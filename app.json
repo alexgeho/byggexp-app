@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./src/assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "splash": {
       "image": "./src/assets/icon.png",
       "resizeMode": "contain",
@@ -14,7 +14,10 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.totbygghubmobileapp"
+      "bundleIdentifier": "com.anonymous.totbygghubmobileapp",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -34,7 +37,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": ""
+        "projectId": "735addb2-34e2-4ccd-a0fd-5c2ed4e7edd4"
       }
     }
   }
