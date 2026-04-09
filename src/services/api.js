@@ -1,0 +1,94 @@
+import axios from 'axios';
+import { getToken, saveToken, removeToken, getRefreshToken, saveRefreshToken, removeRefreshToken } from '../utils/storage';
+
+const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '') ||
+  'https://api.byggexp.se';
+
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+api.interceptors.request.use(
+  async (config) => {
+    const token = await getToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 403) {
+      console.warn('403 Forbidden:', error.response?.data?.message || 'Нет прав доступа');
+    }
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const refreshToken = await getRefreshToken();
+        if (!refreshToken) {
+          await removeToken();
+          await removeRefreshToken();
+          return Promise.reject(error);
+        }
+
+        const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, {
+          refresh_token: refreshToken,
+        });
+
+        const newAccessToken = data.access_token;
+        const newRefreshToken = data.refresh_token;
+        
+        await saveToken(newAccessToken);
+        if (newRefreshToken) {
+          await saveRefreshToken(newRefreshToken);
+        }
+
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return api(originalRequest);
+      } catch (refreshError) {
+        await removeToken();
+        await removeRefreshToken();
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+export const fetchData = async (endpoint) => {
+  try {
+    const response = await api.get(endpoint);
+    return response.data;
+  } catch (error) {
+    console.error('Ошибка при получении данных:', error);
+    throw error;
+  }
+};
+
+export default api;
+
+export const setAuthToken = async (token) => {
+  if (token) {
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    await saveToken(token);
+  } else {
+    delete api.defaults.headers.common['Authorization'];
+    await removeToken();
+  }
+};
+

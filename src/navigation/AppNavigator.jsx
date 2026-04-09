@@ -1,0 +1,73 @@
+import React, { useContext } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import LoaderScreen from '../screens/LoaderScreen';
+import AuthNavigator from './AuthNavigator';
+import MainScreen from '../screens/Main/MainScreen';
+import CameraScreen from '../screens/Main/Camera/CameraScreen';
+import ChatListScreen from '../screens/Main/Chat/ChatListScreen';
+import ProjectsScreen from '../screens/Main/Project/ProjectsScreen';
+import HistoryScreen from '../screens/Main/History/HistoryScreen';
+import MenuScreen from '../screens/Menu/MenuScreen';
+import CreateProjectScreen from '../screens/Main/Project/CreateProjectScreen';
+import { MyAccount } from '../screens/Menu/MyAccount';
+import GroupChatScreen from '../screens/Main/Chat/GroupChatScreen';
+import { ProjectScreen } from '../screens/Main/Project/ProjectScreen';
+import { SelectWorkers } from '../screens/Main/Project/SelectWorkers';
+import { SelectAdmin } from '../screens/Main/Project/SelectAdmin';
+import { ShiftHistory } from '../screens/Main/Project/ShiftHistory';
+import SingleChatScreen from '../screens/Main/Chat/SingleChatScreen';
+import AuthContext from '../contexts/AuthContext';
+
+const Stack = createNativeStackNavigator();
+
+export default function AppNavigator() {
+  const { isAuthenticated, isLoading, user } = useContext(AuthContext);
+
+  if (isLoading) {
+    return <LoaderScreen />;
+  }
+
+  const canManageProjects = ['companyAdmin', 'projectAdmin'].includes(user?.role);
+  const canManageWorkers = ['companyAdmin', 'projectAdmin'].includes(user?.role);
+  const isCompanyAdmin = user?.role === 'companyAdmin';
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: true }}>
+        {isAuthenticated ? (
+          <>
+            <Stack.Screen name='Main' component={MainScreen} options={{ headerShown: false }}/>
+            <Stack.Screen name='Camera' component={CameraScreen} />
+            <Stack.Screen name='Chats' component={ChatListScreen} />
+            <Stack.Screen name='GroupChat' component={GroupChatScreen} />
+            <Stack.Screen name='SingleChat' component={SingleChatScreen} />
+            <Stack.Screen name='Projects' component={ProjectsScreen} />
+            <Stack.Screen name='Project' component={ProjectScreen} />
+            <Stack.Screen name='ShiftHistory' component={ShiftHistory} />
+            <Stack.Screen 
+              name='CreateProject' 
+              component={CreateProjectScreen}
+              options={{ gestureEnabled: canManageProjects }}
+            />
+            <Stack.Screen 
+              name='SelectWorkers' 
+              component={SelectWorkers}
+              options={{ gestureEnabled: canManageWorkers }}
+            />
+            <Stack.Screen 
+              name='SelectAdmin' 
+              component={SelectAdmin}
+              options={{ gestureEnabled: isCompanyAdmin }}
+            />
+            <Stack.Screen name='History' component={HistoryScreen} />
+            <Stack.Screen name='Menu' component={MenuScreen} />
+            <Stack.Screen name='MyAccount' component={MyAccount} />
+          </>
+        ) : (
+          <Stack.Screen name='Auth' component={AuthNavigator} />
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
