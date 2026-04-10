@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "tot-bygghub-mobile-app",
-    "slug": "tot-bygghub-mobile-app",
+    "name": "ByggExp",
+    "slug": "byggexp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/icon.png",
@@ -38,7 +38,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "735addb2-34e2-4ccd-a0fd-5c2ed4e7edd4"
+        "projectId": "e64be0f7-ffc0-440c-8c72-5cffe89943b7"
       }
     }
   }
