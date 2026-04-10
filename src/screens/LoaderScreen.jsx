@@ -24,7 +24,7 @@ export default function LoaderScreen() {
 
     const timer = setTimeout(() => {
       setIsAuthenticated(false);
-    }, 2000);
+    }, 10000);
 
     return () => clearTimeout(timer);
   }, []);

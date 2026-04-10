@@ -37,7 +37,7 @@ export default function AppNavigator() {
       <Stack.Navigator screenOptions={{ headerShown: true }}>
         {isAuthenticated ? (
           <>
-            <Stack.Screen name='Main' component={MainScreen} options={{ headerShown: false }}/>
+            <Stack.Screen name='Main' component={MainScreen} options={{ headerShown: false }} />
             <Stack.Screen name='Camera' component={CameraScreen} />
             <Stack.Screen name='Chats' component={ChatListScreen} />
             <Stack.Screen name='GroupChat' component={GroupChatScreen} />
@@ -45,18 +45,18 @@ export default function AppNavigator() {
             <Stack.Screen name='Projects' component={ProjectsScreen} />
             <Stack.Screen name='Project' component={ProjectScreen} />
             <Stack.Screen name='ShiftHistory' component={ShiftHistory} />
-            <Stack.Screen 
-              name='CreateProject' 
+            <Stack.Screen
+              name='CreateProject'
               component={CreateProjectScreen}
               options={{ gestureEnabled: canManageProjects }}
             />
-            <Stack.Screen 
-              name='SelectWorkers' 
+            <Stack.Screen
+              name='SelectWorkers'
               component={SelectWorkers}
               options={{ gestureEnabled: canManageWorkers }}
             />
-            <Stack.Screen 
-              name='SelectAdmin' 
+            <Stack.Screen
+              name='SelectAdmin'
               component={SelectAdmin}
               options={{ gestureEnabled: isCompanyAdmin }}
             />
@@ -65,7 +65,7 @@ export default function AppNavigator() {
             <Stack.Screen name='MyAccount' component={MyAccount} />
           </>
         ) : (
-          <Stack.Screen name='Auth' component={AuthNavigator} />
+          <Stack.Screen name='Auth' component={AuthNavigator} options={{ headerShown: false }} />
         )}
       </Stack.Navigator>
     </NavigationContainer>

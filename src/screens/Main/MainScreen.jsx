@@ -11,46 +11,46 @@ import { GlassView } from '../../components/common/GlassView/GlassView';
 
 export default function MainScreen() {
 
-    const { theme } = useTheme();
-    const navigation = useNavigation();
-    const { user } = useContext(AuthContext);
-    const { formattedTime, isRunning, isPaused, progress: timerProgress, start, pause, reset } = useTimer();
-    
-    const [selectedProject, setSelectedProject] = useState(null);
-    const [projects, setProjects] = useState([]);
-    const [loading, setLoading] = useState(true);
+  const { theme } = useTheme();
+  const navigation = useNavigation();
+  const { user } = useContext(AuthContext);
+  const { formattedTime, isRunning, isPaused, progress: timerProgress, start, pause, reset } = useTimer();
 
-    useEffect(() => {
-        fetchProjects();
-    }, []);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    const fetchProjects = async () => {
-        try {
-            const data = await projectService.getMyProjects();
-            setProjects(data);
-        } catch (error) {
-            console.error('Error fetching projects:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+  useEffect(() => {
+    fetchProjects();
+  }, []);
 
-    const handleCreateProject = (name) => {
-        console.log('Creating project:', name);
-        navigation.navigate('CreateProject');
-    };
-
-    const handlePlayPause = () => {
-        if (isRunning) {
-            pause();
-        } else {
-            start();
-        }
-    };
-
-    const handleNav = (screen) => {
-        navigation.navigate(screen)
+  const fetchProjects = async () => {
+    try {
+      const data = await projectService.getMyProjects();
+      setProjects(data);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleCreateProject = (name) => {
+    console.log('Creating project:', name);
+    navigation.navigate('CreateProject');
+  };
+
+  const handlePlayPause = () => {
+    if (isRunning) {
+      pause();
+    } else {
+      start();
+    }
+  };
+
+  const handleNav = (screen) => {
+    navigation.navigate(screen)
+  }
 
   // Разные заголовки для разных ролей
   const getRoleTitle = () => {
@@ -90,51 +90,48 @@ export default function MainScreen() {
           }}
           projects={projects}
           onCreateProject={handleCreateProject}
+          onPress={() => navigation.navigate('Projects')}
         />
 
         <View style={styles.timerRow}>
-          <Text style={[styles.timerNumber, {fontFamily: theme.text.fontFamily['regular']}]}>{formattedTime.hours}</Text>
-          <Text style={[styles.timerNumber, {fontFamily: theme.text.fontFamily['regular']}]}>:</Text>
-          <Text style={[styles.timerNumber, {fontFamily: theme.text.fontFamily['regular']}]}>{formattedTime.minutes}</Text>
-          <Text style={[styles.timerNumber, {fontFamily: theme.text.fontFamily['regular']}]}>:</Text>
-          <Text style={[styles.timerSubNumber, {fontFamily: theme.text.fontFamily['regular']}]}>{formattedTime.seconds}</Text>
+          <Text style={[styles.timerNumber, { fontFamily: theme.text.fontFamily['regular'] }]}>{formattedTime.hours}</Text>
+          <Text style={[styles.timerNumber, { fontFamily: theme.text.fontFamily['regular'] }]}>:</Text>
+          <Text style={[styles.timerNumber, { fontFamily: theme.text.fontFamily['regular'] }]}>{formattedTime.minutes}</Text>
+          <Text style={[styles.timerNumber, { fontFamily: theme.text.fontFamily['regular'] }]}>:</Text>
+          <Text style={[styles.timerSubNumber, { fontFamily: theme.text.fontFamily['regular'] }]}>{formattedTime.seconds}</Text>
         </View>
 
         <View style={styles.dotsRow}>
           {Array.from({ length: 10 }).map((_, index) => (
-            <View 
-              key={index} 
+            <View
+              key={index}
               style={[
                 styles.dot,
                 index < timerProgress && styles.dotActive
-              ]} 
+              ]}
             />
           ))}
         </View>
 
         <View style={styles.playButtonContainer}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[
               styles.playButton,
               isPaused && styles.playButtonPaused
-            ]} 
+            ]}
             onPress={handlePlayPause}
           >
-            <Image 
-              style={styles.playIcon} 
-              source={isRunning ? require('../../assets/Pause.png') : require('../../assets/Play.png')} 
+            <Image
+              style={styles.playIcon}
+              source={isRunning ? require('../../assets/Pause.png') : require('../../assets/Play.png')}
             />
           </TouchableOpacity>
-          {isRunning && (
-            <TouchableOpacity style={styles.stopButton} onPress={reset}>
-              <Text style={styles.stopButtonText}>Stop</Text>
-            </TouchableOpacity>
-          )}
+
         </View>
-        
+
         {/* Кнопка "Отметить время" для Worker */}
         {user?.role === 'worker' && (
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.timeReportButton}
             onPress={() => navigation.navigate('ShiftHistory', { type: 'report' })}
           >
@@ -147,25 +144,25 @@ export default function MainScreen() {
         <GlassView style={styles.button} intensity={60} tint="dark">
           <TouchableOpacity onPress={() => handleNav('Camera')} style={styles.buttonInner}>
             <Image style={styles.buttonIcon} source={require('../../assets/Camera.png')} />
-            <Text style={[styles.text, {fontFamily: theme.text.fontFamily['regular']}]}>Camera</Text>
+            <Text style={[styles.text, { fontFamily: theme.text.fontFamily['regular'] }]}>Camera</Text>
           </TouchableOpacity>
         </GlassView>
         <GlassView style={styles.button} intensity={60} tint="dark">
           <TouchableOpacity onPress={() => handleNav('Chats')} style={styles.buttonInner}>
             <Image style={styles.buttonIcon} source={require('../../assets/messager.png')} />
-            <Text style={[styles.text, {fontFamily: theme.text.fontFamily['regular']}]}>Chats</Text>
+            <Text style={[styles.text, { fontFamily: theme.text.fontFamily['regular'] }]}>Chats</Text>
           </TouchableOpacity>
         </GlassView>
         <GlassView style={styles.button} intensity={60} tint="dark">
           <TouchableOpacity onPress={() => handleNav('History')} style={styles.buttonInner}>
             <Image style={styles.buttonIcon} source={require('../../assets/history.png')} />
-            <Text style={[styles.text, {fontFamily: theme.text.fontFamily['regular']}]}>History</Text>
+            <Text style={[styles.text, { fontFamily: theme.text.fontFamily['regular'] }]}>History</Text>
           </TouchableOpacity>
         </GlassView>
         <GlassView style={styles.button} intensity={60} tint="dark">
           <TouchableOpacity onPress={() => handleNav('Projects')} style={styles.buttonInner}>
             <Image style={styles.buttonIcon} source={require('../../assets/projects.png')} />
-            <Text style={[styles.text, {fontFamily: theme.text.fontFamily['regular']}]}>Projects</Text>
+            <Text style={[styles.text, { fontFamily: theme.text.fontFamily['regular'] }]}>Projects</Text>
           </TouchableOpacity>
         </GlassView>
       </View>
@@ -209,7 +206,7 @@ const styles = StyleSheet.create({
     fontSize: 48,
   },
   timerSubNumber: {
-    color: '#ffffff40',
+    color: '#ffffff',
     fontSize: 48,
   },
   dotsRow: {

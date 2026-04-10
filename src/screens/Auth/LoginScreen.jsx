@@ -4,7 +4,7 @@ import AuthContext from '../../contexts/AuthContext';
 import ActionButton from '../../components/common/ActionButton/ActionButton';
 import { useTheme } from '../../theme/ThemeContext';
 
-export default function LoginScreen() {
+export default function LoginScreen({ navigation }) {
   const { theme } = useTheme();
   const { login, isLoading } = useContext(AuthContext);
   const [email, setEmail] = useState('');
@@ -19,7 +19,9 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.text, {fontFamily: theme.text.fontFamily['regular']}]}>Hi! Enter your email and pass to log in:</Text>
+      <Text style={[styles.text, { fontFamily: theme.text.fontFamily['regular'] }]}>
+        Hi! Enter your email and pass to log in:
+      </Text>
       <TextInput
         placeholder="Email"
         style={styles.input}
@@ -36,12 +38,18 @@ export default function LoginScreen() {
         secureTextEntry
       />
       <ActionButton onPress={handleLogin} title={isLoading ? 'Login...' : 'Login'} disabled={isLoading} />
+      <TouchableOpacity onPress={() => navigation.navigate('Register')} style={styles.registerLink}>
+        <Text style={styles.registerText}>No account? <Text style={styles.registerTextBold}>Register</Text></Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 20 },
-  input: { borderWidth: 1, padding: 16, marginBottom: 10, borderRadius: 20, borderColor: 'transparent', outlineColor: "#0785F4", color: '#151515', boxShadow: "0 0 10px #00203A10" },
-  text: { width: '100%', textAlign: 'center', marginBottom: 20, fontSize: 32, color: '#052D50' }
+  input: { borderWidth: 1, padding: 16, marginBottom: 10, borderRadius: 20, borderColor: 'transparent', outlineColor: '#0785F4', color: '#151515', boxShadow: '0 0 10px #00203A10' },
+  text: { width: '100%', textAlign: 'center', marginBottom: 20, fontSize: 32, color: '#052D50' },
+  registerLink: { marginTop: 16, alignItems: 'center' },
+  registerText: { color: '#888', fontSize: 14 },
+  registerTextBold: { color: '#0785F4', fontWeight: 'bold' },
 });

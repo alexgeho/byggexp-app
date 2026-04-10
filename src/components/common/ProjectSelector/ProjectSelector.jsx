@@ -12,7 +12,7 @@ const GlassViewWrapper = ({ children, style }) => {
   );
 };
 
-export default function ProjectSelector({ value, onChange, projects = [], onCreateProject }) {
+export default function ProjectSelector({ value, onChange, projects = [], onCreateProject, onPress }) {
   const { theme } = useTheme();
   const [isVisible, setIsVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -89,7 +89,7 @@ export default function ProjectSelector({ value, onChange, projects = [], onCrea
         <TouchableOpacity
           ref={buttonRef}
           style={styles.glassInput}
-          onPress={handleToggle}
+          onPress={onPress || handleToggle}
           activeOpacity={0.7}
         >
           <LinearGradient
@@ -119,49 +119,49 @@ export default function ProjectSelector({ value, onChange, projects = [], onCrea
           >
             <View style={styles.dropdownBlurWeb}>
               <View style={styles.dropdownContent}>
-              <TextInput
-                style={[styles.searchInput, { color: theme.colors.text || '#fff' }]}
-                placeholder="Search or type new..."
-                placeholderTextColor={theme.colors.textSecondary || '#aaa'}
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                onSubmitEditing={handleCreate}
-                autoFocus
-                underlineColorAndroid="transparent"
-                autoCorrect={false}
-              />
-              <FlatList
-                data={filteredProjects}
-                keyExtractor={getKey}
-                renderItem={({ item }) => (
+                <TextInput
+                  style={[styles.searchInput, { color: theme.colors.text || '#fff' }]}
+                  placeholder="Search or type new..."
+                  placeholderTextColor={theme.colors.textSecondary || '#aaa'}
+                  value={searchQuery}
+                  onChangeText={setSearchQuery}
+                  onSubmitEditing={handleCreate}
+                  autoFocus
+                  underlineColorAndroid="transparent"
+                  autoCorrect={false}
+                />
+                <FlatList
+                  data={filteredProjects}
+                  keyExtractor={getKey}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      style={styles.projectItem}
+                      onPress={() => handleSelect(item)}
+                    >
+                      <Text style={[styles.projectText, { color: '#fff' }]}>
+                        {item.name}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                  ListEmptyComponent={
+                    <Text style={[styles.emptyText, { color: theme.colors.textSecondary || '#aaa' }]}>
+                      {searchQuery.trim() ? 'Type to create...' : 'No projects'}
+                    </Text>
+                  }
+                  style={styles.list}
+                />
+                {searchQuery.trim() && (
                   <TouchableOpacity
-                    style={styles.projectItem}
-                    onPress={() => handleSelect(item)}
+                    style={[styles.createButton, { backgroundColor: theme.colors.primary }]}
+                    onPress={handleCreate}
                   >
-                    <Text style={[styles.projectText, { color: '#fff' }]}>
-                      {item.name}
+                    <Text style={styles.createButtonText}>
+                      Create "{searchQuery}"
                     </Text>
                   </TouchableOpacity>
                 )}
-                ListEmptyComponent={
-                  <Text style={[styles.emptyText, { color: theme.colors.textSecondary || '#aaa' }]}>
-                    {searchQuery.trim() ? 'Type to create...' : 'No projects'}
-                  </Text>
-                }
-                style={styles.list}
-              />
-              {searchQuery.trim() && (
-                <TouchableOpacity
-                  style={[styles.createButton, { backgroundColor: theme.colors.primary }]}
-                  onPress={handleCreate}
-                >
-                  <Text style={styles.createButtonText}>
-                    Create "{searchQuery}"
-                  </Text>
-                </TouchableOpacity>
-              )}
+              </View>
             </View>
-          </View>
           </Animated.View>
         )
       ) : (

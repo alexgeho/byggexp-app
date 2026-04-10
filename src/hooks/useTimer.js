@@ -1,20 +1,34 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
+// Maximum work day duration: 8 hours in milliseconds
 const WORK_DAY_DURATION = 8 * 60 * 60 * 1000;
 
 export const useTimer = () => {
-  const [timeRemaining, setTimeRemaining] = useState(WORK_DAY_DURATION);
+  // Total elapsed time in milliseconds
+  const [timeElapsed, setTimeElapsed] = useState(0);
+  
+  // Whether the timer is actively counting
   const [isRunning, setIsRunning] = useState(false);
+  
+  // Whether the timer is paused (started but stopped temporarily)
   const [isPaused, setIsPaused] = useState(false);
+  
+  // Reference to the interval so we can clear it
   const intervalRef = useRef(null);
-  const endTimeRef = useRef(null);
+  
+  // Timestamp when the current run segment started
+  const startTimeRef = useRef(null);
+  
+  // Total time accumulated from previous run segments (before pauses)
+  const accumulatedRef = useRef(0);
 
+  // Converts milliseconds to { hours, minutes, seconds } strings
   const formatTime = useCallback((ms) => {
     const totalSeconds = Math.floor(ms / 1000);
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
-    
+
     return {
       hours: String(hours).padStart(2, '0'),
       minutes: String(minutes).padStart(2, '0'),
@@ -22,47 +36,43 @@ export const useTimer = () => {
     };
   }, []);
 
+  // Returns a progress value from 0 to 10 based on elapsed vs work day duration
   const progress = useCallback(() => {
-    const elapsed = WORK_DAY_DURATION - timeRemaining;
-    const percentage = elapsed / WORK_DAY_DURATION;
+    const percentage = timeElapsed / WORK_DAY_DURATION;
     return Math.min(10, Math.max(0, Math.ceil(percentage * 10)));
-  }, [timeRemaining]);
+  }, [timeElapsed]);
 
+  // Starts or resumes the timer
   const start = useCallback(() => {
-    if (isPaused) {
-      setIsPaused(false);
-      setIsRunning(true);
-      return;
-    }
+    if (isRunning) return;
 
     setIsRunning(true);
     setIsPaused(false);
-    endTimeRef.current = Date.now() + timeRemaining;
+    
+    // Record when this segment started
+    startTimeRef.current = Date.now();
 
+    // Tick every second: elapsed = accumulated + current segment duration
     intervalRef.current = setInterval(() => {
-      const now = Date.now();
-      const remaining = endTimeRef.current - now;
-
-      if (remaining <= 0) {
-        setTimeRemaining(0);
-        setIsRunning(false);
-        setIsPaused(false);
-        clearInterval(intervalRef.current);
-      } else {
-        setTimeRemaining(remaining);
-      }
+      const elapsed = accumulatedRef.current + (Date.now() - startTimeRef.current);
+      setTimeElapsed(elapsed);
     }, 1000);
-  }, [isPaused, timeRemaining]);
+  }, [isRunning]);
 
+  // Pauses the timer and saves accumulated time
   const pause = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = undefined;
     }
+    
+    // Save how much time has passed in this segment
+    accumulatedRef.current += Date.now() - startTimeRef.current;
     setIsPaused(true);
     setIsRunning(false);
   }, []);
 
+  // Resets the timer to zero
   const reset = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -70,10 +80,12 @@ export const useTimer = () => {
     }
     setIsRunning(false);
     setIsPaused(false);
-    setTimeRemaining(WORK_DAY_DURATION);
-    endTimeRef.current = undefined;
+    setTimeElapsed(0);
+    accumulatedRef.current = 0;
+    startTimeRef.current = null;
   }, []);
 
+  // Cleanup interval on component unmount
   useEffect(() => {
     return () => {
       if (intervalRef.current) {
@@ -82,11 +94,9 @@ export const useTimer = () => {
     };
   }, []);
 
-  const formattedTime = formatTime(timeRemaining);
-
   return {
-    timeRemaining,
-    formattedTime,
+    timeElapsed,
+    formattedTime: formatTime(timeElapsed),
     isRunning,
     isPaused,
     progress: progress(),
