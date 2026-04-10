@@ -1,44 +1,20 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, Platform, ActivityIndicator } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, Text, TouchableOpacity, Image, StyleSheet, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../theme/ThemeContext';
 import { useNavigation } from '@react-navigation/native';
 import ProjectSelector from '../../components/common/ProjectSelector/ProjectSelector';
 import AuthContext from '../../contexts/AuthContext';
-import { projectService } from '../../services';
 import { useTimer } from '../../hooks/useTimer';
 import { GlassView } from '../../components/common/GlassView/GlassView';
 
 export default function MainScreen() {
-
   const { theme } = useTheme();
   const navigation = useNavigation();
   const { user } = useContext(AuthContext);
   const { formattedTime, isRunning, isPaused, progress: timerProgress, start, pause, reset } = useTimer();
 
   const [selectedProject, setSelectedProject] = useState(null);
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchProjects();
-  }, []);
-
-  const fetchProjects = async () => {
-    try {
-      const data = await projectService.getMyProjects();
-      setProjects(data);
-    } catch (error) {
-      console.error('Error fetching projects:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCreateProject = (name) => {
-    console.log('Creating project:', name);
-    navigation.navigate('CreateProject');
-  };
 
   const handlePlayPause = () => {
     if (isRunning) {
@@ -49,22 +25,7 @@ export default function MainScreen() {
   };
 
   const handleNav = (screen) => {
-    navigation.navigate(screen)
-  }
-
-  // Разные заголовки для разных ролей
-  const getRoleTitle = () => {
-    if (!user) return 'ByggHub';
-    switch (user.role) {
-      case 'companyAdmin':
-        return 'Company Dashboard';
-      case 'projectAdmin':
-        return 'Project Dashboard';
-      case 'worker':
-        return 'My Dashboard';
-      default:
-        return 'ByggHub';
-    }
+    navigation.navigate(screen);
   };
 
   const BackgroundComponent = Platform.OS === 'web' ? View : LinearGradient;
@@ -88,8 +49,7 @@ export default function MainScreen() {
             setSelectedProject(project);
             reset();
           }}
-          projects={projects}
-          onCreateProject={handleCreateProject}
+          projects={[]}
           onPress={() => navigation.navigate('Projects')}
         />
 
@@ -105,41 +65,34 @@ export default function MainScreen() {
           {Array.from({ length: 10 }).map((_, index) => (
             <View
               key={index}
-              style={[
-                styles.dot,
-                index < timerProgress && styles.dotActive
-              ]}
+              style={[styles.dot, index < timerProgress && styles.dotActive]}
             />
           ))}
         </View>
 
         <View style={styles.playButtonContainer}>
           <TouchableOpacity
-            style={[
-              styles.playButton,
-              isPaused && styles.playButtonPaused
-            ]}
+            style={[styles.playButton, isPaused && styles.playButtonPaused]}
             onPress={handlePlayPause}
           >
             <Image
-              style={styles.playIcon}
-              source={isRunning ? require('../../assets/Pause.png') : require('../../assets/Play.png')}
+              style={[styles.playIcon, { tintColor: '#ffffff' }]}
+              source={isRunning ? require('../../assets/main/Pause.png') : require('../../assets/main/Play.png')}
             />
           </TouchableOpacity>
-
         </View>
 
-        {/* Кнопка "Отметить время" для Worker */}
         {user?.role === 'worker' && (
           <TouchableOpacity
             style={styles.timeReportButton}
             onPress={() => navigation.navigate('ShiftHistory', { type: 'report' })}
           >
             <Image style={styles.timeReportIcon} source={require('../../assets/WorkShifts.png')} />
-            <Text style={styles.timeReportText}>Отметить время</Text>
+            <Text style={styles.timeReportText}>Mark time</Text>
           </TouchableOpacity>
         )}
       </View>
+
       <View style={styles.navButtonContainer}>
         <GlassView style={styles.button} intensity={60} tint="dark">
           <TouchableOpacity onPress={() => handleNav('Camera')} style={styles.buttonInner}>
@@ -166,6 +119,7 @@ export default function MainScreen() {
           </TouchableOpacity>
         </GlassView>
       </View>
+
       <View style={styles.bottomNavContainer}>
         <TouchableOpacity style={styles.bottomNavItem}>
           <Image style={styles.bottomIcon} source={require('../../assets/Home.png')} />
@@ -199,14 +153,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 32,
-    elevation: 3
+    elevation: 3,
   },
   timerNumber: {
     color: '#ffffff',
     fontSize: 48,
   },
   timerSubNumber: {
-    color: '#ffffff',
+    color: '#ffffff40',
     fontSize: 48,
   },
   dotsRow: {
@@ -215,7 +169,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: 12,
-    elevation: 3
+    elevation: 3,
   },
   dot: {
     width: '6%',
@@ -256,20 +210,6 @@ const styles = StyleSheet.create({
   playIcon: {
     width: 32,
     height: 32,
-  },
-  stopButton: {
-    marginTop: 16,
-    paddingVertical: 8,
-    paddingHorizontal: 24,
-    backgroundColor: 'rgba(255, 100, 100, 0.3)',
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#ff6464',
-  },
-  stopButtonText: {
-    color: '#ff6464',
-    fontSize: 14,
-    fontWeight: '600',
   },
   navButtonContainer: {
     flexWrap: 'wrap',
@@ -337,4 +277,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-
