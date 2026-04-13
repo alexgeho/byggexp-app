@@ -23,6 +23,7 @@ export default function MenuScreen() {
     if (user?.role === 'companyAdmin') {
       return [
         ...baseItems,
+        { id: 'tasks', screen: 'Tasks', title: 'Tasks', icon: require('../../assets/Tasks.png'), color: '#00C853' },
         { id: 'company', title: 'Company', icon: require('../../assets/About.png'), color: '#009688' },
         { id: 'users', title: 'Users', icon: require('../../assets/Tasks.png'), color: '#2196F3' },
         { id: 'projects', title: 'Projects', icon: require('../../assets/Projekts.png'), color: '#FF9800' },
@@ -34,6 +35,7 @@ export default function MenuScreen() {
     if (user?.role === 'projectAdmin') {
       return [
         ...baseItems,
+        { id: 'tasks', screen: 'Tasks', title: 'Tasks', icon: require('../../assets/Tasks.png'), color: '#00C853' },
         { id: 'projects', title: 'Projects', icon: require('../../assets/Projekts.png'), color: '#FF9800' },
         { id: 'team', title: 'My Team', icon: require('../../assets/Tasks.png'), color: '#2196F3' },
         { id: 'reports', title: 'Reports', icon: require('../../assets/Documents.png'), color: '#795548' },
@@ -43,7 +45,7 @@ export default function MenuScreen() {
     // Worker: базовое меню
     return [
       ...baseItems,
-      { id: 'tasks', title: 'Tasks', icon: require('../../assets/Tasks.png'), color: '#00C853' },
+      { id: 'tasks', screen: 'Tasks', title: 'Tasks', icon: require('../../assets/Tasks.png'), color: '#00C853' },
       { id: 'documents', title: 'Documents', icon: require('../../assets/Documents.png'), color: '#2196F3' },
       { id: 'workShifts', title: 'Work shifts', icon: require('../../assets/WorkShifts.png'), color: '#F44336' },
     ];

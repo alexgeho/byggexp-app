@@ -6,6 +6,7 @@ import AuthNavigator from './AuthNavigator';
 import MainScreen from '../screens/Main/MainScreen';
 import CameraScreen from '../screens/Main/Camera/CameraScreen';
 import ChatListScreen from '../screens/Main/Chat/ChatListScreen';
+import TasksScreen from '../screens/Main/TasksScreen';
 import ProjectsScreen from '../screens/Main/Project/ProjectsScreen';
 import HistoryScreen from '../screens/Main/History/HistoryScreen';
 import MenuScreen from '../screens/Menu/MenuScreen';
@@ -40,6 +41,7 @@ export default function AppNavigator() {
             <Stack.Screen name='Main' component={MainScreen} options={{ headerShown: false }} />
             <Stack.Screen name='Camera' component={CameraScreen} options={{ headerShown: true }} />
             <Stack.Screen name='Chats' component={ChatListScreen} />
+            <Stack.Screen name='Tasks' component={TasksScreen} />
             <Stack.Screen name='GroupChat' component={GroupChatScreen} />
             <Stack.Screen name='SingleChat' component={SingleChatScreen} />
             <Stack.Screen name='Projects' component={ProjectsScreen} />

@@ -1,7 +1,10 @@
 import React from 'react'
+import { useNavigation } from '@react-navigation/native'
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 export const MenuButton = ({ id, screen, title, color, icon }) => {
+  const navigation = useNavigation();
+
   return <>
     <TouchableOpacity
         key={id}
