@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     fontSize: 48,
   },
   timerSubNumber: {
-    color: '#ffffff40',
+    color: '#ffffff',
     fontSize: 48,
   },
   dotsRow: {
