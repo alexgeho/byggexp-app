@@ -1,25 +1,26 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 import { useTheme } from '../../../theme/ThemeContext';
 import AuthContext from '../../../contexts/AuthContext';
 import { projectService } from '../../../services';
-import { BottomBar } from '../../../components/BottomBar';
 import { GlassBackButton } from '../../../components/common/GlassBackButton/GlassBackButton';
-
-const MOCK_PROJECTS = [
-  { _id: '1', name: 'Gruvrisvägen 70', status: 'In progress', location: 'Falun', beginningDate: new Date() },
-  { _id: '2', name: 'Projekt Stockholm', status: 'Planning', location: 'Stockholm', beginningDate: new Date() },
-];
 
 export default function ProjectsScreen() {
   const navigation = useNavigation();
   const { theme } = useTheme();
   const { userId, isLoading: authLoading, user } = useContext(AuthContext);
-  const [projects, setProjects] = useState(MOCK_PROJECTS);
+  const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const canManageProjects = ['companyAdmin', 'projectAdmin'].includes(user?.role);
+  const canManageProjects = ['superadmin', 'companyAdmin', 'projectAdmin'].includes(user?.role);
+  const formatStatus = (status) => {
+    if (!status) return '';
+
+    const normalizedStatus = status.replace(/_/g, ' ').toLowerCase();
+    return normalizedStatus.charAt(0).toUpperCase() + normalizedStatus.slice(1);
+  };
 
   useEffect(() => {
     if (!authLoading && userId) {
@@ -30,7 +31,9 @@ export default function ProjectsScreen() {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      const data = await projectService.getMyProjects();
+      const data = user?.role === 'superadmin'
+        ? await projectService.getAll()
+        : await projectService.getMyProjects();
 
       let userProjects = data;
       if (user?.role === 'worker' || user?.role === 'projectAdmin') {
@@ -42,7 +45,7 @@ export default function ProjectsScreen() {
       setProjects(userProjects);
     } catch (err) {
       console.error('Failed to fetch projects:', err);
-      setProjects(MOCK_PROJECTS);
+      setProjects([]);
     } finally {
       setLoading(false);
     }
@@ -87,7 +90,7 @@ export default function ProjectsScreen() {
             >
               <View style={styles.cardHeader}>
                 <Text style={[styles.projectName, { fontFamily: theme.text.fontFamily['bold'] }]}>{project.name}</Text>
-                <Text style={styles.statusBadge}>{project.status}</Text>
+                <Text style={styles.statusBadge}>{formatStatus(project.status)}</Text>
               </View>
               <Text style={styles.dateText}>Start: {new Date(project.beginningDate).toLocaleDateString()}</Text>
               <Text style={styles.locationText}>Location: {project.location}</Text>
@@ -96,12 +99,18 @@ export default function ProjectsScreen() {
         )}
       </ScrollView>
 
-      <BottomBar
-        onLeftPress={() => navigation.navigate('Home')}
-        onRightPress={() => navigation.navigate('Menu')}
-        onAddPress={() => navigation.navigate('CreateProject')}
-        showAddButton={canManageProjects}
-      />
+      {canManageProjects && (
+        <TouchableOpacity
+          onPress={() => navigation.navigate('CreateProject')}
+          style={styles.floatingAddButton}
+          activeOpacity={0.85}
+        >
+          <Svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <Path d="M9.62256 1V18.2449" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <Path d="M1 9.56934H18.2449" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </Svg>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -152,7 +161,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     width: '100%',
     gap: 12,
-    paddingBottom: 96,
+    paddingBottom: 140,
   },
   projectCard: {
     backgroundColor: '#ffffff',
@@ -189,5 +198,22 @@ const styles = StyleSheet.create({
     marginTop: 20,
     color: '#698196',
     fontSize: 16,
+  },
+  floatingAddButton: {
+    position: 'absolute',
+    right: 16,
+    bottom: 45,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: '#0091FF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 20,
+    shadowColor: '#0091FF',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    elevation: 6,
   },
 });

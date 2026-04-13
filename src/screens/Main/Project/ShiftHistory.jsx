@@ -35,8 +35,7 @@ export const ShiftHistory = ({ route }) => {
       <View style={styles.header}>
         <GlassBackButton backgroundColor={'rgb(253 253 253)'} tint={"light"} borderColor="#FFFFFF50" onPress={() => navigation.goBack()} iconSource={require('../../../assets/Arrow-left.png')} />
         <Text style={styles.projectName}>Shift history</Text>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backZeroButton}>
-        </TouchableOpacity>
+        <View style={styles.backZeroButton} />
       </View>
 
       <Text style={{ color: '#052D50', fontSize: 36, width: '100%' }}>Alex Gerhard</Text>

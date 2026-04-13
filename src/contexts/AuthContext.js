@@ -80,7 +80,7 @@ export const AuthProvider = ({ children }) => {
   const isWorker = () => user?.role === 'worker';
   const isProjectAdmin = () => user?.role === 'projectAdmin';
   const isCompanyAdmin = () => user?.role === 'companyAdmin';
-  const canManageProjects = () => ['companyAdmin', 'projectAdmin'].includes(user?.role);
+  const canManageProjects = () => ['superadmin', 'companyAdmin', 'projectAdmin'].includes(user?.role);
   const canManageWorkers = () => ['companyAdmin', 'projectAdmin'].includes(user?.role);
 
   return (

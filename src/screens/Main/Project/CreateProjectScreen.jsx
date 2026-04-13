@@ -12,8 +12,8 @@ export default function CreateProjectScreen() {
     const { theme } = useTheme();
     const { user } = useContext(AuthContext);
 
-    // Проверка прав доступа - только для companyAdmin и projectAdmin
-    const canManageProjects = ['companyAdmin', 'projectAdmin'].includes(user?.role);
+    // Проверка прав доступа - только для superadmin, companyAdmin и projectAdmin
+    const canManageProjects = ['superadmin', 'companyAdmin', 'projectAdmin'].includes(user?.role);
     
     if (!canManageProjects) {
         return (
@@ -58,17 +58,44 @@ export default function CreateProjectScreen() {
         fetchUsersAndCompanies();
     }, []);
 
+    useEffect(() => {
+        if (user?.role === 'superadmin' && selectedClientCompany) {
+            fetchUsersByCompany(selectedClientCompany);
+        }
+    }, [user?.role, selectedClientCompany]);
+
+    const fetchUsersByCompany = async (companyId) => {
+        try {
+            const usersData = await userService.getByCompany(companyId);
+            setUsers(usersData);
+        } catch (error) {
+            console.error('Error fetching company users:', error);
+            setUsers([]);
+        }
+    };
+
     const fetchUsersAndCompanies = async () => {
         try {
-            // Получаем мою компанию
-            const myCompany = await companyService.getMyCompany();
-            setCompanies([myCompany]);
-            setSelectedClientCompany(myCompany._id);
-            
-            // Получаем пользователей моей компании
-            const usersData = await userService.getByCompany(myCompany._id);
-            setUsers(usersData);
-            
+            if (user?.role === 'superadmin') {
+                const allCompanies = await companyService.getAll();
+                setCompanies(allCompanies);
+
+                const initialCompanyId = allCompanies[0]?._id || null;
+                setSelectedClientCompany(initialCompanyId);
+
+                if (!initialCompanyId) {
+                    setUsers([]);
+                }
+            } else {
+                // Для companyAdmin / projectAdmin используем их компанию
+                const myCompany = await companyService.getMyCompany();
+                setCompanies([myCompany]);
+                setSelectedClientCompany(myCompany._id);
+
+                const usersData = await userService.getByCompany(myCompany._id);
+                setUsers(usersData);
+            }
+
             setLoading(false);
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -92,6 +119,9 @@ export default function CreateProjectScreen() {
 
     const handleSelectCompany = (companyId) => {
         setSelectedClientCompany(companyId);
+        setSelectedOwner(null);
+        setSelectedManager(null);
+        setSelectedWorkers([]);
         setShowCompaniesModal(false);
     };
 

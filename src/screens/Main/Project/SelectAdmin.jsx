@@ -18,9 +18,7 @@ export const SelectAdmin = () => {
             <View style={styles.header}>
             <GlassBackButton backgroundColor={'rgb(253 253 253)'} tint={"light"} borderColor="#FFFFFF50" onPress={() => navigation.goBack()} iconSource={require('../../../assets/Arrow-left.png')} />
             <Text style={styles.projectName}>Select an Admin</Text>
-            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                <Image style={styles.backIcon} source={require('../../../assets/Search.png')} />
-            </TouchableOpacity>
+            <GlassBackButton backgroundColor={'rgb(253 253 253)'} tint={"light"} borderColor="#FFFFFF50" onPress={() => navigation.goBack()} iconSource={require('../../../assets/Search.png')} />
             </View>
             <View style={styles.accessDeniedContainer}>
             <Text style={styles.accessDeniedText}>Доступ запрещён</Text>
@@ -34,9 +32,7 @@ export const SelectAdmin = () => {
     <View style={styles.header}>
           <GlassBackButton backgroundColor={'rgb(253 253 253)'} tint={"light"} borderColor="#FFFFFF50" onPress={() => navigation.goBack()} iconSource={require('../../../assets/Arrow-left.png')} />
           <Text style={styles.projectName}>Select an Admin</Text>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Image style={styles.backIcon} source={require('../../../assets/Search.png')} />
-          </TouchableOpacity>
+          <GlassBackButton backgroundColor={'rgb(253 253 253)'} tint={"light"} borderColor="#FFFFFF50" onPress={() => navigation.goBack()} iconSource={require('../../../assets/Search.png')} />
         </View>
 
 

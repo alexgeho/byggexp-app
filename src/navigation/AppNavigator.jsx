@@ -28,17 +28,17 @@ export default function AppNavigator() {
     return <LoaderScreen />;
   }
 
-  const canManageProjects = ['companyAdmin', 'projectAdmin'].includes(user?.role);
+  const canManageProjects = ['superadmin', 'companyAdmin', 'projectAdmin'].includes(user?.role);
   const canManageWorkers = ['companyAdmin', 'projectAdmin'].includes(user?.role);
   const isCompanyAdmin = user?.role === 'companyAdmin';
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: true }}>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
         {isAuthenticated ? (
           <>
             <Stack.Screen name='Main' component={MainScreen} options={{ headerShown: false }} />
-            <Stack.Screen name='Camera' component={CameraScreen} />
+            <Stack.Screen name='Camera' component={CameraScreen} options={{ headerShown: true }} />
             <Stack.Screen name='Chats' component={ChatListScreen} />
             <Stack.Screen name='GroupChat' component={GroupChatScreen} />
             <Stack.Screen name='SingleChat' component={SingleChatScreen} />

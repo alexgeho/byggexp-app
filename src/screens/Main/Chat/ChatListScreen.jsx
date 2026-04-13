@@ -12,9 +12,7 @@ export default function ChatListScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <GlassBackButton backgroundColor={'rgb(253 253 253)'} tint={"light"} borderColor="#FFFFFF50" onPress={() => navigation.goBack()} iconSource={require('../../../assets/Arrow-left.png')} />
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Image style={styles.backIcon} source={require('../../../assets/Search.png')} />
-        </TouchableOpacity>
+        <GlassBackButton backgroundColor={'rgb(253 253 253)'} tint={"light"} borderColor="#FFFFFF50" onPress={() => navigation.goBack()} iconSource={require('../../../assets/Search.png')} />
       </View>
       <View style={styles.chatHeader}>
         <Text style={[styles.chatTitle, { fontFamily: theme.text.fontFamily['bold'] }]}>Chat</Text>
