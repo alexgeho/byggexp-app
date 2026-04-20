@@ -1,0 +1,7 @@
+ByggExp test note
+
+Project: Demo Construction Site
+Owner: Anna Svensson
+Manager: Erik Holm
+
+This file is used to verify document picking in the iOS simulator.

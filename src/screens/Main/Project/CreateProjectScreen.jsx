@@ -1,11 +1,161 @@
-import { View, Text, TouchableOpacity, Image, TextInput, ScrollView, StyleSheet, Alert, Modal, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, Image, TextInput, ScrollView, StyleSheet, Alert, Modal, FlatList, ActivityIndicator, Animated, Switch, Platform } from 'react-native';
 import { useTheme } from '../../../theme/ThemeContext';
 import { useNavigation } from '@react-navigation/native';
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import * as DocumentPicker from 'expo-document-picker';
+import MapView, { Marker } from 'react-native-maps';
+import * as Location from 'expo-location';
+import Icon from 'react-native-vector-icons/Feather';
+import { LinearGradient } from 'expo-linear-gradient';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import AuthContext from '../../../contexts/AuthContext';
 import { projectService, userService, companyService } from '../../../services';
 import { GlassBackButton } from '../../../components/common/GlassBackButton/GlassBackButton';
+import { GlassView } from '../../../components/common/GlassView/GlassView';
+
+const DEFAULT_REGION = {
+    latitude: 59.3293,
+    longitude: 18.0686,
+    latitudeDelta: 0.012,
+    longitudeDelta: 0.012,
+};
+const DATE_PICKER_DISPLAY = Platform.OS === 'ios' ? 'inline' : 'calendar';
+const REVERSE_GEOCODE_MIN_INTERVAL_MS = 1200;
+
+const GEOCODER_HEADERS = {
+    Accept: 'application/json',
+    'Accept-Language': 'en',
+};
+
+const formatResolvedAddress = (address) => {
+    if (!address) {
+        return '';
+    }
+
+    const streetLine = [address.street, address.streetNumber].filter(Boolean).join(' ').trim();
+
+    return [
+        address.name,
+        streetLine,
+        address.city || address.subregion || address.region,
+        address.postalCode,
+        address.country,
+    ]
+        .filter(Boolean)
+        .join(', ');
+};
+
+const reverseGeocodeWithNominatim = async (latitude, longitude) => {
+    const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
+        {
+            headers: GEOCODER_HEADERS,
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(`Reverse geocoding failed with status ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data?.display_name || '';
+};
+
+const searchAddressWithNominatim = async (query) => {
+    const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(query)}`,
+        {
+            headers: GEOCODER_HEADERS,
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(`Address search failed with status ${response.status}`);
+    }
+
+    const data = await response.json();
+    return Array.isArray(data) ? data[0] : null;
+};
+
+const getCoordinateCacheKey = (latitude, longitude) => `${latitude.toFixed(4)},${longitude.toFixed(4)}`;
+
+const getUserInitials = (name = '') => {
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    return parts.slice(0, 2).map(part => part[0]?.toUpperCase() || '').join('') || '?';
+};
+
+const getFileExtension = (fileName = '') => {
+    const parts = fileName.split('.');
+    return parts.length > 1 ? parts.pop().toUpperCase() : '';
+};
+
+const isImageDocument = (document) => {
+    const mimeType = document?.mimeType || '';
+    const extension = getFileExtension(document?.name || '').toLowerCase();
+    return mimeType.startsWith('image/') || ['png', 'jpg', 'jpeg', 'webp', 'gif', 'bmp', 'heic'].includes(extension);
+};
+
+const getDocumentTypeMeta = (document) => {
+    const extension = getFileExtension(document?.name || '');
+    const mimeType = document?.mimeType || '';
+
+    if (isImageDocument(document)) {
+        return { icon: 'image', label: extension || 'IMAGE' };
+    }
+
+    if (mimeType.includes('pdf') || extension === 'PDF') {
+        return { icon: 'file-text', label: 'PDF' };
+    }
+
+    if (['DOC', 'DOCX', 'TXT', 'RTF'].includes(extension)) {
+        return { icon: 'file-text', label: extension || 'DOC' };
+    }
+
+    if (['XLS', 'XLSX', 'CSV'].includes(extension)) {
+        return { icon: 'grid', label: extension || 'XLS' };
+    }
+
+    return { icon: 'file', label: extension || 'FILE' };
+};
+
+const MapControlButton = ({ onPress, iconName, style, iconSize = 20 }) => {
+    const content = (
+        <GlassView
+            backgroundColor={'rgb(253 253 253)'}
+            borderColor="#FFFFFF50"
+            tint="light"
+            intensity={85}
+            style={styles.mapControlButton}
+            onPress={Platform.OS === 'web' ? onPress : undefined}
+        >
+            <LinearGradient
+                colors={['rgba(255,255,255,0.88)', 'rgba(255,255,255,0.22)']}
+                start={{ x: 0.2, y: 0 }}
+                end={{ x: 0.8, y: 1 }}
+                style={styles.mapControlBaseGradient}
+            />
+            <LinearGradient
+                colors={['rgba(255,255,255,0.95)', 'rgba(255,255,255,0)']}
+                start={{ x: 0.15, y: 0 }}
+                end={{ x: 0.85, y: 0.7 }}
+                style={styles.mapControlHighlight}
+            />
+            <View style={styles.mapControlGlow} />
+            <Icon name={iconName} size={iconSize} color="#052D50" />
+        </GlassView>
+    );
+
+    if (Platform.OS === 'web') {
+        return <View style={style}>{content}</View>;
+    }
+
+    return (
+        <TouchableOpacity onPress={onPress} activeOpacity={0.7} style={style}>
+            {content}
+        </TouchableOpacity>
+    );
+};
 
 export default function CreateProjectScreen() {
     const navigation = useNavigation();
@@ -31,9 +181,16 @@ export default function CreateProjectScreen() {
     }
 
     const [projectName, setProjectName] = useState('');
-    const [description, setDescription] = useState('');
+    const [isProjectNameFocused, setIsProjectNameFocused] = useState(false);
+    const [useLocationAsName, setUseLocationAsName] = useState(false);
+    const [note, setNote] = useState('');
     const [location, setLocation] = useState('');
-    const [contractNumber, setContractNumber] = useState('');
+    const [mapRegion, setMapRegion] = useState(DEFAULT_REGION);
+    const [selectedCoordinate, setSelectedCoordinate] = useState(null);
+    const [isLocationPickerVisible, setIsLocationPickerVisible] = useState(false);
+    const [isLocationSearchVisible, setIsLocationSearchVisible] = useState(false);
+    const [locationSearch, setLocationSearch] = useState('');
+    const [isLocationLoading, setIsLocationLoading] = useState(false);
     const [beginningDate, setBeginningDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
     const [showStartDatePicker, setShowStartDatePicker] = useState(false);
@@ -50,13 +207,35 @@ export default function CreateProjectScreen() {
     const [showManagersModal, setShowManagersModal] = useState(false);
     const [showCompaniesModal, setShowCompaniesModal] = useState(false);
     const [showWorkersModal, setShowWorkersModal] = useState(false);
+    const [workerSearch, setWorkerSearch] = useState('');
+    const [ownerSearch, setOwnerSearch] = useState('');
+    const [managerSearch, setManagerSearch] = useState('');
+    const [selectedDocuments, setSelectedDocuments] = useState([]);
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const projectNameLabelAnim = useRef(new Animated.Value(0)).current;
+    const isLocationLoadingRef = useRef(false);
+    const lastReverseGeocodeAtRef = useRef(0);
+    const reverseGeocodeCacheRef = useRef(new Map());
 
     useEffect(() => {
         fetchUsersAndCompanies();
     }, []);
+
+    useEffect(() => {
+        Animated.timing(projectNameLabelAnim, {
+            toValue: isProjectNameFocused || !!projectName ? 1 : 0,
+            duration: 180,
+            useNativeDriver: false,
+        }).start();
+    }, [isProjectNameFocused, projectName, projectNameLabelAnim]);
+
+    useEffect(() => {
+        if (useLocationAsName) {
+            setProjectName(location);
+        }
+    }, [useLocationAsName, location]);
 
     useEffect(() => {
         if (user?.role === 'superadmin' && selectedClientCompany) {
@@ -135,6 +314,212 @@ export default function CreateProjectScreen() {
         });
     };
 
+    const pickDocuments = async () => {
+        try {
+            const result = await DocumentPicker.getDocumentAsync({
+                multiple: true,
+                copyToCacheDirectory: true,
+                type: ['image/*', 'application/pdf', 'text/plain', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+            });
+
+            if (result.canceled || !result.assets?.length) {
+                return;
+            }
+
+            setSelectedDocuments(prev => {
+                const existingUris = new Set(prev.map(item => item.uri));
+                const nextDocuments = result.assets.filter(item => !existingUris.has(item.uri));
+                return [...prev, ...nextDocuments];
+            });
+        } catch (error) {
+            console.error('Error picking documents:', error);
+            Alert.alert('Documents error', 'Unable to select documents right now.');
+        }
+    };
+
+    const closeLocationPicker = () => {
+        setIsLocationSearchVisible(false);
+        setIsLocationPickerVisible(false);
+    };
+
+    const closeDatePickers = () => {
+        setShowStartDatePicker(false);
+        setShowEndDatePicker(false);
+    };
+
+    const setLocationLoadingState = (value) => {
+        isLocationLoadingRef.current = value;
+        setIsLocationLoading(value);
+    };
+
+    const resolveAddressFromCoordinate = async (latitude, longitude) => {
+        const cacheKey = getCoordinateCacheKey(latitude, longitude);
+        const cachedAddress = reverseGeocodeCacheRef.current.get(cacheKey);
+
+        if (cachedAddress) {
+            return cachedAddress;
+        }
+
+        const elapsedSinceLastReverseGeocode = Date.now() - lastReverseGeocodeAtRef.current;
+        if (elapsedSinceLastReverseGeocode < REVERSE_GEOCODE_MIN_INTERVAL_MS) {
+            await new Promise(resolve => setTimeout(resolve, REVERSE_GEOCODE_MIN_INTERVAL_MS - elapsedSinceLastReverseGeocode));
+        }
+
+        try {
+            lastReverseGeocodeAtRef.current = Date.now();
+            const [resolvedAddress] = await Location.reverseGeocodeAsync({ latitude, longitude });
+            const formattedAddress = formatResolvedAddress(resolvedAddress);
+
+            if (formattedAddress) {
+                reverseGeocodeCacheRef.current.set(cacheKey, formattedAddress);
+                return formattedAddress;
+            }
+        } catch {}
+
+        try {
+            const nominatimAddress = await reverseGeocodeWithNominatim(latitude, longitude);
+            if (nominatimAddress) {
+                reverseGeocodeCacheRef.current.set(cacheKey, nominatimAddress);
+                return nominatimAddress;
+            }
+        } catch {}
+
+        return null;
+    };
+
+    const applyResolvedLocation = async (latitude, longitude, nextRegion, resolvedAddressText) => {
+        setSelectedCoordinate({ latitude, longitude });
+        setMapRegion(nextRegion || {
+            ...mapRegion,
+            latitude,
+            longitude,
+        });
+
+        if (resolvedAddressText) {
+            setLocation(resolvedAddressText);
+            setLocationSearch(resolvedAddressText);
+            reverseGeocodeCacheRef.current.set(getCoordinateCacheKey(latitude, longitude), resolvedAddressText);
+            return;
+        }
+
+        const resolvedAddress = await resolveAddressFromCoordinate(latitude, longitude);
+        if (resolvedAddress) {
+            setLocation(resolvedAddress);
+            setLocationSearch(resolvedAddress);
+            return;
+        }
+
+        const fallbackAddress = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+        setLocation(fallbackAddress);
+        setLocationSearch(fallbackAddress);
+    };
+
+    const openLocationPicker = () => {
+        setLocationSearch(location);
+        setIsLocationPickerVisible(true);
+    };
+
+    const handleMapPress = async (event) => {
+        if (isLocationLoadingRef.current) {
+            return;
+        }
+
+        const { latitude, longitude } = event.nativeEvent.coordinate;
+        setLocationLoadingState(true);
+        try {
+            await applyResolvedLocation(latitude, longitude, {
+                ...mapRegion,
+                latitude,
+                longitude,
+            });
+            closeLocationPicker();
+        } finally {
+            setLocationLoadingState(false);
+        }
+    };
+
+    const handleUseCurrentLocation = async () => {
+        try {
+            const { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Location access denied', 'Allow geolocation to use your current position.');
+                return;
+            }
+
+            setLocationLoadingState(true);
+            const currentPosition = await Location.getCurrentPositionAsync({
+                accuracy: Location.Accuracy.Balanced,
+            });
+
+            const latitude = currentPosition.coords.latitude;
+            const longitude = currentPosition.coords.longitude;
+
+            await applyResolvedLocation(latitude, longitude, {
+                ...mapRegion,
+                latitude,
+                longitude,
+            });
+            closeLocationPicker();
+        } catch (error) {
+            console.error('Error getting current location:', error);
+            Alert.alert('Location error', 'Unable to determine your current position.');
+        } finally {
+            setLocationLoadingState(false);
+        }
+    };
+
+    const handleSearchLocation = async () => {
+        const query = locationSearch.trim();
+
+        if (!query) {
+            return;
+        }
+
+        try {
+            setLocationLoadingState(true);
+            let latitude = null;
+            let longitude = null;
+            let resolvedSearchAddress = query;
+
+            try {
+                const matches = await Location.geocodeAsync(query);
+                if (matches.length) {
+                    latitude = matches[0].latitude;
+                    longitude = matches[0].longitude;
+                }
+            } catch (error) {
+                // Try external geocoder next.
+            }
+
+            if (latitude === null || longitude === null) {
+                const match = await searchAddressWithNominatim(query);
+
+                if (match) {
+                    latitude = Number(match.lat);
+                    longitude = Number(match.lon);
+                    resolvedSearchAddress = match.display_name || query;
+                }
+            }
+
+            if (latitude === null || longitude === null) {
+                Alert.alert('Nothing found', 'Try a more specific address.');
+                return;
+            }
+
+            await applyResolvedLocation(latitude, longitude, {
+                ...mapRegion,
+                latitude,
+                longitude,
+            }, resolvedSearchAddress);
+            closeLocationPicker();
+        } catch (error) {
+            console.error('Error searching location:', error);
+            Alert.alert('Search error', 'Unable to find this address right now.');
+        } finally {
+            setLocationLoadingState(false);
+        }
+    };
+
     const createProject = async () => {
         if (!projectName || !selectedOwner || !selectedManager || !selectedClientCompany) {
             Alert.alert('Validation Error', 'Please fill all required fields marked with *');
@@ -151,10 +536,10 @@ export default function CreateProjectScreen() {
                 name: projectName,
                 status: 'planning',
                 location: location || undefined,
-                contractNumber: contractNumber || undefined,
                 beginningDate: beginningDate ? beginningDate.toISOString() : undefined,
                 endDate: endDate ? endDate.toISOString() : undefined,
-                description: description || undefined,
+                documents: selectedDocuments.map(item => item.name),
+                description: note || undefined,
                 workers: selectedWorkers.length > 0 ? selectedWorkers : undefined
             };
 
@@ -194,41 +579,6 @@ export default function CreateProjectScreen() {
         </TouchableOpacity>
     );
 
-    const UsersListModal = ({ visible, onClose, onSelect, title, selectedUserId }) => (
-        <Modal
-            animationType="slide"
-            transparent={true}
-            visible={visible}
-            onRequestClose={onClose}
-        >
-            <View style={styles.modalOverlay}>
-                <View style={styles.modalContent}>
-                    <Text style={styles.modalTitle}>{title}</Text>
-                    <FlatList
-                        data={users}
-                        keyExtractor={(item) => item._id}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity
-                                style={[
-                                    styles.userItem,
-                                    selectedUserId === item._id && styles.selectedUserItem
-                                ]}
-                                onPress={() => onSelect(item._id)}
-                            >
-                                <Text style={styles.userName}>{item.name}</Text>
-                                <Text style={styles.userEmail}>{item.email}</Text>
-                            </TouchableOpacity>
-                        )}
-                        ListEmptyComponent={<Text>No users found</Text>}
-                    />
-                    <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                        <Text style={styles.closeButtonText}>Close</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        </Modal>
-    );
-
     const CompaniesListModal = ({ visible, onClose, onSelect, selectedCompanyId }) => (
         <Modal
             animationType="slide"
@@ -263,40 +613,200 @@ export default function CreateProjectScreen() {
         </Modal>
     );
 
-    const WorkersListModal = ({ visible, onClose, selectedWorkers, toggleSelection }) => (
+    const getFilteredUsers = (searchValue) => {
+        const normalizedSearch = searchValue.trim().toLowerCase();
+
+        if (!normalizedSearch) {
+            return users;
+        }
+
+        return users.filter(item => {
+            const searchableText = [
+                item.name,
+                item.profession,
+                item.email,
+            ]
+                .filter(Boolean)
+                .join(' ')
+                .toLowerCase();
+
+            return searchableText.includes(normalizedSearch);
+        });
+    };
+
+    const availableWorkers = users.filter(item => item.role === 'worker');
+    const normalizedWorkerSearch = workerSearch.trim().toLowerCase();
+    const filteredWorkers = availableWorkers.filter(worker => {
+        if (!normalizedWorkerSearch) {
+            return true;
+        }
+
+        const searchableText = [
+            worker.name,
+            worker.profession,
+            worker.email,
+        ]
+            .filter(Boolean)
+            .join(' ')
+            .toLowerCase();
+
+        return searchableText.includes(normalizedWorkerSearch);
+    });
+
+    const selectedWorkersLabel = selectedWorkers.length > 0
+        ? `${selectedWorkers.length} worker${selectedWorkers.length > 1 ? 's' : ''}`
+        : '';
+
+    const filteredOwners = getFilteredUsers(ownerSearch);
+    const filteredManagers = getFilteredUsers(managerSearch);
+
+    const SingleUserPickerModal = ({ visible, onClose, title, searchValue, onSearchChange, selectedUserId, onSelect, data }) => (
         <Modal
             animationType="slide"
-            transparent={true}
+            transparent={false}
             visible={visible}
             onRequestClose={onClose}
         >
-            <View style={styles.modalOverlay}>
-                <View style={styles.modalContent}>
-                    <Text style={styles.modalTitle}>Select Workers</Text>
-                    <FlatList
-                        data={users}
-                        keyExtractor={(item) => item._id}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity
-                                style={[
-                                    styles.userItem,
-                                    selectedWorkers.includes(item._id) && styles.selectedUserItem
-                                ]}
-                                onPress={() => toggleSelection(item._id)}
-                            >
-                                <Text style={styles.userName}>{item.name}</Text>
-                                <Text style={styles.userEmail}>{item.email}</Text>
-                            </TouchableOpacity>
-                        )}
-                        ListEmptyComponent={<Text>No users found</Text>}
+            <SafeAreaView style={styles.workersModalContainer}>
+                <View style={styles.workersModalHeader}>
+                    <GlassBackButton
+                        backgroundColor={'rgb(253 253 253)'}
+                        tint={"light"}
+                        borderColor="#FFFFFF50"
+                        onPress={onClose}
+                        iconSource={require('../../../assets/Arrow-left.png')}
                     />
-                    <View style={styles.modalButtons}>
-                        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                            <Text style={styles.closeButtonText}>Done</Text>
-                        </TouchableOpacity>
-                    </View>
+                    <Text style={styles.workersModalTitle}>{title}</Text>
+                    <View style={styles.placeholder} />
                 </View>
-            </View>
+
+                <View style={styles.workersSearchBar}>
+                    <Icon name="search" size={18} color="rgba(5, 45, 80, 0.5)" />
+                    <TextInput
+                        value={searchValue}
+                        onChangeText={onSearchChange}
+                        placeholder="Search workers"
+                        placeholderTextColor="rgba(5, 45, 80, 0.5)"
+                        style={styles.workersSearchInput}
+                    />
+                </View>
+
+                <FlatList
+                    data={data}
+                    keyExtractor={(item) => item._id}
+                    contentContainerStyle={styles.workersListContent}
+                    renderItem={({ item }) => {
+                        const isSelected = selectedUserId === item._id;
+
+                        return (
+                            <TouchableOpacity
+                                style={styles.workerCard}
+                                onPress={() => onSelect(item._id)}
+                                activeOpacity={0.85}
+                            >
+                                <View style={styles.workerAvatarPlaceholder}>
+                                    <Text style={styles.workerAvatarInitials}>{getUserInitials(item.name)}</Text>
+                                </View>
+                                <View style={styles.workerCardInfo}>
+                                    <Text numberOfLines={1} style={styles.workerCardName}>
+                                        {item.name || 'Unnamed worker'}
+                                    </Text>
+                                    <Text numberOfLines={1} style={styles.workerCardProfession}>
+                                        {item.profession || 'Profession not set'}
+                                    </Text>
+                                </View>
+                                <View style={[styles.workerCheckbox, isSelected && styles.workerCheckboxSelected]}>
+                                    {isSelected ? <Icon name="check" size={12} color="#FFFFFF" /> : null}
+                                </View>
+                            </TouchableOpacity>
+                        );
+                    }}
+                    ListEmptyComponent={(
+                        <View style={styles.workersEmptyState}>
+                            <Text style={styles.workersEmptyText}>No workers found</Text>
+                        </View>
+                    )}
+                />
+            </SafeAreaView>
+        </Modal>
+    );
+
+    const WorkersListModal = ({ visible, onClose, selectedWorkers, toggleSelection }) => (
+        <Modal
+            animationType="slide"
+            transparent={false}
+            visible={visible}
+            onRequestClose={onClose}
+        >
+            <SafeAreaView style={styles.workersModalContainer}>
+                <View style={styles.workersModalHeader}>
+                    <GlassBackButton
+                        backgroundColor={'rgb(253 253 253)'}
+                        tint={"light"}
+                        borderColor="#FFFFFF50"
+                        onPress={onClose}
+                        iconSource={require('../../../assets/Arrow-left.png')}
+                    />
+                    <Text style={styles.workersModalTitle}>Project team</Text>
+                    <View style={styles.placeholder} />
+                </View>
+
+                <View style={styles.workersSearchBar}>
+                    <Icon name="search" size={18} color="rgba(5, 45, 80, 0.5)" />
+                    <TextInput
+                        value={workerSearch}
+                        onChangeText={setWorkerSearch}
+                        placeholder="Search workers"
+                        placeholderTextColor="rgba(5, 45, 80, 0.5)"
+                        style={styles.workersSearchInput}
+                    />
+                </View>
+
+                <FlatList
+                    data={filteredWorkers}
+                    keyExtractor={(item) => item._id}
+                    contentContainerStyle={styles.workersListContent}
+                    renderItem={({ item }) => {
+                        const isSelected = selectedWorkers.includes(item._id);
+
+                        return (
+                            <TouchableOpacity
+                                style={styles.workerCard}
+                                onPress={() => toggleSelection(item._id)}
+                                activeOpacity={0.85}
+                            >
+                                <View style={styles.workerAvatarPlaceholder}>
+                                    <Text style={styles.workerAvatarInitials}>{getUserInitials(item.name)}</Text>
+                                </View>
+                                <View style={styles.workerCardInfo}>
+                                    <Text numberOfLines={1} style={styles.workerCardName}>
+                                        {item.name || 'Unnamed worker'}
+                                    </Text>
+                                    <Text numberOfLines={1} style={styles.workerCardProfession}>
+                                        {item.profession || 'Profession not set'}
+                                    </Text>
+                                </View>
+                                <View style={[styles.workerCheckbox, isSelected && styles.workerCheckboxSelected]}>
+                                    {isSelected ? <Icon name="check" size={12} color="#FFFFFF" /> : null}
+                                </View>
+                            </TouchableOpacity>
+                        );
+                    }}
+                    ListEmptyComponent={(
+                        <View style={styles.workersEmptyState}>
+                            <Text style={styles.workersEmptyText}>No workers found</Text>
+                        </View>
+                    )}
+                />
+
+                <View style={styles.workersModalFooter}>
+                    <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                        <Text style={styles.closeButtonText}>
+                            {selectedWorkers.length > 0 ? `Done (${selectedWorkers.length})` : 'Done'}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
         </Modal>
     );
 
@@ -317,45 +827,117 @@ export default function CreateProjectScreen() {
                 <View style={styles.placeholder} />
             </View>
 
-            <View style={styles.inputsContainer}>
-                <TextInput 
-                    style={[styles.input, styles.firstInput]} 
-                    placeholder='Project name *' 
+            <View style={styles.projectNameField}>
+                <Animated.Text
+                    style={[
+                        styles.floatingLabel,
+                        {
+                            top: projectNameLabelAnim.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [18, 8],
+                            }),
+                            fontSize: projectNameLabelAnim.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [16, 12],
+                            }),
+                        },
+                    ]}
+                >
+                    Project name *
+                </Animated.Text>
+                <TextInput
+                    style={styles.floatingInput}
                     value={projectName}
                     onChangeText={setProjectName}
-                />
-                <TextInput 
-                    style={styles.input} 
-                    placeholder='Project description' 
-                    value={description}
-                    onChangeText={setDescription}
-                    multiline
-                />
-                <TextInput 
-                    style={styles.input} 
-                    placeholder='Project address' 
-                    value={location}
-                    onChangeText={setLocation}
-                />
-                <TextInput 
-                    style={styles.input} 
-                    placeholder='Contract number' 
-                    value={contractNumber}
-                    onChangeText={setContractNumber}
+                    onFocus={() => setIsProjectNameFocused(true)}
+                    onBlur={() => setIsProjectNameFocused(false)}
+                    editable={!useLocationAsName}
                 />
             </View>
 
-            <SelectedItem 
-                title="Owner *" 
-                value={users.find(u => u._id === selectedOwner)?.name || ''}
-                onPress={() => setShowOwnersModal(true)}
-            />
+            <View style={styles.switchField}>
+                <Text style={styles.switchLabel}>Use location as a name</Text>
+                <Switch
+                    value={useLocationAsName}
+                    onValueChange={setUseLocationAsName}
+                    trackColor={{ false: '#D9E3EC', true: '#0091FF' }}
+                    thumbColor="#FFFFFF"
+                    ios_backgroundColor="#D9E3EC"
+                    style={styles.switchControl}
+                />
+            </View>
 
-            <SelectedItem 
-                title="Project Manager *" 
-                value={users.find(u => u._id === selectedManager)?.name || ''}
-                onPress={() => setShowManagersModal(true)}
-            />
+            <TouchableOpacity style={[styles.locationField, styles.spacingAfterSwitch]} onPress={openLocationPicker} activeOpacity={0.85}>
+                <View style={styles.locationFieldContent}>
+                    <View style={styles.locationFieldIconContainer}>
+                        <Icon name="map-pin" size={16} color="#052D50" />
+                    </View>
+                    <Text
+                        numberOfLines={1}
+                        style={[
+                            styles.locationFieldText,
+                            location ? styles.locationFieldValue : styles.locationFieldPlaceholder,
+                        ]}
+                    >
+                        {location || 'Location'}
+                    </Text>
+                </View>
+                <Icon name="chevron-right" size={18} color="#052D50" />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.locationField} onPress={() => setShowWorkersModal(true)} activeOpacity={0.85}>
+                <View style={styles.locationFieldContent}>
+                    <View style={styles.locationFieldIconContainer}>
+                        <Icon name="users" size={16} color="#052D50" />
+                    </View>
+                    <Text
+                        numberOfLines={1}
+                        style={[
+                            styles.locationFieldText,
+                            selectedWorkers.length ? styles.locationFieldValue : styles.locationFieldPlaceholder,
+                        ]}
+                    >
+                        {selectedWorkersLabel || 'Project team'}
+                    </Text>
+                </View>
+                <Icon name="chevron-right" size={18} color="#052D50" />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.locationField} onPress={() => setShowOwnersModal(true)} activeOpacity={0.85}>
+                <View style={styles.locationFieldContent}>
+                    <View style={styles.locationFieldIconContainer}>
+                        <Icon name="user" size={16} color="#052D50" />
+                    </View>
+                    <Text
+                        numberOfLines={1}
+                        style={[
+                            styles.locationFieldText,
+                            selectedOwner ? styles.locationFieldValue : styles.locationFieldPlaceholder,
+                        ]}
+                    >
+                        {users.find(u => u._id === selectedOwner)?.name || 'Owner *'}
+                    </Text>
+                </View>
+                <Icon name="chevron-right" size={18} color="#052D50" />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.locationField} onPress={() => setShowManagersModal(true)} activeOpacity={0.85}>
+                <View style={styles.locationFieldContent}>
+                    <View style={styles.locationFieldIconContainer}>
+                        <Icon name="briefcase" size={16} color="#052D50" />
+                    </View>
+                    <Text
+                        numberOfLines={1}
+                        style={[
+                            styles.locationFieldText,
+                            selectedManager ? styles.locationFieldValue : styles.locationFieldPlaceholder,
+                        ]}
+                    >
+                        {users.find(u => u._id === selectedManager)?.name || 'Project Manager *'}
+                    </Text>
+                </View>
+                <Icon name="chevron-right" size={18} color="#052D50" />
+            </TouchableOpacity>
 
             <SelectedItem 
                 title="Client Company *" 
@@ -363,11 +945,50 @@ export default function CreateProjectScreen() {
                 onPress={() => setShowCompaniesModal(true)}
             />
 
-            <SelectedItem 
-                title="Workers" 
-                value={`${selectedWorkers.length} selected`}
-                onPress={() => setShowWorkersModal(true)}
-            />
+            <TouchableOpacity style={[styles.locationField, styles.spacingAfterClientCompany]} onPress={pickDocuments} activeOpacity={0.85}>
+                <View style={styles.locationFieldContent}>
+                    <View style={styles.locationFieldIconContainer}>
+                        <Icon name="paperclip" size={16} color="#052D50" />
+                    </View>
+                    <Text
+                        numberOfLines={1}
+                        style={[
+                            styles.locationFieldText,
+                            selectedDocuments.length ? styles.locationFieldValue : styles.locationFieldPlaceholder,
+                        ]}
+                    >
+                        {selectedDocuments.length ? `${selectedDocuments.length} document${selectedDocuments.length > 1 ? 's' : ''}` : 'Documents'}
+                    </Text>
+                </View>
+                <Icon name="chevron-right" size={18} color="#052D50" />
+            </TouchableOpacity>
+
+            {selectedDocuments.length ? (
+                <View style={[styles.documentsGrid, styles.spacingAfterDocuments]}>
+                    {selectedDocuments.map((document, index) => {
+                        const typeMeta = getDocumentTypeMeta(document);
+                        const isImage = isImageDocument(document);
+
+                        return (
+                            <View key={`${document.uri}-${index}`} style={styles.documentCard}>
+                                {isImage ? (
+                                    <Image source={{ uri: document.uri }} style={styles.documentImage} />
+                                ) : (
+                                    <View style={styles.documentFileContent}>
+                                        <Text numberOfLines={2} style={styles.documentName}>
+                                            {document.name}
+                                        </Text>
+                                        <View style={styles.documentMetaRow}>
+                                            <Icon name={typeMeta.icon} size={12} color="#052D50" />
+                                            <Text style={styles.documentMetaText}>{typeMeta.label}</Text>
+                                        </View>
+                                    </View>
+                                )}
+                            </View>
+                        );
+                    })}
+                </View>
+            ) : null}
 
             <View style={styles.datesContainer}>
                 <TouchableOpacity 
@@ -391,36 +1012,48 @@ export default function CreateProjectScreen() {
                 </TouchableOpacity>
             </View>
 
-            {showStartDatePicker && (
-                <DateTimePicker
-                    value={beginningDate || new Date()}
-                    mode="date"
-                    display="default"
-                    onChange={(event, date) => {
-                        setShowStartDatePicker(false);
-                        if (date) setBeginningDate(date);
-                    }}
-                />
-            )}
+            <Modal
+                visible={showStartDatePicker || showEndDatePicker}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={closeDatePickers}
+            >
+                <View style={styles.datePickerOverlay}>
+                    <View style={styles.datePickerCard}>
+                        <Text style={styles.datePickerTitle}>
+                            {showStartDatePicker ? 'Start Date' : 'End Date'}
+                        </Text>
+                        <DateTimePicker
+                            value={showStartDatePicker ? (beginningDate || new Date()) : (endDate || new Date())}
+                            mode="date"
+                            display={DATE_PICKER_DISPLAY}
+                            onChange={(event, date) => {
+                                if (!date) {
+                                    return;
+                                }
 
-            {showEndDatePicker && (
-                <DateTimePicker
-                    value={endDate || new Date()}
-                    mode="date"
-                    display="default"
-                    onChange={(event, date) => {
-                        setShowEndDatePicker(false);
-                        if (date) setEndDate(date);
-                    }}
-                />
-            )}
+                                if (showStartDatePicker) {
+                                    setBeginningDate(date);
+                                } else if (showEndDatePicker) {
+                                    setEndDate(date);
+                                }
+                            }}
+                        />
+                        <View style={styles.datePickerActions}>
+                            <TouchableOpacity style={styles.datePickerSecondaryButton} onPress={closeDatePickers}>
+                                <Text style={styles.datePickerSecondaryButtonText}>Done</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
 
             <TextInput
                 multiline={true}
                 placeholder='Note'
                 style={styles.noteInput}
-                value={description}
-                onChangeText={setDescription}
+                value={note}
+                onChangeText={setNote}
             />
 
             <TouchableOpacity 
@@ -435,20 +1068,38 @@ export default function CreateProjectScreen() {
                 )}
             </TouchableOpacity>
 
-            <UsersListModal
+            <SingleUserPickerModal
                 visible={showOwnersModal}
-                onClose={() => setShowOwnersModal(false)}
-                onSelect={(id) => handleSelectUser(id, 'owner')}
-                title="Select Owner"
+                onClose={() => {
+                    setShowOwnersModal(false);
+                    setOwnerSearch('');
+                }}
+                onSelect={(id) => {
+                    handleSelectUser(id, 'owner');
+                    setOwnerSearch('');
+                }}
+                title="Owner"
+                searchValue={ownerSearch}
+                onSearchChange={setOwnerSearch}
                 selectedUserId={selectedOwner}
+                data={filteredOwners}
             />
 
-            <UsersListModal
+            <SingleUserPickerModal
                 visible={showManagersModal}
-                onClose={() => setShowManagersModal(false)}
-                onSelect={(id) => handleSelectUser(id, 'manager')}
-                title="Select Project Manager"
+                onClose={() => {
+                    setShowManagersModal(false);
+                    setManagerSearch('');
+                }}
+                onSelect={(id) => {
+                    handleSelectUser(id, 'manager');
+                    setManagerSearch('');
+                }}
+                title="Project Manager"
+                searchValue={managerSearch}
+                onSearchChange={setManagerSearch}
                 selectedUserId={selectedManager}
+                data={filteredManagers}
             />
 
             <CompaniesListModal
@@ -460,10 +1111,85 @@ export default function CreateProjectScreen() {
 
             <WorkersListModal
                 visible={showWorkersModal}
-                onClose={() => setShowWorkersModal(false)}
+                onClose={() => {
+                    setShowWorkersModal(false);
+                    setWorkerSearch('');
+                }}
                 selectedWorkers={selectedWorkers}
                 toggleSelection={toggleWorkerSelection}
             />
+
+            <Modal
+                visible={isLocationPickerVisible}
+                animationType="slide"
+                onRequestClose={closeLocationPicker}
+            >
+                <View style={styles.mapModalContainer}>
+                    <MapView
+                        style={styles.map}
+                        region={mapRegion}
+                        onRegionChangeComplete={setMapRegion}
+                        onPress={handleMapPress}
+                        loadingEnabled
+                        showsCompass={false}
+                        mapType="standard"
+                    >
+                        {selectedCoordinate ? <Marker coordinate={selectedCoordinate} /> : null}
+                    </MapView>
+
+                    <SafeAreaView style={styles.mapOverlay} pointerEvents="box-none">
+                        <View style={styles.mapTopBar}>
+                            <MapControlButton
+                                iconName="arrow-left"
+                                onPress={closeLocationPicker}
+                            />
+                            <MapControlButton
+                                iconName={isLocationSearchVisible ? 'x' : 'search'}
+                                onPress={() => setIsLocationSearchVisible(prev => !prev)}
+                            />
+                        </View>
+
+                        {isLocationSearchVisible ? (
+                            <View style={styles.mapSearchContainer}>
+                                <TextInput
+                                    value={locationSearch}
+                                    onChangeText={setLocationSearch}
+                                    placeholder="Search address"
+                                    placeholderTextColor="rgba(5, 45, 80, 0.5)"
+                                    style={styles.mapSearchInput}
+                                    returnKeyType="search"
+                                    onSubmitEditing={handleSearchLocation}
+                                />
+                                <TouchableOpacity style={styles.mapSearchAction} onPress={handleSearchLocation}>
+                                    <Text style={styles.mapSearchActionText}>Go</Text>
+                                </TouchableOpacity>
+                            </View>
+                        ) : null}
+
+                        {location ? (
+                            <View style={styles.mapAddressBadge}>
+                                <Text numberOfLines={2} style={styles.mapAddressBadgeText}>
+                                    {location}
+                                </Text>
+                            </View>
+                        ) : null}
+
+                        <View style={styles.mapBottomBar}>
+                            <MapControlButton
+                                iconName="crosshair"
+                                onPress={handleUseCurrentLocation}
+                            />
+                        </View>
+
+                        {isLocationLoading ? (
+                            <View style={styles.mapLoadingBadge}>
+                                <ActivityIndicator size="small" color="#052D50" />
+                                <Text style={styles.mapLoadingText}>Loading location...</Text>
+                            </View>
+                        ) : null}
+                    </SafeAreaView>
+                </View>
+            </Modal>
         </ScrollView>
     );
 }
@@ -522,6 +1248,134 @@ const styles = StyleSheet.create({
         color: '#052D5050',
         borderBottomWidth: 1,
         borderBottomColor: '#052D5050',
+    },
+    projectNameField: {
+        width: '100%',
+        height: 56,
+        position: 'relative',
+        backgroundColor: '#ffffff',
+        borderRadius: 20,
+        paddingHorizontal: 16,
+        marginBottom: 8,
+    },
+    switchField: {
+        width: '100%',
+        height: 56,
+        backgroundColor: '#ffffff',
+        borderRadius: 20,
+        paddingHorizontal: 16,
+        marginBottom: 8,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    floatingLabel: {
+        position: 'absolute',
+        left: 16,
+        color: '#052D50',
+        opacity: 0.5,
+    },
+    floatingInput: {
+        width: '100%',
+        height: '100%',
+        paddingTop: 22,
+        paddingBottom: 0,
+        color: '#052D50',
+        fontSize: 16,
+    },
+    switchLabel: {
+        color: '#052D50',
+        fontSize: 16,
+    },
+    switchControl: {
+        transform: [{ scaleX: 1.22 }, { scaleY: 0.9 }],
+        alignSelf: 'center',
+        marginVertical: 0,
+    },
+    locationField: {
+        width: '100%',
+        height: 56,
+        backgroundColor: '#ffffff',
+        borderRadius: 20,
+        paddingHorizontal: 16,
+        marginBottom: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    locationFieldContent: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        paddingRight: 12,
+    },
+    locationFieldIconContainer: {
+        width: 27,
+        height: 27,
+        borderRadius: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#FF9500',
+    },
+    locationFieldText: {
+        flex: 1,
+        fontSize: 16,
+    },
+    locationFieldPlaceholder: {
+        color: 'rgba(5, 45, 80, 0.5)',
+    },
+    locationFieldValue: {
+        color: 'rgba(5, 45, 80, 1)',
+    },
+    spacingAfterSwitch: {
+        marginTop: 24,
+    },
+    spacingAfterClientCompany: {
+        marginTop: 20,
+    },
+    documentsGrid: {
+        width: '100%',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+        marginBottom: 12,
+    },
+    spacingAfterDocuments: {
+        marginBottom: 32,
+    },
+    documentCard: {
+        width: '23%',
+        height: 67,
+        backgroundColor: 'rgba(239, 239, 240, 1)',
+        borderRadius: 8,
+        overflow: 'hidden',
+    },
+    documentImage: {
+        width: '100%',
+        height: '100%',
+    },
+    documentFileContent: {
+        flex: 1,
+        paddingHorizontal: 6,
+        paddingVertical: 6,
+        justifyContent: 'space-between',
+    },
+    documentName: {
+        color: '#052D50',
+        fontSize: 10,
+        lineHeight: 12,
+        fontWeight: '500',
+    },
+    documentMetaRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+    },
+    documentMetaText: {
+        color: '#052D50',
+        fontSize: 10,
+        fontWeight: '600',
     },
     firstInput: {
         borderBottomWidth: 1,
@@ -592,6 +1446,50 @@ const styles = StyleSheet.create({
         color: '#052D50',
         fontSize: 14,
     },
+    datePickerOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(5, 45, 80, 0.28)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+    },
+    datePickerCard: {
+        width: '100%',
+        maxWidth: 360,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 24,
+        padding: 16,
+        shadowColor: '#052D50',
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.1,
+        shadowRadius: 24,
+        elevation: 6,
+    },
+    datePickerTitle: {
+        color: '#052D50',
+        fontSize: 18,
+        fontWeight: '600',
+        textAlign: 'center',
+        marginBottom: 12,
+    },
+    datePickerActions: {
+        marginTop: 12,
+        alignItems: 'center',
+    },
+    datePickerSecondaryButton: {
+        minWidth: 120,
+        height: 44,
+        borderRadius: 14,
+        backgroundColor: '#0091FF',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 18,
+    },
+    datePickerSecondaryButtonText: {
+        color: '#FFFFFF',
+        fontSize: 15,
+        fontWeight: '600',
+    },
     noteInput: {
         backgroundColor: '#ffffff',
         borderRadius: 12,
@@ -600,6 +1498,103 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         minHeight: 100,
         textAlignVertical: 'top',
+    },
+    workersModalContainer: {
+        flex: 1,
+        backgroundColor: '#EEF5FB',
+        paddingHorizontal: 12,
+        paddingTop: 48,
+        paddingBottom: 24,
+    },
+    workersModalHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 16,
+    },
+    workersModalTitle: {
+        color: '#052D50',
+        fontSize: 18,
+        fontWeight: '600',
+    },
+    workersSearchBar: {
+        height: 56,
+        borderRadius: 20,
+        backgroundColor: '#FFFFFF',
+        paddingHorizontal: 16,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        marginBottom: 16,
+    },
+    workersSearchInput: {
+        flex: 1,
+        color: '#052D50',
+        fontSize: 16,
+    },
+    workersListContent: {
+        paddingBottom: 20,
+    },
+    workerCard: {
+        height: 72,
+        borderRadius: 100,
+        backgroundColor: '#FFFFFF',
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 12,
+        gap: 12,
+        marginBottom: 12,
+    },
+    workerAvatarPlaceholder: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        backgroundColor: '#D9E3EC',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    workerAvatarInitials: {
+        color: '#052D50',
+        fontSize: 16,
+        fontWeight: '700',
+    },
+    workerCardInfo: {
+        flex: 1,
+        justifyContent: 'center',
+    },
+    workerCardName: {
+        color: '#052D50',
+        fontSize: 16,
+        fontWeight: '600',
+        marginBottom: 2,
+    },
+    workerCardProfession: {
+        color: 'rgba(5, 45, 80, 0.65)',
+        fontSize: 14,
+    },
+    workerCheckbox: {
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: 'rgba(5, 45, 80, 1)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'transparent',
+    },
+    workerCheckboxSelected: {
+        backgroundColor: 'rgba(5, 45, 80, 1)',
+    },
+    workersEmptyState: {
+        paddingTop: 24,
+        alignItems: 'center',
+    },
+    workersEmptyText: {
+        color: '#698196',
+        fontSize: 16,
+    },
+    workersModalFooter: {
+        paddingTop: 8,
     },
     createButton: {
         backgroundColor: '#0091FF',
@@ -687,6 +1682,139 @@ const styles = StyleSheet.create({
         color: '#ffffff',
         fontSize: 16,
         fontWeight: '600',
+    },
+    mapModalContainer: {
+        flex: 1,
+        backgroundColor: '#EEF5FB',
+    },
+    map: {
+        ...StyleSheet.absoluteFillObject,
+    },
+    mapOverlay: {
+        flex: 1,
+        justifyContent: 'space-between',
+        paddingHorizontal: 12,
+        paddingTop: 12,
+        paddingBottom: 16,
+    },
+    mapTopBar: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+    },
+    mapBottomBar: {
+        alignItems: 'center',
+    },
+    mapControlButton: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        overflow: 'hidden',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'rgba(238, 245, 251, 0.72)',
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.55)',
+        shadowColor: '#052D50',
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.08,
+        shadowRadius: 20,
+        elevation: 4,
+    },
+    mapControlBaseGradient: {
+        ...StyleSheet.absoluteFillObject,
+        borderRadius: 22,
+    },
+    mapControlHighlight: {
+        position: 'absolute',
+        top: 1,
+        left: 1,
+        right: 1,
+        height: 18,
+        borderRadius: 21,
+    },
+    mapControlGlow: {
+        position: 'absolute',
+        top: 2,
+        left: 2,
+        right: 2,
+        bottom: 2,
+        borderRadius: 20,
+        backgroundColor: 'rgba(5, 45, 80, 0.04)',
+    },
+    mapSearchContainer: {
+        marginTop: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        backgroundColor: '#ffffff',
+        borderRadius: 18,
+        padding: 8,
+        shadowColor: '#052D50',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.08,
+        shadowRadius: 16,
+        elevation: 4,
+    },
+    mapSearchInput: {
+        flex: 1,
+        height: 44,
+        paddingHorizontal: 12,
+        color: '#052D50',
+        fontSize: 16,
+    },
+    mapSearchAction: {
+        height: 44,
+        minWidth: 52,
+        borderRadius: 14,
+        backgroundColor: '#0091FF',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 14,
+    },
+    mapSearchActionText: {
+        color: '#ffffff',
+        fontSize: 15,
+        fontWeight: '600',
+    },
+    mapAddressBadge: {
+        marginTop: 12,
+        backgroundColor: 'rgba(255, 255, 255, 0.94)',
+        borderRadius: 16,
+        paddingHorizontal: 14,
+        paddingVertical: 12,
+        shadowColor: '#052D50',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.08,
+        shadowRadius: 16,
+        elevation: 4,
+    },
+    mapAddressBadgeText: {
+        color: '#052D50',
+        fontSize: 14,
+        lineHeight: 20,
+    },
+    mapLoadingBadge: {
+        position: 'absolute',
+        alignSelf: 'center',
+        bottom: 28,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        backgroundColor: 'rgba(255, 255, 255, 0.94)',
+        borderRadius: 16,
+        paddingHorizontal: 14,
+        paddingVertical: 10,
+        shadowColor: '#052D50',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.08,
+        shadowRadius: 16,
+        elevation: 4,
+    },
+    mapLoadingText: {
+        color: '#052D50',
+        fontSize: 14,
+        fontWeight: '500',
     },
 });
 

@@ -34,7 +34,13 @@
     },
     "plugins": [
       "expo-font",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow ByggExp to access your location while creating a project."
+        }
+      ]
     ],
     "extra": {
       "eas": {
