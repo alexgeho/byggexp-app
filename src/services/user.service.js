@@ -11,6 +11,11 @@ export const userService = {
     return data;
   },
 
+  getMyCompanyUsers: async () => {
+    const { data } = await api.get('/users/my-company');
+    return data;
+  },
+
   getByProject: async (projectId) => {
     const { data } = await api.get(`/users/project/${projectId}`);
     return data;

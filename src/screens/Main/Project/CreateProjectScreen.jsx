@@ -7,6 +7,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import Icon from 'react-native-vector-icons/Feather';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AuthContext from '../../../contexts/AuthContext';
@@ -83,6 +84,14 @@ const getCoordinateCacheKey = (latitude, longitude) => `${latitude.toFixed(4)},$
 const getUserInitials = (name = '') => {
     const parts = name.trim().split(/\s+/).filter(Boolean);
     return parts.slice(0, 2).map(part => part[0]?.toUpperCase() || '').join('') || '?';
+};
+
+const FieldIcon = ({ library = 'feather', name, size = 20, color = 'rgba(5, 45, 80, 1)' }) => {
+    if (library === 'material-community') {
+        return <MaterialCommunityIcons name={name} size={size} color={color} />;
+    }
+
+    return <Icon name={name} size={size} color={color} />;
 };
 
 const getFileExtension = (fileName = '') => {
@@ -237,12 +246,6 @@ export default function CreateProjectScreen() {
         }
     }, [useLocationAsName, location]);
 
-    useEffect(() => {
-        if (user?.role === 'superadmin' && selectedClientCompany) {
-            fetchUsersByCompany(selectedClientCompany);
-        }
-    }, [user?.role, selectedClientCompany]);
-
     const fetchUsersByCompany = async (companyId) => {
         try {
             const usersData = await userService.getByCompany(companyId);
@@ -256,22 +259,23 @@ export default function CreateProjectScreen() {
     const fetchUsersAndCompanies = async () => {
         try {
             if (user?.role === 'superadmin') {
-                const allCompanies = await companyService.getAll();
+                const [allCompanies, allUsers] = await Promise.all([
+                    companyService.getAll(),
+                    userService.getAll(),
+                ]);
                 setCompanies(allCompanies);
+                setUsers(allUsers);
 
                 const initialCompanyId = allCompanies[0]?._id || null;
                 setSelectedClientCompany(initialCompanyId);
 
-                if (!initialCompanyId) {
-                    setUsers([]);
-                }
             } else {
                 // Для companyAdmin / projectAdmin используем их компанию
                 const myCompany = await companyService.getMyCompany();
                 setCompanies([myCompany]);
                 setSelectedClientCompany(myCompany._id);
 
-                const usersData = await userService.getByCompany(myCompany._id);
+                const usersData = await userService.getMyCompanyUsers();
                 setUsers(usersData);
             }
 
@@ -557,14 +561,14 @@ export default function CreateProjectScreen() {
         }
     };
 
-    const SelectedItem = ({ title, value, onPress, showArrow = true }) => (
+    const SelectedItem = ({ title, value, onPress, showArrow = true, iconName = 'briefcase', iconLibrary = 'feather' }) => (
         <TouchableOpacity 
             style={[styles.selectableRow, {borderBottomWidth: 0}]} 
             onPress={onPress}
         >
             <View style={styles.rowCenter}>
                 <View style={styles.iconContainer}>
-                    <Image source={require('../../../assets/Account.png')} style={styles.smallIcon} />
+                    <FieldIcon library={iconLibrary} name={iconName} />
                 </View>
                 <View>
                     <Text style={styles.label}>{title}</Text>
@@ -870,7 +874,7 @@ export default function CreateProjectScreen() {
             <TouchableOpacity style={[styles.locationField, styles.spacingAfterSwitch]} onPress={openLocationPicker} activeOpacity={0.85}>
                 <View style={styles.locationFieldContent}>
                     <View style={styles.locationFieldIconContainer}>
-                        <Icon name="map-pin" size={16} color="#052D50" />
+                        <FieldIcon name="flag" />
                     </View>
                     <Text
                         numberOfLines={1}
@@ -888,7 +892,7 @@ export default function CreateProjectScreen() {
             <TouchableOpacity style={styles.locationField} onPress={() => setShowWorkersModal(true)} activeOpacity={0.85}>
                 <View style={styles.locationFieldContent}>
                     <View style={styles.locationFieldIconContainer}>
-                        <Icon name="users" size={16} color="#052D50" />
+                        <FieldIcon name="users" />
                     </View>
                     <Text
                         numberOfLines={1}
@@ -906,7 +910,7 @@ export default function CreateProjectScreen() {
             <TouchableOpacity style={styles.locationField} onPress={() => setShowOwnersModal(true)} activeOpacity={0.85}>
                 <View style={styles.locationFieldContent}>
                     <View style={styles.locationFieldIconContainer}>
-                        <Icon name="user" size={16} color="#052D50" />
+                        <FieldIcon library="material-community" name="tie" />
                     </View>
                     <Text
                         numberOfLines={1}
@@ -924,7 +928,7 @@ export default function CreateProjectScreen() {
             <TouchableOpacity style={styles.locationField} onPress={() => setShowManagersModal(true)} activeOpacity={0.85}>
                 <View style={styles.locationFieldContent}>
                     <View style={styles.locationFieldIconContainer}>
-                        <Icon name="briefcase" size={16} color="#052D50" />
+                        <FieldIcon name="briefcase" />
                     </View>
                     <Text
                         numberOfLines={1}
@@ -943,12 +947,14 @@ export default function CreateProjectScreen() {
                 title="Client Company *" 
                 value={companies.find(c => c._id === selectedClientCompany)?.name || ''}
                 onPress={() => setShowCompaniesModal(true)}
+                iconName="office-building-outline"
+                iconLibrary="material-community"
             />
 
             <TouchableOpacity style={[styles.locationField, styles.spacingAfterClientCompany]} onPress={pickDocuments} activeOpacity={0.85}>
                 <View style={styles.locationFieldContent}>
                     <View style={styles.locationFieldIconContainer}>
-                        <Icon name="paperclip" size={16} color="#052D50" />
+                        <FieldIcon name="paperclip" />
                     </View>
                     <Text
                         numberOfLines={1}
@@ -1311,12 +1317,10 @@ const styles = StyleSheet.create({
         paddingRight: 12,
     },
     locationFieldIconContainer: {
-        width: 27,
-        height: 27,
-        borderRadius: 5,
+        width: 20,
+        height: 20,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#FF9500',
     },
     locationFieldText: {
         flex: 1,
@@ -1397,16 +1401,14 @@ const styles = StyleSheet.create({
         gap: 16,
     },
     iconContainer: {
-        width: 27,
-        height: 27,
-        backgroundColor: '#FF9500',
-        borderRadius: 5,
+        width: 20,
+        height: 20,
         alignItems: 'center',
         justifyContent: 'center',
     },
     smallIcon: {
-        width: 16,
-        height: 16,
+        width: 20,
+        height: 20,
     },
     label: {
         color: '#052D50',
@@ -1694,13 +1696,14 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'space-between',
         paddingHorizontal: 12,
-        paddingTop: 12,
+        paddingTop: 48,
         paddingBottom: 16,
     },
     mapTopBar: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
+        marginTop: 4,
     },
     mapBottomBar: {
         alignItems: 'center',
