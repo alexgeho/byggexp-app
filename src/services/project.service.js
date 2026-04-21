@@ -37,7 +37,14 @@ export const projectService = {
   },
 
   create: async (projectData) => {
-    const { data } = await api.post('/projects', projectData);
+    const isFormData = typeof FormData !== 'undefined' && projectData instanceof FormData;
+    const { data } = await api.post('/projects', projectData, isFormData
+      ? {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      : undefined);
     return data;
   },
 

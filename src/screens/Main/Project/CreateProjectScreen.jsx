@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, Image, TextInput, ScrollView, StyleSheet, Alert, Modal, FlatList, ActivityIndicator, Animated, Switch, Platform } from 'react-native';
 import { useTheme } from '../../../theme/ThemeContext';
 import { useNavigation } from '@react-navigation/native';
-import { useState, useEffect, useContext, useRef } from 'react';
+import { memo, useState, useEffect, useContext, useRef } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as DocumentPicker from 'expo-document-picker';
 import MapView, { Marker } from 'react-native-maps';
@@ -128,6 +128,98 @@ const getDocumentTypeMeta = (document) => {
     return { icon: 'file', label: extension || 'FILE' };
 };
 
+const WorkersListModal = memo(function WorkersListModal({
+    visible,
+    onClose,
+    selectedWorkers,
+    toggleSelection,
+    onSave,
+    workerSearch,
+    onWorkerSearchChange,
+    filteredWorkers,
+}) {
+    return (
+        <Modal
+            animationType="slide"
+            transparent={false}
+            visible={visible}
+            onRequestClose={onClose}
+        >
+            <SafeAreaView style={styles.workersModalContainer}>
+                <View style={styles.workersModalHeader}>
+                    <GlassBackButton
+                        backgroundColor={'rgb(253 253 253)'}
+                        tint={"light"}
+                        borderColor="#FFFFFF50"
+                        onPress={onClose}
+                        iconSource={require('../../../assets/Arrow-left.png')}
+                    />
+                    <Text style={styles.workersModalTitle}>Project team</Text>
+                    <View style={styles.placeholder} />
+                </View>
+
+                <View style={styles.workersSearchBar}>
+                    <Icon name="search" size={18} color="rgba(5, 45, 80, 0.5)" />
+                    <TextInput
+                        value={workerSearch}
+                        onChangeText={onWorkerSearchChange}
+                        placeholder="Search workers"
+                        placeholderTextColor="rgba(5, 45, 80, 0.5)"
+                        style={styles.workersSearchInput}
+                    />
+                </View>
+
+                <FlatList
+                    data={filteredWorkers}
+                    keyExtractor={(item) => item._id}
+                    contentContainerStyle={styles.workersListContent}
+                    keyboardShouldPersistTaps="handled"
+                    extraData={selectedWorkers}
+                    renderItem={({ item }) => {
+                        const isSelected = selectedWorkers.includes(item._id);
+
+                        return (
+                            <TouchableOpacity
+                                style={styles.workerCard}
+                                onPress={() => toggleSelection(item._id)}
+                                activeOpacity={0.85}
+                            >
+                                <View style={styles.workerAvatarPlaceholder}>
+                                    <Text style={styles.workerAvatarInitials}>{getUserInitials(item.name)}</Text>
+                                </View>
+                                <View style={styles.workerCardInfo}>
+                                    <Text numberOfLines={1} style={styles.workerCardName}>
+                                        {item.name || 'Unnamed worker'}
+                                    </Text>
+                                    <Text numberOfLines={1} style={styles.workerCardProfession}>
+                                        {item.profession || 'Profession not set'}
+                                    </Text>
+                                </View>
+                                <View style={[styles.workerCheckbox, isSelected && styles.workerCheckboxSelected]}>
+                                    {isSelected ? <Icon name="check" size={12} color="#FFFFFF" /> : null}
+                                </View>
+                            </TouchableOpacity>
+                        );
+                    }}
+                    ListEmptyComponent={(
+                        <View style={styles.workersEmptyState}>
+                            <Text style={styles.workersEmptyText}>No workers found</Text>
+                        </View>
+                    )}
+                />
+
+                <View style={styles.workersModalFooter}>
+                    <TouchableOpacity style={styles.closeButton} onPress={onSave}>
+                        <Text style={styles.closeButtonText}>
+                            {selectedWorkers.length > 0 ? `Save (${selectedWorkers.length})` : 'Save'}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
+        </Modal>
+    );
+});
+
 const MapControlButton = ({ onPress, iconName, style, iconSize = 20 }) => {
     const content = (
         <GlassView
@@ -219,6 +311,7 @@ export default function CreateProjectScreen() {
     const [workerSearch, setWorkerSearch] = useState('');
     const [ownerSearch, setOwnerSearch] = useState('');
     const [managerSearch, setManagerSearch] = useState('');
+    const [pendingWorkers, setPendingWorkers] = useState([]);
     const [selectedDocuments, setSelectedDocuments] = useState([]);
 
     const [loading, setLoading] = useState(true);
@@ -316,6 +409,33 @@ export default function CreateProjectScreen() {
                 return [...prev, workerId];
             }
         });
+    };
+
+    const togglePendingWorkerSelection = (workerId) => {
+        setPendingWorkers(prev => {
+            if (prev.includes(workerId)) {
+                return prev.filter(id => id !== workerId);
+            }
+
+            return [...prev, workerId];
+        });
+    };
+
+    const openWorkersModal = () => {
+        setPendingWorkers(selectedWorkers);
+        setWorkerSearch('');
+        setShowWorkersModal(true);
+    };
+
+    const closeWorkersModal = () => {
+        setShowWorkersModal(false);
+        setWorkerSearch('');
+        setPendingWorkers([]);
+    };
+
+    const saveWorkersSelection = () => {
+        setSelectedWorkers(pendingWorkers);
+        closeWorkersModal();
     };
 
     const pickDocuments = async () => {
@@ -533,19 +653,41 @@ export default function CreateProjectScreen() {
         setSaving(true);
 
         try {
-            const projectData = {
-                ownerId: selectedOwner,
-                projectManagerId: selectedManager,
-                clientCompanyId: selectedClientCompany,
-                name: projectName,
-                status: 'planning',
-                location: location || undefined,
-                beginningDate: beginningDate ? beginningDate.toISOString() : undefined,
-                endDate: endDate ? endDate.toISOString() : undefined,
-                documents: selectedDocuments.map(item => item.name),
-                description: note || undefined,
-                workers: selectedWorkers.length > 0 ? selectedWorkers : undefined
-            };
+            const projectData = new FormData();
+
+            projectData.append('ownerId', selectedOwner);
+            projectData.append('projectManagerId', selectedManager);
+            projectData.append('clientCompanyId', selectedClientCompany);
+            projectData.append('name', projectName);
+            projectData.append('status', 'planning');
+
+            if (location) {
+                projectData.append('location', location);
+            }
+
+            if (beginningDate) {
+                projectData.append('beginningDate', beginningDate.toISOString());
+            }
+
+            if (endDate) {
+                projectData.append('endDate', endDate.toISOString());
+            }
+
+            if (note) {
+                projectData.append('description', note);
+            }
+
+            if (selectedWorkers.length > 0) {
+                projectData.append('workers', JSON.stringify(selectedWorkers));
+            }
+
+            selectedDocuments.forEach((item, index) => {
+                projectData.append('documents', {
+                    uri: item.uri,
+                    name: item.name || `document-${index + 1}`,
+                    type: item.mimeType || 'application/octet-stream',
+                });
+            });
 
             const result = await projectService.create(projectData);
             
@@ -735,85 +877,6 @@ export default function CreateProjectScreen() {
         </Modal>
     );
 
-    const WorkersListModal = ({ visible, onClose, selectedWorkers, toggleSelection }) => (
-        <Modal
-            animationType="slide"
-            transparent={false}
-            visible={visible}
-            onRequestClose={onClose}
-        >
-            <SafeAreaView style={styles.workersModalContainer}>
-                <View style={styles.workersModalHeader}>
-                    <GlassBackButton
-                        backgroundColor={'rgb(253 253 253)'}
-                        tint={"light"}
-                        borderColor="#FFFFFF50"
-                        onPress={onClose}
-                        iconSource={require('../../../assets/Arrow-left.png')}
-                    />
-                    <Text style={styles.workersModalTitle}>Project team</Text>
-                    <View style={styles.placeholder} />
-                </View>
-
-                <View style={styles.workersSearchBar}>
-                    <Icon name="search" size={18} color="rgba(5, 45, 80, 0.5)" />
-                    <TextInput
-                        value={workerSearch}
-                        onChangeText={setWorkerSearch}
-                        placeholder="Search workers"
-                        placeholderTextColor="rgba(5, 45, 80, 0.5)"
-                        style={styles.workersSearchInput}
-                    />
-                </View>
-
-                <FlatList
-                    data={filteredWorkers}
-                    keyExtractor={(item) => item._id}
-                    contentContainerStyle={styles.workersListContent}
-                    renderItem={({ item }) => {
-                        const isSelected = selectedWorkers.includes(item._id);
-
-                        return (
-                            <TouchableOpacity
-                                style={styles.workerCard}
-                                onPress={() => toggleSelection(item._id)}
-                                activeOpacity={0.85}
-                            >
-                                <View style={styles.workerAvatarPlaceholder}>
-                                    <Text style={styles.workerAvatarInitials}>{getUserInitials(item.name)}</Text>
-                                </View>
-                                <View style={styles.workerCardInfo}>
-                                    <Text numberOfLines={1} style={styles.workerCardName}>
-                                        {item.name || 'Unnamed worker'}
-                                    </Text>
-                                    <Text numberOfLines={1} style={styles.workerCardProfession}>
-                                        {item.profession || 'Profession not set'}
-                                    </Text>
-                                </View>
-                                <View style={[styles.workerCheckbox, isSelected && styles.workerCheckboxSelected]}>
-                                    {isSelected ? <Icon name="check" size={12} color="#FFFFFF" /> : null}
-                                </View>
-                            </TouchableOpacity>
-                        );
-                    }}
-                    ListEmptyComponent={(
-                        <View style={styles.workersEmptyState}>
-                            <Text style={styles.workersEmptyText}>No workers found</Text>
-                        </View>
-                    )}
-                />
-
-                <View style={styles.workersModalFooter}>
-                    <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                        <Text style={styles.closeButtonText}>
-                            {selectedWorkers.length > 0 ? `Done (${selectedWorkers.length})` : 'Done'}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            </SafeAreaView>
-        </Modal>
-    );
-
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
@@ -889,7 +952,7 @@ export default function CreateProjectScreen() {
                 <Icon name="chevron-right" size={18} color="#052D50" />
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.locationField} onPress={() => setShowWorkersModal(true)} activeOpacity={0.85}>
+            <TouchableOpacity style={styles.locationField} onPress={openWorkersModal} activeOpacity={0.85}>
                 <View style={styles.locationFieldContent}>
                     <View style={styles.locationFieldIconContainer}>
                         <FieldIcon name="users" />
@@ -1117,12 +1180,13 @@ export default function CreateProjectScreen() {
 
             <WorkersListModal
                 visible={showWorkersModal}
-                onClose={() => {
-                    setShowWorkersModal(false);
-                    setWorkerSearch('');
-                }}
-                selectedWorkers={selectedWorkers}
-                toggleSelection={toggleWorkerSelection}
+                onClose={closeWorkersModal}
+                onSave={saveWorkersSelection}
+                selectedWorkers={pendingWorkers}
+                toggleSelection={togglePendingWorkerSelection}
+                workerSearch={workerSearch}
+                onWorkerSearchChange={setWorkerSearch}
+                filteredWorkers={filteredWorkers}
             />
 
             <Modal
