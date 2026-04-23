@@ -1,41 +1,210 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useState, useRef } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal } from 'react-native';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import React, { useCallback, useContext, useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, Alert, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-import { BottomBar } from '../../../components/BottomBar';
+import Icon from 'react-native-vector-icons/Feather';
+import Svg, { Path } from 'react-native-svg';
 import { GlassBackButton } from '../../../components/common/GlassBackButton/GlassBackButton';
+import AuthContext from '../../../contexts/AuthContext';
+import { projectService } from '../../../services';
+
+const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '') ||
+  'https://api.byggexp.se';
+
+const formatDate = (value, withTime = false) => {
+  if (!value) return 'No date';
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'No date';
+
+  return withTime
+    ? date.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
+};
+
+const formatFileSize = (value) => {
+  const size = Number(value);
+
+  if (!Number.isFinite(size) || size <= 0) {
+    return 'Unknown size';
+  }
+
+  if (size < 1024) {
+    return `${size} B`;
+  }
+
+  if (size < 1024 * 1024) {
+    return `${(size / 1024).toFixed(1)} KB`;
+  }
+
+  if (size < 1024 * 1024 * 1024) {
+    return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  return `${(size / (1024 * 1024 * 1024)).toFixed(1)} GB`;
+};
+
+const resolveDocumentUrl = (url) => {
+  if (!url) return null;
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`;
+};
+
+const getDocumentName = (document, index) => {
+  if (typeof document === 'string') {
+    const parts = document.split('/');
+    return parts[parts.length - 1] || `Document ${index + 1}`;
+  }
+
+  return document?.name || `Document ${index + 1}`;
+};
+
+const getFileExtension = (fileName = '') => {
+  const parts = fileName.split('.');
+  return parts.length > 1 ? parts.pop().toUpperCase() : '';
+};
+
+const isImageDocument = (document) => {
+  const mimeType = document?.mimeType || '';
+  const extension = getFileExtension(document?.name || '').toLowerCase();
+  return mimeType.startsWith('image/') || ['png', 'jpg', 'jpeg', 'webp', 'gif', 'bmp', 'heic'].includes(extension);
+};
+
+const getDocumentTypeMeta = (document) => {
+  const extension = getFileExtension(document?.name || '');
+  const mimeType = document?.mimeType || '';
+
+  if (isImageDocument(document)) {
+    return { icon: 'image', label: extension || 'IMAGE' };
+  }
+
+  if (mimeType.includes('pdf') || extension === 'PDF') {
+    return { icon: 'file-text', label: 'PDF' };
+  }
+
+  if (['DOC', 'DOCX', 'TXT', 'RTF'].includes(extension)) {
+    return { icon: 'file-text', label: extension || 'DOC' };
+  }
+
+  if (['XLS', 'XLSX', 'CSV'].includes(extension)) {
+    return { icon: 'grid', label: extension || 'XLS' };
+  }
+
+  return { icon: 'file', label: extension || 'FILE' };
+};
 
 export const ProjectScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
+  const { user } = useContext(AuthContext);
   const { id } = route.params || {};
-  const project = { id: id, name: 'Ludvika' };
   const [modal, setModal] = useState('Tasks');
   const [selectedWorker, setSelectedWorker] = useState(null);
+  const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const bottomSheetRef = useRef(null);
+
+  const fetchProject = useCallback(async () => {
+    if (!id) {
+      setError('Project id is missing');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError('');
+      const data = await projectService.getPopulatedById(id);
+      setProject(data);
+    } catch (fetchError) {
+      console.error('Failed to fetch project:', fetchError);
+      setError('Failed to load project data');
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchProject();
+    }, [fetchProject])
+  );
+
   const openWorkerModal = (worker) => {
     setSelectedWorker(worker);
     bottomSheetRef.current?.expand();
   };
 
-  const workers = [
-    { id: 1, name: 'Alex Gerhard', avatar: require('../../../assets/TasksAva.png') },
-    { id: 2, name: 'Alexander Reed', avatar: require('../../../assets/TasksAva.png') },
-    { id: 3, name: 'Daniel Thompson', avatar: require('../../../assets/TasksAva.png') },
-    { id: 4, name: 'Henry Cooper', avatar: require('../../../assets/TasksAva.png') },
-  ];
+  const tasks = useMemo(() => (
+    Array.isArray(project?.tasks)
+      ? project.tasks.filter((task) => task && typeof task === 'object')
+      : []
+  ), [project?.tasks]);
 
-  const closeWorkerModal = () => {
-    bottomSheetRef.current?.close();
-    setTimeout(() => setSelectedWorker(null), 300);
+  const documents = useMemo(() => (
+    Array.isArray(project?.documents)
+      ? project.documents.map((document, index) => ({
+          id: document?._id || document?.url || `${index}`,
+          name: getDocumentName(document, index),
+          url: resolveDocumentUrl(typeof document === 'string' ? document : document?.url),
+          mimeType: typeof document === 'string' ? '' : document?.mimeType || '',
+          size: typeof document === 'string' ? null : document?.size ?? null,
+          uploadedAt: typeof document === 'string' ? null : document?.uploadedAt || project?.createdAt || null,
+          isImage: isImageDocument({
+            name: getDocumentName(document, index),
+            mimeType: typeof document === 'string' ? '' : document?.mimeType || '',
+          }),
+        }))
+      : []
+  ), [project?.createdAt, project?.documents]);
+
+  const workers = useMemo(() => (
+    Array.isArray(project?.workers)
+      ? project.workers.filter((worker) => worker && typeof worker === 'object')
+      : []
+  ), [project?.workers]);
+  const canCreateTasks = ['superadmin', 'companyAdmin', 'projectAdmin'].includes(user?.role);
+
+  const handleOpenDocument = async (documentUrl) => {
+    if (!documentUrl) {
+      Alert.alert('Document unavailable', 'This file does not have a valid link.');
+      return;
+    }
+
+    try {
+      await Linking.openURL(documentUrl);
+    } catch (linkError) {
+      console.error('Failed to open document:', linkError);
+      Alert.alert('Unable to open document', 'Please try again later.');
+    }
   };
+
+  if (loading) {
+    return (
+      <View style={styles.centeredContainer}>
+        <ActivityIndicator size="large" color="#0785F4" />
+        <Text style={styles.statusText}>Loading project...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <GlassBackButton backgroundColor={'rgb(253 253 253)'} tint={"light"} borderColor="#FFFFFF50" onPress={() => navigation.goBack()} iconSource={require('../../../assets/Arrow-left.png')} />
-        <Text style={styles.projectName}>{project.name}</Text>
-        <GlassBackButton backgroundColor={'rgb(253 253 253)'} tint={"light"} borderColor="#FFFFFF50" onPress={() => navigation.goBack()} iconSource={require('../../../assets/Search.png')} />
+        <Text style={styles.projectName}>{project?.name || 'Project'}</Text>
+        <View style={styles.headerPlaceholder} />
       </View>
 
       <View style={styles.tabContainer}>
@@ -69,57 +238,126 @@ export const ProjectScreen = () => {
       </View>
 
       <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
+        {error ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyStateTitle}>Unable to load project</Text>
+            <Text style={styles.emptyStateText}>{error}</Text>
+          </View>
+        ) : null}
+
         {modal === 'Tasks' && (
-          <TouchableOpacity style={styles.taskItem}>
-            <Text style={styles.taskTitle}>Install electrical wiring - Floor 2</Text>
-            <Text style={styles.taskDescription}>
-              Complete electrical installation for second floor including outlets, switches, and lighting...
-            </Text>
-            <View style={styles.taskFooter}>
-              <View style={styles.taskAssignee}>
-                <Image style={styles.assigneeAvatar} source={require('../../../assets/TasksAva.png')} />
-                <Text style={styles.assigneeName}>Alex Gerhard</Text>
+          tasks.length > 0 ? (
+            tasks.map((task) => (
+              <View key={task._id || task.id || task.taskTitle} style={styles.taskItem}>
+                <Text style={styles.taskTitle}>{task.taskTitle || 'Untitled task'}</Text>
+                <Text style={styles.taskDescription}>
+                  {task.taskDescription || 'No description provided.'}
+                </Text>
+                <View style={styles.taskFooter}>
+                  <View style={styles.taskDate}>
+                    <Image style={styles.dateIcon} source={require('../../../assets/TasksCalendar.png')} />
+                    <Text style={styles.dateText}>{formatDate(task.dueDate, true)}</Text>
+                  </View>
+                </View>
               </View>
-              <View style={styles.taskDate}>
-                <Image style={styles.dateIcon} source={require('../../../assets/TasksCalendar.png')} />
-                <Text style={styles.dateText}>Aug 1 20:00</Text>
-              </View>
+            ))
+          ) : (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateTitle}>No tasks yet</Text>
+              <Text style={styles.emptyStateText}>There are no tasks assigned to this project.</Text>
             </View>
-          </TouchableOpacity>
+          )
         )}
 
         {modal === 'Documents' && (
-          <TouchableOpacity style={styles.documentItem}>
-            <Image style={styles.documentImage} source={require('../../../assets/Document.png')} />
-            <View style={styles.documentInfo}>
-              <Text style={styles.documentName}>Building Floor Plan - Level 1</Text>
-              <Text style={styles.documentMeta}>2.5 MB   01.15.2025</Text>
+          documents.length > 0 ? (
+            documents.map((document) => {
+              const typeMeta = getDocumentTypeMeta(document);
+
+              return (
+                <TouchableOpacity
+                  key={document.id}
+                  style={styles.documentItem}
+                  onPress={() => handleOpenDocument(document.url)}
+                  activeOpacity={0.85}
+                >
+                  <View style={styles.documentPreviewContainer}>
+                    {document.isImage ? (
+                      <Image
+                        style={styles.documentPreviewImage}
+                        source={{ uri: document.url }}
+                      />
+                    ) : (
+                      <View style={styles.documentFilePreview}>
+                        <Icon name={typeMeta.icon} size={24} color="#052D50" />
+                        <Text style={styles.documentFileType}>{typeMeta.label}</Text>
+                      </View>
+                    )}
+                  </View>
+                  <View style={styles.documentInfo}>
+                    <Text numberOfLines={2} style={styles.documentName}>{document.name}</Text>
+                    <Text style={styles.documentMeta}>
+                      {`${formatFileSize(document.size)}   ${formatDate(document.uploadedAt)}`}
+                    </Text>
+                  </View>
+                  <Image style={styles.documentArrowIcon} source={require('../../../assets/Arrow-right.png')} />
+                </TouchableOpacity>
+              );
+            })
+          ) : (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateTitle}>No files uploaded</Text>
+              <Text style={styles.emptyStateText}>Project files will appear here after upload.</Text>
             </View>
-          </TouchableOpacity>
+          )
         )}
 
         {modal === 'Workers' && (
-          <>
-            {workers.map((worker) => (
+          workers.length > 0 ? (
+            workers.map((worker) => (
               <TouchableOpacity
-                key={worker.id}
+                key={worker._id || worker.id}
                 style={styles.workerItem}
                 onPress={() => openWorkerModal(worker)}
               >
-                <Image style={styles.workerAvatar} source={worker.avatar} />
-                <Text style={styles.workerName}>{worker.name}</Text>
+                <Image style={styles.workerAvatar} source={require('../../../assets/TasksAva.png')} />
+                <View style={styles.workerInfo}>
+                  <Text style={styles.workerName}>{worker.name || 'Unnamed worker'}</Text>
+                  <Text style={styles.workerSubtitle}>
+                    {worker.profession || worker.email || 'Worker'}
+                  </Text>
+                </View>
                 <Image style={styles.arrowIcon} source={require('../../../assets/Arrow-right.png')} />
               </TouchableOpacity>
-            ))}
-          </>
+            ))
+          ) : (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateTitle}>No workers in project</Text>
+              <Text style={styles.emptyStateText}>Assigned workers will appear in this list.</Text>
+            </View>
+          )
         )}
       </ScrollView>
+
+      {modal === 'Tasks' && canCreateTasks ? (
+        <TouchableOpacity
+          onPress={() => navigation.navigate('CreateTask', { projectId: id, projectName: project?.name })}
+          style={styles.floatingAddButton}
+          activeOpacity={0.85}
+        >
+          <Svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <Path d="M9.62256 1V18.2449" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <Path d="M1 9.56934H18.2449" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </Svg>
+        </TouchableOpacity>
+      ) : null}
 
       <BottomSheet
         ref={bottomSheetRef}
         index={-1}
         snapPoints={['30%', '60%']}
         enablePanDownToClose={true}
+        onClose={() => setSelectedWorker(null)}
         backgroundStyle={styles.bottomSheetBackground}
         handleIndicatorStyle={styles.handleIndicator}
       >
@@ -127,6 +365,9 @@ export const ProjectScreen = () => {
           {selectedWorker && (
             <>
               <Text style={styles.workerModalTitle}>{selectedWorker.name}</Text>
+              <Text style={styles.workerModalSubtitle}>
+                {selectedWorker.profession || selectedWorker.email || 'Worker'}
+              </Text>
 
               <TouchableOpacity onPress={() => navigation.navigate('ShiftHistory')} style={styles.modalOption}>
                 <Text style={styles.optionText}>Shift history</Text>
@@ -147,11 +388,6 @@ export const ProjectScreen = () => {
         </BottomSheetView>
       </BottomSheet>
 
-      <BottomBar
-        onLeftPress={() => navigation.navigate('Home')}
-        onRightPress={() => navigation.navigate('Menu')}
-        onAddPress={() => navigation.navigate('CreateProject')}
-      />
     </View>
   );
 };
@@ -165,6 +401,16 @@ const styles = StyleSheet.create({
     paddingTop: 48,
     paddingBottom: 48,
     gap: 24,
+  },
+  centeredContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  statusText: {
+    marginTop: 12,
+    color: '#698196',
   },
   header: {
     width: '100%',
@@ -188,6 +434,13 @@ const styles = StyleSheet.create({
   },
   projectName: {
     color: '#052D50',
+    fontSize: 18,
+    flex: 1,
+    textAlign: 'center',
+  },
+  headerPlaceholder: {
+    width: 44,
+    height: 44,
   },
   tabContainer: {
     width: '100%',
@@ -223,8 +476,28 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   scrollContent: {
-    paddingBottom: 96,
+    paddingBottom: 120,
     width: '100%',
+  },
+  emptyState: {
+    width: '100%',
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.0625,
+    shadowRadius: 10,
+    elevation: 1,
+  },
+  emptyStateTitle: {
+    color: '#052D50',
+    fontSize: 18,
+    marginBottom: 6,
+  },
+  emptyStateText: {
+    color: '#698196',
   },
   taskItem: {
     width: '100%',
@@ -249,20 +522,8 @@ const styles = StyleSheet.create({
   taskFooter: {
     flexDirection: 'row',
     width: '100%',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
-  },
-  taskAssignee: {
-    flexDirection: 'row',
-    gap: 8,
-    alignItems: 'center',
-  },
-  assigneeAvatar: {
-    width: 30,
-    height: 30,
-  },
-  assigneeName: {
-    color: '#052D50',
   },
   taskDate: {
     flexDirection: 'row',
@@ -296,17 +557,44 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  documentImage: {
+  documentPreviewContainer: {
     width: 80,
     height: 80,
     borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: '#EFF3F8',
   },
-  documentInfo: {},
+  documentPreviewImage: {
+    width: '100%',
+    height: '100%',
+  },
+  documentFilePreview: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+    gap: 8,
+  },
+  documentFileType: {
+    color: '#052D50',
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  documentInfo: {
+    flex: 1,
+  },
   documentName: {
     color: '#052D50',
+    fontSize: 15,
   },
   documentMeta: {
     color: '#052D5050',
+    marginTop: 4,
+  },
+  documentArrowIcon: {
+    width: 10,
+    height: 20,
+    tintColor: '#052D50',
   },
   workerItem: {
     width: '100%',
@@ -330,6 +618,15 @@ const styles = StyleSheet.create({
   },
   workerName: {
     flex: 1,
+    color: '#052D50',
+  },
+  workerInfo: {
+    flex: 1,
+  },
+  workerSubtitle: {
+    marginTop: 2,
+    color: '#698196',
+    fontSize: 12,
   },
   arrowIcon: {
     width: 16,
@@ -357,6 +654,10 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#052D50',
+  },
+  workerModalSubtitle: {
+    color: '#698196',
+    marginTop: 4,
     marginBottom: 20,
   },
   modalOption: {
@@ -391,6 +692,23 @@ const styles = StyleSheet.create({
   addGroupChatText: {
     color: '#0091FF',
     fontWeight: '600',
+  },
+  floatingAddButton: {
+    position: 'absolute',
+    right: 16,
+    bottom: 32,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: '#0091FF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 20,
+    shadowColor: '#0091FF',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    elevation: 6,
   },
 });
 

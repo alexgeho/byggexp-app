@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useTheme } from '../../../theme/ThemeContext';
@@ -13,6 +13,7 @@ export default function ProjectsScreen() {
   const { userId, isLoading: authLoading, user } = useContext(AuthContext);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const canManageProjects = ['superadmin', 'companyAdmin', 'projectAdmin'].includes(user?.role);
   const formatStatus = (status) => {
@@ -51,6 +52,29 @@ export default function ProjectsScreen() {
     }
   };
 
+  const filteredProjects = useMemo(() => {
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+
+    if (!normalizedQuery) {
+      return projects;
+    }
+
+    return projects.filter((project) => {
+      const searchableText = [
+        project?.name,
+        project?.location,
+        project?.status,
+        project?.contractNumber,
+        project?.description,
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+
+      return searchableText.includes(normalizedQuery);
+    });
+  }, [projects, searchQuery]);
+
   if (authLoading || loading) {
     return (
       <View style={styles.centeredContainer}>
@@ -75,14 +99,19 @@ export default function ProjectsScreen() {
       </View>
 
       <View style={styles.searchContainer}>
-        <TextInput style={styles.searchInput} placeholder="Search..." />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} style={styles.scrollContainer}>
-        {projects.length === 0 ? (
+        {filteredProjects.length === 0 ? (
           <Text style={styles.noProjectsText}>No projects found.</Text>
         ) : (
-          projects.map(project => (
+          filteredProjects.map(project => (
             <TouchableOpacity
               key={project._id}
               onPress={() => navigation.navigate('Project', { id: project._id })}

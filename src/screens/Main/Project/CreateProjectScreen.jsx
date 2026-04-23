@@ -703,9 +703,9 @@ export default function CreateProjectScreen() {
         }
     };
 
-    const SelectedItem = ({ title, value, onPress, showArrow = true, iconName = 'briefcase', iconLibrary = 'feather' }) => (
+    const SelectedItem = ({ title, value, onPress, showArrow = true, iconName = 'briefcase', iconLibrary = 'feather', containerStyle }) => (
         <TouchableOpacity 
-            style={[styles.selectableRow, {borderBottomWidth: 0}]} 
+            style={[styles.selectableRow, {borderBottomWidth: 0}, containerStyle]} 
             onPress={onPress}
         >
             <View style={styles.rowCenter}>
@@ -894,146 +894,156 @@ export default function CreateProjectScreen() {
                 <View style={styles.placeholder} />
             </View>
 
-            <View style={styles.projectNameField}>
-                <Animated.Text
-                    style={[
-                        styles.floatingLabel,
-                        {
-                            top: projectNameLabelAnim.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [18, 8],
-                            }),
-                            fontSize: projectNameLabelAnim.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [16, 12],
-                            }),
-                        },
-                    ]}
-                >
-                    Project name *
-                </Animated.Text>
-                <TextInput
-                    style={styles.floatingInput}
-                    value={projectName}
-                    onChangeText={setProjectName}
-                    onFocus={() => setIsProjectNameFocused(true)}
-                    onBlur={() => setIsProjectNameFocused(false)}
-                    editable={!useLocationAsName}
+            <Text style={styles.formSectionTitle}>General</Text>
+            <View style={styles.groupCard}>
+                <View style={[styles.projectNameField, styles.groupedField, styles.groupRowDivider]}>
+                    <Animated.Text
+                        style={[
+                            styles.floatingLabel,
+                            {
+                                top: projectNameLabelAnim.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [18, 8],
+                                }),
+                                fontSize: projectNameLabelAnim.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [16, 12],
+                                }),
+                            },
+                        ]}
+                    >
+                        Project name *
+                    </Animated.Text>
+                    <TextInput
+                        style={styles.floatingInput}
+                        value={projectName}
+                        onChangeText={setProjectName}
+                        onFocus={() => setIsProjectNameFocused(true)}
+                        onBlur={() => setIsProjectNameFocused(false)}
+                        editable={!useLocationAsName}
+                    />
+                </View>
+
+                <View style={[styles.switchField, styles.groupedField, styles.groupRowDivider]}>
+                    <Text style={styles.switchLabel}>Use location as a name</Text>
+                    <Switch
+                        value={useLocationAsName}
+                        onValueChange={setUseLocationAsName}
+                        trackColor={{ false: '#D9E3EC', true: '#0091FF' }}
+                        thumbColor="#FFFFFF"
+                        ios_backgroundColor="#D9E3EC"
+                        style={styles.switchControl}
+                    />
+                </View>
+
+                <TouchableOpacity style={[styles.locationField, styles.groupedField, styles.groupRowLast]} onPress={openLocationPicker} activeOpacity={0.85}>
+                    <View style={styles.locationFieldContent}>
+                        <View style={styles.locationFieldIconContainer}>
+                            <FieldIcon name="flag" />
+                        </View>
+                        <Text
+                            numberOfLines={1}
+                            style={[
+                                styles.locationFieldText,
+                                location ? styles.locationFieldValue : styles.locationFieldPlaceholder,
+                            ]}
+                        >
+                            {location || 'Location'}
+                        </Text>
+                    </View>
+                    <Icon name="chevron-right" size={18} color="#052D50" />
+                </TouchableOpacity>
+            </View>
+
+            <Text style={styles.formSectionTitle}>Team</Text>
+            <View style={styles.groupCard}>
+                <TouchableOpacity style={[styles.locationField, styles.groupedField, styles.groupRowDivider]} onPress={openWorkersModal} activeOpacity={0.85}>
+                    <View style={styles.locationFieldContent}>
+                        <View style={styles.locationFieldIconContainer}>
+                            <FieldIcon name="users" />
+                        </View>
+                        <Text
+                            numberOfLines={1}
+                            style={[
+                                styles.locationFieldText,
+                                selectedWorkers.length ? styles.locationFieldValue : styles.locationFieldPlaceholder,
+                            ]}
+                        >
+                            {selectedWorkersLabel || 'Project team'}
+                        </Text>
+                    </View>
+                    <Icon name="chevron-right" size={18} color="#052D50" />
+                </TouchableOpacity>
+
+                <TouchableOpacity style={[styles.locationField, styles.groupedField, styles.groupRowDivider]} onPress={() => setShowOwnersModal(true)} activeOpacity={0.85}>
+                    <View style={styles.locationFieldContent}>
+                        <View style={styles.locationFieldIconContainer}>
+                            <FieldIcon library="material-community" name="tie" />
+                        </View>
+                        <Text
+                            numberOfLines={1}
+                            style={[
+                                styles.locationFieldText,
+                                selectedOwner ? styles.locationFieldValue : styles.locationFieldPlaceholder,
+                            ]}
+                        >
+                            {users.find(u => u._id === selectedOwner)?.name || 'Owner *'}
+                        </Text>
+                    </View>
+                    <Icon name="chevron-right" size={18} color="#052D50" />
+                </TouchableOpacity>
+
+                <TouchableOpacity style={[styles.locationField, styles.groupedField, styles.groupRowDivider]} onPress={() => setShowManagersModal(true)} activeOpacity={0.85}>
+                    <View style={styles.locationFieldContent}>
+                        <View style={styles.locationFieldIconContainer}>
+                            <FieldIcon name="briefcase" />
+                        </View>
+                        <Text
+                            numberOfLines={1}
+                            style={[
+                                styles.locationFieldText,
+                                selectedManager ? styles.locationFieldValue : styles.locationFieldPlaceholder,
+                            ]}
+                        >
+                            {users.find(u => u._id === selectedManager)?.name || 'Project Manager *'}
+                        </Text>
+                    </View>
+                    <Icon name="chevron-right" size={18} color="#052D50" />
+                </TouchableOpacity>
+
+                <SelectedItem 
+                    title="Client Company *" 
+                    value={companies.find(c => c._id === selectedClientCompany)?.name || ''}
+                    onPress={() => setShowCompaniesModal(true)}
+                    iconName="office-building-outline"
+                    iconLibrary="material-community"
+                    containerStyle={styles.groupedSelectableRow}
                 />
             </View>
 
-            <View style={styles.switchField}>
-                <Text style={styles.switchLabel}>Use location as a name</Text>
-                <Switch
-                    value={useLocationAsName}
-                    onValueChange={setUseLocationAsName}
-                    trackColor={{ false: '#D9E3EC', true: '#0091FF' }}
-                    thumbColor="#FFFFFF"
-                    ios_backgroundColor="#D9E3EC"
-                    style={styles.switchControl}
-                />
+            <Text style={styles.formSectionTitle}>Files</Text>
+            <View style={styles.groupCard}>
+                <TouchableOpacity style={[styles.locationField, styles.groupedField, styles.groupRowLast]} onPress={pickDocuments} activeOpacity={0.85}>
+                    <View style={styles.locationFieldContent}>
+                        <View style={styles.locationFieldIconContainer}>
+                            <FieldIcon name="paperclip" />
+                        </View>
+                        <Text
+                            numberOfLines={1}
+                            style={[
+                                styles.locationFieldText,
+                                selectedDocuments.length ? styles.locationFieldValue : styles.locationFieldPlaceholder,
+                            ]}
+                        >
+                            {selectedDocuments.length ? `${selectedDocuments.length} document${selectedDocuments.length > 1 ? 's' : ''}` : 'Documents'}
+                        </Text>
+                    </View>
+                    <Icon name="chevron-right" size={18} color="#052D50" />
+                </TouchableOpacity>
             </View>
-
-            <TouchableOpacity style={[styles.locationField, styles.spacingAfterSwitch]} onPress={openLocationPicker} activeOpacity={0.85}>
-                <View style={styles.locationFieldContent}>
-                    <View style={styles.locationFieldIconContainer}>
-                        <FieldIcon name="flag" />
-                    </View>
-                    <Text
-                        numberOfLines={1}
-                        style={[
-                            styles.locationFieldText,
-                            location ? styles.locationFieldValue : styles.locationFieldPlaceholder,
-                        ]}
-                    >
-                        {location || 'Location'}
-                    </Text>
-                </View>
-                <Icon name="chevron-right" size={18} color="#052D50" />
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.locationField} onPress={openWorkersModal} activeOpacity={0.85}>
-                <View style={styles.locationFieldContent}>
-                    <View style={styles.locationFieldIconContainer}>
-                        <FieldIcon name="users" />
-                    </View>
-                    <Text
-                        numberOfLines={1}
-                        style={[
-                            styles.locationFieldText,
-                            selectedWorkers.length ? styles.locationFieldValue : styles.locationFieldPlaceholder,
-                        ]}
-                    >
-                        {selectedWorkersLabel || 'Project team'}
-                    </Text>
-                </View>
-                <Icon name="chevron-right" size={18} color="#052D50" />
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.locationField} onPress={() => setShowOwnersModal(true)} activeOpacity={0.85}>
-                <View style={styles.locationFieldContent}>
-                    <View style={styles.locationFieldIconContainer}>
-                        <FieldIcon library="material-community" name="tie" />
-                    </View>
-                    <Text
-                        numberOfLines={1}
-                        style={[
-                            styles.locationFieldText,
-                            selectedOwner ? styles.locationFieldValue : styles.locationFieldPlaceholder,
-                        ]}
-                    >
-                        {users.find(u => u._id === selectedOwner)?.name || 'Owner *'}
-                    </Text>
-                </View>
-                <Icon name="chevron-right" size={18} color="#052D50" />
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.locationField} onPress={() => setShowManagersModal(true)} activeOpacity={0.85}>
-                <View style={styles.locationFieldContent}>
-                    <View style={styles.locationFieldIconContainer}>
-                        <FieldIcon name="briefcase" />
-                    </View>
-                    <Text
-                        numberOfLines={1}
-                        style={[
-                            styles.locationFieldText,
-                            selectedManager ? styles.locationFieldValue : styles.locationFieldPlaceholder,
-                        ]}
-                    >
-                        {users.find(u => u._id === selectedManager)?.name || 'Project Manager *'}
-                    </Text>
-                </View>
-                <Icon name="chevron-right" size={18} color="#052D50" />
-            </TouchableOpacity>
-
-            <SelectedItem 
-                title="Client Company *" 
-                value={companies.find(c => c._id === selectedClientCompany)?.name || ''}
-                onPress={() => setShowCompaniesModal(true)}
-                iconName="office-building-outline"
-                iconLibrary="material-community"
-            />
-
-            <TouchableOpacity style={[styles.locationField, styles.spacingAfterClientCompany]} onPress={pickDocuments} activeOpacity={0.85}>
-                <View style={styles.locationFieldContent}>
-                    <View style={styles.locationFieldIconContainer}>
-                        <FieldIcon name="paperclip" />
-                    </View>
-                    <Text
-                        numberOfLines={1}
-                        style={[
-                            styles.locationFieldText,
-                            selectedDocuments.length ? styles.locationFieldValue : styles.locationFieldPlaceholder,
-                        ]}
-                    >
-                        {selectedDocuments.length ? `${selectedDocuments.length} document${selectedDocuments.length > 1 ? 's' : ''}` : 'Documents'}
-                    </Text>
-                </View>
-                <Icon name="chevron-right" size={18} color="#052D50" />
-            </TouchableOpacity>
 
             {selectedDocuments.length ? (
-                <View style={[styles.documentsGrid, styles.spacingAfterDocuments]}>
+                <View style={styles.documentsGrid}>
                     {selectedDocuments.map((document, index) => {
                         const typeMeta = getDocumentTypeMeta(document);
                         const isImage = isImageDocument(document);
@@ -1059,25 +1069,42 @@ export default function CreateProjectScreen() {
                 </View>
             ) : null}
 
-            <View style={styles.datesContainer}>
+            <Text style={styles.formSectionTitle}>Schedule</Text>
+            <View style={styles.groupCard}>
                 <TouchableOpacity 
-                    style={styles.dateButton}
+                    style={[styles.groupedDateRow, styles.groupRowDivider]}
                     onPress={() => setShowStartDatePicker(true)}
                 >
-                    <Text style={styles.dateLabel}>Start Date</Text>
-                    <Text style={styles.dateValue}>
-                        {beginningDate ? beginningDate.toLocaleDateString() : 'Select date'}
-                    </Text>
+                    <View style={styles.locationFieldContent}>
+                        <View style={styles.locationFieldIconContainer}>
+                            <FieldIcon name="calendar" />
+                        </View>
+                        <View>
+                            <Text style={styles.dateLabel}>Start Date</Text>
+                            <Text style={styles.dateValue}>
+                                {beginningDate ? beginningDate.toLocaleDateString() : 'Select date'}
+                            </Text>
+                        </View>
+                    </View>
+                    <Icon name="chevron-right" size={18} color="#052D50" />
                 </TouchableOpacity>
 
                 <TouchableOpacity 
-                    style={styles.dateButton}
+                    style={[styles.groupedDateRow, styles.groupRowLast]}
                     onPress={() => setShowEndDatePicker(true)}
                 >
-                    <Text style={styles.dateLabel}>End Date</Text>
-                    <Text style={styles.dateValue}>
-                        {endDate ? endDate.toLocaleDateString() : 'Select date'}
-                    </Text>
+                    <View style={styles.locationFieldContent}>
+                        <View style={styles.locationFieldIconContainer}>
+                            <FieldIcon name="clock" />
+                        </View>
+                        <View>
+                            <Text style={styles.dateLabel}>End Date</Text>
+                            <Text style={styles.dateValue}>
+                                {endDate ? endDate.toLocaleDateString() : 'Select date'}
+                            </Text>
+                        </View>
+                    </View>
+                    <Icon name="chevron-right" size={18} color="#052D50" />
                 </TouchableOpacity>
             </View>
 
@@ -1117,13 +1144,16 @@ export default function CreateProjectScreen() {
                 </View>
             </Modal>
 
-            <TextInput
-                multiline={true}
-                placeholder='Note'
-                style={styles.noteInput}
-                value={note}
-                onChangeText={setNote}
-            />
+            <Text style={styles.formSectionTitle}>Notes</Text>
+            <View style={styles.noteGroup}>
+                <TextInput
+                    multiline={true}
+                    placeholder='Note'
+                    style={styles.noteInput}
+                    value={note}
+                    onChangeText={setNote}
+                />
+            </View>
 
             <TouchableOpacity 
                 style={styles.createButton}
@@ -1303,6 +1333,59 @@ const styles = StyleSheet.create({
         color: '#052D50',
         fontSize: 18,
         textAlign: 'center',
+    },
+    formSectionTitle: {
+        color: '#698196',
+        fontSize: 13,
+        fontWeight: '600',
+        marginBottom: 8,
+        marginTop: 8,
+        paddingHorizontal: 8,
+    },
+    groupCard: {
+        width: '100%',
+        backgroundColor: '#FFFFFF',
+        borderRadius: 24,
+        overflow: 'hidden',
+        marginBottom: 12,
+    },
+    groupedField: {
+        backgroundColor: 'transparent',
+        borderRadius: 0,
+        marginBottom: 0,
+    },
+    groupRowDivider: {
+        borderBottomWidth: 1,
+        borderBottomColor: 'rgba(5, 45, 80, 0.08)',
+    },
+    groupRowLast: {
+        borderBottomWidth: 0,
+    },
+    groupedSelectableRow: {
+        backgroundColor: 'transparent',
+        borderRadius: 0,
+        marginBottom: 0,
+        minHeight: 56,
+        borderBottomWidth: 0,
+        paddingHorizontal: 16,
+    },
+    groupedDateRow: {
+        width: '100%',
+        minHeight: 56,
+        backgroundColor: 'transparent',
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    noteGroup: {
+        width: '100%',
+        backgroundColor: '#FFFFFF',
+        borderRadius: 24,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        marginBottom: 20,
     },
     inputsContainer: {
         padding: 18,
@@ -1557,13 +1640,13 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     noteInput: {
-        backgroundColor: '#ffffff',
-        borderRadius: 12,
-        padding: 12,
+        backgroundColor: 'transparent',
+        borderRadius: 0,
+        padding: 0,
         width: '100%',
-        marginBottom: 20,
         minHeight: 100,
         textAlignVertical: 'top',
+        color: '#052D50',
     },
     workersModalContainer: {
         flex: 1,
