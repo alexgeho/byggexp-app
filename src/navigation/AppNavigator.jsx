@@ -11,6 +11,7 @@ import ProjectsScreen from '../screens/Main/Project/ProjectsScreen';
 import HistoryScreen from '../screens/Main/History/HistoryScreen';
 import MenuScreen from '../screens/Menu/MenuScreen';
 import CreateProjectScreen from '../screens/Main/Project/CreateProjectScreen';
+import CreateTaskScreen from '../screens/Main/Project/CreateTaskScreen';
 import { MyAccount } from '../screens/Menu/MyAccount';
 import GroupChatScreen from '../screens/Main/Chat/GroupChatScreen';
 import { ProjectScreen } from '../screens/Main/Project/ProjectScreen';
@@ -50,6 +51,11 @@ export default function AppNavigator() {
             <Stack.Screen
               name='CreateProject'
               component={CreateProjectScreen}
+              options={{ gestureEnabled: canManageProjects }}
+            />
+            <Stack.Screen
+              name='CreateTask'
+              component={CreateTaskScreen}
               options={{ gestureEnabled: canManageProjects }}
             />
             <Stack.Screen
