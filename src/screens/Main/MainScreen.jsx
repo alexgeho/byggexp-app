@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../theme/ThemeContext';
@@ -11,10 +11,14 @@ import { GlassView } from '../../components/common/GlassView/GlassView';
 export default function MainScreen() {
   const { theme } = useTheme();
   const navigation = useNavigation();
-  const { user } = useContext(AuthContext);
+  const { user, selectedProject, setSelectedProject } = useContext(AuthContext);
   const { formattedTime, isRunning, isPaused, progress: timerProgress, start, pause, reset } = useTimer();
 
-  const [selectedProject, setSelectedProject] = useState(null);
+  useEffect(() => {
+    if (selectedProject) {
+      reset();
+    }
+  }, [selectedProject, reset]);
 
   const handlePlayPause = () => {
     if (isRunning) {
@@ -50,7 +54,7 @@ export default function MainScreen() {
             reset();
           }}
           projects={[]}
-          onPress={() => navigation.navigate('Projects')}
+          onPress={() => navigation.navigate('Projects', { mode: 'select' })}
         />
 
         <View style={styles.timerRow}>
@@ -113,7 +117,7 @@ export default function MainScreen() {
           </TouchableOpacity>
         </GlassView>
         <GlassView style={styles.button} intensity={60} tint="dark">
-          <TouchableOpacity onPress={() => handleNav('Projects')} style={styles.buttonInner}>
+          <TouchableOpacity onPress={() => navigation.navigate('Projects', { mode: 'browse' })} style={styles.buttonInner}>
             <Image style={styles.buttonIcon} source={require('../../assets/projects.png')} />
             <Text style={[styles.text, { fontFamily: theme.text.fontFamily['regular'] }]}>Projects</Text>
           </TouchableOpacity>

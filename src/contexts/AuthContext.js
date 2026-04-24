@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [userId, setUserId] = useState(null);
   const [user, setUser] = useState(null);
+  const [selectedProject, setSelectedProject] = useState(null);
 
   useEffect(() => {
     const loadTokenAndUser = async () => {
@@ -74,6 +75,7 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
     setUserId(null);
     setUser(null);
+    setSelectedProject(null);
   };
 
   // Хелперы для проверки ролей
@@ -91,6 +93,8 @@ export const AuthProvider = ({ children }) => {
       logout, 
       userId, 
       user,
+      selectedProject,
+      setSelectedProject,
       setIsAuthenticated,
       isWorker,
       isProjectAdmin,

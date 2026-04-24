@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
@@ -9,13 +9,19 @@ import { GlassBackButton } from '../../../components/common/GlassBackButton/Glas
 
 export default function ProjectsScreen() {
   const navigation = useNavigation();
+  const route = useRoute();
   const { theme } = useTheme();
-  const { userId, isLoading: authLoading, user } = useContext(AuthContext);
+  const { userId, isLoading: authLoading, user, selectedProject, setSelectedProject } = useContext(AuthContext);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const isSelectionMode = route.params?.mode === 'select';
 
   const canManageProjects = ['superadmin', 'companyAdmin', 'projectAdmin'].includes(user?.role);
+  const selectedProjectId = selectedProject?._id || selectedProject?.id;
+
+  const getProjectId = (project) => project?._id || project?.id;
+
   const formatStatus = (status) => {
     if (!status) return '';
 
@@ -75,6 +81,18 @@ export default function ProjectsScreen() {
     });
   }, [projects, searchQuery]);
 
+  const handleProjectPress = (project) => {
+    if (isSelectionMode) {
+      setSelectedProject(project);
+      setTimeout(() => {
+        navigation.goBack();
+      }, 120);
+      return;
+    }
+
+    navigation.navigate('Project', { id: getProjectId(project) });
+  };
+
   if (authLoading || loading) {
     return (
       <View style={styles.centeredContainer}>
@@ -113,9 +131,12 @@ export default function ProjectsScreen() {
         ) : (
           filteredProjects.map(project => (
             <TouchableOpacity
-              key={project._id}
-              onPress={() => navigation.navigate('Project', { id: project._id })}
-              style={styles.projectCard}
+              key={getProjectId(project)}
+              onPress={() => handleProjectPress(project)}
+              style={[
+                styles.projectCard,
+                selectedProjectId === getProjectId(project) && styles.projectCardSelected,
+              ]}
             >
               <View style={styles.cardHeader}>
                 <Text style={[styles.projectName, { fontFamily: theme.text.fontFamily['bold'] }]}>{project.name}</Text>
@@ -198,6 +219,11 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 16,
     gap: 8,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  projectCardSelected: {
+    borderColor: '#0785F4',
   },
   cardHeader: {
     width: '100%',
