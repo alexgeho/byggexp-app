@@ -24,6 +24,7 @@ export default function MenuScreen() {
       return [
         ...baseItems,
         { id: 'tasks', screen: 'Tasks', title: 'Tasks', icon: require('../../assets/Tasks.png'), color: '#00C853' },
+        { id: 'shifts', screen: 'History', title: 'Shifts', icon: require('../../assets/WorkShifts.png'), color: '#F44336' },
         { id: 'company', title: 'Company', icon: require('../../assets/About.png'), color: '#009688' },
         { id: 'users', title: 'Users', icon: require('../../assets/Tasks.png'), color: '#2196F3' },
         { id: 'projects', title: 'Projects', icon: require('../../assets/Projekts.png'), color: '#FF9800' },
@@ -36,6 +37,7 @@ export default function MenuScreen() {
       return [
         ...baseItems,
         { id: 'tasks', screen: 'Tasks', title: 'Tasks', icon: require('../../assets/Tasks.png'), color: '#00C853' },
+        { id: 'shifts', screen: 'History', title: 'Shifts', icon: require('../../assets/WorkShifts.png'), color: '#F44336' },
         { id: 'projects', title: 'Projects', icon: require('../../assets/Projekts.png'), color: '#FF9800' },
         { id: 'team', title: 'My Team', icon: require('../../assets/Tasks.png'), color: '#2196F3' },
         { id: 'reports', title: 'Reports', icon: require('../../assets/Documents.png'), color: '#795548' },
@@ -47,7 +49,7 @@ export default function MenuScreen() {
       ...baseItems,
       { id: 'tasks', screen: 'Tasks', title: 'Tasks', icon: require('../../assets/Tasks.png'), color: '#00C853' },
       { id: 'documents', title: 'Documents', icon: require('../../assets/Documents.png'), color: '#2196F3' },
-      { id: 'workShifts', title: 'Work shifts', icon: require('../../assets/WorkShifts.png'), color: '#F44336' },
+      { id: 'workShifts', screen: 'History', title: 'Work shifts', icon: require('../../assets/WorkShifts.png'), color: '#F44336' },
     ];
   }, [user?.role]);
 
