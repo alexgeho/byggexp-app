@@ -56,7 +56,7 @@ export const MyAccount = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <GlassBackButton onPress={() => navigation.goBack()} iconSource={require('../../assets/Arrow-left.png')} />
-        <Text style={[styles.headerTitle, { fontFamily: theme.text.fontFamily['bold'] }]}>
+        <Text style={[styles.headerTitle, { fontFamily: theme.text.fontFamily['semiBold'] }]}>
           Create project
         </Text>
         <View style={styles.placeholder} />
@@ -206,6 +206,7 @@ const styles = StyleSheet.create({
     paddingTop: 48,
     paddingBottom: 48,
     gap: 12,
+    backgroundColor: '#EEF5FB',
   },
   header: {
     width: '100%',
@@ -229,7 +230,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: '#052D50',
-    fontSize: 18,
+    fontSize: 17,
     textAlign: 'center',
   },
   placeholder: {

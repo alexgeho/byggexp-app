@@ -139,7 +139,7 @@ export default function HistoryScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <GlassBackButton backgroundColor={'rgb(253 253 253)'} tint={"light"} borderColor="#FFFFFF50" onPress={() => navigation.goBack()} iconSource={require('../../../assets/Arrow-left.png')} />
-        <Text style={[styles.headerTitle, { fontFamily: theme.text.fontFamily['bold'] }]}>Work shifts</Text>
+        <Text style={[styles.headerTitle, { fontFamily: theme.text.fontFamily['semiBold'] }]}>Work shifts</Text>
         <View style={styles.placeholder} />
       </View>
 
@@ -173,7 +173,7 @@ export default function HistoryScreen() {
           </View>
 
           <ScrollView style={styles.shiftDetailsContainer} contentContainerStyle={styles.shiftDetailsContent}>
-            <Text style={[styles.shiftTitle, { fontFamily: theme.text.fontFamily['bold'] }]}>
+            <Text style={[styles.shiftTitle, { fontFamily: theme.text.fontFamily['semiBold'] }]}>
               Shift details for {selectedDay ? formatShiftDate(selectedDay.date) : '—'}
             </Text>
 
@@ -268,7 +268,7 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#EEF5FB',
     padding: 16,
     paddingTop: 48,
     paddingBottom: 48,
@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: '#052D50',
-    fontSize: 18,
+    fontSize: 17,
     textAlign: 'center',
   },
   placeholder: {
@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
   },
   shiftTitle: {
     color: '#052D50',
-    fontSize: 16,
+    fontSize: 17,
     marginBottom: 12,
   },
   shiftCard: {

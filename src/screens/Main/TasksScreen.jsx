@@ -102,7 +102,7 @@ export default function TasksScreen() {
           onPress={() => navigation.goBack()}
           iconSource={require('../../assets/Arrow-left.png')}
         />
-        <Text style={[styles.headerTitle, { fontFamily: theme.text.fontFamily['bold'] }]}>Tasks</Text>
+        <Text style={[styles.headerTitle, { fontFamily: theme.text.fontFamily['semiBold'] }]}>Tasks</Text>
         <View style={styles.placeholder} />
       </View>
 
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: '#052D50',
-    fontSize: 18,
+    fontSize: 17,
     textAlign: 'center',
   },
   placeholder: {

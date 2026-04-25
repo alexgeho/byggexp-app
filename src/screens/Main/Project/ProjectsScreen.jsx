@@ -112,7 +112,7 @@ export default function ProjectsScreen() {
           onPress={() => navigation.goBack()}
           iconSource={require('../../../assets/Arrow-left.png')}
         />
-        <Text style={[styles.headerTitle, { fontFamily: theme.text.fontFamily['bold'] }]}>My projects</Text>
+        <Text style={[styles.headerTitle, { fontFamily: theme.text.fontFamily['semiBold'] }]}>My projects</Text>
         <View style={styles.placeholder} />
       </View>
 
@@ -174,6 +174,7 @@ const styles = StyleSheet.create({
     paddingTop: 48,
     paddingBottom: 48,
     gap: 12,
+    backgroundColor: '#EEF5FB',
   },
   centeredContainer: {
     flex: 1,
@@ -188,7 +189,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: '#052D50',
-    fontSize: 18,
+    fontSize: 17,
     textAlign: 'center',
   },
   placeholder: {

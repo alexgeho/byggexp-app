@@ -195,18 +195,18 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     gap: 12,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#EEF5FB',
   },
   centered: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#EEF5FB',
   },
   title: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: 17,
+    fontFamily: 'DMSans-SemiBold',
     color: '#052D50',
   },
   subtitle: {

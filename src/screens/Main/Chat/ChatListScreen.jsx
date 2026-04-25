@@ -15,7 +15,7 @@ export default function ChatListScreen() {
         <GlassBackButton backgroundColor={'rgb(253 253 253)'} tint={"light"} borderColor="#FFFFFF50" onPress={() => navigation.goBack()} iconSource={require('../../../assets/Search.png')} />
       </View>
       <View style={styles.chatHeader}>
-        <Text style={[styles.chatTitle, { fontFamily: theme.text.fontFamily['bold'] }]}>Chat</Text>
+        <Text style={[styles.chatTitle, { fontFamily: theme.text.fontFamily['semiBold'] }]}>Chat</Text>
         <View style={styles.filterRow}>
           <TouchableOpacity style={styles.filterButton}>
             <Text>All</Text>
@@ -119,6 +119,7 @@ const styles = StyleSheet.create({
     padding: 12,
     paddingTop: 48,
     paddingBottom: 48,
+    backgroundColor: '#EEF5FB',
   },
   header: {
     width: '100%',
@@ -148,7 +149,7 @@ const styles = StyleSheet.create({
   },
   chatTitle: {
     color: '#052D50',
-    fontSize: 38,
+    fontSize: 17,
   },
   filterRow: {
     width: '100%',

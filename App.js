@@ -1,11 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Text, TextInput } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Font from 'expo-font';
 import AppNavigator from './src/navigation/AppNavigator';
 import { AuthProvider } from './src/contexts/AuthContext';
 import { ThemeProvider } from './src/theme/ThemeContext';
+
+const defaultTextStyle = { fontFamily: 'DMSans-Regular' };
+
+const mergeDefaultStyle = (currentStyle) => {
+  if (Array.isArray(currentStyle)) {
+    const hasFontFamily = currentStyle.some((style) => style?.fontFamily);
+    return hasFontFamily ? currentStyle : [defaultTextStyle, ...currentStyle];
+  }
+
+  if (currentStyle?.fontFamily) {
+    return currentStyle;
+  }
+
+  return currentStyle ? [defaultTextStyle, currentStyle] : defaultTextStyle;
+};
+
+Text.defaultProps = Text.defaultProps || {};
+Text.defaultProps.style = mergeDefaultStyle(Text.defaultProps.style);
+
+TextInput.defaultProps = TextInput.defaultProps || {};
+TextInput.defaultProps.style = mergeDefaultStyle(TextInput.defaultProps.style);
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -17,6 +38,7 @@ export default function App() {
           'DMSans-Regular': require('./src/assets/fonts/DMSans-Regular.ttf'),
           'DMSans-Bold': require('./src/assets/fonts/DMSans-Bold.ttf'),
           'DMSans-Medium': require('./src/assets/fonts/DMSans-Medium.ttf'),
+          'DMSans-SemiBold': require('./src/assets/fonts/DMSans-Medium.ttf'),
         });
         setFontsLoaded(true);
       } catch (error) {

@@ -401,6 +401,7 @@ const styles = StyleSheet.create({
     paddingTop: 48,
     paddingBottom: 48,
     gap: 24,
+    backgroundColor: '#EEF5FB',
   },
   centeredContainer: {
     flex: 1,
@@ -434,9 +435,10 @@ const styles = StyleSheet.create({
   },
   projectName: {
     color: '#052D50',
-    fontSize: 18,
+    fontSize: 17,
     flex: 1,
     textAlign: 'center',
+    fontFamily: 'DMSans-SemiBold',
   },
   headerPlaceholder: {
     width: 44,

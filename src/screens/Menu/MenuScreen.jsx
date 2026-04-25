@@ -61,7 +61,7 @@ export default function MenuScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <GlassBackButton backgroundColor={'rgb(253 253 253)'} tint={"light"} borderColor="#FFFFFF50" onPress={() => navigation.goBack()} iconSource={require('../../assets/Arrow-left.png')} />
-        <Text style={[styles.headerTitle, { fontFamily: theme.text.fontFamily['bold'] }]}>Menu</Text>
+        <Text style={[styles.headerTitle, { fontFamily: theme.text.fontFamily['semiBold'] }]}>Menu</Text>
         <View style={styles.placeholder} />
       </View>
 
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: '#052D50',
-    fontSize: 18,
+    fontSize: 17,
     textAlign: 'center',
   },
   placeholder: {

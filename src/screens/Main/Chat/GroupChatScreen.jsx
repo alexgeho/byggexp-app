@@ -106,7 +106,7 @@ export default function GroupChatScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#EEF5FB',
   },
   backgroundBlur: {
     position: 'absolute',
@@ -150,8 +150,8 @@ const styles = StyleSheet.create({
     width: '100%',
     textAlign: 'center',
     color: '#052D50',
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 17,
+    fontFamily: 'DMSans-SemiBold',
   },
   channelStatus: {
     width: '100%',
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#EEF5FB',
     zIndex: 3,
   },
   inputButton: {

@@ -890,7 +890,7 @@ export default function CreateProjectScreen() {
         <ScrollView style={[styles.container, {paddingTop: 48}]}>
             <View style={styles.header}>
                 <GlassBackButton backgroundColor={'rgb(253 253 253)'} tint={"light"} borderColor="#FFFFFF50" onPress={() => navigation.goBack()} iconSource={require('../../../assets/Arrow-left.png')} />
-                <Text style={[styles.headerTitle, { fontFamily: theme.text.fontFamily['bold'] }]}>Create project</Text>
+                <Text style={[styles.headerTitle, { fontFamily: theme.text.fontFamily['semiBold'] }]}>Create project</Text>
                 <View style={styles.placeholder} />
             </View>
 
@@ -1297,7 +1297,7 @@ export default function CreateProjectScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: '#EEF5FB',
         paddingHorizontal: 12,
     },
     loadingContainer: {
@@ -1331,7 +1331,7 @@ const styles = StyleSheet.create({
     },
     headerTitle: {
         color: '#052D50',
-        fontSize: 18,
+        fontSize: 17,
         textAlign: 'center',
     },
     formSectionTitle: {
@@ -1663,8 +1663,8 @@ const styles = StyleSheet.create({
     },
     workersModalTitle: {
         color: '#052D50',
-        fontSize: 18,
-        fontWeight: '600',
+        fontSize: 17,
+        fontFamily: 'DMSans-SemiBold',
     },
     workersSearchBar: {
         height: 56,

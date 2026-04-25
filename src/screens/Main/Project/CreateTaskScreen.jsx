@@ -456,8 +456,8 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: '#052D50',
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: 17,
+    fontFamily: 'DMSans-SemiBold',
   },
   placeholder: {
     width: 44,

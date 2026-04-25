@@ -5,7 +5,7 @@ export const baseColors = {
   warning: '#FF9500',
   danger: '#FF3B30',
   background: {
-    light: '#FFFFFF',
+    light: '#EEF5FB',
     dark: '#000000',
   },
   text: {

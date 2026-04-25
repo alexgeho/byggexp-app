@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoaderScreen from '../screens/LoaderScreen';
 import AuthNavigator from './AuthNavigator';
@@ -20,11 +20,13 @@ import { SelectAdmin } from '../screens/Main/Project/SelectAdmin';
 import { ShiftHistory } from '../screens/Main/Project/ShiftHistory';
 import SingleChatScreen from '../screens/Main/Chat/SingleChatScreen';
 import AuthContext from '../contexts/AuthContext';
+import { useTheme } from '../theme/ThemeContext';
 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
   const { isAuthenticated, isLoading, user } = useContext(AuthContext);
+  const { theme } = useTheme();
 
   if (isLoading) {
     return <LoaderScreen />;
@@ -33,10 +35,26 @@ export default function AppNavigator() {
   const canManageProjects = ['superadmin', 'companyAdmin', 'projectAdmin'].includes(user?.role);
   const canManageWorkers = ['companyAdmin', 'projectAdmin'].includes(user?.role);
   const isCompanyAdmin = user?.role === 'companyAdmin';
+  const navigationTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      primary: theme.colors.primary,
+      background: theme.colors.background,
+      card: theme.colors.card,
+      text: theme.colors.text,
+      border: theme.colors.border,
+    },
+  };
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <NavigationContainer theme={navigationTheme}>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: theme.colors.background },
+        }}
+      >
         {isAuthenticated ? (
           <>
             <Stack.Screen name='Main' component={MainScreen} options={{ headerShown: false }} />

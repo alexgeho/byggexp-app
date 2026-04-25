@@ -151,11 +151,13 @@ const styles = StyleSheet.create({
     paddingTop: 48,
     paddingBottom: 48,
     gap: 24,
+    backgroundColor: '#EEF5FB',
   },
   centeredContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#EEF5FB',
   },
   header: {
     width: '100%',
@@ -179,6 +181,10 @@ const styles = StyleSheet.create({
   },
   projectName: {
     color: '#052D50',
+    flex: 1,
+    textAlign: 'center',
+    fontSize: 17,
+    fontFamily: 'DMSans-SemiBold',
   },
   scrollContainer: {
     flex: 1,
