@@ -221,23 +221,6 @@ export default function MainScreen() {
           onPress={() => navigation.navigate('Projects', { mode: 'select' })}
         />
 
-        {projectsLoading || loadingShift ? (
-          <View style={styles.shiftStateRow}>
-            <ActivityIndicator size="small" color="#ffffff" />
-          </View>
-        ) : (
-          <View style={styles.shiftStateRow}>
-            <Text style={styles.shiftStateText}>
-              {currentShift
-                ? `${currentShift.projectName} · ${formatDuration(currentShift.durationMs)}`
-                : 'No shift started'}
-            </Text>
-            <Text style={styles.shiftStateSubtext}>
-              {currentShift?.location || 'Location will be taken from the selected project'}
-            </Text>
-          </View>
-        )}
-
         <View style={styles.timerRow}>
           <Text style={[styles.timerNumber, { fontFamily: theme.text.fontFamily['regular'] }]}>{formattedTime.hours}</Text>
           <Text style={[styles.timerNumber, { fontFamily: theme.text.fontFamily['regular'] }]}>:</Text>
@@ -355,21 +338,6 @@ const styles = StyleSheet.create({
   timerSubNumber: {
     color: '#ffffff',
     fontSize: 48,
-  },
-  shiftStateRow: {
-    alignItems: 'center',
-    marginTop: 18,
-    gap: 4,
-  },
-  shiftStateText: {
-    color: '#ffffff',
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  shiftStateSubtext: {
-    color: '#ffffff80',
-    fontSize: 12,
-    textAlign: 'center',
   },
   dotsRow: {
     flexDirection: 'row',
