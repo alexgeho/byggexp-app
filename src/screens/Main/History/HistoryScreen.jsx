@@ -1,99 +1,139 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, ActivityIndicator, Modal, Alert } from 'react-native';
 import { useTheme } from '../../../theme/ThemeContext';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { GlassBackButton } from '../../../components/common/GlassBackButton/GlassBackButton';
+import { shiftService } from '../../../services';
+import {
+  formatDuration,
+  formatDurationShort,
+  formatMonthLabel,
+  formatShiftDate,
+  formatTimeRange,
+  resolveUploadUrl,
+} from '../../../utils/shifts';
 
 export default function HistoryScreen() {
   const navigation = useNavigation();
   const { theme } = useTheme();
+  const [availableMonths, setAvailableMonths] = useState([]);
+  const [selectedMonth, setSelectedMonth] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [days, setDays] = useState([]);
+  const [currentMonthDuration, setCurrentMonthDuration] = useState(0);
+  const [previousMonthDuration, setPreviousMonthDuration] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [pickerVisible, setPickerVisible] = useState(false);
 
-  const [selectedDate, setSelectedDate] = useState('2025-04-08');
+  const loadMonths = useCallback(async () => {
+    const months = await shiftService.getMonths();
+    setAvailableMonths(months);
+    return months;
+  }, []);
 
-  const shiftData = {
-    '2025-04-08': {
-      date: 'Tuesday, July 8, 2025',
-      hours: '08:00 – 16:00',
-      duration: '8 hours',
-      project: 'General construction labor',
-      location: 'Site A – Central building area',
-      images: [
-        require('../../../assets/shiftImage1.jpg'),
-        require('../../../assets/shiftImage2.jpg'),
-      ],
-    },
-    '2025-04-09': {
-      date: 'Wednesday, July 9, 2025',
-      hours: '07:00 – 15:00',
-      duration: '8 hours',
-      project: 'Roof installation',
-      location: 'Site B – North wing',
-      images: [
-        require('../../../assets/shiftImage3.jpg'),
-      ],
-    },
-  };
+  const loadHistory = useCallback(async (month) => {
+    const data = await shiftService.getHistory(month ? { month } : {});
+    setAvailableMonths(data.availableMonths || []);
+    setCurrentMonthDuration(data.monthTotalDurationMs || 0);
+    setPreviousMonthDuration(data.previousMonthTotalDurationMs || 0);
+    setDays(data.days || []);
+    setSelectedMonth(data.month);
+    setSelectedDate((previousDate) => {
+      const nextDate = previousDate && (data.days || []).some((day) => day.date === previousDate)
+        ? previousDate
+        : data.days?.[0]?.date || null;
+      return nextDate;
+    });
+  }, []);
 
-  const currentMonthHours = 120;
-  const previousMonthHours = 132;
+  const refreshHistory = useCallback(async (preferredMonth) => {
+    try {
+      setLoading(true);
+      const months = await loadMonths();
+      const nextMonth = preferredMonth || months[0];
+      await loadHistory(nextMonth);
+    } catch (error) {
+      console.error('Failed to load shifts history:', error);
+      setDays([]);
+      setAvailableMonths([]);
+      setSelectedDate(null);
+    } finally {
+      setLoading(false);
+    }
+  }, [loadHistory, loadMonths]);
 
-  const today = new Date();
-  const currentMonth = today.toLocaleString('default', { month: 'long' });
+  useFocusEffect(
+    useCallback(() => {
+      refreshHistory(selectedMonth);
+    }, [refreshHistory, selectedMonth]),
+  );
 
-  const renderCalendar = () => {
-    const daysInMonth = 30; 
-    const startDay = 3;
+  const dayMap = useMemo(() => {
+    const map = new Map();
+    days.forEach((day) => map.set(day.date, day));
+    return map;
+  }, [days]);
 
-    const rows = [];
-    let days = [];
+  const selectedDay = selectedDate ? dayMap.get(selectedDate) : null;
+  const selectedDayShifts = selectedDay?.shifts || [];
 
-    for (let i = 0; i < startDay; i++) {
-      days.push(<View key={`empty-${i}`} style={styles.calendarCellEmpty} />);
+  const calendarRows = useMemo(() => {
+    if (!selectedMonth) {
+      return [];
     }
 
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dateStr = `2025-04-${day.toString().padStart(2, '0')}`;
-      const isSelected = selectedDate === dateStr;
-      const hasShift = shiftData[dateStr];
+    const [year, month] = selectedMonth.split('-').map(Number);
+    const daysInMonth = new Date(year, month, 0).getDate();
+    const firstDayIndex = (new Date(year, month - 1, 1).getDay() + 6) % 7;
 
-      days.push(
+    const cells = [];
+    for (let index = 0; index < firstDayIndex; index += 1) {
+      cells.push(<View key={`empty-start-${index}`} style={styles.calendarCellEmpty} />);
+    }
+
+    for (let day = 1; day <= daysInMonth; day += 1) {
+      const dateStr = `${selectedMonth}-${day.toString().padStart(2, '0')}`;
+      const shiftDay = dayMap.get(dateStr);
+      const isSelected = selectedDate === dateStr;
+
+      cells.push(
         <TouchableOpacity
-          key={day}
+          key={dateStr}
           style={[
             styles.calendarCell,
+            !shiftDay && styles.calendarCellMuted,
             isSelected && styles.calendarCellSelected,
-            !hasShift && styles.calendarCellEmpty,
           ]}
-          onPress={() => setSelectedDate(dateStr)}
+          onPress={() => shiftDay && setSelectedDate(dateStr)}
+          disabled={!shiftDay}
         >
           <Text style={[styles.calendarDay, isSelected && styles.calendarDaySelected]}>
             {day}
           </Text>
-          {hasShift && (
+          {shiftDay ? (
             <Text style={[styles.calendarHours, isSelected && styles.calendarHoursSelected]}>
-              {shiftData[dateStr].duration.split(' ')[0]}h
+              {formatDurationShort(shiftDay.totalDurationMs)}
             </Text>
-          )}
-        </TouchableOpacity>
+          ) : null}
+        </TouchableOpacity>,
       );
-
-      if (days.length === 7) {
-        rows.push(<View key={`row-${rows.length}`} style={styles.calendarRow}>{days}</View>);
-        days = [];
-      }
     }
 
-    if (days.length > 0) {
-      while (days.length < 7) {
-        days.push(<View key={`empty-end-${days.length}`} style={styles.calendarCellEmpty} />);
-      }
-      rows.push(<View key="last-row" style={styles.calendarRow}>{days}</View>);
+    while (cells.length % 7 !== 0) {
+      cells.push(<View key={`empty-end-${cells.length}`} style={styles.calendarCellEmpty} />);
+    }
+
+    const rows = [];
+    for (let index = 0; index < cells.length; index += 7) {
+      rows.push(
+        <View key={`row-${index}`} style={styles.calendarRow}>
+          {cells.slice(index, index + 7)}
+        </View>,
+      );
     }
 
     return rows;
-  };
-
-  const currentShift = shiftData[selectedDate] || {};
+  }, [dayMap, selectedDate, selectedMonth]);
 
   return (
     <View style={styles.container}>
@@ -105,70 +145,122 @@ export default function HistoryScreen() {
 
       <View style={styles.exportSelector}>
         <Text style={styles.exportLabel}>Select period for export</Text>
-        <TouchableOpacity style={styles.dropdownButton}>
-          <Text style={styles.dropdownText}>April 2025</Text>
+        <TouchableOpacity style={styles.dropdownButton} onPress={() => setPickerVisible(true)}>
+          <Text style={styles.dropdownText}>{formatMonthLabel(selectedMonth)}</Text>
           <Image style={styles.dropdownIcon} source={require('../../../assets/Arrow-down.png')} />
         </TouchableOpacity>
       </View>
 
-      <View style={styles.calendarContainer}>
-        <View style={styles.calendarHeader}>
-          <Text style={styles.calendarHeaderDay}>Mon</Text>
-          <Text style={styles.calendarHeaderDay}>Tue</Text>
-          <Text style={styles.calendarHeaderDay}>Wed</Text>
-          <Text style={styles.calendarHeaderDay}>Thu</Text>
-          <Text style={styles.calendarHeaderDay}>Fri</Text>
-          <Text style={styles.calendarHeaderDay}>Sat</Text>
-          <Text style={styles.calendarHeaderDay}>Sun</Text>
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0088FF" />
         </View>
-        {renderCalendar()}
-      </View>
+      ) : (
+        <>
+          <View style={styles.calendarContainer}>
+            <View style={styles.calendarHeader}>
+              <Text style={styles.calendarHeaderDay}>Mon</Text>
+              <Text style={styles.calendarHeaderDay}>Tue</Text>
+              <Text style={styles.calendarHeaderDay}>Wed</Text>
+              <Text style={styles.calendarHeaderDay}>Thu</Text>
+              <Text style={styles.calendarHeaderDay}>Fri</Text>
+              <Text style={styles.calendarHeaderDay}>Sat</Text>
+              <Text style={styles.calendarHeaderDay}>Sun</Text>
+            </View>
+            {calendarRows.length ? calendarRows : (
+              <Text style={styles.emptyMonthText}>No shifts for this period yet.</Text>
+            )}
+          </View>
 
-      <View style={styles.shiftDetailsContainer}>
-        <Text style={[styles.shiftTitle, { fontFamily: theme.text.fontFamily['bold'] }]}>
-          Shift details for {currentShift.date || '—'}
-        </Text>
-        <View style={styles.shiftInfoRow}>
-          <Text style={styles.shiftLabel}>Work hours:</Text>
-          <Text style={styles.shiftValue}>{currentShift.hours || '—'}</Text>
-        </View>
-        <View style={styles.shiftInfoRow}>
-          <Text style={styles.shiftLabel}>Duration:</Text>
-          <Text style={styles.shiftValue}>{currentShift.duration || '—'}</Text>
-        </View>
-        <View style={styles.shiftInfoRow}>
-          <Text style={styles.shiftLabel}>Project:</Text>
-          <Text style={styles.shiftValue}>{currentShift.project || '—'}</Text>
-        </View>
-        <View style={styles.shiftInfoRow}>
-          <Text style={styles.shiftLabel}>Location:</Text>
-          <Text style={styles.shiftValue}>{currentShift.location || '—'}</Text>
-        </View>
-        <View style={styles.shiftImagesRow}>
-          {currentShift.images?.map((img, index) => (
-            <Image
-              key={index}
-              style={styles.shiftImage}
-              source={img}
-            />
-          ))}
-        </View>
-      </View>
+          <ScrollView style={styles.shiftDetailsContainer} contentContainerStyle={styles.shiftDetailsContent}>
+            <Text style={[styles.shiftTitle, { fontFamily: theme.text.fontFamily['bold'] }]}>
+              Shift details for {selectedDay ? formatShiftDate(selectedDay.date) : '—'}
+            </Text>
+
+            {selectedDayShifts.length === 0 ? (
+              <Text style={styles.emptyDetailsText}>Select a highlighted day to see shift details.</Text>
+            ) : (
+              selectedDayShifts.map((shift) => (
+                <View key={shift.id} style={styles.shiftCard}>
+                  <View style={styles.shiftInfoRow}>
+                    <Text style={styles.shiftLabel}>Work hours:</Text>
+                    <Text style={styles.shiftValue}>{formatTimeRange(shift.startedAt, shift.endedAt)}</Text>
+                  </View>
+                  <View style={styles.shiftInfoRow}>
+                    <Text style={styles.shiftLabel}>Duration:</Text>
+                    <Text style={styles.shiftValue}>{formatDuration(shift.durationMs)}</Text>
+                  </View>
+                  <View style={styles.shiftInfoRow}>
+                    <Text style={styles.shiftLabel}>Project:</Text>
+                    <Text style={styles.shiftValue}>{shift.projectName || '—'}</Text>
+                  </View>
+                  <View style={styles.shiftInfoRow}>
+                    <Text style={styles.shiftLabel}>Location:</Text>
+                    <Text style={styles.shiftValue}>{shift.location || '—'}</Text>
+                  </View>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.shiftImagesRow}>
+                    {shift.photos?.length ? shift.photos.map((photo, index) => (
+                      <Image
+                        key={`${shift.id}-photo-${index}`}
+                        style={styles.shiftImage}
+                        source={{ uri: resolveUploadUrl(photo.url) }}
+                      />
+                    )) : (
+                      <Text style={styles.noPhotosText}>No photos attached</Text>
+                    )}
+                  </ScrollView>
+                </View>
+              ))
+            )}
+          </ScrollView>
+        </>
+      )}
 
       <View style={styles.statsContainer}>
         <View style={styles.statItem}>
           <Text style={styles.statLabel}>Current month:</Text>
-          <Text style={styles.statValue}>{currentMonthHours} h</Text>
+          <Text style={styles.statValue}>{formatDuration(currentMonthDuration)}</Text>
         </View>
         <View style={styles.statItem}>
           <Text style={styles.statLabel}>Previous month:</Text>
-          <Text style={styles.statValue}>{previousMonthHours} h</Text>
+          <Text style={styles.statValue}>{formatDuration(previousMonthDuration)}</Text>
         </View>
       </View>
 
-      <TouchableOpacity style={styles.exportButton}>
+      <TouchableOpacity
+        style={styles.exportButton}
+        onPress={() => Alert.alert('Export is not ready yet', 'The shifts period is already real, but export is still pending.')}
+      >
         <Text style={styles.exportButtonText}>Export current period</Text>
       </TouchableOpacity>
+
+      <Modal
+        visible={pickerVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setPickerVisible(false)}
+      >
+        <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setPickerVisible(false)}>
+          <View style={styles.modalContent}>
+            {availableMonths.length ? availableMonths.map((month) => (
+              <TouchableOpacity
+                key={month}
+                style={styles.monthOption}
+                onPress={async () => {
+                  setPickerVisible(false);
+                  await refreshHistory(month);
+                }}
+              >
+                <Text style={[styles.monthOptionText, month === selectedMonth && styles.monthOptionTextSelected]}>
+                  {formatMonthLabel(month)}
+                </Text>
+              </TouchableOpacity>
+            )) : (
+              <Text style={styles.monthOptionText}>No periods yet</Text>
+            )}
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 }
@@ -268,6 +360,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#e0e0e0',
   },
+  calendarCellMuted: {
+    backgroundColor: '#f3f3f3',
+  },
   calendarCellSelected: {
     backgroundColor: '#0088FF',
   },
@@ -297,20 +392,31 @@ const styles = StyleSheet.create({
   },
   shiftDetailsContainer: {
     width: '100%',
+    flex: 1,
     backgroundColor: '#f9f9f9',
     borderRadius: 16,
     padding: 12,
     marginBottom: 12,
+  },
+  shiftDetailsContent: {
+    gap: 12,
   },
   shiftTitle: {
     color: '#052D50',
     fontSize: 16,
     marginBottom: 12,
   },
+  shiftCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 12,
+    gap: 8,
+  },
   shiftInfoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 8,
+    gap: 12,
   },
   shiftLabel: {
     color: '#698196',
@@ -320,16 +426,18 @@ const styles = StyleSheet.create({
     color: '#052D50',
     fontSize: 14,
     fontWeight: '500',
+    flex: 1,
+    textAlign: 'right',
   },
   shiftImagesRow: {
     flexDirection: 'row',
-    gap: 8,
     marginTop: 12,
   },
   shiftImage: {
     width: 48,
     height: 48,
     borderRadius: 8,
+    marginRight: 8,
   },
   statsContainer: {
     width: '100%',
@@ -361,6 +469,47 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyMonthText: {
+    color: '#698196',
+    textAlign: 'center',
+    marginTop: 12,
+  },
+  emptyDetailsText: {
+    color: '#698196',
+    fontSize: 14,
+  },
+  noPhotosText: {
+    color: '#698196',
+    fontSize: 13,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: '#00000040',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  modalContent: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    paddingVertical: 8,
+  },
+  monthOption: {
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+  },
+  monthOptionText: {
+    color: '#052D50',
+    fontSize: 16,
+  },
+  monthOptionTextSelected: {
+    color: '#0088FF',
+    fontWeight: '700',
   },
 });
 

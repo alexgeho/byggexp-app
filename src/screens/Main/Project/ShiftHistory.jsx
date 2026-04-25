@@ -1,26 +1,58 @@
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
-import React, { useRef, useState, useContext } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, TextInput } from 'react-native';
+import React, { useRef, useState, useContext, useCallback } from 'react';
+import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, TextInput } from 'react-native';
 import AuthContext from '../../../contexts/AuthContext';
 import { BottomBar } from '../../../components/BottomBar';
 import { GlassBackButton } from '../../../components/common/GlassBackButton/GlassBackButton';
+import { shiftService } from '../../../services';
+import { formatDuration, formatMonthLabel, formatShiftDayLabel, formatTimeRange } from '../../../utils/shifts';
+import { useFocusEffect } from '@react-navigation/native';
 
 export const ShiftHistory = ({ route }) => {
   const navigation = useNavigation();
   const { user } = useContext(AuthContext);
   const bottomSheetRef = useRef(null);
-  const [period, setPeriod] = useState('Month');
-  const [fromDate, setFromDate] = useState('August 2025');
-  const [toDate, setToDate] = useState('August 2025');
-  
+  const [period] = useState('Month');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
+  const [days, setDays] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const { projectId, type = 'history' } = route.params || {};
-  
-  // Worker может создавать отчёты
   const canCreate = user?.role === 'worker' && type === 'report';
-  
-  // Admin может просматривать все отчёты
   const canViewAll = ['companyAdmin', 'projectAdmin'].includes(user?.role);
+
+  const loadShiftDays = useCallback(async () => {
+    try {
+      setLoading(true);
+      const [months, data] = await Promise.all([
+        shiftService.getMonths(),
+        shiftService.list(projectId ? { projectId } : {}),
+      ]);
+
+      setDays(data.days || []);
+
+      if (months.length > 0) {
+        setFromDate(formatMonthLabel(months[months.length - 1]));
+        setToDate(formatMonthLabel(months[0]));
+      } else {
+        setFromDate('');
+        setToDate('');
+      }
+    } catch (error) {
+      console.error('Failed to load shift history list:', error);
+      setDays([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [projectId]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadShiftDays();
+    }, [loadShiftDays]),
+  );
 
   const openWorkerModal = () => {
     bottomSheetRef.current?.expand();
@@ -38,43 +70,38 @@ export const ShiftHistory = ({ route }) => {
         <View style={styles.backZeroButton} />
       </View>
 
-      <Text style={{ color: '#052D50', fontSize: 36, width: '100%' }}>Alex Gerhard</Text>
+      <Text style={{ color: '#052D50', fontSize: 36, width: '100%' }}>{user?.name || 'Shift history'}</Text>
 
       <ScrollView style={{ flex: 1, width: '100%' }}>
-        <TouchableOpacity style={[styles.shiftItem, { marginBottom: 12 }]}>
-          <View style={styles.shiftHeader}>
-            <Text style={styles.dateText}>July 3, 2025</Text>
-            <Text style={styles.totalText}>Total: 10h 5m</Text>
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#0091FF" />
           </View>
-          <View style={styles.shiftBody}>
-            <Text style={styles.locationText}>Gruvrisvägen 70, 791 61 Falun</Text>
-            <View style={styles.timeContainer}>
-              <Text style={styles.durationText}>10h 5m</Text>
-              <Text style={styles.timeRangeText}>08:32-18:37</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
+        ) : days.length === 0 ? (
+          <Text style={styles.emptyStateText}>No shifts found yet.</Text>
+        ) : (
+          days.map((day) => (
+            <TouchableOpacity key={day.date} style={[styles.shiftItem, { marginBottom: 12 }]} activeOpacity={0.9}>
+              <View style={styles.shiftHeader}>
+                <Text style={styles.dateText}>{formatShiftDayLabel(day.date)}</Text>
+                <Text style={styles.totalText}>Total: {formatDuration(day.totalDurationMs)}</Text>
+              </View>
 
-        <TouchableOpacity style={[styles.shiftItem, { marginBottom: 12 }]}>
-          <View style={styles.shiftHeader}>
-            <Text style={styles.dateText}>July 3, 2025</Text>
-            <Text style={styles.totalText}>Total: 10h 5m</Text>
-          </View>
-          <View style={styles.shiftBody}>
-            <Text style={styles.locationText}>Gruvrisvägen 70, 791 61 Falun</Text>
-            <View style={styles.timeContainer}>
-              <Text style={styles.durationText}>10h 5m</Text>
-              <Text style={styles.timeRangeText}>08:32-18:37</Text>
-            </View>
-          </View>
-          <View style={styles.subShift}>
-            <Text style={styles.locationText}>Ludvika</Text>
-            <View style={styles.timeContainer}>
-              <Text style={styles.durationText}>2h 0m</Text>
-              <Text style={styles.timeRangeText}>19:00-21:00</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
+              {day.shifts.map((shift, index) => (
+                <View key={shift.id} style={index === 0 ? styles.shiftBody : styles.subShift}>
+                  <View style={styles.shiftProjectContainer}>
+                    <Text style={styles.projectInlineText}>{shift.projectName}</Text>
+                    <Text style={styles.locationText}>{shift.location || 'No location'}</Text>
+                  </View>
+                  <View style={styles.timeContainer}>
+                    <Text style={styles.durationText}>{formatDuration(shift.durationMs)}</Text>
+                    <Text style={styles.timeRangeText}>{formatTimeRange(shift.startedAt, shift.endedAt)}</Text>
+                  </View>
+                </View>
+              ))}
+            </TouchableOpacity>
+          ))
+        )}
       </ScrollView>
 
       <BottomSheet
@@ -124,8 +151,13 @@ export const ShiftHistory = ({ route }) => {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.exportMainButton}>
-            <Text style={styles.exportMainButtonText}>Export</Text>
+          <TouchableOpacity
+            style={styles.exportMainButton}
+            onPress={() => Alert.alert('Export is not ready yet', 'Shift data is real now, but report export is still pending.')}
+          >
+            <Text style={styles.exportMainButtonText}>
+              Export
+            </Text>
           </TouchableOpacity>
         </BottomSheetView>
       </BottomSheet>
@@ -186,6 +218,15 @@ const styles = StyleSheet.create({
     paddingBottom: 96,
     width: '100%',
   },
+  loadingContainer: {
+    paddingTop: 32,
+    alignItems: 'center',
+  },
+  emptyStateText: {
+    color: '#698196',
+    textAlign: 'center',
+    marginTop: 24,
+  },
   shiftItem: {
     width: '100%',
     backgroundColor: '#ffffff',
@@ -211,10 +252,18 @@ const styles = StyleSheet.create({
   shiftBody: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  shiftProjectContainer: {
+    width: '45%',
+    gap: 4,
+  },
+  projectInlineText: {
+    color: '#052D50',
+    fontWeight: '600',
   },
   locationText: {
     color: '#052D50',
-    width: '35%',
   },
   timeContainer: {
     gap: 4,
@@ -233,6 +282,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   bottomSheetBackground: {
     backgroundColor: '#F5F8FA',

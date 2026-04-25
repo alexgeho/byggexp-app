@@ -4,22 +4,11 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 const WORK_DAY_DURATION = 8 * 60 * 60 * 1000;
 
 export const useTimer = () => {
-  // Total elapsed time in milliseconds
   const [timeElapsed, setTimeElapsed] = useState(0);
-  
-  // Whether the timer is actively counting
   const [isRunning, setIsRunning] = useState(false);
-  
-  // Whether the timer is paused (started but stopped temporarily)
   const [isPaused, setIsPaused] = useState(false);
-  
-  // Reference to the interval so we can clear it
   const intervalRef = useRef(null);
-  
-  // Timestamp when the current run segment started
-  const startTimeRef = useRef(null);
-  
-  // Total time accumulated from previous run segments (before pauses)
+  const lastResumedAtRef = useRef(null);
   const accumulatedRef = useRef(0);
 
   // Converts milliseconds to { hours, minutes, seconds } strings
@@ -36,63 +25,81 @@ export const useTimer = () => {
     };
   }, []);
 
-  // Returns a progress value from 0 to 10 based on elapsed vs work day duration
   const progress = useCallback(() => {
     const percentage = timeElapsed / WORK_DAY_DURATION;
     return Math.min(10, Math.max(0, Math.ceil(percentage * 10)));
   }, [timeElapsed]);
 
-  // Starts or resumes the timer
-  const start = useCallback(() => {
-    if (isRunning) return;
-
-    setIsRunning(true);
-    setIsPaused(false);
-    
-    // Record when this segment started
-    startTimeRef.current = Date.now();
-
-    // Tick every second: elapsed = accumulated + current segment duration
-    intervalRef.current = setInterval(() => {
-      const elapsed = accumulatedRef.current + (Date.now() - startTimeRef.current);
-      setTimeElapsed(elapsed);
-    }, 1000);
-  }, [isRunning]);
-
-  // Pauses the timer and saves accumulated time
-  const pause = useCallback(() => {
+  const clearTimer = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = undefined;
     }
-    
-    // Save how much time has passed in this segment
-    accumulatedRef.current += Date.now() - startTimeRef.current;
-    setIsPaused(true);
-    setIsRunning(false);
   }, []);
 
-  // Resets the timer to zero
-  const reset = useCallback(() => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = undefined;
+  const startInterval = useCallback(() => {
+    if (!lastResumedAtRef.current) {
+      return;
     }
+
+    intervalRef.current = setInterval(() => {
+      const elapsed = accumulatedRef.current + (Date.now() - lastResumedAtRef.current);
+      setTimeElapsed(elapsed);
+    }, 1000);
+  }, []);
+
+  const sync = useCallback((shift) => {
+    clearTimer();
+
+    if (!shift) {
+      accumulatedRef.current = 0;
+      lastResumedAtRef.current = null;
+      setTimeElapsed(0);
+      setIsRunning(false);
+      setIsPaused(false);
+      return;
+    }
+
+    const baseDuration = shift.storedDurationMs ?? shift.durationMs ?? 0;
+    accumulatedRef.current = baseDuration;
+
+    if (shift.status === 'active' && shift.lastResumedAt) {
+      lastResumedAtRef.current = new Date(shift.lastResumedAt).getTime();
+      setIsRunning(true);
+      setIsPaused(false);
+      setTimeElapsed(baseDuration + Math.max(0, Date.now() - lastResumedAtRef.current));
+      startInterval();
+      return;
+    }
+
+    lastResumedAtRef.current = null;
+    setTimeElapsed(shift.durationMs ?? baseDuration);
+    setIsRunning(false);
+    setIsPaused(shift.status === 'paused');
+  }, [clearTimer, startInterval]);
+
+  const start = useCallback((shift) => {
+    sync(shift);
+  }, [sync]);
+
+  const pause = useCallback((shift) => {
+    sync(shift);
+  }, [sync]);
+
+  const reset = useCallback(() => {
+    clearTimer();
     setIsRunning(false);
     setIsPaused(false);
     setTimeElapsed(0);
     accumulatedRef.current = 0;
-    startTimeRef.current = null;
-  }, []);
+    lastResumedAtRef.current = null;
+  }, [clearTimer]);
 
-  // Cleanup interval on component unmount
   useEffect(() => {
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
+      clearTimer();
     };
-  }, []);
+  }, [clearTimer]);
 
   return {
     timeElapsed,
@@ -102,6 +109,7 @@ export const useTimer = () => {
     progress: progress(),
     start,
     pause,
+    sync,
     reset,
   };
 };

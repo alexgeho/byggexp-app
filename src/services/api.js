@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getToken, saveToken, removeToken, getRefreshToken, saveRefreshToken, removeRefreshToken } from '../utils/storage';
 
-const API_BASE_URL =
+export const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '') ||
   'https://api.byggexp.se';
 
