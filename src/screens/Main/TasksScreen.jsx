@@ -140,6 +140,7 @@ export default function TasksScreen() {
                     key={task._id || `${project._id}-${index}`}
                     style={styles.taskItem}
                     activeOpacity={0.85}
+                    onPress={() => navigation.navigate('Task', { task, project })}
                   >
                     <Text style={styles.taskTitle}>{task.taskTitle || 'Untitled task'}</Text>
                     {!!task.taskDescription && (

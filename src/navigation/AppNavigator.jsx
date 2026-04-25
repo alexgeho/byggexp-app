@@ -12,6 +12,7 @@ import HistoryScreen from '../screens/Main/History/HistoryScreen';
 import MenuScreen from '../screens/Menu/MenuScreen';
 import CreateProjectScreen from '../screens/Main/Project/CreateProjectScreen';
 import CreateTaskScreen from '../screens/Main/Project/CreateTaskScreen';
+import TaskScreen from '../screens/Main/Project/TaskScreen';
 import { MyAccount } from '../screens/Menu/MyAccount';
 import GroupChatScreen from '../screens/Main/Chat/GroupChatScreen';
 import { ProjectScreen } from '../screens/Main/Project/ProjectScreen';
@@ -65,6 +66,7 @@ export default function AppNavigator() {
             <Stack.Screen name='SingleChat' component={SingleChatScreen} />
             <Stack.Screen name='Projects' component={ProjectsScreen} />
             <Stack.Screen name='Project' component={ProjectScreen} />
+            <Stack.Screen name='Task' component={TaskScreen} />
             <Stack.Screen name='ShiftHistory' component={ShiftHistory} />
             <Stack.Screen
               name='CreateProject'

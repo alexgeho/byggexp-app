@@ -248,7 +248,12 @@ export const ProjectScreen = () => {
         {modal === 'Tasks' && (
           tasks.length > 0 ? (
             tasks.map((task) => (
-              <View key={task._id || task.id || task.taskTitle} style={styles.taskItem}>
+              <TouchableOpacity
+                key={task._id || task.id || task.taskTitle}
+                style={styles.taskItem}
+                activeOpacity={0.85}
+                onPress={() => navigation.navigate('Task', { task, project })}
+              >
                 <Text style={styles.taskTitle}>{task.taskTitle || 'Untitled task'}</Text>
                 <Text style={styles.taskDescription}>
                   {task.taskDescription || 'No description provided.'}
@@ -259,7 +264,7 @@ export const ProjectScreen = () => {
                     <Text style={styles.dateText}>{formatDate(task.dueDate, true)}</Text>
                   </View>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))
           ) : (
             <View style={styles.emptyState}>
