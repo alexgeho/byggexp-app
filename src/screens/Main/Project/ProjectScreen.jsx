@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import { GlassBackButton } from '../../../components/common/GlassBackButton/GlassBackButton';
 import { BottomBar } from '../../../components/BottomBar';
 import AuthContext from '../../../contexts/AuthContext';
-import { projectService } from '../../../services';
+import { chatService, projectService } from '../../../services';
 
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '') ||
@@ -113,6 +113,7 @@ export const ProjectScreen = () => {
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [chatActionLoading, setChatActionLoading] = useState('');
   const bottomSheetRef = useRef(null);
 
   const fetchProject = useCallback(async () => {
@@ -175,6 +176,48 @@ export const ProjectScreen = () => {
       : []
   ), [project?.workers]);
   const canCreateTasks = ['superadmin', 'companyAdmin', 'projectAdmin'].includes(user?.role);
+
+  const handleOpenPersonalChat = async () => {
+    const participantId = selectedWorker?._id || selectedWorker?.id;
+
+    if (!participantId) {
+      return;
+    }
+
+    try {
+      setChatActionLoading('direct');
+      const chat = await chatService.getOrCreateDirect(participantId);
+      bottomSheetRef.current?.close();
+      setSelectedWorker(null);
+      navigation.navigate('SingleChat', { chatId: chat._id, initialChat: chat });
+    } catch (chatError) {
+      console.error('Failed to open personal chat:', chatError);
+      const message = chatError?.response?.data?.message || 'Please try again later.';
+      Alert.alert('Unable to open chat', message);
+    } finally {
+      setChatActionLoading('');
+    }
+  };
+
+  const handleOpenProjectGroupChat = async () => {
+    if (!id) {
+      return;
+    }
+
+    try {
+      setChatActionLoading('group');
+      const chat = await chatService.getOrCreateProjectGroup(id, project?.name);
+      bottomSheetRef.current?.close();
+      setSelectedWorker(null);
+      navigation.navigate('GroupChat', { chatId: chat._id, initialChat: chat });
+    } catch (chatError) {
+      console.error('Failed to open project chat:', chatError);
+      const message = chatError?.response?.data?.message || 'Please try again later.';
+      Alert.alert('Unable to open group chat', message);
+    } finally {
+      setChatActionLoading('');
+    }
+  };
 
   const handleOpenDocument = async (documentUrl) => {
     if (!documentUrl) {
@@ -373,13 +416,25 @@ export const ProjectScreen = () => {
                 <Image style={styles.optionArrow} source={require('../../../assets/Arrow-right.png')} />
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => navigation.navigate('SingleChat')} style={styles.modalOption}>
-                <Text style={styles.optionText}>Personal chat</Text>
+              <TouchableOpacity
+                onPress={handleOpenPersonalChat}
+                style={styles.modalOption}
+                disabled={chatActionLoading === 'direct'}
+              >
+                <Text style={styles.optionText}>
+                  {chatActionLoading === 'direct' ? 'Opening personal chat...' : 'Personal chat'}
+                </Text>
                 <Image style={styles.optionArrow} source={require('../../../assets/Arrow-right.png')} />
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => navigation.navigate('GroupChat')} style={[styles.modalOption, styles.addGroupChat]}>
-                <Text style={[styles.optionText, styles.addGroupChatText]}>Add to group chat</Text>
+              <TouchableOpacity
+                onPress={handleOpenProjectGroupChat}
+                style={[styles.modalOption, styles.addGroupChat]}
+                disabled={chatActionLoading === 'group'}
+              >
+                <Text style={[styles.optionText, styles.addGroupChatText]}>
+                  {chatActionLoading === 'group' ? 'Opening group chat...' : 'Project group chat'}
+                </Text>
                 <Image style={styles.optionArrow} source={require('../../../assets/Arrow-right.png')} />
               </TouchableOpacity>
             </>

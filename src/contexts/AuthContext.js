@@ -29,11 +29,19 @@ export const AuthProvider = ({ children }) => {
     loadTokenAndUser();
   }, []);
 
+  const updateStoredUser = async (userData) => {
+    setUser(userData);
+    await saveUser(userData);
+
+    if (userData?._id || userData?.id) {
+      setUserId(userData._id || userData.id);
+    }
+  };
+
   const fetchUserInfo = async (id) => {
     try {
       const userData = await userService.getInfo(id);
-      setUser(userData);
-      await saveUser(userData);
+      await updateStoredUser(userData);
       setIsAuthenticated(true);
     } catch (error) {
       console.error('AuthContext: Ошибка при получении данных пользователя:', error);
@@ -100,6 +108,8 @@ export const AuthProvider = ({ children }) => {
       selectedProject,
       setSelectedProject,
       setIsAuthenticated,
+      updateStoredUser,
+      fetchUserInfo,
       isWorker,
       isProjectAdmin,
       isCompanyAdmin,

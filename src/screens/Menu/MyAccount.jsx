@@ -1,8 +1,10 @@
-import React, { useState, useContext } from 'react';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { useTheme } from '../../theme/ThemeContext';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import AuthContext from '../../contexts/AuthContext';
 import {
+  ActivityIndicator,
+  Alert,
   Image,
   ScrollView,
   StyleSheet,
@@ -10,21 +12,73 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  Modal,
 } from 'react-native';
 import { BottomBar } from '../../components/BottomBar';
 import { GlassBackButton } from '../../components/common/GlassBackButton/GlassBackButton';
+import { userService } from '../../services';
+
+const getLanguageInputValue = (language) => {
+  if (!language) {
+    return '';
+  }
+
+  if (typeof language === 'string') {
+    return language;
+  }
+
+  if (typeof language === 'object' && !Array.isArray(language)) {
+    const values = Object.values(language).filter(
+      (value) => typeof value === 'string' && value.trim(),
+    );
+    return values[0] || '';
+  }
+
+  return '';
+};
+
+const buildLanguagePayload = (value, existingLanguage) => {
+  const trimmedValue = value.trim();
+
+  if (!trimmedValue) {
+    return {};
+  }
+
+  if (existingLanguage && typeof existingLanguage === 'object' && !Array.isArray(existingLanguage)) {
+    const firstKey = Object.keys(existingLanguage)[0] || 'primary';
+    return { [firstKey]: trimmedValue };
+  }
+
+  return { primary: trimmedValue };
+};
+
+const parseOptionalNumber = (value) => {
+  const normalized = String(value || '').replace(/\D/g, '');
+  return normalized ? parseInt(normalized, 10) : undefined;
+};
 
 export const MyAccount = () => {
   const { theme } = useTheme();
   const navigation = useNavigation();
-  const { user } = useContext(AuthContext);
+  const { user, userId, updateStoredUser } = useContext(AuthContext);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({
+    name: '',
+    profession: '',
+    email: '',
+    phoneAreaCode: '',
+    phoneNumber: '',
+    language: '',
+  });
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const profileId = userId || user?._id || user?.id || null;
+  const activeRole = profile?.role || user?.role;
 
   const getRoleInfo = () => {
-    switch (user?.role) {
+    switch (activeRole) {
+      case 'superadmin':
+        return { title: 'Super Admin', icon: require('../../assets/Account.png'), color: '#9C27B0' };
       case 'companyAdmin':
         return { title: 'Company Admin', icon: require('../../assets/About.png'), color: '#009688' };
       case 'projectAdmin':
@@ -32,167 +86,282 @@ export const MyAccount = () => {
       case 'worker':
         return { title: 'Worker', icon: require('../../assets/Tasks.png'), color: '#00C853' };
       default:
-        return { title: 'User', icon: require('../../assets/Account.png'), color: '#9C27B0' };
+        return { title: activeRole || 'Unknown role', icon: require('../../assets/Account.png'), color: '#9C27B0' };
     }
   };
-  
-  const roleInfo = getRoleInfo();
 
-  const openModal = (imageSource) => {
-    setSelectedImage(imageSource);
-    setModalVisible(true);
+  const roleInfo = useMemo(() => getRoleInfo(), [activeRole]);
+
+  const applyProfileToForm = useCallback((userData) => {
+    setForm({
+      name: userData?.name || '',
+      profession: userData?.profession || '',
+      email: userData?.email || '',
+      phoneAreaCode: userData?.phoneAreaCode ? String(userData.phoneAreaCode) : '',
+      phoneNumber: userData?.phoneNumber ? String(userData.phoneNumber) : '',
+      language: getLanguageInputValue(userData?.language),
+    });
+  }, []);
+
+  const loadProfile = useCallback(async () => {
+    if (!profileId) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const userData = await userService.getById(profileId);
+      setProfile(userData);
+      applyProfileToForm(userData);
+    } catch (error) {
+      console.error('Failed to load account:', error);
+      Alert.alert('Unable to load account', 'Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  }, [applyProfileToForm, profileId]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadProfile();
+    }, [loadProfile]),
+  );
+
+  const handleChange = (field, value) => {
+    setForm((previous) => ({
+      ...previous,
+      [field]: value,
+    }));
   };
 
-  const closeModal = () => {
-    setModalVisible(false);
-    setSelectedImage(null);
+  const handleNotAvailableYet = () => {
+    Alert.alert('Not available yet', 'Verify and document actions will be added later.');
   };
 
-  const handleDownload = () => {
-    console.log('Downloading image...');
+  const handleSave = async () => {
+    if (!profileId) {
+      Alert.alert('Unable to save', 'User id is missing.');
+      return;
+    }
+
+    const trimmedName = form.name.trim();
+
+    if (!trimmedName) {
+      Alert.alert('Name required', 'Please enter your name.');
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const payload = {
+        name: trimmedName,
+        profession: form.profession.trim(),
+        language: buildLanguagePayload(form.language, profile?.language),
+      };
+      const phoneAreaCode = parseOptionalNumber(form.phoneAreaCode);
+      const phoneNumber = parseOptionalNumber(form.phoneNumber);
+
+      if (phoneAreaCode !== undefined) {
+        payload.phoneAreaCode = phoneAreaCode;
+      }
+
+      if (phoneNumber !== undefined) {
+        payload.phoneNumber = phoneNumber;
+      }
+
+      const updatedUser = await userService.update(profileId, payload);
+
+      setProfile(updatedUser);
+      applyProfileToForm(updatedUser);
+      await updateStoredUser({
+        ...(user || {}),
+        ...updatedUser,
+        id: updatedUser?._id || updatedUser?.id || profileId,
+      });
+      Alert.alert('Saved', 'Your account has been updated.');
+    } catch (error) {
+      console.error('Failed to update account:', error);
+      Alert.alert(
+        'Unable to save',
+        error?.response?.data?.message || 'Please try again later.',
+      );
+    } finally {
+      setSaving(false);
+    }
   };
+
+  const documents = Array.isArray(profile?.additionalDocuments)
+    ? profile.additionalDocuments
+    : [];
+
+  if (loading) {
+    return (
+      <View style={styles.centeredContainer}>
+        <ActivityIndicator size="large" color="#0785F4" />
+        <Text style={styles.statusText}>Loading account...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <GlassBackButton onPress={() => navigation.goBack()} iconSource={require('../../assets/Arrow-left.png')} />
         <Text style={[styles.headerTitle, { fontFamily: theme.text.fontFamily['semiBold'] }]}>
-          Create project
+          My account
         </Text>
         <View style={styles.placeholder} />
       </View>
 
-      <View style={styles.avatarContainer}>
-        <View style={styles.avatarWrapper}>
-          <Image
-            style={styles.avatar}
-            source={require('../../assets/Avatar.png')}
-          />
-          <TouchableOpacity style={styles.editAvatarButton}>
+      <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
+        <View style={styles.avatarContainer}>
+          <View style={styles.avatarWrapper}>
             <Image
-              style={styles.editAvatarIcon}
-              source={require('../../assets/EditAvatar.png')}
+              style={styles.avatar}
+              source={require('../../assets/Avatar.png')}
             />
-          </TouchableOpacity>
-        </View>
-        {/* Бейдж с ролью */}
-        <View style={[styles.roleBadgeLarge, { backgroundColor: roleInfo.color + '26' }]}>
-          <Image style={styles.roleBadgeIcon} source={roleInfo.icon} />
-          <Text style={[styles.roleBadgeText, { color: roleInfo.color }]}>{roleInfo.title}</Text>
-        </View>
-      </View>
-
-      <View style={styles.inputContainer}>
-        <View style={styles.inputLabelRow}>
-          <Text style={styles.inputLabel}>Your name</Text>
-          <Text style={styles.requiredAsterisk}>*</Text>
-        </View>
-        <TextInput style={styles.textInput} placeholder="type..." defaultValue={user?.name || ''} />
-      </View>
-
-      <View style={styles.rowContainer}>
-        <View style={styles.areaCodeContainer}>
-          <View style={styles.inputLabelRow}>
-            <Text style={styles.inputLabel}>Area code</Text>
-          </View>
-          <TextInput style={styles.textInput} placeholder="type..." />
-        </View>
-        <View style={styles.phoneContainer}>
-          <View style={styles.inputLabelRow}>
-            <Text style={styles.inputLabel}>Phone</Text>
-          </View>
-          <TextInput style={styles.textInput} placeholder="type..." />
-        </View>
-      </View>
-
-      <View style={styles.inputContainer}>
-        <View style={styles.inputLabelRow}>
-          <Text style={styles.inputLabel}>Language</Text>
-        </View>
-        <TextInput style={styles.textInput} placeholder="type..." />
-      </View>
-
-      <View style={styles.verifyRow}>
-        <View style={styles.verifyTextContainer}>
-          <Text style={styles.verifyText}>
-            Verify your email and phone to access other companies. Learn more
-          </Text>
-        </View>
-        <TouchableOpacity style={styles.verifyButton}>
-          <Text style={styles.verifyButtonText}>Verify</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.documentsContainer}>
-        <Text style={styles.documentsLabel}>Additional Documents</Text>
-        <TouchableOpacity style={styles.addButton}>
-          <Image style={styles.addIcon} source={require('../../assets/PlusBlack.png')} />
-        </TouchableOpacity>
-        <ScrollView
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          style={styles.documentsScroll}
-          contentContainerStyle={styles.documentsScrollContent}
-        >
-          {[1, 2, 3, 4, 5].map((item, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.documentImageWrapper}
-              onPress={() => openModal(require('../../assets/DocPhoto.png'))}
-            >
+            <TouchableOpacity style={styles.editAvatarButton} onPress={handleNotAvailableYet}>
               <Image
-                style={styles.documentImage}
-                source={require('../../assets/DocPhoto.png')}
+                style={styles.editAvatarIcon}
+                source={require('../../assets/EditAvatar.png')}
               />
             </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
+          </View>
+          <View style={[styles.roleBadgeLarge, { backgroundColor: roleInfo.color + '26' }]}>
+            <Image style={styles.roleBadgeIcon} source={roleInfo.icon} />
+            <Text style={[styles.roleBadgeText, { color: roleInfo.color }]}>{roleInfo.title}</Text>
+          </View>
+        </View>
+
+        <View style={styles.inputContainer}>
+          <View style={styles.inputLabelRow}>
+            <Text style={styles.inputLabel}>Your name</Text>
+            <Text style={styles.requiredAsterisk}>*</Text>
+          </View>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Type..."
+            value={form.name}
+            onChangeText={(value) => handleChange('name', value)}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <View style={styles.inputLabelRow}>
+            <Text style={styles.inputLabel}>Role</Text>
+          </View>
+          <TextInput
+            style={[styles.textInput, styles.readOnlyInput]}
+            value={roleInfo.title}
+            editable={false}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <View style={styles.inputLabelRow}>
+            <Text style={styles.inputLabel}>Email</Text>
+          </View>
+          <TextInput
+            style={[styles.textInput, styles.readOnlyInput]}
+            value={form.email}
+            editable={false}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <View style={styles.inputLabelRow}>
+            <Text style={styles.inputLabel}>Profession</Text>
+          </View>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Type..."
+            value={form.profession}
+            onChangeText={(value) => handleChange('profession', value)}
+          />
+        </View>
+
+        <View style={styles.rowContainer}>
+          <View style={styles.areaCodeContainer}>
+            <View style={styles.inputLabelRow}>
+              <Text style={styles.inputLabel}>Area code</Text>
+            </View>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Type..."
+              value={form.phoneAreaCode}
+              onChangeText={(value) => handleChange('phoneAreaCode', value)}
+              keyboardType="phone-pad"
+            />
+          </View>
+          <View style={styles.phoneContainer}>
+            <View style={styles.inputLabelRow}>
+              <Text style={styles.inputLabel}>Phone</Text>
+            </View>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Type..."
+              value={form.phoneNumber}
+              onChangeText={(value) => handleChange('phoneNumber', value)}
+              keyboardType="phone-pad"
+            />
+          </View>
+        </View>
+
+        <View style={styles.inputContainer}>
+          <View style={styles.inputLabelRow}>
+            <Text style={styles.inputLabel}>Language</Text>
+          </View>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Type..."
+            value={form.language}
+            onChangeText={(value) => handleChange('language', value)}
+          />
+        </View>
+
+        <View style={styles.documentsContainer}>
+          <Text style={styles.documentsLabel}>Additional documents</Text>
+          <TouchableOpacity style={styles.addButton} onPress={handleNotAvailableYet}>
+            <Image style={styles.addIcon} source={require('../../assets/PlusBlack.png')} />
+          </TouchableOpacity>
+          {documents.length ? (
+            <ScrollView
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              style={styles.documentsScroll}
+              contentContainerStyle={styles.documentsScrollContent}
+            >
+              {documents.map((document, index) => (
+                <TouchableOpacity
+                  key={`${document}-${index}`}
+                  style={styles.documentImageWrapper}
+                  onPress={handleNotAvailableYet}
+                >
+                  <Image
+                    style={styles.documentImage}
+                    source={require('../../assets/DocPhoto.png')}
+                  />
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          ) : (
+            <Text style={styles.emptyDocumentsText}>No additional documents yet.</Text>
+          )}
+        </View>
+      </ScrollView>
 
       <BottomBar
         onLeftPress={() => navigation.navigate('Main')}
         onRightPress={() => navigation.navigate('Menu')}
-        onAddPress={() => navigation.navigate('CreateProject')}
-        renderAddContent={() => <Text style={styles.logoutButtonText}>Log out</Text>}
+        onAddPress={handleSave}
+        addDisabled={saving}
+        renderAddContent={() => (
+          saving
+            ? <ActivityIndicator color="#ffffff" />
+            : <Text style={styles.saveButtonText}>Save</Text>
+        )}
       />
-
-      <Modal
-        visible={modalVisible}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={closeModal}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <TouchableOpacity onPress={handleDownload} style={styles.modalButton}>
-                <Image
-                  style={styles.modalIcon}
-                  source={require('../../assets/Download.png')}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={closeModal} style={styles.modalButton}>
-                <Image
-                  style={styles.modalIcon}
-                  source={require('../../assets/Close.png')}
-                />
-              </TouchableOpacity>
-            </View>
-
-            {selectedImage && (
-              <Image
-                style={styles.modalImage}
-                source={selectedImage}
-                resizeMode="contain"
-              />
-            )}
-
-            <TouchableOpacity style={styles.scanButton}>
-              <Text style={styles.scanButtonText}>Scan ID Card</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 };
@@ -200,13 +369,22 @@ export const MyAccount = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
     padding: 12,
     paddingTop: 48,
     paddingBottom: 48,
     gap: 12,
     backgroundColor: '#EEF5FB',
+  },
+  centeredContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+    backgroundColor: '#EEF5FB',
+  },
+  statusText: {
+    marginTop: 12,
+    color: '#698196',
   },
   header: {
     width: '100%',
@@ -235,6 +413,14 @@ const styles = StyleSheet.create({
   },
   placeholder: {
     width: 36,
+  },
+  scrollContainer: {
+    flex: 1,
+    width: '100%',
+  },
+  scrollContent: {
+    paddingBottom: 120,
+    gap: 12,
   },
   avatarContainer: {
     width: '100%',
@@ -310,6 +496,13 @@ const styles = StyleSheet.create({
     color: '#ff0000ff',
   },
   textInput: {
+    marginTop: 6,
+    color: '#052D50',
+    fontSize: 16,
+    paddingVertical: 4,
+  },
+  readOnlyInput: {
+    color: '#698196',
   },
   rowContainer: {
     width: '100%',
@@ -342,40 +535,11 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 2,
   },
-  verifyRow: {
-    width: '100%',
-    flexDirection: 'row',
-    gap: 12,
-  },
-  verifyTextContainer: {
-    width: '70%',
-    flexWrap: 'wrap',
-  },
-  verifyText: {
-    color: '#052D5050',
-  },
-  verifyButton: {
-    flex: 1,
-    padding: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#2582D91A',
-    borderRadius: 8,
-    shadowColor: '#2582D91A',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.392,
-    shadowRadius: 10,
-    elevation: 2,
-  },
-  verifyButtonText: {
-    color: '#2582D9',
-  },
   documentsContainer: {
     width: '100%',
     padding: 12,
     backgroundColor: '#ffffff',
     borderRadius: 12,
-    marginBottom: 96,
     gap: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 0 },
@@ -412,6 +576,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   documentsScrollContent: {
+    paddingTop: 8,
   },
   documentImageWrapper: {
     marginRight: 12,
@@ -422,63 +587,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     resizeMode: 'contain',
   },
-  logoutButtonText: {
-    color: '#ffffff',
+  emptyDocumentsText: {
+    color: '#698196',
+    marginTop: 4,
   },
-
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    width: '90%',
-    maxHeight: '80%',
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 16,
-    alignItems: 'center',
-  },
-  modalHeader: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: 16,
-    marginBottom: 16,
-  },
-  modalButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#f0f0f0',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalIcon: {
-    width: 20,
-    height: 20,
-  },
-  modalImage: {
-    width: '100%',
-    height: 300,
-    borderRadius: 12,
-    marginBottom: 16,
-  },
-  scanButton: {
-    width: '100%',
-    paddingVertical: 12,
-    backgroundColor: '#0091FF',
-    borderRadius: 12,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 7,
-    elevation: 4,
-    boxShadow: '0px 2px 7px 0px rgba(0, 0, 0, 0.25)',
-  },
-  scanButtonText: {
+  saveButtonText: {
     color: '#ffffff',
     fontSize: 16,
     fontWeight: 'bold',
