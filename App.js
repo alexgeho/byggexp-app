@@ -6,6 +6,7 @@ import * as Font from 'expo-font';
 import AppNavigator from './src/navigation/AppNavigator';
 import { AuthProvider } from './src/contexts/AuthContext';
 import { ThemeProvider } from './src/theme/ThemeContext';
+import NotificationBootstrap from './src/components/NotificationBootstrap';
 
 const defaultTextStyle = { fontFamily: 'DMSans-Regular' };
 
@@ -59,6 +60,7 @@ export default function App() {
       <ThemeProvider>
         <AuthProvider>
           <SafeAreaProvider>
+            <NotificationBootstrap />
             <AppNavigator />
           </SafeAreaProvider>
         </AuthProvider>

@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect } from 'react';
 import { saveToken, saveUser, getUser, removeToken, removeUser, saveRefreshToken, removeRefreshToken } from '../utils/storage';
 import { authService, userService } from '../services';
 import { jwtDecode } from 'jwt-decode';
+import { unregisterPushToken } from '../services/notifications.service';
 
 const AuthContext = createContext();
 
@@ -69,6 +70,9 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     await authService.logout();
+    await unregisterPushToken().catch((error) => {
+      console.error('AuthContext: Failed to unregister push token:', error);
+    });
     await removeToken();
     await removeRefreshToken();
     await removeUser();

@@ -22,6 +22,8 @@ import { ShiftHistory } from '../screens/Main/Project/ShiftHistory';
 import SingleChatScreen from '../screens/Main/Chat/SingleChatScreen';
 import AuthContext from '../contexts/AuthContext';
 import { useTheme } from '../theme/ThemeContext';
+import { navigationRef } from './navigationRef';
+import { flushPendingNotificationNavigation } from '../services/notifications.service';
 
 const Stack = createNativeStackNavigator();
 
@@ -49,7 +51,11 @@ export default function AppNavigator() {
   };
 
   return (
-    <NavigationContainer theme={navigationTheme}>
+    <NavigationContainer
+      ref={navigationRef}
+      theme={navigationTheme}
+      onReady={flushPendingNotificationNavigation}
+    >
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
