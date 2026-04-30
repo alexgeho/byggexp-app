@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, ActivityIn
 import { useTheme } from '../../../theme/ThemeContext';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { GlassBackButton } from '../../../components/common/GlassBackButton/GlassBackButton';
+import { BottomBar } from '../../../components/BottomBar';
 import { shiftService } from '../../../services';
 import {
   formatDuration,
@@ -234,6 +235,12 @@ export default function HistoryScreen() {
         <Text style={styles.exportButtonText}>Export current period</Text>
       </TouchableOpacity>
 
+      <BottomBar
+        onLeftPress={() => navigation.navigate('Main')}
+        onRightPress={() => navigation.navigate('Menu')}
+        showAddButton={false}
+      />
+
       <Modal
         visible={pickerVisible}
         transparent
@@ -464,6 +471,13 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 16,
     alignItems: 'center',
+    marginBottom: 110,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 7,
+    elevation: 4,
+    boxShadow: '0px 2px 7px 0px rgba(0, 0, 0, 0.25)',
   },
   exportButtonText: {
     color: '#ffffff',

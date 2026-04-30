@@ -131,7 +131,7 @@ export const SelectWorkers = () => {
       </View>
 
       <BottomBar
-        onLeftPress={() => navigation.navigate('Home')}
+        onLeftPress={() => navigation.navigate('Main')}
         onRightPress={() => navigation.navigate('Menu')}
         onAddPress={handleSaveWorkers}
         renderAddContent={() => (

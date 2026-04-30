@@ -1,11 +1,11 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
 import { useTheme } from '../../../theme/ThemeContext';
 import AuthContext from '../../../contexts/AuthContext';
 import { projectService } from '../../../services';
 import { GlassBackButton } from '../../../components/common/GlassBackButton/GlassBackButton';
+import { BottomBar } from '../../../components/BottomBar';
 
 export default function ProjectsScreen() {
   const navigation = useNavigation();
@@ -149,18 +149,12 @@ export default function ProjectsScreen() {
         )}
       </ScrollView>
 
-      {canManageProjects && (
-        <TouchableOpacity
-          onPress={() => navigation.navigate('CreateProject')}
-          style={styles.floatingAddButton}
-          activeOpacity={0.85}
-        >
-          <Svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <Path d="M9.62256 1V18.2449" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            <Path d="M1 9.56934H18.2449" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </Svg>
-        </TouchableOpacity>
-      )}
+      <BottomBar
+        onLeftPress={() => navigation.navigate('Main')}
+        onRightPress={() => navigation.navigate('Menu')}
+        showAddButton={canManageProjects}
+        onAddPress={() => navigation.navigate('CreateProject')}
+      />
     </View>
   );
 }
@@ -266,10 +260,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 20,
-    shadowColor: '#0091FF',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 7,
     elevation: 6,
+    boxShadow: '0px 2px 7px 0px rgba(0, 0, 0, 0.25)',
   },
 });

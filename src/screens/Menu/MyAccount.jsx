@@ -150,7 +150,7 @@ export const MyAccount = () => {
       </View>
 
       <BottomBar
-        onLeftPress={() => navigation.navigate('Home')}
+        onLeftPress={() => navigation.navigate('Main')}
         onRightPress={() => navigation.navigate('Menu')}
         onAddPress={() => navigation.navigate('CreateProject')}
         renderAddContent={() => <Text style={styles.logoutButtonText}>Log out</Text>}
@@ -471,6 +471,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#0091FF',
     borderRadius: 12,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 7,
+    elevation: 4,
+    boxShadow: '0px 2px 7px 0px rgba(0, 0, 0, 0.25)',
   },
   scanButtonText: {
     color: '#ffffff',

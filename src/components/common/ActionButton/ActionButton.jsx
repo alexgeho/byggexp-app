@@ -39,9 +39,14 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 50,
     alignItems: 'center',
-    boxShadow: '0 1px 8px #0091FF35',
-},
-text: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 7,
+    elevation: 4,
+    boxShadow: '0px 2px 7px 0px rgba(0, 0, 0, 0.25)',
+  },
+  text: {
     fontSize: 16,
     color: '#ffffff',
     textShadowColor: '#ffffff',

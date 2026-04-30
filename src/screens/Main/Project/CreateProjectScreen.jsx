@@ -14,6 +14,7 @@ import AuthContext from '../../../contexts/AuthContext';
 import { projectService, userService, companyService } from '../../../services';
 import { GlassBackButton } from '../../../components/common/GlassBackButton/GlassBackButton';
 import { GlassView } from '../../../components/common/GlassView/GlassView';
+import { BottomBar } from '../../../components/BottomBar';
 
 const DEFAULT_REGION = {
     latitude: 59.3293,
@@ -887,7 +888,8 @@ export default function CreateProjectScreen() {
     }
 
     return (
-        <ScrollView style={[styles.container, {paddingTop: 48}]}>
+        <View style={styles.screen}>
+        <ScrollView style={styles.container} contentContainerStyle={styles.containerContent}>
             <View style={styles.header}>
                 <GlassBackButton backgroundColor={'rgb(253 253 253)'} tint={"light"} borderColor="#FFFFFF50" onPress={() => navigation.goBack()} iconSource={require('../../../assets/Arrow-left.png')} />
                 <Text style={[styles.headerTitle, { fontFamily: theme.text.fontFamily['semiBold'] }]}>Create project</Text>
@@ -1155,18 +1157,6 @@ export default function CreateProjectScreen() {
                 />
             </View>
 
-            <TouchableOpacity 
-                style={styles.createButton}
-                onPress={createProject}
-                disabled={saving}
-            >
-                {saving ? (
-                    <ActivityIndicator size="small" color="#fff" />
-                ) : (
-                    <Text style={styles.createButtonText}>Create Project</Text>
-                )}
-            </TouchableOpacity>
-
             <SingleUserPickerModal
                 visible={showOwnersModal}
                 onClose={() => {
@@ -1291,14 +1281,34 @@ export default function CreateProjectScreen() {
                 </View>
             </Modal>
         </ScrollView>
+            <BottomBar
+                onLeftPress={() => navigation.navigate('Main')}
+                onRightPress={() => navigation.navigate('Menu')}
+                onAddPress={createProject}
+                addDisabled={saving}
+                renderAddContent={() => (
+                    saving
+                        ? <ActivityIndicator size="small" color="#FFFFFF" />
+                        : <Icon name="check" size={28} color="#FFFFFF" />
+                )}
+            />
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
+    screen: {
+        flex: 1,
+        backgroundColor: '#EEF5FB',
+    },
     container: {
         flex: 1,
         backgroundColor: '#EEF5FB',
         paddingHorizontal: 12,
+    },
+    containerContent: {
+        paddingTop: 48,
+        paddingBottom: 140,
     },
     loadingContainer: {
         flex: 1,
@@ -1633,6 +1643,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         paddingHorizontal: 18,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 7,
+        elevation: 4,
+        boxShadow: '0px 2px 7px 0px rgba(0, 0, 0, 0.25)',
     },
     datePickerSecondaryButtonText: {
         color: '#FFFFFF',
@@ -1751,6 +1767,12 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         alignItems: 'center',
         marginBottom: 100,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 7,
+        elevation: 4,
+        boxShadow: '0px 2px 7px 0px rgba(0, 0, 0, 0.25)',
     },
     createButtonText: {
         color: '#ffffff',
@@ -1798,6 +1820,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#0091FF',
         borderRadius: 8,
         alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 7,
+        elevation: 4,
+        boxShadow: '0px 2px 7px 0px rgba(0, 0, 0, 0.25)',
     },
     closeButtonText: {
         color: '#ffffff',

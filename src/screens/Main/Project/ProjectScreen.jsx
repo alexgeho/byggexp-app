@@ -3,8 +3,8 @@ import React, { useCallback, useContext, useMemo, useRef, useState } from 'react
 import { ActivityIndicator, Alert, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import Icon from 'react-native-vector-icons/Feather';
-import Svg, { Path } from 'react-native-svg';
 import { GlassBackButton } from '../../../components/common/GlassBackButton/GlassBackButton';
+import { BottomBar } from '../../../components/BottomBar';
 import AuthContext from '../../../contexts/AuthContext';
 import { projectService } from '../../../services';
 
@@ -344,18 +344,12 @@ export const ProjectScreen = () => {
         )}
       </ScrollView>
 
-      {modal === 'Tasks' && canCreateTasks ? (
-        <TouchableOpacity
-          onPress={() => navigation.navigate('CreateTask', { projectId: id, projectName: project?.name })}
-          style={styles.floatingAddButton}
-          activeOpacity={0.85}
-        >
-          <Svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <Path d="M9.62256 1V18.2449" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            <Path d="M1 9.56934H18.2449" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </Svg>
-        </TouchableOpacity>
-      ) : null}
+      <BottomBar
+        onLeftPress={() => navigation.navigate('Main')}
+        onRightPress={() => navigation.navigate('Menu')}
+        showAddButton={modal === 'Tasks' && canCreateTasks}
+        onAddPress={() => navigation.navigate('CreateTask', { projectId: id, projectName: project?.name })}
+      />
 
       <BottomSheet
         ref={bottomSheetRef}
@@ -711,11 +705,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 20,
-    shadowColor: '#0091FF',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 7,
     elevation: 6,
+    boxShadow: '0px 2px 7px 0px rgba(0, 0, 0, 0.25)',
   },
 });
 

@@ -3,6 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { Alert, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { GlassBackButton } from '../../../components/common/GlassBackButton/GlassBackButton';
+import { BottomBar } from '../../../components/BottomBar';
 
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '') ||
@@ -290,6 +291,12 @@ export default function TaskScreen() {
           )
         ) : null}
       </ScrollView>
+
+      <BottomBar
+        onLeftPress={() => navigation.navigate('Main')}
+        onRightPress={() => navigation.navigate('Menu')}
+        showAddButton={false}
+      />
     </View>
   );
 }
@@ -356,7 +363,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     width: '100%',
-    paddingBottom: 32,
+    paddingBottom: 140,
   },
   groupCard: {
     backgroundColor: '#FFFFFF',

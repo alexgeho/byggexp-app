@@ -2,13 +2,12 @@ import React from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-export const MenuButton = ({ id, screen, title, color, icon }) => {
+export const MenuButton = ({ screen, title, color, icon, isLast = false }) => {
   const navigation = useNavigation();
 
   return <>
     <TouchableOpacity
-        key={id}
-        style={styles.menuItem}
+        style={[styles.menuItem, !isLast && styles.menuItemDivider]}
         onPress={() => navigation.navigate(screen ? screen : 'Menu')}
     >
         <View style={[styles.menuIconContainer, { backgroundColor: color }]}>
@@ -21,15 +20,17 @@ export const MenuButton = ({ id, screen, title, color, icon }) => {
 }
 
 const styles = StyleSheet.create({
-  
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f9f9f9',
-    borderRadius: 16,
-    paddingVertical: 12,
+    minHeight: 56,
+    backgroundColor: 'transparent',
+    paddingVertical: 10,
     paddingHorizontal: 16,
-    marginBottom: 8,
+  },
+  menuItemDivider: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(5, 45, 80, 0.08)',
   },
   menuIconContainer: {
     width: 32,
@@ -48,6 +49,7 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     color: '#052D50',
     fontSize: 16,
+    fontWeight: '500',
   },
   arrowIcon: {
     width: 16,

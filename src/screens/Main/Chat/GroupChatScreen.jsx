@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'rea
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { TextInput } from 'react-native';
 import { GlassBackButton } from '../../../components/common/GlassBackButton/GlassBackButton';
+import { BottomBar } from '../../../components/BottomBar';
 
 export default function GroupChatScreen() {
   const route = useRoute();
@@ -99,6 +100,12 @@ export default function GroupChatScreen() {
           )}
         </View>
       </View>
+      <BottomBar
+        onLeftPress={() => navigation.navigate('Main')}
+        onRightPress={() => navigation.navigate('Menu')}
+        showAddButton={false}
+        containerStyle={styles.bottomBarOffset}
+      />
     </View>
   );
 }
@@ -185,7 +192,7 @@ const styles = StyleSheet.create({
     zIndex: 0,
   },
   messagesContent: {
-    paddingBottom: 120,
+    paddingBottom: 220,
   },
   messageRow: {
     marginBottom: 12,
@@ -294,5 +301,8 @@ const styles = StyleSheet.create({
   voiceIcon: {
     width: 24,
     height: 24,
+  },
+  bottomBarOffset: {
+    bottom: 96,
   },
 });

@@ -3,6 +3,7 @@ import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, Touchabl
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { BottomBar } from '../../../components/BottomBar';
 import { shiftService } from '../../../services';
 import { formatDuration, formatShiftDate, resolveUploadUrl } from '../../../utils/shifts';
 
@@ -155,6 +156,11 @@ export default function CameraScreen() {
         <TouchableOpacity style={styles.actionButton} onPress={() => navigation.goBack()}>
           <Text style={styles.actionButtonText}>Back</Text>
         </TouchableOpacity>
+        <BottomBar
+          onLeftPress={() => navigation.navigate('Main')}
+          onRightPress={() => navigation.navigate('Menu')}
+          showAddButton={false}
+        />
       </View>
     );
   }
@@ -186,6 +192,11 @@ export default function CameraScreen() {
           <Text style={styles.emptyText}>No photos attached yet.</Text>
         )}
       </ScrollView>
+      <BottomBar
+        onLeftPress={() => navigation.navigate('Main')}
+        onRightPress={() => navigation.navigate('Menu')}
+        showAddButton={false}
+      />
     </View>
   );
 }
@@ -202,6 +213,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
+    paddingBottom: 140,
     backgroundColor: '#EEF5FB',
   },
   title: {
@@ -230,6 +242,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 7,
+    elevation: 4,
+    boxShadow: '0px 2px 7px 0px rgba(0, 0, 0, 0.25)',
   },
   secondaryButton: {
     borderRadius: 14,
@@ -252,7 +270,7 @@ const styles = StyleSheet.create({
   },
   gallery: {
     gap: 12,
-    paddingBottom: 32,
+    paddingBottom: 140,
   },
   photo: {
     width: '100%',

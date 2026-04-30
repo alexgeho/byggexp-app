@@ -103,7 +103,7 @@ export default function ChatListScreen() {
         </TouchableOpacity>
       </ScrollView>
       <BottomBar
-        onLeftPress={() => navigation.navigate('Home')}
+        onLeftPress={() => navigation.navigate('Main')}
         onRightPress={() => navigation.navigate('Menu')}
         onAddPress={() => navigation.navigate('CreateChat')}
       />

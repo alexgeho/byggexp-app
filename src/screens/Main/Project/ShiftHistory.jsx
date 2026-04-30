@@ -163,7 +163,7 @@ export const ShiftHistory = ({ route }) => {
       </BottomSheet>
 
       <BottomBar
-        onLeftPress={() => navigation.navigate('Home')}
+        onLeftPress={() => navigation.navigate('Main')}
         onRightPress={() => navigation.navigate('Menu')}
         onAddPress={openWorkerModal}
         showAddButton={canCreate || canViewAll}
@@ -391,6 +391,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 7,
+    elevation: 4,
+    boxShadow: '0px 2px 7px 0px rgba(0, 0, 0, 0.25)',
   },
   exportMainButtonText: {
     fontSize: 18,

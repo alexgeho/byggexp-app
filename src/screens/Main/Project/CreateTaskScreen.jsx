@@ -18,6 +18,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import Icon from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { GlassBackButton } from '../../../components/common/GlassBackButton/GlassBackButton';
+import { BottomBar } from '../../../components/BottomBar';
 import { projectService, taskService } from '../../../services';
 
 const DATE_PICKER_DISPLAY = Platform.OS === 'ios' ? 'inline' : 'calendar';
@@ -237,6 +238,7 @@ export default function CreateTaskScreen() {
   }
 
   return (
+    <View style={styles.container}>
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <View style={styles.header}>
         <GlassBackButton
@@ -401,14 +403,6 @@ export default function CreateTaskScreen() {
         </GroupRow>
       </GroupCard>
 
-      <TouchableOpacity
-        style={[styles.createButton, saving && styles.createButtonDisabled]}
-        onPress={createTask}
-        disabled={saving}
-      >
-        {saving ? <ActivityIndicator size="small" color="#FFFFFF" /> : <Text style={styles.createButtonText}>Create Task</Text>}
-      </TouchableOpacity>
-
       <DateFieldModal
         visible={showStartDatePicker}
         title="Start date"
@@ -424,6 +418,18 @@ export default function CreateTaskScreen() {
         onClose={() => setShowDueDatePicker(false)}
       />
     </ScrollView>
+      <BottomBar
+        onLeftPress={() => navigation.navigate('Main')}
+        onRightPress={() => navigation.navigate('Menu')}
+        onAddPress={createTask}
+        addDisabled={saving}
+        renderAddContent={() => (
+          saving
+            ? <ActivityIndicator size="small" color="#FFFFFF" />
+            : <Icon name="check" size={28} color="#FFFFFF" />
+        )}
+      />
+    </View>
   );
 }
 
@@ -435,7 +441,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     padding: 12,
     paddingTop: 48,
-    paddingBottom: 32,
+    paddingBottom: 140,
   },
   loadingContainer: {
     flex: 1,
@@ -585,6 +591,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#0091FF',
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 7,
+    elevation: 4,
+    boxShadow: '0px 2px 7px 0px rgba(0, 0, 0, 0.25)',
   },
   createButtonDisabled: {
     opacity: 0.7,
@@ -622,6 +634,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 14,
     backgroundColor: '#0091FF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 7,
+    elevation: 4,
+    boxShadow: '0px 2px 7px 0px rgba(0, 0, 0, 0.25)',
   },
   datePickerButtonText: {
     color: '#FFFFFF',

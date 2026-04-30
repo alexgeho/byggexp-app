@@ -83,23 +83,41 @@ export default function MenuScreen() {
         </View>
       )}
 
-      <ScrollView style={{paddingBottom: 96}}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.menuSection}>
             <Text style={styles.sectionTitle}>Main</Text>
-            {menuItems.map((item) => (
-              <MenuButton id={item.id} screen={item.screen ? item.screen : 'Menu'} title={item.title} color={item.color} icon={item.icon} />
-            ))}
+            <View style={styles.groupCard}>
+              {menuItems.map((item, index) => (
+                <MenuButton
+                  key={item.id}
+                  screen={item.screen ? item.screen : 'Menu'}
+                  title={item.title}
+                  color={item.color}
+                  icon={item.icon}
+                  isLast={index === menuItems.length - 1}
+                />
+              ))}
+            </View>
         </View>
 
         <View style={styles.settingsSection}>
             <Text style={styles.sectionTitle}>Settings</Text>
-            {settingsItems.map((item) => (
-              <MenuButton id={item.id} screen={item.screen ? item.screen : 'Menu'} title={item.title} color={item.color} icon={item.icon} />
-            ))}
+            <View style={styles.groupCard}>
+              {settingsItems.map((item, index) => (
+                <MenuButton
+                  key={item.id}
+                  screen={item.screen ? item.screen : 'Menu'}
+                  title={item.title}
+                  color={item.color}
+                  icon={item.icon}
+                  isLast={index === settingsItems.length - 1}
+                />
+              ))}
+            </View>
         </View>
       </ScrollView>
         <BottomBar
-          onLeftPress={() => navigation.navigate('Home')}
+          onLeftPress={() => navigation.navigate('Main')}
           onRightPress={() => navigation.navigate('Menu')}
           onAddPress={logout}
           renderAddContent={() => <Text style={styles.logoutButtonText}>Log out</Text>}
@@ -147,15 +165,26 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: '#698196',
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 13,
+    fontWeight: '600',
     marginBottom: 8,
+    marginTop: 8,
+    paddingHorizontal: 8,
   },
   menuSection: {
-    marginBottom: 24,
+    marginBottom: 16,
   },
   settingsSection: {
     marginBottom: 24,
+  },
+  scrollContent: {
+    paddingBottom: 120,
+  },
+  groupCard: {
+    width: '100%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    overflow: 'hidden',
   },
   menuItem: {
     flexDirection: 'row',

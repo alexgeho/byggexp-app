@@ -15,11 +15,15 @@ export const BottomBar = ({
   addIcon = DEFAULT_ADD_ICON,
   showAddButton = true,
   renderAddContent,
+  addDisabled = false,
+  containerStyle,
+  navButtonsStyle,
+  addButtonStyle,
 }) => {
   return (
-    <View style={styles.bottomBar}>
+    <View style={[styles.bottomBar, containerStyle]}>
       <GlassView
-        style={styles.navButtons}
+        style={[styles.navButtons, navButtonsStyle]}
         backgroundColor='rgba(238, 245, 251, 0.5)'
         borderColor='rgba(238, 245, 251, 0.5)'
         intensity={60}
@@ -33,7 +37,7 @@ export const BottomBar = ({
         </TouchableOpacity>
       </GlassView>
       {showAddButton && (
-        <TouchableOpacity onPress={onAddPress} style={styles.addProjectButton}>
+        <TouchableOpacity onPress={onAddPress} style={[styles.addProjectButton, addButtonStyle]} disabled={addDisabled}>
           {renderAddContent ? renderAddContent() : (
             <Image style={styles.addIcon} source={addIcon} />
           )}
@@ -83,11 +87,12 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#999',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.325,
-    shadowRadius: 10,
-    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 7,
+    elevation: 4,
+    boxShadow: '0px 2px 7px 0px rgba(0, 0, 0, 0.25)',
   },
   addIcon: {
     width: 24,
