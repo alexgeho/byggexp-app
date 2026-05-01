@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  Linking,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,9 +14,16 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from 'expo-image-picker';
+import Icon from 'react-native-vector-icons/Feather';
 import { BottomBar } from '../../components/BottomBar';
 import { GlassBackButton } from '../../components/common/GlassBackButton/GlassBackButton';
 import { userService } from '../../services';
+
+const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '') ||
+  'https://api.byggexp.se';
 
 const getLanguageInputValue = (language) => {
   if (!language) {
@@ -56,6 +64,60 @@ const parseOptionalNumber = (value) => {
   return normalized ? parseInt(normalized, 10) : undefined;
 };
 
+const resolveImageUrl = (value) => {
+  if (!value) {
+    return null;
+  }
+
+  if (value.startsWith('http://') || value.startsWith('https://')) {
+    return value;
+  }
+
+  return `${API_BASE_URL}${value.startsWith('/') ? value : `/${value}`}`;
+};
+
+const getDocumentName = (value, index) => {
+  if (!value) {
+    return `Document ${index + 1}`;
+  }
+
+  const parts = value.split('/');
+  return parts[parts.length - 1] || `Document ${index + 1}`;
+};
+
+const getFileExtension = (fileName = '') => {
+  const cleanName = fileName.split('?')[0];
+  const parts = cleanName.split('.');
+  return parts.length > 1 ? parts.pop().toUpperCase() : '';
+};
+
+const isImageDocument = (documentUrl) => {
+  const extension = getFileExtension(getDocumentName(documentUrl, 0)).toLowerCase();
+  return ['png', 'jpg', 'jpeg', 'webp', 'gif', 'bmp', 'heic'].includes(extension);
+};
+
+const getDocumentTypeMeta = (documentUrl) => {
+  const extension = getFileExtension(getDocumentName(documentUrl, 0));
+
+  if (isImageDocument(documentUrl)) {
+    return { icon: 'image', label: extension || 'IMAGE' };
+  }
+
+  if (extension === 'PDF') {
+    return { icon: 'file-text', label: 'PDF' };
+  }
+
+  if (['DOC', 'DOCX', 'TXT', 'RTF'].includes(extension)) {
+    return { icon: 'file-text', label: extension || 'DOC' };
+  }
+
+  if (['XLS', 'XLSX', 'CSV'].includes(extension)) {
+    return { icon: 'grid', label: extension || 'XLS' };
+  }
+
+  return { icon: 'file', label: extension || 'FILE' };
+};
+
 export const MyAccount = () => {
   const { theme } = useTheme();
   const navigation = useNavigation();
@@ -63,6 +125,7 @@ export const MyAccount = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [form, setForm] = useState({
     name: '',
     profession: '',
@@ -135,8 +198,57 @@ export const MyAccount = () => {
     }));
   };
 
-  const handleNotAvailableYet = () => {
-    Alert.alert('Not available yet', 'Verify and document actions will be added later.');
+  const handleChangeAvatar = async () => {
+    if (!profileId) {
+      Alert.alert('Unable to update avatar', 'User id is missing.');
+      return;
+    }
+
+    try {
+      setUploadingAvatar(true);
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (!permission.granted) {
+        Alert.alert('Permission required', 'Allow photo library access to change your avatar.');
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (result.canceled || !result.assets?.length) {
+        return;
+      }
+
+      const asset = result.assets[0];
+      const updatedUser = await userService.uploadAvatar(profileId, {
+        uri: asset.uri,
+        name: asset.fileName || asset.fileName || `avatar-${Date.now()}.jpg`,
+        mimeType: asset.mimeType || asset.type || 'image/jpeg',
+        type: asset.mimeType || asset.type || 'image/jpeg',
+      });
+
+      setProfile(updatedUser);
+      applyProfileToForm(updatedUser);
+      await updateStoredUser({
+        ...(user || {}),
+        ...updatedUser,
+        id: updatedUser?._id || updatedUser?.id || profileId,
+      });
+      Alert.alert('Saved', 'Avatar updated.');
+    } catch (error) {
+      console.error('Failed to update avatar:', error);
+      Alert.alert(
+        'Unable to update avatar',
+        error?.response?.data?.message || 'Please try again later.',
+      );
+    } finally {
+      setUploadingAvatar(false);
+    }
   };
 
   const handleSave = async () => {
@@ -191,9 +303,85 @@ export const MyAccount = () => {
     }
   };
 
+  const handleUploadDocuments = async () => {
+    if (!profileId) {
+      Alert.alert('Unable to upload', 'User id is missing.');
+      return;
+    }
+
+    const remainingSlots = 4 - documents.length;
+
+    if (remainingSlots <= 0) {
+      Alert.alert('Limit reached', 'You can upload up to 4 additional documents.');
+      return;
+    }
+
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        multiple: true,
+        copyToCacheDirectory: true,
+      });
+
+      if (result.canceled || !result.assets?.length) {
+        return;
+      }
+
+      if (result.assets.length > remainingSlots) {
+        Alert.alert(
+          'Too many files',
+          `You can upload ${remainingSlots} more ${remainingSlots === 1 ? 'document' : 'documents'}.`,
+        );
+        return;
+      }
+
+      const updatedUser = await userService.uploadDocuments(
+        profileId,
+        result.assets.map((asset, index) => ({
+          uri: asset.uri,
+          name: asset.name || `document-${Date.now()}-${index + 1}`,
+          mimeType: asset.mimeType || asset.type || 'application/octet-stream',
+          type: asset.mimeType || asset.type || 'application/octet-stream',
+        })),
+      );
+
+      setProfile(updatedUser);
+      applyProfileToForm(updatedUser);
+      await updateStoredUser({
+        ...(user || {}),
+        ...updatedUser,
+        id: updatedUser?._id || updatedUser?.id || profileId,
+      });
+      Alert.alert('Saved', 'Documents uploaded.');
+    } catch (error) {
+      console.error('Failed to upload documents:', error);
+      Alert.alert(
+        'Unable to upload documents',
+        error?.response?.data?.message || 'Please try again later.',
+      );
+    }
+  };
+
+  const handleOpenDocument = async (documentUrl) => {
+    const resolvedUrl = resolveImageUrl(documentUrl);
+
+    if (!resolvedUrl) {
+      Alert.alert('Document unavailable', 'This file does not have a valid link.');
+      return;
+    }
+
+    try {
+      await Linking.openURL(resolvedUrl);
+    } catch (error) {
+      console.error('Failed to open document:', error);
+      Alert.alert('Unable to open document', 'Please try again later.');
+    }
+  };
+
   const documents = Array.isArray(profile?.additionalDocuments)
     ? profile.additionalDocuments
     : [];
+
+  const avatarSource = resolveImageUrl(profile?.avatarUrl || user?.avatarUrl);
 
   if (loading) {
     return (
@@ -219,13 +407,21 @@ export const MyAccount = () => {
           <View style={styles.avatarWrapper}>
             <Image
               style={styles.avatar}
-              source={require('../../assets/Avatar.png')}
+              source={avatarSource ? { uri: avatarSource } : require('../../assets/Avatar.png')}
             />
-            <TouchableOpacity style={styles.editAvatarButton} onPress={handleNotAvailableYet}>
+            <TouchableOpacity
+              style={styles.editAvatarButton}
+              onPress={handleChangeAvatar}
+              disabled={uploadingAvatar}
+            >
+              {uploadingAvatar ? (
+                <ActivityIndicator size="small" color="#0091FF" />
+              ) : (
               <Image
                 style={styles.editAvatarIcon}
                 source={require('../../assets/EditAvatar.png')}
               />
+              )}
             </TouchableOpacity>
           </View>
           <View style={[styles.roleBadgeLarge, { backgroundColor: roleInfo.color + '26' }]}>
@@ -322,32 +518,42 @@ export const MyAccount = () => {
 
         <View style={styles.documentsContainer}>
           <Text style={styles.documentsLabel}>Additional documents</Text>
-          <TouchableOpacity style={styles.addButton} onPress={handleNotAvailableYet}>
+          <TouchableOpacity style={styles.addButton} onPress={handleUploadDocuments}>
             <Image style={styles.addIcon} source={require('../../assets/PlusBlack.png')} />
           </TouchableOpacity>
           {documents.length ? (
-            <ScrollView
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-              style={styles.documentsScroll}
-              contentContainerStyle={styles.documentsScrollContent}
-            >
-              {documents.map((document, index) => (
-                <TouchableOpacity
-                  key={`${document}-${index}`}
-                  style={styles.documentImageWrapper}
-                  onPress={handleNotAvailableYet}
-                >
-                  <Image
-                    style={styles.documentImage}
-                    source={require('../../assets/DocPhoto.png')}
-                  />
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+            <View style={styles.documentsGrid}>
+              {documents.map((document, index) => {
+                const typeMeta = getDocumentTypeMeta(document);
+                const imageDocument = isImageDocument(document);
+                const documentUri = resolveImageUrl(document);
+
+                return (
+                  <TouchableOpacity
+                    key={`${document}-${index}`}
+                    style={styles.documentCard}
+                    onPress={() => handleOpenDocument(document)}
+                    activeOpacity={0.85}
+                  >
+                    {imageDocument && documentUri ? (
+                      <Image source={{ uri: documentUri }} style={styles.documentImage} />
+                    ) : (
+                      <View style={styles.documentFileContent}>
+                        <Icon name={typeMeta.icon} size={18} color="#052D50" />
+                        <Text numberOfLines={2} style={styles.documentName}>
+                          {getDocumentName(document, index)}
+                        </Text>
+                        <Text style={styles.documentTypeBadge}>{typeMeta.label}</Text>
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           ) : (
             <Text style={styles.emptyDocumentsText}>No additional documents yet.</Text>
           )}
+          <Text style={styles.documentsHint}>{`${documents.length}/4 documents`}</Text>
         </View>
       </ScrollView>
 
@@ -572,23 +778,48 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
   },
-  documentsScroll: {
+  documentsGrid: {
     width: '100%',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 8,
   },
-  documentsScrollContent: {
-    paddingTop: 8,
-  },
-  documentImageWrapper: {
-    marginRight: 12,
+  documentCard: {
+    width: '23%',
+    height: 84,
+    backgroundColor: '#EFEFF0',
+    borderRadius: 12,
+    overflow: 'hidden',
   },
   documentImage: {
-    width: 78,
-    height: 97,
-    borderRadius: 12,
-    resizeMode: 'contain',
+    width: '100%',
+    height: '100%',
+  },
+  documentFileContent: {
+    flex: 1,
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    padding: 8,
+  },
+  documentName: {
+    color: '#052D50',
+    fontSize: 10,
+    lineHeight: 12,
+    fontWeight: '500',
+  },
+  documentTypeBadge: {
+    color: '#052D50',
+    fontSize: 10,
+    fontWeight: '700',
   },
   emptyDocumentsText: {
     color: '#698196',
+    marginTop: 4,
+  },
+  documentsHint: {
+    color: '#698196',
+    fontSize: 12,
     marginTop: 4,
   },
   saveButtonText: {

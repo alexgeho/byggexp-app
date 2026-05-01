@@ -8,10 +8,27 @@ import AuthContext from '../../contexts/AuthContext';
 import { BottomBar } from '../../components/BottomBar';
 import { GlassBackButton } from '../../components/common/GlassBackButton/GlassBackButton';
 
+const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '') ||
+  'https://api.byggexp.se';
+
+const resolveImageUrl = (value) => {
+  if (!value) {
+    return null;
+  }
+
+  if (value.startsWith('http://') || value.startsWith('https://')) {
+    return value;
+  }
+
+  return `${API_BASE_URL}${value.startsWith('/') ? value : `/${value}`}`;
+};
+
 export default function MenuScreen() {
   const navigation = useNavigation();
   const { theme } = useTheme();
   const { user, logout } = useContext(AuthContext);
+  const avatarSource = resolveImageUrl(user?.avatarUrl);
 
   const menuItems = useMemo(() => {
     const baseItems = [
@@ -69,7 +86,10 @@ export default function MenuScreen() {
 
       {user && (
         <View style={styles.userInfoContainer}>
-          <Image style={styles.userAvatar} source={require('../../assets/Avatar.png')} />
+          <Image
+            style={styles.userAvatar}
+            source={avatarSource ? { uri: avatarSource } : require('../../assets/Avatar.png')}
+          />
           <View style={styles.userInfo}>
             <Text style={[styles.userName, { fontFamily: theme.text.fontFamily['bold'] }]}>{user.name || 'User'}</Text>
             <View style={styles.roleBadge}>

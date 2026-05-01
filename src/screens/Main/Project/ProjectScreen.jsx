@@ -7,6 +7,7 @@ import { GlassBackButton } from '../../../components/common/GlassBackButton/Glas
 import { BottomBar } from '../../../components/BottomBar';
 import AuthContext from '../../../contexts/AuthContext';
 import { chatService, projectService } from '../../../services';
+import { resolveUploadUrl } from '../../../utils/shifts';
 
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '') ||
@@ -368,7 +369,14 @@ export const ProjectScreen = () => {
                 style={styles.workerItem}
                 onPress={() => openWorkerModal(worker)}
               >
-                <Image style={styles.workerAvatar} source={require('../../../assets/TasksAva.png')} />
+                <Image
+                  style={styles.workerAvatar}
+                  source={
+                    worker.avatarUrl
+                      ? { uri: resolveUploadUrl(worker.avatarUrl) }
+                      : require('../../../assets/TasksAva.png')
+                  }
+                />
                 <View style={styles.workerInfo}>
                   <Text style={styles.workerName}>{worker.name || 'Unnamed worker'}</Text>
                   <Text style={styles.workerSubtitle}>

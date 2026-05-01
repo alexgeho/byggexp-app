@@ -14,6 +14,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { GlassBackButton } from '../../../components/common/GlassBackButton/GlassBackButton';
 import AuthContext from '../../../contexts/AuthContext';
 import { useChatConversation } from './useChatConversation';
+import { resolveUploadUrl } from '../../../utils/shifts';
 
 const formatMessageTime = (value) => {
   if (!value) return '';
@@ -64,6 +65,9 @@ export default function ChatConversationScreen({ variant }) {
     () => getChatSubtitle(chat || initialChat, variant),
     [chat, initialChat, variant],
   );
+  const headerAvatarSource = (chat || initialChat)?.participant?.avatarUrl
+    ? { uri: resolveUploadUrl((chat || initialChat).participant.avatarUrl) }
+    : require('../../../assets/chatImage.jpg');
 
   const handleSendMessage = async () => {
     const text = messageText.trim();
@@ -109,7 +113,7 @@ export default function ChatConversationScreen({ variant }) {
           {headerSubtitle ? <Text style={styles.channelStatus}>{headerSubtitle}</Text> : null}
         </View>
         <TouchableOpacity style={styles.backAvatar} activeOpacity={0.8}>
-          <Image style={styles.avatarImage} source={require('../../../assets/chatImage.jpg')} />
+          <Image style={styles.avatarImage} source={headerAvatarSource} />
         </TouchableOpacity>
       </View>
 

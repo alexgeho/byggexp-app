@@ -5,6 +5,7 @@ import AuthContext from '../../../contexts/AuthContext'
 import { userService, projectService } from '../../../services'
 import { BottomBar } from '../../../components/BottomBar'
 import { GlassBackButton } from '../../../components/common/GlassBackButton/GlassBackButton'
+import { resolveUploadUrl } from '../../../utils/shifts'
 
 export const SelectWorkers = () => {
 
@@ -100,7 +101,14 @@ export const SelectWorkers = () => {
         ) : (
           workers.map((worker) => (
             <View key={worker._id} style={styles.workerItem}>
-              <Image style={styles.workerAvatar} source={require('../../../assets/TasksAva.png')} />
+              <Image
+                style={styles.workerAvatar}
+                source={
+                  worker.avatarUrl
+                    ? { uri: resolveUploadUrl(worker.avatarUrl) }
+                    : require('../../../assets/TasksAva.png')
+                }
+              />
               <View style={styles.workerInfo}>
                 <Text style={styles.workerName}>{worker.name || 'Без имени'}</Text>
                 <Text style={styles.workerEmail}>{worker.email || ''}</Text>

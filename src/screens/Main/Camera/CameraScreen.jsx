@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -14,6 +14,7 @@ export default function CameraScreen() {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [autoLaunchDone, setAutoLaunchDone] = useState(false);
+  const [cameraReady, setCameraReady] = useState(false);
 
   const loadShift = useCallback(async () => {
     try {
@@ -87,6 +88,17 @@ export default function CameraScreen() {
     }
   }, [shift?.id, uploadAssets]);
 
+  const promptOpenSettings = useCallback(() => {
+    Alert.alert(
+      'Camera access needed',
+      'Enable camera access for ByggExp in iPhone Settings to take photos in TestFlight builds.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Open Settings', onPress: () => Linking.openSettings() },
+      ],
+    );
+  }, []);
+
   const handleTakePhoto = async () => {
     if (!shift?.id) {
       Alert.alert('Shift required', 'Start a shift before attaching photos.');
@@ -95,10 +107,26 @@ export default function CameraScreen() {
 
     try {
       setUploading(true);
-      const permission = await ImagePicker.requestCameraPermissionsAsync();
+      let permission = await ImagePicker.getCameraPermissionsAsync();
 
       if (!permission.granted) {
-        await handleAttachFile();
+        permission = await ImagePicker.requestCameraPermissionsAsync();
+      }
+
+      if (!permission.granted) {
+        if (permission.canAskAgain === false) {
+          promptOpenSettings();
+          return;
+        }
+
+        Alert.alert(
+          'Camera access needed',
+          'Allow camera access to take a shift photo. You can still attach an image from your files.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Attach file', onPress: () => handleAttachFile() },
+          ],
+        );
         return;
       }
 
@@ -112,7 +140,14 @@ export default function CameraScreen() {
         });
       } catch (cameraError) {
         console.warn('Camera unavailable, falling back to file picker:', cameraError);
-        await handleAttachFile();
+        Alert.alert(
+          'Camera unavailable',
+          'Camera is unavailable on this device right now. You can attach an image from your files instead.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Attach file', onPress: () => handleAttachFile() },
+          ],
+        );
         return;
       }
 
@@ -134,11 +169,34 @@ export default function CameraScreen() {
   };
 
   useEffect(() => {
-    if (!loading && shift?.id && !uploading && !autoLaunchDone) {
+    let isMounted = true;
+
+    const warmUpCameraPermission = async () => {
+      try {
+        const permission = await ImagePicker.getCameraPermissionsAsync();
+        if (isMounted) {
+          setCameraReady(permission.granted);
+        }
+      } catch (error) {
+        if (isMounted) {
+          setCameraReady(false);
+        }
+      }
+    };
+
+    warmUpCameraPermission();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!loading && shift?.id && !uploading && !autoLaunchDone && cameraReady) {
       setAutoLaunchDone(true);
       handleTakePhoto();
     }
-  }, [autoLaunchDone, handleTakePhoto, loading, shift?.id, uploading]);
+  }, [autoLaunchDone, cameraReady, handleTakePhoto, loading, shift?.id, uploading]);
 
   if (loading) {
     return (
@@ -171,7 +229,7 @@ export default function CameraScreen() {
       <Text style={styles.subtitle}>{shift.projectName}</Text>
       <Text style={styles.metaText}>{shift.location || 'No location'}</Text>
       <Text style={styles.metaText}>{formatShiftDate(shift.shiftDate)} · {formatDuration(shift.durationMs)}</Text>
-      <Text style={styles.hintText}>The camera opens automatically. If it is unavailable in the simulator, a file picker opens instead.</Text>
+      <Text style={styles.hintText}>Camera access is required on iPhone/TestFlight. If unavailable, you can attach an image file instead.</Text>
 
       <TouchableOpacity style={styles.actionButton} onPress={handleTakePhoto} disabled={uploading}>
         {uploading ? <ActivityIndicator color="#ffffff" /> : <Text style={styles.actionButtonText}>Take photo</Text>}

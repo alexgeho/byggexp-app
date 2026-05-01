@@ -15,6 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import { BottomBar } from '../../../components/BottomBar';
 import { GlassBackButton } from '../../../components/common/GlassBackButton/GlassBackButton';
 import { chatService } from '../../../services';
+import { resolveUploadUrl } from '../../../utils/shifts';
 
 const FILTERS = ['All', 'Groups', 'People', 'Projects'];
 
@@ -145,7 +146,14 @@ export default function ChatListScreen() {
 
         {!loading && !error && filteredChats.map((chat) => (
           <TouchableOpacity key={chat._id} onPress={() => openChat(chat)} style={styles.chatItem}>
-            <Image style={styles.chatImage} source={require('../../../assets/chatImage.jpg')} />
+            <Image
+              style={styles.chatImage}
+              source={
+                chat.participant?.avatarUrl
+                  ? { uri: resolveUploadUrl(chat.participant.avatarUrl) }
+                  : require('../../../assets/chatImage.jpg')
+              }
+            />
             <View style={styles.chatInfo}>
               <View style={styles.chatInfoHeader}>
                 <Text

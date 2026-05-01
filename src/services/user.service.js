@@ -1,5 +1,15 @@
 import api from './api';
 
+const getMultipartConfig = (payload) => (
+  typeof FormData !== 'undefined' && payload instanceof FormData
+    ? {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    : undefined
+);
+
 export const userService = {
   getAll: async () => {
     const { data } = await api.get('/users');
@@ -53,6 +63,43 @@ export const userService = {
 
   update: async (id, userData) => {
     const { data } = await api.put(`/users/${id}`, userData);
+    return data;
+  },
+
+  uploadAvatar: async (id, file) => {
+    const formData = new FormData();
+    formData.append('avatar', {
+      uri: file.uri,
+      name: file.name || `avatar-${Date.now()}.jpg`,
+      type: file.mimeType || file.type || 'image/jpeg',
+    });
+
+    const { data } = await api.post(
+      `/users/${id}/avatar`,
+      formData,
+      getMultipartConfig(formData),
+    );
+
+    return data;
+  },
+
+  uploadDocuments: async (id, files) => {
+    const formData = new FormData();
+
+    files.forEach((file, index) => {
+      formData.append('documents', {
+        uri: file.uri,
+        name: file.name || `document-${index + 1}`,
+        type: file.mimeType || file.type || 'application/octet-stream',
+      });
+    });
+
+    const { data } = await api.post(
+      `/users/${id}/documents`,
+      formData,
+      getMultipartConfig(formData),
+    );
+
     return data;
   },
 

@@ -37,6 +37,13 @@
       "@react-native-community/datetimepicker",
       "expo-notifications",
       [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow ByggExp to access your photos so you can upload an avatar or attach shift images.",
+          "cameraPermission": "Allow ByggExp to use your camera so you can take shift photos."
+        }
+      ],
+      [
         "expo-location",
         {
           "locationWhenInUsePermission": "Allow ByggExp to access your location while creating a project."

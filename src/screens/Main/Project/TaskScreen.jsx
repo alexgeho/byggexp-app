@@ -4,10 +4,7 @@ import { Alert, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, 
 import Icon from 'react-native-vector-icons/Feather';
 import { GlassBackButton } from '../../../components/common/GlassBackButton/GlassBackButton';
 import { BottomBar } from '../../../components/BottomBar';
-
-const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '') ||
-  'https://api.byggexp.se';
+import { resolveUploadUrl } from '../../../utils/shifts';
 
 const GroupCard = ({ children }) => (
   <View style={styles.groupCard}>{children}</View>
@@ -48,7 +45,7 @@ const resolveDocumentUrl = (url) => {
     return url;
   }
 
-  return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`;
+  return resolveUploadUrl(url);
 };
 
 const getDocumentName = (document, index) => {
@@ -274,7 +271,14 @@ export default function TaskScreen() {
                 key={worker._id || worker.id}
                 style={styles.workerItem}
               >
-                <Image style={styles.workerAvatar} source={require('../../../assets/TasksAva.png')} />
+                <Image
+                  style={styles.workerAvatar}
+                  source={
+                    worker.avatarUrl
+                      ? { uri: resolveUploadUrl(worker.avatarUrl) }
+                      : require('../../../assets/TasksAva.png')
+                  }
+                />
                 <View style={styles.workerInfo}>
                   <Text style={styles.workerName}>{worker.name || 'Unnamed worker'}</Text>
                   <Text style={styles.workerSubtitle}>
