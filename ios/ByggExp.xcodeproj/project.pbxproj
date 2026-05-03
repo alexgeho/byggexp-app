@@ -345,7 +345,8 @@
 			inputPaths = (
 				"$(SRCROOT)/.xcode.env",
 				"$(SRCROOT)/.xcode.env.local",
-				"$(SRCROOT)/ByggExp/ByggExp.entitlements",
+				"$(SRCROOT)/ByggExp/ByggExp.debug.entitlements",
+				"$(SRCROOT)/ByggExp/ByggExp.release.entitlements",
 				"$(SRCROOT)/Pods/Target Support Files/Pods-ByggExp/expo-configure-project.sh",
 			);
 			name = "[Expo] Configure project";
@@ -379,7 +380,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = ByggExp/ByggExp.entitlements;
+				CODE_SIGN_ENTITLEMENTS = ByggExp/ByggExp.debug.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -415,7 +416,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = ByggExp/ByggExp.entitlements;
+				CODE_SIGN_ENTITLEMENTS = ByggExp/ByggExp.release.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				INFOPLIST_FILE = ByggExp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
