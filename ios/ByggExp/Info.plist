@@ -46,12 +46,18 @@
       <key>NSAllowsLocalNetworking</key>
       <true/>
     </dict>
+    <key>NSCameraUsageDescription</key>
+    <string>Allow ByggExp to use your camera so you can take shift photos.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your location</string>
     <key>NSLocationAlwaysUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your location</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>Allow ByggExp to access your location while creating a project.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>Allow ByggExp to save and attach shift photos.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Allow ByggExp to access your photos so you can upload an avatar or attach shift images.</string>
     <key>RCTNewArchEnabled</key>
     <true/>
     <key>UILaunchStoryboardName</key>
