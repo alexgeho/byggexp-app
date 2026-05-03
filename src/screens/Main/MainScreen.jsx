@@ -255,15 +255,6 @@ export default function MainScreen() {
           </TouchableOpacity>
         </View>
 
-        {user?.role === 'worker' && (
-          <TouchableOpacity
-            style={styles.timeReportButton}
-            onPress={() => navigation.navigate('ShiftHistory', { type: 'report' })}
-          >
-            <Image style={styles.timeReportIcon} source={require('../../assets/WorkShifts.png')} />
-            <Text style={styles.timeReportText}>Mark time</Text>
-          </TouchableOpacity>
-        )}
       </View>
 
       <View style={styles.navButtonContainer}>
@@ -430,32 +421,5 @@ const styles = StyleSheet.create({
   bottomText: {
     color: '#ffffff',
     fontSize: 12,
-  },
-  timeReportButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#0091FF',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    marginTop: 16,
-    gap: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 7,
-    elevation: 4,
-    boxShadow: '0px 2px 7px 0px rgba(0, 0, 0, 0.25)',
-  },
-  timeReportIcon: {
-    width: 20,
-    height: 20,
-    tintColor: '#ffffff',
-  },
-  timeReportText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
   },
 });

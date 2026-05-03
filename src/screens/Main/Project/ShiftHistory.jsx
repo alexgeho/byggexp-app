@@ -19,19 +19,48 @@ export const ShiftHistory = ({ route }) => {
   const [days, setDays] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const { projectId, type = 'history' } = route.params || {};
+  const { projectId, workerId, workerName, type = 'history' } = route.params || {};
   const canCreate = user?.role === 'worker' && type === 'report';
-  const canViewAll = ['companyAdmin', 'projectAdmin'].includes(user?.role);
+  const canViewAll = ['superadmin', 'companyAdmin', 'projectAdmin'].includes(user?.role);
+  const currentUserId = user?._id || user?.id;
+  const effectiveWorkerId = workerId || (user?.role === 'worker' ? currentUserId : null);
+  const titleName = workerName || (user?.role === 'worker' ? user?.name : 'Shift history');
+
+  const filterDaysByWorker = useCallback((inputDays) => {
+    if (!effectiveWorkerId) {
+      return inputDays || [];
+    }
+
+    return (inputDays || []).reduce((result, day) => {
+      const shifts = (day?.shifts || []).filter((shift) => shift.workerId === effectiveWorkerId);
+
+      if (!shifts.length) {
+        return result;
+      }
+
+      result.push({
+        ...day,
+        shifts,
+        totalDurationMs: shifts.reduce((total, shift) => total + (shift.durationMs || 0), 0),
+      });
+
+      return result;
+    }, []);
+  }, [effectiveWorkerId]);
 
   const loadShiftDays = useCallback(async () => {
     try {
       setLoading(true);
+      const filterParams = {
+        ...(projectId ? { projectId } : {}),
+        ...(effectiveWorkerId ? { workerId: effectiveWorkerId } : {}),
+      };
       const [months, data] = await Promise.all([
-        shiftService.getMonths(),
-        shiftService.list(projectId ? { projectId } : {}),
+        shiftService.getMonths(filterParams),
+        shiftService.list(filterParams),
       ]);
 
-      setDays(data.days || []);
+      setDays(filterDaysByWorker(data.days));
 
       if (months.length > 0) {
         setFromDate(formatMonthLabel(months[months.length - 1]));
@@ -46,7 +75,7 @@ export const ShiftHistory = ({ route }) => {
     } finally {
       setLoading(false);
     }
-  }, [projectId]);
+  }, [effectiveWorkerId, filterDaysByWorker, projectId]);
 
   useFocusEffect(
     useCallback(() => {
@@ -70,7 +99,14 @@ export const ShiftHistory = ({ route }) => {
         <View style={styles.backZeroButton} />
       </View>
 
-      <Text style={{ color: '#052D50', fontSize: 36, width: '100%' }}>{user?.name || 'Shift history'}</Text>
+      <View style={styles.titleRow}>
+        <Text style={styles.screenTitle}>{titleName || 'Shift history'}</Text>
+        {(canCreate || canViewAll) && (
+          <TouchableOpacity style={styles.pageExportButton} onPress={openWorkerModal}>
+            <Text style={styles.pageExportButtonText}>Export</Text>
+          </TouchableOpacity>
+        )}
+      </View>
 
       <ScrollView style={{ flex: 1, width: '100%' }}>
         {loading ? (
@@ -90,6 +126,9 @@ export const ShiftHistory = ({ route }) => {
               {day.shifts.map((shift, index) => (
                 <View key={shift.id} style={index === 0 ? styles.shiftBody : styles.subShift}>
                   <View style={styles.shiftProjectContainer}>
+                    {shift.workerName && !effectiveWorkerId ? (
+                      <Text style={styles.workerInlineText}>{shift.workerName}</Text>
+                    ) : null}
                     <Text style={styles.projectInlineText}>{shift.projectName}</Text>
                     <Text style={styles.locationText}>{shift.location || 'No location'}</Text>
                   </View>
@@ -168,7 +207,7 @@ export const ShiftHistory = ({ route }) => {
         onAddPress={openWorkerModal}
         showAddButton={canCreate || canViewAll}
         renderAddContent={() => (
-          <Text style={{ color: '#ffffff' }}>{canCreate ? 'Export Report' : 'View Reports'}</Text>
+          <Text style={{ color: '#ffffff' }}>Export</Text>
         )}
       />
     </View>
@@ -214,6 +253,35 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 17,
     fontFamily: 'DMSans-SemiBold',
+  },
+  titleRow: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  screenTitle: {
+    color: '#052D50',
+    fontSize: 36,
+    flex: 1,
+  },
+  pageExportButton: {
+    backgroundColor: '#0091FF',
+    borderRadius: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 7,
+    elevation: 4,
+    boxShadow: '0px 2px 7px 0px rgba(0, 0, 0, 0.25)',
+  },
+  pageExportButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
   },
   scrollContainer: {
     flex: 1,
@@ -265,6 +333,11 @@ const styles = StyleSheet.create({
   },
   projectInlineText: {
     color: '#052D50',
+    fontWeight: '600',
+  },
+  workerInlineText: {
+    color: '#0785F4',
+    fontSize: 13,
     fontWeight: '600',
   },
   locationText: {

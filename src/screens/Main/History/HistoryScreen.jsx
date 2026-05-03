@@ -144,20 +144,24 @@ export default function HistoryScreen() {
         <View style={styles.placeholder} />
       </View>
 
-      <View style={styles.exportSelector}>
-        <Text style={styles.exportLabel}>Select period for export</Text>
-        <TouchableOpacity style={styles.dropdownButton} onPress={() => setPickerVisible(true)}>
-          <Text style={styles.dropdownText}>{formatMonthLabel(selectedMonth)}</Text>
-          <Image style={styles.dropdownIcon} source={require('../../../assets/Arrow-down.png')} />
-        </TouchableOpacity>
-      </View>
-
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#0088FF" />
         </View>
       ) : (
-        <>
+        <ScrollView
+          style={styles.contentScroll}
+          contentContainerStyle={styles.contentScrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.exportSelector}>
+            <Text style={styles.exportLabel}>Select period for export</Text>
+            <TouchableOpacity style={styles.dropdownButton} onPress={() => setPickerVisible(true)}>
+              <Text style={styles.dropdownText}>{formatMonthLabel(selectedMonth)}</Text>
+              <Image style={styles.dropdownIcon} source={require('../../../assets/Arrow-down.png')} />
+            </TouchableOpacity>
+          </View>
+
           <View style={styles.calendarContainer}>
             <View style={styles.calendarHeader}>
               <Text style={styles.calendarHeaderDay}>Mon</Text>
@@ -173,72 +177,70 @@ export default function HistoryScreen() {
             )}
           </View>
 
-          <ScrollView style={styles.shiftDetailsContainer} contentContainerStyle={styles.shiftDetailsContent}>
+          <View style={styles.shiftDetailsContainer}>
             <Text style={[styles.shiftTitle, { fontFamily: theme.text.fontFamily['semiBold'] }]}>
               Shift details for {selectedDay ? formatShiftDate(selectedDay.date) : '—'}
             </Text>
 
-            {selectedDayShifts.length === 0 ? (
-              <Text style={styles.emptyDetailsText}>Select a highlighted day to see shift details.</Text>
-            ) : (
-              selectedDayShifts.map((shift) => (
-                <View key={shift.id} style={styles.shiftCard}>
-                  <View style={styles.shiftInfoRow}>
-                    <Text style={styles.shiftLabel}>Work hours:</Text>
-                    <Text style={styles.shiftValue}>{formatTimeRange(shift.startedAt, shift.endedAt)}</Text>
+            <View style={styles.shiftDetailsContent}>
+              {selectedDayShifts.length === 0 ? (
+                <Text style={styles.emptyDetailsText}>Select a highlighted day to see shift details.</Text>
+              ) : (
+                selectedDayShifts.map((shift) => (
+                  <View key={shift.id} style={styles.shiftCard}>
+                    <View style={styles.shiftInfoRow}>
+                      <Text style={styles.shiftLabel}>Work hours:</Text>
+                      <Text style={styles.shiftValue}>{formatTimeRange(shift.startedAt, shift.endedAt)}</Text>
+                    </View>
+                    <View style={styles.shiftInfoRow}>
+                      <Text style={styles.shiftLabel}>Duration:</Text>
+                      <Text style={styles.shiftValue}>{formatDuration(shift.durationMs)}</Text>
+                    </View>
+                    <View style={styles.shiftInfoRow}>
+                      <Text style={styles.shiftLabel}>Project:</Text>
+                      <Text style={styles.shiftValue}>{shift.projectName || '—'}</Text>
+                    </View>
+                    <View style={styles.shiftInfoRow}>
+                      <Text style={styles.shiftLabel}>Location:</Text>
+                      <Text style={styles.shiftValue}>{shift.location || '—'}</Text>
+                    </View>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.shiftImagesRow}>
+                      {shift.photos?.length ? shift.photos.map((photo, index) => (
+                        <Image
+                          key={`${shift.id}-photo-${index}`}
+                          style={styles.shiftImage}
+                          source={{ uri: resolveUploadUrl(photo.url) }}
+                        />
+                      )) : (
+                        <Text style={styles.noPhotosText}>No photos attached</Text>
+                      )}
+                    </ScrollView>
                   </View>
-                  <View style={styles.shiftInfoRow}>
-                    <Text style={styles.shiftLabel}>Duration:</Text>
-                    <Text style={styles.shiftValue}>{formatDuration(shift.durationMs)}</Text>
-                  </View>
-                  <View style={styles.shiftInfoRow}>
-                    <Text style={styles.shiftLabel}>Project:</Text>
-                    <Text style={styles.shiftValue}>{shift.projectName || '—'}</Text>
-                  </View>
-                  <View style={styles.shiftInfoRow}>
-                    <Text style={styles.shiftLabel}>Location:</Text>
-                    <Text style={styles.shiftValue}>{shift.location || '—'}</Text>
-                  </View>
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.shiftImagesRow}>
-                    {shift.photos?.length ? shift.photos.map((photo, index) => (
-                      <Image
-                        key={`${shift.id}-photo-${index}`}
-                        style={styles.shiftImage}
-                        source={{ uri: resolveUploadUrl(photo.url) }}
-                      />
-                    )) : (
-                      <Text style={styles.noPhotosText}>No photos attached</Text>
-                    )}
-                  </ScrollView>
-                </View>
-              ))
-            )}
-          </ScrollView>
-        </>
+                ))
+              )}
+            </View>
+          </View>
+
+          <View style={styles.statsContainer}>
+            <View style={styles.statItem}>
+              <Text style={styles.statLabel}>Current month:</Text>
+              <Text style={styles.statValue}>{formatDuration(currentMonthDuration)}</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statLabel}>Previous month:</Text>
+              <Text style={styles.statValue}>{formatDuration(previousMonthDuration)}</Text>
+            </View>
+          </View>
+        </ScrollView>
       )}
-
-      <View style={styles.statsContainer}>
-        <View style={styles.statItem}>
-          <Text style={styles.statLabel}>Current month:</Text>
-          <Text style={styles.statValue}>{formatDuration(currentMonthDuration)}</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statLabel}>Previous month:</Text>
-          <Text style={styles.statValue}>{formatDuration(previousMonthDuration)}</Text>
-        </View>
-      </View>
-
-      <TouchableOpacity
-        style={styles.exportButton}
-        onPress={() => Alert.alert('Export is not ready yet', 'The shifts period is already real, but export is still pending.')}
-      >
-        <Text style={styles.exportButtonText}>Export current period</Text>
-      </TouchableOpacity>
 
       <BottomBar
         onLeftPress={() => navigation.navigate('Main')}
         onRightPress={() => navigation.navigate('Menu')}
-        showAddButton={false}
+        onAddPress={() => Alert.alert('Export is not ready yet', 'The shifts period is already real, but export is still pending.')}
+        showAddButton
+        renderAddContent={() => <Text style={styles.exportFabText}>Export</Text>}
+        addButtonStyle={styles.exportFabButton}
       />
 
       <Modal
@@ -279,7 +281,6 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingTop: 48,
     paddingBottom: 48,
-    justifyContent: 'space-between'
   },
   header: {
     width: '100%',
@@ -309,6 +310,13 @@ const styles = StyleSheet.create({
   },
   placeholder: {
     width: 36,
+  },
+  contentScroll: {
+    flex: 1,
+    width: '100%',
+  },
+  contentScrollContent: {
+    paddingBottom: 140,
   },
   exportSelector: {
     width: '100%',
@@ -399,7 +407,6 @@ const styles = StyleSheet.create({
   },
   shiftDetailsContainer: {
     width: '100%',
-    flex: 1,
     backgroundColor: '#f9f9f9',
     borderRadius: 16,
     padding: 12,
@@ -465,24 +472,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
-  exportButton: {
-    width: '100%',
-    backgroundColor: '#0088FF',
-    borderRadius: 16,
-    paddingVertical: 16,
-    alignItems: 'center',
-    marginBottom: 110,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 7,
-    elevation: 4,
-    boxShadow: '0px 2px 7px 0px rgba(0, 0, 0, 0.25)',
+  exportFabButton: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
   },
-  exportButtonText: {
+  exportFabText: {
     color: '#ffffff',
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: 'bold',
+    textAlign: 'center',
+    lineHeight: 16,
   },
   loadingContainer: {
     flex: 1,

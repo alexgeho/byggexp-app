@@ -13,7 +13,8 @@ export const useTimer = () => {
 
   // Converts milliseconds to { hours, minutes, seconds } strings
   const formatTime = useCallback((ms) => {
-    const totalSeconds = Math.floor(ms / 1000);
+    const safeMs = Math.max(0, ms || 0);
+    const totalSeconds = Math.floor(safeMs / 1000);
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
@@ -43,7 +44,7 @@ export const useTimer = () => {
     }
 
     intervalRef.current = setInterval(() => {
-      const elapsed = accumulatedRef.current + (Date.now() - lastResumedAtRef.current);
+      const elapsed = accumulatedRef.current + Math.max(0, Date.now() - lastResumedAtRef.current);
       setTimeElapsed(elapsed);
     }, 1000);
   }, []);
@@ -60,20 +61,24 @@ export const useTimer = () => {
       return;
     }
 
-    const baseDuration = shift.storedDurationMs ?? shift.durationMs ?? 0;
+    const baseDuration = Math.max(0, shift.storedDurationMs ?? shift.durationMs ?? 0);
     accumulatedRef.current = baseDuration;
 
     if (shift.status === 'active' && shift.lastResumedAt) {
-      lastResumedAtRef.current = new Date(shift.lastResumedAt).getTime();
+      // The backend already returns effective elapsed time for active shifts.
+      // Continue ticking from that local snapshot to avoid negative values when
+      // the device clock is slightly behind the server clock.
+      accumulatedRef.current = Math.max(0, shift.durationMs ?? baseDuration);
+      lastResumedAtRef.current = Date.now();
       setIsRunning(true);
       setIsPaused(false);
-      setTimeElapsed(baseDuration + Math.max(0, Date.now() - lastResumedAtRef.current));
+      setTimeElapsed(accumulatedRef.current);
       startInterval();
       return;
     }
 
     lastResumedAtRef.current = null;
-    setTimeElapsed(shift.durationMs ?? baseDuration);
+    setTimeElapsed(Math.max(0, shift.durationMs ?? baseDuration));
     setIsRunning(false);
     setIsPaused(shift.status === 'paused');
   }, [clearTimer, startInterval]);

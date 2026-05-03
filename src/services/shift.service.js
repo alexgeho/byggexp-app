@@ -38,8 +38,8 @@ export const shiftService = {
     return data;
   },
 
-  getMonths: async () => {
-    const { data } = await api.get('/shifts/months');
+  getMonths: async (params = {}) => {
+    const { data } = await api.get('/shifts/months', { params });
     return data;
   },
 

@@ -419,7 +419,15 @@ export const ProjectScreen = () => {
                 {selectedWorker.profession || selectedWorker.email || 'Worker'}
               </Text>
 
-              <TouchableOpacity onPress={() => navigation.navigate('ShiftHistory')} style={styles.modalOption}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('ShiftHistory', {
+                  projectId: id,
+                  workerId: selectedWorker._id || selectedWorker.id,
+                  workerName: selectedWorker.name,
+                  type: 'history',
+                })}
+                style={styles.modalOption}
+              >
                 <Text style={styles.optionText}>Shift history</Text>
                 <Image style={styles.optionArrow} source={require('../../../assets/Arrow-right.png')} />
               </TouchableOpacity>
