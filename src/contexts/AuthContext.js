@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { saveToken, saveUser, getUser, removeToken, removeUser, saveRefreshToken, removeRefreshToken } from '../utils/storage';
-import { authService, userService } from '../services';
+import { authService, userService, logUserActivity } from '../services';
 import { jwtDecode } from 'jwt-decode';
 import { unregisterPushToken } from '../services/notifications.service';
 
@@ -78,6 +78,17 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     await authService.logout();
+    await logUserActivity({
+      category: 'auth',
+      type: 'logout_requested',
+      level: 'info',
+      message: 'User logged out from the mobile app.',
+      details: {
+        userId,
+      },
+    }).catch((error) => {
+      console.error('AuthContext: Failed to log logout activity:', error);
+    });
     await unregisterPushToken().catch((error) => {
       console.error('AuthContext: Failed to unregister push token:', error);
     });

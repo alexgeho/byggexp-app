@@ -4,6 +4,7 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import api from './api';
+import { logUserActivity } from './user-activity.service';
 import { isNavigationReady, navigate } from '../navigation/navigationRef';
 
 const INSTALLATION_ID_KEY = 'notificationInstallationId';
@@ -31,6 +32,14 @@ const getAppVersion = () =>
   Constants?.expoConfig?.version ??
   Constants?.manifest2?.extra?.expoClient?.version ??
   'unknown';
+
+const safeLogActivity = async (payload) => {
+  try {
+    await logUserActivity(payload);
+  } catch (error) {
+    console.warn('Failed to send user activity log:', error);
+  }
+};
 
 const getInstallationId = async () => {
   const existingId = await AsyncStorage.getItem(INSTALLATION_ID_KEY);
@@ -166,20 +175,66 @@ export const syncPushTokenForUser = async (user) => {
     return { status: 'skipped' };
   }
 
-  const { status, token } = await requestPushToken();
-  if (!token) {
-    return { status };
+  try {
+    const { status, token } = await requestPushToken();
+    if (!token) {
+      await safeLogActivity({
+        category: 'notifications',
+        type: `push_token_${status}`,
+        level: status === 'denied' ? 'warning' : 'info',
+        message:
+          status === 'denied'
+            ? 'Push notification permission was denied.'
+            : status === 'unsupported'
+              ? 'Push token sync skipped because the device is unsupported.'
+              : 'Push token sync skipped.',
+        details: {
+          status,
+          platform: Platform.OS,
+          appVersion: getAppVersion(),
+        },
+      });
+      return { status };
+    }
+
+    const installationId = await getInstallationId();
+    await api.post('/notifications/push-token', {
+      expoPushToken: token,
+      installationId,
+      platform: Platform.OS,
+      appVersion: getAppVersion(),
+    });
+
+    await safeLogActivity({
+      category: 'notifications',
+      type: 'push_token_sync_succeeded',
+      level: 'info',
+      message: 'Push token synced successfully.',
+      details: {
+        platform: Platform.OS,
+        appVersion: getAppVersion(),
+        installationId,
+        expoPushToken: token,
+      },
+    });
+
+    return { status, token };
+  } catch (error) {
+    await safeLogActivity({
+      category: 'notifications',
+      type: 'push_token_sync_failed',
+      level: 'error',
+      message: 'Push token sync failed.',
+      details: {
+        platform: Platform.OS,
+        appVersion: getAppVersion(),
+        errorMessage: error?.message || 'Unknown error',
+        responseStatus: error?.response?.status || null,
+        responseData: error?.response?.data || null,
+      },
+    });
+    throw error;
   }
-
-  const installationId = await getInstallationId();
-  await api.post('/notifications/push-token', {
-    expoPushToken: token,
-    installationId,
-    platform: Platform.OS,
-    appVersion: getAppVersion(),
-  });
-
-  return { status, token };
 };
 
 export const unregisterPushToken = async () => {
@@ -190,7 +245,33 @@ export const unregisterPushToken = async () => {
 
   try {
     await api.delete(`/notifications/push-token/${encodeURIComponent(installationId)}`);
+    await safeLogActivity({
+      category: 'notifications',
+      type: 'push_token_unregister_succeeded',
+      level: 'info',
+      message: 'Push token unregistered successfully.',
+      details: {
+        installationId,
+        platform: Platform.OS,
+      },
+    });
   } catch (error) {
+    await safeLogActivity({
+      category: 'notifications',
+      type: 'push_token_unregister_failed',
+      level: error?.response?.status === 404 ? 'warning' : 'error',
+      message:
+        error?.response?.status === 404
+          ? 'Push token unregister skipped because the token was not found.'
+          : 'Push token unregister failed.',
+      details: {
+        installationId,
+        platform: Platform.OS,
+        errorMessage: error?.message || 'Unknown error',
+        responseStatus: error?.response?.status || null,
+        responseData: error?.response?.data || null,
+      },
+    });
     if (error?.response?.status !== 404) {
       throw error;
     }
