@@ -20,11 +20,13 @@ export const ShiftHistory = ({ route }) => {
   const [availableMonths, setAvailableMonths] = useState([]);
   const [selectedPeriod, setSelectedPeriod] = useState('Month');
   const [periodPickerOpen, setPeriodPickerOpen] = useState(false);
+  const [selectedExportType, setSelectedExportType] = useState('pdf');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [datePickerTarget, setDatePickerTarget] = useState(null);
   const [days, setDays] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
 
   const { projectId, workerId, workerName, type = 'history' } = route.params || {};
   const currentUserId = user?._id || user?.id;
@@ -236,6 +238,39 @@ export const ShiftHistory = ({ route }) => {
     }
   }, [datePickerTarget, formatDateForApi]);
 
+  const handleExport = useCallback(async () => {
+    if (exporting) {
+      return;
+    }
+
+    if (fromDate && toDate && fromDate > toDate) {
+      Alert.alert('Invalid period', 'The "From" date must be earlier than the "To" date.');
+      return;
+    }
+
+    try {
+      setExporting(true);
+
+      await shiftService.exportReport({
+        format: selectedExportType,
+        projectId,
+        workerId: effectiveWorkerId,
+        from: fromDate,
+        to: toDate,
+        workerName: titleName,
+      });
+
+      bottomSheetRef.current?.close();
+    } catch (error) {
+      const message = error?.response?.data?.message
+        || error?.message
+        || 'Failed to export shifts. Please try again.';
+      Alert.alert('Export failed', message);
+    } finally {
+      setExporting(false);
+    }
+  }, [effectiveWorkerId, exporting, fromDate, projectId, selectedExportType, titleName, toDate]);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -358,24 +393,57 @@ export const ShiftHistory = ({ route }) => {
             </View>
           </View>
 
-          <View style={styles.sheetCard}>
+          <View style={styles.exportSheetCard}>
             <View style={styles.exportButtonsContainer}>
-              <TouchableOpacity style={styles.exportButton}>
-                <Text style={styles.exportButtonText}>PDF</Text>
+              <TouchableOpacity
+                style={[
+                  styles.exportButton,
+                  selectedExportType === 'pdf' && styles.exportButtonActive,
+                ]}
+                onPress={() => setSelectedExportType('pdf')}
+                activeOpacity={0.85}
+              >
+                <Text
+                  style={[
+                    styles.exportButtonText,
+                    selectedExportType === 'pdf' && styles.exportButtonTextActive,
+                  ]}
+                >
+                  PDF
+                </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.exportButton}>
-                <Text style={styles.exportButtonText}>Excel</Text>
+              <TouchableOpacity
+                style={[
+                  styles.exportButton,
+                  selectedExportType === 'excel' && styles.exportButtonActive,
+                ]}
+                onPress={() => setSelectedExportType('excel')}
+                activeOpacity={0.85}
+              >
+                <Text
+                  style={[
+                    styles.exportButtonText,
+                    selectedExportType === 'excel' && styles.exportButtonTextActive,
+                  ]}
+                >
+                  Excel
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
 
           <TouchableOpacity
-            style={styles.exportMainButton}
-            onPress={() => Alert.alert('Export is not ready yet', 'Shift data is real now, but report export is still pending.')}
+            style={[styles.exportMainButton, exporting && styles.exportMainButtonDisabled]}
+            onPress={handleExport}
+            disabled={exporting}
           >
-            <Text style={styles.exportMainButtonText}>
-              Export
-            </Text>
+            {exporting ? (
+              <ActivityIndicator color="#FFFFFF" />
+            ) : (
+              <Text style={styles.exportMainButtonText}>
+                Export
+              </Text>
+            )}
           </TouchableOpacity>
         </BottomSheetView>
       </BottomSheet>
@@ -582,6 +650,11 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 16,
   },
+  exportSheetCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 0,
+  },
   workerModalTitle: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -677,22 +750,29 @@ const styles = StyleSheet.create({
   },
   exportButtonsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 0,
   },
   exportButton: {
     flex: 1,
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
-    paddingHorizontal: 12,
     paddingVertical: 12,
-    borderWidth: 1,
-    borderColor: '#E6E6E6',
     alignItems: 'center',
+    borderWidth: 0,
+    borderColor: 'transparent',
+  },
+  exportButtonActive: {
+    borderWidth: 2,
+    borderColor: 'rgba(7, 133, 244, 1)',
   },
   exportButtonText: {
     fontSize: 16,
     color: '#052D50',
+  },
+  exportButtonTextActive: {
+    fontWeight: '600',
   },
   exportMainButton: {
     width: '100%',
@@ -706,6 +786,9 @@ const styles = StyleSheet.create({
     shadowRadius: 7,
     elevation: 4,
     boxShadow: '0px 2px 7px 0px rgba(0, 0, 0, 0.25)',
+  },
+  exportMainButtonDisabled: {
+    opacity: 0.7,
   },
   exportMainButtonText: {
     fontSize: 18,

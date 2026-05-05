@@ -25,6 +25,9 @@ export default function HistoryScreen() {
   const [previousMonthDuration, setPreviousMonthDuration] = useState(0);
   const [loading, setLoading] = useState(true);
   const [pickerVisible, setPickerVisible] = useState(false);
+  const [exportModalVisible, setExportModalVisible] = useState(false);
+  const [selectedExportType, setSelectedExportType] = useState('pdf');
+  const [exporting, setExporting] = useState(false);
 
   const loadMonths = useCallback(async () => {
     const months = await shiftService.getMonths();
@@ -136,6 +139,33 @@ export default function HistoryScreen() {
     return rows;
   }, [dayMap, selectedDate, selectedMonth]);
 
+  const handleExport = useCallback(async () => {
+    if (exporting) {
+      return;
+    }
+
+    if (!selectedMonth) {
+      Alert.alert('No period selected', 'Choose a month to export shifts.');
+      return;
+    }
+
+    try {
+      setExporting(true);
+      await shiftService.exportReport({
+        format: selectedExportType,
+        month: selectedMonth,
+      });
+      setExportModalVisible(false);
+    } catch (error) {
+      const message = error?.response?.data?.message
+        || error?.message
+        || 'Failed to export shifts. Please try again.';
+      Alert.alert('Export failed', message);
+    } finally {
+      setExporting(false);
+    }
+  }, [exporting, selectedExportType, selectedMonth]);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -237,11 +267,80 @@ export default function HistoryScreen() {
       <BottomBar
         onLeftPress={() => navigation.navigate('Main')}
         onRightPress={() => navigation.navigate('Menu')}
-        onAddPress={() => Alert.alert('Export is not ready yet', 'The shifts period is already real, but export is still pending.')}
+        onAddPress={() => setExportModalVisible(true)}
         showAddButton
         renderAddContent={() => <Text style={styles.exportFabText}>Export</Text>}
         addButtonStyle={styles.exportFabButton}
       />
+
+      <Modal
+        visible={exportModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setExportModalVisible(false)}
+      >
+        <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setExportModalVisible(false)}>
+          <TouchableOpacity style={styles.exportModalCard} activeOpacity={1} onPress={() => {}}>
+            <Text style={[styles.exportModalTitle, { fontFamily: theme.text.fontFamily['semiBold'] }]}>
+              Export shifts
+            </Text>
+            <Text style={styles.exportModalSubtitle}>
+              Period: {selectedMonth ? formatMonthLabel(selectedMonth) : 'Not selected'}
+            </Text>
+
+            <View style={styles.exportSheetCard}>
+              <View style={styles.exportButtonsContainer}>
+                <TouchableOpacity
+                  style={[
+                    styles.exportButton,
+                    selectedExportType === 'pdf' && styles.exportButtonActive,
+                  ]}
+                  onPress={() => setSelectedExportType('pdf')}
+                  activeOpacity={0.85}
+                >
+                  <Text
+                    style={[
+                      styles.exportButtonText,
+                      selectedExportType === 'pdf' && styles.exportButtonTextActive,
+                    ]}
+                  >
+                    PDF
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.exportButton,
+                    selectedExportType === 'excel' && styles.exportButtonActive,
+                  ]}
+                  onPress={() => setSelectedExportType('excel')}
+                  activeOpacity={0.85}
+                >
+                  <Text
+                    style={[
+                      styles.exportButtonText,
+                      selectedExportType === 'excel' && styles.exportButtonTextActive,
+                    ]}
+                  >
+                    Excel
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              style={[styles.exportMainButton, exporting && styles.exportMainButtonDisabled]}
+              onPress={handleExport}
+              disabled={exporting}
+            >
+              {exporting ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Text style={styles.exportMainButtonText}>Export</Text>
+              )}
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
 
       <Modal
         visible={pickerVisible}
@@ -512,6 +611,66 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 16,
     paddingVertical: 8,
+  },
+  exportModalCard: {
+    backgroundColor: '#EEF5FB',
+    borderRadius: 24,
+    padding: 20,
+    gap: 12,
+  },
+  exportModalTitle: {
+    color: '#052D50',
+    fontSize: 22,
+  },
+  exportModalSubtitle: {
+    color: '#698196',
+    fontSize: 14,
+  },
+  exportSheetCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 0,
+  },
+  exportButtonsContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 0,
+  },
+  exportButton: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderWidth: 0,
+    borderColor: 'transparent',
+  },
+  exportButtonActive: {
+    borderWidth: 2,
+    borderColor: 'rgba(7, 133, 244, 1)',
+  },
+  exportButtonText: {
+    fontSize: 16,
+    color: '#052D50',
+  },
+  exportButtonTextActive: {
+    fontWeight: '600',
+  },
+  exportMainButton: {
+    width: '100%',
+    backgroundColor: '#0091FF',
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  exportMainButtonDisabled: {
+    opacity: 0.7,
+  },
+  exportMainButtonText: {
+    fontSize: 18,
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
   monthOption: {
     paddingHorizontal: 16,
