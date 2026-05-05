@@ -20,6 +20,12 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { GlassBackButton } from '../../../components/common/GlassBackButton/GlassBackButton';
 import { BottomBar } from '../../../components/BottomBar';
 import { projectService, taskService } from '../../../services';
+import {
+  buildTaskNotificationsPayload,
+  createDefaultTaskNotificationSettings,
+  getTaskNotificationSummary,
+  normalizeTaskNotificationSettings,
+} from '../../../utils/taskNotifications';
 
 const DATE_PICKER_DISPLAY = Platform.OS === 'ios' ? 'inline' : 'calendar';
 
@@ -114,7 +120,7 @@ export default function CreateTaskScreen() {
   const [taskTitle, setTaskTitle] = useState('');
   const [taskDescription, setTaskDescription] = useState('');
   const [notes, setNotes] = useState('');
-  const [notificationsInput, setNotificationsInput] = useState('');
+  const [notificationSettings, setNotificationSettings] = useState(() => createDefaultTaskNotificationSettings());
   const [selectedDocuments, setSelectedDocuments] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [dueDate, setDueDate] = useState(null);
@@ -143,12 +149,17 @@ export default function CreateTaskScreen() {
     fetchProject();
   }, [projectId, projectName]);
 
-  const notifications = useMemo(
-    () => notificationsInput
-      .split('\n')
-      .map((item) => item.trim())
-      .filter(Boolean),
-    [notificationsInput]
+  useEffect(() => {
+    if (!route.params?.notificationSettings) {
+      return;
+    }
+
+    setNotificationSettings(normalizeTaskNotificationSettings(route.params.notificationSettings));
+  }, [route.params?.notificationSettings]);
+
+  const notificationsSummary = useMemo(
+    () => getTaskNotificationSummary(notificationSettings),
+    [notificationSettings],
   );
 
   const pickDocuments = async () => {
@@ -185,6 +196,11 @@ export default function CreateTaskScreen() {
     try {
       setSaving(true);
       const taskData = new FormData();
+      const notifications = buildTaskNotificationsPayload({
+        settings: notificationSettings,
+        startDate,
+        dueDate,
+      });
 
       taskData.append('projectId', projectId);
       taskData.append('taskTitle', taskTitle.trim());
@@ -200,6 +216,8 @@ export default function CreateTaskScreen() {
       if (notifications.length > 0) {
         taskData.append('notifications', JSON.stringify(notifications));
       }
+
+      taskData.append('notificationSettings', JSON.stringify(notificationSettings));
 
       if (startDate) {
         taskData.append('startDate', startDate.toISOString());
@@ -328,19 +346,33 @@ export default function CreateTaskScreen() {
             />
           </View>
         </GroupRow>
-        <GroupRow isLast={true}>
-          <View style={styles.textAreaWrapper}>
-            <Text style={styles.inputLabel}>Notifications</Text>
-            <TextInput
-              multiline={true}
-              style={[styles.input, styles.textArea]}
-              value={notificationsInput}
-              onChangeText={setNotificationsInput}
-              placeholder="One notification per line"
-              placeholderTextColor="rgba(5, 45, 80, 0.45)"
-            />
+      </GroupCard>
+
+      <SectionLabel>Notifications</SectionLabel>
+      <GroupCard>
+        <TouchableOpacity
+          style={[styles.groupRow, styles.groupRowLast]}
+          activeOpacity={0.85}
+          onPress={() => navigation.navigate('TaskNotifications', {
+            projectId,
+            startDate: startDate ? startDate.toISOString() : null,
+            dueDate: dueDate ? dueDate.toISOString() : null,
+            notificationSettings,
+          })}
+        >
+          <View style={styles.rowContent}>
+            <View style={styles.rowIcon}>
+              <FieldIcon name="bell" />
+            </View>
+            <View style={styles.rowTextContainer}>
+              <Text style={styles.rowLabel}>Notifications</Text>
+              <Text style={[styles.rowValue, notificationsSummary === 'Set notifications' && styles.rowPlaceholder]}>
+                {notificationsSummary}
+              </Text>
+            </View>
           </View>
-        </GroupRow>
+          <Icon name="chevron-right" size={18} color="#052D50" />
+        </TouchableOpacity>
       </GroupCard>
 
       <SectionLabel>Files</SectionLabel>
