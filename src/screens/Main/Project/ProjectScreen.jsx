@@ -1,7 +1,7 @@
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import React, { useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import Icon from 'react-native-vector-icons/Feather';
 import { GlassBackButton } from '../../../components/common/GlassBackButton/GlassBackButton';
 import { BottomBar } from '../../../components/BottomBar';
@@ -147,6 +147,16 @@ export const ProjectScreen = () => {
     setSelectedWorker(worker);
     bottomSheetRef.current?.expand();
   };
+
+  const renderBottomSheetBackdrop = useCallback((props) => (
+    <BottomSheetBackdrop
+      {...props}
+      appearsOnIndex={0}
+      disappearsOnIndex={-1}
+      opacity={0.59}
+      pressBehavior="close"
+    />
+  ), []);
 
   const tasks = useMemo(() => (
     Array.isArray(project?.tasks)
@@ -410,14 +420,17 @@ export const ProjectScreen = () => {
         onClose={() => setSelectedWorker(null)}
         backgroundStyle={styles.bottomSheetBackground}
         handleIndicatorStyle={styles.handleIndicator}
+        backdropComponent={renderBottomSheetBackdrop}
       >
         <BottomSheetView style={styles.bottomSheetContent}>
           {selectedWorker && (
             <>
-              <Text style={styles.workerModalTitle}>{selectedWorker.name}</Text>
-              <Text style={styles.workerModalSubtitle}>
-                {selectedWorker.profession || selectedWorker.email || 'Worker'}
-              </Text>
+              <View style={styles.workerHeaderCard}>
+                <Text style={styles.workerModalTitle}>{selectedWorker.name}</Text>
+                <Text style={styles.workerModalSubtitle}>
+                  {selectedWorker.profession || selectedWorker.email || 'Worker'}
+                </Text>
+              </View>
 
               <TouchableOpacity
                 onPress={() => navigation.navigate('ShiftHistory', {
@@ -706,9 +719,9 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   bottomSheetBackground: {
-    backgroundColor: '#F5F8FA',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    backgroundColor: '#EEF5FB',
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
   },
   handleIndicator: {
     backgroundColor: '#CCCCCC',
@@ -721,6 +734,12 @@ const styles = StyleSheet.create({
   bottomSheetContent: {
     padding: 20,
     paddingTop: 12,
+    gap: 12,
+  },
+  workerHeaderCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 16,
   },
   workerModalTitle: {
     fontSize: 24,
@@ -730,17 +749,15 @@ const styles = StyleSheet.create({
   workerModalSubtitle: {
     color: '#698196',
     marginTop: 4,
-    marginBottom: 20,
   },
   modalOption: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 16,
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    marginBottom: 8,
+    borderRadius: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.05,

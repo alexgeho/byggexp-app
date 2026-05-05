@@ -1,7 +1,8 @@
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
 import React, { useRef, useState, useContext, useCallback } from 'react';
-import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, TextInput } from 'react-native';
+import { ActivityIndicator, Alert, Image, Modal, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import AuthContext from '../../../contexts/AuthContext';
 import { BottomBar } from '../../../components/BottomBar';
 import { GlassBackButton } from '../../../components/common/GlassBackButton/GlassBackButton';
@@ -9,22 +10,136 @@ import { shiftService } from '../../../services';
 import { formatDuration, formatMonthLabel, formatShiftDayLabel, formatTimeRange } from '../../../utils/shifts';
 import { useFocusEffect } from '@react-navigation/native';
 
+const PERIOD_OPTIONS = ['All time', 'Month', 'Year', 'Custom'];
+const DATE_PICKER_DISPLAY = Platform.OS === 'ios' ? 'inline' : 'calendar';
+
 export const ShiftHistory = ({ route }) => {
   const navigation = useNavigation();
   const { user } = useContext(AuthContext);
   const bottomSheetRef = useRef(null);
-  const [period] = useState('Month');
+  const [availableMonths, setAvailableMonths] = useState([]);
+  const [selectedPeriod, setSelectedPeriod] = useState('Month');
+  const [periodPickerOpen, setPeriodPickerOpen] = useState(false);
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
+  const [datePickerTarget, setDatePickerTarget] = useState(null);
   const [days, setDays] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const { projectId, workerId, workerName, type = 'history' } = route.params || {};
-  const canCreate = user?.role === 'worker' && type === 'report';
-  const canViewAll = ['superadmin', 'companyAdmin', 'projectAdmin'].includes(user?.role);
   const currentUserId = user?._id || user?.id;
   const effectiveWorkerId = workerId || (user?.role === 'worker' ? currentUserId : null);
   const titleName = workerName || (user?.role === 'worker' ? user?.name : 'Shift history');
+
+  const getPeriodRange = useCallback((monthKey) => {
+    if (!monthKey || !/^\d{4}-\d{2}$/.test(monthKey)) {
+      return { from: '', to: '' };
+    }
+
+    const [year, month] = monthKey.split('-').map(Number);
+    const lastDay = new Date(year, month, 0).getDate();
+
+    return {
+      from: `${monthKey}-01`,
+      to: `${monthKey}-${String(lastDay).padStart(2, '0')}`,
+    };
+  }, []);
+
+  const getYearRange = useCallback((year) => ({
+    from: `${year}-01-01`,
+    to: `${year}-12-31`,
+  }), []);
+
+  const formatDateValue = useCallback((value) => {
+    if (!value) {
+      return 'Select date';
+    }
+
+    const date = new Date(`${value}T12:00:00`);
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  }, []);
+
+  const formatDateForApi = useCallback((date) => {
+    if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+      return '';
+    }
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }, []);
+
+  const parseDateValue = useCallback((value) => {
+    if (!value) {
+      return new Date();
+    }
+
+    const date = new Date(`${value}T12:00:00`);
+    return Number.isNaN(date.getTime()) ? new Date() : date;
+  }, []);
+
+  const applyPeriod = useCallback((nextPeriod, months = []) => {
+    setSelectedPeriod(nextPeriod);
+
+    if (nextPeriod === 'Custom') {
+      setPeriodPickerOpen(false);
+      return;
+    }
+
+    if (nextPeriod === 'All time') {
+      if (months.length > 0) {
+        const firstMonth = months[months.length - 1];
+        const lastMonth = months[0];
+        const { from } = getPeriodRange(firstMonth);
+        const { to } = getPeriodRange(lastMonth);
+        setFromDate(from);
+        setToDate(to);
+      } else {
+        setFromDate('');
+        setToDate('');
+      }
+      setPeriodPickerOpen(false);
+      return;
+    }
+
+    if (nextPeriod === 'Month') {
+      const targetMonth = months[0];
+      if (targetMonth) {
+        const { from, to } = getPeriodRange(targetMonth);
+        setFromDate(from);
+        setToDate(to);
+      } else {
+        setFromDate('');
+        setToDate('');
+      }
+      setPeriodPickerOpen(false);
+      return;
+    }
+
+    if (nextPeriod === 'Year') {
+      const sourceMonth = months[0];
+      const targetYear = sourceMonth?.slice(0, 4);
+      if (targetYear) {
+        const { from, to } = getYearRange(targetYear);
+        setFromDate(from);
+        setToDate(to);
+      } else {
+        setFromDate('');
+        setToDate('');
+      }
+      setPeriodPickerOpen(false);
+    }
+  }, [getPeriodRange, getYearRange]);
 
   const filterDaysByWorker = useCallback((inputDays) => {
     if (!effectiveWorkerId) {
@@ -60,12 +175,16 @@ export const ShiftHistory = ({ route }) => {
         shiftService.list(filterParams),
       ]);
 
+      setAvailableMonths(months || []);
       setDays(filterDaysByWorker(data.days));
 
-      if (months.length > 0) {
-        setFromDate(formatMonthLabel(months[months.length - 1]));
-        setToDate(formatMonthLabel(months[0]));
+      if ((months || []).length > 0) {
+        setSelectedPeriod('Month');
+        const { from, to } = getPeriodRange(months[0]);
+        setFromDate(from);
+        setToDate(to);
       } else {
+        setSelectedPeriod('Month');
         setFromDate('');
         setToDate('');
       }
@@ -75,7 +194,7 @@ export const ShiftHistory = ({ route }) => {
     } finally {
       setLoading(false);
     }
-  }, [effectiveWorkerId, filterDaysByWorker, projectId]);
+  }, [effectiveWorkerId, filterDaysByWorker, getPeriodRange, projectId]);
 
   useFocusEffect(
     useCallback(() => {
@@ -84,12 +203,38 @@ export const ShiftHistory = ({ route }) => {
   );
 
   const openWorkerModal = () => {
+    setPeriodPickerOpen(false);
     bottomSheetRef.current?.expand();
   };
 
   const closeWorkerModal = () => {
+    setPeriodPickerOpen(false);
+    setDatePickerTarget(null);
     bottomSheetRef.current?.close();
   };
+
+  const renderBottomSheetBackdrop = useCallback((props) => (
+    <BottomSheetBackdrop
+      {...props}
+      appearsOnIndex={0}
+      disappearsOnIndex={-1}
+      opacity={0.59}
+      pressBehavior="close"
+    />
+  ), []);
+
+  const handleCustomDateChange = useCallback((_event, date) => {
+    if (!datePickerTarget || !date) {
+      return;
+    }
+
+    const formattedDate = formatDateForApi(date);
+    if (datePickerTarget === 'from') {
+      setFromDate(formattedDate);
+    } else {
+      setToDate(formattedDate);
+    }
+  }, [datePickerTarget, formatDateForApi]);
 
   return (
     <View style={styles.container}>
@@ -101,11 +246,6 @@ export const ShiftHistory = ({ route }) => {
 
       <View style={styles.titleRow}>
         <Text style={styles.screenTitle}>{titleName || 'Shift history'}</Text>
-        {(canCreate || canViewAll) && (
-          <TouchableOpacity style={styles.pageExportButton} onPress={openWorkerModal}>
-            <Text style={styles.pageExportButtonText}>Export</Text>
-          </TouchableOpacity>
-        )}
       </View>
 
       <ScrollView style={{ flex: 1, width: '100%' }}>
@@ -146,48 +286,87 @@ export const ShiftHistory = ({ route }) => {
       <BottomSheet
         ref={bottomSheetRef}
         index={-1}
-        snapPoints={['30%', '60%']}
+        snapPoints={['45%', '72%']}
         enablePanDownToClose={true}
         backgroundStyle={styles.bottomSheetBackground}
         handleIndicatorStyle={styles.handleIndicator}
+        backdropComponent={renderBottomSheetBackdrop}
       >
         <BottomSheetView style={styles.bottomSheetContent}>
-          <View style={styles.periodContainer}>
-            <Text style={styles.periodLabel}>Period</Text>
-            <TouchableOpacity style={styles.periodDropdown}>
-              <Text style={styles.periodValue}>{period}</Text>
-              <Image style={styles.dropdownArrow} source={require('../../../assets/Arrow-down.png')} />
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.dateContainer}>
-            <View style={styles.dateField}>
-              <Text style={styles.dateLabel}>From</Text>
-              <TextInput
-                style={styles.dateInput}
-                value={fromDate}
-                onChangeText={setFromDate}
-                placeholder="Select date"
-              />
-            </View>
-            <View style={styles.dateField}>
-              <Text style={styles.dateLabel}>To</Text>
-              <TextInput
-                style={styles.dateInput}
-                value={toDate}
-                onChangeText={setToDate}
-                placeholder="Select date"
-              />
+          <View style={styles.sheetCard}>
+            <View style={styles.periodContainer}>
+              <Text style={styles.periodLabel}>Period</Text>
+              <TouchableOpacity style={styles.periodDropdown} onPress={() => setPeriodPickerOpen((previous) => !previous)}>
+                <Text style={styles.periodValue}>{selectedPeriod}</Text>
+                <Image style={styles.dropdownArrow} source={require('../../../assets/Arrow-down.png')} />
+              </TouchableOpacity>
             </View>
           </View>
 
-          <View style={styles.exportButtonsContainer}>
-            <TouchableOpacity style={styles.exportButton}>
-              <Text style={styles.exportButtonText}>PDF</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.exportButton}>
-              <Text style={styles.exportButtonText}>Excel</Text>
-            </TouchableOpacity>
+          {periodPickerOpen ? (
+            <View style={styles.sheetCard}>
+              <View style={styles.periodOptions}>
+                {PERIOD_OPTIONS.map((option) => (
+                  <TouchableOpacity
+                    key={option}
+                    style={[
+                      styles.periodOptionButton,
+                      selectedPeriod === option && styles.periodOptionButtonActive,
+                    ]}
+                    onPress={() => applyPeriod(option, availableMonths)}
+                  >
+                    <Text
+                      style={[
+                        styles.periodOptionText,
+                        selectedPeriod === option && styles.periodOptionTextActive,
+                      ]}
+                    >
+                      {option}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          ) : null}
+
+          <View style={styles.sheetCard}>
+            <View style={styles.dateContainer}>
+              <View style={styles.dateField}>
+                <Text style={styles.dateLabel}>From</Text>
+                <TouchableOpacity
+                  style={[styles.dateValueCard, selectedPeriod !== 'Custom' && styles.dateValueCardDisabled]}
+                  onPress={() => selectedPeriod === 'Custom' && setDatePickerTarget('from')}
+                  activeOpacity={selectedPeriod === 'Custom' ? 0.8 : 1}
+                >
+                  <Text style={[styles.dateValueText, !fromDate && styles.dateValuePlaceholder]}>
+                    {formatDateValue(fromDate)}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.dateField}>
+                <Text style={styles.dateLabel}>To</Text>
+                <TouchableOpacity
+                  style={[styles.dateValueCard, selectedPeriod !== 'Custom' && styles.dateValueCardDisabled]}
+                  onPress={() => selectedPeriod === 'Custom' && setDatePickerTarget('to')}
+                  activeOpacity={selectedPeriod === 'Custom' ? 0.8 : 1}
+                >
+                  <Text style={[styles.dateValueText, !toDate && styles.dateValuePlaceholder]}>
+                    {formatDateValue(toDate)}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.sheetCard}>
+            <View style={styles.exportButtonsContainer}>
+              <TouchableOpacity style={styles.exportButton}>
+                <Text style={styles.exportButtonText}>PDF</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.exportButton}>
+                <Text style={styles.exportButtonText}>Excel</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
           <TouchableOpacity
@@ -205,11 +384,34 @@ export const ShiftHistory = ({ route }) => {
         onLeftPress={() => navigation.navigate('Main')}
         onRightPress={() => navigation.navigate('Menu')}
         onAddPress={openWorkerModal}
-        showAddButton={canCreate || canViewAll}
-        renderAddContent={() => (
-          <Text style={{ color: '#ffffff' }}>Export</Text>
-        )}
+        showAddButton
+        renderAddContent={() => <Text style={styles.exportFabText}>Export</Text>}
+        addButtonStyle={styles.exportFabButton}
       />
+
+      <Modal
+        visible={Boolean(datePickerTarget)}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setDatePickerTarget(null)}
+      >
+        <View style={styles.datePickerOverlay}>
+          <View style={styles.datePickerCard}>
+            <Text style={styles.datePickerTitle}>
+              {datePickerTarget === 'from' ? 'From date' : 'To date'}
+            </Text>
+            <DateTimePicker
+              value={parseDateValue(datePickerTarget === 'from' ? fromDate : toDate)}
+              mode="date"
+              display={DATE_PICKER_DISPLAY}
+              onChange={handleCustomDateChange}
+            />
+            <TouchableOpacity style={styles.datePickerButton} onPress={() => setDatePickerTarget(null)}>
+              <Text style={styles.datePickerButtonText}>Done</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -266,22 +468,17 @@ const styles = StyleSheet.create({
     fontSize: 36,
     flex: 1,
   },
-  pageExportButton: {
-    backgroundColor: '#0091FF',
-    borderRadius: 14,
-    paddingVertical: 10,
-    paddingHorizontal: 18,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 7,
-    elevation: 4,
-    boxShadow: '0px 2px 7px 0px rgba(0, 0, 0, 0.25)',
+  exportFabButton: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
   },
-  pageExportButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '700',
+  exportFabText: {
+    color: '#ffffff',
+    fontSize: 13,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    lineHeight: 16,
   },
   scrollContainer: {
     flex: 1,
@@ -363,9 +560,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   bottomSheetBackground: {
-    backgroundColor: '#F5F8FA',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    backgroundColor: '#EEF5FB',
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
   },
   handleIndicator: {
     backgroundColor: '#CCCCCC',
@@ -378,6 +575,12 @@ const styles = StyleSheet.create({
   bottomSheetContent: {
     padding: 20,
     paddingTop: 12,
+    gap: 12,
+  },
+  sheetCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 16,
   },
   workerModalTitle: {
     fontSize: 24,
@@ -389,7 +592,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    gap: 12,
   },
   periodLabel: {
     fontSize: 16,
@@ -399,11 +602,38 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
+    borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderWidth: 1,
     borderColor: '#E6E6E6',
+  },
+  periodOptions: {
+    gap: 12,
+  },
+  periodOptionButton: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: '#E6E6E6',
+  },
+  periodOptionButtonActive: {
+    borderColor: '#0091FF',
+    backgroundColor: '#EAF4FF',
+  },
+  periodOptionText: {
+    color: '#052D50',
+    fontSize: 15,
+  },
+  periodOptionTextActive: {
+    color: '#0091FF',
+    fontWeight: '700',
+  },
+  periodEmptyText: {
+    color: '#698196',
+    fontSize: 14,
   },
   periodValue: {
     fontSize: 16,
@@ -419,7 +649,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 12,
-    marginBottom: 16,
   },
   dateField: {
     flex: 1,
@@ -429,27 +658,34 @@ const styles = StyleSheet.create({
     color: '#052D50',
     marginBottom: 4,
   },
-  dateInput: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
+  dateValueCard: {
+    backgroundColor: 'rgba(245, 245, 245, 1)',
+    borderRadius: 20,
     paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: '#E6E6E6',
-    fontSize: 16,
+    height: 44,
+    justifyContent: 'center',
+  },
+  dateValueCardDisabled: {
+    opacity: 0.72,
+  },
+  dateValueText: {
+    fontSize: 15,
     color: '#052D50',
+  },
+  dateValuePlaceholder: {
+    color: '#698196',
   },
   exportButtonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    gap: 12,
   },
   exportButton: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
+    borderRadius: 20,
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingVertical: 12,
     borderWidth: 1,
     borderColor: '#E6E6E6',
     alignItems: 'center',
@@ -475,6 +711,36 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#FFFFFF',
     fontWeight: '600',
+  },
+  datePickerOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  datePickerCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 16,
+  },
+  datePickerTitle: {
+    color: '#052D50',
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 12,
+  },
+  datePickerButton: {
+    alignSelf: 'flex-end',
+    marginTop: 12,
+    backgroundColor: '#0091FF',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  datePickerButtonText: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '700',
   },
 });
 
