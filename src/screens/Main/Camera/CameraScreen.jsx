@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Alert, Image, InteractionManager, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -13,8 +13,8 @@ export default function CameraScreen() {
   const [shift, setShift] = useState(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [autoLaunchDone, setAutoLaunchDone] = useState(false);
-  const [cameraReady, setCameraReady] = useState(false);
+  const autoLaunchTriggeredRef = useRef(false);
+  const cameraLaunchInFlightRef = useRef(false);
 
   const loadShift = useCallback(async () => {
     try {
@@ -99,13 +99,18 @@ export default function CameraScreen() {
     );
   }, []);
 
-  const handleTakePhoto = async () => {
+  const handleTakePhoto = useCallback(async () => {
+    if (cameraLaunchInFlightRef.current || uploading) {
+      return;
+    }
+
     if (!shift?.id) {
       Alert.alert('Shift required', 'Start a shift before attaching photos.');
       return;
     }
 
     try {
+      cameraLaunchInFlightRef.current = true;
       setUploading(true);
       let permission = await ImagePicker.getCameraPermissionsAsync();
 
@@ -164,39 +169,32 @@ export default function CameraScreen() {
         error?.response?.data?.message || error?.message || 'Unable to attach a photo right now.',
       );
     } finally {
+      cameraLaunchInFlightRef.current = false;
       setUploading(false);
     }
-  };
+  }, [handleAttachFile, promptOpenSettings, shift?.id, uploadAssets, uploading]);
 
   useEffect(() => {
-    let isMounted = true;
+    if (!route.params?.autoOpen || loading || !shift?.id || autoLaunchTriggeredRef.current) {
+      return;
+    }
 
-    const warmUpCameraPermission = async () => {
-      try {
-        const permission = await ImagePicker.getCameraPermissionsAsync();
-        if (isMounted) {
-          setCameraReady(permission.granted);
-        }
-      } catch (error) {
-        if (isMounted) {
-          setCameraReady(false);
-        }
-      }
-    };
+    autoLaunchTriggeredRef.current = true;
 
-    warmUpCameraPermission();
+    let timeoutId;
+    const interactionTask = InteractionManager.runAfterInteractions(() => {
+      timeoutId = setTimeout(() => {
+        handleTakePhoto();
+      }, 350);
+    });
 
     return () => {
-      isMounted = false;
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      interactionTask.cancel();
     };
-  }, []);
-
-  useEffect(() => {
-    if (!loading && shift?.id && !uploading && !autoLaunchDone && cameraReady) {
-      setAutoLaunchDone(true);
-      handleTakePhoto();
-    }
-  }, [autoLaunchDone, cameraReady, handleTakePhoto, loading, shift?.id, uploading]);
+  }, [handleTakePhoto, loading, route.params?.autoOpen, shift?.id]);
 
   if (loading) {
     return (

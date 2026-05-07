@@ -260,7 +260,10 @@ export default function MainScreen() {
       <View style={styles.navButtonContainer}>
         <GlassView style={styles.button} intensity={60} tint="dark">
           <TouchableOpacity
-            onPress={() => navigation.navigate('Camera', currentShift?.id ? { shiftId: currentShift.id } : {})}
+            onPress={() => navigation.navigate(
+              'Camera',
+              currentShift?.id ? { shiftId: currentShift.id, autoOpen: true } : {},
+            )}
             style={styles.buttonInner}
           >
             <Image style={styles.buttonIcon} source={require('../../assets/Camera.png')} />
