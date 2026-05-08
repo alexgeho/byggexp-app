@@ -266,8 +266,8 @@ export default function MainScreen() {
             )}
             style={styles.buttonInner}
           >
-            <Image style={styles.buttonIcon} source={require('../../assets/Camera.png')} />
-            <Text style={[styles.text, { fontFamily: theme.text.fontFamily['regular'] }]}>Camera</Text>
+            <Image style={styles.buttonIcon} source={require('../../assets/next-screen.png')} />
+            <Text style={[styles.text, { fontFamily: theme.text.fontFamily['regular'] }]}>NEXT SCREEN</Text>
           </TouchableOpacity>
         </GlassView>
         <GlassView style={styles.button} intensity={60} tint="dark">
