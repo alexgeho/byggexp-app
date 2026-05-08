@@ -1,14 +1,14 @@
 import React, { useCallback, useContext, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Platform, Alert, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTheme } from '../../theme/ThemeContext';
+import { useTheme } from '../../../theme/ThemeContext';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import ProjectSelector from '../../components/common/ProjectSelector/ProjectSelector';
-import AuthContext from '../../contexts/AuthContext';
-import { useTimer } from '../../hooks/useTimer';
-import { GlassView } from '../../components/common/GlassView/GlassView';
-import { projectService, shiftService } from '../../services';
-import { formatDuration } from '../../utils/shifts';
+import ProjectSelector from '../../../components/common/ProjectSelector/ProjectSelector';
+import AuthContext from '../../../contexts/AuthContext';
+import { useTimer } from '../../../hooks/useTimer';
+import { GlassView } from '../../../components/common/GlassView/GlassView';
+import { projectService, shiftService } from '../../../services';
+import { formatDuration } from '../../../utils/shifts';
 
 export default function MainScreen() {
   const { theme } = useTheme();
@@ -202,14 +202,12 @@ export default function MainScreen() {
   const BackgroundComponent = Platform.OS === 'web' ? View : LinearGradient;
 
 
-function openVariantOne() {
-    navigation.navigate("HomeVariant1");
-  }
 
-/* SCREEN RENDER */
+  /* screen render */
+
   return (
     <BackgroundComponent
-      colors={['#00203A', '#000509']}
+      colors={['#e8eaec', '#000509']}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
       style={styles.container}
@@ -255,7 +253,7 @@ function openVariantOne() {
             ) : (
               <Image
                 style={[styles.playIcon, { tintColor: '#ffffff' }]}
-                source={isRunning ? require('../../assets/main/Pause.png') : require('../../assets/main/Play.png')}
+                source={isRunning ? require('../../../assets/main/Pause.png') : require('../../../assets/main/Play.png')}
               />
             )}
           </TouchableOpacity>
@@ -266,28 +264,31 @@ function openVariantOne() {
       <View style={styles.navButtonContainer}>
         <GlassView style={styles.button} intensity={60} tint="dark">
           <TouchableOpacity
-            onPress={openVariantOne}
+            onPress={() => navigation.navigate(
+              'Camera',
+              currentShift?.id ? { shiftId: currentShift.id, autoOpen: true } : {},
+            )}
             style={styles.buttonInner}
           >
-            <Image style={styles.buttonIcon} source={require('../../assets/next-screen.png')} />
+            <Image style={styles.buttonIcon} source={require('../../../assets/next-screen.png')} />
             <Text style={[styles.text, { fontFamily: theme.text.fontFamily['regular'] }]}>NEXT SCREEN</Text>
           </TouchableOpacity>
         </GlassView>
         <GlassView style={styles.button} intensity={60} tint="dark">
           <TouchableOpacity onPress={() => handleNav('Chats')} style={styles.buttonInner}>
-            <Image style={styles.buttonIcon} source={require('../../assets/messager.png')} />
+            <Image style={styles.buttonIcon} source={require('../../../assets/messager.png')} />
             <Text style={[styles.text, { fontFamily: theme.text.fontFamily['regular'] }]}>Chats</Text>
           </TouchableOpacity>
         </GlassView>
         <GlassView style={styles.button} intensity={60} tint="dark">
           <TouchableOpacity onPress={() => handleNav('History')} style={styles.buttonInner}>
-            <Image style={styles.buttonIcon} source={require('../../assets/history.png')} />
+            <Image style={styles.buttonIcon} source={require('../../../assets/history.png')} />
             <Text style={[styles.text, { fontFamily: theme.text.fontFamily['regular'] }]}>History</Text>
           </TouchableOpacity>
         </GlassView>
         <GlassView style={styles.button} intensity={60} tint="dark">
           <TouchableOpacity onPress={() => navigation.navigate('Projects', { mode: 'browse' })} style={styles.buttonInner}>
-            <Image style={styles.buttonIcon} source={require('../../assets/projects.png')} />
+            <Image style={styles.buttonIcon} source={require('../../../assets/projects.png')} />
             <Text style={[styles.text, { fontFamily: theme.text.fontFamily['regular'] }]}>Projects</Text>
           </TouchableOpacity>
         </GlassView>
@@ -295,11 +296,11 @@ function openVariantOne() {
 
       <View style={styles.bottomNavContainer}>
         <TouchableOpacity style={styles.bottomNavItem}>
-          <Image style={styles.bottomIcon} source={require('../../assets/Home.png')} />
+          <Image style={styles.bottomIcon} source={require('../../../assets/Home.png')} />
           <Text style={styles.bottomText}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleNav('Menu')} style={styles.bottomNavItem}>
-          <Image style={styles.bottomIcon} source={require('../../assets/Menu.png')} />
+          <Image style={styles.bottomIcon} source={require('../../../assets/Menu.png')} />
           <Text style={styles.bottomText}>Menu</Text>
         </TouchableOpacity>
       </View>
