@@ -270,7 +270,7 @@ function openVariantOne() {
             style={styles.buttonInner}
           >
             <Image style={styles.buttonIcon} source={require('../../assets/next-screen.png')} />
-            <Text style={[styles.text, { fontFamily: theme.text.fontFamily['regular'] }]}>NEXT SCREEN</Text>
+            <Text style={[styles.text, { fontFamily: theme.text.fontFamily['regular'] }]}>NEXT SCREEN 1</Text>
           </TouchableOpacity>
         </GlassView>
         <GlassView style={styles.button} intensity={60} tint="dark">
