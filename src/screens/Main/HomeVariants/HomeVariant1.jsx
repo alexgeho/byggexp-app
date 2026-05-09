@@ -319,7 +319,18 @@ export default function MainScreen() {
           {Array.from({ length: 10 }).map((_, index) => (
             <View
               key={index}
-              style={[styles.dot, index < timerProgress && styles.dotActive]}
+              style={[
+                styles.dot,
+                {
+                  backgroundColor: theme.colors.hourBlockEmpty,
+                  borderColor: theme.colors.hourBlockEmpty,
+                },
+
+                index < timerProgress && {
+                  backgroundColor: theme.colors.hourBlockFilled,
+                  borderColor: theme.colors.hourBlockFilled,
+                },
+              ]}
             />
           ))}
         </View>
@@ -354,74 +365,151 @@ export default function MainScreen() {
         </View>
       </View>
 
+      {/* MAIN NAV BTNs */}
       <View style={styles.navButtonContainer}>
-        <GlassView style={styles.button} intensity={60} tint="dark">
+        {/* 1ST BUTTON */}
+        <GlassView
+          style={[
+            styles.button,
+            {
+              borderColor: theme.colors.border,
+              backgroundColor: theme.colors.card,
+            },
+          ]}
+          intensity={60}
+        >
           <TouchableOpacity onPress={openVariantTwo} style={styles.buttonInner}>
             <Image
-              style={styles.buttonIcon}
+              style={[
+                styles.buttonIcon,
+                {
+                  tintColor: theme.colors.icon,
+                },
+              ]}
               source={require("../../../assets/next-screen.png")}
             />
+
             <Text
               style={[
                 styles.text,
-                { fontFamily: theme.text.fontFamily["regular"] },
+                {
+                  fontFamily: theme.text.fontFamily["regular"],
+                  color: theme.colors.text,
+                },
               ]}
             >
               NEXT SCREEN 2
             </Text>
           </TouchableOpacity>
         </GlassView>
-        <GlassView style={styles.button} intensity={60} tint="dark">
+
+        {/* CHATS */}
+        <GlassView
+          style={[
+            styles.button,
+            {
+              borderColor: theme.colors.border,
+              backgroundColor: theme.colors.card,
+            },
+          ]}
+          intensity={60}
+        >
           <TouchableOpacity
             onPress={() => handleNav("Chats")}
             style={styles.buttonInner}
           >
             <Image
-              style={styles.buttonIcon}
+              style={[
+                styles.buttonIcon,
+                {
+                  tintColor: theme.colors.icon,
+                },
+              ]}
               source={require("../../../assets/messager.png")}
             />
             <Text
               style={[
                 styles.text,
-                { fontFamily: theme.text.fontFamily["regular"] },
+                {
+                  fontFamily: theme.text.fontFamily["regular"],
+                  color: theme.colors.text,
+                },
               ]}
             >
               Chats
             </Text>
           </TouchableOpacity>
         </GlassView>
-        <GlassView style={styles.button} intensity={60} tint="dark">
+
+        {/* SHIFTS */}
+        <GlassView
+          style={[
+            styles.button,
+            {
+              borderColor: theme.colors.border,
+              backgroundColor: theme.colors.card,
+            },
+          ]}
+          intensity={60}
+        >
           <TouchableOpacity
             onPress={() => handleNav("History")}
             style={styles.buttonInner}
           >
             <Image
-              style={styles.buttonIcon}
+              style={[
+                styles.buttonIcon,
+                {
+                  tintColor: theme.colors.icon,
+                },
+              ]}
               source={require("../../../assets/history.png")}
             />
             <Text
               style={[
                 styles.text,
-                { fontFamily: theme.text.fontFamily["regular"] },
+                {
+                  fontFamily: theme.text.fontFamily["regular"],
+                  color: theme.colors.text,
+                },
               ]}
             >
               History
             </Text>
           </TouchableOpacity>
         </GlassView>
-        <GlassView style={styles.button} intensity={60} tint="dark">
+
+        {/* PROJECTS */}
+        <GlassView
+          style={[
+            styles.button,
+            {
+              borderColor: theme.colors.border,
+              backgroundColor: theme.colors.card,
+            },
+          ]}
+          intensity={60}
+        >
           <TouchableOpacity
             onPress={() => navigation.navigate("Projects", { mode: "browse" })}
             style={styles.buttonInner}
           >
             <Image
-              style={styles.buttonIcon}
+              style={[
+                styles.buttonIcon,
+                {
+                  tintColor: theme.colors.icon,
+                },
+              ]}
               source={require("../../../assets/projects.png")}
             />
             <Text
               style={[
                 styles.text,
-                { fontFamily: theme.text.fontFamily["regular"] },
+                {
+                  fontFamily: theme.text.fontFamily["regular"],
+                  color: theme.colors.text,
+                },
               ]}
             >
               Projects
@@ -491,14 +579,8 @@ const styles = StyleSheet.create({
   dot: {
     width: "6%",
     height: 42,
-    backgroundColor: "#0A1724",
     borderWidth: 1,
-    borderColor: "#ffffff20",
     borderRadius: 50,
-  },
-  dotActive: {
-    backgroundColor: "#0088FF",
-    borderColor: "#0088FF",
   },
   playButtonContainer: {
     width: "100%",
@@ -539,6 +621,8 @@ const styles = StyleSheet.create({
     width: "48%",
     borderRadius: 16,
     overflow: "hidden",
+
+    borderWidth: 1,
   },
   buttonInner: {
     flexDirection: "column",
