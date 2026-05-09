@@ -649,10 +649,11 @@ const styles = StyleSheet.create({
     padding: 16,
     width: "100%",
     flexDirection: "row",
-    gap: 10,
+    justifyContent: "center",
+    gap: 30,
   },
   button: {
-    width: "48%",
+    width: "42%",
     borderRadius: 16,
     overflow: "hidden",
 
