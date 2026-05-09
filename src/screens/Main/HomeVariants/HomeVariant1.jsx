@@ -246,7 +246,7 @@ export default function MainScreen() {
 
   return (
     <BackgroundComponent
-      colors={["#ffffff", "#000509"]}
+      colors={["#ffffff", "#ffffff"]}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
       style={styles.container}
@@ -254,11 +254,14 @@ export default function MainScreen() {
         style: [
           styles.container,
           {
-            backgroundImage: "linear-gradient(180deg, #00203A 0%, #000509 40%)",
+            backgroundImage: "linear-gradient(180deg, #00203A 0%, #464a4d 40%)",
           },
         ],
       })}
     >
+
+      {/* PROJECT SELECTOR */}
+
       <View style={styles.selectProjectContainer}>
         <ProjectSelector
           value={selectedProject}
