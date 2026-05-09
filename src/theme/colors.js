@@ -39,6 +39,8 @@ colors: {
   selectorArrow: '#282828',
 
   icon: '#1C1C1C80',
+
+  bottomNav: '#282828'
 }
 
 };

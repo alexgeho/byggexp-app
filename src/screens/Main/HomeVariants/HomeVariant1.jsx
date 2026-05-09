@@ -518,23 +518,57 @@ export default function MainScreen() {
         </GlassView>
       </View>
 
+      {/* BOTTOM MENU */}
       <View style={styles.bottomNavContainer}>
         <TouchableOpacity style={styles.bottomNavItem}>
           <Image
-            style={styles.bottomIcon}
+            style={[
+              styles.bottomIcon,
+              {
+                tintColor: theme.colors.icon,
+              },
+            ]}
             source={require("../../../assets/Home.png")}
           />
-          <Text style={styles.bottomText}>Home</Text>
+
+          <Text
+            style={[
+              styles.bottomText,
+              {
+                color: theme.colors.bottomNav,
+                fontFamily: theme.text.fontFamily["regular"],
+              },
+            ]}
+          >
+            Home
+          </Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           onPress={() => handleNav("Menu")}
           style={styles.bottomNavItem}
         >
           <Image
-            style={styles.bottomIcon}
+            style={[
+              styles.bottomIcon,
+              {
+                tintColor: theme.colors.icon,
+              },
+            ]}
             source={require("../../../assets/Menu.png")}
           />
-          <Text style={styles.bottomText}>Menu</Text>
+
+          <Text
+            style={[
+              styles.bottomText,
+              {
+                color: theme.colors.bottomNav,
+                fontFamily: theme.text.fontFamily["regular"],
+              },
+            ]}
+          >
+            Menu
+          </Text>
         </TouchableOpacity>
       </View>
     </BackgroundComponent>
