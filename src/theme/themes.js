@@ -1,12 +1,19 @@
 import { baseColors } from './colors';
 
 const common = {
-  borderRadius: 8,
+  borderRadius: {
+    small: 8,
+    medium: 16,
+    large: 24,
+    full: 50,
+  },
+
   spacing: {
     small: 8,
     medium: 16,
     large: 24,
   },
+
   text: {
     fontFamily: {
       regular: 'DMSans-Regular',
@@ -14,6 +21,7 @@ const common = {
       semiBold: 'DMSans-SemiBold',
       bold: 'DMSans-Bold',
     },
+
     sizes: {
       small: 12,
       medium: 16,
@@ -22,25 +30,32 @@ const common = {
   },
 };
 
-export const lightTheme = {
+export const greenTheme = {
   ...common,
+
   colors: {
-    primary: baseColors.primary,
-    background: baseColors.background.light,
-    card: '#FFFFFF',
-    text: baseColors.text.light,
-    border: '#CCCCCC',
+    background: baseColors.colors.background,
+
+    primary: baseColors.colors.primary,
+
+    glow: baseColors.colors.glow,
+
+    text: baseColors.colors.text,
+
+    hourBlockFilled: baseColors.colors.hourBlockFilled,
+
+    hourBlockEmpty: baseColors.colors.hourBlockEmpty,
+
+    border: baseColors.colors.border,
+
+    card: baseColors.colors.card,
+
+    selectorBackground: baseColors.colors.selectorBackground,
+
+    selectorBorder: baseColors.colors.selectorBorder,
+
+    selectorArrow: baseColors.colors.selectorArrow,
+
+    icon: baseColors.colors.icon,
   },
 };
-
-export const darkTheme = {
-  ...common,
-  colors: {
-    primary: baseColors.primary,
-    background: baseColors.background.dark,
-    card: '#1C1C1E',
-    text: baseColors.text.dark,
-    border: '#444444',
-  },
-};
-

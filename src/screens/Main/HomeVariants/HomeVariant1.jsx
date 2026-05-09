@@ -246,7 +246,7 @@ export default function MainScreen() {
 
   return (
     <BackgroundComponent
-      colors={["#ffffff", "#ffffff"]}
+      colors={[theme.colors.background, theme.colors.background]}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
       style={styles.container}
@@ -259,7 +259,6 @@ export default function MainScreen() {
         ],
       })}
     >
-
       {/* PROJECT SELECTOR */}
 
       <View style={styles.selectProjectContainer}>
@@ -274,7 +273,10 @@ export default function MainScreen() {
           <Text
             style={[
               styles.timerNumber,
-              { fontFamily: theme.text.fontFamily["regular"] },
+              {
+                color: theme.colors.text,
+                fontFamily: theme.text.fontFamily["regular"],
+              },
             ]}
           >
             {formattedTime.hours}
@@ -322,9 +324,17 @@ export default function MainScreen() {
           ))}
         </View>
 
+        {/* PLAY BUTTON CONTAINER */}
         <View style={styles.playButtonContainer}>
           <TouchableOpacity
-            style={[styles.playButton, isPaused && styles.playButtonPaused]}
+            style={[
+              styles.playButton,
+              {
+                backgroundColor: theme.colors.primary,
+                shadowColor: theme.colors.glow,
+              },
+              isPaused && styles.playButtonPaused,
+            ]}
             onPress={handlePlayPause}
             disabled={actionLoading}
           >
@@ -465,11 +475,9 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   timerNumber: {
-    color: "#ffffff",
     fontSize: 48,
   },
   timerSubNumber: {
-    color: "#ffffff",
     fontSize: 48,
   },
   dotsRow: {
@@ -501,15 +509,15 @@ const styles = StyleSheet.create({
   playButton: {
     width: 100,
     height: 100,
-    backgroundColor: "#0088FF",
     borderRadius: 50,
     borderWidth: 1,
     borderColor: "#ffffff60",
-    shadowColor: "#0088FF",
+
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.605,
     shadowRadius: 80,
     elevation: 10,
+
     alignItems: "center",
     justifyContent: "center",
   },
