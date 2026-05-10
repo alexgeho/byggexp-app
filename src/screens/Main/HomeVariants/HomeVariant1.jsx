@@ -242,7 +242,7 @@ export default function MainScreen() {
     navigation.navigate("HomeVariant2");
   }
 
-  /* screen render */
+  /* SCREEN RENDER */
 
   return (
     <BackgroundComponent
@@ -260,7 +260,6 @@ export default function MainScreen() {
       })}
     >
       {/* PROJECT SELECTOR */}
-
       <View style={styles.selectProjectContainer}>
         <ProjectSelector
           value={selectedProject}
@@ -269,6 +268,7 @@ export default function MainScreen() {
           onPress={() => navigation.navigate("Projects", { mode: "select" })}
         />
 
+        {/* TIMER */}
         <View style={styles.timerRow}>
           <Text
             style={[
@@ -315,6 +315,7 @@ export default function MainScreen() {
           </Text>
         </View>
 
+        {/* HOURS DOTS*/}
         <View style={styles.dotsRow}>
           {Array.from({ length: 10 }).map((_, index) => (
             <View
@@ -343,6 +344,10 @@ export default function MainScreen() {
               {
                 backgroundColor: theme.colors.primary,
                 shadowColor: theme.colors.glow,
+                borderColor: theme.colors.glow,
+                shadowOpacity: 0.7,
+                shadowRadius: 40,
+                elevation: 25,
               },
               isPaused && styles.playButtonPaused,
             ]}
@@ -587,13 +592,14 @@ const styles = StyleSheet.create({
     padding: 46,
     zIndex: 1000,
     position: "relative",
+    gap: 15,
   },
   timerRow: {
     flexDirection: "row",
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 32,
+   
     elevation: 3,
   },
   timerNumber: {
@@ -607,7 +613,6 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 12,
     elevation: 3,
   },
   dot: {
@@ -620,19 +625,18 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 32,
+    marginTop: 30,
   },
   playButton: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 150,
+    height: 150,
+    borderRadius: 100,
     borderWidth: 1,
-    borderColor: "#ffffff60",
 
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.605,
-    shadowRadius: 80,
-    elevation: 10,
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
 
     alignItems: "center",
     justifyContent: "center",
@@ -641,8 +645,8 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   playIcon: {
-    width: 32,
-    height: 32,
+    width: 52,
+    height: 52,
   },
   navButtonContainer: {
     flexWrap: "wrap",

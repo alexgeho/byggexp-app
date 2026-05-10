@@ -1,4 +1,9 @@
-import { baseColors } from './colors';
+import {
+  greenColors,
+  blueColors,
+  orangeColors,
+  darkGrayColors,
+} from "./colors";
 
 const common = {
   borderRadius: {
@@ -16,10 +21,10 @@ const common = {
 
   text: {
     fontFamily: {
-      regular: 'DMSans-Regular',
-      medium: 'DMSans-Medium',
-      semiBold: 'DMSans-SemiBold',
-      bold: 'DMSans-Bold',
+      regular: "DMSans-Regular",
+      medium: "DMSans-Medium",
+      semiBold: "DMSans-SemiBold",
+      bold: "DMSans-Bold",
     },
 
     sizes: {
@@ -32,30 +37,20 @@ const common = {
 
 export const greenTheme = {
   ...common,
+  colors: greenColors,
+};
 
-  colors: {
-    background: baseColors.colors.background,
+export const blueTheme = {
+  ...common,
+  colors: blueColors,
+};
 
-    primary: baseColors.colors.primary,
+export const orangeTheme = {
+  ...common,
+  colors: orangeColors,
+};
 
-    glow: baseColors.colors.glow,
-
-    text: baseColors.colors.text,
-
-    hourBlockFilled: baseColors.colors.hourBlockFilled,
-
-    hourBlockEmpty: baseColors.colors.hourBlockEmpty,
-
-    border: baseColors.colors.border,
-
-    card: baseColors.colors.card,
-
-    selectorBackground: baseColors.colors.selectorBackground,
-
-    selectorBorder: baseColors.colors.selectorBorder,
-
-    selectorArrow: baseColors.colors.selectorArrow,
-
-    icon: baseColors.colors.icon,
-  },
+export const darkGrayTheme = {
+  ...common,
+  colors: darkGrayColors,
 };

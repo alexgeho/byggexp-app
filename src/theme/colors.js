@@ -14,8 +14,9 @@ export const baseColors = {
     description: '#052D50'
   },
 
+};
 
-colors: {
+export const greenColors = {
   background: '#FFFFFF',
 
   primary: '#759D3C',
@@ -43,4 +44,86 @@ colors: {
   bottomNav: '#282828'
 }
 
+export const blueColors = {
+  background: "#FFFFFF",
+
+  primary: "#3B82F6",
+
+  glow: "#3B82F6",
+
+  text: "#282828",
+
+  hourBlockFilled: "#3B82F6",
+
+  hourBlockEmpty: "#3B82F64D",
+
+  border: "#2828284D",
+
+  card: "#FFFFFF",
+
+  selectorBackground: "#FFFFFF",
+
+  selectorBorder: "#28282866",
+
+  selectorArrow: "#282828",
+
+  icon: "#1C1C1C80",
+
+  bottomNav: "#282828",
+};
+
+export const orangeColors = {
+  background: "#FFFFFF",
+
+  primary: "#F97316",
+
+  glow: "#F97316",
+
+  text: "#282828",
+
+  hourBlockFilled: "#F97316",
+
+  hourBlockEmpty: "#F973164D",
+
+  border: "#2828284D",
+
+  card: "#FFFFFF",
+
+  selectorBackground: "#FFFFFF",
+
+  selectorBorder: "#28282866",
+
+  selectorArrow: "#282828",
+
+  icon: "#1C1C1C80",
+
+  bottomNav: "#282828",
+};
+
+export const darkGrayColors = {
+  background: "#121212",
+
+  primary: "#2A2A2A",
+
+  glow: "#000000",
+
+  text: "#FFFFFF",
+
+  hourBlockFilled: "#3A3A3A",
+
+  hourBlockEmpty: "#FFFFFF20",
+
+  border: "#FFFFFF10",
+
+  card: "#1C1C1C",
+
+  selectorBackground: "#1F1F1F",
+
+  selectorBorder: "#FFFFFF15",
+
+  selectorArrow: "#FFFFFF",
+
+  icon: "#FFFFFF80",
+
+  bottomNav: "#FFFFFF",
 };

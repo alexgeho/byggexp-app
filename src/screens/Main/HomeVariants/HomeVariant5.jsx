@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -16,7 +10,6 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Audio } from "expo-av";
 import { useTheme } from "../../../theme/ThemeContext";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import ProjectSelector from "../../../components/common/ProjectSelector/ProjectSelector";
@@ -27,8 +20,7 @@ import { projectService, shiftService } from "../../../services";
 import { formatDuration } from "../../../utils/shifts";
 
 export default function MainScreen() {
-  const soundRef = useRef(null);
-  const { theme } = useTheme();
+  const { theme, changeTheme } = useTheme();
   const navigation = useNavigation();
   const { user, selectedProject, setSelectedProject } = useContext(AuthContext);
   const [projects, setProjects] = useState([]);
@@ -245,61 +237,19 @@ export default function MainScreen() {
   };
 
   const BackgroundComponent = Platform.OS === "web" ? View : LinearGradient;
+  useEffect(function applyTheme() {
+    changeTheme("orange");
+  }, []);
 
-  function openVariantThree() {
-    navigation.navigate("HomeVariant3");
+  function openVariantTwo() {
+    navigation.navigate("HomeVariant6");
   }
 
-  useEffect(function setupAudio() {
-  loadAndPlayMusic();
-
-  return function cleanupAudio() {
-    unloadMusic();
-  };
-}, []);
-
-async function loadAndPlayMusic() {
-  try {
-    const { sound } = await Audio.Sound.createAsync(
-      require("../../../assets/sounds/mortal_kombat_theme.mp3"),
-      {
-        shouldPlay: true,
-        isLooping: true,
-        volume: 0.35,
-      }
-    );
-
-    soundRef.current = sound;
-  } catch (error) {
-    console.log("Audio error:", error);
-  }
-}
-
-async function unloadMusic() {
-  if (soundRef.current) {
-    await soundRef.current.stopAsync();
-    await soundRef.current.unloadAsync();
-    soundRef.current = null;
-  }
-}
-
-async function pauseMusic() {
-  if (soundRef.current) {
-    await soundRef.current.pauseAsync();
-  }
-}
-
-async function playMusic() {
-  if (soundRef.current) {
-    await soundRef.current.playAsync();
-  }
-}
-
-  /* screen render */
+  /* SCREEN RENDER */
 
   return (
     <BackgroundComponent
-      colors={["#fefefe", "#ffffff"]}
+      colors={[theme.colors.background, theme.colors.background]}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
       style={styles.container}
@@ -307,25 +257,13 @@ async function playMusic() {
         style: [
           styles.container,
           {
-            backgroundImage: "linear-gradient(180deg, #00203A 0%, #000509 40%)",
+            backgroundImage: "linear-gradient(180deg, #00203A 0%, #464a4d 40%)",
           },
         ],
       })}
     >
-      {/* Demo image */}
-      <Image
-        source={require("../../../assets/ufcstars.png")}
-        style={{
-          width: "100%",
-          height: undefined,
-          aspectRatio: 1,
-          marginTop: "20px",
-        }}
-        resizeMode="contain"
-      />
-
-      {/*  <View style={styles.selectProjectContainer}>
-          
+      {/* PROJECT SELECTOR */}
+      <View style={styles.selectProjectContainer}>
         <ProjectSelector
           value={selectedProject}
           onChange={handleProjectChange}
@@ -333,11 +271,15 @@ async function playMusic() {
           onPress={() => navigation.navigate("Projects", { mode: "select" })}
         />
 
+        {/* TIMER */}
         <View style={styles.timerRow}>
           <Text
             style={[
               styles.timerNumber,
-              { fontFamily: theme.text.fontFamily["regular"] },
+              {
+                color: theme.colors.text,
+                fontFamily: theme.text.fontFamily["regular"],
+              },
             ]}
           >
             {formattedTime.hours}
@@ -376,18 +318,42 @@ async function playMusic() {
           </Text>
         </View>
 
+        {/* HOURS DOTS*/}
         <View style={styles.dotsRow}>
           {Array.from({ length: 10 }).map((_, index) => (
             <View
               key={index}
-              style={[styles.dot, index < timerProgress && styles.dotActive]}
+              style={[
+                styles.dot,
+                {
+                  backgroundColor: theme.colors.hourBlockEmpty,
+                  borderColor: theme.colors.hourBlockEmpty,
+                },
+
+                index < timerProgress && {
+                  backgroundColor: theme.colors.hourBlockFilled,
+                  borderColor: theme.colors.hourBlockFilled,
+                },
+              ]}
             />
           ))}
         </View>
 
+        {/* PLAY BUTTON CONTAINER */}
         <View style={styles.playButtonContainer}>
           <TouchableOpacity
-            style={[styles.playButton, isPaused && styles.playButtonPaused]}
+            style={[
+              styles.playButton,
+              {
+                backgroundColor: theme.colors.primary,
+                shadowColor: theme.colors.glow,
+                borderColor: theme.colors.glow,
+                shadowOpacity: 0.7,
+                shadowRadius: 40,
+                elevation: 25,
+              },
+              isPaused && styles.playButtonPaused,
+            ]}
             onPress={handlePlayPause}
             disabled={actionLoading}
           >
@@ -406,104 +372,211 @@ async function playMusic() {
           </TouchableOpacity>
         </View>
       </View>
- */}
+
+      {/* MAIN NAV BTNs */}
       <View style={styles.navButtonContainer}>
-        <GlassView style={styles.button} intensity={60}>
-          <TouchableOpacity
-            onPress={openVariantThree}
-            style={styles.buttonInner}
-          >
+        {/* 1ST BUTTON */}
+        <GlassView
+          style={[
+            styles.button,
+            {
+              borderColor: theme.colors.border,
+              backgroundColor: theme.colors.card,
+            },
+          ]}
+          intensity={60}
+        >
+          <TouchableOpacity onPress={openVariantTwo} style={styles.buttonInner}>
             <Image
-              style={styles.buttonIcon}
+              style={[
+                styles.buttonIcon,
+                {
+                  tintColor: theme.colors.icon,
+                },
+              ]}
               source={require("../../../assets/next-screen.png")}
             />
+
             <Text
               style={[
-                styles.text1,
-                { fontFamily: theme.text.fontFamily["regular"] },
+                styles.text,
+                {
+                  fontFamily: theme.text.fontFamily["regular"],
+                  color: theme.colors.text,
+                },
               ]}
             >
-              NEXT SCREEN 3
+              NEXT SCREEN 6
             </Text>
           </TouchableOpacity>
         </GlassView>
 
-        {/* <GlassView style={styles.button} intensity={60} tint="dark">
+        {/* CHATS */}
+        <GlassView
+          style={[
+            styles.button,
+            {
+              borderColor: theme.colors.border,
+              backgroundColor: theme.colors.card,
+            },
+          ]}
+          intensity={60}
+        >
           <TouchableOpacity
             onPress={() => handleNav("Chats")}
             style={styles.buttonInner}
           >
             <Image
-              style={styles.buttonIcon}
+              style={[
+                styles.buttonIcon,
+                {
+                  tintColor: theme.colors.icon,
+                },
+              ]}
               source={require("../../../assets/messager.png")}
             />
             <Text
               style={[
                 styles.text,
-                { fontFamily: theme.text.fontFamily["regular"] },
+                {
+                  fontFamily: theme.text.fontFamily["regular"],
+                  color: theme.colors.text,
+                },
               ]}
             >
               Chats
             </Text>
           </TouchableOpacity>
         </GlassView>
-        <GlassView style={styles.button} intensity={60} tint="dark">
+
+        {/* SHIFTS */}
+        <GlassView
+          style={[
+            styles.button,
+            {
+              borderColor: theme.colors.border,
+              backgroundColor: theme.colors.card,
+            },
+          ]}
+          intensity={60}
+        >
           <TouchableOpacity
             onPress={() => handleNav("History")}
             style={styles.buttonInner}
           >
             <Image
-              style={styles.buttonIcon}
+              style={[
+                styles.buttonIcon,
+                {
+                  tintColor: theme.colors.icon,
+                },
+              ]}
               source={require("../../../assets/history.png")}
             />
             <Text
               style={[
                 styles.text,
-                { fontFamily: theme.text.fontFamily["regular"] },
+                {
+                  fontFamily: theme.text.fontFamily["regular"],
+                  color: theme.colors.text,
+                },
               ]}
             >
               History
             </Text>
           </TouchableOpacity>
         </GlassView>
-        <GlassView style={styles.button} intensity={60} tint="dark">
+
+        {/* PROJECTS */}
+        <GlassView
+          style={[
+            styles.button,
+            {
+              borderColor: theme.colors.border,
+              backgroundColor: theme.colors.card,
+            },
+          ]}
+          intensity={60}
+        >
           <TouchableOpacity
             onPress={() => navigation.navigate("Projects", { mode: "browse" })}
             style={styles.buttonInner}
           >
             <Image
-              style={styles.buttonIcon}
+              style={[
+                styles.buttonIcon,
+                {
+                  tintColor: theme.colors.icon,
+                },
+              ]}
               source={require("../../../assets/projects.png")}
             />
             <Text
               style={[
                 styles.text,
-                { fontFamily: theme.text.fontFamily["regular"] },
+                {
+                  fontFamily: theme.text.fontFamily["regular"],
+                  color: theme.colors.text,
+                },
               ]}
             >
               Projects
             </Text>
           </TouchableOpacity>
-        </GlassView> */}
+        </GlassView>
       </View>
 
+      {/* BOTTOM MENU */}
       <View style={styles.bottomNavContainer}>
         <TouchableOpacity style={styles.bottomNavItem}>
           <Image
-            style={styles.bottomIcon}
+            style={[
+              styles.bottomIcon,
+              {
+                tintColor: theme.colors.icon,
+              },
+            ]}
             source={require("../../../assets/Home.png")}
           />
-          <Text style={styles.bottomText}>Home</Text>
+
+          <Text
+            style={[
+              styles.bottomText,
+              {
+                color: theme.colors.bottomNav,
+                fontFamily: theme.text.fontFamily["regular"],
+              },
+            ]}
+          >
+            Home
+          </Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           onPress={() => handleNav("Menu")}
           style={styles.bottomNavItem}
         >
           <Image
-            style={styles.bottomIcon}
+            style={[
+              styles.bottomIcon,
+              {
+                tintColor: theme.colors.icon,
+              },
+            ]}
             source={require("../../../assets/Menu.png")}
           />
-          <Text style={styles.bottomText}>Menu</Text>
+
+          <Text
+            style={[
+              styles.bottomText,
+              {
+                color: theme.colors.bottomNav,
+                fontFamily: theme.text.fontFamily["regular"],
+              },
+            ]}
+          >
+            Menu
+          </Text>
         </TouchableOpacity>
       </View>
     </BackgroundComponent>
@@ -515,28 +588,27 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     overflow: "hidden",
-    paddingTop: 62,
+    paddingTop: 32,
     justifyContent: "space-between",
   },
   selectProjectContainer: {
     padding: 46,
     zIndex: 1000,
     position: "relative",
+    gap: 15,
   },
   timerRow: {
     flexDirection: "row",
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 32,
+
     elevation: 3,
   },
   timerNumber: {
-    color: "#ffffff",
     fontSize: 48,
   },
   timerSubNumber: {
-    color: "#ffffff",
     fontSize: 48,
   },
   dotsRow: {
@@ -544,39 +616,31 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 12,
     elevation: 3,
   },
   dot: {
     width: "6%",
     height: 42,
-    backgroundColor: "#0A1724",
     borderWidth: 1,
-    borderColor: "#ffffff20",
     borderRadius: 50,
-  },
-  dotActive: {
-    backgroundColor: "#0088FF",
-    borderColor: "#0088FF",
   },
   playButtonContainer: {
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 32,
+    marginTop: 30,
   },
   playButton: {
-    width: 100,
-    height: 100,
-    backgroundColor: "#0088FF",
-    borderRadius: 50,
+    width: 150,
+    height: 150,
+    borderRadius: 100,
     borderWidth: 1,
-    borderColor: "#ffffff60",
-    shadowColor: "#0088FF",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.605,
-    shadowRadius: 80,
-    elevation: 10,
+
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+
     alignItems: "center",
     justifyContent: "center",
   },
@@ -584,23 +648,23 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   playIcon: {
-    width: 32,
-    height: 32,
+    width: 52,
+    height: 52,
   },
   navButtonContainer: {
     flexWrap: "wrap",
     padding: 16,
     width: "100%",
     flexDirection: "row",
-    gap: 10,
+    justifyContent: "center",
+    gap: 30,
   },
   button: {
-    width: "100%",
+    width: "42%",
     borderRadius: 16,
     overflow: "hidden",
-    color: "#000000",
-    borderWidth: 2,
-    borderColor: "#00000040",
+
+    borderWidth: 1,
   },
   buttonInner: {
     flexDirection: "column",
@@ -614,9 +678,6 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "#ffffff",
-  },
-  text1: {
-    color: "#000000",
   },
   bottomNavContainer: {
     flexDirection: "row",

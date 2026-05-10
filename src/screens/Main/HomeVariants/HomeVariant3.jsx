@@ -1,4 +1,9 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import {
   View,
   Text,
@@ -20,7 +25,7 @@ import { projectService, shiftService } from "../../../services";
 import { formatDuration } from "../../../utils/shifts";
 
 export default function MainScreen() {
-  const { theme } = useTheme();
+  const { theme, changeTheme } = useTheme();
   const navigation = useNavigation();
   const { user, selectedProject, setSelectedProject } = useContext(AuthContext);
   const [projects, setProjects] = useState([]);
@@ -239,14 +244,14 @@ export default function MainScreen() {
   const BackgroundComponent = Platform.OS === "web" ? View : LinearGradient;
 
   function openMainScreen() {
-    navigation.navigate("Main");
+    navigation.navigate("HomeVariant4");
   }
 
   /* SCREEN RENDER */
 
   return (
     <BackgroundComponent
-      colors={["#ededed", "#000509"]}
+      colors={["#ededed", "#1f1f1f"]}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
       style={styles.container}
@@ -480,7 +485,7 @@ const styles = StyleSheet.create({
   dot: {
     width: "6%",
     height: 42,
-    backgroundColor: "#0A1724",
+    backgroundColor: "#4c4e51",
     borderWidth: 1,
     borderColor: "#ffffff20",
     borderRadius: 50,
@@ -496,13 +501,13 @@ const styles = StyleSheet.create({
     marginTop: 32,
   },
   playButton: {
-    width: 100,
-    height: 100,
-    backgroundColor: "#0088FF",
-    borderRadius: 50,
+    width: 140,
+    height: 140,
+    backgroundColor: "#000000",
+    borderRadius: 100,
     borderWidth: 1,
     borderColor: "#ffffff60",
-    shadowColor: "#0088FF",
+    shadowColor: "#000000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.605,
     shadowRadius: 80,

@@ -30,6 +30,9 @@ import { flushPendingNotificationNavigation } from "../services/notifications.se
 import HomeVariant1 from "../screens/Main/HomeVariants/HomeVariant1";
 import HomeVariant2 from "../screens/Main/HomeVariants/HomeVariant2";
 import HomeVariant3 from "../screens/Main/HomeVariants/HomeVariant3";
+import HomeVariant4 from "../screens/Main/HomeVariants/HomeVariant4";
+import HomeVariant5 from "../screens/Main/HomeVariants/HomeVariant5";
+import HomeVariant6 from "../screens/Main/HomeVariants/HomeVariant6";
 
 const Stack = createNativeStackNavigator();
 
@@ -84,6 +87,9 @@ export default function AppNavigator() {
             <Stack.Screen name="HomeVariant1" component={HomeVariant1} />
             <Stack.Screen name="HomeVariant2" component={HomeVariant2} />
             <Stack.Screen name="HomeVariant3" component={HomeVariant3} />
+            <Stack.Screen name="HomeVariant4" component={HomeVariant4} />
+            <Stack.Screen name="HomeVariant5" component={HomeVariant5} />
+            <Stack.Screen name="HomeVariant6" component={HomeVariant6} />
             <Stack.Screen
               name="Camera"
               component={CameraScreen}
