@@ -242,12 +242,12 @@ export default function MainScreen() {
   };
 
   const BackgroundComponent = Platform.OS === "web" ? View : LinearGradient;
-      useEffect(function applyTheme() {
-      changeTheme("blue");
-    }, []);
+  useEffect(function applyTheme() {
+  changeTheme("darkGray");
+}, []);
 
   function openVariantTwo() {
-    navigation.navigate("Main");
+    navigation.navigate("HomeVariant5orange");
   }
 
   /* SCREEN RENDER */
@@ -292,7 +292,9 @@ export default function MainScreen() {
           <Text
             style={[
               styles.timerNumber,
-              { fontFamily: theme.text.fontFamily["regular"] },
+              { 
+                color: theme.colors.text,
+                fontFamily: theme.text.fontFamily["regular"] },
             ]}
           >
             :
@@ -300,7 +302,9 @@ export default function MainScreen() {
           <Text
             style={[
               styles.timerNumber,
-              { fontFamily: theme.text.fontFamily["regular"] },
+              { 
+                color: theme.colors.text,
+                fontFamily: theme.text.fontFamily["regular"] },
             ]}
           >
             {formattedTime.minutes}
@@ -308,7 +312,9 @@ export default function MainScreen() {
           <Text
             style={[
               styles.timerNumber,
-              { fontFamily: theme.text.fontFamily["regular"] },
+              { 
+                color: theme.colors.text,
+                fontFamily: theme.text.fontFamily["regular"] },
             ]}
           >
             :
@@ -316,7 +322,9 @@ export default function MainScreen() {
           <Text
             style={[
               styles.timerSubNumber,
-              { fontFamily: theme.text.fontFamily["regular"] },
+              { 
+                color: theme.colors.text,
+                fontFamily: theme.text.fontFamily["regular"] },
             ]}
           >
             {formattedTime.seconds}
@@ -411,7 +419,7 @@ export default function MainScreen() {
                 },
               ]}
             >
-              NEXT TO MAIN
+              NEXT SCREEN 5
             </Text>
           </TouchableOpacity>
         </GlassView>
@@ -636,8 +644,8 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   playButton: {
-    width: 150,
-    height: 150,
+    width: 130,
+    height: 130,
     borderRadius: 100,
     borderWidth: 1,
 
@@ -674,7 +682,7 @@ const styles = StyleSheet.create({
   buttonInner: {
     flexDirection: "column",
     padding: 16,
-    gap: 28,
+    gap: 8,
     alignItems: "center",
   },
   buttonIcon: {

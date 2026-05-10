@@ -27,12 +27,12 @@ import { useTheme } from "../theme/ThemeContext";
 import { navigationRef } from "./navigationRef";
 import { flushPendingNotificationNavigation } from "../services/notifications.service";
 
-import HomeVariant1 from "../screens/Main/HomeVariants/HomeVariant1";
+import HomeVariant1green from "../screens/Main/HomeVariants/HomeVariant1green";
 import HomeVariant2 from "../screens/Main/HomeVariants/HomeVariant2";
 import HomeVariant3 from "../screens/Main/HomeVariants/HomeVariant3";
-import HomeVariant4 from "../screens/Main/HomeVariants/HomeVariant4";
-import HomeVariant5 from "../screens/Main/HomeVariants/HomeVariant5";
-import HomeVariant6 from "../screens/Main/HomeVariants/HomeVariant6";
+import HomeVariant4darkGray from "../screens/Main/HomeVariants/HomeVariant4darkGray";
+import HomeVariant5orange from "../screens/Main/HomeVariants/HomeVariant5orange";
+import HomeVariant6blue from "../screens/Main/HomeVariants/HomeVariant6blue";
 
 const Stack = createNativeStackNavigator();
 
@@ -81,15 +81,15 @@ export default function AppNavigator() {
           <>
             <Stack.Screen
               name="Main"
-              component={MainScreen}
+              component={HomeVariant1green}
               options={{ headerShown: false }}
             />
-            <Stack.Screen name="HomeVariant1" component={HomeVariant1} />
+            <Stack.Screen name="HomeVariant1green" component={HomeVariant1green} />
             <Stack.Screen name="HomeVariant2" component={HomeVariant2} />
             <Stack.Screen name="HomeVariant3" component={HomeVariant3} />
-            <Stack.Screen name="HomeVariant4" component={HomeVariant4} />
-            <Stack.Screen name="HomeVariant5" component={HomeVariant5} />
-            <Stack.Screen name="HomeVariant6" component={HomeVariant6} />
+            <Stack.Screen name="HomeVariant4darkGray" component={HomeVariant4darkGray} />
+            <Stack.Screen name="HomeVariant5orange" component={HomeVariant5orange} />
+            <Stack.Screen name="HomeVariant6blue" component={HomeVariant6blue} />
             <Stack.Screen
               name="Camera"
               component={CameraScreen}

@@ -244,7 +244,7 @@ export default function MainScreen() {
   const BackgroundComponent = Platform.OS === "web" ? View : LinearGradient;
 
   function openMainScreen() {
-    navigation.navigate("HomeVariant4");
+    navigation.navigate("HomeVariant4darkGray");
   }
 
   /* SCREEN RENDER */
