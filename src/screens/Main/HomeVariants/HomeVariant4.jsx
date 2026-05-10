@@ -644,8 +644,8 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   playButton: {
-    width: 150,
-    height: 150,
+    width: 130,
+    height: 130,
     borderRadius: 100,
     borderWidth: 1,
 
@@ -682,7 +682,7 @@ const styles = StyleSheet.create({
   buttonInner: {
     flexDirection: "column",
     padding: 16,
-    gap: 28,
+    gap: 8,
     alignItems: "center",
   },
   buttonIcon: {

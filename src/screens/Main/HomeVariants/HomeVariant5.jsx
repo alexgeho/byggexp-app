@@ -262,322 +262,349 @@ export default function MainScreen() {
         ],
       })}
     >
+    
       {/* PROJECT SELECTOR */}
-      <View style={styles.selectProjectContainer}>
-        <ProjectSelector
-          value={selectedProject}
-          onChange={handleProjectChange}
-          projects={projects}
-          onPress={() => navigation.navigate("Projects", { mode: "select" })}
-        />
+      <View style={styles.projectSelectorWrapper}>
+      <ProjectSelector
+        value={selectedProject}
+        onChange={handleProjectChange}
+        projects={projects}
+        onPress={() => navigation.navigate("Projects", { mode: "select" })}
+      />
+      </View>
 
-        {/* TIMER */}
-        <View style={styles.timerRow}>
-          <Text
-            style={[
-              styles.timerNumber,
-              {
-                color: theme.colors.text,
-                fontFamily: theme.text.fontFamily["regular"],
-              },
-            ]}
-          >
-            {formattedTime.hours}
-          </Text>
-          <Text
-            style={[
-              styles.timerNumber,
-              { fontFamily: theme.text.fontFamily["regular"] },
-            ]}
-          >
-            :
-          </Text>
-          <Text
-            style={[
-              styles.timerNumber,
-              { fontFamily: theme.text.fontFamily["regular"] },
-            ]}
-          >
-            {formattedTime.minutes}
-          </Text>
-          <Text
-            style={[
-              styles.timerNumber,
-              { fontFamily: theme.text.fontFamily["regular"] },
-            ]}
-          >
-            :
-          </Text>
-          <Text
-            style={[
-              styles.timerSubNumber,
-              { fontFamily: theme.text.fontFamily["regular"] },
-            ]}
-          >
-            {formattedTime.seconds}
-          </Text>
-        </View>
-
-        {/* HOURS DOTS*/}
-        <View style={styles.dotsRow}>
-          {Array.from({ length: 10 }).map((_, index) => (
-            <View
-              key={index}
+      {/* MAIN CONTENT */}
+      <View style={styles.contentContainer}>
+        <View style={styles.timerContentContainer}>
+          {/* TIMER */}
+          <View style={styles.timerRow}>
+            <Text
               style={[
-                styles.dot,
+                styles.timerNumber,
                 {
-                  backgroundColor: theme.colors.hourBlockEmpty,
-                  borderColor: theme.colors.hourBlockEmpty,
-                },
-
-                index < timerProgress && {
-                  backgroundColor: theme.colors.hourBlockFilled,
-                  borderColor: theme.colors.hourBlockFilled,
+                  color: theme.colors.text,
+                  fontFamily: theme.text.fontFamily["regular"],
                 },
               ]}
-            />
-          ))}
-        </View>
+            >
+              {formattedTime.hours}
+            </Text>
 
-        {/* PLAY BUTTON CONTAINER */}
-        <View style={styles.playButtonContainer}>
-          <TouchableOpacity
-            style={[
-              styles.playButton,
-              {
-                backgroundColor: theme.colors.primary,
-                shadowColor: theme.colors.glow,
-                borderColor: theme.colors.glow,
-                shadowOpacity: 0.7,
-                shadowRadius: 40,
-                elevation: 25,
-              },
-              isPaused && styles.playButtonPaused,
-            ]}
-            onPress={handlePlayPause}
-            disabled={actionLoading}
-          >
-            {actionLoading ? (
-              <ActivityIndicator color="#ffffff" />
-            ) : (
-              <Image
-                style={[styles.playIcon, { tintColor: "#ffffff" }]}
-                source={
-                  isRunning
-                    ? require("../../../assets/main/Pause.png")
-                    : require("../../../assets/main/Play.png")
-                }
+            <Text
+              style={[
+                styles.timerNumber,
+                {
+                  color: theme.colors.text,
+                  fontFamily: theme.text.fontFamily["regular"],
+                },
+              ]}
+            >
+              :
+            </Text>
+
+            <Text
+              style={[
+                styles.timerNumber,
+                {
+                  color: theme.colors.text,
+                  fontFamily: theme.text.fontFamily["regular"],
+                },
+              ]}
+            >
+              {formattedTime.minutes}
+            </Text>
+
+            <Text
+              style={[
+                styles.timerNumber,
+                {
+                  color: theme.colors.text,
+                  fontFamily: theme.text.fontFamily["regular"],
+                },
+              ]}
+            >
+              :
+            </Text>
+
+            <Text
+              style={[
+                styles.timerSubNumber,
+                {
+                  color: theme.colors.text,
+                  fontFamily: theme.text.fontFamily["regular"],
+                },
+              ]}
+            >
+              {formattedTime.seconds}
+            </Text>
+          </View>
+
+          {/* HOURS DOTS */}
+          <View style={styles.dotsRow}>
+            {Array.from({ length: 8 }).map((_, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.dot,
+                  {
+                    backgroundColor: theme.colors.hourBlockEmpty,
+                    borderColor: theme.colors.hourBlockEmpty,
+                  },
+
+                  index < timerProgress && {
+                    backgroundColor: theme.colors.hourBlockFilled,
+                    borderColor: theme.colors.hourBlockFilled,
+                  },
+                ]}
               />
-            )}
+            ))}
+          </View>
+
+          {/* PLAY BUTTON */}
+          <View style={styles.playButtonContainer}>
+            <TouchableOpacity
+              style={[
+                styles.playButton,
+                {
+                  backgroundColor: theme.colors.primary,
+                  shadowColor: theme.colors.glow,
+                  borderColor: theme.colors.glow,
+                  shadowOpacity: 0.7,
+                  shadowRadius: 40,
+                  elevation: 25,
+                },
+                isPaused && styles.playButtonPaused,
+              ]}
+              onPress={handlePlayPause}
+              disabled={actionLoading}
+            >
+              {actionLoading ? (
+                <ActivityIndicator color="#ffffff" />
+              ) : (
+                <Image
+                  style={[styles.playIcon, { tintColor: "#ffffff" }]}
+                  source={
+                    isRunning
+                      ? require("../../../assets/main/Pause.png")
+                      : require("../../../assets/main/Play.png")
+                  }
+                />
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* MAIN NAV BTNs */}
+        <View style={styles.navButtonContainer}>
+          {/* 1ST BUTTON */}
+          <GlassView
+            style={[
+              styles.button,
+              {
+                borderColor: theme.colors.border,
+                backgroundColor: theme.colors.card,
+              },
+            ]}
+            intensity={60}
+          >
+            <TouchableOpacity
+              onPress={openVariantTwo}
+              style={styles.buttonInner}
+            >
+              <Image
+                style={[
+                  styles.buttonIcon,
+                  {
+                    tintColor: theme.colors.icon,
+                  },
+                ]}
+                source={require("../../../assets/next-screen.png")}
+              />
+
+              <Text
+                style={[
+                  styles.text,
+                  {
+                    fontFamily: theme.text.fontFamily["regular"],
+                    color: theme.colors.text,
+                  },
+                ]}
+              >
+                NEXT SCREEN 6
+              </Text>
+            </TouchableOpacity>
+          </GlassView>
+
+          {/* CHATS */}
+          <GlassView
+            style={[
+              styles.button,
+              {
+                borderColor: theme.colors.border,
+                backgroundColor: theme.colors.card,
+              },
+            ]}
+            intensity={60}
+          >
+            <TouchableOpacity
+              onPress={() => handleNav("Chats")}
+              style={styles.buttonInner}
+            >
+              <Image
+                style={[
+                  styles.buttonIcon,
+                  {
+                    tintColor: theme.colors.icon,
+                  },
+                ]}
+                source={require("../../../assets/messager.png")}
+              />
+              <Text
+                style={[
+                  styles.text,
+                  {
+                    fontFamily: theme.text.fontFamily["regular"],
+                    color: theme.colors.text,
+                  },
+                ]}
+              >
+                Chats
+              </Text>
+            </TouchableOpacity>
+          </GlassView>
+
+          {/* SHIFTS */}
+          <GlassView
+            style={[
+              styles.button,
+              {
+                borderColor: theme.colors.border,
+                backgroundColor: theme.colors.card,
+              },
+            ]}
+            intensity={60}
+          >
+            <TouchableOpacity
+              onPress={() => handleNav("History")}
+              style={styles.buttonInner}
+            >
+              <Image
+                style={[
+                  styles.buttonIcon,
+                  {
+                    tintColor: theme.colors.icon,
+                  },
+                ]}
+                source={require("../../../assets/history.png")}
+              />
+              <Text
+                style={[
+                  styles.text,
+                  {
+                    fontFamily: theme.text.fontFamily["regular"],
+                    color: theme.colors.text,
+                  },
+                ]}
+              >
+                History
+              </Text>
+            </TouchableOpacity>
+          </GlassView>
+
+          {/* PROJECTS */}
+          <GlassView
+            style={[
+              styles.button,
+              {
+                borderColor: theme.colors.border,
+                backgroundColor: theme.colors.card,
+              },
+            ]}
+            intensity={60}
+          >
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("Projects", { mode: "browse" })
+              }
+              style={styles.buttonInner}
+            >
+              <Image
+                style={[
+                  styles.buttonIcon,
+                  {
+                    tintColor: theme.colors.icon,
+                  },
+                ]}
+                source={require("../../../assets/projects.png")}
+              />
+              <Text
+                style={[
+                  styles.text,
+                  {
+                    fontFamily: theme.text.fontFamily["regular"],
+                    color: theme.colors.text,
+                  },
+                ]}
+              >
+                Projects
+              </Text>
+            </TouchableOpacity>
+          </GlassView>
+        </View>
+
+        {/* BOTTOM MENU */}
+        <View style={styles.bottomNavContainer}>
+          <TouchableOpacity style={styles.bottomNavItem}>
+            <Image
+              style={[
+                styles.bottomIcon,
+                {
+                  tintColor: theme.colors.icon,
+                },
+              ]}
+              source={require("../../../assets/Home.png")}
+            />
+
+            <Text
+              style={[
+                styles.bottomText,
+                {
+                  color: theme.colors.bottomNav,
+                  fontFamily: theme.text.fontFamily["regular"],
+                },
+              ]}
+            >
+              Home
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => handleNav("Menu")}
+            style={styles.bottomNavItem}
+          >
+            <Image
+              style={[
+                styles.bottomIcon,
+                {
+                  tintColor: theme.colors.icon,
+                },
+              ]}
+              source={require("../../../assets/Menu.png")}
+            />
+
+            <Text
+              style={[
+                styles.bottomText,
+                {
+                  color: theme.colors.bottomNav,
+                  fontFamily: theme.text.fontFamily["regular"],
+                },
+              ]}
+            >
+              Menu
+            </Text>
           </TouchableOpacity>
         </View>
-      </View>
-
-      {/* MAIN NAV BTNs */}
-      <View style={styles.navButtonContainer}>
-        {/* 1ST BUTTON */}
-        <GlassView
-          style={[
-            styles.button,
-            {
-              borderColor: theme.colors.border,
-              backgroundColor: theme.colors.card,
-            },
-          ]}
-          intensity={60}
-        >
-          <TouchableOpacity onPress={openVariantTwo} style={styles.buttonInner}>
-            <Image
-              style={[
-                styles.buttonIcon,
-                {
-                  tintColor: theme.colors.icon,
-                },
-              ]}
-              source={require("../../../assets/next-screen.png")}
-            />
-
-            <Text
-              style={[
-                styles.text,
-                {
-                  fontFamily: theme.text.fontFamily["regular"],
-                  color: theme.colors.text,
-                },
-              ]}
-            >
-              NEXT SCREEN 6
-            </Text>
-          </TouchableOpacity>
-        </GlassView>
-
-        {/* CHATS */}
-        <GlassView
-          style={[
-            styles.button,
-            {
-              borderColor: theme.colors.border,
-              backgroundColor: theme.colors.card,
-            },
-          ]}
-          intensity={60}
-        >
-          <TouchableOpacity
-            onPress={() => handleNav("Chats")}
-            style={styles.buttonInner}
-          >
-            <Image
-              style={[
-                styles.buttonIcon,
-                {
-                  tintColor: theme.colors.icon,
-                },
-              ]}
-              source={require("../../../assets/messager.png")}
-            />
-            <Text
-              style={[
-                styles.text,
-                {
-                  fontFamily: theme.text.fontFamily["regular"],
-                  color: theme.colors.text,
-                },
-              ]}
-            >
-              Chats
-            </Text>
-          </TouchableOpacity>
-        </GlassView>
-
-        {/* SHIFTS */}
-        <GlassView
-          style={[
-            styles.button,
-            {
-              borderColor: theme.colors.border,
-              backgroundColor: theme.colors.card,
-            },
-          ]}
-          intensity={60}
-        >
-          <TouchableOpacity
-            onPress={() => handleNav("History")}
-            style={styles.buttonInner}
-          >
-            <Image
-              style={[
-                styles.buttonIcon,
-                {
-                  tintColor: theme.colors.icon,
-                },
-              ]}
-              source={require("../../../assets/history.png")}
-            />
-            <Text
-              style={[
-                styles.text,
-                {
-                  fontFamily: theme.text.fontFamily["regular"],
-                  color: theme.colors.text,
-                },
-              ]}
-            >
-              History
-            </Text>
-          </TouchableOpacity>
-        </GlassView>
-
-        {/* PROJECTS */}
-        <GlassView
-          style={[
-            styles.button,
-            {
-              borderColor: theme.colors.border,
-              backgroundColor: theme.colors.card,
-            },
-          ]}
-          intensity={60}
-        >
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Projects", { mode: "browse" })}
-            style={styles.buttonInner}
-          >
-            <Image
-              style={[
-                styles.buttonIcon,
-                {
-                  tintColor: theme.colors.icon,
-                },
-              ]}
-              source={require("../../../assets/projects.png")}
-            />
-            <Text
-              style={[
-                styles.text,
-                {
-                  fontFamily: theme.text.fontFamily["regular"],
-                  color: theme.colors.text,
-                },
-              ]}
-            >
-              Projects
-            </Text>
-          </TouchableOpacity>
-        </GlassView>
-      </View>
-
-      {/* BOTTOM MENU */}
-      <View style={styles.bottomNavContainer}>
-        <TouchableOpacity style={styles.bottomNavItem}>
-          <Image
-            style={[
-              styles.bottomIcon,
-              {
-                tintColor: theme.colors.icon,
-              },
-            ]}
-            source={require("../../../assets/Home.png")}
-          />
-
-          <Text
-            style={[
-              styles.bottomText,
-              {
-                color: theme.colors.bottomNav,
-                fontFamily: theme.text.fontFamily["regular"],
-              },
-            ]}
-          >
-            Home
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => handleNav("Menu")}
-          style={styles.bottomNavItem}
-        >
-          <Image
-            style={[
-              styles.bottomIcon,
-              {
-                tintColor: theme.colors.icon,
-              },
-            ]}
-            source={require("../../../assets/Menu.png")}
-          />
-
-          <Text
-            style={[
-              styles.bottomText,
-              {
-                color: theme.colors.bottomNav,
-                fontFamily: theme.text.fontFamily["regular"],
-              },
-            ]}
-          >
-            Menu
-          </Text>
-        </TouchableOpacity>
       </View>
     </BackgroundComponent>
   );
@@ -591,8 +618,21 @@ const styles = StyleSheet.create({
     paddingTop: 32,
     justifyContent: "space-between",
   },
-  selectProjectContainer: {
-    padding: 46,
+  projectSelectorWrapper: {
+    paddingTop: 46,
+    paddingHorizontal: 46,
+    zIndex: 1000,
+    position: "relative",
+    gap: 15,
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: "space-around",
+  },
+
+  timerContentContainer: {
+    paddingTop: 46,
+    paddingHorizontal: 46,
     zIndex: 1000,
     position: "relative",
     gap: 15,
@@ -631,8 +671,8 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   playButton: {
-    width: 150,
-    height: 150,
+    width: 120,
+    height: 120,
     borderRadius: 100,
     borderWidth: 1,
 
@@ -657,19 +697,19 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     justifyContent: "center",
-    gap: 30,
+    gap: 10,
   },
   button: {
     width: "42%",
-    borderRadius: 16,
+    borderRadius: 6,
     overflow: "hidden",
 
     borderWidth: 1,
   },
   buttonInner: {
     flexDirection: "column",
-    padding: 16,
-    gap: 28,
+    padding: 10,
+    gap: 10,
     alignItems: "center",
   },
   buttonIcon: {

@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   View,
   Text,
@@ -20,7 +26,7 @@ import { projectService, shiftService } from "../../../services";
 import { formatDuration } from "../../../utils/shifts";
 
 export default function MainScreen() {
-  const { theme } = useTheme();
+  const { theme, changeTheme } = useTheme();
   const navigation = useNavigation();
   const { user, selectedProject, setSelectedProject } = useContext(AuthContext);
   const [projects, setProjects] = useState([]);
@@ -237,6 +243,9 @@ export default function MainScreen() {
   };
 
   const BackgroundComponent = Platform.OS === "web" ? View : LinearGradient;
+  useEffect(function applyTheme() {
+  changeTheme("green");
+}, []);
 
   function openVariantTwo() {
     navigation.navigate("HomeVariant2");
@@ -589,7 +598,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   selectProjectContainer: {
-    padding: 46,
+    paddingTop: 46,
+    paddingHorizontal: 46,
     zIndex: 1000,
     position: "relative",
     gap: 15,
@@ -599,7 +609,7 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
-   
+
     elevation: 3,
   },
   timerNumber: {
@@ -625,7 +635,7 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 30,
+    marginTop: 40,
   },
   playButton: {
     width: 150,
@@ -650,11 +660,10 @@ const styles = StyleSheet.create({
   },
   navButtonContainer: {
     flexWrap: "wrap",
-    padding: 16,
     width: "100%",
     flexDirection: "row",
     justifyContent: "center",
-    gap: 30,
+    gap: 20,
   },
   button: {
     width: "42%",
@@ -666,7 +675,7 @@ const styles = StyleSheet.create({
   buttonInner: {
     flexDirection: "column",
     padding: 16,
-    gap: 28,
+    gap: 18,
     alignItems: "center",
   },
   buttonIcon: {
