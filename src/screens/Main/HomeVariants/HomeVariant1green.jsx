@@ -2,7 +2,6 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useRef,
   useState,
 } from "react";
 import {
@@ -22,14 +21,13 @@ import ProjectSelector from "../../../components/common/ProjectSelector/ProjectS
 import AuthContext from "../../../contexts/AuthContext";
 import { useTimer } from "../../../hooks/useTimer";
 import { GlassView } from "../../../components/common/GlassView/GlassView";
-import { projectService, shiftService } from "../../../services";
-import { formatDuration } from "../../../utils/shifts";
+import { shiftService } from "../../../services";
 
 export default function MainScreen() {
   const { theme, changeTheme } = useTheme();
   const navigation = useNavigation();
-  const [projects, setProjects] = useState([]);
-  const [loadingShift, setLoadingShift] = useState(true);
+  const { selectedProject, setSelectedProject } = useContext(AuthContext);
+  const [setLoadingShift] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [currentShift, setCurrentShift] = useState(null);
   const {
@@ -45,61 +43,9 @@ export default function MainScreen() {
 
   const selectedProjectId = selectedProject?._id || selectedProject?.id;
 
-  const getProjectId = (project) => project?._id || project?.id;
-
+  /* ERRORS */
   const getErrorMessage = (error, fallbackMessage) =>
     error?.response?.data?.message || error?.message || fallbackMessage;
-
-  const upsertProject = useCallback((projectLike) => {
-    if (!projectLike) {
-      return;
-    }
-
-    setProjects((previousProjects) => {
-      const projectId = getProjectId(projectLike);
-      if (!projectId) {
-        return previousProjects;
-      }
-
-      const nextProject = {
-        ...projectLike,
-        _id: projectLike._id || projectLike.id || projectId,
-        id: projectLike.id || projectLike._id || projectId,
-      };
-
-      const existingIndex = previousProjects.findIndex(
-        (project) => getProjectId(project) === projectId,
-      );
-      if (existingIndex === -1) {
-        return [nextProject, ...previousProjects];
-      }
-
-      const updatedProjects = [...previousProjects];
-      updatedProjects[existingIndex] = {
-        ...updatedProjects[existingIndex],
-        ...nextProject,
-      };
-
-      return updatedProjects;
-    });
-  }, []);
-
-  const fetchProjects = useCallback(async () => {
-    try {
-      setProjectsLoading(true);
-      const data =
-        user?.role === "superadmin"
-          ? await projectService.getAll()
-          : await projectService.getMyProjects();
-
-      setProjects(data || []);
-    } catch (error) {
-      console.error("Failed to fetch projects for main screen:", error);
-      setProjects([]);
-    } finally {
-      setProjectsLoading(false);
-    }
-  }, [user?.role]);
 
   const applyShiftState = useCallback(
     (shift) => {
@@ -107,16 +53,12 @@ export default function MainScreen() {
 
       if (shift) {
         sync(shift);
-        upsertProject({
-          _id: shift.projectId,
-          id: shift.projectId,
-          name: shift.projectName,
-          location: shift.location,
-        });
 
         setSelectedProject((previousProject) => {
-          const previousProjectId = getProjectId(previousProject);
-          if (previousProjectId === shift.projectId) {
+          if (
+            previousProject?._id === shift.projectId ||
+            previousProject?.id === shift.projectId
+          ) {
             return previousProject;
           }
 
@@ -132,7 +74,7 @@ export default function MainScreen() {
 
       reset();
     },
-    [reset, setSelectedProject, sync, upsertProject],
+    [reset, setSelectedProject, sync],
   );
 
   const loadCurrentShift = useCallback(
@@ -167,22 +109,9 @@ export default function MainScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      fetchProjects();
       loadCurrentShift(selectedProjectId);
-    }, [fetchProjects, loadCurrentShift, selectedProjectId]),
+    }, [loadCurrentShift, selectedProjectId]),
   );
-
-  const handleProjectChange = (project) => {
-    if (currentShift?.status === "active") {
-      Alert.alert(
-        "Shift in progress",
-        "Pause the current shift before switching projects.",
-      );
-      return;
-    }
-
-    setSelectedProject(project);
-  };
 
   const handlePlayPause = async () => {
     if (actionLoading) {
@@ -242,8 +171,8 @@ export default function MainScreen() {
 
   const BackgroundComponent = Platform.OS === "web" ? View : LinearGradient;
   useEffect(function applyTheme() {
-  changeTheme("green");
-}, []);
+    changeTheme("green");
+  }, []);
 
   function openVariantTwo() {
     navigation.navigate("HomeVariant2");
@@ -270,8 +199,6 @@ export default function MainScreen() {
       <View style={styles.selectProjectContainer}>
         <ProjectSelector
           value={selectedProject}
-          onChange={handleProjectChange}
-          projects={projects}
           onPress={() => navigation.navigate("Projects", { mode: "select" })}
         />
 
