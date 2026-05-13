@@ -262,15 +262,14 @@ export default function MainScreen() {
         ],
       })}
     >
-    
       {/* PROJECT SELECTOR */}
       <View style={styles.projectSelectorWrapper}>
-      <ProjectSelector
-        value={selectedProject}
-        onChange={handleProjectChange}
-        projects={projects}
-        onPress={() => navigation.navigate("Projects", { mode: "select" })}
-      />
+        <ProjectSelector
+          value={selectedProject}
+          onChange={handleProjectChange}
+          projects={projects}
+          onPress={() => navigation.navigate("Projects", { mode: "select" })}
+        />
       </View>
 
       {/* MAIN CONTENT */}
@@ -655,7 +654,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: "100%",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "center",
+    gap: 15,
     elevation: 3,
   },
   dot: {

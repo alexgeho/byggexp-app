@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useTheme } from "../../../theme/ThemeContext";
 
-export default function ProjectSelector({ value, onPress }) {
+export default function ProjectSelector({ value, onPress, style }) {
   const { theme } = useTheme();
 
   return (
@@ -9,6 +9,7 @@ export default function ProjectSelector({ value, onPress }) {
       <TouchableOpacity
         style={[
           styles.selectorButton,
+          style,
           {
             backgroundColor: theme.colors.selectorBackground,
             borderColor: theme.colors.selectorBorder,

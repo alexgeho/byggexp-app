@@ -1,9 +1,4 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -242,9 +237,9 @@ export default function MainScreen() {
   };
 
   const BackgroundComponent = Platform.OS === "web" ? View : LinearGradient;
-      useEffect(function applyTheme() {
-      changeTheme("blue");
-    }, []);
+  useEffect(function applyTheme() {
+    changeTheme("blue");
+  }, []);
 
   function openVariantTwo() {
     navigation.navigate("HomeVariant1green");
@@ -270,6 +265,7 @@ export default function MainScreen() {
       {/* PROJECT SELECTOR */}
       <View style={styles.selectProjectContainer}>
         <ProjectSelector
+          style={{ borderRadius: 0 }}
           value={selectedProject}
           onChange={handleProjectChange}
           projects={projects}
@@ -394,7 +390,7 @@ export default function MainScreen() {
           <TouchableOpacity onPress={openVariantTwo} style={styles.buttonInner}>
             <Image
               style={[
-                styles.buttonIcon,
+                styles.btnIcon,
                 {
                   tintColor: theme.colors.icon,
                 },
@@ -433,7 +429,7 @@ export default function MainScreen() {
           >
             <Image
               style={[
-                styles.buttonIcon,
+                styles.btnIcon,
                 {
                   tintColor: theme.colors.icon,
                 },
@@ -454,45 +450,7 @@ export default function MainScreen() {
           </TouchableOpacity>
         </GlassView>
 
-        {/* SHIFTS */}
-        <GlassView
-          style={[
-            styles.button,
-            {
-              borderColor: theme.colors.border,
-              backgroundColor: theme.colors.card,
-            },
-          ]}
-          intensity={60}
-        >
-          <TouchableOpacity
-            onPress={() => handleNav("History")}
-            style={styles.buttonInner}
-          >
-            <Image
-              style={[
-                styles.buttonIcon,
-                {
-                  tintColor: theme.colors.icon,
-                },
-              ]}
-              source={require("../../../assets/history.png")}
-            />
-            <Text
-              style={[
-                styles.text,
-                {
-                  fontFamily: theme.text.fontFamily["regular"],
-                  color: theme.colors.text,
-                },
-              ]}
-            >
-              History
-            </Text>
-          </TouchableOpacity>
-        </GlassView>
-
-        {/* PROJECTS */}
+        {/* ADD BUTTON */}
         <GlassView
           style={[
             styles.button,
@@ -509,12 +467,12 @@ export default function MainScreen() {
           >
             <Image
               style={[
-                styles.buttonIcon,
+                styles.btnIcon,
                 {
                   tintColor: theme.colors.icon,
                 },
               ]}
-              source={require("../../../assets/projects.png")}
+              source={require("../../../assets/add-button.png")}
             />
             <Text
               style={[
@@ -525,7 +483,7 @@ export default function MainScreen() {
                 },
               ]}
             >
-              Projects
+              Add button
             </Text>
           </TouchableOpacity>
         </GlassView>
@@ -607,7 +565,7 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
-   
+
     elevation: 3,
   },
   timerNumber: {
@@ -662,11 +620,11 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     justifyContent: "center",
-    gap: 30,
+    gap: 1,
   },
   button: {
     width: "42%",
-    borderRadius: 16,
+    borderRadius: 0,
     overflow: "hidden",
 
     borderWidth: 1,
@@ -674,7 +632,7 @@ const styles = StyleSheet.create({
   buttonInner: {
     flexDirection: "column",
     padding: 16,
-    gap: 28,
+    gap: 14,
     alignItems: "center",
   },
   buttonIcon: {
@@ -698,6 +656,10 @@ const styles = StyleSheet.create({
   bottomIcon: {
     width: 28,
     height: 28,
+  },
+  btnIcon:{
+    width: 38,
+    height: 38,
   },
   bottomText: {
     color: "#ffffff",

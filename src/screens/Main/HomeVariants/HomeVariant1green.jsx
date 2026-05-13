@@ -28,9 +28,7 @@ import { formatDuration } from "../../../utils/shifts";
 export default function MainScreen() {
   const { theme, changeTheme } = useTheme();
   const navigation = useNavigation();
-  const { user, selectedProject, setSelectedProject } = useContext(AuthContext);
   const [projects, setProjects] = useState([]);
-  const [projectsLoading, setProjectsLoading] = useState(true);
   const [loadingShift, setLoadingShift] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [currentShift, setCurrentShift] = useState(null);
@@ -326,7 +324,7 @@ export default function MainScreen() {
 
         {/* HOURS DOTS*/}
         <View style={styles.dotsRow}>
-          {Array.from({ length: 10 }).map((_, index) => (
+          {Array.from({ length: 8 }).map((_, index) => (
             <View
               key={index}
               style={[
@@ -622,7 +620,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: "100%",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "center",
+    gap: 15,
     elevation: 3,
   },
   dot: {

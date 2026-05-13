@@ -2,6 +2,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import {
@@ -242,16 +243,19 @@ export default function MainScreen() {
   };
 
   const BackgroundComponent = Platform.OS === "web" ? View : LinearGradient;
+  useEffect(function applyTheme() {
+  changeTheme("green");
+}, []);
 
-  function openMainScreen() {
-    navigation.navigate("HomeVariant5orange");
+  function openVariantTwo() {
+    navigation.navigate("HomeVariant2");
   }
 
   /* SCREEN RENDER */
 
   return (
     <BackgroundComponent
-      colors={["#ededed", "#1f1f1f"]}
+      colors={[theme.colors.background, theme.colors.background]}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
       style={styles.container}
@@ -259,11 +263,12 @@ export default function MainScreen() {
         style: [
           styles.container,
           {
-            backgroundImage: "linear-gradient(180deg, #00203A 0%, #000509 40%)",
+            backgroundImage: "linear-gradient(180deg, #00203A 0%, #464a4d 40%)",
           },
         ],
       })}
     >
+      {/* PROJECT SELECTOR */}
       <View style={styles.selectProjectContainer}>
         <ProjectSelector
           value={selectedProject}
@@ -272,11 +277,15 @@ export default function MainScreen() {
           onPress={() => navigation.navigate("Projects", { mode: "select" })}
         />
 
+        {/* TIMER */}
         <View style={styles.timerRow}>
           <Text
             style={[
               styles.timerNumber,
-              { fontFamily: theme.text.fontFamily["regular"] },
+              {
+                color: theme.colors.text,
+                fontFamily: theme.text.fontFamily["regular"],
+              },
             ]}
           >
             {formattedTime.hours}
@@ -315,18 +324,42 @@ export default function MainScreen() {
           </Text>
         </View>
 
+        {/* HOURS DOTS*/}
         <View style={styles.dotsRow}>
-          {Array.from({ length: 10 }).map((_, index) => (
+          {Array.from({ length: 8 }).map((_, index) => (
             <View
               key={index}
-              style={[styles.dot, index < timerProgress && styles.dotActive]}
+              style={[
+                styles.dot,
+                {
+                  backgroundColor: theme.colors.hourBlockEmpty,
+                  borderColor: theme.colors.hourBlockEmpty,
+                },
+
+                index < timerProgress && {
+                  backgroundColor: theme.colors.hourBlockFilled,
+                  borderColor: theme.colors.hourBlockFilled,
+                },
+              ]}
             />
           ))}
         </View>
 
+        {/* PLAY BUTTON CONTAINER */}
         <View style={styles.playButtonContainer}>
           <TouchableOpacity
-            style={[styles.playButton, isPaused && styles.playButtonPaused]}
+            style={[
+              styles.playButton,
+              {
+                backgroundColor: theme.colors.primary,
+                shadowColor: theme.colors.glow,
+                borderColor: theme.colors.glow,
+                shadowOpacity: 0.7,
+                shadowRadius: 40,
+                elevation: 25,
+              },
+              isPaused && styles.playButtonPaused,
+            ]}
             onPress={handlePlayPause}
             disabled={actionLoading}
           >
@@ -346,74 +379,151 @@ export default function MainScreen() {
         </View>
       </View>
 
+      {/* MAIN NAV BTNs */}
       <View style={styles.navButtonContainer}>
-        <GlassView style={styles.button} intensity={60} tint="dark">
-          <TouchableOpacity onPress={openMainScreen} style={styles.buttonInner}>
+        {/* 1ST BUTTON */}
+        <GlassView
+          style={[
+            styles.button,
+            {
+              borderColor: theme.colors.border,
+              backgroundColor: theme.colors.card,
+            },
+          ]}
+          intensity={60}
+        >
+          <TouchableOpacity onPress={openVariantTwo} style={styles.buttonInner}>
             <Image
-              style={styles.buttonIcon}
+              style={[
+                styles.buttonIcon,
+                {
+                  tintColor: theme.colors.icon,
+                },
+              ]}
               source={require("../../../assets/next-screen.png")}
             />
+
             <Text
               style={[
                 styles.text,
-                { fontFamily: theme.text.fontFamily["regular"] },
+                {
+                  fontFamily: theme.text.fontFamily["regular"],
+                  color: theme.colors.text,
+                },
               ]}
             >
-              NEXT SCREEN
+              NEXT SCREEN 2
             </Text>
           </TouchableOpacity>
         </GlassView>
-        <GlassView style={styles.button} intensity={60} tint="dark">
+
+        {/* CHATS */}
+        <GlassView
+          style={[
+            styles.button,
+            {
+              borderColor: theme.colors.border,
+              backgroundColor: theme.colors.card,
+            },
+          ]}
+          intensity={60}
+        >
           <TouchableOpacity
             onPress={() => handleNav("Chats")}
             style={styles.buttonInner}
           >
             <Image
-              style={styles.buttonIcon}
+              style={[
+                styles.buttonIcon,
+                {
+                  tintColor: theme.colors.icon,
+                },
+              ]}
               source={require("../../../assets/messager.png")}
             />
             <Text
               style={[
                 styles.text,
-                { fontFamily: theme.text.fontFamily["regular"] },
+                {
+                  fontFamily: theme.text.fontFamily["regular"],
+                  color: theme.colors.text,
+                },
               ]}
             >
               Chats
             </Text>
           </TouchableOpacity>
         </GlassView>
-        <GlassView style={styles.button} intensity={60} tint="dark">
+
+        {/* SHIFTS */}
+        <GlassView
+          style={[
+            styles.button,
+            {
+              borderColor: theme.colors.border,
+              backgroundColor: theme.colors.card,
+            },
+          ]}
+          intensity={60}
+        >
           <TouchableOpacity
             onPress={() => handleNav("History")}
             style={styles.buttonInner}
           >
             <Image
-              style={styles.buttonIcon}
+              style={[
+                styles.buttonIcon,
+                {
+                  tintColor: theme.colors.icon,
+                },
+              ]}
               source={require("../../../assets/history.png")}
             />
             <Text
               style={[
                 styles.text,
-                { fontFamily: theme.text.fontFamily["regular"] },
+                {
+                  fontFamily: theme.text.fontFamily["regular"],
+                  color: theme.colors.text,
+                },
               ]}
             >
               History
             </Text>
           </TouchableOpacity>
         </GlassView>
-        <GlassView style={styles.button} intensity={60} tint="dark">
+
+        {/* PROJECTS */}
+        <GlassView
+          style={[
+            styles.button,
+            {
+              borderColor: theme.colors.border,
+              backgroundColor: theme.colors.card,
+            },
+          ]}
+          intensity={60}
+        >
           <TouchableOpacity
             onPress={() => navigation.navigate("Projects", { mode: "browse" })}
             style={styles.buttonInner}
           >
             <Image
-              style={styles.buttonIcon}
+              style={[
+                styles.buttonIcon,
+                {
+                  tintColor: theme.colors.icon,
+                },
+              ]}
               source={require("../../../assets/projects.png")}
             />
             <Text
               style={[
                 styles.text,
-                { fontFamily: theme.text.fontFamily["regular"] },
+                {
+                  fontFamily: theme.text.fontFamily["regular"],
+                  color: theme.colors.text,
+                },
               ]}
             >
               Projects
@@ -422,23 +532,57 @@ export default function MainScreen() {
         </GlassView>
       </View>
 
+      {/* BOTTOM MENU */}
       <View style={styles.bottomNavContainer}>
         <TouchableOpacity style={styles.bottomNavItem}>
           <Image
-            style={styles.bottomIcon}
+            style={[
+              styles.bottomIcon,
+              {
+                tintColor: theme.colors.icon,
+              },
+            ]}
             source={require("../../../assets/Home.png")}
           />
-          <Text style={styles.bottomText}>Home</Text>
+
+          <Text
+            style={[
+              styles.bottomText,
+              {
+                color: theme.colors.bottomNav,
+                fontFamily: theme.text.fontFamily["regular"],
+              },
+            ]}
+          >
+            Home
+          </Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           onPress={() => handleNav("Menu")}
           style={styles.bottomNavItem}
         >
           <Image
-            style={styles.bottomIcon}
+            style={[
+              styles.bottomIcon,
+              {
+                tintColor: theme.colors.icon,
+              },
+            ]}
             source={require("../../../assets/Menu.png")}
           />
-          <Text style={styles.bottomText}>Menu</Text>
+
+          <Text
+            style={[
+              styles.bottomText,
+              {
+                color: theme.colors.bottomNav,
+                fontFamily: theme.text.fontFamily["regular"],
+              },
+            ]}
+          >
+            Menu
+          </Text>
         </TouchableOpacity>
       </View>
     </BackgroundComponent>
@@ -454,64 +598,57 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   selectProjectContainer: {
-    padding: 46,
+    paddingTop: 46,
+    paddingHorizontal: 46,
     zIndex: 1000,
     position: "relative",
+    gap: 15,
   },
   timerRow: {
     flexDirection: "row",
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 32,
+
     elevation: 3,
   },
   timerNumber: {
-    color: "#ffffff",
     fontSize: 48,
   },
   timerSubNumber: {
-    color: "#ffffff",
     fontSize: 48,
   },
   dotsRow: {
     flexDirection: "row",
     width: "100%",
     alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 12,
+    justifyContent: "center",
+    gap: 15,
     elevation: 3,
   },
   dot: {
     width: "6%",
     height: 42,
-    backgroundColor: "#4c4e51",
     borderWidth: 1,
-    borderColor: "#ffffff20",
     borderRadius: 50,
-  },
-  dotActive: {
-    backgroundColor: "#0088FF",
-    borderColor: "#0088FF",
   },
   playButtonContainer: {
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 32,
+    marginTop: 40,
   },
   playButton: {
-    width: 140,
-    height: 140,
-    backgroundColor: "#000000",
+    width: 150,
+    height: 150,
     borderRadius: 100,
     borderWidth: 1,
-    borderColor: "#ffffff60",
-    shadowColor: "#000000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.605,
-    shadowRadius: 80,
-    elevation: 10,
+
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+
     alignItems: "center",
     justifyContent: "center",
   },
@@ -519,25 +656,27 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   playIcon: {
-    width: 32,
-    height: 32,
+    width: 52,
+    height: 52,
   },
   navButtonContainer: {
     flexWrap: "wrap",
-    padding: 16,
     width: "100%",
     flexDirection: "row",
-    gap: 10,
+    justifyContent: "center",
+    gap: 20,
   },
   button: {
-    width: "48%",
+    width: "42%",
     borderRadius: 16,
     overflow: "hidden",
+
+    borderWidth: 1,
   },
   buttonInner: {
     flexDirection: "column",
     padding: 16,
-    gap: 28,
+    gap: 18,
     alignItems: "center",
   },
   buttonIcon: {
