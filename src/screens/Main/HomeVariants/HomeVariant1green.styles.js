@@ -1,7 +1,9 @@
 import { StyleSheet } from "react-native";
 
 export function createStyles(theme) {
-  return StyleSheet.create({ container: {
+  return StyleSheet.create({ 
+    
+    container: {
     width: "100%",
     height: "100%",
     overflow: "hidden",

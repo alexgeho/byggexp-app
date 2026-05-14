@@ -1,16 +1,10 @@
 import React, { useState } from "react";
 
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 
-import {
-  useNavigation,
-  useFocusEffect,
-} from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
+
+import { useTheme } from "../../theme/ThemeContext";
 
 import {
   mainButtons,
@@ -24,13 +18,18 @@ import {
 
 import { GlassBackButton } from "../../components/common/GlassBackButton/GlassBackButton";
 
+import { createStyles } from "./CustomizeHomeScreen.styles";
+
 export default function CustomizeHomeScreen() {
   const navigation = useNavigation();
 
-  const [enabledButtons, setEnabledButtons] = useState(
-    defaultEnabledButtons,
-  );
+  const { theme } = useTheme();
 
+  const styles = createStyles(theme);
+
+  const [enabledButtons, setEnabledButtons] = useState(defaultEnabledButtons);
+
+  /* LOAD SAVED BUTTONS */
   useFocusEffect(
     React.useCallback(function loadButtons() {
       async function fetchButtons() {
@@ -45,15 +44,14 @@ export default function CustomizeHomeScreen() {
     }, []),
   );
 
+  /* TOGGLE BUTTON ENABLED STATE */
   async function toggleButton(buttonId) {
     const isEnabled = enabledButtons.includes(buttonId);
 
     if (isEnabled) {
-      const updatedButtons = enabledButtons.filter(
-        function removeButton(id) {
-          return id !== buttonId;
-        },
-      );
+      const updatedButtons = enabledButtons.filter(function removeButton(id) {
+        return id !== buttonId;
+      });
 
       setEnabledButtons(updatedButtons);
 
@@ -71,6 +69,7 @@ export default function CustomizeHomeScreen() {
 
   return (
     <View style={styles.container}>
+      {/* HEADER */}
       <View style={styles.header}>
         <GlassBackButton
           backgroundColor="#ffffff"
@@ -80,43 +79,34 @@ export default function CustomizeHomeScreen() {
           iconSource={require("../../assets/Arrow-left.png")}
         />
 
-        <Text style={styles.title}>
-          Customize Home Screen
-        </Text>
+        {/* TITLE */}
+        <Text style={styles.title}>Customize Home Screen</Text>
 
         <View style={styles.placeholder} />
       </View>
 
+      {/* BUTTON LIST */}
       <View style={styles.list}>
-        {mainButtons.map(function renderButton(button) {
-          const isEnabled = enabledButtons.includes(
-            button.id,
-          );
+        {mainButtons.map(function renderButton(button, index) {
+          const isEnabled = enabledButtons.includes(button.id);
 
           return (
             <TouchableOpacity
               key={button.id}
-              style={styles.item}
+              style={[
+                styles.item,
+                index !== mainButtons.length - 1 && styles.itemBorder,
+              ]}
               onPress={function handlePress() {
                 toggleButton(button.id);
               }}
             >
-              <Text style={styles.itemText}>
-                {button.title}
-              </Text>
+              <Text style={styles.itemText}>{button.title}</Text>
 
               <View
-                style={[
-                  styles.checkbox,
-                  isEnabled &&
-                    styles.checkboxActive,
-                ]}
+                style={[styles.checkbox, isEnabled && styles.checkboxActive]}
               >
-                {isEnabled && (
-                  <Text style={styles.checkmark}>
-                    ✓
-                  </Text>
-                )}
+                {isEnabled && <Text style={styles.checkmark}>✓</Text>}
               </View>
             </TouchableOpacity>
           );
@@ -125,70 +115,3 @@ export default function CustomizeHomeScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#EEF5FB",
-    paddingTop: 48,
-    paddingHorizontal: 16,
-  },
-
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 32,
-  },
-
-  title: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#052D50",
-  },
-
-  placeholder: {
-    width: 44,
-  },
-
-  list: {
-    gap: 12,
-  },
-
-  item: {
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    padding: 16,
-
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-
-  itemText: {
-    fontSize: 16,
-    color: "#052D50",
-  },
-
-  checkbox: {
-    width: 28,
-    height: 28,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: "#D0D7E2",
-
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  checkboxActive: {
-    backgroundColor: "#2582D9",
-    borderColor: "#2582D9",
-  },
-
-  checkmark: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "700",
-  },
-});
