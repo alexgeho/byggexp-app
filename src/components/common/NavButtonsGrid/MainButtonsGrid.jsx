@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     justifyContent: "center",
-    gap: 20,
+    gap: 10,
   },
 
   button: {

@@ -14,7 +14,7 @@ export function createStyles(theme) {
       paddingHorizontal: 46,
       zIndex: 1000,
       position: "relative",
-      gap: 15,
+      
     },
     contentContainer: {
       flex: 1,
@@ -23,7 +23,8 @@ export function createStyles(theme) {
       marginBottom: 20,
       zIndex: 1000,
       position: "relative",
-      gap: 15,
+      gap: 10,
+   
     },
     timerRow: {
       flexDirection: "row",
@@ -83,7 +84,7 @@ export function createStyles(theme) {
       width: "100%",
       flexDirection: "row",
       justifyContent: "center",
-      gap: 20,
+      
     },
     button: {
       width: "42%",
