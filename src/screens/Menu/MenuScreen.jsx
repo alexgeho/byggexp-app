@@ -189,6 +189,8 @@ export default function MenuScreen() {
 
   return (
     <View style={styles.container}>
+
+      {/* HEADER */}
       <View style={styles.header}>
         <GlassBackButton
           backgroundColor={"rgb(253 253 253)"}
@@ -197,6 +199,8 @@ export default function MenuScreen() {
           onPress={() => navigation.goBack()}
           iconSource={require("../../assets/Arrow-left.png")}
         />
+
+        {/* TITLE */}
         <Text
           style={[
             styles.headerTitle,
@@ -208,8 +212,11 @@ export default function MenuScreen() {
         <View style={styles.placeholder} />
       </View>
 
+       {/* AVATAR */}
       {user && (
         <View style={styles.userInfoContainer}>
+         
+  
           <Image
             style={styles.userAvatar}
             source={
@@ -218,6 +225,7 @@ export default function MenuScreen() {
                 : require("../../assets/Avatar.png")
             }
           />
+
           <View style={styles.userInfo}>
             <Text
               style={[
@@ -242,6 +250,8 @@ export default function MenuScreen() {
         </View>
       )}
 
+
+      {/* MAIN */}
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.menuSection}>
           <Text style={styles.sectionTitle}>Main</Text>
