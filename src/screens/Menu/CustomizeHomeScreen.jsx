@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import {
   View,
   Text,
@@ -6,12 +7,20 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-import { useNavigation } from "@react-navigation/native";
+import {
+  useNavigation,
+  useFocusEffect,
+} from "@react-navigation/native";
 
 import {
   mainButtons,
   defaultEnabledButtons,
 } from "../../constants/mainButtons";
+
+import {
+  getEnabledButtons,
+  saveEnabledButtons,
+} from "../../utils/homeButtonsStorage";
 
 import { GlassBackButton } from "../../components/common/GlassBackButton/GlassBackButton";
 
@@ -22,20 +31,42 @@ export default function CustomizeHomeScreen() {
     defaultEnabledButtons,
   );
 
-  function toggleButton(buttonId) {
+  useFocusEffect(
+    React.useCallback(function loadButtons() {
+      async function fetchButtons() {
+        const savedButtons = await getEnabledButtons();
+
+        if (savedButtons) {
+          setEnabledButtons(savedButtons);
+        }
+      }
+
+      fetchButtons();
+    }, []),
+  );
+
+  async function toggleButton(buttonId) {
     const isEnabled = enabledButtons.includes(buttonId);
 
     if (isEnabled) {
-      setEnabledButtons(
-        enabledButtons.filter(function removeButton(id) {
+      const updatedButtons = enabledButtons.filter(
+        function removeButton(id) {
           return id !== buttonId;
-        }),
+        },
       );
+
+      setEnabledButtons(updatedButtons);
+
+      await saveEnabledButtons(updatedButtons);
 
       return;
     }
 
-    setEnabledButtons([...enabledButtons, buttonId]);
+    const updatedButtons = [...enabledButtons, buttonId];
+
+    setEnabledButtons(updatedButtons);
+
+    await saveEnabledButtons(updatedButtons);
   }
 
   return (
@@ -49,14 +80,18 @@ export default function CustomizeHomeScreen() {
           iconSource={require("../../assets/Arrow-left.png")}
         />
 
-        <Text style={styles.title}>Customize Home Screen</Text>
+        <Text style={styles.title}>
+          Customize Home Screen
+        </Text>
 
         <View style={styles.placeholder} />
       </View>
 
       <View style={styles.list}>
         {mainButtons.map(function renderButton(button) {
-          const isEnabled = enabledButtons.includes(button.id);
+          const isEnabled = enabledButtons.includes(
+            button.id,
+          );
 
           return (
             <TouchableOpacity
@@ -73,11 +108,14 @@ export default function CustomizeHomeScreen() {
               <View
                 style={[
                   styles.checkbox,
-                  isEnabled && styles.checkboxActive,
+                  isEnabled &&
+                    styles.checkboxActive,
                 ]}
               >
                 {isEnabled && (
-                  <Text style={styles.checkmark}>✓</Text>
+                  <Text style={styles.checkmark}>
+                    ✓
+                  </Text>
                 )}
               </View>
             </TouchableOpacity>

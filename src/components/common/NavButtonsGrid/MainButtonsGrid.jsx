@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+
 import {
   View,
   Text,
@@ -7,14 +8,43 @@ import {
   StyleSheet,
 } from "react-native";
 
-import { useNavigation } from "@react-navigation/native";
+import {
+  useNavigation,
+  useFocusEffect,
+} from "@react-navigation/native";
 
 import { useTheme } from "../../../theme/ThemeContext";
-import { mainButtons } from "../../../constants/mainButtons";
+
+import {
+  mainButtons,
+  defaultEnabledButtons,
+} from "../../../constants/mainButtons";
+
+import {
+  getEnabledButtons,
+} from "../../../utils/homeButtonsStorage";
 
 export default function MainButtonsGrid() {
   const navigation = useNavigation();
   const { theme } = useTheme();
+
+  const [enabledButtons, setEnabledButtons] = useState(
+    defaultEnabledButtons,
+  );
+
+  useFocusEffect(
+    React.useCallback(function loadButtons() {
+      async function fetchButtons() {
+        const savedButtons = await getEnabledButtons();
+
+        if (savedButtons) {
+          setEnabledButtons(savedButtons);
+        }
+      }
+
+      fetchButtons();
+    }, []),
+  );
 
   function handlePress(screen) {
     navigation.navigate(screen);
@@ -23,45 +53,53 @@ export default function MainButtonsGrid() {
   return (
     <View style={styles.container}>
       {mainButtons
-        .map((button) => (
-          <View
-            key={button.id}
-            style={[
-              styles.button,
-              {
-                borderColor: theme.colors.border,
-                backgroundColor: theme.colors.card,
-              },
-            ]}
-          >
-            <TouchableOpacity
-              style={styles.buttonInner}
-              onPress={() => handlePress(button.screen)}
+        .filter(function filterButtons(button) {
+          return enabledButtons.includes(button.id);
+        })
+        .map(function renderButton(button) {
+          return (
+            <View
+              key={button.id}
+              style={[
+                styles.button,
+                {
+                  borderColor: theme.colors.border,
+                  backgroundColor: theme.colors.card,
+                },
+              ]}
             >
-              <Image
-                source={button.icon}
-                style={[
-                  styles.buttonIcon,
-                  {
-                    tintColor: theme.colors.icon,
-                  },
-                ]}
-              />
-
-              <Text
-                style={[
-                  styles.buttonText,
-                  {
-                    color: theme.colors.text,
-                    fontFamily: theme.text.fontFamily.regular,
-                  },
-                ]}
+              <TouchableOpacity
+                style={styles.buttonInner}
+                onPress={function onButtonPress() {
+                  handlePress(button.screen);
+                }}
               >
-                {button.title}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        ))}
+                <Image
+                  source={button.icon}
+                  style={[
+                    styles.buttonIcon,
+                    {
+                      tintColor: theme.colors.icon,
+                    },
+                  ]}
+                />
+
+                <Text
+                  style={[
+                    styles.buttonText,
+                    {
+                      color: theme.colors.text,
+                      fontFamily:
+                        theme.text.fontFamily.regular,
+                    },
+                  ]}
+                >
+                  {button.title}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          );
+        })}
     </View>
   );
 }
