@@ -122,13 +122,12 @@ export function createStyles(theme) {
   },
   roleBadge: {
     backgroundColor: "#2582D91A",
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
-    alignSelf: "flex-start",
+    padding: 14,
+    borderRadius: 89,
+  
   },
   roleText: {
-    fontSize: 12,
+    fontSize: 16,
     color: "#2582D9",
     fontWeight: "500",
   },

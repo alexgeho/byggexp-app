@@ -211,9 +211,10 @@ export default function MenuScreen() {
         <View style={styles.placeholder} />
       </View>
 
-      {/* AVATAR */}
+      {/* AVATAR SECTION*/}
       {user && (
         <View style={styles.userInfoContainer}>
+          {/* PHOTO */}
           <Image
             style={styles.userAvatar}
             source={
@@ -223,6 +224,7 @@ export default function MenuScreen() {
             }
           />
 
+          {/* NAME */}
           <View style={styles.userInfo}>
             <Text
               style={[
@@ -232,17 +234,19 @@ export default function MenuScreen() {
             >
               {user.name || "User"}
             </Text>
-            <View style={styles.roleBadge}>
-              <Text style={styles.roleText}>
-                {user.role === "companyAdmin"
-                  ? "Company Admin"
-                  : user.role === "projectAdmin"
-                    ? "Project Admin"
-                    : user.role === "worker"
-                      ? "Worker"
-                      : "User"}
-              </Text>
-            </View>
+          </View>
+          
+          {/* BADGE */}
+          <View style={styles.roleBadge}>
+            <Text style={styles.roleText}>
+              {user.role === "companyAdmin"
+                ? "Company Admin"
+                : user.role === "projectAdmin"
+                  ? "Project Admin"
+                  : user.role === "worker"
+                    ? "Worker"
+                    : "User"}
+            </Text>
           </View>
         </View>
       )}
