@@ -23,6 +23,7 @@ export function createStyles(theme) {
       marginBottom: 20,
       zIndex: 1000,
       position: "relative",
+      gap: 15,
     },
     timerRow: {
       flexDirection: "row",
