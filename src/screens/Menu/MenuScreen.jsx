@@ -1,5 +1,5 @@
 import React, { useContext, useMemo } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "../../theme/ThemeContext";
 import { ScrollView } from "react-native";
@@ -7,6 +7,7 @@ import { MenuButton } from "../../components/common/MenuButton/MenuButton";
 import AuthContext from "../../contexts/AuthContext";
 import { BottomBar } from "../../components/BottomBar";
 import { GlassBackButton } from "../../components/common/GlassBackButton/GlassBackButton";
+import { createStyles } from "./MenuScreen.styles";
 
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, "") ||
@@ -27,6 +28,7 @@ const resolveImageUrl = (value) => {
 export default function MenuScreen() {
   const navigation = useNavigation();
   const { theme } = useTheme();
+  const styles = createStyles(theme);
   const { user, logout } = useContext(AuthContext);
   const avatarSource = resolveImageUrl(user?.avatarUrl);
 
@@ -37,20 +39,20 @@ export default function MenuScreen() {
         screen: "CustomizeHomeScreen",
         title: "Customize Home Screen",
         icon: require("../../assets/Home.png"),
-        color: "#3B82F6",
+        color: theme.colors.primary,
       },
       {
         id: "account",
         screen: "MyAccount",
         title: "My account",
         icon: require("../../assets/Account.png"),
-        color: "#9C27B0",
+        color: theme.colors.primary,
       },
       {
         id: "notifications",
         title: "Notifications",
         icon: require("../../assets/Notifications.png"),
-        color: "#FFEB3B",
+        color: theme.colors.primary,
       },
     ];
 
@@ -63,38 +65,38 @@ export default function MenuScreen() {
           screen: "Tasks",
           title: "Tasks",
           icon: require("../../assets/Tasks.png"),
-          color: "#00C853",
+          color: theme.colors.primary,
         },
         {
           id: "shifts",
           screen: "History",
           title: "Shifts",
           icon: require("../../assets/WorkShifts.png"),
-          color: "#F44336",
+          color: theme.colors.primary,
         },
         {
           id: "company",
           title: "Company",
           icon: require("../../assets/About.png"),
-          color: "#009688",
+          color: theme.colors.primary,
         },
         {
           id: "users",
           title: "Users",
           icon: require("../../assets/Tasks.png"),
-          color: "#2196F3",
+          color: theme.colors.primary,
         },
         {
           id: "projects",
           title: "Projects",
           icon: require("../../assets/Projekts.png"),
-          color: "#FF9800",
+          color: theme.colors.primary,
         },
         {
           id: "finance",
           title: "Finance",
           icon: require("../../assets/Tracker.png"),
-          color: "#4CAF50",
+          color: theme.colors.primary
         },
       ];
     }
@@ -108,32 +110,32 @@ export default function MenuScreen() {
           screen: "Tasks",
           title: "Tasks",
           icon: require("../../assets/Tasks.png"),
-          color: "#00C853",
+          color: theme.colors.primary,
         },
         {
           id: "shifts",
           screen: "History",
           title: "Shifts",
           icon: require("../../assets/WorkShifts.png"),
-          color: "#F44336",
+          color: theme.colors.primary,
         },
         {
           id: "projects",
           title: "Projects",
           icon: require("../../assets/Projekts.png"),
-          color: "#FF9800",
+          color: theme.colors.primary,
         },
         {
           id: "team",
           title: "My Team",
           icon: require("../../assets/Tasks.png"),
-          color: "#2196F3",
+          color: theme.colors.primary,
         },
         {
           id: "reports",
           title: "Reports",
           icon: require("../../assets/Documents.png"),
-          color: "#795548",
+          color: theme.colors.primary,
         },
       ];
     }
@@ -146,20 +148,20 @@ export default function MenuScreen() {
         screen: "Tasks",
         title: "Tasks",
         icon: require("../../assets/Tasks.png"),
-        color: "#00C853",
+        color: theme.colors.primary,
       },
       {
         id: "documents",
         title: "Documents",
         icon: require("../../assets/Documents.png"),
-        color: "#2196F3",
+        color: theme.colors.primary,
       },
       {
         id: "workShifts",
         screen: "History",
         title: "Work shifts",
         icon: require("../../assets/WorkShifts.png"),
-        color: "#F44336",
+        color: theme.colors.primary,
       },
     ];
   }, [user?.role]);
@@ -169,19 +171,19 @@ export default function MenuScreen() {
       id: "legal",
       title: "Legal & Policies",
       icon: require("../../assets/Legal.png"),
-      color: "#009688",
+      color: theme.colors.primary,
     },
     {
       id: "help",
       title: "Help & Support",
       icon: require("../../assets/Help.png"),
-      color: "#00BCD4",
+      color: theme.colors.primary,
     },
     {
       id: "about",
       title: "About the App",
       icon: require("../../assets/About.png"),
-      color: "#795548",
+      color: theme.colors.primary,
     },
   ];
 
@@ -285,140 +287,3 @@ export default function MenuScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#EEF5FB",
-    padding: 16,
-    paddingTop: 48,
-    paddingBottom: 48,
-  },
-  header: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 16,
-  },
-  backButton: {
-    padding: 16,
-    backgroundColor: "#ffffff",
-    borderRadius: 9999,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
-  },
-  backIcon: {
-    width: 20,
-    height: 20,
-  },
-  headerTitle: {
-    color: "#052D50",
-    fontSize: 17,
-    textAlign: "center",
-  },
-  placeholder: {
-    width: 36,
-  },
-  sectionTitle: {
-    color: "#698196",
-    fontSize: 13,
-    fontWeight: "600",
-    marginBottom: 8,
-    marginTop: 8,
-    paddingHorizontal: 8,
-  },
-  menuSection: {
-    marginBottom: 16,
-  },
-  settingsSection: {
-    marginBottom: 24,
-  },
-  scrollContent: {
-    paddingBottom: 120,
-  },
-  groupCard: {
-    width: "100%",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 24,
-    overflow: "hidden",
-  },
-  menuItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#f9f9f9",
-    borderRadius: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    marginBottom: 8,
-  },
-  menuIconContainer: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  menuIcon: {
-    width: 16,
-    height: 16,
-    tintColor: "#ffffff",
-  },
-  menuTitle: {
-    flex: 1,
-    marginLeft: 12,
-    color: "#052D50",
-    fontSize: 16,
-  },
-  arrowIcon: {
-    width: 16,
-    height: 16,
-    tintColor: "#698196",
-  },
-  userInfoContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.0625,
-    shadowRadius: 10,
-    elevation: 2,
-  },
-  userAvatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-  },
-  userInfo: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  userName: {
-    fontSize: 18,
-    color: "#052D50",
-    marginBottom: 4,
-  },
-  roleBadge: {
-    backgroundColor: "#2582D91A",
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
-    alignSelf: "flex-start",
-  },
-  roleText: {
-    fontSize: 12,
-    color: "#2582D9",
-    fontWeight: "500",
-  },
-  logoutButtonText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "600",
-  },
-});

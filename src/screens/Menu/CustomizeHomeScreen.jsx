@@ -21,6 +21,7 @@ import { GlassBackButton } from "../../components/common/GlassBackButton/GlassBa
 import { createStyles } from "./CustomizeHomeScreen.styles";
 
 export default function CustomizeHomeScreen() {
+  
   const navigation = useNavigation();
 
   const { theme } = useTheme();
@@ -81,8 +82,8 @@ export default function CustomizeHomeScreen() {
 
         {/* TITLE */}
         <Text style={styles.title}>Customize Home Screen</Text>
-
         <View style={styles.placeholder} />
+
       </View>
 
       {/* BUTTON LIST */}
