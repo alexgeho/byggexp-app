@@ -34,6 +34,8 @@ import HomeVariant4darkGray from "../screens/Main/HomeVariants/HomeVariant4darkG
 import HomeVariant5orange from "../screens/Main/HomeVariants/HomeVariant5orange";
 import HomeVariant6blue from "../screens/Main/HomeVariants/HomeVariant6blue";
 
+import CustomizeHomeScreen from "../screens/Menu/CustomizeHomeScreen";
+
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
@@ -84,12 +86,24 @@ export default function AppNavigator() {
               component={HomeVariant1green}
               options={{ headerShown: false }}
             />
-            <Stack.Screen name="HomeVariant1green" component={HomeVariant1green} />
+            <Stack.Screen
+              name="HomeVariant1green"
+              component={HomeVariant1green}
+            />
             <Stack.Screen name="HomeVariant2" component={HomeVariant2} />
             <Stack.Screen name="HomeVariant3" component={HomeVariant3} />
-            <Stack.Screen name="HomeVariant4darkGray" component={HomeVariant4darkGray} />
-            <Stack.Screen name="HomeVariant5orange" component={HomeVariant5orange} />
-            <Stack.Screen name="HomeVariant6blue" component={HomeVariant6blue} />
+            <Stack.Screen
+              name="HomeVariant4darkGray"
+              component={HomeVariant4darkGray}
+            />
+            <Stack.Screen
+              name="HomeVariant5orange"
+              component={HomeVariant5orange}
+            />
+            <Stack.Screen
+              name="HomeVariant6blue"
+              component={HomeVariant6blue}
+            />
             <Stack.Screen
               name="Camera"
               component={CameraScreen}
@@ -102,7 +116,10 @@ export default function AppNavigator() {
             <Stack.Screen name="Projects" component={ProjectsScreen} />
             <Stack.Screen name="Project" component={ProjectScreen} />
             <Stack.Screen name="Task" component={TaskScreen} />
-            <Stack.Screen name="ShiftsScreen" component={ShiftsScreen} />
+            <Stack.Screen
+              name="CustomizeHomeScreen"
+              component={CustomizeHomeScreen}
+            />
             <Stack.Screen
               name="CreateProject"
               component={CreateProjectScreen}
