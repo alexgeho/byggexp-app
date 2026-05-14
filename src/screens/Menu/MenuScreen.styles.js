@@ -118,7 +118,6 @@ export function createStyles(theme) {
   userName: {
     fontSize: 18,
     color: "#052D50",
-    marginBottom: 4,
   },
   roleBadge: {
     backgroundColor: "#2582D91A",
