@@ -96,7 +96,7 @@ export default function MenuScreen() {
           id: "finance",
           title: "Finance",
           icon: require("../../assets/Tracker.png"),
-          color: theme.colors.primary
+          color: theme.colors.primary,
         },
       ];
     }
@@ -278,12 +278,11 @@ export default function MenuScreen() {
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
-        onAddPress={logout}
-        renderAddContent={() => (
+        onActionPress={logout}
+        renderActionContent={() => (
           <Text style={styles.logoutButtonText}>Log out</Text>
         )}
       />
     </View>
   );
 }
-

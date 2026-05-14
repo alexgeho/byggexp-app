@@ -10,8 +10,8 @@ export function createStyles(theme) {
       right: 20,
 
       flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
+      justifyContent: "center",
+      gap: 14,
     },
     menuWrapper: {
       width: 226,
@@ -34,5 +34,35 @@ export function createStyles(theme) {
       flexDirection: "row",
       justifyContent: "space-around",
     },
+    navButton: {
+      width: 80,
+      height: 80,
+
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    navIcon: {
+      width: 24,
+      height: 24,
+      resizeMode: "contain",
+    },
+    actionButton: {
+      width: 81,
+      height: 81,
+
+      borderRadius: 100,
+
+      justifyContent: "center",
+      alignItems: "center",
+
+      backgroundColor: theme.colors.primary,
+      padding: 10,
+    },
+    logoutButtonText: {
+      color: "#FFFFFF",
+      fontSize: 15,
+      fontWeight: "600",
+    },
+
   });
 }
