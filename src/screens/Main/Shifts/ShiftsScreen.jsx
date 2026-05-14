@@ -14,7 +14,7 @@ import {
   resolveUploadUrl,
 } from '../../../utils/shifts';
 
-export default function HistoryScreen() {
+export default function ShiftsScreen() {
   const navigation = useNavigation();
   const { theme } = useTheme();
   const [availableMonths, setAvailableMonths] = useState([]);

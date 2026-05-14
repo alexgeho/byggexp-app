@@ -364,7 +364,7 @@ export default function MainScreen() {
                   tintColor: theme.colors.icon,
                 },
               ]}
-              source={require("../../../assets/messager.png")}
+              source={require("../../../assets/mainButtons/messager.png")}
             />
             <Text
               style={[
@@ -392,7 +392,7 @@ export default function MainScreen() {
           intensity={60}
         >
           <TouchableOpacity
-            onPress={() => handleNav("History")}
+            onPress={() => handleNav("Shifts")}
             style={styles.buttonInner}
           >
             <Image
@@ -402,7 +402,7 @@ export default function MainScreen() {
                   tintColor: theme.colors.icon,
                 },
               ]}
-              source={require("../../../assets/history.png")}
+              source={require("../../../assets/mainButtons/shifts.png")}
             />
             <Text
               style={[
@@ -413,7 +413,7 @@ export default function MainScreen() {
                 },
               ]}
             >
-              History
+              Shifts
             </Text>
           </TouchableOpacity>
         </GlassView>
@@ -440,7 +440,7 @@ export default function MainScreen() {
                   tintColor: theme.colors.icon,
                 },
               ]}
-              source={require("../../../assets/projects.png")}
+              source={require("../../../assets/mainButtons/projects.png")}
             />
             <Text
               style={[

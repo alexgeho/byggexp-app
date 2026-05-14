@@ -8,7 +8,7 @@ import CameraScreen from "../screens/Main/Camera/CameraScreen";
 import ChatListScreen from "../screens/Main/Chat/ChatListScreen";
 import TasksScreen from "../screens/Main/TasksScreen";
 import ProjectsScreen from "../screens/Main/Project/ProjectsScreen";
-import HistoryScreen from "../screens/Main/History/HistoryScreen";
+import ShiftsScreen from "../screens/Main/Shifts/ShiftsScreen";
 import MenuScreen from "../screens/Menu/MenuScreen";
 import CreateProjectScreen from "../screens/Main/Project/CreateProjectScreen";
 import CreateTaskScreen from "../screens/Main/Project/CreateTaskScreen";
@@ -102,7 +102,7 @@ export default function AppNavigator() {
             <Stack.Screen name="Projects" component={ProjectsScreen} />
             <Stack.Screen name="Project" component={ProjectScreen} />
             <Stack.Screen name="Task" component={TaskScreen} />
-            <Stack.Screen name="ShiftHistory" component={ShiftHistory} />
+            <Stack.Screen name="ShiftsScreen" component={ShiftsScreen} />
             <Stack.Screen
               name="CreateProject"
               component={CreateProjectScreen}
@@ -133,7 +133,7 @@ export default function AppNavigator() {
               component={SelectAdmin}
               options={{ gestureEnabled: isCompanyAdmin }}
             />
-            <Stack.Screen name="History" component={HistoryScreen} />
+            <Stack.Screen name="Shifts" component={ShiftsScreen} />
             <Stack.Screen name="Menu" component={MenuScreen} />
             <Stack.Screen name="MyAccount" component={MyAccount} />
           </>

@@ -434,7 +434,7 @@ export default function MainScreen() {
                   tintColor: theme.colors.icon,
                 },
               ]}
-              source={require("../../../assets/messager.png")}
+              source={require("../../../assets/mainButtons/messager.png")}
             />
             <Text
               style={[

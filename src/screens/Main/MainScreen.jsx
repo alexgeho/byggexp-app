@@ -366,7 +366,7 @@ export default function MainScreen() {
           >
             <Image
               style={styles.buttonIcon}
-              source={require("../../assets/messager.png")}
+              source={require("../../assets/mainButtons/messager.png")}
             />
             <Text
               style={[
@@ -380,12 +380,12 @@ export default function MainScreen() {
         </GlassView>
         <GlassView style={styles.button} intensity={60} tint="dark">
           <TouchableOpacity
-            onPress={() => handleNav("History")}
+            onPress={() => handleNav("Shifts")}
             style={styles.buttonInner}
           >
             <Image
               style={styles.buttonIcon}
-              source={require("../../assets/history.png")}
+              source={require("../../assets/mainButtons/shifts.png")}
             />
             <Text
               style={[
@@ -404,7 +404,7 @@ export default function MainScreen() {
           >
             <Image
               style={styles.buttonIcon}
-              source={require("../../assets/projects.png")}
+              source={require("../../assets/mainButtons/projects.png")}
             />
             <Text
               style={[
