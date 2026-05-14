@@ -1,9 +1,4 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -203,7 +198,9 @@ export default function MainScreen() {
           value={selectedProject}
           onPress={() => navigation.navigate("Projects", { mode: "select" })}
         />
+      </View>
 
+      <View style={styles.contentContainer}>
         {/* TIMER */}
         <View style={styles.timerRow}>
           <Text
@@ -304,11 +301,10 @@ export default function MainScreen() {
             )}
           </TouchableOpacity>
         </View>
+
+        {/* MAIN NAV BTNs */}
+        <MainButtonsGrid />
       </View>
-
-      {/* MAIN NAV BTNs */}
-     <MainButtonsGrid />
-
       {/* BOTTOM MENU */}
       <View style={styles.bottomNavContainer}>
         <TouchableOpacity style={styles.bottomNavItem}>
@@ -365,4 +361,3 @@ export default function MainScreen() {
     </BackgroundComponent>
   );
 }
-
