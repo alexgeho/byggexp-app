@@ -6,7 +6,7 @@ import { ScrollView } from "react-native";
 import { MenuButton } from "../../components/common/MenuButton/MenuButton";
 import AuthContext from "../../contexts/AuthContext";
 import { BottomBar } from "../../components/BottomBar";
-import { GlassBackButton } from "../../components/common/GlassBackButton/GlassBackButton";
+import { BackButton } from "../../components/common/BackButton/BackButton";
 import { createStyles } from "./MenuScreen.styles";
 
 const API_BASE_URL =
@@ -189,10 +189,9 @@ export default function MenuScreen() {
 
   return (
     <View style={styles.container}>
-
       {/* HEADER */}
       <View style={styles.header}>
-        <GlassBackButton
+        <BackButton
           backgroundColor={"rgb(253 253 253)"}
           tint={"light"}
           borderColor="#FFFFFF50"
@@ -212,11 +211,9 @@ export default function MenuScreen() {
         <View style={styles.placeholder} />
       </View>
 
-       {/* AVATAR */}
+      {/* AVATAR */}
       {user && (
         <View style={styles.userInfoContainer}>
-         
-  
           <Image
             style={styles.userAvatar}
             source={
@@ -249,7 +246,6 @@ export default function MenuScreen() {
           </View>
         </View>
       )}
-
 
       {/* MAIN */}
       <ScrollView contentContainerStyle={styles.scrollContent}>

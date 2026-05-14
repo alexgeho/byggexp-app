@@ -1,35 +1,58 @@
-import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
-import React, { useCallback, useContext, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
-import Icon from 'react-native-vector-icons/Feather';
-import { GlassBackButton } from '../../../components/common/GlassBackButton/GlassBackButton';
-import { BottomBar } from '../../../components/BottomBar';
-import AuthContext from '../../../contexts/AuthContext';
-import { chatService, projectService } from '../../../services';
-import { resolveUploadUrl } from '../../../utils/shifts';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
+import React, {
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetView,
+} from "@gorhom/bottom-sheet";
+import Icon from "react-native-vector-icons/Feather";
+import { BackButton } from "../../../components/common/BackButton/BackButton";
+import { BottomBar } from "../../../components/BottomBar";
+import AuthContext from "../../../contexts/AuthContext";
+import { chatService, projectService } from "../../../services";
+import { resolveUploadUrl } from "../../../utils/shifts";
 
 const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '') ||
-  'https://api.byggexp.se';
+  process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, "") ||
+  "https://api.byggexp.se";
 
 const formatDate = (value, withTime = false) => {
-  if (!value) return 'No date';
+  if (!value) return "No date";
 
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return 'No date';
+  if (Number.isNaN(date.getTime())) return "No date";
 
   return withTime
-    ? date.toLocaleString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
+    ? date.toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
       })
-    : date.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
+    : date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
       });
 };
 
@@ -37,7 +60,7 @@ const formatFileSize = (value) => {
   const size = Number(value);
 
   if (!Number.isFinite(size) || size <= 0) {
-    return 'Unknown size';
+    return "Unknown size";
   }
 
   if (size < 1024) {
@@ -57,51 +80,54 @@ const formatFileSize = (value) => {
 
 const resolveDocumentUrl = (url) => {
   if (!url) return null;
-  if (url.startsWith('http://') || url.startsWith('https://')) return url;
-  return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`;
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  return `${API_BASE_URL}${url.startsWith("/") ? url : `/${url}`}`;
 };
 
 const getDocumentName = (document, index) => {
-  if (typeof document === 'string') {
-    const parts = document.split('/');
+  if (typeof document === "string") {
+    const parts = document.split("/");
     return parts[parts.length - 1] || `Document ${index + 1}`;
   }
 
   return document?.name || `Document ${index + 1}`;
 };
 
-const getFileExtension = (fileName = '') => {
-  const parts = fileName.split('.');
-  return parts.length > 1 ? parts.pop().toUpperCase() : '';
+const getFileExtension = (fileName = "") => {
+  const parts = fileName.split(".");
+  return parts.length > 1 ? parts.pop().toUpperCase() : "";
 };
 
 const isImageDocument = (document) => {
-  const mimeType = document?.mimeType || '';
-  const extension = getFileExtension(document?.name || '').toLowerCase();
-  return mimeType.startsWith('image/') || ['png', 'jpg', 'jpeg', 'webp', 'gif', 'bmp', 'heic'].includes(extension);
+  const mimeType = document?.mimeType || "";
+  const extension = getFileExtension(document?.name || "").toLowerCase();
+  return (
+    mimeType.startsWith("image/") ||
+    ["png", "jpg", "jpeg", "webp", "gif", "bmp", "heic"].includes(extension)
+  );
 };
 
 const getDocumentTypeMeta = (document) => {
-  const extension = getFileExtension(document?.name || '');
-  const mimeType = document?.mimeType || '';
+  const extension = getFileExtension(document?.name || "");
+  const mimeType = document?.mimeType || "";
 
   if (isImageDocument(document)) {
-    return { icon: 'image', label: extension || 'IMAGE' };
+    return { icon: "image", label: extension || "IMAGE" };
   }
 
-  if (mimeType.includes('pdf') || extension === 'PDF') {
-    return { icon: 'file-text', label: 'PDF' };
+  if (mimeType.includes("pdf") || extension === "PDF") {
+    return { icon: "file-text", label: "PDF" };
   }
 
-  if (['DOC', 'DOCX', 'TXT', 'RTF'].includes(extension)) {
-    return { icon: 'file-text', label: extension || 'DOC' };
+  if (["DOC", "DOCX", "TXT", "RTF"].includes(extension)) {
+    return { icon: "file-text", label: extension || "DOC" };
   }
 
-  if (['XLS', 'XLSX', 'CSV'].includes(extension)) {
-    return { icon: 'grid', label: extension || 'XLS' };
+  if (["XLS", "XLSX", "CSV"].includes(extension)) {
+    return { icon: "grid", label: extension || "XLS" };
   }
 
-  return { icon: 'file', label: extension || 'FILE' };
+  return { icon: "file", label: extension || "FILE" };
 };
 
 export const ProjectScreen = () => {
@@ -109,29 +135,29 @@ export const ProjectScreen = () => {
   const navigation = useNavigation();
   const { user } = useContext(AuthContext);
   const { id } = route.params || {};
-  const [modal, setModal] = useState('Tasks');
+  const [modal, setModal] = useState("Tasks");
   const [selectedWorker, setSelectedWorker] = useState(null);
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [chatActionLoading, setChatActionLoading] = useState('');
+  const [error, setError] = useState("");
+  const [chatActionLoading, setChatActionLoading] = useState("");
   const bottomSheetRef = useRef(null);
 
   const fetchProject = useCallback(async () => {
     if (!id) {
-      setError('Project id is missing');
+      setError("Project id is missing");
       setLoading(false);
       return;
     }
 
     try {
       setLoading(true);
-      setError('');
+      setError("");
       const data = await projectService.getPopulatedById(id);
       setProject(data);
     } catch (fetchError) {
-      console.error('Failed to fetch project:', fetchError);
-      setError('Failed to load project data');
+      console.error("Failed to fetch project:", fetchError);
+      setError("Failed to load project data");
     } finally {
       setLoading(false);
     }
@@ -140,7 +166,7 @@ export const ProjectScreen = () => {
   useFocusEffect(
     useCallback(() => {
       fetchProject();
-    }, [fetchProject])
+    }, [fetchProject]),
   );
 
   const openWorkerModal = (worker) => {
@@ -148,45 +174,68 @@ export const ProjectScreen = () => {
     bottomSheetRef.current?.expand();
   };
 
-  const renderBottomSheetBackdrop = useCallback((props) => (
-    <BottomSheetBackdrop
-      {...props}
-      appearsOnIndex={0}
-      disappearsOnIndex={-1}
-      opacity={0.59}
-      pressBehavior="close"
-    />
-  ), []);
+  const renderBottomSheetBackdrop = useCallback(
+    (props) => (
+      <BottomSheetBackdrop
+        {...props}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+        opacity={0.59}
+        pressBehavior="close"
+      />
+    ),
+    [],
+  );
 
-  const tasks = useMemo(() => (
-    Array.isArray(project?.tasks)
-      ? project.tasks.filter((task) => task && typeof task === 'object')
-      : []
-  ), [project?.tasks]);
+  const tasks = useMemo(
+    () =>
+      Array.isArray(project?.tasks)
+        ? project.tasks.filter((task) => task && typeof task === "object")
+        : [],
+    [project?.tasks],
+  );
 
-  const documents = useMemo(() => (
-    Array.isArray(project?.documents)
-      ? project.documents.map((document, index) => ({
-          id: document?._id || document?.url || `${index}`,
-          name: getDocumentName(document, index),
-          url: resolveDocumentUrl(typeof document === 'string' ? document : document?.url),
-          mimeType: typeof document === 'string' ? '' : document?.mimeType || '',
-          size: typeof document === 'string' ? null : document?.size ?? null,
-          uploadedAt: typeof document === 'string' ? null : document?.uploadedAt || project?.createdAt || null,
-          isImage: isImageDocument({
+  const documents = useMemo(
+    () =>
+      Array.isArray(project?.documents)
+        ? project.documents.map((document, index) => ({
+            id: document?._id || document?.url || `${index}`,
             name: getDocumentName(document, index),
-            mimeType: typeof document === 'string' ? '' : document?.mimeType || '',
-          }),
-        }))
-      : []
-  ), [project?.createdAt, project?.documents]);
+            url: resolveDocumentUrl(
+              typeof document === "string" ? document : document?.url,
+            ),
+            mimeType:
+              typeof document === "string" ? "" : document?.mimeType || "",
+            size:
+              typeof document === "string" ? null : (document?.size ?? null),
+            uploadedAt:
+              typeof document === "string"
+                ? null
+                : document?.uploadedAt || project?.createdAt || null,
+            isImage: isImageDocument({
+              name: getDocumentName(document, index),
+              mimeType:
+                typeof document === "string" ? "" : document?.mimeType || "",
+            }),
+          }))
+        : [],
+    [project?.createdAt, project?.documents],
+  );
 
-  const workers = useMemo(() => (
-    Array.isArray(project?.workers)
-      ? project.workers.filter((worker) => worker && typeof worker === 'object')
-      : []
-  ), [project?.workers]);
-  const canCreateTasks = ['superadmin', 'companyAdmin', 'projectAdmin'].includes(user?.role);
+  const workers = useMemo(
+    () =>
+      Array.isArray(project?.workers)
+        ? project.workers.filter(
+            (worker) => worker && typeof worker === "object",
+          )
+        : [],
+    [project?.workers],
+  );
+  const canCreateTasks = [
+    "superadmin",
+    "companyAdmin",
+    "projectAdmin",
+  ].includes(user?.role);
 
   const handleOpenPersonalChat = async () => {
     const participantId = selectedWorker?._id || selectedWorker?.id;
@@ -196,17 +245,21 @@ export const ProjectScreen = () => {
     }
 
     try {
-      setChatActionLoading('direct');
+      setChatActionLoading("direct");
       const chat = await chatService.getOrCreateDirect(participantId);
       bottomSheetRef.current?.close();
       setSelectedWorker(null);
-      navigation.navigate('SingleChat', { chatId: chat._id, initialChat: chat });
+      navigation.navigate("SingleChat", {
+        chatId: chat._id,
+        initialChat: chat,
+      });
     } catch (chatError) {
-      console.error('Failed to open personal chat:', chatError);
-      const message = chatError?.response?.data?.message || 'Please try again later.';
-      Alert.alert('Unable to open chat', message);
+      console.error("Failed to open personal chat:", chatError);
+      const message =
+        chatError?.response?.data?.message || "Please try again later.";
+      Alert.alert("Unable to open chat", message);
     } finally {
-      setChatActionLoading('');
+      setChatActionLoading("");
     }
   };
 
@@ -216,31 +269,35 @@ export const ProjectScreen = () => {
     }
 
     try {
-      setChatActionLoading('group');
+      setChatActionLoading("group");
       const chat = await chatService.getOrCreateProjectGroup(id, project?.name);
       bottomSheetRef.current?.close();
       setSelectedWorker(null);
-      navigation.navigate('GroupChat', { chatId: chat._id, initialChat: chat });
+      navigation.navigate("GroupChat", { chatId: chat._id, initialChat: chat });
     } catch (chatError) {
-      console.error('Failed to open project chat:', chatError);
-      const message = chatError?.response?.data?.message || 'Please try again later.';
-      Alert.alert('Unable to open group chat', message);
+      console.error("Failed to open project chat:", chatError);
+      const message =
+        chatError?.response?.data?.message || "Please try again later.";
+      Alert.alert("Unable to open group chat", message);
     } finally {
-      setChatActionLoading('');
+      setChatActionLoading("");
     }
   };
 
   const handleOpenDocument = async (documentUrl) => {
     if (!documentUrl) {
-      Alert.alert('Document unavailable', 'This file does not have a valid link.');
+      Alert.alert(
+        "Document unavailable",
+        "This file does not have a valid link.",
+      );
       return;
     }
 
     try {
       await Linking.openURL(documentUrl);
     } catch (linkError) {
-      console.error('Failed to open document:', linkError);
-      Alert.alert('Unable to open document', 'Please try again later.');
+      console.error("Failed to open document:", linkError);
+      Alert.alert("Unable to open document", "Please try again later.");
     }
   };
 
@@ -256,42 +313,42 @@ export const ProjectScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <GlassBackButton backgroundColor={'rgb(253 253 253)'} tint={"light"} borderColor="#FFFFFF50" onPress={() => navigation.goBack()} iconSource={require('../../../assets/Arrow-left.png')} />
-        <Text style={styles.projectName}>{project?.name || 'Project'}</Text>
+        <BackButton
+          backgroundColor={"rgb(253 253 253)"}
+          tint={"light"}
+          borderColor="#FFFFFF50"
+          onPress={() => navigation.goBack()}
+          iconSource={require("../../../assets/Arrow-left.png")}
+        />
+        <Text style={styles.projectName}>{project?.name || "Project"}</Text>
         <View style={styles.headerPlaceholder} />
       </View>
 
       <View style={styles.tabContainer}>
         <TouchableOpacity
-          onPress={() => setModal('Tasks')}
-          style={[
-            styles.tabButton,
-            modal === 'Tasks' && styles.activeTab,
-          ]}
+          onPress={() => setModal("Tasks")}
+          style={[styles.tabButton, modal === "Tasks" && styles.activeTab]}
         >
           <Text style={styles.tabText}>Tasks</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => setModal('Documents')}
-          style={[
-            styles.tabButton,
-            modal === 'Documents' && styles.activeTab,
-          ]}
+          onPress={() => setModal("Documents")}
+          style={[styles.tabButton, modal === "Documents" && styles.activeTab]}
         >
           <Text style={styles.tabText}>Documents</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => setModal('Workers')}
-          style={[
-            styles.tabButton,
-            modal === 'Workers' && styles.activeTab,
-          ]}
+          onPress={() => setModal("Workers")}
+          style={[styles.tabButton, modal === "Workers" && styles.activeTab]}
         >
           <Text style={styles.tabText}>Workers</Text>
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        style={styles.scrollContainer}
+        contentContainerStyle={styles.scrollContent}
+      >
         {error ? (
           <View style={styles.emptyState}>
             <Text style={styles.emptyStateTitle}>Unable to load project</Text>
@@ -299,23 +356,30 @@ export const ProjectScreen = () => {
           </View>
         ) : null}
 
-        {modal === 'Tasks' && (
-          tasks.length > 0 ? (
+        {modal === "Tasks" &&
+          (tasks.length > 0 ? (
             tasks.map((task) => (
               <TouchableOpacity
                 key={task._id || task.id || task.taskTitle}
                 style={styles.taskItem}
                 activeOpacity={0.85}
-                onPress={() => navigation.navigate('Task', { task, project })}
+                onPress={() => navigation.navigate("Task", { task, project })}
               >
-                <Text style={styles.taskTitle}>{task.taskTitle || 'Untitled task'}</Text>
+                <Text style={styles.taskTitle}>
+                  {task.taskTitle || "Untitled task"}
+                </Text>
                 <Text style={styles.taskDescription}>
-                  {task.taskDescription || 'No description provided.'}
+                  {task.taskDescription || "No description provided."}
                 </Text>
                 <View style={styles.taskFooter}>
                   <View style={styles.taskDate}>
-                    <Image style={styles.dateIcon} source={require('../../../assets/TasksCalendar.png')} />
-                    <Text style={styles.dateText}>{formatDate(task.dueDate, true)}</Text>
+                    <Image
+                      style={styles.dateIcon}
+                      source={require("../../../assets/TasksCalendar.png")}
+                    />
+                    <Text style={styles.dateText}>
+                      {formatDate(task.dueDate, true)}
+                    </Text>
                   </View>
                 </View>
               </TouchableOpacity>
@@ -323,13 +387,14 @@ export const ProjectScreen = () => {
           ) : (
             <View style={styles.emptyState}>
               <Text style={styles.emptyStateTitle}>No tasks yet</Text>
-              <Text style={styles.emptyStateText}>There are no tasks assigned to this project.</Text>
+              <Text style={styles.emptyStateText}>
+                There are no tasks assigned to this project.
+              </Text>
             </View>
-          )
-        )}
+          ))}
 
-        {modal === 'Documents' && (
-          documents.length > 0 ? (
+        {modal === "Documents" &&
+          (documents.length > 0 ? (
             documents.map((document) => {
               const typeMeta = getDocumentTypeMeta(document);
 
@@ -349,30 +414,38 @@ export const ProjectScreen = () => {
                     ) : (
                       <View style={styles.documentFilePreview}>
                         <Icon name={typeMeta.icon} size={24} color="#052D50" />
-                        <Text style={styles.documentFileType}>{typeMeta.label}</Text>
+                        <Text style={styles.documentFileType}>
+                          {typeMeta.label}
+                        </Text>
                       </View>
                     )}
                   </View>
                   <View style={styles.documentInfo}>
-                    <Text numberOfLines={2} style={styles.documentName}>{document.name}</Text>
+                    <Text numberOfLines={2} style={styles.documentName}>
+                      {document.name}
+                    </Text>
                     <Text style={styles.documentMeta}>
                       {`${formatFileSize(document.size)}   ${formatDate(document.uploadedAt)}`}
                     </Text>
                   </View>
-                  <Image style={styles.documentArrowIcon} source={require('../../../assets/Arrow-right.png')} />
+                  <Image
+                    style={styles.documentArrowIcon}
+                    source={require("../../../assets/Arrow-right.png")}
+                  />
                 </TouchableOpacity>
               );
             })
           ) : (
             <View style={styles.emptyState}>
               <Text style={styles.emptyStateTitle}>No files uploaded</Text>
-              <Text style={styles.emptyStateText}>Project files will appear here after upload.</Text>
+              <Text style={styles.emptyStateText}>
+                Project files will appear here after upload.
+              </Text>
             </View>
-          )
-        )}
+          ))}
 
-        {modal === 'Workers' && (
-          workers.length > 0 ? (
+        {modal === "Workers" &&
+          (workers.length > 0 ? (
             workers.map((worker) => (
               <TouchableOpacity
                 key={worker._id || worker.id}
@@ -384,38 +457,49 @@ export const ProjectScreen = () => {
                   source={
                     worker.avatarUrl
                       ? { uri: resolveUploadUrl(worker.avatarUrl) }
-                      : require('../../../assets/TasksAva.png')
+                      : require("../../../assets/TasksAva.png")
                   }
                 />
                 <View style={styles.workerInfo}>
-                  <Text style={styles.workerName}>{worker.name || 'Unnamed worker'}</Text>
+                  <Text style={styles.workerName}>
+                    {worker.name || "Unnamed worker"}
+                  </Text>
                   <Text style={styles.workerSubtitle}>
-                    {worker.profession || worker.email || 'Worker'}
+                    {worker.profession || worker.email || "Worker"}
                   </Text>
                 </View>
-                <Image style={styles.arrowIcon} source={require('../../../assets/Arrow-right.png')} />
+                <Image
+                  style={styles.arrowIcon}
+                  source={require("../../../assets/Arrow-right.png")}
+                />
               </TouchableOpacity>
             ))
           ) : (
             <View style={styles.emptyState}>
               <Text style={styles.emptyStateTitle}>No workers in project</Text>
-              <Text style={styles.emptyStateText}>Assigned workers will appear in this list.</Text>
+              <Text style={styles.emptyStateText}>
+                Assigned workers will appear in this list.
+              </Text>
             </View>
-          )
-        )}
+          ))}
       </ScrollView>
 
       <BottomBar
-        onLeftPress={() => navigation.navigate('Main')}
-        onRightPress={() => navigation.navigate('Menu')}
-        showAddButton={modal === 'Tasks' && canCreateTasks}
-        onAddPress={() => navigation.navigate('CreateTask', { projectId: id, projectName: project?.name })}
+        onLeftPress={() => navigation.navigate("Main")}
+        onRightPress={() => navigation.navigate("Menu")}
+        showAddButton={modal === "Tasks" && canCreateTasks}
+        onAddPress={() =>
+          navigation.navigate("CreateTask", {
+            projectId: id,
+            projectName: project?.name,
+          })
+        }
       />
 
       <BottomSheet
         ref={bottomSheetRef}
         index={-1}
-        snapPoints={['30%', '60%']}
+        snapPoints={["30%", "60%"]}
         enablePanDownToClose={true}
         onClose={() => setSelectedWorker(null)}
         backgroundStyle={styles.bottomSheetBackground}
@@ -426,51 +510,69 @@ export const ProjectScreen = () => {
           {selectedWorker && (
             <>
               <View style={styles.workerHeaderCard}>
-                <Text style={styles.workerModalTitle}>{selectedWorker.name}</Text>
+                <Text style={styles.workerModalTitle}>
+                  {selectedWorker.name}
+                </Text>
                 <Text style={styles.workerModalSubtitle}>
-                  {selectedWorker.profession || selectedWorker.email || 'Worker'}
+                  {selectedWorker.profession ||
+                    selectedWorker.email ||
+                    "Worker"}
                 </Text>
               </View>
 
               <TouchableOpacity
-                onPress={() => navigation.navigate('ShiftHistory', {
-                  projectId: id,
-                  workerId: selectedWorker._id || selectedWorker.id,
-                  workerName: selectedWorker.name,
-                  type: 'history',
-                })}
+                onPress={() =>
+                  navigation.navigate("ShiftHistory", {
+                    projectId: id,
+                    workerId: selectedWorker._id || selectedWorker.id,
+                    workerName: selectedWorker.name,
+                    type: "history",
+                  })
+                }
                 style={styles.modalOption}
               >
                 <Text style={styles.optionText}>Shift history</Text>
-                <Image style={styles.optionArrow} source={require('../../../assets/Arrow-right.png')} />
+                <Image
+                  style={styles.optionArrow}
+                  source={require("../../../assets/Arrow-right.png")}
+                />
               </TouchableOpacity>
 
               <TouchableOpacity
                 onPress={handleOpenPersonalChat}
                 style={styles.modalOption}
-                disabled={chatActionLoading === 'direct'}
+                disabled={chatActionLoading === "direct"}
               >
                 <Text style={styles.optionText}>
-                  {chatActionLoading === 'direct' ? 'Opening personal chat...' : 'Personal chat'}
+                  {chatActionLoading === "direct"
+                    ? "Opening personal chat..."
+                    : "Personal chat"}
                 </Text>
-                <Image style={styles.optionArrow} source={require('../../../assets/Arrow-right.png')} />
+                <Image
+                  style={styles.optionArrow}
+                  source={require("../../../assets/Arrow-right.png")}
+                />
               </TouchableOpacity>
 
               <TouchableOpacity
                 onPress={handleOpenProjectGroupChat}
                 style={[styles.modalOption, styles.addGroupChat]}
-                disabled={chatActionLoading === 'group'}
+                disabled={chatActionLoading === "group"}
               >
                 <Text style={[styles.optionText, styles.addGroupChatText]}>
-                  {chatActionLoading === 'group' ? 'Opening group chat...' : 'Project group chat'}
+                  {chatActionLoading === "group"
+                    ? "Opening group chat..."
+                    : "Project group chat"}
                 </Text>
-                <Image style={styles.optionArrow} source={require('../../../assets/Arrow-right.png')} />
+                <Image
+                  style={styles.optionArrow}
+                  source={require("../../../assets/Arrow-right.png")}
+                />
               </TouchableOpacity>
             </>
           )}
         </BottomSheetView>
       </BottomSheet>
-
     </View>
   );
 };
@@ -478,35 +580,35 @@ export const ProjectScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 12,
     paddingTop: 48,
     paddingBottom: 48,
     gap: 24,
-    backgroundColor: '#EEF5FB',
+    backgroundColor: "#EEF5FB",
   },
   centeredContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 24,
   },
   statusText: {
     marginTop: 12,
-    color: '#698196',
+    color: "#698196",
   },
   header: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   backButton: {
     padding: 16,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     borderRadius: 9999,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
@@ -517,20 +619,20 @@ const styles = StyleSheet.create({
     height: 20,
   },
   projectName: {
-    color: '#052D50',
+    color: "#052D50",
     fontSize: 17,
     flex: 1,
-    textAlign: 'center',
-    fontFamily: 'DMSans-SemiBold',
+    textAlign: "center",
+    fontFamily: "DMSans-SemiBold",
   },
   headerPlaceholder: {
     width: 44,
     height: 44,
   },
   tabContainer: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
     gap: 12,
   },
   tabButton: {
@@ -538,59 +640,59 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingLeft: 8,
     paddingRight: 8,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     borderRadius: 999,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.0625,
     shadowRadius: 10,
     elevation: 1,
     borderWidth: 1,
-    borderColor: 'transparent',
+    borderColor: "transparent",
   },
   activeTab: {
-    borderColor: '#0785F4',
+    borderColor: "#0785F4",
   },
   tabText: {
-    color: '#052D50',
-    width: '100%',
-    textAlign: 'center',
+    color: "#052D50",
+    width: "100%",
+    textAlign: "center",
   },
   scrollContainer: {
     flex: 1,
-    width: '100%',
+    width: "100%",
   },
   scrollContent: {
     paddingBottom: 120,
-    width: '100%',
+    width: "100%",
   },
   emptyState: {
-    width: '100%',
-    backgroundColor: '#ffffff',
+    width: "100%",
+    backgroundColor: "#ffffff",
     borderRadius: 16,
     padding: 20,
     marginBottom: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.0625,
     shadowRadius: 10,
     elevation: 1,
   },
   emptyStateTitle: {
-    color: '#052D50',
+    color: "#052D50",
     fontSize: 18,
     marginBottom: 6,
   },
   emptyStateText: {
-    color: '#698196',
+    color: "#698196",
   },
   taskItem: {
-    width: '100%',
-    backgroundColor: '#ffffff',
+    width: "100%",
+    backgroundColor: "#ffffff",
     borderRadius: 16,
     gap: 16,
     padding: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.0625,
     shadowRadius: 10,
@@ -598,26 +700,26 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   taskTitle: {
-    color: '#052D50',
+    color: "#052D50",
     fontSize: 22,
   },
   taskDescription: {
-    color: '#052D5050',
+    color: "#052D5050",
   },
   taskFooter: {
-    flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "flex-end",
+    alignItems: "center",
   },
   taskDate: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
-    alignItems: 'center',
+    alignItems: "center",
     padding: 4,
     paddingLeft: 12,
     paddingRight: 12,
-    backgroundColor: '#0177DE0D',
+    backgroundColor: "#0177DE0D",
     borderRadius: 999,
   },
   dateIcon: {
@@ -625,70 +727,70 @@ const styles = StyleSheet.create({
     height: 14,
   },
   dateText: {
-    color: '#0785F4',
+    color: "#0785F4",
   },
   documentItem: {
-    width: '100%',
-    backgroundColor: '#ffffff',
+    width: "100%",
+    backgroundColor: "#ffffff",
     borderRadius: 16,
     gap: 16,
     padding: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.0625,
     shadowRadius: 10,
     elevation: 1,
     marginBottom: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   documentPreviewContainer: {
     width: 80,
     height: 80,
     borderRadius: 12,
-    overflow: 'hidden',
-    backgroundColor: '#EFF3F8',
+    overflow: "hidden",
+    backgroundColor: "#EFF3F8",
   },
   documentPreviewImage: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   documentFilePreview: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     padding: 8,
     gap: 8,
   },
   documentFileType: {
-    color: '#052D50',
+    color: "#052D50",
     fontSize: 11,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   documentInfo: {
     flex: 1,
   },
   documentName: {
-    color: '#052D50',
+    color: "#052D50",
     fontSize: 15,
   },
   documentMeta: {
-    color: '#052D5050',
+    color: "#052D5050",
     marginTop: 4,
   },
   documentArrowIcon: {
     width: 10,
     height: 20,
-    tintColor: '#052D50',
+    tintColor: "#052D50",
   },
   workerItem: {
-    width: '100%',
+    width: "100%",
     padding: 8,
     borderRadius: 999,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-    shadowColor: '#000',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#ffffff",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.0625,
     shadowRadius: 10,
@@ -703,14 +805,14 @@ const styles = StyleSheet.create({
   },
   workerName: {
     flex: 1,
-    color: '#052D50',
+    color: "#052D50",
   },
   workerInfo: {
     flex: 1,
   },
   workerSubtitle: {
     marginTop: 2,
-    color: '#698196',
+    color: "#698196",
     fontSize: 12,
   },
   arrowIcon: {
@@ -719,17 +821,17 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   bottomSheetBackground: {
-    backgroundColor: '#EEF5FB',
+    backgroundColor: "#EEF5FB",
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
   },
   handleIndicator: {
-    backgroundColor: '#CCCCCC',
+    backgroundColor: "#CCCCCC",
     width: 40,
     height: 4,
     borderRadius: 2,
     zIndex: 4,
-    position: 'relative'
+    position: "relative",
   },
   bottomSheetContent: {
     padding: 20,
@@ -737,28 +839,28 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   workerHeaderCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 20,
     padding: 16,
   },
   workerModalTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#052D50',
+    fontWeight: "bold",
+    color: "#052D50",
   },
   workerModalSubtitle: {
-    color: '#698196',
+    color: "#698196",
     marginTop: 4,
   },
   modalOption: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 16,
     paddingHorizontal: 16,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 20,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
@@ -766,39 +868,38 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 16,
-    color: '#052D50',
+    color: "#052D50",
   },
   optionArrow: {
     width: 10,
     height: 20,
-    tintColor: '#052D50',
+    tintColor: "#052D50",
   },
   addGroupChat: {
-    backgroundColor: '#FFF',
-    borderColor: '#0091FF',
+    backgroundColor: "#FFF",
+    borderColor: "#0091FF",
     borderWidth: 1,
   },
   addGroupChatText: {
-    color: '#0091FF',
-    fontWeight: '600',
+    color: "#0091FF",
+    fontWeight: "600",
   },
   floatingAddButton: {
-    position: 'absolute',
+    position: "absolute",
     right: 16,
     bottom: 32,
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: '#0091FF',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#0091FF",
+    alignItems: "center",
+    justifyContent: "center",
     zIndex: 20,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 7,
     elevation: 6,
-    boxShadow: '0px 2px 7px 0px rgba(0, 0, 0, 0.25)',
+    boxShadow: "0px 2px 7px 0px rgba(0, 0, 0, 0.25)",
   },
 });
-

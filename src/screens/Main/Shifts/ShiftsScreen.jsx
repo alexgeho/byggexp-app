@@ -1,10 +1,20 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, ActivityIndicator, Modal, Alert } from 'react-native';
-import { useTheme } from '../../../theme/ThemeContext';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { GlassBackButton } from '../../../components/common/GlassBackButton/GlassBackButton';
-import { BottomBar } from '../../../components/BottomBar';
-import { shiftService } from '../../../services';
+import React, { useCallback, useMemo, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  ActivityIndicator,
+  Modal,
+  Alert,
+} from "react-native";
+import { useTheme } from "../../../theme/ThemeContext";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { BackButton } from "../../../components/common/BackButton/BackButton";
+import { BottomBar } from "../../../components/BottomBar";
+import { shiftService } from "../../../services";
 import {
   formatDuration,
   formatDurationShort,
@@ -12,7 +22,7 @@ import {
   formatShiftDate,
   formatTimeRange,
   resolveUploadUrl,
-} from '../../../utils/shifts';
+} from "../../../utils/shifts";
 
 export default function ShiftsScreen() {
   const navigation = useNavigation();
@@ -26,7 +36,7 @@ export default function ShiftsScreen() {
   const [loading, setLoading] = useState(true);
   const [pickerVisible, setPickerVisible] = useState(false);
   const [exportModalVisible, setExportModalVisible] = useState(false);
-  const [selectedExportType, setSelectedExportType] = useState('pdf');
+  const [selectedExportType, setSelectedExportType] = useState("pdf");
   const [exporting, setExporting] = useState(false);
 
   const loadMonths = useCallback(async () => {
@@ -43,28 +53,33 @@ export default function ShiftsScreen() {
     setDays(data.days || []);
     setSelectedMonth(data.month);
     setSelectedDate((previousDate) => {
-      const nextDate = previousDate && (data.days || []).some((day) => day.date === previousDate)
-        ? previousDate
-        : data.days?.[0]?.date || null;
+      const nextDate =
+        previousDate &&
+        (data.days || []).some((day) => day.date === previousDate)
+          ? previousDate
+          : data.days?.[0]?.date || null;
       return nextDate;
     });
   }, []);
 
-  const refreshHistory = useCallback(async (preferredMonth) => {
-    try {
-      setLoading(true);
-      const months = await loadMonths();
-      const nextMonth = preferredMonth || months[0];
-      await loadHistory(nextMonth);
-    } catch (error) {
-      console.error('Failed to load shifts history:', error);
-      setDays([]);
-      setAvailableMonths([]);
-      setSelectedDate(null);
-    } finally {
-      setLoading(false);
-    }
-  }, [loadHistory, loadMonths]);
+  const refreshHistory = useCallback(
+    async (preferredMonth) => {
+      try {
+        setLoading(true);
+        const months = await loadMonths();
+        const nextMonth = preferredMonth || months[0];
+        await loadHistory(nextMonth);
+      } catch (error) {
+        console.error("Failed to load shifts history:", error);
+        setDays([]);
+        setAvailableMonths([]);
+        setSelectedDate(null);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [loadHistory, loadMonths],
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -86,17 +101,19 @@ export default function ShiftsScreen() {
       return [];
     }
 
-    const [year, month] = selectedMonth.split('-').map(Number);
+    const [year, month] = selectedMonth.split("-").map(Number);
     const daysInMonth = new Date(year, month, 0).getDate();
     const firstDayIndex = (new Date(year, month - 1, 1).getDay() + 6) % 7;
 
     const cells = [];
     for (let index = 0; index < firstDayIndex; index += 1) {
-      cells.push(<View key={`empty-start-${index}`} style={styles.calendarCellEmpty} />);
+      cells.push(
+        <View key={`empty-start-${index}`} style={styles.calendarCellEmpty} />,
+      );
     }
 
     for (let day = 1; day <= daysInMonth; day += 1) {
-      const dateStr = `${selectedMonth}-${day.toString().padStart(2, '0')}`;
+      const dateStr = `${selectedMonth}-${day.toString().padStart(2, "0")}`;
       const shiftDay = dayMap.get(dateStr);
       const isSelected = selectedDate === dateStr;
 
@@ -111,11 +128,21 @@ export default function ShiftsScreen() {
           onPress={() => shiftDay && setSelectedDate(dateStr)}
           disabled={!shiftDay}
         >
-          <Text style={[styles.calendarDay, isSelected && styles.calendarDaySelected]}>
+          <Text
+            style={[
+              styles.calendarDay,
+              isSelected && styles.calendarDaySelected,
+            ]}
+          >
             {day}
           </Text>
           {shiftDay ? (
-            <Text style={[styles.calendarHours, isSelected && styles.calendarHoursSelected]}>
+            <Text
+              style={[
+                styles.calendarHours,
+                isSelected && styles.calendarHoursSelected,
+              ]}
+            >
               {formatDurationShort(shiftDay.totalDurationMs)}
             </Text>
           ) : null}
@@ -124,7 +151,12 @@ export default function ShiftsScreen() {
     }
 
     while (cells.length % 7 !== 0) {
-      cells.push(<View key={`empty-end-${cells.length}`} style={styles.calendarCellEmpty} />);
+      cells.push(
+        <View
+          key={`empty-end-${cells.length}`}
+          style={styles.calendarCellEmpty}
+        />,
+      );
     }
 
     const rows = [];
@@ -145,7 +177,7 @@ export default function ShiftsScreen() {
     }
 
     if (!selectedMonth) {
-      Alert.alert('No period selected', 'Choose a month to export shifts.');
+      Alert.alert("No period selected", "Choose a month to export shifts.");
       return;
     }
 
@@ -157,10 +189,11 @@ export default function ShiftsScreen() {
       });
       setExportModalVisible(false);
     } catch (error) {
-      const message = error?.response?.data?.message
-        || error?.message
-        || 'Failed to export shifts. Please try again.';
-      Alert.alert('Export failed', message);
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to export shifts. Please try again.";
+      Alert.alert("Export failed", message);
     } finally {
       setExporting(false);
     }
@@ -169,8 +202,21 @@ export default function ShiftsScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <GlassBackButton backgroundColor={'rgb(253 253 253)'} tint={"light"} borderColor="#FFFFFF50" onPress={() => navigation.goBack()} iconSource={require('../../../assets/Arrow-left.png')} />
-        <Text style={[styles.headerTitle, { fontFamily: theme.text.fontFamily['semiBold'] }]}>Work shifts</Text>
+        <BackButton
+          backgroundColor={"rgb(253 253 253)"}
+          tint={"light"}
+          borderColor="#FFFFFF50"
+          onPress={() => navigation.goBack()}
+          iconSource={require("../../../assets/Arrow-left.png")}
+        />
+        <Text
+          style={[
+            styles.headerTitle,
+            { fontFamily: theme.text.fontFamily["semiBold"] },
+          ]}
+        >
+          Work shifts
+        </Text>
         <View style={styles.placeholder} />
       </View>
 
@@ -186,9 +232,17 @@ export default function ShiftsScreen() {
         >
           <View style={styles.exportSelector}>
             <Text style={styles.exportLabel}>Select period for export</Text>
-            <TouchableOpacity style={styles.dropdownButton} onPress={() => setPickerVisible(true)}>
-              <Text style={styles.dropdownText}>{formatMonthLabel(selectedMonth)}</Text>
-              <Image style={styles.dropdownIcon} source={require('../../../assets/Arrow-down.png')} />
+            <TouchableOpacity
+              style={styles.dropdownButton}
+              onPress={() => setPickerVisible(true)}
+            >
+              <Text style={styles.dropdownText}>
+                {formatMonthLabel(selectedMonth)}
+              </Text>
+              <Image
+                style={styles.dropdownIcon}
+                source={require("../../../assets/Arrow-down.png")}
+              />
             </TouchableOpacity>
           </View>
 
@@ -202,47 +256,75 @@ export default function ShiftsScreen() {
               <Text style={styles.calendarHeaderDay}>Sat</Text>
               <Text style={styles.calendarHeaderDay}>Sun</Text>
             </View>
-            {calendarRows.length ? calendarRows : (
-              <Text style={styles.emptyMonthText}>No shifts for this period yet.</Text>
+            {calendarRows.length ? (
+              calendarRows
+            ) : (
+              <Text style={styles.emptyMonthText}>
+                No shifts for this period yet.
+              </Text>
             )}
           </View>
 
           <View style={styles.shiftDetailsContainer}>
-            <Text style={[styles.shiftTitle, { fontFamily: theme.text.fontFamily['semiBold'] }]}>
-              Shift details for {selectedDay ? formatShiftDate(selectedDay.date) : '—'}
+            <Text
+              style={[
+                styles.shiftTitle,
+                { fontFamily: theme.text.fontFamily["semiBold"] },
+              ]}
+            >
+              Shift details for{" "}
+              {selectedDay ? formatShiftDate(selectedDay.date) : "—"}
             </Text>
 
             <View style={styles.shiftDetailsContent}>
               {selectedDayShifts.length === 0 ? (
-                <Text style={styles.emptyDetailsText}>Select a highlighted day to see shift details.</Text>
+                <Text style={styles.emptyDetailsText}>
+                  Select a highlighted day to see shift details.
+                </Text>
               ) : (
                 selectedDayShifts.map((shift) => (
                   <View key={shift.id} style={styles.shiftCard}>
                     <View style={styles.shiftInfoRow}>
                       <Text style={styles.shiftLabel}>Work hours:</Text>
-                      <Text style={styles.shiftValue}>{formatTimeRange(shift.startedAt, shift.endedAt)}</Text>
+                      <Text style={styles.shiftValue}>
+                        {formatTimeRange(shift.startedAt, shift.endedAt)}
+                      </Text>
                     </View>
                     <View style={styles.shiftInfoRow}>
                       <Text style={styles.shiftLabel}>Duration:</Text>
-                      <Text style={styles.shiftValue}>{formatDuration(shift.durationMs)}</Text>
+                      <Text style={styles.shiftValue}>
+                        {formatDuration(shift.durationMs)}
+                      </Text>
                     </View>
                     <View style={styles.shiftInfoRow}>
                       <Text style={styles.shiftLabel}>Project:</Text>
-                      <Text style={styles.shiftValue}>{shift.projectName || '—'}</Text>
+                      <Text style={styles.shiftValue}>
+                        {shift.projectName || "—"}
+                      </Text>
                     </View>
                     <View style={styles.shiftInfoRow}>
                       <Text style={styles.shiftLabel}>Location:</Text>
-                      <Text style={styles.shiftValue}>{shift.location || '—'}</Text>
+                      <Text style={styles.shiftValue}>
+                        {shift.location || "—"}
+                      </Text>
                     </View>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.shiftImagesRow}>
-                      {shift.photos?.length ? shift.photos.map((photo, index) => (
-                        <Image
-                          key={`${shift.id}-photo-${index}`}
-                          style={styles.shiftImage}
-                          source={{ uri: resolveUploadUrl(photo.url) }}
-                        />
-                      )) : (
-                        <Text style={styles.noPhotosText}>No photos attached</Text>
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      style={styles.shiftImagesRow}
+                    >
+                      {shift.photos?.length ? (
+                        shift.photos.map((photo, index) => (
+                          <Image
+                            key={`${shift.id}-photo-${index}`}
+                            style={styles.shiftImage}
+                            source={{ uri: resolveUploadUrl(photo.url) }}
+                          />
+                        ))
+                      ) : (
+                        <Text style={styles.noPhotosText}>
+                          No photos attached
+                        </Text>
                       )}
                     </ScrollView>
                   </View>
@@ -254,22 +336,28 @@ export default function ShiftsScreen() {
           <View style={styles.statsContainer}>
             <View style={styles.statItem}>
               <Text style={styles.statLabel}>Current month:</Text>
-              <Text style={styles.statValue}>{formatDuration(currentMonthDuration)}</Text>
+              <Text style={styles.statValue}>
+                {formatDuration(currentMonthDuration)}
+              </Text>
             </View>
             <View style={styles.statItem}>
               <Text style={styles.statLabel}>Previous month:</Text>
-              <Text style={styles.statValue}>{formatDuration(previousMonthDuration)}</Text>
+              <Text style={styles.statValue}>
+                {formatDuration(previousMonthDuration)}
+              </Text>
             </View>
           </View>
         </ScrollView>
       )}
 
       <BottomBar
-        onLeftPress={() => navigation.navigate('Main')}
-        onRightPress={() => navigation.navigate('Menu')}
+        onLeftPress={() => navigation.navigate("Main")}
+        onRightPress={() => navigation.navigate("Menu")}
         onAddPress={() => setExportModalVisible(true)}
         showAddButton
-        renderAddContent={() => <Text style={styles.exportFabText}>Export</Text>}
+        renderAddContent={() => (
+          <Text style={styles.exportFabText}>Export</Text>
+        )}
         addButtonStyle={styles.exportFabButton}
       />
 
@@ -279,13 +367,27 @@ export default function ShiftsScreen() {
         animationType="fade"
         onRequestClose={() => setExportModalVisible(false)}
       >
-        <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setExportModalVisible(false)}>
-          <TouchableOpacity style={styles.exportModalCard} activeOpacity={1} onPress={() => {}}>
-            <Text style={[styles.exportModalTitle, { fontFamily: theme.text.fontFamily['semiBold'] }]}>
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setExportModalVisible(false)}
+        >
+          <TouchableOpacity
+            style={styles.exportModalCard}
+            activeOpacity={1}
+            onPress={() => {}}
+          >
+            <Text
+              style={[
+                styles.exportModalTitle,
+                { fontFamily: theme.text.fontFamily["semiBold"] },
+              ]}
+            >
               Export shifts
             </Text>
             <Text style={styles.exportModalSubtitle}>
-              Period: {selectedMonth ? formatMonthLabel(selectedMonth) : 'Not selected'}
+              Period:{" "}
+              {selectedMonth ? formatMonthLabel(selectedMonth) : "Not selected"}
             </Text>
 
             <View style={styles.exportSheetCard}>
@@ -293,15 +395,16 @@ export default function ShiftsScreen() {
                 <TouchableOpacity
                   style={[
                     styles.exportButton,
-                    selectedExportType === 'pdf' && styles.exportButtonActive,
+                    selectedExportType === "pdf" && styles.exportButtonActive,
                   ]}
-                  onPress={() => setSelectedExportType('pdf')}
+                  onPress={() => setSelectedExportType("pdf")}
                   activeOpacity={0.85}
                 >
                   <Text
                     style={[
                       styles.exportButtonText,
-                      selectedExportType === 'pdf' && styles.exportButtonTextActive,
+                      selectedExportType === "pdf" &&
+                        styles.exportButtonTextActive,
                     ]}
                   >
                     PDF
@@ -310,15 +413,16 @@ export default function ShiftsScreen() {
                 <TouchableOpacity
                   style={[
                     styles.exportButton,
-                    selectedExportType === 'excel' && styles.exportButtonActive,
+                    selectedExportType === "excel" && styles.exportButtonActive,
                   ]}
-                  onPress={() => setSelectedExportType('excel')}
+                  onPress={() => setSelectedExportType("excel")}
                   activeOpacity={0.85}
                 >
                   <Text
                     style={[
                       styles.exportButtonText,
-                      selectedExportType === 'excel' && styles.exportButtonTextActive,
+                      selectedExportType === "excel" &&
+                        styles.exportButtonTextActive,
                     ]}
                   >
                     Excel
@@ -328,7 +432,10 @@ export default function ShiftsScreen() {
             </View>
 
             <TouchableOpacity
-              style={[styles.exportMainButton, exporting && styles.exportMainButtonDisabled]}
+              style={[
+                styles.exportMainButton,
+                exporting && styles.exportMainButtonDisabled,
+              ]}
               onPress={handleExport}
               disabled={exporting}
             >
@@ -348,22 +455,33 @@ export default function ShiftsScreen() {
         animationType="fade"
         onRequestClose={() => setPickerVisible(false)}
       >
-        <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setPickerVisible(false)}>
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setPickerVisible(false)}
+        >
           <View style={styles.modalContent}>
-            {availableMonths.length ? availableMonths.map((month) => (
-              <TouchableOpacity
-                key={month}
-                style={styles.monthOption}
-                onPress={async () => {
-                  setPickerVisible(false);
-                  await refreshHistory(month);
-                }}
-              >
-                <Text style={[styles.monthOptionText, month === selectedMonth && styles.monthOptionTextSelected]}>
-                  {formatMonthLabel(month)}
-                </Text>
-              </TouchableOpacity>
-            )) : (
+            {availableMonths.length ? (
+              availableMonths.map((month) => (
+                <TouchableOpacity
+                  key={month}
+                  style={styles.monthOption}
+                  onPress={async () => {
+                    setPickerVisible(false);
+                    await refreshHistory(month);
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.monthOptionText,
+                      month === selectedMonth && styles.monthOptionTextSelected,
+                    ]}
+                  >
+                    {formatMonthLabel(month)}
+                  </Text>
+                </TouchableOpacity>
+              ))
+            ) : (
               <Text style={styles.monthOptionText}>No periods yet</Text>
             )}
           </View>
@@ -376,23 +494,23 @@ export default function ShiftsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#EEF5FB',
+    backgroundColor: "#EEF5FB",
     padding: 16,
     paddingTop: 48,
     paddingBottom: 48,
   },
   header: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 16,
   },
   backButton: {
     padding: 16,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     borderRadius: 9999,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
@@ -403,42 +521,42 @@ const styles = StyleSheet.create({
     height: 20,
   },
   headerTitle: {
-    color: '#052D50',
+    color: "#052D50",
     fontSize: 17,
-    textAlign: 'center',
+    textAlign: "center",
   },
   placeholder: {
     width: 36,
   },
   contentScroll: {
     flex: 1,
-    width: '100%',
+    width: "100%",
   },
   contentScrollContent: {
     paddingBottom: 140,
   },
   exportSelector: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 16,
   },
   exportLabel: {
-    color: '#052D50',
+    color: "#052D50",
     fontSize: 14,
   },
   dropdownButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     paddingVertical: 8,
     paddingHorizontal: 12,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
     borderRadius: 12,
   },
   dropdownText: {
-    color: '#052D50',
+    color: "#052D50",
     fontSize: 14,
   },
   dropdownIcon: {
@@ -446,67 +564,67 @@ const styles = StyleSheet.create({
     height: 16,
   },
   calendarContainer: {
-    width: '100%',
+    width: "100%",
     marginBottom: 12,
   },
   calendarHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 8,
   },
   calendarHeaderDay: {
-    color: '#698196',
+    color: "#698196",
     fontSize: 12,
-    fontWeight: '500',
+    fontWeight: "500",
     width: 40,
-    textAlign: 'center'
+    textAlign: "center",
   },
   calendarRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 8,
   },
   calendarCell: {
     width: 40,
     height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 8,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
   },
   calendarCellMuted: {
-    backgroundColor: '#f3f3f3',
+    backgroundColor: "#f3f3f3",
   },
   calendarCellSelected: {
-    backgroundColor: '#0088FF',
+    backgroundColor: "#0088FF",
   },
   calendarCellEmpty: {
     width: 40,
     height: 40,
   },
   calendarDay: {
-    color: '#052D50',
+    color: "#052D50",
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   calendarDaySelected: {
-    color: '#ffffff',
+    color: "#ffffff",
   },
   calendarHours: {
-    color: '#ffffff',
+    color: "#ffffff",
     fontSize: 10,
     marginTop: 2,
-    backgroundColor: '#0088FF',
+    backgroundColor: "#0088FF",
     paddingHorizontal: 4,
     borderRadius: 4,
   },
   calendarHoursSelected: {
-    backgroundColor: '#ffffff',
-    color: '#0088FF',
+    backgroundColor: "#ffffff",
+    color: "#0088FF",
   },
   shiftDetailsContainer: {
-    width: '100%',
-    backgroundColor: '#f9f9f9',
+    width: "100%",
+    backgroundColor: "#f9f9f9",
     borderRadius: 16,
     padding: 12,
     marginBottom: 12,
@@ -515,35 +633,35 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   shiftTitle: {
-    color: '#052D50',
+    color: "#052D50",
     fontSize: 17,
     marginBottom: 12,
   },
   shiftCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     borderRadius: 12,
     padding: 12,
     gap: 8,
   },
   shiftInfoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 8,
     gap: 12,
   },
   shiftLabel: {
-    color: '#698196',
+    color: "#698196",
     fontSize: 14,
   },
   shiftValue: {
-    color: '#052D50',
+    color: "#052D50",
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     flex: 1,
-    textAlign: 'right',
+    textAlign: "right",
   },
   shiftImagesRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 12,
   },
   shiftImage: {
@@ -553,23 +671,23 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   statsContainer: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 24,
   },
   statItem: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   statLabel: {
-    color: '#698196',
+    color: "#698196",
     fontSize: 14,
   },
   statValue: {
-    color: '#052D50',
+    color: "#052D50",
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   exportFabButton: {
     width: 80,
@@ -577,112 +695,111 @@ const styles = StyleSheet.create({
     borderRadius: 40,
   },
   exportFabText: {
-    color: '#ffffff',
+    color: "#ffffff",
     fontSize: 13,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
     lineHeight: 16,
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   emptyMonthText: {
-    color: '#698196',
-    textAlign: 'center',
+    color: "#698196",
+    textAlign: "center",
     marginTop: 12,
   },
   emptyDetailsText: {
-    color: '#698196',
+    color: "#698196",
     fontSize: 14,
   },
   noPhotosText: {
-    color: '#698196',
+    color: "#698196",
     fontSize: 13,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: '#00000040',
-    justifyContent: 'center',
+    backgroundColor: "#00000040",
+    justifyContent: "center",
     padding: 24,
   },
   modalContent: {
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     borderRadius: 16,
     paddingVertical: 8,
   },
   exportModalCard: {
-    backgroundColor: '#EEF5FB',
+    backgroundColor: "#EEF5FB",
     borderRadius: 24,
     padding: 20,
     gap: 12,
   },
   exportModalTitle: {
-    color: '#052D50',
+    color: "#052D50",
     fontSize: 22,
   },
   exportModalSubtitle: {
-    color: '#698196',
+    color: "#698196",
     fontSize: 14,
   },
   exportSheetCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 20,
     padding: 0,
   },
   exportButtonsContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
+    flexDirection: "row",
+    backgroundColor: "#FFFFFF",
     borderRadius: 20,
     padding: 0,
   },
   exportButton: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 20,
     paddingVertical: 12,
-    alignItems: 'center',
+    alignItems: "center",
     borderWidth: 0,
-    borderColor: 'transparent',
+    borderColor: "transparent",
   },
   exportButtonActive: {
     borderWidth: 2,
-    borderColor: 'rgba(7, 133, 244, 1)',
+    borderColor: "rgba(7, 133, 244, 1)",
   },
   exportButtonText: {
     fontSize: 16,
-    color: '#052D50',
+    color: "#052D50",
   },
   exportButtonTextActive: {
-    fontWeight: '600',
+    fontWeight: "600",
   },
   exportMainButton: {
-    width: '100%',
-    backgroundColor: '#0091FF',
+    width: "100%",
+    backgroundColor: "#0091FF",
     borderRadius: 12,
     paddingVertical: 12,
-    alignItems: 'center',
+    alignItems: "center",
   },
   exportMainButtonDisabled: {
     opacity: 0.7,
   },
   exportMainButtonText: {
     fontSize: 18,
-    color: '#FFFFFF',
-    fontWeight: '600',
+    color: "#FFFFFF",
+    fontWeight: "600",
   },
   monthOption: {
     paddingHorizontal: 16,
     paddingVertical: 14,
   },
   monthOptionText: {
-    color: '#052D50',
+    color: "#052D50",
     fontSize: 16,
   },
   monthOptionTextSelected: {
-    color: '#0088FF',
-    fontWeight: '700',
+    color: "#0088FF",
+    fontWeight: "700",
   },
 });
-

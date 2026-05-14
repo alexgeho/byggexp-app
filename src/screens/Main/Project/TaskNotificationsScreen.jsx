@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -10,20 +10,25 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { GlassBackButton } from '../../../components/common/GlassBackButton/GlassBackButton';
-import { projectService } from '../../../services';
+} from "react-native";
+import Icon from "react-native-vector-icons/Feather";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { BackButton } from "../../../components/common/BackButton/BackButton";
+import { projectService } from "../../../services";
 import {
   createDefaultTaskNotificationSettings,
   getRepeatLabel,
   normalizeTaskNotificationSettings,
-} from '../../../utils/taskNotifications';
+} from "../../../utils/taskNotifications";
 
-const getUserInitials = (name = '') => {
+const getUserInitials = (name = "") => {
   const parts = name.trim().split(/\s+/).filter(Boolean);
-  return parts.slice(0, 2).map((part) => part[0]?.toUpperCase() || '').join('') || '?';
+  return (
+    parts
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase() || "")
+      .join("") || "?"
+  );
 };
 
 export default function TaskNotificationsScreen() {
@@ -33,13 +38,13 @@ export default function TaskNotificationsScreen() {
   const dueDate = route.params?.dueDate || null;
   const startDate = route.params?.startDate || null;
 
-  const [settings, setSettings] = useState(() => (
-    normalizeTaskNotificationSettings(route.params?.notificationSettings)
-  ));
+  const [settings, setSettings] = useState(() =>
+    normalizeTaskNotificationSettings(route.params?.notificationSettings),
+  );
   const [workers, setWorkers] = useState([]);
   const [loadingWorkers, setLoadingWorkers] = useState(false);
   const [showWorkersModal, setShowWorkersModal] = useState(false);
-  const [workerSearch, setWorkerSearch] = useState('');
+  const [workerSearch, setWorkerSearch] = useState("");
   const [pendingAssignees, setPendingAssignees] = useState([]);
 
   useEffect(() => {
@@ -59,17 +64,20 @@ export default function TaskNotificationsScreen() {
 
         const projectWorkers = Array.isArray(project?.workers)
           ? project.workers
-              .filter((user) => user && typeof user === 'object')
+              .filter((user) => user && typeof user === "object")
               .map((user) => ({
                 id: user._id,
-                name: user.name || 'Unnamed worker',
-                profession: user.profession || '',
+                name: user.name || "Unnamed worker",
+                profession: user.profession || "",
               }))
           : [];
 
         setWorkers(projectWorkers);
       } catch (error) {
-        console.error('Failed to load project workers for task notifications:', error);
+        console.error(
+          "Failed to load project workers for task notifications:",
+          error,
+        );
       } finally {
         if (mounted) {
           setLoadingWorkers(false);
@@ -91,7 +99,7 @@ export default function TaskNotificationsScreen() {
 
     setSettings((previous) => ({
       ...previous,
-      repeat: route.params.repeatSelection || 'none',
+      repeat: route.params.repeatSelection || "none",
     }));
   }, [route.params?.repeatSelection]);
 
@@ -101,22 +109,22 @@ export default function TaskNotificationsScreen() {
       return workers;
     }
 
-    return workers.filter((worker) => (
+    return workers.filter((worker) =>
       [worker.name, worker.profession]
         .filter(Boolean)
-        .join(' ')
+        .join(" ")
         .toLowerCase()
-        .includes(normalizedSearch)
-    ));
+        .includes(normalizedSearch),
+    );
   }, [workerSearch, workers]);
 
   const assigneesLabel = useMemo(() => {
     if (settings.allMembersNotification && settings.assignees.length === 0) {
-      return 'All project members';
+      return "All project members";
     }
 
     if (settings.assignees.length === 0) {
-      return 'Choose workers';
+      return "Choose workers";
     }
 
     if (settings.assignees.length === 1) {
@@ -128,13 +136,13 @@ export default function TaskNotificationsScreen() {
 
   const openWorkersModal = () => {
     setPendingAssignees(settings.assignees);
-    setWorkerSearch('');
+    setWorkerSearch("");
     setShowWorkersModal(true);
   };
 
   const closeWorkersModal = () => {
     setPendingAssignees([]);
-    setWorkerSearch('');
+    setWorkerSearch("");
     setShowWorkersModal(false);
   };
 
@@ -164,7 +172,7 @@ export default function TaskNotificationsScreen() {
     };
 
     navigation.navigate({
-      name: 'CreateTask',
+      name: "CreateTask",
       params: { notificationSettings: nextSettings },
       merge: true,
     });
@@ -174,22 +182,33 @@ export default function TaskNotificationsScreen() {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.header}>
-          <GlassBackButton
-            backgroundColor={'rgb(253 253 253)'}
+          <BackButton
+            backgroundColor={"rgb(253 253 253)"}
             tint="light"
             borderColor="#FFFFFF50"
             onPress={() => navigation.goBack()}
-            iconSource={require('../../../assets/Arrow-left.png')}
+            iconSource={require("../../../assets/Arrow-left.png")}
           />
           <Text style={styles.headerTitle}>Notifications</Text>
           <View style={styles.placeholder} />
         </View>
 
         <View style={styles.groupCard}>
-          <TouchableOpacity style={styles.groupRow} onPress={openWorkersModal} activeOpacity={0.85}>
+          <TouchableOpacity
+            style={styles.groupRow}
+            onPress={openWorkersModal}
+            activeOpacity={0.85}
+          >
             <View style={styles.rowTextContainer}>
               <Text style={styles.rowLabel}>Assign to</Text>
-              <Text style={[styles.rowValue, settings.assignees.length === 0 && !settings.allMembersNotification && styles.rowPlaceholder]}>
+              <Text
+                style={[
+                  styles.rowValue,
+                  settings.assignees.length === 0 &&
+                    !settings.allMembersNotification &&
+                    styles.rowPlaceholder,
+                ]}
+              >
                 {assigneesLabel}
               </Text>
             </View>
@@ -199,12 +218,19 @@ export default function TaskNotificationsScreen() {
           <View style={styles.groupRow}>
             <View style={styles.rowTextContainer}>
               <Text style={styles.rowLabel}>Auto Reminder</Text>
-              <Text style={styles.rowHint}>Uses the default reminder text for the team.</Text>
+              <Text style={styles.rowHint}>
+                Uses the default reminder text for the team.
+              </Text>
             </View>
             <Switch
               value={settings.autoReminder}
-              onValueChange={(value) => setSettings((previous) => ({ ...previous, autoReminder: value }))}
-              trackColor={{ false: '#D9E3EC', true: '#0091FF' }}
+              onValueChange={(value) =>
+                setSettings((previous) => ({
+                  ...previous,
+                  autoReminder: value,
+                }))
+              }
+              trackColor={{ false: "#D9E3EC", true: "#0091FF" }}
               thumbColor="#FFFFFF"
               ios_backgroundColor="#D9E3EC"
             />
@@ -213,12 +239,19 @@ export default function TaskNotificationsScreen() {
           <View style={styles.groupRow}>
             <View style={styles.rowTextContainer}>
               <Text style={styles.rowLabel}>Custom Reminder</Text>
-              <Text style={styles.rowHint}>Lets you send your own reminder text.</Text>
+              <Text style={styles.rowHint}>
+                Lets you send your own reminder text.
+              </Text>
             </View>
             <Switch
               value={settings.customReminder}
-              onValueChange={(value) => setSettings((previous) => ({ ...previous, customReminder: value }))}
-              trackColor={{ false: '#D9E3EC', true: '#0091FF' }}
+              onValueChange={(value) =>
+                setSettings((previous) => ({
+                  ...previous,
+                  customReminder: value,
+                }))
+              }
+              trackColor={{ false: "#D9E3EC", true: "#0091FF" }}
               thumbColor="#FFFFFF"
               ios_backgroundColor="#D9E3EC"
             />
@@ -227,16 +260,20 @@ export default function TaskNotificationsScreen() {
           <TouchableOpacity
             style={[styles.groupRow, styles.groupRowLast]}
             activeOpacity={0.85}
-            onPress={() => navigation.navigate('TaskNotificationRepeat', {
-              dueDate,
-              startDate,
-              selectedRepeat: settings.repeat,
-              notificationSettings: settings,
-            })}
+            onPress={() =>
+              navigation.navigate("TaskNotificationRepeat", {
+                dueDate,
+                startDate,
+                selectedRepeat: settings.repeat,
+                notificationSettings: settings,
+              })
+            }
           >
             <View style={styles.rowTextContainer}>
               <Text style={styles.rowLabel}>Repeat</Text>
-              <Text style={styles.rowValue}>{getRepeatLabel(settings.repeat)}</Text>
+              <Text style={styles.rowValue}>
+                {getRepeatLabel(settings.repeat)}
+              </Text>
             </View>
             <Icon name="chevron-right" size={18} color="#052D50" />
           </TouchableOpacity>
@@ -250,7 +287,12 @@ export default function TaskNotificationsScreen() {
                 multiline={true}
                 style={styles.messageInput}
                 value={settings.customMessage}
-                onChangeText={(value) => setSettings((previous) => ({ ...previous, customMessage: value }))}
+                onChangeText={(value) =>
+                  setSettings((previous) => ({
+                    ...previous,
+                    customMessage: value,
+                  }))
+                }
                 placeholder="Write your own reminder for the team."
                 placeholderTextColor="rgba(5, 45, 80, 0.45)"
               />
@@ -260,13 +302,24 @@ export default function TaskNotificationsScreen() {
 
         <View style={styles.infoCard}>
           <Text style={styles.infoTitle}>How repeat limits work</Text>
-          <Text style={styles.infoText}>Repeat options stop at the task due date and stay disabled until a reminder is turned on.</Text>
-          <Text style={styles.infoText}>Hourly is available only for tasks due within 24 hours. Daily is available up to 30 days before due date. Weekly needs at least 7 days before due date.</Text>
+          <Text style={styles.infoText}>
+            Repeat options stop at the task due date and stay disabled until a
+            reminder is turned on.
+          </Text>
+          <Text style={styles.infoText}>
+            Hourly is available only for tasks due within 24 hours. Daily is
+            available up to 30 days before due date. Weekly needs at least 7
+            days before due date.
+          </Text>
         </View>
       </ScrollView>
 
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.saveButton} activeOpacity={0.85} onPress={handleSave}>
+        <TouchableOpacity
+          style={styles.saveButton}
+          activeOpacity={0.85}
+          onPress={handleSave}
+        >
           <Icon name="check" size={18} color="#FFFFFF" />
           <Text style={styles.saveButtonText}>Save notifications</Text>
         </TouchableOpacity>
@@ -280,12 +333,12 @@ export default function TaskNotificationsScreen() {
       >
         <View style={styles.modalContainer}>
           <View style={styles.header}>
-            <GlassBackButton
-              backgroundColor={'rgb(253 253 253)'}
+            <BackButton
+              backgroundColor={"rgb(253 253 253)"}
               tint="light"
               borderColor="#FFFFFF50"
               onPress={closeWorkersModal}
-              iconSource={require('../../../assets/Arrow-left.png')}
+              iconSource={require("../../../assets/Arrow-left.png")}
             />
             <Text style={styles.headerTitle}>Assign to</Text>
             <View style={styles.placeholder} />
@@ -306,12 +359,19 @@ export default function TaskNotificationsScreen() {
             <View style={[styles.groupRow, styles.groupRowLast]}>
               <View style={styles.rowTextContainer}>
                 <Text style={styles.rowLabel}>All Members Notification</Text>
-                <Text style={styles.rowHint}>Send reminders to everyone in the project team.</Text>
+                <Text style={styles.rowHint}>
+                  Send reminders to everyone in the project team.
+                </Text>
               </View>
               <Switch
                 value={settings.allMembersNotification}
-                onValueChange={(value) => setSettings((previous) => ({ ...previous, allMembersNotification: value }))}
-                trackColor={{ false: '#D9E3EC', true: '#0091FF' }}
+                onValueChange={(value) =>
+                  setSettings((previous) => ({
+                    ...previous,
+                    allMembersNotification: value,
+                  }))
+                }
+                trackColor={{ false: "#D9E3EC", true: "#0091FF" }}
                 thumbColor="#FFFFFF"
                 ios_backgroundColor="#D9E3EC"
               />
@@ -330,7 +390,9 @@ export default function TaskNotificationsScreen() {
               contentContainerStyle={styles.workersListContent}
               keyboardShouldPersistTaps="handled"
               renderItem={({ item }) => {
-                const isSelected = pendingAssignees.some((worker) => worker.id === item.id);
+                const isSelected = pendingAssignees.some(
+                  (worker) => worker.id === item.id,
+                );
 
                 return (
                   <TouchableOpacity
@@ -339,34 +401,54 @@ export default function TaskNotificationsScreen() {
                     activeOpacity={0.85}
                   >
                     <View style={styles.workerAvatarPlaceholder}>
-                      <Text style={styles.workerAvatarInitials}>{getUserInitials(item.name)}</Text>
+                      <Text style={styles.workerAvatarInitials}>
+                        {getUserInitials(item.name)}
+                      </Text>
                     </View>
                     <View style={styles.workerCardInfo}>
                       <Text numberOfLines={1} style={styles.workerCardName}>
                         {item.name}
                       </Text>
-                      <Text numberOfLines={1} style={styles.workerCardProfession}>
-                        {item.profession || 'Profession not set'}
+                      <Text
+                        numberOfLines={1}
+                        style={styles.workerCardProfession}
+                      >
+                        {item.profession || "Profession not set"}
                       </Text>
                     </View>
-                    <View style={[styles.workerCheckbox, isSelected && styles.workerCheckboxSelected]}>
-                      {isSelected ? <Icon name="check" size={12} color="#FFFFFF" /> : null}
+                    <View
+                      style={[
+                        styles.workerCheckbox,
+                        isSelected && styles.workerCheckboxSelected,
+                      ]}
+                    >
+                      {isSelected ? (
+                        <Icon name="check" size={12} color="#FFFFFF" />
+                      ) : null}
                     </View>
                   </TouchableOpacity>
                 );
               }}
-              ListEmptyComponent={(
+              ListEmptyComponent={
                 <View style={styles.emptyState}>
-                  <Text style={styles.emptyStateText}>No workers available for notifications</Text>
+                  <Text style={styles.emptyStateText}>
+                    No workers available for notifications
+                  </Text>
                 </View>
-              )}
+              }
             />
           )}
 
           <View style={styles.modalFooter}>
-            <TouchableOpacity style={styles.modalSaveButton} activeOpacity={0.85} onPress={saveWorkersSelection}>
+            <TouchableOpacity
+              style={styles.modalSaveButton}
+              activeOpacity={0.85}
+              onPress={saveWorkersSelection}
+            >
               <Text style={styles.modalSaveButtonText}>
-                {pendingAssignees.length > 0 ? `Save (${pendingAssignees.length})` : 'Save'}
+                {pendingAssignees.length > 0
+                  ? `Save (${pendingAssignees.length})`
+                  : "Save"}
               </Text>
             </TouchableOpacity>
           </View>
@@ -379,7 +461,7 @@ export default function TaskNotificationsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#EEF5FB',
+    backgroundColor: "#EEF5FB",
   },
   contentContainer: {
     padding: 12,
@@ -387,25 +469,25 @@ const styles = StyleSheet.create({
     paddingBottom: 140,
   },
   header: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 24,
   },
   headerTitle: {
-    color: '#052D50',
+    color: "#052D50",
     fontSize: 17,
-    fontFamily: 'DMSans-SemiBold',
+    fontFamily: "DMSans-SemiBold",
   },
   placeholder: {
     width: 44,
     height: 44,
   },
   groupCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 24,
-    overflow: 'hidden',
+    overflow: "hidden",
     marginBottom: 12,
   },
   groupRow: {
@@ -413,10 +495,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(5, 45, 80, 0.08)',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    borderBottomColor: "rgba(5, 45, 80, 0.08)",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     gap: 12,
   },
   groupRowLast: {
@@ -426,19 +508,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   rowLabel: {
-    color: '#698196',
+    color: "#698196",
     fontSize: 12,
     marginBottom: 4,
   },
   rowValue: {
-    color: '#052D50',
+    color: "#052D50",
     fontSize: 16,
   },
   rowPlaceholder: {
-    color: 'rgba(5, 45, 80, 0.45)',
+    color: "rgba(5, 45, 80, 0.45)",
   },
   rowHint: {
-    color: '#698196',
+    color: "#698196",
     fontSize: 13,
     lineHeight: 18,
   },
@@ -447,63 +529,63 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   messageLabel: {
-    color: '#698196',
+    color: "#698196",
     fontSize: 12,
     marginBottom: 8,
   },
   messageInput: {
     minHeight: 110,
-    color: '#052D50',
+    color: "#052D50",
     fontSize: 16,
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
     paddingTop: 4,
   },
   messageInputDisabled: {
-    color: 'rgba(5, 45, 80, 0.45)',
+    color: "rgba(5, 45, 80, 0.45)",
   },
   infoCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 24,
     padding: 16,
     gap: 8,
   },
   infoTitle: {
-    color: '#052D50',
+    color: "#052D50",
     fontSize: 15,
-    fontFamily: 'DMSans-SemiBold',
+    fontFamily: "DMSans-SemiBold",
   },
   infoText: {
-    color: '#698196',
+    color: "#698196",
     fontSize: 13,
     lineHeight: 18,
   },
   footer: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     right: 0,
     bottom: 0,
     paddingHorizontal: 12,
     paddingBottom: 24,
     paddingTop: 12,
-    backgroundColor: 'rgba(238, 245, 251, 0.96)',
+    backgroundColor: "rgba(238, 245, 251, 0.96)",
   },
   saveButton: {
     height: 56,
     borderRadius: 18,
-    backgroundColor: '#0091FF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
+    backgroundColor: "#0091FF",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
     gap: 8,
   },
   saveButtonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 16,
-    fontFamily: 'DMSans-SemiBold',
+    fontFamily: "DMSans-SemiBold",
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: '#EEF5FB',
+    backgroundColor: "#EEF5FB",
     padding: 12,
     paddingTop: 48,
     paddingBottom: 24,
@@ -511,55 +593,55 @@ const styles = StyleSheet.create({
   searchBar: {
     height: 52,
     borderRadius: 18,
-    backgroundColor: '#FFFFFF',
-    flexDirection: 'row',
-    alignItems: 'center',
+    backgroundColor: "#FFFFFF",
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 16,
     gap: 10,
     marginBottom: 12,
   },
   searchInput: {
     flex: 1,
-    color: '#052D50',
+    color: "#052D50",
     fontSize: 15,
   },
   workersListContent: {
     paddingBottom: 16,
   },
   workerCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 18,
     paddingHorizontal: 14,
     paddingVertical: 12,
     marginBottom: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
   },
   workerAvatarPlaceholder: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#D9E8F5',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#D9E8F5",
+    alignItems: "center",
+    justifyContent: "center",
   },
   workerAvatarInitials: {
-    color: '#052D50',
+    color: "#052D50",
     fontSize: 14,
-    fontFamily: 'DMSans-SemiBold',
+    fontFamily: "DMSans-SemiBold",
   },
   workerCardInfo: {
     flex: 1,
   },
   workerCardName: {
-    color: '#052D50',
+    color: "#052D50",
     fontSize: 15,
-    fontFamily: 'DMSans-SemiBold',
+    fontFamily: "DMSans-SemiBold",
     marginBottom: 2,
   },
   workerCardProfession: {
-    color: '#698196',
+    color: "#698196",
     fontSize: 13,
   },
   workerCheckbox: {
@@ -567,30 +649,30 @@ const styles = StyleSheet.create({
     height: 22,
     borderRadius: 6,
     borderWidth: 2,
-    borderColor: '#0091FF',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderColor: "#0091FF",
+    alignItems: "center",
+    justifyContent: "center",
   },
   workerCheckboxSelected: {
-    backgroundColor: '#0091FF',
+    backgroundColor: "#0091FF",
   },
   emptyState: {
     paddingVertical: 48,
-    alignItems: 'center',
+    alignItems: "center",
   },
   emptyStateText: {
-    color: '#698196',
+    color: "#698196",
     fontSize: 14,
   },
   loadingContainer: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 48,
   },
   loadingText: {
     marginTop: 12,
-    color: '#698196',
+    color: "#698196",
   },
   modalFooter: {
     paddingTop: 8,
@@ -598,13 +680,13 @@ const styles = StyleSheet.create({
   modalSaveButton: {
     height: 56,
     borderRadius: 18,
-    backgroundColor: '#0091FF',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#0091FF",
+    alignItems: "center",
+    justifyContent: "center",
   },
   modalSaveButtonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 16,
-    fontFamily: 'DMSans-SemiBold',
+    fontFamily: "DMSans-SemiBold",
   },
 });

@@ -16,12 +16,11 @@ import {
   saveEnabledButtons,
 } from "../../utils/homeButtonsStorage";
 
-import { GlassBackButton } from "../../components/common/GlassBackButton/GlassBackButton";
+import { BackButton } from "../../components/common/BackButton/BackButton";
 
 import { createStyles } from "./CustomizeHomeScreen.styles";
 
 export default function CustomizeHomeScreen() {
-  
   const navigation = useNavigation();
 
   const { theme } = useTheme();
@@ -72,7 +71,7 @@ export default function CustomizeHomeScreen() {
     <View style={styles.container}>
       {/* HEADER */}
       <View style={styles.header}>
-        <GlassBackButton
+        <BackButton
           backgroundColor="#ffffff"
           tint="light"
           borderColor="#FFFFFF50"
@@ -83,7 +82,6 @@ export default function CustomizeHomeScreen() {
         {/* TITLE */}
         <Text style={styles.title}>Customize Home Screen</Text>
         <View style={styles.placeholder} />
-
       </View>
 
       {/* BUTTON LIST */}
