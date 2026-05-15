@@ -19,6 +19,7 @@ import { GlassView } from "../../../components/common/GlassView/GlassView";
 import { shiftService } from "../../../services";
 import { createStyles } from "./HomeVariant1green.styles";
 import ProjectFilesSection from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
+import { getEnabledSections } from "../../../utils/homeButtonsStorage";
 
 export default function MainScreen() {
   const { theme, changeTheme } = useTheme();
@@ -40,6 +41,8 @@ export default function MainScreen() {
   } = useTimer();
 
   const selectedProjectId = selectedProject?._id || selectedProject?.id;
+
+  const [enabledSections, setEnabledSections] = useState([]);
 
   /* ERRORS */
   const getErrorMessage = (error, fallbackMessage) =>
@@ -106,9 +109,22 @@ export default function MainScreen() {
   );
 
   useFocusEffect(
-    useCallback(() => {
-      loadCurrentShift(selectedProjectId);
-    }, [loadCurrentShift, selectedProjectId]),
+    React.useCallback(
+      function loadScreenData() {
+        async function fetchData() {
+          await loadCurrentShift(selectedProjectId);
+
+          const savedSections = await getEnabledSections();
+
+          if (savedSections) {
+            setEnabledSections(savedSections);
+          }
+        }
+
+        fetchData();
+      },
+      [loadCurrentShift, selectedProjectId],
+    ),
   );
 
   const handlePlayPause = async () => {
@@ -204,7 +220,6 @@ export default function MainScreen() {
       </View>
 
       <View style={styles.contentContainer}>
-        
         {/* TIMER */}
         <View style={styles.timerRow}>
           <Text
@@ -310,9 +325,9 @@ export default function MainScreen() {
         <MainButtonsGrid />
 
         {/* PROJECT FILES SELECTION */}
-        <ProjectFilesSection />
-
-
+        {enabledSections.includes("project-files") && (
+          <ProjectFilesSection project={selectedProject} />
+        )}
       </View>
       {/* BOTTOM MENU */}
       <View style={styles.bottomNavContainer}>

@@ -31,10 +31,22 @@ export const mainButtons = [
   },
 ];
 
+export const homeSections = [
+  {
+    id: "project-files",
+    title: "Project Files",
+  },
+];
+
 export const defaultEnabledButtons = [
   "next",
   "camera",
   "chats",
   "shifts",
   "projects",
+  
+];
+
+export const defaultEnabledSections = [
+  "project-files",
 ];

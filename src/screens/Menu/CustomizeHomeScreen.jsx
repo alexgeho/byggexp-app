@@ -8,12 +8,16 @@ import { useTheme } from "../../theme/ThemeContext";
 
 import {
   mainButtons,
+  homeSections,
   defaultEnabledButtons,
+  defaultEnabledSections,
 } from "../../constants/mainButtons";
 
 import {
   getEnabledButtons,
   saveEnabledButtons,
+  getEnabledSections,
+  saveEnabledSections,
 } from "../../utils/homeButtonsStorage";
 
 import { BackButton } from "../../components/common/BackButton/BackButton";
@@ -27,20 +31,32 @@ export default function CustomizeHomeScreen() {
 
   const styles = createStyles(theme);
 
-  const [enabledButtons, setEnabledButtons] = useState(defaultEnabledButtons);
+  const [enabledButtons, setEnabledButtons] = useState(
+    defaultEnabledButtons,
+  );
 
-  /* LOAD SAVED BUTTONS */
+  const [enabledSections, setEnabledSections] = useState(
+    defaultEnabledSections,
+  );
+
+  /* LOAD SAVED SETTINGS */
   useFocusEffect(
-    React.useCallback(function loadButtons() {
-      async function fetchButtons() {
+    React.useCallback(function loadSettings() {
+      async function fetchSettings() {
         const savedButtons = await getEnabledButtons();
+
+        const savedSections = await getEnabledSections();
 
         if (savedButtons) {
           setEnabledButtons(savedButtons);
         }
+
+        if (savedSections) {
+          setEnabledSections(savedSections);
+        }
       }
 
-      fetchButtons();
+      fetchSettings();
     }, []),
   );
 
@@ -67,6 +83,31 @@ export default function CustomizeHomeScreen() {
     await saveEnabledButtons(updatedButtons);
   }
 
+  /* TOGGLE SECTION ENABLED STATE */
+  async function toggleSection(sectionId) {
+    const isEnabled = enabledSections.includes(sectionId);
+
+    if (isEnabled) {
+      const updatedSections = enabledSections.filter(function removeSection(
+        id,
+      ) {
+        return id !== sectionId;
+      });
+
+      setEnabledSections(updatedSections);
+
+      await saveEnabledSections(updatedSections);
+
+      return;
+    }
+
+    const updatedSections = [...enabledSections, sectionId];
+
+    setEnabledSections(updatedSections);
+
+    await saveEnabledSections(updatedSections);
+  }
+
   return (
     <View style={styles.container}>
       {/* HEADER */}
@@ -79,8 +120,8 @@ export default function CustomizeHomeScreen() {
           iconSource={require("../../assets/Arrow-left.png")}
         />
 
-        {/* TITLE */}
         <Text style={styles.title}>Customize Home Screen</Text>
+
         <View style={styles.placeholder} />
       </View>
 
@@ -101,6 +142,34 @@ export default function CustomizeHomeScreen() {
               }}
             >
               <Text style={styles.itemText}>{button.title}</Text>
+
+              <View
+                style={[styles.checkbox, isEnabled && styles.checkboxActive]}
+              >
+                {isEnabled && <Text style={styles.checkmark}>✓</Text>}
+              </View>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+
+      {/* SECTION LIST */}
+      <View style={styles.list}>
+        {homeSections.map(function renderSection(section, index) {
+          const isEnabled = enabledSections.includes(section.id);
+
+          return (
+            <TouchableOpacity
+              key={section.id}
+              style={[
+                styles.item,
+                index !== homeSections.length - 1 && styles.itemBorder,
+              ]}
+              onPress={function handlePress() {
+                toggleSection(section.id);
+              }}
+            >
+              <Text style={styles.itemText}>{section.title}</Text>
 
               <View
                 style={[styles.checkbox, isEnabled && styles.checkboxActive]}
