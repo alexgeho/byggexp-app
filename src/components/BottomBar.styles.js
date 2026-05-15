@@ -58,6 +58,11 @@ export function createStyles(theme) {
       backgroundColor: theme.colors.primary,
       padding: 10,
     },
+    addIcon: {
+      width: 20,
+      height: 20,
+      resizeMode: "contain",
+    },
     logoutButtonText: {
       color: "#FFFFFF",
       fontSize: 15,

@@ -29,6 +29,7 @@ import Icon from "react-native-vector-icons/Feather";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/BottomBar";
 import AuthContext from "../../../contexts/AuthContext";
+import { useTheme } from "../../../theme/ThemeContext";
 import { chatService, projectService } from "../../../services";
 import { resolveUploadUrl } from "../../../utils/shifts";
 
@@ -134,6 +135,7 @@ export const ProjectScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { user } = useContext(AuthContext);
+  const { theme } = useTheme();
   const { id } = route.params || {};
   const [modal, setModal] = useState("Tasks");
   const [selectedWorker, setSelectedWorker] = useState(null);
@@ -310,6 +312,9 @@ export const ProjectScreen = () => {
     );
   }
 
+  const activeTabStyle = { borderColor: theme.colors.primary };
+  const activeTabTextStyle = { color: theme.colors.primary };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -327,21 +332,48 @@ export const ProjectScreen = () => {
       <View style={styles.tabContainer}>
         <TouchableOpacity
           onPress={() => setModal("Tasks")}
-          style={[styles.tabButton, modal === "Tasks" && styles.activeTab]}
+          style={[
+            styles.tabButton,
+            modal === "Tasks" && styles.activeTab,
+            modal === "Tasks" && activeTabStyle,
+          ]}
         >
-          <Text style={styles.tabText}>Tasks</Text>
+          <Text
+            style={[styles.tabText, modal === "Tasks" && activeTabTextStyle]}
+          >
+            Tasks
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => setModal("Documents")}
-          style={[styles.tabButton, modal === "Documents" && styles.activeTab]}
+          style={[
+            styles.tabButton,
+            modal === "Documents" && styles.activeTab,
+            modal === "Documents" && activeTabStyle,
+          ]}
         >
-          <Text style={styles.tabText}>Documents</Text>
+          <Text
+            style={[
+              styles.tabText,
+              modal === "Documents" && activeTabTextStyle,
+            ]}
+          >
+            Documents
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => setModal("Workers")}
-          style={[styles.tabButton, modal === "Workers" && styles.activeTab]}
+          style={[
+            styles.tabButton,
+            modal === "Workers" && styles.activeTab,
+            modal === "Workers" && activeTabStyle,
+          ]}
         >
-          <Text style={styles.tabText}>Workers</Text>
+          <Text
+            style={[styles.tabText, modal === "Workers" && activeTabTextStyle]}
+          >
+            Workers
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -586,7 +618,7 @@ const styles = StyleSheet.create({
     paddingTop: 48,
     paddingBottom: 48,
     gap: 24,
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
   },
   centeredContainer: {
     flex: 1,
@@ -821,7 +853,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   bottomSheetBackground: {
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
   },

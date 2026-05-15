@@ -4,7 +4,7 @@ export function createStyles(theme) {
   return StyleSheet.create({
    container: {
     flex: 1,
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
     padding: 16,
     paddingTop: 48,
     paddingBottom: 48,

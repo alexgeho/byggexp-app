@@ -4,7 +4,7 @@ export function createStyles(theme) {
   return StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: "#EEF5FB",
+      backgroundColor: "#EEEEEE",
       paddingTop: 48,
       paddingHorizontal: 16,
     },
@@ -55,15 +55,15 @@ export function createStyles(theme) {
       height: 28,
       borderRadius: 8,
       borderWidth: 2,
-      borderColor: "#D0D7E2",
+      borderColor: `${theme.colors.primary}33`,
 
       alignItems: "center",
       justifyContent: "center",
     },
 
     checkboxActive: {
-      backgroundColor: "#2582D9",
-      borderColor: "#2582D9",
+      backgroundColor: theme.colors.primary,
+      borderColor: theme.colors.primary,
     },
 
     checkmark: {

@@ -11,6 +11,7 @@ import {
   Alert,
 } from "react-native";
 import AuthContext from "../../../contexts/AuthContext";
+import { useTheme } from "../../../theme/ThemeContext";
 import { userService, projectService } from "../../../services";
 import { BottomBar } from "../../../components/BottomBar";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
@@ -20,12 +21,20 @@ export const SelectWorkers = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { user } = useContext(AuthContext);
+  const { theme } = useTheme();
   const { projectId } = route.params || {};
 
   const [workers, setWorkers] = useState([]);
   const [selectedWorkers, setSelectedWorkers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const themedCheckboxStyle = {
+    borderColor: `${theme.colors.primary}66`,
+  };
+  const themedCheckboxSelectedStyle = {
+    backgroundColor: theme.colors.primary,
+    borderColor: theme.colors.primary,
+  };
 
   // Проверка прав доступа - только для companyAdmin и projectAdmin
   if (!["companyAdmin", "projectAdmin"].includes(user?.role)) {
@@ -151,19 +160,12 @@ export const SelectWorkers = () => {
               </View>
               <TouchableOpacity
                 onPress={() => toggleWorkerSelection(worker._id)}
-                style={{
-                  width: 22,
-                  height: 22,
-                  borderWidth: 2,
-                  borderColor: "#0088FF",
-                  borderRadius: 4,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor: selectedWorkers.includes(worker._id)
-                    ? "#0088FF"
-                    : "transparent",
-                  marginRight: 8,
-                }}
+                style={[
+                  styles.checkbox,
+                  themedCheckboxStyle,
+                  selectedWorkers.includes(worker._id) &&
+                    themedCheckboxSelectedStyle,
+                ]}
               >
                 {selectedWorkers.includes(worker._id) && (
                   <Text style={{ color: "#ffffff" }}>✓</Text>
@@ -212,13 +214,13 @@ const styles = StyleSheet.create({
     paddingTop: 48,
     paddingBottom: 48,
     gap: 24,
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
   },
   centeredContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
   },
   header: {
     width: "100%",
@@ -285,6 +287,16 @@ const styles = StyleSheet.create({
   workerEmail: {
     fontSize: 14,
     color: "#698196",
+  },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderWidth: 2,
+    borderRadius: 4,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "transparent",
+    marginRight: 8,
   },
   noWorkersText: {
     textAlign: "center",

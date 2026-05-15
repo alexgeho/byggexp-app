@@ -48,13 +48,13 @@ export const BottomBar = ({
             <Defs>
               <RadialGradient id="leftGlow" cx="29.59%" cy="47.26%" rx="42.43%" ry="126.71%">
                 <Stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.98" />
-                <Stop offset="54%" stopColor="#EEF5FB" stopOpacity="0.56" />
-                <Stop offset="100%" stopColor="#EEF5FB" stopOpacity="0" />
+                <Stop offset="54%" stopColor="#EEEEEE" stopOpacity="0.56" />
+                <Stop offset="100%" stopColor="#EEEEEE" stopOpacity="0" />
               </RadialGradient>
               <RadialGradient id="rightGlow" cx="71.33%" cy="46.58%" rx="40.37%" ry="120.55%">
                 <Stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.98" />
-                <Stop offset="54%" stopColor="#EEF5FB" stopOpacity="0.56" />
-                <Stop offset="100%" stopColor="#EEF5FB" stopOpacity="0" />
+                <Stop offset="54%" stopColor="#EEEEEE" stopOpacity="0.56" />
+                <Stop offset="100%" stopColor="#EEEEEE" stopOpacity="0" />
               </RadialGradient>
             </Defs>
             <Rect x="0" y="0" width="100%" height="100%" fill="url(#leftGlow)" />
@@ -82,12 +82,12 @@ export const BottomBar = ({
           <Svg pointerEvents="none" width="100%" height="100%" style={styles.navButtonsRadialOverlay}>
             <Defs>
               <RadialGradient id="fallbackLeftGlow" cx="29.59%" cy="47.26%" rx="42.43%" ry="126.71%">
-                <Stop offset="0%" stopColor="#EEF5FB" stopOpacity="0.95" />
-                <Stop offset="100%" stopColor="#EEF5FB" stopOpacity="0" />
+                <Stop offset="0%" stopColor="#EEEEEE" stopOpacity="0.95" />
+                <Stop offset="100%" stopColor="#EEEEEE" stopOpacity="0" />
               </RadialGradient>
               <RadialGradient id="fallbackRightGlow" cx="71.33%" cy="46.58%" rx="40.37%" ry="120.55%">
-                <Stop offset="0%" stopColor="#EEF5FB" stopOpacity="0.95" />
-                <Stop offset="100%" stopColor="#EEF5FB" stopOpacity="0" />
+                <Stop offset="0%" stopColor="#EEEEEE" stopOpacity="0.95" />
+                <Stop offset="100%" stopColor="#EEEEEE" stopOpacity="0" />
               </RadialGradient>
             </Defs>
             <Rect x="0" y="0" width="100%" height="100%" fill="url(#fallbackLeftGlow)" />

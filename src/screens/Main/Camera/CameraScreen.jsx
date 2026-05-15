@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     gap: 12,
-    backgroundColor: '#EEF5FB',
+    backgroundColor: '#EEEEEE',
   },
   centered: {
     flex: 1,
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 24,
     paddingBottom: 140,
-    backgroundColor: '#EEF5FB',
+    backgroundColor: '#EEEEEE',
   },
   title: {
     fontSize: 17,
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 220,
     borderRadius: 16,
-    backgroundColor: '#EEF5FB',
+    backgroundColor: '#EEEEEE',
   },
   emptyTitle: {
     color: '#052D50',

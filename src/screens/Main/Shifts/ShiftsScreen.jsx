@@ -494,7 +494,7 @@ export default function ShiftsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
     padding: 16,
     paddingTop: 48,
     paddingBottom: 48,
@@ -731,7 +731,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   exportModalCard: {
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
     borderRadius: 24,
     padding: 20,
     gap: 12,

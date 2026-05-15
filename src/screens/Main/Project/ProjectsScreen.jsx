@@ -9,6 +9,7 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
+import Icon from "react-native-vector-icons/Feather";
 import { useTheme } from "../../../theme/ThemeContext";
 import AuthContext from "../../../contexts/AuthContext";
 import { projectService } from "../../../services";
@@ -121,6 +122,13 @@ export default function ProjectsScreen() {
     );
   }
 
+  const themedSelectionStyle = { borderColor: theme.colors.primary };
+  const themedStatusBadgeStyle = {
+    color: theme.colors.primary,
+    backgroundColor: `${theme.colors.primary}1A`,
+  };
+  const themedAccentTextStyle = { color: theme.colors.primary };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -143,12 +151,18 @@ export default function ProjectsScreen() {
       </View>
 
       <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
+        <View style={styles.searchInputWrapper}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search..."
+            placeholderTextColor="rgba(5, 45, 80, 0.45)"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          <View style={styles.searchIconWrapper} pointerEvents="none">
+            <Icon name="search" size={18} color="rgba(5, 45, 80, 0.5)" />
+          </View>
+        </View>
       </View>
 
       <ScrollView
@@ -166,6 +180,8 @@ export default function ProjectsScreen() {
                 styles.projectCard,
                 selectedProjectId === getProjectId(project) &&
                   styles.projectCardSelected,
+                selectedProjectId === getProjectId(project) &&
+                  themedSelectionStyle,
               ]}
             >
               <View style={styles.cardHeader}>
@@ -177,11 +193,11 @@ export default function ProjectsScreen() {
                 >
                   {project.name}
                 </Text>
-                <Text style={styles.statusBadge}>
+                <Text style={[styles.statusBadge, themedStatusBadgeStyle]}>
                   {formatStatus(project.status)}
                 </Text>
               </View>
-              <Text style={styles.dateText}>
+              <Text style={[styles.dateText, themedAccentTextStyle]}>
                 Start: {new Date(project.beginningDate).toLocaleDateString()}
               </Text>
               <Text style={styles.locationText}>
@@ -211,7 +227,7 @@ const styles = StyleSheet.create({
     paddingTop: 48,
     paddingBottom: 48,
     gap: 12,
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
   },
   centeredContainer: {
     flex: 1,
@@ -235,12 +251,29 @@ const styles = StyleSheet.create({
   searchContainer: {
     width: "100%",
   },
-  searchInput: {
+  searchInputWrapper: {
     width: "100%",
-    height: 64,
+    height: 48,
     backgroundColor: "#052D500D",
     borderRadius: 20,
-    padding: 16,
+    paddingLeft: 16,
+    paddingRight: 14,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  searchInput: {
+    flex: 1,
+    height: "100%",
+    color: "#052D50",
+    fontSize: 16,
+    paddingVertical: 0,
+    paddingRight: 12,
+  },
+  searchIconWrapper: {
+    width: 20,
+    height: 20,
+    alignItems: "center",
+    justifyContent: "center",
   },
   scrollContainer: {
     flex: 1,

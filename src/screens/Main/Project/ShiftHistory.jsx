@@ -615,7 +615,7 @@ const styles = StyleSheet.create({
     padding: 12,
     paddingTop: 48,
     gap: 24,
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
   },
   header: {
     width: "100%",
@@ -751,7 +751,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   bottomSheetBackground: {
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
   },

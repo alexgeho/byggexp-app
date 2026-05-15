@@ -9,13 +9,22 @@ import {
   ScrollView,
 } from "react-native";
 import AuthContext from "../../../contexts/AuthContext";
+import { useTheme } from "../../../theme/ThemeContext";
 import { BottomBar } from "../../../components/BottomBar";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 
 export const SelectAdmin = () => {
   const navigation = useNavigation();
   const { user } = useContext(AuthContext);
+  const { theme } = useTheme();
   const [isSelected, setSelection] = useState(false);
+  const themedCheckboxStyle = {
+    borderColor: `${theme.colors.primary}66`,
+  };
+  const themedCheckboxSelectedStyle = {
+    backgroundColor: theme.colors.primary,
+    borderColor: theme.colors.primary,
+  };
 
   // Проверка прав доступа - только для companyAdmin
   if (user?.role !== "companyAdmin") {
@@ -77,17 +86,11 @@ export const SelectAdmin = () => {
           <Text style={styles.workerName}>Хуеглотус</Text>
           <TouchableOpacity
             onPress={() => setSelection(!isSelected)}
-            style={{
-              width: 22,
-              height: 22,
-              borderWidth: 2,
-              borderColor: "#0088FF",
-              borderRadius: 4,
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: isSelected ? "#0088FF" : "transparent",
-              marginRight: 8,
-            }}
+            style={[
+              styles.checkbox,
+              themedCheckboxStyle,
+              isSelected && themedCheckboxSelectedStyle,
+            ]}
           >
             {isSelected && <Text style={{ color: "#ffffff" }}>✓</Text>}
           </TouchableOpacity>
@@ -112,7 +115,7 @@ const styles = StyleSheet.create({
     paddingTop: 48,
     paddingBottom: 48,
     gap: 24,
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
   },
   header: {
     width: "100%",
@@ -282,6 +285,16 @@ const styles = StyleSheet.create({
   },
   workerName: {
     flex: 1,
+  },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderWidth: 2,
+    borderRadius: 4,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "transparent",
+    marginRight: 8,
   },
   arrowIcon: {
     width: 16,

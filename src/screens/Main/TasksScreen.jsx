@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     paddingTop: 48,
     paddingBottom: 48,
     gap: 12,
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
   },
   centeredContainer: {
     flex: 1,

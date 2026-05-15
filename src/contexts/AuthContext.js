@@ -3,6 +3,7 @@ import { saveToken, saveUser, getUser, removeToken, removeUser, saveRefreshToken
 import { authService, userService, logUserActivity } from '../services';
 import { jwtDecode } from 'jwt-decode';
 import { unregisterPushToken } from '../services/notifications.service';
+import { setUnauthorizedHandler } from '../services/api';
 
 const AuthContext = createContext();
 
@@ -27,6 +28,23 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(false);
     };
     loadTokenAndUser();
+  }, []);
+
+  useEffect(() => {
+    setUnauthorizedHandler(async () => {
+      await removeToken();
+      await removeRefreshToken();
+      await removeUser();
+      setIsAuthenticated(false);
+      setIsLoading(false);
+      setUserId(null);
+      setUser(null);
+      setSelectedProject(null);
+    });
+
+    return () => {
+      setUnauthorizedHandler(null);
+    };
   }, []);
 
   const updateStoredUser = async (userData) => {

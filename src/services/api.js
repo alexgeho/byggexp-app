@@ -1,5 +1,13 @@
 import axios from 'axios';
-import { getToken, saveToken, removeToken, getRefreshToken, saveRefreshToken, removeRefreshToken } from '../utils/storage';
+import {
+  getToken,
+  saveToken,
+  removeToken,
+  getRefreshToken,
+  saveRefreshToken,
+  removeRefreshToken,
+  removeUser,
+} from '../utils/storage';
 
 export const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '') ||
@@ -11,6 +19,36 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+let unauthorizedHandler = null;
+let unauthorizedHandlingPromise = null;
+
+const clearStoredAuth = async () => {
+  delete api.defaults.headers.common.Authorization;
+  await removeToken();
+  await removeRefreshToken();
+  await removeUser();
+};
+
+const handleUnauthorized = async () => {
+  if (unauthorizedHandlingPromise) {
+    return unauthorizedHandlingPromise;
+  }
+
+  unauthorizedHandlingPromise = (async () => {
+    try {
+      if (typeof unauthorizedHandler === 'function') {
+        await unauthorizedHandler();
+      } else {
+        await clearStoredAuth();
+      }
+    } finally {
+      unauthorizedHandlingPromise = null;
+    }
+  })();
+
+  return unauthorizedHandlingPromise;
+};
 
 api.interceptors.request.use(
   async (config) => {
@@ -40,8 +78,7 @@ api.interceptors.response.use(
       try {
         const refreshToken = await getRefreshToken();
         if (!refreshToken) {
-          await removeToken();
-          await removeRefreshToken();
+          await handleUnauthorized();
           return Promise.reject(error);
         }
 
@@ -60,8 +97,7 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return api(originalRequest);
       } catch (refreshError) {
-        await removeToken();
-        await removeRefreshToken();
+        await handleUnauthorized();
         return Promise.reject(refreshError);
       }
     }
@@ -82,13 +118,17 @@ export const fetchData = async (endpoint) => {
 
 export default api;
 
+export const setUnauthorizedHandler = (handler) => {
+  unauthorizedHandler = handler;
+};
+
 export const setAuthToken = async (token) => {
   if (token) {
     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     await saveToken(token);
   } else {
     delete api.defaults.headers.common['Authorization'];
-    await removeToken();
+    await clearStoredAuth();
   }
 };
 

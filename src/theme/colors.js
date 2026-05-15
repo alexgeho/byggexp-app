@@ -5,7 +5,7 @@ export const baseColors = {
   warning: '#FF9500',
   danger: '#FF3B30',
   background: {
-    light: '#EEF5FB',
+    light: '#EEEEEE',
     dark: '#000000',
   },
   text: {
@@ -17,7 +17,7 @@ export const baseColors = {
 };
 
 export const greenColors = {
-  background: '#FFFFFF',
+  background: '#EEEEEE',
 
   primary: '#759D3C',
 
@@ -45,7 +45,7 @@ export const greenColors = {
 }
 
 export const blueColors = {
-  background: "#FFFFFF",
+  background: "#EEEEEE",
 
   primary: "#3B82F6",
 
@@ -73,7 +73,7 @@ export const blueColors = {
 };
 
 export const orangeColors = {
-  background: "#FFFFFF",
+  background: "#EEEEEE",
 
   primary: "#F97316",
 

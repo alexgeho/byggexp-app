@@ -251,7 +251,7 @@ export default function ChatConversationScreen({ variant }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
   },
   backgroundBlur: {
     position: "absolute",
@@ -409,7 +409,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
     zIndex: 3,
   },
   inputButton: {
@@ -433,7 +433,7 @@ const styles = StyleSheet.create({
     minHeight: 48,
     flex: 1,
     borderRadius: 9999,
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.0625,

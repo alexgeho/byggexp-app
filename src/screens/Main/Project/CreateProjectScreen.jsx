@@ -82,9 +82,9 @@ const reverseGeocodeWithNominatim = async (latitude, longitude) => {
   return data?.display_name || "";
 };
 
-const searchAddressWithNominatim = async (query) => {
+const searchAddressesWithNominatim = async (query, limit = 5) => {
   const response = await fetch(
-    `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(query)}`,
+    `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=${limit}&q=${encodeURIComponent(query)}`,
     {
       headers: GEOCODER_HEADERS,
     },
@@ -95,7 +95,36 @@ const searchAddressWithNominatim = async (query) => {
   }
 
   const data = await response.json();
-  return Array.isArray(data) ? data[0] : null;
+  return Array.isArray(data) ? data : [];
+};
+
+const normalizeLocationSuggestions = (matches = []) => {
+  const seenLabels = new Set();
+
+  return matches.reduce((suggestions, match, index) => {
+    const label = match?.display_name?.trim();
+    const latitude = Number(match?.lat);
+    const longitude = Number(match?.lon);
+
+    if (
+      !label ||
+      Number.isNaN(latitude) ||
+      Number.isNaN(longitude) ||
+      seenLabels.has(label)
+    ) {
+      return suggestions;
+    }
+
+    seenLabels.add(label);
+    suggestions.push({
+      id: String(match?.place_id || `${label}-${index}`),
+      label,
+      latitude,
+      longitude,
+    });
+
+    return suggestions;
+  }, []);
 };
 
 const getCoordinateCacheKey = (latitude, longitude) =>
@@ -233,7 +262,9 @@ const WorkersListModal = memo(function WorkersListModal({
                 <View
                   style={[
                     styles.workerCheckbox,
+                    themedCheckboxStyle,
                     isSelected && styles.workerCheckboxSelected,
+                    isSelected && themedCheckboxSelectedStyle,
                   ]}
                 >
                   {isSelected ? (
@@ -333,7 +364,7 @@ export default function CreateProjectScreen() {
 
   const [projectName, setProjectName] = useState("");
   const [isProjectNameFocused, setIsProjectNameFocused] = useState(false);
-  const [useLocationAsName, setUseLocationAsName] = useState(false);
+  const [useLocationAsName, setUseLocationAsName] = useState(true);
   const [note, setNote] = useState("");
   const [location, setLocation] = useState("");
   const [mapRegion, setMapRegion] = useState(DEFAULT_REGION);
@@ -341,6 +372,9 @@ export default function CreateProjectScreen() {
   const [isLocationPickerVisible, setIsLocationPickerVisible] = useState(false);
   const [isLocationSearchVisible, setIsLocationSearchVisible] = useState(false);
   const [locationSearch, setLocationSearch] = useState("");
+  const [locationSuggestions, setLocationSuggestions] = useState([]);
+  const [isLocationSuggestionsLoading, setIsLocationSuggestionsLoading] =
+    useState(false);
   const [isLocationLoading, setIsLocationLoading] = useState(false);
   const [beginningDate, setBeginningDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -370,6 +404,7 @@ export default function CreateProjectScreen() {
   const isLocationLoadingRef = useRef(false);
   const lastReverseGeocodeAtRef = useRef(0);
   const reverseGeocodeCacheRef = useRef(new Map());
+  const locationSearchRequestIdRef = useRef(0);
 
   useEffect(() => {
     fetchUsersAndCompanies();
@@ -388,6 +423,26 @@ export default function CreateProjectScreen() {
       setProjectName(location);
     }
   }, [useLocationAsName, location]);
+
+  useEffect(() => {
+    if (!isLocationPickerVisible || !isLocationSearchVisible) {
+      return;
+    }
+
+    const query = locationSearch.trim();
+    if (query.length < 3) {
+      locationSearchRequestIdRef.current += 1;
+      setLocationSuggestions([]);
+      setIsLocationSuggestionsLoading(false);
+      return;
+    }
+
+    const debounceId = setTimeout(() => {
+      fetchLocationSuggestions(query);
+    }, 300);
+
+    return () => clearTimeout(debounceId);
+  }, [locationSearch, isLocationPickerVisible, isLocationSearchVisible]);
 
   const fetchUsersByCompany = async (companyId) => {
     try {
@@ -521,7 +576,10 @@ export default function CreateProjectScreen() {
   };
 
   const closeLocationPicker = () => {
+    locationSearchRequestIdRef.current += 1;
     setIsLocationSearchVisible(false);
+    setLocationSuggestions([]);
+    setIsLocationSuggestionsLoading(false);
     setIsLocationPickerVisible(false);
   };
 
@@ -627,6 +685,73 @@ export default function CreateProjectScreen() {
     setIsLocationPickerVisible(true);
   };
 
+  const fetchLocationSuggestions = async (query) => {
+    const normalizedQuery = query.trim();
+
+    if (!normalizedQuery) {
+      locationSearchRequestIdRef.current += 1;
+      setLocationSuggestions([]);
+      setIsLocationSuggestionsLoading(false);
+      return [];
+    }
+
+    const requestId = ++locationSearchRequestIdRef.current;
+    setIsLocationSuggestionsLoading(true);
+
+    try {
+      const matches = await searchAddressesWithNominatim(normalizedQuery, 5);
+      const suggestions = normalizeLocationSuggestions(matches);
+
+      if (locationSearchRequestIdRef.current === requestId) {
+        setLocationSuggestions(suggestions);
+      }
+
+      return suggestions;
+    } catch (error) {
+      if (locationSearchRequestIdRef.current === requestId) {
+        setLocationSuggestions([]);
+      }
+      throw error;
+    } finally {
+      if (locationSearchRequestIdRef.current === requestId) {
+        setIsLocationSuggestionsLoading(false);
+      }
+    }
+  };
+
+  const handleLocationSuggestionPress = async (suggestion) => {
+    locationSearchRequestIdRef.current += 1;
+    setLocationSuggestions([]);
+    setIsLocationSuggestionsLoading(false);
+    setLocationSearch(suggestion.label);
+
+    await applyResolvedLocation(
+      suggestion.latitude,
+      suggestion.longitude,
+      {
+        ...mapRegion,
+        latitude: suggestion.latitude,
+        longitude: suggestion.longitude,
+      },
+      suggestion.label,
+    );
+    closeLocationPicker();
+  };
+
+  const toggleLocationSearch = () => {
+    setIsLocationSearchVisible((prev) => {
+      const nextVisible = !prev;
+
+      if (!nextVisible) {
+        locationSearchRequestIdRef.current += 1;
+        setLocationSuggestions([]);
+        setIsLocationSuggestionsLoading(false);
+      }
+
+      return nextVisible;
+    });
+  };
+
   const handleMapPress = async (event) => {
     if (isLocationLoadingRef.current) {
       return;
@@ -690,65 +815,27 @@ export default function CreateProjectScreen() {
     }
 
     try {
-      setLocationLoadingState(true);
-      let latitude = null;
-      let longitude = null;
-      let resolvedSearchAddress = query;
+      const suggestions = await fetchLocationSuggestions(query);
 
-      try {
-        const matches = await Location.geocodeAsync(query);
-        if (matches.length) {
-          latitude = matches[0].latitude;
-          longitude = matches[0].longitude;
-        }
-      } catch (error) {
-        // Try external geocoder next.
-      }
-
-      if (latitude === null || longitude === null) {
-        const match = await searchAddressWithNominatim(query);
-
-        if (match) {
-          latitude = Number(match.lat);
-          longitude = Number(match.lon);
-          resolvedSearchAddress = match.display_name || query;
-        }
-      }
-
-      if (latitude === null || longitude === null) {
+      if (!suggestions.length) {
         Alert.alert("Nothing found", "Try a more specific address.");
         return;
       }
 
-      await applyResolvedLocation(
-        latitude,
-        longitude,
-        {
-          ...mapRegion,
-          latitude,
-          longitude,
-        },
-        resolvedSearchAddress,
-      );
-      closeLocationPicker();
+      if (suggestions.length === 1) {
+        await handleLocationSuggestionPress(suggestions[0]);
+      }
     } catch (error) {
       console.error("Error searching location:", error);
       Alert.alert("Search error", "Unable to find this address right now.");
-    } finally {
-      setLocationLoadingState(false);
     }
   };
 
   const createProject = async () => {
-    if (
-      !projectName ||
-      !selectedOwner ||
-      !selectedManager ||
-      !selectedClientCompany
-    ) {
+    if (!projectName) {
       Alert.alert(
         "Validation Error",
-        "Please fill all required fields marked with *",
+        "Please enter project name",
       );
       return;
     }
@@ -758,9 +845,18 @@ export default function CreateProjectScreen() {
     try {
       const projectData = new FormData();
 
-      projectData.append("ownerId", selectedOwner);
-      projectData.append("projectManagerId", selectedManager);
-      projectData.append("clientCompanyId", selectedClientCompany);
+      if (selectedOwner) {
+        projectData.append("ownerId", selectedOwner);
+      }
+
+      if (selectedManager) {
+        projectData.append("projectManagerId", selectedManager);
+      }
+
+      if (selectedClientCompany) {
+        projectData.append("clientCompanyId", selectedClientCompany);
+      }
+
       projectData.append("name", projectName);
       projectData.append("status", "planning");
 
@@ -820,8 +916,13 @@ export default function CreateProjectScreen() {
       onPress={onPress}
     >
       <View style={styles.rowCenter}>
-        <View style={styles.iconContainer}>
-          <FieldIcon library={iconLibrary} name={iconName} />
+        <View style={[styles.iconContainer, fieldIconBadgeStyle]}>
+          <FieldIcon
+            library={iconLibrary}
+            name={iconName}
+            size={14}
+            color="#FFFFFF"
+          />
         </View>
         <View>
           <Text style={styles.label}>{title}</Text>
@@ -989,7 +1090,9 @@ export default function CreateProjectScreen() {
                 <View
                   style={[
                     styles.workerCheckbox,
+                    themedCheckboxStyle,
                     isSelected && styles.workerCheckboxSelected,
+                    isSelected && themedCheckboxSelectedStyle,
                   ]}
                 >
                   {isSelected ? (
@@ -1018,6 +1121,15 @@ export default function CreateProjectScreen() {
     );
   }
 
+  const fieldIconBadgeStyle = { backgroundColor: theme.colors.primary };
+  const themedCheckboxStyle = {
+    borderColor: `${theme.colors.primary}66`,
+  };
+  const themedCheckboxSelectedStyle = {
+    backgroundColor: theme.colors.primary,
+    borderColor: theme.colors.primary,
+  };
+
   return (
     <View style={styles.screen}>
       <ScrollView
@@ -1045,11 +1157,54 @@ export default function CreateProjectScreen() {
 
         <Text style={styles.formSectionTitle}>General</Text>
         <View style={styles.groupCard}>
+          <TouchableOpacity
+            style={[
+              styles.locationField,
+              styles.groupedField,
+              styles.groupRowDivider,
+            ]}
+            onPress={openLocationPicker}
+            activeOpacity={0.85}
+          >
+            <View style={styles.locationFieldContent}>
+              <Text
+                numberOfLines={1}
+                style={[
+                  styles.locationFieldText,
+                  location
+                    ? styles.locationFieldValue
+                    : styles.locationFieldPlaceholder,
+                ]}
+              >
+                {location || "Location"}
+              </Text>
+            </View>
+            <Icon name="chevron-right" size={18} color="#052D50" />
+          </TouchableOpacity>
+
+          <View
+            style={[
+              styles.switchField,
+              styles.groupedField,
+              styles.groupRowDivider,
+            ]}
+          >
+            <Text style={styles.switchLabel}>Use location as a name</Text>
+            <Switch
+              value={useLocationAsName}
+              onValueChange={setUseLocationAsName}
+              trackColor={{ false: "#D9E3EC", true: "#0091FF" }}
+              thumbColor="#FFFFFF"
+              ios_backgroundColor="#D9E3EC"
+              style={styles.switchControl}
+            />
+          </View>
+
           <View
             style={[
               styles.projectNameField,
               styles.groupedField,
-              styles.groupRowDivider,
+              styles.groupRowLast,
             ]}
           >
             <Animated.Text
@@ -1078,52 +1233,6 @@ export default function CreateProjectScreen() {
               editable={!useLocationAsName}
             />
           </View>
-
-          <View
-            style={[
-              styles.switchField,
-              styles.groupedField,
-              styles.groupRowDivider,
-            ]}
-          >
-            <Text style={styles.switchLabel}>Use location as a name</Text>
-            <Switch
-              value={useLocationAsName}
-              onValueChange={setUseLocationAsName}
-              trackColor={{ false: "#D9E3EC", true: "#0091FF" }}
-              thumbColor="#FFFFFF"
-              ios_backgroundColor="#D9E3EC"
-              style={styles.switchControl}
-            />
-          </View>
-
-          <TouchableOpacity
-            style={[
-              styles.locationField,
-              styles.groupedField,
-              styles.groupRowLast,
-            ]}
-            onPress={openLocationPicker}
-            activeOpacity={0.85}
-          >
-            <View style={styles.locationFieldContent}>
-              <View style={styles.locationFieldIconContainer}>
-                <FieldIcon name="flag" />
-              </View>
-              <Text
-                numberOfLines={1}
-                style={[
-                  styles.locationFieldText,
-                  location
-                    ? styles.locationFieldValue
-                    : styles.locationFieldPlaceholder,
-                ]}
-              >
-                {location || "Location"}
-              </Text>
-            </View>
-            <Icon name="chevron-right" size={18} color="#052D50" />
-          </TouchableOpacity>
         </View>
 
         <Text style={styles.formSectionTitle}>Team</Text>
@@ -1138,8 +1247,10 @@ export default function CreateProjectScreen() {
             activeOpacity={0.85}
           >
             <View style={styles.locationFieldContent}>
-              <View style={styles.locationFieldIconContainer}>
-                <FieldIcon name="users" />
+              <View
+                style={[styles.locationFieldIconContainer, fieldIconBadgeStyle]}
+              >
+                <FieldIcon name="users" size={14} color="#FFFFFF" />
               </View>
               <Text
                 numberOfLines={1}
@@ -1166,8 +1277,15 @@ export default function CreateProjectScreen() {
             activeOpacity={0.85}
           >
             <View style={styles.locationFieldContent}>
-              <View style={styles.locationFieldIconContainer}>
-                <FieldIcon library="material-community" name="tie" />
+              <View
+                style={[styles.locationFieldIconContainer, fieldIconBadgeStyle]}
+              >
+                <FieldIcon
+                  library="material-community"
+                  name="tie"
+                  size={14}
+                  color="#FFFFFF"
+                />
               </View>
               <Text
                 numberOfLines={1}
@@ -1178,7 +1296,7 @@ export default function CreateProjectScreen() {
                     : styles.locationFieldPlaceholder,
                 ]}
               >
-                {users.find((u) => u._id === selectedOwner)?.name || "Owner *"}
+                {users.find((u) => u._id === selectedOwner)?.name || "Owner"}
               </Text>
             </View>
             <Icon name="chevron-right" size={18} color="#052D50" />
@@ -1194,8 +1312,10 @@ export default function CreateProjectScreen() {
             activeOpacity={0.85}
           >
             <View style={styles.locationFieldContent}>
-              <View style={styles.locationFieldIconContainer}>
-                <FieldIcon name="briefcase" />
+              <View
+                style={[styles.locationFieldIconContainer, fieldIconBadgeStyle]}
+              >
+                <FieldIcon name="briefcase" size={14} color="#FFFFFF" />
               </View>
               <Text
                 numberOfLines={1}
@@ -1207,14 +1327,14 @@ export default function CreateProjectScreen() {
                 ]}
               >
                 {users.find((u) => u._id === selectedManager)?.name ||
-                  "Project Manager *"}
+                  "Project Manager"}
               </Text>
             </View>
             <Icon name="chevron-right" size={18} color="#052D50" />
           </TouchableOpacity>
 
           <SelectedItem
-            title="Client Company *"
+            title="Client Company"
             value={
               companies.find((c) => c._id === selectedClientCompany)?.name || ""
             }
@@ -1237,8 +1357,10 @@ export default function CreateProjectScreen() {
             activeOpacity={0.85}
           >
             <View style={styles.locationFieldContent}>
-              <View style={styles.locationFieldIconContainer}>
-                <FieldIcon name="paperclip" />
+              <View
+                style={[styles.locationFieldIconContainer, fieldIconBadgeStyle]}
+              >
+                <FieldIcon name="paperclip" size={14} color="#FFFFFF" />
               </View>
               <Text
                 numberOfLines={1}
@@ -1300,8 +1422,10 @@ export default function CreateProjectScreen() {
             onPress={() => setShowStartDatePicker(true)}
           >
             <View style={styles.locationFieldContent}>
-              <View style={styles.locationFieldIconContainer}>
-                <FieldIcon name="calendar" />
+              <View
+                style={[styles.locationFieldIconContainer, fieldIconBadgeStyle]}
+              >
+                <FieldIcon name="calendar" size={14} color="#FFFFFF" />
               </View>
               <View>
                 <Text style={styles.dateLabel}>Start Date</Text>
@@ -1320,8 +1444,10 @@ export default function CreateProjectScreen() {
             onPress={() => setShowEndDatePicker(true)}
           >
             <View style={styles.locationFieldContent}>
-              <View style={styles.locationFieldIconContainer}>
-                <FieldIcon name="clock" />
+              <View
+                style={[styles.locationFieldIconContainer, fieldIconBadgeStyle]}
+              >
+                <FieldIcon name="clock" size={14} color="#FFFFFF" />
               </View>
               <View>
                 <Text style={styles.dateLabel}>End Date</Text>
@@ -1468,28 +1594,84 @@ export default function CreateProjectScreen() {
                 />
                 <MapControlButton
                   iconName={isLocationSearchVisible ? "x" : "search"}
-                  onPress={() => setIsLocationSearchVisible((prev) => !prev)}
+                  onPress={toggleLocationSearch}
                 />
               </View>
 
               {isLocationSearchVisible ? (
-                <View style={styles.mapSearchContainer}>
-                  <TextInput
-                    value={locationSearch}
-                    onChangeText={setLocationSearch}
-                    placeholder="Search address"
-                    placeholderTextColor="rgba(5, 45, 80, 0.5)"
-                    style={styles.mapSearchInput}
-                    returnKeyType="search"
-                    onSubmitEditing={handleSearchLocation}
-                  />
-                  <TouchableOpacity
-                    style={styles.mapSearchAction}
-                    onPress={handleSearchLocation}
-                  >
-                    <Text style={styles.mapSearchActionText}>Go</Text>
-                  </TouchableOpacity>
-                </View>
+                <>
+                  <View style={styles.mapSearchContainer}>
+                    <TextInput
+                      value={locationSearch}
+                      onChangeText={setLocationSearch}
+                      placeholder="Search address"
+                      placeholderTextColor="rgba(5, 45, 80, 0.5)"
+                      style={styles.mapSearchInput}
+                      returnKeyType="search"
+                      onSubmitEditing={handleSearchLocation}
+                    />
+                    <TouchableOpacity
+                      style={styles.mapSearchAction}
+                      onPress={handleSearchLocation}
+                    >
+                      <Text style={styles.mapSearchActionText}>Go</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  {isLocationSuggestionsLoading ? (
+                    <View style={styles.mapSuggestionsCard}>
+                      <View style={styles.mapSuggestionsLoadingRow}>
+                        <ActivityIndicator size="small" color="#052D50" />
+                        <Text style={styles.mapSuggestionsLoadingText}>
+                          Searching addresses...
+                        </Text>
+                      </View>
+                    </View>
+                  ) : null}
+
+                  {!isLocationSuggestionsLoading &&
+                  locationSearch.trim().length >= 3 &&
+                  locationSuggestions.length ? (
+                    <View style={styles.mapSuggestionsCard}>
+                      <FlatList
+                        data={locationSuggestions}
+                        keyExtractor={(item) => item.id}
+                        keyboardShouldPersistTaps="handled"
+                        showsVerticalScrollIndicator={false}
+                        renderItem={({ item, index }) => (
+                          <TouchableOpacity
+                            style={[
+                              styles.mapSuggestionItem,
+                              index === locationSuggestions.length - 1
+                                ? styles.mapSuggestionItemLast
+                                : null,
+                            ]}
+                            activeOpacity={0.85}
+                            onPress={() => handleLocationSuggestionPress(item)}
+                          >
+                            <Icon name="map-pin" size={16} color="#052D50" />
+                            <Text
+                              numberOfLines={2}
+                              style={styles.mapSuggestionText}
+                            >
+                              {item.label}
+                            </Text>
+                          </TouchableOpacity>
+                        )}
+                      />
+                    </View>
+                  ) : null}
+
+                  {!isLocationSuggestionsLoading &&
+                  locationSearch.trim().length >= 3 &&
+                  !locationSuggestions.length ? (
+                    <View style={styles.mapSuggestionsCard}>
+                      <Text style={styles.mapSuggestionsEmptyText}>
+                        No address options found. Try a more specific query.
+                      </Text>
+                    </View>
+                  ) : null}
+                </>
               ) : null}
 
               {location ? (
@@ -1537,11 +1719,11 @@ export default function CreateProjectScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
   },
   container: {
     flex: 1,
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
     paddingHorizontal: 12,
   },
   containerContent: {
@@ -1689,7 +1871,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   switchControl: {
-    transform: [{ scaleX: 1.22 }, { scaleY: 0.9 }],
+    width: 51,
+    height: 31,
     alignSelf: "center",
     marginVertical: 0,
   },
@@ -1712,8 +1895,9 @@ const styles = StyleSheet.create({
     paddingRight: 12,
   },
   locationFieldIconContainer: {
-    width: 20,
-    height: 20,
+    width: 27,
+    height: 27,
+    borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -1796,8 +1980,9 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   iconContainer: {
-    width: 20,
-    height: 20,
+    width: 27,
+    height: 27,
+    borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -1904,7 +2089,7 @@ const styles = StyleSheet.create({
   },
   workersModalContainer: {
     flex: 1,
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
     paddingHorizontal: 12,
     paddingTop: 48,
     paddingBottom: 24,
@@ -2079,7 +2264,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 24,
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
   },
   accessDeniedText: {
     fontSize: 24,
@@ -2100,7 +2285,7 @@ const styles = StyleSheet.create({
   },
   mapModalContainer: {
     flex: 1,
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
   },
   map: {
     ...StyleSheet.absoluteFillObject,
@@ -2192,6 +2377,53 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 15,
     fontWeight: "600",
+  },
+  mapSuggestionsCard: {
+    marginTop: 12,
+    maxHeight: 240,
+    backgroundColor: "rgba(255, 255, 255, 0.94)",
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    shadowColor: "#052D50",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 4,
+  },
+  mapSuggestionsLoadingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    minHeight: 32,
+  },
+  mapSuggestionsLoadingText: {
+    color: "#052D50",
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  mapSuggestionItem: {
+    minHeight: 52,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(5, 45, 80, 0.08)",
+  },
+  mapSuggestionItemLast: {
+    borderBottomWidth: 0,
+  },
+  mapSuggestionText: {
+    flex: 1,
+    color: "#052D50",
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  mapSuggestionsEmptyText: {
+    color: "#698196",
+    fontSize: 14,
+    lineHeight: 20,
   },
   mapAddressBadge: {
     marginTop: 12,

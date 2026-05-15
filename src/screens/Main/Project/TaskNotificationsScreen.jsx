@@ -14,6 +14,7 @@ import {
 import Icon from "react-native-vector-icons/Feather";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
+import { useTheme } from "../../../theme/ThemeContext";
 import { projectService } from "../../../services";
 import {
   createDefaultTaskNotificationSettings,
@@ -34,6 +35,7 @@ const getUserInitials = (name = "") => {
 export default function TaskNotificationsScreen() {
   const navigation = useNavigation();
   const route = useRoute();
+  const { theme } = useTheme();
   const projectId = route.params?.projectId;
   const dueDate = route.params?.dueDate || null;
   const startDate = route.params?.startDate || null;
@@ -46,6 +48,13 @@ export default function TaskNotificationsScreen() {
   const [showWorkersModal, setShowWorkersModal] = useState(false);
   const [workerSearch, setWorkerSearch] = useState("");
   const [pendingAssignees, setPendingAssignees] = useState([]);
+  const themedCheckboxStyle = {
+    borderColor: `${theme.colors.primary}66`,
+  };
+  const themedCheckboxSelectedStyle = {
+    backgroundColor: theme.colors.primary,
+    borderColor: theme.colors.primary,
+  };
 
   useEffect(() => {
     if (!projectId) {
@@ -419,7 +428,9 @@ export default function TaskNotificationsScreen() {
                     <View
                       style={[
                         styles.workerCheckbox,
+                        themedCheckboxStyle,
                         isSelected && styles.workerCheckboxSelected,
+                        isSelected && themedCheckboxSelectedStyle,
                       ]}
                     >
                       {isSelected ? (
@@ -461,7 +472,7 @@ export default function TaskNotificationsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
   },
   contentContainer: {
     padding: 12,
@@ -585,7 +596,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
     padding: 12,
     paddingTop: 48,
     paddingBottom: 24,

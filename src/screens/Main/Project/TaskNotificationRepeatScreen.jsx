@@ -159,7 +159,7 @@ export default function TaskNotificationRepeatScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
   },
   contentContainer: {
     padding: 12,

@@ -19,6 +19,7 @@ import Icon from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/BottomBar";
+import { useTheme } from "../../../theme/ThemeContext";
 import { projectService, taskService } from "../../../services";
 import {
   buildTaskNotificationsPayload,
@@ -124,6 +125,7 @@ const DateFieldModal = ({ visible, title, value, onChange, onClose }) => (
 export default function CreateTaskScreen() {
   const navigation = useNavigation();
   const route = useRoute();
+  const { theme } = useTheme();
   const { projectId, projectName: initialProjectName } = route.params || {};
 
   const [projectName, setProjectName] = useState(initialProjectName || "");
@@ -278,6 +280,8 @@ export default function CreateTaskScreen() {
     );
   }
 
+  const fieldIconBadgeStyle = { backgroundColor: theme.colors.primary };
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -300,8 +304,8 @@ export default function CreateTaskScreen() {
         <GroupCard>
           <GroupRow>
             <View style={styles.rowContent}>
-              <View style={styles.rowIcon}>
-                <FieldIcon name="folder" />
+              <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
+                <FieldIcon name="folder" size={14} color="#FFFFFF" />
               </View>
               <View style={styles.rowTextContainer}>
                 <Text style={styles.rowLabel}>Project</Text>
@@ -338,8 +342,8 @@ export default function CreateTaskScreen() {
             activeOpacity={0.85}
           >
             <View style={styles.rowContent}>
-              <View style={styles.rowIcon}>
-                <FieldIcon name="calendar" />
+              <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
+                <FieldIcon name="calendar" size={14} color="#FFFFFF" />
               </View>
               <View style={styles.rowTextContainer}>
                 <Text style={styles.rowLabel}>Start date</Text>
@@ -358,8 +362,8 @@ export default function CreateTaskScreen() {
             activeOpacity={0.85}
           >
             <View style={styles.rowContent}>
-              <View style={styles.rowIcon}>
-                <FieldIcon name="clock" />
+              <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
+                <FieldIcon name="clock" size={14} color="#FFFFFF" />
               </View>
               <View style={styles.rowTextContainer}>
                 <Text style={styles.rowLabel}>Due date</Text>
@@ -406,8 +410,8 @@ export default function CreateTaskScreen() {
             }
           >
             <View style={styles.rowContent}>
-              <View style={styles.rowIcon}>
-                <FieldIcon name="bell" />
+              <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
+                <FieldIcon name="bell" size={14} color="#FFFFFF" />
               </View>
               <View style={styles.rowTextContainer}>
                 <Text style={styles.rowLabel}>Notifications</Text>
@@ -434,8 +438,8 @@ export default function CreateTaskScreen() {
             activeOpacity={0.85}
           >
             <View style={styles.rowContent}>
-              <View style={styles.rowIcon}>
-                <FieldIcon name="paperclip" />
+              <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
+                <FieldIcon name="paperclip" size={14} color="#FFFFFF" />
               </View>
               <View style={styles.rowTextContainer}>
                 <Text style={styles.rowLabel}>Documents</Text>
@@ -540,7 +544,7 @@ export default function CreateTaskScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
   },
   contentContainer: {
     padding: 12,
@@ -551,7 +555,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#EEF5FB",
+    backgroundColor: "#EEEEEE",
   },
   loadingText: {
     marginTop: 12,
@@ -607,7 +611,9 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   rowIcon: {
-    width: 22,
+    width: 27,
+    height: 27,
+    borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
   },
