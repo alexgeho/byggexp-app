@@ -176,7 +176,6 @@ export default function MainScreen() {
   }
 
   /* SCREEN RENDER */
-
   return (
     <BackgroundComponent
       colors={[theme.colors.background, theme.colors.background]}
@@ -201,6 +200,7 @@ export default function MainScreen() {
       </View>
 
       <View style={styles.contentContainer}>
+        
         {/* TIMER */}
         <View style={styles.timerRow}>
           <Text
