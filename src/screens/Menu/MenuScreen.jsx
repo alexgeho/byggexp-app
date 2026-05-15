@@ -189,110 +189,112 @@ export default function MenuScreen() {
 
   return (
     <View style={styles.container}>
-      {/* HEADER */}
-      <View style={styles.header}>
-        <BackButton
-          backgroundColor={"rgb(253 253 253)"}
-          tint={"light"}
-          borderColor="#FFFFFF50"
-          onPress={() => navigation.goBack()}
-          iconSource={require("../../assets/Arrow-left.png")}
-        />
-
-        {/* TITLE */}
-        <Text
-          style={[
-            styles.headerTitle,
-            { fontFamily: theme.text.fontFamily["semiBold"] },
-          ]}
-        >
-          Menu
-        </Text>
-        <View style={styles.placeholder} />
-      </View>
-
-      {/* AVATAR SECTION*/}
-      {user && (
-        <View style={styles.userInfoContainer}>
-          {/* PHOTO */}
-          <Image
-            style={styles.userAvatar}
-            source={
-              avatarSource
-                ? { uri: avatarSource }
-                : require("../../assets/Avatar.png")
-            }
+      <View style={styles.sidePanel}>
+        {/* HEADER */}
+        <View style={styles.header}>
+          <BackButton
+            backgroundColor={"rgb(253 253 253)"}
+            tint={"light"}
+            borderColor="#FFFFFF50"
+            onPress={() => navigation.goBack()}
+            iconSource={require("../../assets/Arrow-left.png")}
           />
 
-          {/* NAME */}
-          <View style={styles.userInfo}>
-            <Text
-              style={[
-                styles.userName,
-                { fontFamily: theme.text.fontFamily["bold"] },
-              ]}
-            >
-              {user.name || "User"}
-            </Text>
-          </View>
-          
-          {/* BADGE */}
-          <View style={styles.roleBadge}>
-            <Text style={styles.roleText}>
-              {user.role === "companyAdmin"
-                ? "Company Admin"
-                : user.role === "projectAdmin"
-                  ? "Project Admin"
-                  : user.role === "worker"
-                    ? "Worker"
-                    : "User"}
-            </Text>
-          </View>
-        </View>
-      )}
-
-      {/* MAIN */}
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.menuSection}>
-          <Text style={styles.sectionTitle}>Main</Text>
-          <View style={styles.groupCard}>
-            {menuItems.map((item, index) => (
-              <MenuButton
-                key={item.id}
-                screen={item.screen ? item.screen : "Menu"}
-                title={item.title}
-                color={item.color}
-                icon={item.icon}
-                isLast={index === menuItems.length - 1}
-              />
-            ))}
-          </View>
+          {/* TITLE */}
+          <Text
+            style={[
+              styles.headerTitle,
+              { fontFamily: theme.text.fontFamily["semiBold"] },
+            ]}
+          >
+            Menu
+          </Text>
+          <View style={styles.placeholder} />
         </View>
 
-        <View style={styles.settingsSection}>
-          <Text style={styles.sectionTitle}>Settings</Text>
-          <View style={styles.groupCard}>
-            {settingsItems.map((item, index) => (
-              <MenuButton
-                key={item.id}
-                screen={item.screen ? item.screen : "Menu"}
-                title={item.title}
-                color={item.color}
-                icon={item.icon}
-                isLast={index === settingsItems.length - 1}
-              />
-            ))}
+        {/* AVATAR SECTION*/}
+        {user && (
+          <View style={styles.userInfoContainer}>
+            {/* PHOTO */}
+            <Image
+              style={styles.userAvatar}
+              source={
+                avatarSource
+                  ? { uri: avatarSource }
+                  : require("../../assets/Avatar.png")
+              }
+            />
+
+            {/* NAME */}
+            <View style={styles.userInfo}>
+              <Text
+                style={[
+                  styles.userName,
+                  { fontFamily: theme.text.fontFamily["bold"] },
+                ]}
+              >
+                {user.name || "User"}
+              </Text>
+            </View>
+
+            {/* BADGE */}
+            <View style={styles.roleBadge}>
+              <Text style={styles.roleText}>
+                {user.role === "companyAdmin"
+                  ? "Company Admin"
+                  : user.role === "projectAdmin"
+                    ? "Project Admin"
+                    : user.role === "worker"
+                      ? "Worker"
+                      : "User"}
+              </Text>
+            </View>
           </View>
-        </View>
-      </ScrollView>
-      <BottomBar
-        onLeftPress={() => navigation.navigate("Main")}
-        onRightPress={() => navigation.navigate("Menu")}
-        onActionPress={logout}
-        renderActionContent={() => (
-          <Text style={styles.logoutButtonText}>Log out</Text>
         )}
-      />
+
+        {/* MAIN */}
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.menuSection}>
+            <Text style={styles.sectionTitle}>Main</Text>
+            <View style={styles.groupCard}>
+              {menuItems.map((item, index) => (
+                <MenuButton
+                  key={item.id}
+                  screen={item.screen ? item.screen : "Menu"}
+                  title={item.title}
+                  color={item.color}
+                  icon={item.icon}
+                  isLast={index === menuItems.length - 1}
+                />
+              ))}
+            </View>
+          </View>
+
+          <View style={styles.settingsSection}>
+            <Text style={styles.sectionTitle}>Settings</Text>
+            <View style={styles.groupCard}>
+              {settingsItems.map((item, index) => (
+                <MenuButton
+                  key={item.id}
+                  screen={item.screen ? item.screen : "Menu"}
+                  title={item.title}
+                  color={item.color}
+                  icon={item.icon}
+                  isLast={index === settingsItems.length - 1}
+                />
+              ))}
+            </View>
+          </View>
+        </ScrollView>
+        <BottomBar
+          onLeftPress={() => navigation.navigate("Main")}
+          onRightPress={() => navigation.navigate("Menu")}
+          onActionPress={logout}
+          renderActionContent={() => (
+            <Text style={styles.logoutButtonText}>Log out</Text>
+          )}
+        />
+      </View>
     </View>
   );
 }

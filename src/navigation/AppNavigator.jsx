@@ -151,7 +151,17 @@ export default function AppNavigator() {
               options={{ gestureEnabled: isCompanyAdmin }}
             />
             <Stack.Screen name="Shifts" component={ShiftsScreen} />
-            <Stack.Screen name="Menu" component={MenuScreen} />
+            <Stack.Screen
+              name="Menu"
+              component={MenuScreen}
+              options={{
+                presentation: "transparentModal",
+                animation: "slide_from_right",
+                contentStyle: {
+                  backgroundColor: "transparent",
+                },
+              }}
+            />
             <Stack.Screen name="MyAccount" component={MyAccount} />
           </>
         ) : (
