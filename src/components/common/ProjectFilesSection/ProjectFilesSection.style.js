@@ -4,8 +4,7 @@ export function createStyles(theme) {
   return StyleSheet.create({
     title: {
       fontSize: 16,
-      fontWeight: "600",
-      color: theme.colors.primary,
+      fontWeight: "400",
       marginBottom: 2,
       marginLeft: 4,
     },

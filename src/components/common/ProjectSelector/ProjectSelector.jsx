@@ -1,7 +1,17 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
+
 import { useTheme } from "../../../theme/ThemeContext";
 
-export default function ProjectSelector({ value, onPress, style }) {
+export default function ProjectSelector({
+  value,
+  onPress,
+  style,
+}) {
   const { theme } = useTheme();
 
   return (
@@ -11,14 +21,18 @@ export default function ProjectSelector({ value, onPress, style }) {
           styles.selectorButton,
           style,
           {
-            backgroundColor: theme.colors.selectorBackground,
-            borderColor: theme.colors.selectorBorder,
+            backgroundColor:
+              theme.colors.selectorBackground,
+            borderColor:
+              theme.colors.selectorBorder,
           },
         ]}
         onPress={onPress}
         activeOpacity={0.7}
       >
         <Text
+          numberOfLines={1}
+          ellipsizeMode="tail"
           style={[
             styles.text,
             {
@@ -60,8 +74,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 14,
-    paddingHorizontal: 18,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     borderRadius: 6,
     borderWidth: 1,
     shadowColor: "#000",
