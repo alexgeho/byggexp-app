@@ -1193,7 +1193,7 @@ export default function CreateProjectScreen() {
             <Switch
               value={useLocationAsName}
               onValueChange={setUseLocationAsName}
-              trackColor={{ false: "#D9E3EC", true: "#0091FF" }}
+              trackColor={{ false: "#D9E3EC", true: theme.colors.primary }}
               thumbColor="#FFFFFF"
               ios_backgroundColor="#D9E3EC"
               style={styles.switchControl}
@@ -2161,17 +2161,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   workerCheckbox: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: "rgba(5, 45, 80, 1)",
+    width: 24,
+    height: 24,
+    borderRadius: 7,
+    borderWidth: 1.5,
+    borderColor: "rgba(5, 45, 80, 0.18)",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "transparent",
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#052D50",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 1,
   },
   workerCheckboxSelected: {
-    backgroundColor: "rgba(5, 45, 80, 1)",
+    backgroundColor: "#FFFFFF",
   },
   workersEmptyState: {
     paddingTop: 24,

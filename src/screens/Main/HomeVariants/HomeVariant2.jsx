@@ -25,6 +25,7 @@ import { useTimer } from "../../../hooks/useTimer";
 import { GlassView } from "../../../components/common/GlassView/GlassView";
 import { projectService, shiftService } from "../../../services";
 import { formatDuration } from "../../../utils/shifts";
+import { startShiftWithLocationGuard } from "../../../utils/shiftLocationGuard";
 
 export default function MainScreen() {
   const soundRef = useRef(null);
@@ -226,7 +227,10 @@ export default function MainScreen() {
         return;
       }
 
-      const startedShift = await shiftService.start(selectedProjectId);
+      const startedShift = await startShiftWithLocationGuard({
+        projectId: selectedProjectId,
+        project: selectedProject,
+      });
       setCurrentShift(startedShift);
       start(startedShift);
     } catch (error) {

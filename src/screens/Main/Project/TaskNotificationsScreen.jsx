@@ -239,7 +239,7 @@ export default function TaskNotificationsScreen() {
                   autoReminder: value,
                 }))
               }
-              trackColor={{ false: "#D9E3EC", true: "#0091FF" }}
+              trackColor={{ false: "#D9E3EC", true: theme.colors.primary }}
               thumbColor="#FFFFFF"
               ios_backgroundColor="#D9E3EC"
             />
@@ -260,7 +260,7 @@ export default function TaskNotificationsScreen() {
                   customReminder: value,
                 }))
               }
-              trackColor={{ false: "#D9E3EC", true: "#0091FF" }}
+              trackColor={{ false: "#D9E3EC", true: theme.colors.primary }}
               thumbColor="#FFFFFF"
               ios_backgroundColor="#D9E3EC"
             />
@@ -380,7 +380,7 @@ export default function TaskNotificationsScreen() {
                     allMembersNotification: value,
                   }))
                 }
-                trackColor={{ false: "#D9E3EC", true: "#0091FF" }}
+                trackColor={{ false: "#D9E3EC", true: theme.colors.primary }}
                 thumbColor="#FFFFFF"
                 ios_backgroundColor="#D9E3EC"
               />
@@ -656,16 +656,22 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   workerCheckbox: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
-    borderWidth: 2,
-    borderColor: "#0091FF",
+    width: 24,
+    height: 24,
+    borderRadius: 7,
+    borderWidth: 1.5,
+    borderColor: "rgba(5, 45, 80, 0.18)",
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#052D50",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 1,
   },
   workerCheckboxSelected: {
-    backgroundColor: "#0091FF",
+    backgroundColor: "#FFFFFF",
   },
   emptyState: {
     paddingVertical: 48,

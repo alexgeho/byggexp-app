@@ -51,14 +51,20 @@ export function createStyles(theme) {
     },
 
     checkbox: {
-      width: 28,
-      height: 28,
-      borderRadius: 8,
-      borderWidth: 2,
+      width: 24,
+      height: 24,
+      borderRadius: 7,
+      borderWidth: 1.5,
       borderColor: `${theme.colors.primary}33`,
+      backgroundColor: "#FFFFFF",
 
       alignItems: "center",
       justifyContent: "center",
+      shadowColor: "#052D50",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.06,
+      shadowRadius: 4,
+      elevation: 1,
     },
 
     checkboxActive: {

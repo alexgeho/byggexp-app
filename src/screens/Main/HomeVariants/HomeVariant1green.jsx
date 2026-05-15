@@ -148,7 +148,10 @@ export default function MainScreen() {
         return;
       }
 
-      const startedShift = await shiftService.start(selectedProjectId);
+      const startedShift = await startShiftWithLocationGuard({
+        projectId: selectedProjectId,
+        project: selectedProject,
+      });
       setCurrentShift(startedShift);
       start(startedShift);
     } catch (error) {
