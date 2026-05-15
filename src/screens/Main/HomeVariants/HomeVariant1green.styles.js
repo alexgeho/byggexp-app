@@ -68,7 +68,6 @@ export function createStyles(theme) {
         width: 0,
         height: 0,
       },
-
       alignItems: "center",
       justifyContent: "center",
     },
@@ -86,26 +85,6 @@ export function createStyles(theme) {
       justifyContent: "center",
       
     },
-    button: {
-      width: "42%",
-      borderRadius: 16,
-      overflow: "hidden",
-
-      borderWidth: 1,
-    },
-    buttonInner: {
-      flexDirection: "column",
-      padding: 16,
-      gap: 18,
-      alignItems: "center",
-    },
-    buttonIcon: {
-      width: 26,
-      height: 26,
-    },
-    text: {
-      color: "#ffffff",
-    },
     bottomNavContainer: {
       flexDirection: "row",
       gap: 72,
@@ -122,7 +101,6 @@ export function createStyles(theme) {
       height: 28,
     },
     bottomText: {
-      color: "#ffffff",
       fontSize: 12,
     },
   });

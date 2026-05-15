@@ -1,17 +1,8 @@
 import React, { useState } from "react";
 
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-} from "react-native";
+import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 
-import {
-  useNavigation,
-  useFocusEffect,
-} from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
 import { useTheme } from "../../../theme/ThemeContext";
 
@@ -20,17 +11,13 @@ import {
   defaultEnabledButtons,
 } from "../../../constants/mainButtons";
 
-import {
-  getEnabledButtons,
-} from "../../../utils/homeButtonsStorage";
+import { getEnabledButtons } from "../../../utils/homeButtonsStorage";
 
 export default function MainButtonsGrid() {
   const navigation = useNavigation();
   const { theme } = useTheme();
 
-  const [enabledButtons, setEnabledButtons] = useState(
-    defaultEnabledButtons,
-  );
+  const [enabledButtons, setEnabledButtons] = useState(defaultEnabledButtons);
 
   useFocusEffect(
     React.useCallback(function loadButtons() {
@@ -74,6 +61,13 @@ export default function MainButtonsGrid() {
                   handlePress(button.screen);
                 }}
               >
+                <View style={styles.linesContainer}>
+                  <View style={styles.line} />
+                  <View style={styles.line} />
+                  <View style={styles.line} />
+                  <View style={styles.line} />
+                </View>
+
                 <Image
                   source={button.icon}
                   style={[
@@ -89,8 +83,7 @@ export default function MainButtonsGrid() {
                     styles.buttonText,
                     {
                       color: theme.colors.text,
-                      fontFamily:
-                        theme.text.fontFamily.regular,
+                      fontFamily: theme.text.fontFamily.regular,
                     },
                   ]}
                 >
@@ -110,12 +103,26 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     justifyContent: "center",
-    gap: 10,
+
+    gap: 15,
+  },
+  linesContainer: {
+    position: "absolute",
+    left: -35,
+    bottom: 10,
+    transform: [{ rotate: "45deg" }],
+    gap: 6,
+  },
+
+  line: {
+    width: 80,
+    height: 1,
+    backgroundColor: "rgba(0,0,0,0.08)",
   },
 
   button: {
     width: "42%",
-    borderRadius: 16,
+    borderRadius: 6,
     overflow: "hidden",
     borderWidth: 1,
   },

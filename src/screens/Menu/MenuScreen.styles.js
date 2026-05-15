@@ -120,15 +120,15 @@ export function createStyles(theme) {
     color: "#052D50",
   },
   roleBadge: {
-    backgroundColor: "#2582D91A",
+    backgroundColor: theme.colors.primary + "1A",
     padding: 14,
     borderRadius: 89,
   
   },
   roleText: {
     fontSize: 16,
-    color: "#2582D9",
-    fontWeight: "500",
+    color: theme.colors.primary,
+    fontWeight: "600",
   },
   logoutButtonText: {
     color: "#ffffff",
