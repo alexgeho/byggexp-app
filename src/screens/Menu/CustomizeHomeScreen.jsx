@@ -6,6 +6,8 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
 import { useTheme } from "../../theme/ThemeContext";
 
+import { themeOptions } from "../../theme/themes";
+
 import {
   mainButtons,
   homeSections,
@@ -27,7 +29,11 @@ import { createStyles } from "./CustomizeHomeScreen.styles";
 export default function CustomizeHomeScreen() {
   const navigation = useNavigation();
 
-  const { theme } = useTheme();
+  const {
+    theme,
+    themeName,
+    changeTheme,
+  } = useTheme();
 
   const styles = createStyles(theme);
 
@@ -39,7 +45,6 @@ export default function CustomizeHomeScreen() {
     defaultEnabledSections,
   );
 
-  /* LOAD SAVED SETTINGS */
   useFocusEffect(
     React.useCallback(function loadSettings() {
       async function fetchSettings() {
@@ -60,7 +65,6 @@ export default function CustomizeHomeScreen() {
     }, []),
   );
 
-  /* TOGGLE BUTTON ENABLED STATE */
   async function toggleButton(buttonId) {
     const isEnabled = enabledButtons.includes(buttonId);
 
@@ -83,7 +87,6 @@ export default function CustomizeHomeScreen() {
     await saveEnabledButtons(updatedButtons);
   }
 
-  /* TOGGLE SECTION ENABLED STATE */
   async function toggleSection(sectionId) {
     const isEnabled = enabledSections.includes(sectionId);
 
@@ -110,7 +113,6 @@ export default function CustomizeHomeScreen() {
 
   return (
     <View style={styles.container}>
-      {/* HEADER */}
       <View style={styles.header}>
         <BackButton
           backgroundColor="#ffffff"
@@ -120,9 +122,40 @@ export default function CustomizeHomeScreen() {
           iconSource={require("../../assets/Arrow-left.png")}
         />
 
-        <Text style={styles.title}>Customize Home Screen</Text>
+        <Text style={styles.title}>
+          Customize Home Screen
+        </Text>
 
         <View style={styles.placeholder} />
+      </View>
+
+      {/* THEME SWITCHER */}
+      <View style={styles.themeContainer}>
+        <Text style={styles.sectionTitle}>
+          Themes
+        </Text>
+
+        <View style={styles.themeRow}>
+          {themeOptions.map(function renderTheme(item) {
+            const isActive = themeName === item.id;
+
+            return (
+              <TouchableOpacity
+                key={item.id}
+                style={[
+                  styles.themeButton,
+                  {
+                    backgroundColor: item.color,
+                  },
+                  isActive && styles.activeThemeButton,
+                ]}
+                onPress={function handleThemePress() {
+                  changeTheme(item.id);
+                }}
+              />
+            );
+          })}
+        </View>
       </View>
 
       {/* BUTTON LIST */}
@@ -135,18 +168,29 @@ export default function CustomizeHomeScreen() {
               key={button.id}
               style={[
                 styles.item,
-                index !== mainButtons.length - 1 && styles.itemBorder,
+                index !== mainButtons.length - 1 &&
+                  styles.itemBorder,
               ]}
               onPress={function handlePress() {
                 toggleButton(button.id);
               }}
             >
-              <Text style={styles.itemText}>{button.title}</Text>
+              <Text style={styles.itemText}>
+                {button.title}
+              </Text>
 
               <View
-                style={[styles.checkbox, isEnabled && styles.checkboxActive]}
+                style={[
+                  styles.checkbox,
+                  isEnabled &&
+                    styles.checkboxActive,
+                ]}
               >
-                {isEnabled && <Text style={styles.checkmark}>✓</Text>}
+                {isEnabled && (
+                  <Text style={styles.checkmark}>
+                    ✓
+                  </Text>
+                )}
               </View>
             </TouchableOpacity>
           );
@@ -163,18 +207,29 @@ export default function CustomizeHomeScreen() {
               key={section.id}
               style={[
                 styles.item,
-                index !== homeSections.length - 1 && styles.itemBorder,
+                index !== homeSections.length - 1 &&
+                  styles.itemBorder,
               ]}
               onPress={function handlePress() {
                 toggleSection(section.id);
               }}
             >
-              <Text style={styles.itemText}>{section.title}</Text>
+              <Text style={styles.itemText}>
+                {section.title}
+              </Text>
 
               <View
-                style={[styles.checkbox, isEnabled && styles.checkboxActive]}
+                style={[
+                  styles.checkbox,
+                  isEnabled &&
+                    styles.checkboxActive,
+                ]}
               >
-                {isEnabled && <Text style={styles.checkmark}>✓</Text>}
+                {isEnabled && (
+                  <Text style={styles.checkmark}>
+                    ✓
+                  </Text>
+                )}
               </View>
             </TouchableOpacity>
           );

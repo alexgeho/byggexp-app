@@ -54,3 +54,22 @@ export const darkGrayTheme = {
   ...common,
   colors: darkGrayColors,
 };
+
+export const themeOptions = [
+  {
+    id: "green",
+    color: greenColors.primary,
+  },
+  {
+    id: "blue",
+    color: blueColors.primary,
+  },
+  {
+    id: "orange",
+    color: orangeColors.primary,
+  },
+  {
+    id: "darkGray",
+    color: darkGrayColors.primary,
+  },
+];

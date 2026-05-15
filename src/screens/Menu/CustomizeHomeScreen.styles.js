@@ -26,10 +26,39 @@ export function createStyles(theme) {
       width: 44,
     },
 
+    themeContainer: {
+      marginBottom: 24,
+    },
+
+    sectionTitle: {
+      fontSize: 16,
+      fontWeight: "600",
+      color: "#052D50",
+      marginBottom: 12,
+      marginLeft: 4,
+    },
+
+    themeRow: {
+      flexDirection: "row",
+      gap: 12,
+    },
+
+    themeButton: {
+      width: 42,
+      height: 42,
+      borderRadius: 999,
+    },
+
+    activeThemeButton: {
+      borderWidth: 3,
+      borderColor: "#FFFFFF",
+    },
+
     list: {
       backgroundColor: "#ffffff",
       borderRadius: 24,
       overflow: "hidden",
+      marginBottom: 24,
     },
 
     item: {
