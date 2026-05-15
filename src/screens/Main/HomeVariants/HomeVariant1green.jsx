@@ -18,6 +18,7 @@ import { useTimer } from "../../../hooks/useTimer";
 import { GlassView } from "../../../components/common/GlassView/GlassView";
 import { shiftService } from "../../../services";
 import { createStyles } from "./HomeVariant1green.styles";
+import ProjectFilesSection from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
 
 export default function MainScreen() {
   const { theme, changeTheme } = useTheme();
@@ -307,6 +308,11 @@ export default function MainScreen() {
 
         {/* MAIN NAV BTNs */}
         <MainButtonsGrid />
+
+        {/* PROJECT FILES SELECTION */}
+        <ProjectFilesSection />
+
+
       </View>
       {/* BOTTOM MENU */}
       <View style={styles.bottomNavContainer}>
