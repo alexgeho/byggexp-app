@@ -228,6 +228,7 @@ export default function MainScreen() {
               {
                 color: theme.colors.text,
                 fontFamily: theme.text.fontFamily["regular"],
+                
               },
             ]}
           >
@@ -348,6 +349,7 @@ export default function MainScreen() {
               {
                 color: theme.colors.bottomNav,
                 fontFamily: theme.text.fontFamily["regular"],
+                fontSize: theme.text.sizes.medium,
               },
             ]}
           >
@@ -375,6 +377,7 @@ export default function MainScreen() {
               {
                 color: theme.colors.bottomNav,
                 fontFamily: theme.text.fontFamily["regular"],
+                fontSize: theme.text.sizes.medium,
               },
             ]}
           >

@@ -3,8 +3,8 @@ import { StyleSheet } from "react-native";
 export function createStyles(theme) {
   return StyleSheet.create({
     title: {
-      fontSize: 16,
-      fontWeight: "400",
+      fontSize: theme.text.sizes.medium,
+      fontFamily: theme.text.fontFamily.medium,
       marginBottom: 2,
       marginLeft: 4,
     },

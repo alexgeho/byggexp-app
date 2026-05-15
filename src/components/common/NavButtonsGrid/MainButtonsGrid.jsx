@@ -84,6 +84,7 @@ export default function MainButtonsGrid() {
                     {
                       color: theme.colors.text,
                       fontFamily: theme.text.fontFamily.regular,
+                      fontSize: theme.text.sizes.medium,
                     },
                   ]}
                 >
@@ -139,5 +140,4 @@ const styles = StyleSheet.create({
     height: 26,
   },
 
-  buttonText: {},
 });

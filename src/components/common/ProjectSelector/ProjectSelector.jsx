@@ -1,3 +1,5 @@
+import React from "react";
+
 import {
   View,
   Text,
@@ -13,6 +15,8 @@ export default function ProjectSelector({
   style,
 }) {
   const { theme } = useTheme();
+
+  const styles = createStyles(theme);
 
   return (
     <View style={styles.container}>
@@ -58,37 +62,38 @@ export default function ProjectSelector({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    elevation: 10,
-  },
+const createStyles = (theme) =>
+  StyleSheet.create({
+    container: {
+      width: "100%",
+      elevation: 10,
+    },
 
-  text: {
-    flex: 1,
-    fontSize: 16,
-    fontWeight: "500",
-  },
+    text: {
+      flex: 1,
+      fontSize: theme.text.sizes.medium,
+      fontFamily: theme.text.fontFamily.medium,
+    },
 
-  selectorButton: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 6,
-    borderWidth: 1,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
-    overflow: "hidden",
-  },
+    selectorButton: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 6,
+      borderWidth: 1,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.08,
+      shadowRadius: 12,
+      elevation: 4,
+      overflow: "hidden",
+    },
 
-  arrow: {
-    fontSize: 14,
-    marginLeft: 8,
-    opacity: 0.8,
-  },
-});
+    arrow: {
+      fontSize: 14,
+      marginLeft: 8,
+      opacity: 0.8,
+    },
+  });
