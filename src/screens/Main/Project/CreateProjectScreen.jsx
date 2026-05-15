@@ -682,6 +682,7 @@ export default function CreateProjectScreen() {
 
   const openLocationPicker = () => {
     setLocationSearch(location);
+    setIsLocationSearchVisible(true);
     setIsLocationPickerVisible(true);
   };
 
@@ -1602,6 +1603,7 @@ export default function CreateProjectScreen() {
                 <>
                   <View style={styles.mapSearchContainer}>
                     <TextInput
+                      autoFocus={true}
                       value={locationSearch}
                       onChangeText={setLocationSearch}
                       placeholder="Search address"
