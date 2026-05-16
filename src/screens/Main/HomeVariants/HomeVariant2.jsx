@@ -2,13 +2,19 @@ import { Text, View, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import { styles } from "./HomeVariant2.styles";
 import { Timer } from "../../../components/common2/Timer/Timer";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function HomeVariant2() {
   function handleHomePress() {
     console.log("Home");
   }
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={["#84E2FF", "#2582D9"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      style={styles.container}
+    >
       <View style={styles.header}>
         <Text>9:41</Text>
         <Image
@@ -23,7 +29,7 @@ export default function HomeVariant2() {
           <Text>Gruvrisvägen 70, 791 61 Falun</Text>
         </View>
 
-       <Timer/>
+        <Timer />
 
         {/* MAIN BTN */}
         <View style={styles.mainActionButtons}>
@@ -39,25 +45,27 @@ export default function HomeVariant2() {
         <View style={styles.shiftHistorySection}>
           {/* SHIFT HEADER */}
           <View style={styles.shiftHeader}>
-            <Text>Shift history</Text>
-            <Text>View all</Text>
+            <Text style={styles.shiftHeaderText}>Shift history</Text>
+            <Text style={styles.shiftHeaderText}>View all</Text>
           </View>
 
           {/* SHIFT BODY */}
           <View style={styles.shiftBody}>
             <View style={styles.shiftBodyHeader}>
-              <Text>July 2, 2025</Text>
+              <Text style={styles.shiftBodyHeaderText}>July 2, 2025</Text>
             </View>
 
             <View style={styles.shiftBodyMain}>
               <View style={styles.shiftBodyMainLeft}>
-                <Text>Gruvrisvägen 70, 791 61</Text>
-                <Text>Falun</Text>
+                <Text style={styles.shiftBodyMainLeftText}>
+                  Gruvrisvägen 70, 791 61
+                </Text>
+                <Text style={styles.shiftBodyMainLeftText}>Falun</Text>
               </View>
 
               <View style={styles.shiftBodyMainRight}>
-                <Text>10h 5m</Text>
-                <Text>08:32-18:37</Text>
+                <Text style={styles.shiftBodyMainLeftText}>10h 5m</Text>
+                <Text style={styles.shiftBodyHeaderText}>08:32-18:37</Text>
               </View>
             </View>
           </View>
@@ -86,6 +94,6 @@ export default function HomeVariant2() {
           <Image source={require("../../../assets/HomeScreen2/User.png")} />
         </TouchableOpacity>
       </View>
-    </View>
+    </LinearGradient>
   );
 }
