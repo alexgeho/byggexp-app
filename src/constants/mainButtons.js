@@ -3,7 +3,7 @@ export const mainButtons = [
     id: "next",
     title: "NEXT SCREEN 2",
     icon: require("../assets/next-screen.png"),
-    screen: "Camera",
+    screen: "HomeVariant2",
   },
   {
     id: "camera",
