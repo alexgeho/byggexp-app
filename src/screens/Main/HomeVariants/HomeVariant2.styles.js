@@ -12,71 +12,61 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 30,
   },
-
   main: {
     marginTop: 30,
     flex: 1,
     justifyContent: "space-between",
     marginBottom: 30,
   },
-
   projectSelector: {
+    alignSelf: "center",
+    flexDirection: "row",
+    justifyContent: "center",
     alignItems: "center",
+    gap: 20,
+
+    padding: 20,
+
+    borderRadius: 100,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.20)",
+  },
+  projectSelectorText: {
+    color: "#FFFFFF",
+    textAlign: "center",
+    fontFamily: "DMSans-Medium",
+    fontSize: 17,
+    lineHeight: 22,
   },
 
   mainActionButtons: {
     flexDirection: "row",
     justifyContent: "center",
-    gap: 70,
+    gap: 35,
   },
-
-  shiftHistorySection: {
-    flexDirection: "column",
+  actionButton: {
+    width: 124,
+    height: 124,
+    borderRadius: 999,
+    justifyContent: "center",
     alignItems: "center",
-    gap: 10,
+    backgroundColor: "#FFFFFF",
   },
-
-  shiftHeader: {
-    width: 353,
-    flexDirection: "row",
-    justifyContent: "space-between",
+  actionButtonCamera: {
+    justifyContent: "center",
+    alignItems: "center",
+    opacity: 0.3,
   },
-  shiftHeaderText: {
-    color: "#ffffff",
-    fontSize: 17,
-    fontFamily: "DMSans-Medium",
+  iconAction: {
+    width: 124,
+    height: 124,
+    resizeMode: "contain",
   },
-  shiftBodyHeaderText: {
-    fontFamily: "DMSans-Medium",
-    color: "#ffffff",
-    fontSize: 15,
-    opacity: 0.5,
+  icon: {
+    width: 124,
+    height: 124,
+    resizeMode: "contain",
   },
-  shiftBody: {
-    width: 353,
-    padding: 20,
-    flexDirection: "column",
-    gap: 30,
-
-    borderRadius: 20,
-    backgroundColor: "rgba(255,255,255,0.10)",
-  },
-  shiftBodyMain: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  shiftBodyMainLeft: {
-    gap: 2,
-  },
-  shiftBodyMainRight: {
-    gap: 2,
-  },
-  shiftBodyMainLeftText: {
-    fontFamily: "DMSans-Medium",
-    color: "#ffffff",
-    fontSize: 15,
-  },
-
   footer: {
     flexDirection: "row",
     height: 68,

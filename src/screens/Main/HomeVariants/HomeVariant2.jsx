@@ -1,8 +1,10 @@
 import { Text, View, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import { styles } from "./HomeVariant2.styles";
-import { Timer } from "../../../components/common2/Timer/Timer";
 import { LinearGradient } from "expo-linear-gradient";
+
+import { Timer } from "../../../components/common2/Timer/Timer";
+import { Shifts } from "../../../components/common2/ShiftHistory/ShiftHistory";
 
 export default function HomeVariant2() {
   function handleHomePress() {
@@ -15,61 +17,47 @@ export default function HomeVariant2() {
       end={{ x: 0, y: 1 }}
       style={styles.container}
     >
-      <View style={styles.header}>
+    {/*   <View style={styles.header}>
         <Text>9:41</Text>
         <Image
           source={require("../../../assets/HomeScreen2/battery_charging.png")}
         />
-      </View>
+      </View> */}
 
       {/* MAIN */}
       <View style={styles.main}>
         {/* PROJECT SELECTOR */}
         <View style={styles.projectSelector}>
-          <Text>Gruvrisvägen 70, 791 61 Falun</Text>
+          <Text style={styles.projectSelectorText}>Gruvrisvägen 70, 791 61 Falun</Text>
+          <Image
+          source={require("../../../assets/HomeScreen2/arrow-down.png")}
+
+          /> 
         </View>
 
         <Timer />
 
         {/* MAIN BTN */}
         <View style={styles.mainActionButtons}>
-          <Image
-            source={require("../../../assets/HomeScreen2/circle_circle.png")}
-          />
-          <Image
-            source={require("../../../assets/HomeScreen2/circle_circle.png")}
-          />
+
+          <TouchableOpacity style={styles.actionButton}>
+            <Image
+              source={require("../../../assets/HomeScreen2/iconAction.png")}
+              style={styles.iconAction}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.actionButtonCamera}>
+            <Image
+              source={require("../../../assets/HomeScreen2/CircleCamera.png")}
+              style={styles.icon}
+            />
+          </TouchableOpacity>
+
         </View>
 
         {/* SHIFTS */}
-        <View style={styles.shiftHistorySection}>
-          {/* SHIFT HEADER */}
-          <View style={styles.shiftHeader}>
-            <Text style={styles.shiftHeaderText}>Shift history</Text>
-            <Text style={styles.shiftHeaderText}>View all</Text>
-          </View>
-
-          {/* SHIFT BODY */}
-          <View style={styles.shiftBody}>
-            <View style={styles.shiftBodyHeader}>
-              <Text style={styles.shiftBodyHeaderText}>July 2, 2025</Text>
-            </View>
-
-            <View style={styles.shiftBodyMain}>
-              <View style={styles.shiftBodyMainLeft}>
-                <Text style={styles.shiftBodyMainLeftText}>
-                  Gruvrisvägen 70, 791 61
-                </Text>
-                <Text style={styles.shiftBodyMainLeftText}>Falun</Text>
-              </View>
-
-              <View style={styles.shiftBodyMainRight}>
-                <Text style={styles.shiftBodyMainLeftText}>10h 5m</Text>
-                <Text style={styles.shiftBodyHeaderText}>08:32-18:37</Text>
-              </View>
-            </View>
-          </View>
-        </View>
+        <Shifts />
       </View>
 
       {/* FOOTER */}
