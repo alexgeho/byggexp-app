@@ -5,6 +5,7 @@ import {
   ScrollView,
   View,
   Text,
+  TouchableOpacity,
 } from "react-native";
 
 import { useTheme } from "../../../theme/ThemeContext";
@@ -13,18 +14,37 @@ import { API_BASE_URL } from "../../../services/api";
 
 import { createStyles } from "./ProjectFilesSection.style";
 
-export default function ProjectFilesSection({ project }) {
+export default function ProjectFilesSection({
+  project,
+  onClose,
+}) {
   const { theme } = useTheme();
 
   const styles = createStyles(theme);
 
   const files = project?.documents || [];
 
+  if (!files.length) {
+    return null;
+  }
+
   return (
     <View>
-      <Text style={styles.title}>
-        Project Documents
-      </Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>
+          Project Documents
+        </Text>
+
+        <TouchableOpacity
+          onPress={onClose}
+          activeOpacity={0.7}
+          style={styles.closeButton}
+        >
+          <Text style={styles.closeText}>
+            ✕
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.container}>
         <ScrollView

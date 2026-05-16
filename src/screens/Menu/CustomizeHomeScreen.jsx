@@ -1,12 +1,24 @@
-import React, { useState } from "react";
+import React, {
+  useState,
+  useContext,
+} from "react";
 
-import { View, Text, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import {
+  useNavigation,
+  useFocusEffect,
+} from "@react-navigation/native";
 
 import { useTheme } from "../../theme/ThemeContext";
 
 import { themeOptions } from "../../theme/themes";
+
+import AuthContext from "../../contexts/AuthContext";
 
 import {
   mainButtons,
@@ -18,6 +30,8 @@ import {
 import {
   getEnabledButtons,
   saveEnabledButtons,
+  getDismissedSections,
+  saveDismissedSections,
   getEnabledSections,
   saveEnabledSections,
 } from "../../utils/homeButtonsStorage";
@@ -29,6 +43,9 @@ import { createStyles } from "./CustomizeHomeScreen.styles";
 export default function CustomizeHomeScreen() {
   const navigation = useNavigation();
 
+  const { selectedProject } =
+    useContext(AuthContext);
+
   const {
     theme,
     themeName,
@@ -37,20 +54,26 @@ export default function CustomizeHomeScreen() {
 
   const styles = createStyles(theme);
 
-  const [enabledButtons, setEnabledButtons] = useState(
-    defaultEnabledButtons,
-  );
+  const [enabledButtons, setEnabledButtons] =
+    useState(defaultEnabledButtons);
 
-  const [enabledSections, setEnabledSections] = useState(
-    defaultEnabledSections,
-  );
+  const [enabledSections, setEnabledSections] =
+    useState(defaultEnabledSections);
+
+  const [dismissedSections, setDismissedSections] =
+    useState([]);
 
   useFocusEffect(
     React.useCallback(function loadSettings() {
       async function fetchSettings() {
-        const savedButtons = await getEnabledButtons();
+        const savedButtons =
+          await getEnabledButtons();
 
-        const savedSections = await getEnabledSections();
+        const savedSections =
+          await getEnabledSections();
+
+        const savedDismissedSections =
+          await getDismissedSections();
 
         if (savedButtons) {
           setEnabledButtons(savedButtons);
@@ -59,6 +82,10 @@ export default function CustomizeHomeScreen() {
         if (savedSections) {
           setEnabledSections(savedSections);
         }
+
+        setDismissedSections(
+          savedDismissedSections,
+        );
       }
 
       fetchSettings();
@@ -66,12 +93,16 @@ export default function CustomizeHomeScreen() {
   );
 
   async function toggleButton(buttonId) {
-    const isEnabled = enabledButtons.includes(buttonId);
+    const isEnabled =
+      enabledButtons.includes(buttonId);
 
     if (isEnabled) {
-      const updatedButtons = enabledButtons.filter(function removeButton(id) {
-        return id !== buttonId;
-      });
+      const updatedButtons =
+        enabledButtons.filter(function removeButton(
+          id,
+        ) {
+          return id !== buttonId;
+        });
 
       setEnabledButtons(updatedButtons);
 
@@ -80,7 +111,10 @@ export default function CustomizeHomeScreen() {
       return;
     }
 
-    const updatedButtons = [...enabledButtons, buttonId];
+    const updatedButtons = [
+      ...enabledButtons,
+      buttonId,
+    ];
 
     setEnabledButtons(updatedButtons);
 
@@ -88,27 +122,49 @@ export default function CustomizeHomeScreen() {
   }
 
   async function toggleSection(sectionId) {
-    const isEnabled = enabledSections.includes(sectionId);
+    const isEnabled =
+      enabledSections.includes(sectionId);
 
     if (isEnabled) {
-      const updatedSections = enabledSections.filter(function removeSection(
-        id,
-      ) {
-        return id !== sectionId;
-      });
+      const updatedSections =
+        enabledSections.filter(
+          function removeSection(id) {
+            return id !== sectionId;
+          },
+        );
 
       setEnabledSections(updatedSections);
 
-      await saveEnabledSections(updatedSections);
+      await saveEnabledSections(
+        updatedSections,
+      );
 
       return;
     }
 
-    const updatedSections = [...enabledSections, sectionId];
+    const updatedSections = [
+      ...enabledSections,
+      sectionId,
+    ];
 
     setEnabledSections(updatedSections);
 
     await saveEnabledSections(updatedSections);
+
+    const updatedDismissedSections =
+      dismissedSections.filter(
+        function removeDismissed(id) {
+          return id !== sectionId;
+        },
+      );
+
+    setDismissedSections(
+      updatedDismissedSections,
+    );
+
+    await saveDismissedSections(
+      updatedDismissedSections,
+    );
   }
 
   return (
@@ -136,8 +192,11 @@ export default function CustomizeHomeScreen() {
         </Text>
 
         <View style={styles.themeRow}>
-          {themeOptions.map(function renderTheme(item) {
-            const isActive = themeName === item.id;
+          {themeOptions.map(function renderTheme(
+            item,
+          ) {
+            const isActive =
+              themeName === item.id;
 
             return (
               <TouchableOpacity
@@ -147,7 +206,8 @@ export default function CustomizeHomeScreen() {
                   {
                     backgroundColor: item.color,
                   },
-                  isActive && styles.activeThemeButton,
+                  isActive &&
+                    styles.activeThemeButton,
                 ]}
                 onPress={function handleThemePress() {
                   changeTheme(item.id);
@@ -160,15 +220,20 @@ export default function CustomizeHomeScreen() {
 
       {/* BUTTON LIST */}
       <View style={styles.list}>
-        {mainButtons.map(function renderButton(button, index) {
-          const isEnabled = enabledButtons.includes(button.id);
+        {mainButtons.map(function renderButton(
+          button,
+          index,
+        ) {
+          const isEnabled =
+            enabledButtons.includes(button.id);
 
           return (
             <TouchableOpacity
               key={button.id}
               style={[
                 styles.item,
-                index !== mainButtons.length - 1 &&
+                index !==
+                  mainButtons.length - 1 &&
                   styles.itemBorder,
               ]}
               onPress={function handlePress() {
@@ -199,16 +264,34 @@ export default function CustomizeHomeScreen() {
 
       {/* SECTION LIST */}
       <View style={styles.list}>
-        {homeSections.map(function renderSection(section, index) {
-          const isEnabled = enabledSections.includes(section.id);
+        {homeSections.map(function renderSection(
+          section,
+          index,
+        ) {
+          const isEnabled =
+            enabledSections.includes(section.id);
+
+          const isProjectFiles =
+            section.id === "project-files";
+
+          const isDisabled =
+            isProjectFiles &&
+            !selectedProject;
 
           return (
             <TouchableOpacity
               key={section.id}
+              disabled={isDisabled}
               style={[
                 styles.item,
-                index !== homeSections.length - 1 &&
+                index !==
+                  homeSections.length - 1 &&
                   styles.itemBorder,
+                {
+                  opacity: isDisabled
+                    ? 0.4
+                    : 1,
+                },
               ]}
               onPress={function handlePress() {
                 toggleSection(section.id);

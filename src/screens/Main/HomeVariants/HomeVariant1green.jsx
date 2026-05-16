@@ -43,6 +43,7 @@ export default function MainScreen() {
   const selectedProjectId = selectedProject?._id || selectedProject?.id;
 
   const [enabledSections, setEnabledSections] = useState([]);
+  const [showProjectFiles, setShowProjectFiles] = useState(true);
 
   /* ERRORS */
   const getErrorMessage = (error, fallbackMessage) =>
@@ -228,7 +229,6 @@ export default function MainScreen() {
               {
                 color: theme.colors.text,
                 fontFamily: theme.text.fontFamily["regular"],
-                
               },
             ]}
           >
@@ -326,10 +326,16 @@ export default function MainScreen() {
         <MainButtonsGrid />
 
         {/* PROJECT FILES SELECTION */}
-        {enabledSections.includes("project-files") && (
-          <ProjectFilesSection project={selectedProject} />
+        {showProjectFiles && enabledSections.includes("project-files") && (
+          <ProjectFilesSection
+            project={selectedProject}
+            onClose={function handleClose() {
+              setShowProjectFiles(false);
+            }}
+          />
         )}
       </View>
+
       {/* BOTTOM MENU */}
       <View style={styles.bottomNavContainer}>
         <TouchableOpacity style={styles.bottomNavItem}>
