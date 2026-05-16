@@ -18,55 +18,6 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 30,
   },
-  projectSelector: {
-    alignSelf: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 20,
-
-    padding: 20,
-
-    borderRadius: 100,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.20)",
-  },
-  projectSelectorText: {
-    color: "#FFFFFF",
-    textAlign: "center",
-    fontFamily: "DMSans-Medium",
-    fontSize: 17,
-    lineHeight: 22,
-  },
-
-  mainActionButtons: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 35,
-  },
-  actionButton: {
-    width: 124,
-    height: 124,
-    borderRadius: 999,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
-  },
-  actionButtonCamera: {
-    justifyContent: "center",
-    alignItems: "center",
-    opacity: 0.3,
-  },
-  iconAction: {
-    width: 124,
-    height: 124,
-    resizeMode: "contain",
-  },
-  icon: {
-    width: 124,
-    height: 124,
-    resizeMode: "contain",
-  },
   footer: {
     flexDirection: "row",
     height: 68,

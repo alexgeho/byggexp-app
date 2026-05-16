@@ -5,6 +5,8 @@ import { LinearGradient } from "expo-linear-gradient";
 
 import { Timer } from "../../../components/common2/Timer/Timer";
 import { Shifts } from "../../../components/common2/ShiftHistory/ShiftHistory";
+import { ProjectSelector } from "../../../components/common2/projectSelector/projectSelector";
+import { MainActionButtons } from "../../../components/common2/mainActionButtons/mainActionButtons";
 
 export default function HomeVariant2() {
   function handleHomePress() {
@@ -17,7 +19,7 @@ export default function HomeVariant2() {
       end={{ x: 0, y: 1 }}
       style={styles.container}
     >
-    {/*   <View style={styles.header}>
+      {/*   <View style={styles.header}>
         <Text>9:41</Text>
         <Image
           source={require("../../../assets/HomeScreen2/battery_charging.png")}
@@ -26,35 +28,15 @@ export default function HomeVariant2() {
 
       {/* MAIN */}
       <View style={styles.main}>
+
         {/* PROJECT SELECTOR */}
-        <View style={styles.projectSelector}>
-          <Text style={styles.projectSelectorText}>Gruvrisvägen 70, 791 61 Falun</Text>
-          <Image
-          source={require("../../../assets/HomeScreen2/arrow-down.png")}
+        <ProjectSelector />
 
-          /> 
-        </View>
-
+        {/* Timer */}
         <Timer />
 
         {/* MAIN BTN */}
-        <View style={styles.mainActionButtons}>
-
-          <TouchableOpacity style={styles.actionButton}>
-            <Image
-              source={require("../../../assets/HomeScreen2/iconAction.png")}
-              style={styles.iconAction}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.actionButtonCamera}>
-            <Image
-              source={require("../../../assets/HomeScreen2/CircleCamera.png")}
-              style={styles.icon}
-            />
-          </TouchableOpacity>
-
-        </View>
+        <MainActionButtons/>
 
         {/* SHIFTS */}
         <Shifts />
