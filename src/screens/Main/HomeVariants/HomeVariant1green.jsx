@@ -9,18 +9,17 @@ import {
   ActivityIndicator,
 } from "react-native";
 import MainButtonsGrid from "../../../components/common/NavButtonsGrid/MainButtonsGrid";
-import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "../../../theme/ThemeContext";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import ProjectSelector from "../../../components/common/ProjectSelector/ProjectSelector";
 import AuthContext from "../../../contexts/AuthContext";
 import { useTimer } from "../../../hooks/useTimer";
-import { GlassView } from "../../../components/common/GlassView/GlassView";
 import { shiftService } from "../../../services";
 import { createStyles } from "./HomeVariant1green.styles";
 import ProjectFilesSection from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
 import { getEnabledSections } from "../../../utils/homeButtonsStorage";
 import TimerDisplay from "../../../components/common/TimerDisplay/TimerDisplay";
+import PlayButton from "../../../components/common/PlayButton/PlayButton";
 
 export default function MainScreen() {
   const { theme, changeTheme } = useTheme();
@@ -122,7 +121,6 @@ export default function MainScreen() {
             setEnabledSections(savedSections);
           }
         }
-
         fetchData();
       },
       [loadCurrentShift, selectedProjectId],
@@ -188,7 +186,6 @@ export default function MainScreen() {
     navigation.navigate(screen);
   };
 
-  const BackgroundComponent = Platform.OS === "web" ? View : LinearGradient;
   useEffect(function applyTheme() {
     changeTheme("green");
   }, []);
@@ -199,20 +196,7 @@ export default function MainScreen() {
 
   /* SCREEN RENDER */
   return (
-    <BackgroundComponent
-      colors={[theme.colors.background, theme.colors.background]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-      style={styles.container}
-      {...(Platform.OS === "web" && {
-        style: [
-          styles.container,
-          {
-            backgroundImage: "linear-gradient(180deg, #00203A 0%, #464a4d 40%)",
-          },
-        ],
-      })}
-    >
+    <View style={styles.container}>
       {/* PROJECT SELECTOR */}
       <View style={styles.selectProjectContainer}>
         <ProjectSelector
@@ -223,7 +207,6 @@ export default function MainScreen() {
 
       {/* CONTENT CONTAINER */}
       <View style={styles.contentContainer}>
-        
         {/* TIMER */}
         <TimerDisplay
           hours={formattedTime.hours}
@@ -253,37 +236,12 @@ export default function MainScreen() {
         </View>
 
         {/* PLAY BUTTON CONTAINER */}
-        <View style={styles.playButtonContainer}>
-          <TouchableOpacity
-            style={[
-              styles.playButton,
-              {
-                backgroundColor: theme.colors.primary,
-                shadowColor: theme.colors.glow,
-                borderColor: theme.colors.glow,
-                shadowOpacity: 0.7,
-                shadowRadius: 40,
-                elevation: 25,
-              },
-              isPaused && styles.playButtonPaused,
-            ]}
-            onPress={handlePlayPause}
-            disabled={actionLoading}
-          >
-            {actionLoading ? (
-              <ActivityIndicator color="#ffffff" />
-            ) : (
-              <Image
-                style={[styles.playIcon, { tintColor: "#ffffff" }]}
-                source={
-                  isRunning
-                    ? require("../../../assets/main/Pause.png")
-                    : require("../../../assets/main/Play.png")
-                }
-              />
-            )}
-          </TouchableOpacity>
-        </View>
+        <PlayButton
+          isRunning={isRunning}
+          isPaused={isPaused}
+          loading={actionLoading}
+          onPress={handlePlayPause}
+        />
 
         {/* MAIN NAV BTNs */}
         <MainButtonsGrid />
@@ -354,6 +312,6 @@ export default function MainScreen() {
           </Text>
         </TouchableOpacity>
       </View>
-    </BackgroundComponent>
+    </View>
   );
 }
