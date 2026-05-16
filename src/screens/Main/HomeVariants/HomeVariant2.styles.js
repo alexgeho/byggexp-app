@@ -25,12 +25,6 @@ export const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  timerText: {
-    alignItems: "center",
-    fontSize: 140,
-    fontFamily: 'Landasans-Medium',
-  },
-
   mainActionButtons: {
     flexDirection: "row",
     justifyContent: "center",
@@ -63,7 +57,7 @@ export const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 20,
     justifyContent: "space-between",
-   /*  borderColor: "#fffff",
+    /*  borderColor: "#fffff",
     borderWidth: 1, */
     marginBottom: 20,
   },

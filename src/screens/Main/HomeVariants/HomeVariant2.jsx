@@ -1,6 +1,7 @@
 import { Text, View, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import { styles } from "./HomeVariant2.styles";
+import { Timer } from "../../../components/common2/Timer/Timer";
 
 export default function HomeVariant2() {
   function handleHomePress() {
@@ -21,9 +22,8 @@ export default function HomeVariant2() {
         <View style={styles.projectSelector}>
           <Text>Gruvrisvägen 70, 791 61 Falun</Text>
         </View>
-        <View style={styles.timer}>
-          <Text style={styles.timerText}>06 59 59</Text>
-        </View>
+
+       <Timer/>
 
         {/* MAIN BTN */}
         <View style={styles.mainActionButtons}>
