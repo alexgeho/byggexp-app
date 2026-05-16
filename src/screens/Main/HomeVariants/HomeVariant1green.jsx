@@ -20,6 +20,7 @@ import { shiftService } from "../../../services";
 import { createStyles } from "./HomeVariant1green.styles";
 import ProjectFilesSection from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
 import { getEnabledSections } from "../../../utils/homeButtonsStorage";
+import TimerDisplay from "../../../components/common/TimerDisplay/TimerDisplay";
 
 export default function MainScreen() {
   const { theme, changeTheme } = useTheme();
@@ -220,53 +221,15 @@ export default function MainScreen() {
         />
       </View>
 
+      {/* CONTENT CONTAINER */}
       <View style={styles.contentContainer}>
+        
         {/* TIMER */}
-        <View style={styles.timerRow}>
-          <Text
-            style={[
-              styles.timerNumber,
-              {
-                color: theme.colors.text,
-                fontFamily: theme.text.fontFamily["regular"],
-              },
-            ]}
-          >
-            {formattedTime.hours}
-          </Text>
-          <Text
-            style={[
-              styles.timerNumber,
-              { fontFamily: theme.text.fontFamily["regular"] },
-            ]}
-          >
-            :
-          </Text>
-          <Text
-            style={[
-              styles.timerNumber,
-              { fontFamily: theme.text.fontFamily["regular"] },
-            ]}
-          >
-            {formattedTime.minutes}
-          </Text>
-          <Text
-            style={[
-              styles.timerNumber,
-              { fontFamily: theme.text.fontFamily["regular"] },
-            ]}
-          >
-            :
-          </Text>
-          <Text
-            style={[
-              styles.timerSubNumber,
-              { fontFamily: theme.text.fontFamily["regular"] },
-            ]}
-          >
-            {formattedTime.seconds}
-          </Text>
-        </View>
+        <TimerDisplay
+          hours={formattedTime.hours}
+          minutes={formattedTime.minutes}
+          seconds={formattedTime.seconds}
+        />
 
         {/* HOURS DOTS*/}
         <View style={styles.dotsRow}>
