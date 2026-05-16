@@ -24,6 +24,7 @@ export function createStyles(theme) {
       zIndex: 1000,
       position: "relative",
       gap: 10,
+      marginBottom: 140,
    
     },
     timerRow: {

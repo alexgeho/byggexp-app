@@ -68,6 +68,14 @@ export function createStyles(theme) {
       fontSize: 15,
       fontWeight: "600",
     },
-
+    menuWrapperTransparent: {
+      backgroundColor: "transparent",
+      borderWidth: 0,
+    },
+    navText: {
+      marginTop: 4,
+      fontSize: 14,
+      fontWeight: "500",
+    },
   });
 }

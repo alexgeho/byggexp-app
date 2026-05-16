@@ -21,6 +21,8 @@ import { getEnabledSections } from "../../../utils/homeButtonsStorage";
 import TimerDisplay from "../../../components/common/TimerDisplay/TimerDisplay";
 import PlayButton from "../../../components/common/PlayButton/PlayButton";
 import TimerProgress from "../../../components/common/TimerProgress/TimerProgress";
+import { BottomBar } from "../../../components/BottomBar";
+
 export default function MainScreen() {
   const { theme, changeTheme } = useTheme();
   const styles = createStyles(theme);
@@ -194,6 +196,14 @@ export default function MainScreen() {
     navigation.navigate("HomeVariant2");
   }
 
+  function handleHomePress() {
+    navigation.navigate("Main");
+  }
+
+  function handleMenuPress() {
+    navigation.navigate("Menu");
+  }
+
   /* SCREEN RENDER */
   return (
     <View style={styles.container}>
@@ -207,7 +217,6 @@ export default function MainScreen() {
 
       {/* CONTENT CONTAINER */}
       <View style={styles.contentContainer}>
-
         {/* TIMER */}
         <TimerDisplay
           hours={formattedTime.hours}
@@ -216,8 +225,7 @@ export default function MainScreen() {
         />
 
         {/* HOURS DOTS*/}
-{        <TimerProgress progress={timerProgress} />
-}
+        {<TimerProgress progress={timerProgress} />}
         {/* PLAY BUTTON CONTAINER */}
         <PlayButton
           isRunning={isRunning}
@@ -241,60 +249,13 @@ export default function MainScreen() {
       </View>
 
       {/* BOTTOM MENU */}
-      <View style={styles.bottomNavContainer}>
-        <TouchableOpacity style={styles.bottomNavItem}>
-          <Image
-            style={[
-              styles.bottomIcon,
-              {
-                tintColor: theme.colors.icon,
-              },
-            ]}
-            source={require("../../../assets/Home.png")}
-          />
-
-          <Text
-            style={[
-              styles.bottomText,
-              {
-                color: theme.colors.bottomNav,
-                fontFamily: theme.text.fontFamily["regular"],
-                fontSize: theme.text.sizes.medium,
-              },
-            ]}
-          >
-            Home
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => handleNav("Menu")}
-          style={styles.bottomNavItem}
-        >
-          <Image
-            style={[
-              styles.bottomIcon,
-              {
-                tintColor: theme.colors.icon,
-              },
-            ]}
-            source={require("../../../assets/Menu.png")}
-          />
-
-          <Text
-            style={[
-              styles.bottomText,
-              {
-                color: theme.colors.bottomNav,
-                fontFamily: theme.text.fontFamily["regular"],
-                fontSize: theme.text.sizes.medium,
-              },
-            ]}
-          >
-            Menu
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <BottomBar
+        showAddButton={false}
+        showBackground={false}
+        showText={true}
+        onLeftPress={handleHomePress}
+        onRightPress={handleMenuPress}
+      />
     </View>
   );
 }

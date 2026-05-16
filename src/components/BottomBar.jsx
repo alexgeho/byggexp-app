@@ -1,7 +1,14 @@
 import React from "react";
-import { Image, TouchableOpacity, View } from "react-native";
+
+import {
+  Image,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import { useTheme } from "../theme/ThemeContext";
+
 import { createStyles } from "./BottomBar.styles";
 
 const DEFAULT_ACTION_ICON = require("../assets/Plus.png");
@@ -15,15 +22,28 @@ export function BottomBar({
   showAddButton = true,
   renderAddContent,
   addDisabled = false,
+  showBackground = true,
+  showText = false,
 }) {
   const { theme } = useTheme();
+
   const styles = createStyles(theme);
-  const handleActionPress = onActionPress ?? onAddPress;
-  const actionContent = renderActionContent ?? renderAddContent;
+
+  const handleActionPress =
+    onActionPress ?? onAddPress;
+
+  const actionContent =
+    renderActionContent ?? renderAddContent;
 
   return (
     <View style={styles.container}>
-      <View style={styles.menuWrapper}>
+      <View
+        style={[
+          styles.menuWrapper,
+          !showBackground &&
+            styles.menuWrapperTransparent,
+        ]}
+      >
         <TouchableOpacity
           style={styles.navButton}
           onPress={onLeftPress}
@@ -32,6 +52,19 @@ export function BottomBar({
             source={require("../assets/bottomBar/HomeGray.png")}
             style={styles.navIcon}
           />
+
+          {showText && (
+            <Text
+              style={[
+                styles.navText,
+                {
+                  color: theme.colors.bottomNav,
+                },
+              ]}
+            >
+              Home
+            </Text>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -42,6 +75,19 @@ export function BottomBar({
             source={require("../assets/bottomBar/MenuGray.png")}
             style={styles.navIcon}
           />
+
+          {showText && (
+            <Text
+              style={[
+                styles.navText,
+                {
+                  color: theme.colors.bottomNav,
+                },
+              ]}
+            >
+              Menu
+            </Text>
+          )}
         </TouchableOpacity>
       </View>
 
