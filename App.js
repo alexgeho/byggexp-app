@@ -40,6 +40,7 @@ export default function App() {
           'DMSans-Bold': require('./src/assets/fonts/DMSans-Bold.ttf'),
           'DMSans-Medium': require('./src/assets/fonts/DMSans-Medium.ttf'),
           'DMSans-SemiBold': require('./src/assets/fonts/DMSans-Medium.ttf'),
+          'Landasans-Medium': require('./src/assets/fonts/Landasans-Medium.otf'),
         });
         setFontsLoaded(true);
       } catch (error) {

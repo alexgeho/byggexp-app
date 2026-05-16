@@ -22,7 +22,7 @@ export default function HomeVariant2() {
           <Text>Gruvrisvägen 70, 791 61 Falun</Text>
         </View>
         <View style={styles.timer}>
-          <Text>06 59 59</Text>
+          <Text style={styles.timerText}>06 59 59</Text>
         </View>
 
         {/* MAIN BTN */}
@@ -51,7 +51,8 @@ export default function HomeVariant2() {
 
             <View style={styles.shiftBodyMain}>
               <View style={styles.shiftBodyMainLeft}>
-                <Text>Gruvrisvägen 70, 791 61 Falun</Text>
+                <Text>Gruvrisvägen 70, 791 61</Text>
+                <Text>Falun</Text>
               </View>
 
               <View style={styles.shiftBodyMainRight}>
