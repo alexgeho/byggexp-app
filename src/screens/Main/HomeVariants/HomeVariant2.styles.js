@@ -31,7 +31,9 @@ export const styles = StyleSheet.create({
 
   mainActionButtons: {
     flexDirection: "row",
-    alignItems: "center",
+    justifyContent: "center",
+    gap: 70,
+    
   },
 
   footer: {
