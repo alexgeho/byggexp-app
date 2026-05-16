@@ -1,36 +1,66 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+
 import {
   View,
-  Text,
-  TouchableOpacity,
-  Image,
-  Platform,
   Alert,
-  ActivityIndicator,
 } from "react-native";
-import MainButtonsGrid from "../../../components/common/NavButtonsGrid/MainButtonsGrid";
+
+import {
+  useFocusEffect,
+  useNavigation,
+} from "@react-navigation/native";
+
 import { useTheme } from "../../../theme/ThemeContext";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import ProjectSelector from "../../../components/common/ProjectSelector/ProjectSelector";
+
 import AuthContext from "../../../contexts/AuthContext";
+
 import { useTimer } from "../../../hooks/useTimer";
+
 import { shiftService } from "../../../services";
+
 import { createStyles } from "./HomeVariant1green.styles";
-import ProjectFilesSection from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
+
 import { getEnabledSections } from "../../../utils/homeButtonsStorage";
+
+import ProjectSelector from "../../../components/common/ProjectSelector/ProjectSelector";
+
+import MainButtonsGrid from "../../../components/common/NavButtonsGrid/MainButtonsGrid";
+
+import ProjectFilesSection from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
+
 import TimerDisplay from "../../../components/common/TimerDisplay/TimerDisplay";
+
 import PlayButton from "../../../components/common/PlayButton/PlayButton";
+
 import TimerProgress from "../../../components/common/TimerProgress/TimerProgress";
+
 import { BottomBar } from "../../../components/BottomBar";
 
 export default function MainScreen() {
   const { theme, changeTheme } = useTheme();
+
   const styles = createStyles(theme);
+
   const navigation = useNavigation();
-  const { selectedProject, setSelectedProject } = useContext(AuthContext);
-  const [loadingShift, setLoadingShift] = useState(true);
+
+  const {
+    selectedProject,
+    setSelectedProject,
+  } = useContext(AuthContext);
+
   const [actionLoading, setActionLoading] = useState(false);
+
   const [currentShift, setCurrentShift] = useState(null);
+
+  const [enabledSections, setEnabledSections] = useState([]);
+
+  const [showProjectFiles, setShowProjectFiles] = useState(true);
+
   const {
     formattedTime,
     isRunning,
@@ -42,23 +72,25 @@ export default function MainScreen() {
     reset,
   } = useTimer();
 
-  const selectedProjectId = selectedProject?._id || selectedProject?.id;
+  const selectedProjectId =
+    selectedProject?._id || selectedProject?.id;
 
-  const [enabledSections, setEnabledSections] = useState([]);
-  const [showProjectFiles, setShowProjectFiles] = useState(true);
-
-  /* ERRORS */
-  const getErrorMessage = (error, fallbackMessage) =>
-    error?.response?.data?.message || error?.message || fallbackMessage;
+  function getErrorMessage(error, fallbackMessage) {
+    return (
+      error?.response?.data?.message ||
+      error?.message ||
+      fallbackMessage
+    );
+  }
 
   const applyShiftState = useCallback(
-    (shift) => {
+    function applyShiftState(shift) {
       setCurrentShift(shift);
 
       if (shift) {
         sync(shift);
 
-        setSelectedProject((previousProject) => {
+        setSelectedProject(function updateProject(previousProject) {
           if (
             previousProject?._id === shift.projectId ||
             previousProject?.id === shift.projectId
@@ -73,6 +105,7 @@ export default function MainScreen() {
             location: shift.location,
           };
         });
+
         return;
       }
 
@@ -82,9 +115,8 @@ export default function MainScreen() {
   );
 
   const loadCurrentShift = useCallback(
-    async (projectId) => {
+    async function loadCurrentShift(projectId) {
       try {
-        setLoadingShift(true);
         const shift = await shiftService.getCurrent(projectId);
 
         if (shift) {
@@ -92,20 +124,14 @@ export default function MainScreen() {
           return;
         }
 
-        if (projectId) {
-          setCurrentShift(null);
-          reset();
-          return;
-        }
-
         setCurrentShift(null);
         reset();
       } catch (error) {
         console.error("Failed to load current shift:", error);
+
         setCurrentShift(null);
+
         reset();
-      } finally {
-        setLoadingShift(false);
       }
     },
     [applyShiftState, reset],
@@ -117,19 +143,21 @@ export default function MainScreen() {
         async function fetchData() {
           await loadCurrentShift(selectedProjectId);
 
-          const savedSections = await getEnabledSections();
+          const savedSections =
+            await getEnabledSections();
 
           if (savedSections) {
             setEnabledSections(savedSections);
           }
         }
+
         fetchData();
       },
       [loadCurrentShift, selectedProjectId],
     ),
   );
 
-  const handlePlayPause = async () => {
+  async function handlePlayPause() {
     if (actionLoading) {
       return;
     }
@@ -142,9 +170,13 @@ export default function MainScreen() {
           throw new Error("Active shift is missing.");
         }
 
-        const pausedShift = await shiftService.pause(currentShift.id);
+        const pausedShift =
+          await shiftService.pause(currentShift.id);
+
         setCurrentShift(pausedShift);
+
         pause(pausedShift);
+
         return;
       }
 
@@ -153,6 +185,7 @@ export default function MainScreen() {
           "Project required",
           "Select a project before starting a shift.",
         );
+
         return;
       }
 
@@ -161,40 +194,41 @@ export default function MainScreen() {
         currentShift.projectId === selectedProjectId &&
         currentShift.status === "paused"
       ) {
-        const resumedShift = await shiftService.resume(currentShift.id);
+        const resumedShift =
+          await shiftService.resume(currentShift.id);
+
         setCurrentShift(resumedShift);
+
         start(resumedShift);
+
         return;
       }
 
-      const startedShift = await startShiftWithLocationGuard({
+      const startedShift = await shiftService.start({
         projectId: selectedProjectId,
-        project: selectedProject,
       });
+
       setCurrentShift(startedShift);
+
       start(startedShift);
     } catch (error) {
       console.error("Shift action failed:", error);
+
       Alert.alert(
         "Shift error",
-        getErrorMessage(error, "Unable to update the shift right now."),
+        getErrorMessage(
+          error,
+          "Unable to update the shift right now.",
+        ),
       );
     } finally {
       setActionLoading(false);
     }
-  };
-
-  const handleNav = (screen) => {
-    navigation.navigate(screen);
-  };
+  }
 
   useEffect(function applyTheme() {
     changeTheme("green");
   }, []);
-
-  function openVariantTwo() {
-    navigation.navigate("HomeVariant2");
-  }
 
   function handleHomePress() {
     navigation.navigate("Main");
@@ -204,29 +238,28 @@ export default function MainScreen() {
     navigation.navigate("Menu");
   }
 
-  /* SCREEN RENDER */
   return (
     <View style={styles.container}>
-      {/* PROJECT SELECTOR */}
       <View style={styles.selectProjectContainer}>
         <ProjectSelector
           value={selectedProject}
-          onPress={() => navigation.navigate("Projects", { mode: "select" })}
+          onPress={function handleProjectPress() {
+            navigation.navigate("Projects", {
+              mode: "select",
+            });
+          }}
         />
       </View>
 
-      {/* CONTENT CONTAINER */}
       <View style={styles.contentContainer}>
-        {/* TIMER */}
         <TimerDisplay
           hours={formattedTime.hours}
           minutes={formattedTime.minutes}
           seconds={formattedTime.seconds}
         />
 
-        {/* HOURS DOTS*/}
-        {<TimerProgress progress={timerProgress} />}
-        {/* PLAY BUTTON CONTAINER */}
+        <TimerProgress progress={timerProgress} />
+
         <PlayButton
           isRunning={isRunning}
           isPaused={isPaused}
@@ -234,21 +267,19 @@ export default function MainScreen() {
           onPress={handlePlayPause}
         />
 
-        {/* MAIN NAV BTNs */}
         <MainButtonsGrid />
 
-        {/* PROJECT FILES SELECTION */}
-        {showProjectFiles && enabledSections.includes("project-files") && (
-          <ProjectFilesSection
-            project={selectedProject}
-            onClose={function handleClose() {
-              setShowProjectFiles(false);
-            }}
-          />
-        )}
+        {showProjectFiles &&
+          enabledSections.includes("project-files") && (
+            <ProjectFilesSection
+              project={selectedProject}
+              onClose={function handleClose() {
+                setShowProjectFiles(false);
+              }}
+            />
+          )}
       </View>
 
-      {/* BOTTOM MENU */}
       <BottomBar
         showAddButton={false}
         showBackground={false}
