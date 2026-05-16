@@ -238,7 +238,6 @@ export default function MainScreen() {
           seconds={formattedTime.seconds}
         />
 
-        <TimerProgress progress={timerProgress} />
 
         <PlayButton
           isRunning={isRunning}
