@@ -20,7 +20,7 @@ import ProjectFilesSection from "../../../components/common/ProjectFilesSection/
 import { getEnabledSections } from "../../../utils/homeButtonsStorage";
 import TimerDisplay from "../../../components/common/TimerDisplay/TimerDisplay";
 import PlayButton from "../../../components/common/PlayButton/PlayButton";
-
+import TimerProgress from "../../../components/common/TimerProgress/TimerProgress";
 export default function MainScreen() {
   const { theme, changeTheme } = useTheme();
   const styles = createStyles(theme);
@@ -207,6 +207,7 @@ export default function MainScreen() {
 
       {/* CONTENT CONTAINER */}
       <View style={styles.contentContainer}>
+
         {/* TIMER */}
         <TimerDisplay
           hours={formattedTime.hours}
@@ -215,26 +216,8 @@ export default function MainScreen() {
         />
 
         {/* HOURS DOTS*/}
-        <View style={styles.dotsRow}>
-          {Array.from({ length: 8 }).map((_, index) => (
-            <View
-              key={index}
-              style={[
-                styles.dot,
-                {
-                  backgroundColor: theme.colors.hourBlockEmpty,
-                  borderColor: theme.colors.hourBlockEmpty,
-                },
-
-                index < timerProgress && {
-                  backgroundColor: theme.colors.hourBlockFilled,
-                  borderColor: theme.colors.hourBlockFilled,
-                },
-              ]}
-            />
-          ))}
-        </View>
-
+{        <TimerProgress progress={timerProgress} />
+}
         {/* PLAY BUTTON CONTAINER */}
         <PlayButton
           isRunning={isRunning}
