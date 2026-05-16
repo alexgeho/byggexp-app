@@ -15,52 +15,33 @@ import {
   useNavigation,
 } from "@react-navigation/native";
 
-import { useTheme } from "../../../theme/ThemeContext";
-
-import AuthContext from "../../../contexts/AuthContext";
-
-import { useTimer } from "../../../hooks/useTimer";
-
-import { shiftService } from "../../../services";
-
+import { useTheme } from "@theme/ThemeContext";
+import AuthContext from "@contexts/AuthContext";
+import { useTimer } from "@hooks/useTimer";
+import { shiftService } from "@services";
 import { createStyles } from "./HomeVariant1green.styles";
-
-import { getEnabledSections } from "../../../utils/homeButtonsStorage";
-
-import ProjectSelector from "../../../components/common/ProjectSelector/ProjectSelector";
-
-import MainButtonsGrid from "../../../components/common/NavButtonsGrid/MainButtonsGrid";
-
-import ProjectFilesSection from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
-
-import TimerDisplay from "../../../components/common/TimerDisplay/TimerDisplay";
-
-import PlayButton from "../../../components/common/PlayButton/PlayButton";
-
-import TimerProgress from "../../../components/common/TimerProgress/TimerProgress";
-
-import { BottomBar } from "../../../components/BottomBar";
+import { getEnabledSections } from "@utils/homeButtonsStorage";
+import ProjectSelector from "@components/common/ProjectSelector/ProjectSelector";
+import MainButtonsGrid from "@components/common/NavButtonsGrid/MainButtonsGrid";
+import ProjectFilesSection from "@components/common/ProjectFilesSection/ProjectFilesSection";
+import TimerDisplay from "@components/common/TimerDisplay/TimerDisplay";
+import PlayButton from "@components/common/PlayButton/PlayButton";
+import TimerProgress from "@components/common/TimerProgress/TimerProgress";
+import { BottomBar } from "@components/BottomBar";
 
 export default function MainScreen() {
+
   const { theme, changeTheme } = useTheme();
-
   const styles = createStyles(theme);
-
   const navigation = useNavigation();
-
   const {
     selectedProject,
     setSelectedProject,
   } = useContext(AuthContext);
-
   const [actionLoading, setActionLoading] = useState(false);
-
   const [currentShift, setCurrentShift] = useState(null);
-
   const [enabledSections, setEnabledSections] = useState([]);
-
   const [showProjectFiles, setShowProjectFiles] = useState(true);
-
   const {
     formattedTime,
     isRunning,
@@ -71,7 +52,6 @@ export default function MainScreen() {
     sync,
     reset,
   } = useTimer();
-
   const selectedProjectId =
     selectedProject?._id || selectedProject?.id;
 
