@@ -27,7 +27,7 @@ import ProjectFilesSection from "@components/common/ProjectFilesSection/ProjectF
 import TimerDisplay from "@components/common/TimerDisplay/TimerDisplay";
 import PlayButton from "@components/common/PlayButton/PlayButton";
 import TimerProgress from "@components/common/TimerProgress/TimerProgress";
-import { BottomBar } from "@components/BottomBar";
+import { BottomBar } from "@components/common/BottomBar/BottomBar";
 
 export default function MainScreen() {
 

@@ -24,12 +24,14 @@ export const greenColors = {
   glow: '#759D3C',
 
   text: '#282828',
+  
+  textBtn: '#4C9E3C',
 
   hourBlockFilled: '#759D3C',
 
   hourBlockEmpty: '#759D3C4D',
 
-  border: '#2828284D',
+  border: '#4C9E3C',
 
   card: '#FFFFFF',
 
@@ -39,9 +41,9 @@ export const greenColors = {
 
   selectorArrow: '#282828',
 
-  icon: '#1C1C1C80',
+  icon: '#4C9E3C',
 
-  bottomNav: '#282828'
+  bottomNav: '#4C9E3C',
 }
 
 export const blueColors = {

@@ -13,7 +13,7 @@ import {
 import { useTheme } from "../../../theme/ThemeContext";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
-import { BottomBar } from "../../../components/BottomBar";
+import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { shiftService } from "../../../services";
 import {
   formatDuration,

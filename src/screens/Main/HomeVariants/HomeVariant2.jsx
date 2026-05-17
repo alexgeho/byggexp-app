@@ -15,7 +15,7 @@ export default function HomeVariant2() {
   }
   return (
     <LinearGradient
-      colors={["#84E2FF", "#2582D9"]}
+      colors={["#5BC8FF", "#0D5DB8"]}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
       style={styles.container}

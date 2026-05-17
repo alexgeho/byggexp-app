@@ -14,7 +14,7 @@ import { useTheme } from "../../../theme/ThemeContext";
 import AuthContext from "../../../contexts/AuthContext";
 import { projectService } from "../../../services";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
-import { BottomBar } from "../../../components/BottomBar";
+import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 
 export default function ProjectsScreen() {
   const navigation = useNavigation();

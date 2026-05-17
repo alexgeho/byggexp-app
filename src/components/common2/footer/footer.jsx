@@ -7,9 +7,14 @@ import { footerButtons } from "../../../constants/footerButtonsVariant2";
 export function FooterButtonsVariant2() {
   const navigation = useNavigation();
 
-  function handlePress(screen) {
-    navigation.navigate(screen);
+function handlePress(button) {
+  if (button.goBack) {
+    navigation.goBack();
+    return;
   }
+
+  navigation.navigate(button.screen);
+}
 
   return (
     <View style={styles.footer}>
@@ -18,7 +23,7 @@ export function FooterButtonsVariant2() {
           <TouchableOpacity
             key={button.id}
             onPress={function onButtonPress() {
-              handlePress(button.screen);
+              handlePress(button);
             }}
           >
             <Image source={button.icon} />

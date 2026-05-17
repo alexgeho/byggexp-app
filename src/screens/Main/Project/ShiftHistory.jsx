@@ -18,7 +18,7 @@ import {
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import AuthContext from "../../../contexts/AuthContext";
-import { BottomBar } from "../../../components/BottomBar";
+import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { shiftService } from "../../../services";
 import {

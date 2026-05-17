@@ -7,11 +7,11 @@ import {
   View,
 } from "react-native";
 
-import { useTheme } from "../theme/ThemeContext";
+import { useTheme } from "../../../theme/ThemeContext";
 
 import { createStyles } from "./BottomBar.styles";
 
-const DEFAULT_ACTION_ICON = require("../assets/Plus.png");
+const DEFAULT_ACTION_ICON = require("../../../assets/plus.png");
 
 export function BottomBar({
   onLeftPress,
@@ -49,7 +49,7 @@ export function BottomBar({
           onPress={onLeftPress}
         >
           <Image
-            source={require("../assets/bottomBar/HomeGray.png")}
+            source={require("../../../assets/bottomBar/homeGray.png")}
             style={styles.navIcon}
           />
 
@@ -72,7 +72,7 @@ export function BottomBar({
           onPress={onRightPress}
         >
           <Image
-            source={require("../assets/bottomBar/MenuGray.png")}
+            source={require("../../../assets/bottomBar/menuGray.png")}
             style={styles.navIcon}
           />
 

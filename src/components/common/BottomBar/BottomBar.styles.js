@@ -1,5 +1,4 @@
 import { StyleSheet } from "react-native";
-
 export function createStyles(theme) {
   return StyleSheet.create({
     container: {
@@ -35,26 +34,24 @@ export function createStyles(theme) {
       justifyContent: "space-around",
     },
     navButton: {
-      width: 80,
-      height: 80,
+      width: 40,
+      height: 40,
 
       justifyContent: "center",
       alignItems: "center",
     },
     navIcon: {
-      width: 24,
-      height: 24,
+      width: 44,
+      height: 44,
       resizeMode: "contain",
+      tintColor: theme.colors.icon,
     },
     actionButton: {
       width: 81,
       height: 81,
-
       borderRadius: 100,
-
       justifyContent: "center",
       alignItems: "center",
-
       backgroundColor: theme.colors.primary,
       padding: 10,
     },
@@ -74,8 +71,9 @@ export function createStyles(theme) {
     },
     navText: {
       marginTop: 4,
-      fontSize: 14,
-      fontWeight: "500",
+      fontSize: 18,
+      fontWeight: "300",
+      color: theme.colors.bottomNav,
     },
   });
 }

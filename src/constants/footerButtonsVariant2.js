@@ -2,7 +2,7 @@ export const footerButtons = [
   {
     id: "shift",
     icon: require("../assets/HomeScreen2/footer/circle-clock.png"),
-    screen: "HomeVariant1green"
+    goBack: true,
   },
   {
     id: "projects",

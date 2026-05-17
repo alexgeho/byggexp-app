@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import AuthContext from "../../../contexts/AuthContext";
 import { useTheme } from "../../../theme/ThemeContext";
-import { BottomBar } from "../../../components/BottomBar";
+import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 
 export const SelectAdmin = () => {

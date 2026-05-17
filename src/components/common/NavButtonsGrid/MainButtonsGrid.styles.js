@@ -48,7 +48,7 @@ export function createStyles(theme) {
     },
 
     buttonText: {
-      color: theme.colors.text,
+      color: theme.colors.textBtn,
       fontFamily: theme.text.fontFamily.regular,
       fontSize: theme.text.sizes.medium,
     },

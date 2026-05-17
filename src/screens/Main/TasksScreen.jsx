@@ -13,7 +13,7 @@ import {
 import AuthContext from "../../contexts/AuthContext";
 import { useTheme } from "../../theme/ThemeContext";
 import { projectService } from "../../services";
-import { BottomBar } from "../../components/BottomBar";
+import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 
 export default function TasksScreen() {

@@ -12,21 +12,21 @@ export function createStyles(theme) {
       color: theme.colors.text,
       fontFamily:
         theme.text.fontFamily.regular,
-      fontSize: 72,
+      fontSize: 42,
     },
 
     separator: {
       color: theme.colors.text,
       fontFamily:
         theme.text.fontFamily.regular,
-      fontSize: 72,
+      fontSize: 42,
     },
 
     seconds: {
       color: theme.colors.text,
       fontFamily:
         theme.text.fontFamily.regular,
-      fontSize: 72,
+      fontSize: 42,
     },
   });
 }

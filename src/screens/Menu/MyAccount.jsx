@@ -17,7 +17,7 @@ import {
 import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/Feather";
-import { BottomBar } from "../../components/BottomBar";
+import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { userService } from "../../services";
 

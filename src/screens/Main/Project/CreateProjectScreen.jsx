@@ -29,7 +29,7 @@ import AuthContext from "../../../contexts/AuthContext";
 import { projectService, userService, companyService } from "../../../services";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { GlassView } from "../../../components/common/GlassView/GlassView";
-import { BottomBar } from "../../../components/BottomBar";
+import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 
 const DEFAULT_REGION = {
   latitude: 59.3293,

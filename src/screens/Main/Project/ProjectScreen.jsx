@@ -27,7 +27,7 @@ import BottomSheet, {
 } from "@gorhom/bottom-sheet";
 import Icon from "react-native-vector-icons/Feather";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
-import { BottomBar } from "../../../components/BottomBar";
+import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import AuthContext from "../../../contexts/AuthContext";
 import { useTheme } from "../../../theme/ThemeContext";
 import { chatService, projectService } from "../../../services";

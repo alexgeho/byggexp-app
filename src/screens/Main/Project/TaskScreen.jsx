@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
-import { BottomBar } from "../../../components/BottomBar";
+import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { resolveUploadUrl } from "../../../utils/shifts";
 
 const GroupCard = ({ children }) => (

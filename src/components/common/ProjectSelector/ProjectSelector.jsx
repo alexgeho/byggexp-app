@@ -28,7 +28,7 @@ export default function ProjectSelector({
             backgroundColor:
               theme.colors.selectorBackground,
             borderColor:
-              theme.colors.selectorBorder,
+              theme.colors.border,
           },
         ]}
         onPress={onPress}

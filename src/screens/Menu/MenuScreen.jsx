@@ -5,7 +5,7 @@ import { useTheme } from "../../theme/ThemeContext";
 import { ScrollView } from "react-native";
 import { MenuButton } from "../../components/common/MenuButton/MenuButton";
 import AuthContext from "../../contexts/AuthContext";
-import { BottomBar } from "../../components/BottomBar";
+import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { createStyles } from "./MenuScreen.styles";
 

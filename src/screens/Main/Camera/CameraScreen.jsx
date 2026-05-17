@@ -3,7 +3,7 @@ import { ActivityIndicator, Alert, Image, InteractionManager, Linking, ScrollVie
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { BottomBar } from '../../../components/BottomBar';
+import { BottomBar } from '../../../components/common/BottomBar/BottomBar';
 import { shiftService } from '../../../services';
 import { formatDuration, formatShiftDate, resolveUploadUrl } from '../../../utils/shifts';
 

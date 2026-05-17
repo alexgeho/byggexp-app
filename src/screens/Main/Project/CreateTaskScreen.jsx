@@ -18,7 +18,7 @@ import * as DocumentPicker from "expo-document-picker";
 import Icon from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
-import { BottomBar } from "../../../components/BottomBar";
+import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { useTheme } from "../../../theme/ThemeContext";
 import { projectService, taskService } from "../../../services";
 import {
