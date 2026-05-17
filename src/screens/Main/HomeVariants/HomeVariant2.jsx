@@ -7,6 +7,7 @@ import { Timer } from "../../../components/common2/Timer/Timer";
 import { Shifts } from "../../../components/common2/ShiftHistory/ShiftHistory";
 import { ProjectSelector } from "../../../components/common2/projectSelector/projectSelector";
 import { MainActionButtons } from "../../../components/common2/mainActionButtons/mainActionButtons";
+import { FooterButtonsVariant2 } from "../../../components/common2/footer/footer";
 
 export default function HomeVariant2() {
   function handleHomePress() {
@@ -19,12 +20,6 @@ export default function HomeVariant2() {
       end={{ x: 0, y: 1 }}
       style={styles.container}
     >
-      {/*   <View style={styles.header}>
-        <Text>9:41</Text>
-        <Image
-          source={require("../../../assets/HomeScreen2/battery_charging.png")}
-        />
-      </View> */}
 
       {/* MAIN */}
       <View style={styles.main}>
@@ -43,27 +38,8 @@ export default function HomeVariant2() {
       </View>
 
       {/* FOOTER */}
-      <View style={styles.footer}>
-        <TouchableOpacity onPress={handleHomePress}>
-          <Image
-            source={require("../../../assets/HomeScreen2/Circle-Clock.png")}
-          />
-        </TouchableOpacity>
+      <FooterButtonsVariant2/>
 
-        <TouchableOpacity onPress={handleHomePress}>
-          <Image
-            source={require("../../../assets/HomeScreen2/Folder-Check.png")}
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={handleHomePress}>
-          <Image source={require("../../../assets/HomeScreen2/Chat.png")} />
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={handleHomePress}>
-          <Image source={require("../../../assets/HomeScreen2/User.png")} />
-        </TouchableOpacity>
-      </View>
     </LinearGradient>
   );
 }

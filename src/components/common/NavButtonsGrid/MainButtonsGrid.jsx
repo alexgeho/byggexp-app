@@ -1,29 +1,24 @@
 import React, { useState } from "react";
-
 import {
   View,
   Text,
   TouchableOpacity,
   Image,
 } from "react-native";
-
 import {
   useNavigation,
   useFocusEffect,
 } from "@react-navigation/native";
-
 import { useTheme } from "../../../theme/ThemeContext";
-
 import {
   mainButtons,
   defaultEnabledButtons,
 } from "../../../constants/mainButtons";
-
 import { getEnabledButtons } from "../../../utils/homeButtonsStorage";
-
 import { createStyles } from "./MainButtonsGrid.styles";
 
 export default function MainButtonsGrid() {
+  
   const navigation = useNavigation();
 
   const { theme } = useTheme();
