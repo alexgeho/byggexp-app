@@ -16,6 +16,10 @@ export const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
 
+  actionButtonPaused: {
+    opacity: 0.85,
+  },
+
   actionButtonCamera: {
     justifyContent: "center",
     alignItems: "center",
@@ -23,9 +27,11 @@ export const styles = StyleSheet.create({
   },
 
   iconAction: {
-    width: 124,
-    height: 124,
+    width: 40,
+    height: 40,
     resizeMode: "contain",
+    tintColor: "#2F80ED",
+    opacity: 0.85,
   },
 
   icon: {

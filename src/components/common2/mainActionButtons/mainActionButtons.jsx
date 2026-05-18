@@ -19,20 +19,26 @@ export function MainActionButtons({
   return (
     <View style={styles.mainActionButtons}>
       <TouchableOpacity
-        style={styles.actionButton}
+        style={[
+          styles.actionButton,
+          isPaused &&
+            styles.actionButtonPaused,
+        ]}
         onPress={onPlayPress}
         disabled={loading}
       >
         {loading ? (
-          <ActivityIndicator color="#3B82F6" />
+          <ActivityIndicator
+            color="#2F80ED"
+          />
         ) : (
           <Image
+            style={styles.iconAction}
             source={
               isRunning
-                ? require("../../../assets/HomeScreen2/iconPause.png")
-                : require("../../../assets/HomeScreen2/iconAction.png")
+                ? require("../../../assets/HomeScreen2/Pause.png")
+                : require("../../../assets/HomeScreen2/Play.png")
             }
-            style={styles.iconAction}
           />
         )}
       </TouchableOpacity>

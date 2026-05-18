@@ -1,31 +1,93 @@
-import { Text, View, Image, TouchableOpacity } from "react-native";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
+
+import { View, Alert } from "react-native";
+
 import AuthContext from "../../../contexts/AuthContext";
+
 import { styles } from "./HomeVariant2.styles";
+
 import { LinearGradient } from "expo-linear-gradient";
 
 import { useNavigation } from "@react-navigation/native";
 
 import { Timer } from "../../../components/common2/Timer/Timer";
-import { Shifts } from "../../../components/common2/ShiftHistory/ShiftHistory";
+
 import { ProjectSelector2 } from "../../../components/common2/projectSelector/projectSelector";
+
 import { MainActionButtons } from "../../../components/common2/mainActionButtons/mainActionButtons";
+
 import { FooterButtonsVariant2 } from "../../../components/common2/footer/footer";
+
 import ProjectFilesSection from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
+
 import { useTimer } from "../../../hooks/useTimer";
+
+import shiftService from "../../../services/shift.service";
 
 export default function HomeVariant2() {
   const { selectedProject } = useContext(AuthContext);
+
   const navigation = useNavigation();
+
+  const [loadingShift, setLoadingShift] = useState(false);
+
+  const [currentShift, setCurrentShift] = useState(null);
+
+  const { isRunning, isPaused, start, pause, resume, reset } = useTimer();
+
+  useEffect(function loadShift() {
+    async function fetchShift() {
+      try {
+        const activeShift = await shiftService.getCurrent();
+
+        if (activeShift) {
+          setCurrentShift(activeShift);
+
+          start();
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    fetchShift();
+  }, []);
 
   function openProjects() {
     navigation.navigate("Projects");
   }
 
-  const { isRunning, isPaused } = useTimer();
+  async function handlePlayPause() {
+    try {
+      if (!selectedProject) {
+        Alert.alert("Select project", "Please select a project first");
 
-  function handlePlayPause() {
-    console.log("Play / Pause");
+        return;
+      }
+
+      setLoadingShift(true);
+      console.log(selectedProject);
+      if (!isRunning) {
+        const newShift = await shiftService.start(selectedProject._id);
+        console.log(selectedProject);
+
+        setCurrentShift(newShift);
+
+        start();
+      } else if (isPaused) {
+        await shiftService.resume(currentShift._id);
+
+        resume();
+      } else {
+        await shiftService.pause(currentShift._id);
+
+        pause();
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoadingShift(false);
+    }
   }
 
   function handleCameraPress() {
@@ -39,30 +101,22 @@ export default function HomeVariant2() {
       end={{ x: 0, y: 1 }}
       style={styles.container}
     >
-      {/* MAIN */}
       <View style={styles.main}>
-        {/* PROJECT SELECTOR */}
         <ProjectSelector2 value={selectedProject} onPress={openProjects} />
 
-        {/* Timer */}
         <Timer />
 
-        {/* MAIN BTN */}
         <MainActionButtons
           isRunning={isRunning}
           isPaused={isPaused}
-          loading={false}
+          loading={loadingShift}
           onPlayPress={handlePlayPause}
           onCameraPress={handleCameraPress}
         />
-        {/* SHIFTS */}
-        {/*  <Shifts /> */}
 
-        {/* PROJECT FILES */}
         <ProjectFilesSection project={selectedProject} />
       </View>
 
-      {/* FOOTER */}
       <FooterButtonsVariant2 />
     </LinearGradient>
   );
