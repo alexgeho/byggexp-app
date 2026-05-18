@@ -1,3 +1,4 @@
+import * as Device from "expo-device";
 import * as Location from "expo-location";
 
 import { shiftService } from "../services";
@@ -6,6 +7,11 @@ import { shiftLocationPolicy } from "../config/shiftLocationPolicy";
 const GEOCODER_HEADERS = {
   Accept: "application/json",
   "Accept-Language": "en",
+};
+
+const DEFAULT_EMULATOR_COORDINATE = {
+  latitude: 59.3293,
+  longitude: 18.0686,
 };
 
 const ensureLocationPermission = async () => {
@@ -20,6 +26,23 @@ const ensureLocationPermission = async () => {
       "Location permission is required to start a shift at this project.",
     );
   }
+};
+
+const getCurrentShiftCoordinate = async () => {
+  if (!Device.isDevice) {
+    return DEFAULT_EMULATOR_COORDINATE;
+  }
+
+  await ensureLocationPermission();
+
+  const currentPosition = await Location.getCurrentPositionAsync({
+    accuracy: Location.Accuracy.Balanced,
+  });
+
+  return {
+    latitude: currentPosition.coords.latitude,
+    longitude: currentPosition.coords.longitude,
+  };
 };
 
 const geocodeProjectLocation = async (address) => {
@@ -120,12 +143,8 @@ export const startShiftWithLocationGuard = async ({
     return shiftService.start(projectId);
   }
 
-  await ensureLocationPermission();
-
-  const [currentPosition, geocodedProjectCoordinate] = await Promise.all([
-    Location.getCurrentPositionAsync({
-      accuracy: Location.Accuracy.Balanced,
-    }),
+  const [currentCoordinate, geocodedProjectCoordinate] = await Promise.all([
+    getCurrentShiftCoordinate(),
     savedProjectCoordinate ? Promise.resolve(null) : geocodeProjectLocation(projectLocation),
   ]);
   const projectCoordinate = savedProjectCoordinate || geocodedProjectCoordinate;
@@ -137,8 +156,8 @@ export const startShiftWithLocationGuard = async ({
   }
 
   const distanceMeters = calculateDistanceMeters(
-    currentPosition.coords.latitude,
-    currentPosition.coords.longitude,
+    currentCoordinate.latitude,
+    currentCoordinate.longitude,
     projectCoordinate.latitude,
     projectCoordinate.longitude,
   );
