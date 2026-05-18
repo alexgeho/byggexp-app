@@ -8,6 +8,7 @@ import { Shifts } from "../../../components/common2/ShiftHistory/ShiftHistory";
 import { ProjectSelector } from "../../../components/common2/projectSelector/projectSelector";
 import { MainActionButtons } from "../../../components/common2/mainActionButtons/mainActionButtons";
 import { FooterButtonsVariant2 } from "../../../components/common2/footer/footer";
+import { ProjectFilesSection } from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
 
 export default function HomeVariant2() {
   function handleHomePress() {
@@ -20,10 +21,8 @@ export default function HomeVariant2() {
       end={{ x: 0, y: 1 }}
       style={styles.container}
     >
-
       {/* MAIN */}
       <View style={styles.main}>
-
         {/* PROJECT SELECTOR */}
         <ProjectSelector />
 
@@ -31,15 +30,17 @@ export default function HomeVariant2() {
         <Timer />
 
         {/* MAIN BTN */}
-        <MainActionButtons/>
+        <MainActionButtons />
 
         {/* SHIFTS */}
-        <Shifts />
+        {/*  <Shifts /> */}
+
+        {/* PROJECT FILES */}
+        <ProjectSelector value={selectedProject} onPress={openProjects} />
       </View>
 
       {/* FOOTER */}
-      <FooterButtonsVariant2/>
-
+      <FooterButtonsVariant2 />
     </LinearGradient>
   );
 }

@@ -34,6 +34,7 @@ export default function ProjectSelector({
         onPress={onPress}
         activeOpacity={0.7}
       >
+        
         <Text
           numberOfLines={1}
           ellipsizeMode="tail"

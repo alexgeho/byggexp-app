@@ -1,14 +1,21 @@
 import React from "react";
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import { styles } from "./projectSelector.styles";
 
-export function ProjectSelector() {
+function handleProjectPress() {
+  navigation.navigate("Projects");
+}
+
+export function ProjectSelector2({ value, onPress, style }) {
   return (
-    <View style={styles.projectSelector}>
+    <TouchableOpacity
+      style={styles.projectSelector}
+      onPress={handleProjectPress()}
+    >
       <Text style={styles.projectSelectorText}>
-        Gruvrisvägen 70, 791 61 Falun
+        {value?.name || "Select or create project"}
       </Text>
       <Image source={require("../../../assets/HomeScreen2/arrow-down.png")} />
-    </View>
+    </TouchableOpacity>
   );
 }

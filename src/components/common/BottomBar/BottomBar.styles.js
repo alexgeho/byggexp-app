@@ -34,15 +34,15 @@ export function createStyles(theme) {
       justifyContent: "space-around",
     },
     navButton: {
-      width: 40,
-      height: 40,
+      width: 80,
+      height: 80,
 
       justifyContent: "center",
       alignItems: "center",
     },
     navIcon: {
-      width: 44,
-      height: 44,
+      width: 30,
+      height: 30,
       resizeMode: "contain",
       tintColor: theme.colors.icon,
     },
@@ -71,7 +71,7 @@ export function createStyles(theme) {
     },
     navText: {
       marginTop: 4,
-      fontSize: 18,
+      fontSize: 15,
       fontWeight: "300",
       color: theme.colors.bottomNav,
     },
