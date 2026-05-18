@@ -66,6 +66,20 @@ const geocodeProjectLocation = async (address) => {
   return null;
 };
 
+const hasValidCoordinate = (value) =>
+  typeof value === "number" && Number.isFinite(value);
+
+const getSavedProjectCoordinate = (project) => {
+  const latitude = project?.locationLatitude;
+  const longitude = project?.locationLongitude;
+
+  if (!hasValidCoordinate(latitude) || !hasValidCoordinate(longitude)) {
+    return null;
+  }
+
+  return { latitude, longitude };
+};
+
 const toRadians = (value) => (value * Math.PI) / 180;
 
 const calculateDistanceMeters = (
@@ -97,23 +111,28 @@ export const startShiftWithLocationGuard = async ({
 
   const projectLocation =
     project?.location?.trim?.() || fallbackProjectLocation?.trim?.() || "";
+  const savedProjectCoordinate = getSavedProjectCoordinate(project);
 
-  if (!shiftLocationPolicy.enabled || !projectLocation) {
+  if (
+    !shiftLocationPolicy.enabled ||
+    (!projectLocation && !savedProjectCoordinate)
+  ) {
     return shiftService.start(projectId);
   }
 
   await ensureLocationPermission();
 
-  const [currentPosition, projectCoordinate] = await Promise.all([
+  const [currentPosition, geocodedProjectCoordinate] = await Promise.all([
     Location.getCurrentPositionAsync({
       accuracy: Location.Accuracy.Balanced,
     }),
-    geocodeProjectLocation(projectLocation),
+    savedProjectCoordinate ? Promise.resolve(null) : geocodeProjectLocation(projectLocation),
   ]);
+  const projectCoordinate = savedProjectCoordinate || geocodedProjectCoordinate;
 
   if (!projectCoordinate) {
     throw new Error(
-      "Unable to verify the project location. Update the project address or disable shift location enforcement in code.",
+      "Unable to verify the project location. Save project coordinates or update the project address before starting a shift.",
     );
   }
 

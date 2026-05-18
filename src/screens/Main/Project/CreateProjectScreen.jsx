@@ -19,6 +19,7 @@ import { useNavigation } from "@react-navigation/native";
 import { memo, useState, useEffect, useContext, useRef } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as DocumentPicker from "expo-document-picker";
+import * as Device from "expo-device";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import Icon from "react-native-vector-icons/Feather";
@@ -37,6 +38,7 @@ const DEFAULT_REGION = {
   latitudeDelta: 0.012,
   longitudeDelta: 0.012,
 };
+const DEFAULT_EMULATOR_LOCATION_LABEL = "Stockholm, Sweden";
 const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "inline" : "calendar";
 const REVERSE_GEOCODE_MIN_INTERVAL_MS = 1200;
 
@@ -130,6 +132,11 @@ const normalizeLocationSuggestions = (matches = []) => {
 const getCoordinateCacheKey = (latitude, longitude) =>
   `${latitude.toFixed(4)},${longitude.toFixed(4)}`;
 
+const getStockholmCoordinate = () => ({
+  latitude: DEFAULT_REGION.latitude,
+  longitude: DEFAULT_REGION.longitude,
+});
+
 const getUserInitials = (name = "") => {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   return (
@@ -199,6 +206,8 @@ const WorkersListModal = memo(function WorkersListModal({
   workerSearch,
   onWorkerSearchChange,
   filteredWorkers,
+  checkboxStyle,
+  checkboxSelectedStyle,
 }) {
   return (
     <Modal
@@ -262,9 +271,9 @@ const WorkersListModal = memo(function WorkersListModal({
                 <View
                   style={[
                     styles.workerCheckbox,
-                    themedCheckboxStyle,
+                    checkboxStyle,
                     isSelected && styles.workerCheckboxSelected,
-                    isSelected && themedCheckboxSelectedStyle,
+                    isSelected && checkboxSelectedStyle,
                   ]}
                 >
                   {isSelected ? (
@@ -680,10 +689,69 @@ export default function CreateProjectScreen() {
     setLocationSearch(fallbackAddress);
   };
 
-  const openLocationPicker = () => {
+  const centerLocationPickerOnCoordinate = async (
+    latitude,
+    longitude,
+    resolvedAddressText,
+  ) => {
+    await applyResolvedLocation(
+      latitude,
+      longitude,
+      {
+        ...DEFAULT_REGION,
+        latitude,
+        longitude,
+      },
+      resolvedAddressText,
+    );
+  };
+
+  const openLocationPicker = async () => {
     setLocationSearch(location);
     setIsLocationSearchVisible(true);
     setIsLocationPickerVisible(true);
+
+    if (selectedCoordinate || isLocationLoadingRef.current) {
+      return;
+    }
+
+    setLocationLoadingState(true);
+    try {
+      if (!Device.isDevice) {
+        const stockholmCoordinate = getStockholmCoordinate();
+        await centerLocationPickerOnCoordinate(
+          stockholmCoordinate.latitude,
+          stockholmCoordinate.longitude,
+          DEFAULT_EMULATOR_LOCATION_LABEL,
+        );
+        return;
+      }
+
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Location access denied",
+          "Allow geolocation to center the map on your current position.",
+        );
+        return;
+      }
+
+      const currentPosition = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+      });
+      await centerLocationPickerOnCoordinate(
+        currentPosition.coords.latitude,
+        currentPosition.coords.longitude,
+      );
+    } catch (error) {
+      console.error("Error preparing location picker:", error);
+      Alert.alert(
+        "Location error",
+        "Unable to determine your current position.",
+      );
+    } finally {
+      setLocationLoadingState(false);
+    }
   };
 
   const fetchLocationSuggestions = async (query) => {
@@ -774,6 +842,18 @@ export default function CreateProjectScreen() {
 
   const handleUseCurrentLocation = async () => {
     try {
+      if (!Device.isDevice) {
+        setLocationLoadingState(true);
+        const stockholmCoordinate = getStockholmCoordinate();
+        await centerLocationPickerOnCoordinate(
+          stockholmCoordinate.latitude,
+          stockholmCoordinate.longitude,
+          DEFAULT_EMULATOR_LOCATION_LABEL,
+        );
+        closeLocationPicker();
+        return;
+      }
+
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         Alert.alert(
@@ -791,11 +871,7 @@ export default function CreateProjectScreen() {
       const latitude = currentPosition.coords.latitude;
       const longitude = currentPosition.coords.longitude;
 
-      await applyResolvedLocation(latitude, longitude, {
-        ...mapRegion,
-        latitude,
-        longitude,
-      });
+      await centerLocationPickerOnCoordinate(latitude, longitude);
       closeLocationPicker();
     } catch (error) {
       console.error("Error getting current location:", error);
@@ -863,6 +939,17 @@ export default function CreateProjectScreen() {
 
       if (location) {
         projectData.append("location", location);
+      }
+
+      if (selectedCoordinate) {
+        projectData.append(
+          "locationLatitude",
+          String(selectedCoordinate.latitude),
+        );
+        projectData.append(
+          "locationLongitude",
+          String(selectedCoordinate.longitude),
+        );
       }
 
       if (beginningDate) {
@@ -1565,6 +1652,8 @@ export default function CreateProjectScreen() {
           workerSearch={workerSearch}
           onWorkerSearchChange={setWorkerSearch}
           filteredWorkers={filteredWorkers}
+          checkboxStyle={themedCheckboxStyle}
+          checkboxSelectedStyle={themedCheckboxSelectedStyle}
         />
 
         <Modal

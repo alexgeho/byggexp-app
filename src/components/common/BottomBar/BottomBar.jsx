@@ -1,17 +1,15 @@
 import React from "react";
 
 import {
-  Image,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import Icon from "react-native-vector-icons/Feather";
 
 import { useTheme } from "../../../theme/ThemeContext";
 
 import { createStyles } from "./BottomBar.styles";
-
-const DEFAULT_ACTION_ICON = require("../../../assets/plus.png");
 
 export function BottomBar({
   onLeftPress,
@@ -48,9 +46,10 @@ export function BottomBar({
           style={styles.navButton}
           onPress={onLeftPress}
         >
-          <Image
-            source={require("../../../assets/bottomBar/homeGray.png")}
-            style={styles.navIcon}
+          <Icon
+            name="home"
+            size={24}
+            color={theme.colors.icon}
           />
 
           {showText && (
@@ -71,9 +70,10 @@ export function BottomBar({
           style={styles.navButton}
           onPress={onRightPress}
         >
-          <Image
-            source={require("../../../assets/bottomBar/menuGray.png")}
-            style={styles.navIcon}
+          <Icon
+            name="menu"
+            size={24}
+            color={theme.colors.icon}
           />
 
           {showText && (
@@ -100,9 +100,10 @@ export function BottomBar({
           {actionContent ? (
             actionContent()
           ) : (
-            <Image
-              source={DEFAULT_ACTION_ICON}
-              style={styles.addIcon}
+            <Icon
+              name="plus"
+              size={20}
+              color="#FFFFFF"
             />
           )}
         </TouchableOpacity>

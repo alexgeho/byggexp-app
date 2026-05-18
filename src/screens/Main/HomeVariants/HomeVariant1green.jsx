@@ -19,6 +19,7 @@ import { useTheme } from "@theme/ThemeContext";
 import AuthContext from "@contexts/AuthContext";
 import { useTimer } from "@hooks/useTimer";
 import { shiftService } from "@services";
+import { startShiftWithLocationGuard } from "@utils/shiftLocationGuard";
 import { createStyles } from "./HomeVariant1green.styles";
 import { getEnabledSections } from "@utils/homeButtonsStorage";
 import ProjectSelector from "@components/common/ProjectSelector/ProjectSelector";
@@ -184,9 +185,11 @@ export default function MainScreen() {
         return;
       }
 
-      const startedShift = await shiftService.start({
-        projectId: selectedProjectId,
-      });
+      const startedShift =
+        await startShiftWithLocationGuard({
+          projectId: selectedProjectId,
+          project: selectedProject,
+        });
 
       setCurrentShift(startedShift);
 
