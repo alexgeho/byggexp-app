@@ -12,11 +12,28 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.20)",
   },
+  projectSelector: {
+    width: "100%",
+
+    flexDirection: "row",
+    alignItems: "center",
+
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+
+    borderRadius: 100,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.20)",
+  },
+
   projectSelectorText: {
+    flex: 1,
+
     color: "#FFFFFF",
-    textAlign: "center",
+
     fontFamily: "DMSans-Medium",
     fontSize: 17,
+
     lineHeight: 22,
   },
 });

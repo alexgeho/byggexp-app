@@ -1,19 +1,10 @@
 import React from "react";
 
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
 import { useTheme } from "../../../theme/ThemeContext";
 
-export default function ProjectSelector({
-  value,
-  onPress,
-  style,
-}) {
+export default function ProjectSelector({ value, onPress, style }) {
   const { theme } = useTheme();
 
   const styles = createStyles(theme);
@@ -25,16 +16,13 @@ export default function ProjectSelector({
           styles.selectorButton,
           style,
           {
-            backgroundColor:
-              theme.colors.selectorBackground,
-            borderColor:
-              theme.colors.border,
+            backgroundColor: theme.colors.selectorBackground,
+            borderColor: theme.colors.border,
           },
         ]}
         onPress={onPress}
         activeOpacity={0.7}
       >
-        
         <Text
           numberOfLines={1}
           ellipsizeMode="tail"

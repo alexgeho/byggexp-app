@@ -1,19 +1,26 @@
 import { Text, View, Image, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useContext } from "react";
+import AuthContext from "../../../contexts/AuthContext";
 import { styles } from "./HomeVariant2.styles";
 import { LinearGradient } from "expo-linear-gradient";
 
+import { useNavigation } from "@react-navigation/native";
+
 import { Timer } from "../../../components/common2/Timer/Timer";
 import { Shifts } from "../../../components/common2/ShiftHistory/ShiftHistory";
-import { ProjectSelector } from "../../../components/common2/projectSelector/projectSelector";
+import { ProjectSelector2 } from "../../../components/common2/projectSelector/projectSelector";
 import { MainActionButtons } from "../../../components/common2/mainActionButtons/mainActionButtons";
 import { FooterButtonsVariant2 } from "../../../components/common2/footer/footer";
-import { ProjectFilesSection } from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
+import ProjectFilesSection from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
 
 export default function HomeVariant2() {
-  function handleHomePress() {
-    console.log("Home");
+  const { selectedProject } = useContext(AuthContext);
+  const navigation = useNavigation();
+
+  function openProjects (){
+    navigation.navigate("Projects")
   }
+
   return (
     <LinearGradient
       colors={["#5BC8FF", "#0D5DB8"]}
@@ -24,7 +31,7 @@ export default function HomeVariant2() {
       {/* MAIN */}
       <View style={styles.main}>
         {/* PROJECT SELECTOR */}
-        <ProjectSelector />
+        <ProjectSelector2 value={selectedProject} onPress={openProjects}  />
 
         {/* Timer */}
         <Timer />
@@ -36,7 +43,7 @@ export default function HomeVariant2() {
         {/*  <Shifts /> */}
 
         {/* PROJECT FILES */}
-        <ProjectSelector value={selectedProject} onPress={openProjects} />
+        <ProjectFilesSection project={selectedProject}/>
       </View>
 
       {/* FOOTER */}
