@@ -6,6 +6,7 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 35,
   },
+
   actionButton: {
     width: 124,
     height: 124,
@@ -14,16 +15,19 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#FFFFFF",
   },
+
   actionButtonCamera: {
     justifyContent: "center",
     alignItems: "center",
     opacity: 0.3,
   },
+
   iconAction: {
     width: 124,
     height: 124,
     resizeMode: "contain",
   },
+
   icon: {
     width: 124,
     height: 124,

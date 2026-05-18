@@ -12,13 +12,24 @@ import { ProjectSelector2 } from "../../../components/common2/projectSelector/pr
 import { MainActionButtons } from "../../../components/common2/mainActionButtons/mainActionButtons";
 import { FooterButtonsVariant2 } from "../../../components/common2/footer/footer";
 import ProjectFilesSection from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
+import { useTimer } from "../../../hooks/useTimer";
 
 export default function HomeVariant2() {
   const { selectedProject } = useContext(AuthContext);
   const navigation = useNavigation();
 
-  function openProjects (){
-    navigation.navigate("Projects")
+  function openProjects() {
+    navigation.navigate("Projects");
+  }
+
+  const { isRunning, isPaused } = useTimer();
+
+  function handlePlayPause() {
+    console.log("Play / Pause");
+  }
+
+  function handleCameraPress() {
+    navigation.navigate("Camera");
   }
 
   return (
@@ -31,19 +42,24 @@ export default function HomeVariant2() {
       {/* MAIN */}
       <View style={styles.main}>
         {/* PROJECT SELECTOR */}
-        <ProjectSelector2 value={selectedProject} onPress={openProjects}  />
+        <ProjectSelector2 value={selectedProject} onPress={openProjects} />
 
         {/* Timer */}
         <Timer />
 
         {/* MAIN BTN */}
-        <MainActionButtons />
-
+        <MainActionButtons
+          isRunning={isRunning}
+          isPaused={isPaused}
+          loading={false}
+          onPlayPress={handlePlayPause}
+          onCameraPress={handleCameraPress}
+        />
         {/* SHIFTS */}
         {/*  <Shifts /> */}
 
         {/* PROJECT FILES */}
-        <ProjectFilesSection project={selectedProject}/>
+        <ProjectFilesSection project={selectedProject} />
       </View>
 
       {/* FOOTER */}
