@@ -18,6 +18,7 @@ import {
 import { useTheme } from "@theme/ThemeContext";
 import AuthContext from "@contexts/AuthContext";
 import { useTimer } from "@hooks/useTimer";
+import { useShiftExitAutoComplete } from "@hooks/useShiftExitAutoComplete";
 import { shiftService } from "@services";
 import { startShiftWithLocationGuard } from "@utils/shiftLocationGuard";
 import { createStyles } from "./HomeVariant1green.styles";
@@ -137,6 +138,26 @@ export default function MainScreen() {
       [loadCurrentShift, selectedProjectId],
     ),
   );
+
+  useShiftExitAutoComplete({
+    currentShift,
+    selectedProject,
+    onShiftAutoCompleted: useCallback(
+      function handleShiftAutoCompleted() {
+        setCurrentShift(null);
+        reset();
+
+        Alert.alert(
+          "Shift completed",
+          "You left the project area, so your current shift was ended automatically.",
+        );
+      },
+      [reset],
+    ),
+    onCheckError: useCallback(function handleShiftLocationError(error) {
+      console.error("Failed to verify shift location:", error);
+    }, []),
+  });
 
   async function handlePlayPause() {
     if (actionLoading) {

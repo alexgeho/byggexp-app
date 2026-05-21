@@ -16,10 +16,12 @@ import { useNavigation } from "@react-navigation/native";
 import AuthContext from "../../../contexts/AuthContext";
 
 import { useTimer } from "../../../hooks/useTimer";
+import { useShiftExitAutoComplete } from "../../../hooks/useShiftExitAutoComplete";
 
 import { Timer } from "../../../components/common2/Timer/Timer";
 
 import shiftService from "../../../services/shift.service";
+import { startShiftWithLocationGuard } from "../../../utils/shiftLocationGuard";
 
 import { styles } from "./HomeVariant2.styles";
 
@@ -35,6 +37,8 @@ export default function HomeVariant2() {
   /* SELECTED PROJECT */
   const { selectedProject } =
     useContext(AuthContext);
+  const selectedProjectId =
+    selectedProject?._id || selectedProject?.id;
 
   /* NAVIGATION */
   const navigation =
@@ -60,6 +64,7 @@ export default function HomeVariant2() {
     start,
     pause,
     resume,
+    reset,
   } = useTimer();
 
   /* LOAD ACTIVE SHIFT */
@@ -84,6 +89,23 @@ export default function HomeVariant2() {
     fetchShift();
   }, []);
 
+  useShiftExitAutoComplete({
+    currentShift,
+    selectedProject,
+    onShiftAutoCompleted: () => {
+      setCurrentShift(null);
+      reset();
+
+      Alert.alert(
+        "Shift completed",
+        "You left the project area, so your current shift was ended automatically.",
+      );
+    },
+    onCheckError: (error) => {
+      console.error("Failed to verify shift location:", error);
+    },
+  });
+
   /* OPEN PROJECTS SCREEN */
   function openProjects() {
     navigation.navigate("Projects");
@@ -107,9 +129,10 @@ export default function HomeVariant2() {
       /* START SHIFT */
       if (!isRunning) {
         const newShift =
-          await shiftService.start(
-            selectedProject._id,
-          );
+          await startShiftWithLocationGuard({
+            projectId: selectedProjectId,
+            project: selectedProject,
+          });
 
         setCurrentShift(
           newShift,
@@ -121,7 +144,7 @@ export default function HomeVariant2() {
       /* RESUME SHIFT */
       else if (isPaused) {
         await shiftService.resume(
-          currentShift._id,
+          currentShift?.id || currentShift?._id,
         );
 
         resume();
@@ -130,7 +153,7 @@ export default function HomeVariant2() {
       /* PAUSE SHIFT */
       else {
         await shiftService.pause(
-          currentShift._id,
+          currentShift?.id || currentShift?._id,
         );
 
         pause();

@@ -123,6 +123,82 @@ const calculateDistanceMeters = (
   return 2 * earthRadiusMeters * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 };
 
+const resolveProjectCoordinate = async ({
+  project,
+  fallbackProjectLocation,
+}) => {
+  const projectLocation =
+    project?.location?.trim?.() || fallbackProjectLocation?.trim?.() || "";
+  const savedProjectCoordinate = getSavedProjectCoordinate(project);
+
+  if (
+    !shiftLocationPolicy.enabled ||
+    (!projectLocation && !savedProjectCoordinate)
+  ) {
+    return {
+      enforced: false,
+      projectCoordinate: null,
+    };
+  }
+
+  const geocodedProjectCoordinate = savedProjectCoordinate
+    ? null
+    : await geocodeProjectLocation(projectLocation);
+  const projectCoordinate = savedProjectCoordinate || geocodedProjectCoordinate;
+
+  if (!projectCoordinate) {
+    throw new Error(
+      "Unable to verify the project location. Save project coordinates or update the project address before starting a shift.",
+    );
+  }
+
+  return {
+    enforced: true,
+    projectCoordinate,
+  };
+};
+
+export const getShiftLocationCheck = async ({
+  project,
+  fallbackProjectLocation,
+}) => {
+  const resolvedProjectCoordinate = await resolveProjectCoordinate({
+    project,
+    fallbackProjectLocation,
+  });
+
+  if (!resolvedProjectCoordinate.enforced) {
+    return {
+      enforced: false,
+      distanceMeters: 0,
+      maxDistanceMeters: shiftLocationPolicy.maxDistanceMeters,
+    };
+  }
+
+  const currentCoordinate = await getCurrentShiftCoordinate();
+  const distanceMeters = calculateDistanceMeters(
+    currentCoordinate.latitude,
+    currentCoordinate.longitude,
+    resolvedProjectCoordinate.projectCoordinate.latitude,
+    resolvedProjectCoordinate.projectCoordinate.longitude,
+  );
+
+  return {
+    enforced: true,
+    distanceMeters,
+    maxDistanceMeters: shiftLocationPolicy.maxDistanceMeters,
+  };
+};
+
+export const isWithinProjectLocation = async (options) => {
+  const locationCheck = await getShiftLocationCheck(options);
+
+  return (
+    !locationCheck.enforced ||
+    locationCheck.distanceMeters <= locationCheck.maxDistanceMeters
+  );
+};
+
 export const startShiftWithLocationGuard = async ({
   projectId,
   project,
@@ -132,37 +208,15 @@ export const startShiftWithLocationGuard = async ({
     throw new Error("Project is required to start a shift.");
   }
 
-  const projectLocation =
-    project?.location?.trim?.() || fallbackProjectLocation?.trim?.() || "";
-  const savedProjectCoordinate = getSavedProjectCoordinate(project);
+  const locationCheck = await getShiftLocationCheck({
+    project,
+    fallbackProjectLocation,
+  });
 
   if (
-    !shiftLocationPolicy.enabled ||
-    (!projectLocation && !savedProjectCoordinate)
+    locationCheck.enforced &&
+    locationCheck.distanceMeters > locationCheck.maxDistanceMeters
   ) {
-    return shiftService.start(projectId);
-  }
-
-  const [currentCoordinate, geocodedProjectCoordinate] = await Promise.all([
-    getCurrentShiftCoordinate(),
-    savedProjectCoordinate ? Promise.resolve(null) : geocodeProjectLocation(projectLocation),
-  ]);
-  const projectCoordinate = savedProjectCoordinate || geocodedProjectCoordinate;
-
-  if (!projectCoordinate) {
-    throw new Error(
-      "Unable to verify the project location. Save project coordinates or update the project address before starting a shift.",
-    );
-  }
-
-  const distanceMeters = calculateDistanceMeters(
-    currentCoordinate.latitude,
-    currentCoordinate.longitude,
-    projectCoordinate.latitude,
-    projectCoordinate.longitude,
-  );
-
-  if (distanceMeters > shiftLocationPolicy.maxDistanceMeters) {
     throw new Error(
       `You are not at the project location. Move within ${shiftLocationPolicy.maxDistanceMeters} meters of the project to start a shift.`,
     );

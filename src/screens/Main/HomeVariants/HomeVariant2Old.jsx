@@ -22,6 +22,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import ProjectSelector from "@components/common/ProjectSelector/ProjectSelector";
 import AuthContext from "@contexts/AuthContext";
 import { useTimer } from "@hooks/useTimer";
+import { useShiftExitAutoComplete } from "@hooks/useShiftExitAutoComplete";
 import { GlassView } from "@components/common/GlassView/GlassView";
 import { projectService, shiftService } from "@services";
 import { formatDuration } from "@utils/shifts";
@@ -176,6 +177,23 @@ export default function MainScreen() {
       loadCurrentShift(selectedProjectId);
     }, [fetchProjects, loadCurrentShift, selectedProjectId]),
   );
+
+  useShiftExitAutoComplete({
+    currentShift,
+    selectedProject,
+    onShiftAutoCompleted: useCallback(() => {
+      setCurrentShift(null);
+      reset();
+
+      Alert.alert(
+        "Shift completed",
+        "You left the project area, so your current shift was ended automatically.",
+      );
+    }, [reset]),
+    onCheckError: useCallback((error) => {
+      console.error("Failed to verify shift location:", error);
+    }, []),
+  });
 
   const handleProjectChange = (project) => {
     if (currentShift?.status === "active") {

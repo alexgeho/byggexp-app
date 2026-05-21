@@ -60,8 +60,8 @@ export const shiftService = {
     return data;
   },
 
-  complete: async (shiftId) => {
-    const { data } = await api.post(`/shifts/${shiftId}/complete`);
+  complete: async (shiftId, payload = {}) => {
+    const { data } = await api.post(`/shifts/${shiftId}/complete`, payload);
     return data;
   },
 
