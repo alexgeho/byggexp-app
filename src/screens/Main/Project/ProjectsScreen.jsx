@@ -300,10 +300,13 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
+    gap: 8,
   },
   projectName: {
     color: "#052D50",
+    flex: 1,
+    flexShrink: 1,
   },
   statusBadge: {
     color: "#2582D9",
@@ -312,6 +315,10 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
     paddingRight: 12,
     borderRadius: 12,
+    flexShrink: 0,
+    alignSelf: "flex-start",
+    fontSize: 12,
+    overflow: "hidden",
   },
   dateText: {
     color: "#0785F4",

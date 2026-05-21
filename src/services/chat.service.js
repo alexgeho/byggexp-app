@@ -27,6 +27,11 @@ export const chatService = {
     return data;
   },
 
+  markAsRead: async (chatId) => {
+    const { data } = await api.post(`/chats/${chatId}/read`);
+    return data;
+  },
+
   sendMessage: async (chatId, text) => {
     const { data } = await api.post(`/messages/chat/${chatId}`, { text });
     return data;

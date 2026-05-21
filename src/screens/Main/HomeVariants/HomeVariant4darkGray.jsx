@@ -21,7 +21,9 @@ import ProjectSelector from "../../../components/common/ProjectSelector/ProjectS
 import AuthContext from "../../../contexts/AuthContext";
 import { useTimer } from "../../../hooks/useTimer";
 import { useShiftExitAutoComplete } from "../../../hooks/useShiftExitAutoComplete";
+import { useUnreadChats } from "../../../hooks/useUnreadChats";
 import { GlassView } from "../../../components/common/GlassView/GlassView";
+import UnreadBadge from "../../../components/common/UnreadBadge/UnreadBadge";
 import { projectService, shiftService } from "../../../services";
 import { formatDuration } from "../../../utils/shifts";
 import { startShiftWithLocationGuard } from "../../../utils/shiftLocationGuard";
@@ -35,6 +37,7 @@ export default function MainScreen() {
   const [loadingShift, setLoadingShift] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [currentShift, setCurrentShift] = useState(null);
+  const { unreadCount } = useUnreadChats();
   const {
     formattedTime,
     isRunning,
@@ -461,15 +464,18 @@ export default function MainScreen() {
             onPress={() => handleNav("Chats")}
             style={styles.buttonInner}
           >
-            <Image
-              style={[
-                styles.buttonIcon,
-                {
-                  tintColor: theme.colors.icon,
-                },
-              ]}
-              source={require("../../../assets/mainButtons/messager.png")}
-            />
+            <View style={styles.iconWrapper}>
+              <Image
+                style={[
+                  styles.buttonIcon,
+                  {
+                    tintColor: theme.colors.icon,
+                  },
+                ]}
+                source={require("../../../assets/mainButtons/messager.png")}
+              />
+              <UnreadBadge count={unreadCount} />
+            </View>
             <Text
               style={[
                 styles.text,
@@ -706,6 +712,9 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 8,
     alignItems: "center",
+  },
+  iconWrapper: {
+    position: "relative",
   },
   buttonIcon: {
     width: 26,

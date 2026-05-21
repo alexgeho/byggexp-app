@@ -347,9 +347,18 @@ export const ProjectScreen = () => {
         });
       });
 
-      await projectService.uploadDocuments(id, formData);
-      await fetchProject();
+      const updatedProject =
+        await projectService.uploadDocuments(id, formData);
+
+      if (updatedProject) {
+        setProject(updatedProject);
+      }
+
       setModal("Documents");
+      Alert.alert(
+        "Success",
+        `${pickedAssets.length} document${pickedAssets.length > 1 ? "s" : ""} added to the project.`,
+      );
     } catch (uploadError) {
       console.error("Failed to upload project documents:", uploadError);
       Alert.alert(

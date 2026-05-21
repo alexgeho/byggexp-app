@@ -44,6 +44,8 @@ import {
   defaultEnabledButtons,
 } from "../../../constants/mainButtons";
 import { getEnabledButtons } from "../../../utils/homeButtonsStorage";
+import { useUnreadChats } from "../../../hooks/useUnreadChats";
+import UnreadBadge from "../../../components/common/UnreadBadge/UnreadBadge";
 
 export default function HomeVariant2() {
   /* SELECTED PROJECT */
@@ -74,6 +76,7 @@ export default function HomeVariant2() {
     enabledButtons,
     setEnabledButtons,
   ] = useState(defaultEnabledButtons);
+  const { unreadCount } = useUnreadChats();
 
   /* TIMER LOGIC */
   const {
@@ -330,10 +333,15 @@ export default function HomeVariant2() {
                     openQuickAction(button.screen);
                   }}
                 >
-                  <Image
-                    source={button.icon}
-                    style={styles.quickActionIcon}
-                  />
+                  <View style={styles.quickActionIconWrapper}>
+                    <Image
+                      source={button.icon}
+                      style={styles.quickActionIcon}
+                    />
+                    {button.id === "chats" ? (
+                      <UnreadBadge count={unreadCount} />
+                    ) : null}
+                  </View>
 
                   <Text style={styles.quickActionText}>
                     {button.title}

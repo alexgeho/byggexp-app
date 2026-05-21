@@ -23,8 +23,12 @@ export const useChatConversation = (chatId, initialChat = null) => {
         chatService.getById(chatId),
         chatService.getMessages(chatId),
       ]);
+      const readChatData = await chatService.markAsRead(chatId);
 
-      setChat(chatData);
+      setChat(readChatData || {
+        ...chatData,
+        unreadCount: 0,
+      });
       setMessages(Array.isArray(messagesData) ? messagesData : []);
     } catch (loadError) {
       console.error('Failed to load chat conversation:', loadError);

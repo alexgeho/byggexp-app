@@ -41,6 +41,10 @@ export function createStyles(theme) {
       alignItems: "center",
     },
 
+    iconWrapper: {
+      position: "relative",
+    },
+
     buttonIcon: {
       width: 26,
       height: 26,

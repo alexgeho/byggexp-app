@@ -196,12 +196,18 @@ export default function ChatListScreen() {
                     numberOfLines={1}
                     style={[
                       styles.projectName,
+                      chat.unreadCount > 0 && styles.unreadText,
                       { fontFamily: theme.text.fontFamily["bold"] },
                     ]}
                   >
                     {chat.title}
                   </Text>
-                  <Text style={styles.statusBadge}>
+                  <Text
+                    style={[
+                      styles.statusBadge,
+                      chat.unreadCount > 0 && styles.unreadText,
+                    ]}
+                  >
                     {formatChatTime(chat.lastMessageAt)}
                   </Text>
                 </View>
@@ -212,7 +218,13 @@ export default function ChatListScreen() {
                       chat.participant?.email ||
                       "Direct chat"}
                 </Text>
-                <Text numberOfLines={2} style={styles.locationText}>
+                <Text
+                  numberOfLines={2}
+                  style={[
+                    styles.locationText,
+                    chat.unreadCount > 0 && styles.unreadText,
+                  ]}
+                >
                   {chat.lastMessageText || "No messages yet"}
                 </Text>
               </View>
@@ -359,5 +371,8 @@ const styles = StyleSheet.create({
   locationText: {
     color: "#052D50",
     marginTop: 4,
+  },
+  unreadText: {
+    fontFamily: "DMSans-Bold",
   },
 });

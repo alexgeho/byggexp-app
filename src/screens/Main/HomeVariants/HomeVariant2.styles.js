@@ -33,6 +33,10 @@ export const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: "space-between",
   },
+  quickActionIconWrapper: {
+    position: "relative",
+    alignSelf: "flex-start",
+  },
   quickActionIcon: {
     width: 28,
     height: 28,

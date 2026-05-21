@@ -15,6 +15,8 @@ import {
   defaultEnabledButtons,
 } from "../../../constants/mainButtons";
 import { getEnabledButtons } from "../../../utils/homeButtonsStorage";
+import { useUnreadChats } from "../../../hooks/useUnreadChats";
+import UnreadBadge from "../UnreadBadge/UnreadBadge";
 import { createStyles } from "./MainButtonsGrid.styles";
 
 export default function MainButtonsGrid() {
@@ -24,6 +26,7 @@ export default function MainButtonsGrid() {
   const { theme } = useTheme();
 
   const styles = createStyles(theme);
+  const { unreadCount } = useUnreadChats();
 
   const [enabledButtons, setEnabledButtons] =
     useState(defaultEnabledButtons);
@@ -76,10 +79,16 @@ export default function MainButtonsGrid() {
                   <View style={styles.line} />
                 </View>
 
-                <Image
-                  source={button.icon}
-                  style={styles.buttonIcon}
-                />
+                <View style={styles.iconWrapper}>
+                  <Image
+                    source={button.icon}
+                    style={styles.buttonIcon}
+                  />
+
+                  {button.id === "chats" ? (
+                    <UnreadBadge count={unreadCount} />
+                  ) : null}
+                </View>
 
                 <Text style={styles.buttonText}>
                   {button.title}
