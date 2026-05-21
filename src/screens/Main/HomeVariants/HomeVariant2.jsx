@@ -1,4 +1,5 @@
 import React, {
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -6,12 +7,19 @@ import React, {
 
 import {
   View,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  Image,
   Alert,
 } from "react-native";
 
 import { LinearGradient } from "expo-linear-gradient";
 
-import { useNavigation } from "@react-navigation/native";
+import {
+  useFocusEffect,
+  useNavigation,
+} from "@react-navigation/native";
 
 import AuthContext from "../../../contexts/AuthContext";
 
@@ -26,16 +34,23 @@ import { startShiftWithLocationGuard } from "../../../utils/shiftLocationGuard";
 import { styles } from "./HomeVariant2.styles";
 
 import { ProjectSelector2 } from "../../../components/common2/projectSelector/projectSelector";
-
 import { MainActionButtons } from "../../../components/common2/mainActionButtons/mainActionButtons";
 
 import { FooterButtonsVariant2 } from "../../../components/common2/footer/footer";
 
 import ProjectFilesSection from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
+import {
+  mainButtons,
+  defaultEnabledButtons,
+} from "../../../constants/mainButtons";
+import { getEnabledButtons } from "../../../utils/homeButtonsStorage";
 
 export default function HomeVariant2() {
   /* SELECTED PROJECT */
-  const { selectedProject } =
+  const {
+    selectedProject,
+    setSelectedProject,
+  } =
     useContext(AuthContext);
   const selectedProjectId =
     selectedProject?._id || selectedProject?.id;
@@ -55,6 +70,10 @@ export default function HomeVariant2() {
     currentShift,
     setCurrentShift,
   ] = useState(null);
+  const [
+    enabledButtons,
+    setEnabledButtons,
+  ] = useState(defaultEnabledButtons);
 
   /* TIMER LOGIC */
   const {
@@ -63,31 +82,76 @@ export default function HomeVariant2() {
     isPaused,
     start,
     pause,
-    resume,
+    sync,
     reset,
   } = useTimer();
 
-  /* LOAD ACTIVE SHIFT */
-  useEffect(function loadShift() {
-    async function fetchShift() {
-      try {
-        const activeShift =
-          await shiftService.getCurrent();
+  const getErrorMessage = useCallback(function getErrorMessage(
+    error,
+    fallbackMessage,
+  ) {
+    return (
+      error?.response?.data?.message ||
+      error?.message ||
+      fallbackMessage
+    );
+  }, []);
 
-        if (activeShift) {
-          setCurrentShift(
-            activeShift,
-          );
+  const applyShiftState = useCallback(function applyShiftState(
+    shift,
+  ) {
+    setCurrentShift(shift);
 
-          start(activeShift);
+    if (shift) {
+      sync(shift);
+
+      setSelectedProject(function updateProject(previousProject) {
+        if (
+          previousProject?._id === shift.projectId ||
+          previousProject?.id === shift.projectId
+        ) {
+          return previousProject;
         }
-      } catch (error) {
-        console.log(error);
-      }
+
+        return {
+          _id: shift.projectId,
+          id: shift.projectId,
+          name: shift.projectName,
+          location: shift.location,
+        };
+      });
+
+      return;
     }
 
-    fetchShift();
-  }, []);
+    reset();
+  }, [reset, setSelectedProject, sync]);
+
+  const loadCurrentShift = useCallback(async function loadCurrentShift(
+    projectId,
+  ) {
+    try {
+      const shift =
+        await shiftService.getCurrent(projectId);
+
+      if (shift) {
+        applyShiftState(shift);
+        return;
+      }
+
+      setCurrentShift(null);
+      reset();
+    } catch (error) {
+      console.error("Failed to load current shift:", error);
+      setCurrentShift(null);
+      reset();
+    }
+  }, [applyShiftState, reset]);
+
+  /* LOAD ACTIVE SHIFT */
+  useEffect(function loadShift() {
+    loadCurrentShift(selectedProjectId);
+  }, [loadCurrentShift, selectedProjectId]);
 
   useShiftExitAutoComplete({
     currentShift,
@@ -106,68 +170,99 @@ export default function HomeVariant2() {
     },
   });
 
+  useFocusEffect(
+    React.useCallback(function loadButtons() {
+      async function fetchButtons() {
+        const savedButtons =
+          await getEnabledButtons();
+
+        if (savedButtons) {
+          setEnabledButtons(savedButtons);
+        }
+      }
+
+      fetchButtons();
+    }, []),
+  );
+
   /* OPEN PROJECTS SCREEN */
   function openProjects() {
-    navigation.navigate("Projects");
+    navigation.navigate("Projects", {
+      mode: "select",
+    });
+  }
+
+  function openQuickAction(screen) {
+    navigation.navigate(screen);
+  }
+
+  function handleCameraPress() {
+    navigation.navigate("Camera");
   }
 
   /* PLAY / PAUSE BUTTON */
   async function handlePlayPause() {
-    try {
-      /* PROJECT REQUIRED */
-      if (!selectedProject) {
-        Alert.alert(
-          "Select project",
-          "Please select a project first",
-        );
+    if (loadingShift) {
+      return;
+    }
 
+    try {
+      setLoadingShift(true);
+
+      if (isRunning) {
+        if (!currentShift?.id) {
+          throw new Error("Active shift is missing.");
+        }
+
+        const pausedShift =
+          await shiftService.pause(currentShift.id);
+
+        setCurrentShift(pausedShift);
+        pause(pausedShift);
         return;
       }
 
-      setLoadingShift(true);
-
-      /* START SHIFT */
-      if (!isRunning) {
-        const newShift =
-          await startShiftWithLocationGuard({
-            projectId: selectedProjectId,
-            project: selectedProject,
-          });
-
-        setCurrentShift(
-          newShift,
+      if (!selectedProjectId) {
+        Alert.alert(
+          "Project required",
+          "Select a project before starting a shift.",
         );
-
-        start(newShift);
+        return;
       }
 
-      /* RESUME SHIFT */
-      else if (isPaused) {
-        await shiftService.resume(
-          currentShift?.id || currentShift?._id,
-        );
+      if (
+        currentShift?.id &&
+        currentShift.projectId === selectedProjectId &&
+        currentShift.status === "paused"
+      ) {
+        const resumedShift =
+          await shiftService.resume(currentShift.id);
 
-        resume();
+        setCurrentShift(resumedShift);
+        start(resumedShift);
+        return;
       }
 
-      /* PAUSE SHIFT */
-      else {
-        await shiftService.pause(
-          currentShift?.id || currentShift?._id,
-        );
+      const startedShift =
+        await startShiftWithLocationGuard({
+          projectId: selectedProjectId,
+          project: selectedProject,
+        });
 
-        pause();
-      }
+      setCurrentShift(startedShift);
+      start(startedShift);
     } catch (error) {
-      console.log(error);
+      console.error("Shift action failed:", error);
+      Alert.alert(
+        "Shift error",
+        getErrorMessage(
+          error,
+          "Unable to update the shift right now.",
+        ),
+      );
     } finally {
       setLoadingShift(false);
     }
-  }
-
-  /* OPEN CAMERA SCREEN */
-  function handleCameraPress() {
-    navigation.navigate("Camera");
   }
 
   return (
@@ -186,7 +281,10 @@ export default function HomeVariant2() {
       }}
       style={styles.container}
     >
-      <View style={styles.main}>
+      <ScrollView
+        contentContainerStyle={styles.main}
+        showsVerticalScrollIndicator={false}
+      >
         {/* PROJECT SELECTOR */}
         <ProjectSelector2
           value={selectedProject}
@@ -211,19 +309,45 @@ export default function HomeVariant2() {
           isRunning={isRunning}
           isPaused={isPaused}
           loading={loadingShift}
-          onPlayPress={
-            handlePlayPause
-          }
-          onCameraPress={
-            handleCameraPress
-          }
+          onPlayPress={handlePlayPause}
+          onCameraPress={handleCameraPress}
         />
+
+        <View style={styles.quickActionsGrid}>
+          {mainButtons
+            .filter(function filterButton(button) {
+              return (
+                button.id !== "next" &&
+                enabledButtons.includes(button.id)
+              );
+            })
+            .map(function renderButton(button) {
+              return (
+                <TouchableOpacity
+                  key={button.id}
+                  style={styles.quickActionCard}
+                  onPress={function onButtonPress() {
+                    openQuickAction(button.screen);
+                  }}
+                >
+                  <Image
+                    source={button.icon}
+                    style={styles.quickActionIcon}
+                  />
+
+                  <Text style={styles.quickActionText}>
+                    {button.title}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+        </View>
 
         {/* PROJECT FILES */}
         <ProjectFilesSection
           project={selectedProject}
         />
-      </View>
+      </ScrollView>
 
       {/* FOOTER */}
       <FooterButtonsVariant2 />

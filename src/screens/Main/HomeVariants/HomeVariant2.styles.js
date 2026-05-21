@@ -14,9 +14,35 @@ export const styles = StyleSheet.create({
   },
   main: {
     marginTop: 30,
-    flex: 1,
-    justifyContent: "space-between",
-    marginBottom: 30,
+    paddingBottom: 30,
+    gap: 24,
   },
-
+  quickActionsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    gap: 16,
+  },
+  quickActionCard: {
+    width: "47%",
+    minHeight: 116,
+    backgroundColor: "rgba(255,255,255,0.3)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.2)",
+    padding: 20,
+    borderRadius: 20,
+    justifyContent: "space-between",
+  },
+  quickActionIcon: {
+    width: 28,
+    height: 28,
+    resizeMode: "contain",
+    tintColor: "#fff",
+  },
+  quickActionText: {
+    color: "#fff",
+    fontSize: 16,
+    lineHeight: 20,
+    fontWeight: "600",
+  },
 });

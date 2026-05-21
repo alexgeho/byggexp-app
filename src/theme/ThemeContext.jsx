@@ -27,7 +27,7 @@ export function useTheme() {
 }
 
 export function ThemeProvider({ children }) {
-  const [themeName, setThemeName] = useState("green");
+  const [themeName, setThemeName] = useState("blue");
 
   const changeTheme = (nextTheme) => {
     if (!themes[nextTheme]) {

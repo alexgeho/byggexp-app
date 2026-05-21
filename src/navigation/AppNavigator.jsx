@@ -83,7 +83,7 @@ export default function AppNavigator() {
           <>
             <Stack.Screen
               name="Main"
-              component={HomeVariant1green}
+              component={HomeVariant2}
               options={{ headerShown: false }}
             />
             <Stack.Screen
