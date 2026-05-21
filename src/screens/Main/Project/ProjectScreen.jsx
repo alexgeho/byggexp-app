@@ -21,6 +21,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import * as DocumentPicker from "expo-document-picker";
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetView,
@@ -143,6 +144,7 @@ export const ProjectScreen = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [chatActionLoading, setChatActionLoading] = useState("");
+  const [uploadingDocuments, setUploadingDocuments] = useState(false);
   const bottomSheetRef = useRef(null);
 
   const fetchProject = useCallback(async () => {
@@ -238,6 +240,7 @@ export const ProjectScreen = () => {
     "companyAdmin",
     "projectAdmin",
   ].includes(user?.role);
+  const canManageDocuments = canCreateTasks;
 
   const handleOpenPersonalChat = async () => {
     const participantId = selectedWorker?._id || selectedWorker?.id;
@@ -300,6 +303,63 @@ export const ProjectScreen = () => {
     } catch (linkError) {
       console.error("Failed to open document:", linkError);
       Alert.alert("Unable to open document", "Please try again later.");
+    }
+  };
+
+  const handleAddDocuments = async () => {
+    if (!id) {
+      Alert.alert("Project unavailable", "Project id is missing.");
+      return;
+    }
+
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: [
+          "image/*",
+          "application/pdf",
+          "text/*",
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "application/vnd.ms-excel",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        ],
+        multiple: true,
+        copyToCacheDirectory: true,
+      });
+
+      if (result.canceled) {
+        return;
+      }
+
+      const pickedAssets = result.assets || [];
+      if (!pickedAssets.length) {
+        return;
+      }
+
+      setUploadingDocuments(true);
+
+      const formData = new FormData();
+      pickedAssets.forEach((item, index) => {
+        formData.append("documents", {
+          uri: item.uri,
+          name: item.name || `project-document-${index + 1}`,
+          type: item.mimeType || "application/octet-stream",
+        });
+      });
+
+      await projectService.uploadDocuments(id, formData);
+      await fetchProject();
+      setModal("Documents");
+    } catch (uploadError) {
+      console.error("Failed to upload project documents:", uploadError);
+      Alert.alert(
+        "Upload error",
+        uploadError?.response?.data?.message ||
+          uploadError?.message ||
+          "Unable to upload documents right now.",
+      );
+    } finally {
+      setUploadingDocuments(false);
     }
   };
 
@@ -519,12 +579,28 @@ export const ProjectScreen = () => {
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
-        showAddButton={modal === "Tasks" && canCreateTasks}
-        onAddPress={() =>
+        showAddButton={
+          (modal === "Tasks" && canCreateTasks) ||
+          (modal === "Documents" && canManageDocuments)
+        }
+        onAddPress={() => {
+          if (modal === "Documents") {
+            handleAddDocuments();
+            return;
+          }
+
           navigation.navigate("CreateTask", {
             projectId: id,
             projectName: project?.name,
-          })
+          });
+        }}
+        addDisabled={uploadingDocuments}
+        renderAddContent={() =>
+          uploadingDocuments ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <Icon name="plus" size={22} color="#FFFFFF" />
+          )
         }
       />
 

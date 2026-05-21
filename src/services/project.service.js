@@ -65,8 +65,28 @@ export const projectService = {
     return data;
   },
 
+  uploadDocuments: async (id, projectData) => {
+    const { data } = await api.post(`/projects/${id}/documents`, projectData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return data;
+  },
+
   update: async (id, projectData) => {
-    const { data } = await api.put(`/projects/${id}`, projectData);
+    const isFormData = typeof FormData !== 'undefined' && projectData instanceof FormData;
+    const { data } = await api.put(
+      `/projects/${id}`,
+      projectData,
+      isFormData
+        ? {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        : undefined,
+    );
     return data;
   },
 
