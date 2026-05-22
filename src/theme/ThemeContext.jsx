@@ -1,4 +1,12 @@
-import React, { createContext, useContext, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {
   greenTheme,
@@ -16,6 +24,8 @@ const themes = {
   darkGray: darkGrayTheme,
 };
 
+const THEME_STORAGE_KEY = "app-theme";
+
 export function useTheme() {
   const context = useContext(ThemeContext);
 
@@ -29,22 +39,60 @@ export function useTheme() {
 export function ThemeProvider({ children }) {
   const [themeName, setThemeName] = useState("blue");
 
-  const changeTheme = (nextTheme) => {
+  useEffect(function loadSavedTheme() {
+    let isMounted = true;
+
+    async function hydrateTheme() {
+      try {
+        const savedTheme = await AsyncStorage.getItem(
+          THEME_STORAGE_KEY,
+        );
+
+        if (
+          isMounted &&
+          savedTheme &&
+          themes[savedTheme]
+        ) {
+          setThemeName(savedTheme);
+        }
+      } catch (error) {
+        console.error("Failed to load theme:", error);
+      }
+    }
+
+    hydrateTheme();
+
+    return function cleanup() {
+      isMounted = false;
+    };
+  }, []);
+
+  const changeTheme = useCallback((nextTheme) => {
     if (!themes[nextTheme]) {
       return;
     }
 
     setThemeName(nextTheme);
-  };
+
+    AsyncStorage.setItem(
+      THEME_STORAGE_KEY,
+      nextTheme,
+    ).catch((error) => {
+      console.error("Failed to save theme:", error);
+    });
+  }, []);
+
+  const value = useMemo(
+    () => ({
+      theme: themes[themeName],
+      themeName,
+      changeTheme,
+    }),
+    [changeTheme, themeName],
+  );
 
   return (
-    <ThemeContext.Provider
-      value={{
-        theme: themes[themeName],
-        themeName,
-        changeTheme,
-      }}
-    >
+    <ThemeContext.Provider value={value}>
       {children}
     </ThemeContext.Provider>
   );

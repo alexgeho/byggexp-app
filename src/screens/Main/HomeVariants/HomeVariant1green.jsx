@@ -1,7 +1,6 @@
 import React, {
   useCallback,
   useContext,
-  useEffect,
   useState,
 } from "react";
 
@@ -33,7 +32,7 @@ import { BottomBar } from "@components/common/BottomBar/BottomBar";
 
 export default function MainScreen() {
 
-  const { theme, changeTheme } = useTheme();
+  const { theme } = useTheme();
   const styles = createStyles(theme);
   const navigation = useNavigation();
   const {
@@ -229,10 +228,6 @@ export default function MainScreen() {
       setActionLoading(false);
     }
   }
-
-  useEffect(function applyTheme() {
-    changeTheme("green");
-  }, []);
 
   function handleHomePress() {
     navigation.navigate("Main");
