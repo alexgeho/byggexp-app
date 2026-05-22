@@ -4,6 +4,7 @@ import React, {
 } from "react";
 
 import {
+  ScrollView,
   View,
   Text,
   TouchableOpacity,
@@ -37,6 +38,7 @@ import {
 } from "../../utils/homeButtonsStorage";
 
 import { BackButton } from "../../components/common/BackButton/BackButton";
+import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 
 import { createStyles } from "./CustomizeHomeScreen.styles";
 
@@ -185,139 +187,151 @@ export default function CustomizeHomeScreen() {
         <View style={styles.placeholder} />
       </View>
 
-      {/* THEME SWITCHER */}
-      <View style={styles.themeContainer}>
-        <Text style={styles.sectionTitle}>
-          Themes
-        </Text>
+      <ScrollView
+        style={styles.scrollContainer}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* THEME SWITCHER */}
+        <View style={styles.themeContainer}>
+          <Text style={styles.sectionTitle}>
+            Themes
+          </Text>
 
-        <View style={styles.themeRow}>
-          {themeOptions.map(function renderTheme(
-            item,
+          <View style={styles.themeRow}>
+            {themeOptions.map(function renderTheme(
+              item,
+            ) {
+              const isActive =
+                themeName === item.id;
+
+              return (
+                <TouchableOpacity
+                  key={item.id}
+                  style={[
+                    styles.themeButton,
+                    {
+                      backgroundColor: item.color,
+                    },
+                    isActive &&
+                      styles.activeThemeButton,
+                  ]}
+                  onPress={function handleThemePress() {
+                    changeTheme(item.id);
+                  }}
+                />
+              );
+            })}
+          </View>
+        </View>
+
+        {/* BUTTON LIST */}
+        <View style={styles.list}>
+          {mainButtons.map(function renderButton(
+            button,
+            index,
           ) {
-            const isActive =
-              themeName === item.id;
+            const isEnabled =
+              enabledButtons.includes(button.id);
 
             return (
               <TouchableOpacity
-                key={item.id}
+                key={button.id}
                 style={[
-                  styles.themeButton,
-                  {
-                    backgroundColor: item.color,
-                  },
-                  isActive &&
-                    styles.activeThemeButton,
+                  styles.item,
+                  index !==
+                    mainButtons.length - 1 &&
+                    styles.itemBorder,
                 ]}
-                onPress={function handleThemePress() {
-                  changeTheme(item.id);
+                onPress={function handlePress() {
+                  toggleButton(button.id);
                 }}
-              />
+              >
+                <Text style={styles.itemText}>
+                  {button.title}
+                </Text>
+
+                <View
+                  style={[
+                    styles.checkbox,
+                    isEnabled &&
+                      styles.checkboxActive,
+                  ]}
+                >
+                  {isEnabled && (
+                    <Text style={styles.checkmark}>
+                      ✓
+                    </Text>
+                  )}
+                </View>
+              </TouchableOpacity>
             );
           })}
         </View>
-      </View>
 
-      {/* BUTTON LIST */}
-      <View style={styles.list}>
-        {mainButtons.map(function renderButton(
-          button,
-          index,
-        ) {
-          const isEnabled =
-            enabledButtons.includes(button.id);
+        {/* SECTION LIST */}
+        <View style={styles.list}>
+          {homeSections.map(function renderSection(
+            section,
+            index,
+          ) {
+            const isEnabled =
+              enabledSections.includes(section.id);
 
-          return (
-            <TouchableOpacity
-              key={button.id}
-              style={[
-                styles.item,
-                index !==
-                  mainButtons.length - 1 &&
-                  styles.itemBorder,
-              ]}
-              onPress={function handlePress() {
-                toggleButton(button.id);
-              }}
-            >
-              <Text style={styles.itemText}>
-                {button.title}
-              </Text>
+            const isProjectFiles =
+              section.id === "project-files";
 
-              <View
+            const isDisabled =
+              isProjectFiles &&
+              !selectedProject;
+
+            return (
+              <TouchableOpacity
+                key={section.id}
+                disabled={isDisabled}
                 style={[
-                  styles.checkbox,
-                  isEnabled &&
-                    styles.checkboxActive,
+                  styles.item,
+                  index !==
+                    homeSections.length - 1 &&
+                    styles.itemBorder,
+                  {
+                    opacity: isDisabled
+                      ? 0.4
+                      : 1,
+                  },
                 ]}
+                onPress={function handlePress() {
+                  toggleSection(section.id);
+                }}
               >
-                {isEnabled && (
-                  <Text style={styles.checkmark}>
-                    ✓
-                  </Text>
-                )}
-              </View>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
+                <Text style={styles.itemText}>
+                  {section.title}
+                </Text>
 
-      {/* SECTION LIST */}
-      <View style={styles.list}>
-        {homeSections.map(function renderSection(
-          section,
-          index,
-        ) {
-          const isEnabled =
-            enabledSections.includes(section.id);
+                <View
+                  style={[
+                    styles.checkbox,
+                    isEnabled &&
+                      styles.checkboxActive,
+                  ]}
+                >
+                  {isEnabled && (
+                    <Text style={styles.checkmark}>
+                      ✓
+                    </Text>
+                  )}
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </ScrollView>
 
-          const isProjectFiles =
-            section.id === "project-files";
-
-          const isDisabled =
-            isProjectFiles &&
-            !selectedProject;
-
-          return (
-            <TouchableOpacity
-              key={section.id}
-              disabled={isDisabled}
-              style={[
-                styles.item,
-                index !==
-                  homeSections.length - 1 &&
-                  styles.itemBorder,
-                {
-                  opacity: isDisabled
-                    ? 0.4
-                    : 1,
-                },
-              ]}
-              onPress={function handlePress() {
-                toggleSection(section.id);
-              }}
-            >
-              <Text style={styles.itemText}>
-                {section.title}
-              </Text>
-
-              <View
-                style={[
-                  styles.checkbox,
-                  isEnabled &&
-                    styles.checkboxActive,
-                ]}
-              >
-                {isEnabled && (
-                  <Text style={styles.checkmark}>
-                    ✓
-                  </Text>
-                )}
-              </View>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
+      <BottomBar
+        onLeftPress={() => navigation.navigate("Main")}
+        onRightPress={() => navigation.navigate("Menu")}
+        showAddButton={false}
+      />
     </View>
   );
 }

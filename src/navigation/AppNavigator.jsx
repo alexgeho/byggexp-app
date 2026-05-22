@@ -33,6 +33,7 @@ import HomeVariant3 from "../screens/Main/HomeVariants/HomeVariant3";
 import HomeVariant4darkGray from "../screens/Main/HomeVariants/HomeVariant4darkGray";
 import HomeVariant5orange from "../screens/Main/HomeVariants/HomeVariant5orange";
 import HomeVariant6blue from "../screens/Main/HomeVariants/HomeVariant6blue";
+import ThemeHomeScreen from "../screens/Main/HomeVariants/ThemeHomeScreen";
 
 import CustomizeHomeScreen from "../screens/Menu/CustomizeHomeScreen";
 
@@ -83,7 +84,7 @@ export default function AppNavigator() {
           <>
             <Stack.Screen
               name="Main"
-              component={HomeVariant2}
+              component={ThemeHomeScreen}
               options={{ headerShown: false }}
             />
             <Stack.Screen

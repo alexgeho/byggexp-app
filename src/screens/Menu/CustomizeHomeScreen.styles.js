@@ -8,6 +8,12 @@ export function createStyles(theme) {
       paddingTop: 48,
       paddingHorizontal: 16,
     },
+    scrollContainer: {
+      flex: 1,
+    },
+    scrollContent: {
+      paddingBottom: 140,
+    },
 
     header: {
       flexDirection: "row",

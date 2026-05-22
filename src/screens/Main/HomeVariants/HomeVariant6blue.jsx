@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import {
   View,
   Text,
@@ -24,7 +24,7 @@ import { formatDuration } from "../../../utils/shifts";
 import { startShiftWithLocationGuard } from "../../../utils/shiftLocationGuard";
 
 export default function MainScreen() {
-  const { theme, changeTheme } = useTheme();
+  const { theme } = useTheme();
   const navigation = useNavigation();
   const { user, selectedProject, setSelectedProject } = useContext(AuthContext);
   const [projects, setProjects] = useState([]);
@@ -262,9 +262,6 @@ export default function MainScreen() {
   };
 
   const BackgroundComponent = Platform.OS === "web" ? View : LinearGradient;
-  useEffect(function applyTheme() {
-    changeTheme("blue");
-  }, []);
 
   function openVariantTwo() {
     navigation.navigate("HomeVariant1green");
