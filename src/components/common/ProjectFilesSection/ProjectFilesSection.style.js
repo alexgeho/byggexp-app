@@ -1,57 +1,185 @@
 import { StyleSheet } from "react-native";
 
-export function createStyles(theme) {
+export function createStyles(
+  theme,
+  colorMode = "dark",
+) {
+  const isLightMode =
+    colorMode === "light";
+  const primaryTextColor = isLightMode
+    ? theme.colors.text
+    : "#FFFFFF";
+
   return StyleSheet.create({
+    section: {
+      gap: 10,
+    },
     header: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      marginBottom: 6,
       paddingHorizontal: 4,
     },
 
     title: {
-      fontSize: theme.text.sizes.medium,
-      fontFamily: theme.text.fontFamily.bold,
-      color: theme.colors.text,
-    },
-
-    closeButton: {
-      width: 28,
-      height: 28,
-      borderRadius: 999,
-      alignItems: "center",
-      justifyContent: "center",
-      backgroundColor: theme.colors.background,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-    },
-
-    closeText: {
-      fontSize: 14,
-      color: theme.colors.text,
+      color: primaryTextColor,
+      fontSize: 17,
       fontFamily: theme.text.fontFamily.medium,
     },
 
-    container: {
+    linkButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+    },
+
+    linkText: {
+      color: primaryTextColor,
+      fontSize: 15,
+      opacity: 0.9,
+      fontFamily: theme.text.fontFamily.medium,
+    },
+
+    linkIcon: {
+      opacity: 0.9,
+      marginTop: 1,
+    },
+
+    carouselViewport: {
+      height: 130,
       width: "100%",
-      borderWidth: 1,
-      borderRadius: 18,
-      borderColor: theme.colors.primary,
-      backgroundColor: `${theme.colors.primary}25`,
-      paddingVertical: 4,
+      position: "relative",
+      justifyContent: "center",
+      borderWidth: isLightMode ? 1 : 0,
+      borderColor: isLightMode
+        ? `${theme.colors.primary}33`
+        : "transparent",
+      backgroundColor: isLightMode
+        ? `${theme.colors.primary}18`
+        : "transparent",
+      borderRadius: 20,
       overflow: "hidden",
     },
 
-    scrollContent: {
-      paddingHorizontal: 4,
+    carouselRow: {
+      flexDirection: "row",
+      height: 130,
+      alignSelf: "center",
+      alignItems: "stretch",
+    },
+
+    carouselRowRegular: {
+      gap: 10,
+    },
+
+    peekTrack: {
+      width: "100%",
+      height: 130,
+      position: "relative",
+    },
+
+    carouselSlot: {
+      width: 148,
+      height: 130,
+      overflow: "hidden",
+      flexShrink: 0,
+    },
+
+    carouselSlotPeek: {
+      width: 148,
+      position: "absolute",
+      top: 0,
+    },
+
+    carouselSlotRegular: {
+      width: 148,
+    },
+
+    peekLeftSlot: {
+      left: "50%",
+      marginLeft: -232,
+    },
+
+    peekCenterSlot: {
+      left: "50%",
+      marginLeft: -74,
+    },
+
+    peekRightSlot: {
+      left: "50%",
+      marginLeft: 84,
+    },
+
+    fileTouchable: {
+      flex: 1,
+    },
+
+    imageFrame: {
+      width: "100%",
+      height: "100%",
+      overflow: "hidden",
+      backgroundColor: isLightMode
+        ? "rgba(255,255,255,0.85)"
+        : "rgba(255,255,255,0.12)",
     },
 
     image: {
-      width: 140,
-      height: 140,
-      borderRadius: 16,
-      marginRight: 8,
+      width: "100%",
+      height: "100%",
+      resizeMode: "cover",
+    },
+
+    imageFirst: {
+      borderTopLeftRadius: 20,
+      borderBottomLeftRadius: 20,
+    },
+
+    imageLast: {
+      borderTopRightRadius: 20,
+      borderBottomRightRadius: 20,
+    },
+
+    fileFallback: {
+      flex: 1,
+      backgroundColor: "rgba(255,255,255,0.75)",
+      alignItems: "center",
+      justifyContent: "center",
+      paddingHorizontal: 10,
+      gap: 8,
+    },
+
+    fileFallbackText: {
+      color: "#052D50",
+      fontSize: 12,
+      textAlign: "center",
+      fontFamily: theme.text.fontFamily.medium,
+    },
+
+    navButton: {
+      position: "absolute",
+      top: "50%",
+      marginTop: -16.5,
+      width: 33,
+      height: 33,
+      borderRadius: 999,
+      alignItems: "center",
+      justifyContent: "center",
+      borderWidth: 1,
+      borderColor: "rgba(5, 45, 80, 0.5)",
+      backgroundColor: "rgba(255,255,255,0.6)",
+      zIndex: 2,
+    },
+
+    navButtonLeft: {
+      left: 15,
+    },
+
+    navButtonRight: {
+      right: 15,
+    },
+
+    navButtonDisabled: {
+      opacity: 0.45,
     },
   });
 }

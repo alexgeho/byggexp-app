@@ -2,6 +2,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
@@ -12,6 +13,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  useWindowDimensions,
 } from "react-native";
 
 import { LinearGradient } from "expo-linear-gradient";
@@ -22,6 +24,7 @@ import {
 } from "@react-navigation/native";
 
 import AuthContext from "../../../contexts/AuthContext";
+import { useTheme } from "../../../theme/ThemeContext";
 
 import { useTimer } from "../../../hooks/useTimer";
 import { useShiftExitAutoComplete } from "../../../hooks/useShiftExitAutoComplete";
@@ -31,7 +34,7 @@ import { Timer } from "../../../components/common2/Timer/Timer";
 import shiftService from "../../../services/shift.service";
 import { startShiftWithLocationGuard } from "../../../utils/shiftLocationGuard";
 
-import { styles } from "./HomeVariant2.styles";
+import { createStyles } from "./HomeVariant2.styles";
 
 import { ProjectSelector2 } from "../../../components/common2/projectSelector/projectSelector";
 import { MainActionButtons } from "../../../components/common2/mainActionButtons/mainActionButtons";
@@ -42,12 +45,36 @@ import ProjectFilesSection from "../../../components/common/ProjectFilesSection/
 import {
   mainButtons,
   defaultEnabledButtons,
+  defaultEnabledSections,
 } from "../../../constants/mainButtons";
-import { getEnabledButtons } from "../../../utils/homeButtonsStorage";
+import {
+  getEnabledButtons,
+  getEnabledSections,
+} from "../../../utils/homeButtonsStorage";
 import { useUnreadChats } from "../../../hooks/useUnreadChats";
 import UnreadBadge from "../../../components/common/UnreadBadge/UnreadBadge";
+import ShiftHistoryPreview from "../../../components/common2/ShiftHistoryPreview/ShiftHistoryPreview";
 
 export default function HomeVariant2() {
+  const {
+    theme,
+    themeName,
+  } = useTheme();
+  const gradientColors = useMemo(
+    () =>
+      ({
+        blue: ["#5BC8FF", "#0D5DB8"],
+        green: ["#8ED057", "#4C9E3C"],
+        orange: ["#FFAE63", "#F97316"],
+        darkGray: ["#363636", "#121212"],
+      })[themeName] || ["#5BC8FF", "#0D5DB8"],
+    [themeName],
+  );
+  const { height: screenHeight } =
+    useWindowDimensions();
+  const isVeryCompact = screenHeight <= 700;
+  const isCompact =
+    screenHeight <= 780;
   /* SELECTED PROJECT */
   const {
     selectedProject,
@@ -76,7 +103,37 @@ export default function HomeVariant2() {
     enabledButtons,
     setEnabledButtons,
   ] = useState(defaultEnabledButtons);
+  const [
+    enabledSections,
+    setEnabledSections,
+  ] = useState(defaultEnabledSections);
   const { unreadCount } = useUnreadChats();
+  const visibleQuickButtons = useMemo(
+    () =>
+      mainButtons.filter(function filterButton(button) {
+        return (
+          button.id !== "next" &&
+          enabledButtons.includes(button.id)
+        );
+      }),
+    [enabledButtons],
+  );
+  const hasSections =
+    enabledSections.includes("shift-history") ||
+    enabledSections.includes("project-files");
+  const styles = useMemo(
+    () =>
+      createStyles({
+        compact: isCompact,
+        veryCompact: isVeryCompact,
+        hasSections,
+      }),
+    [
+      hasSections,
+      isCompact,
+      isVeryCompact,
+    ],
+  );
 
   /* TIMER LOGIC */
   const {
@@ -174,17 +231,26 @@ export default function HomeVariant2() {
   });
 
   useFocusEffect(
-    React.useCallback(function loadButtons() {
-      async function fetchButtons() {
-        const savedButtons =
-          await getEnabledButtons();
+    React.useCallback(function loadHomeSettings() {
+      async function fetchSettings() {
+        const [
+          savedButtons,
+          savedSections,
+        ] = await Promise.all([
+          getEnabledButtons(),
+          getEnabledSections(),
+        ]);
 
         if (savedButtons) {
           setEnabledButtons(savedButtons);
         }
+
+        if (savedSections) {
+          setEnabledSections(savedSections);
+        }
       }
 
-      fetchButtons();
+      fetchSettings();
     }, []),
   );
 
@@ -270,10 +336,7 @@ export default function HomeVariant2() {
 
   return (
     <LinearGradient
-      colors={[
-        "#5BC8FF",
-        "#0D5DB8",
-      ]}
+      colors={gradientColors}
       start={{
         x: 0,
         y: 0,
@@ -288,43 +351,65 @@ export default function HomeVariant2() {
         contentContainerStyle={styles.main}
         showsVerticalScrollIndicator={false}
       >
-        {/* PROJECT SELECTOR */}
-        <ProjectSelector2
-          value={selectedProject}
-          onPress={openProjects}
-        />
+        <View style={styles.heroSection}>
+          {/* PROJECT SELECTOR */}
+          <ProjectSelector2
+            value={selectedProject}
+            onPress={openProjects}
+            style={
+              isCompact
+                ? styles.selectorCompact
+                : null
+            }
+            textStyle={
+              isCompact
+                ? styles.selectorTextCompact
+                : null
+            }
+            iconStyle={
+              isCompact
+                ? styles.selectorIconCompact
+                : null
+            }
+          />
 
-        {/* TIMER */}
-        <Timer
-          hours={
-            formattedTime.hours
-          }
-          minutes={
-            formattedTime.minutes
-          }
-          seconds={
-            formattedTime.seconds
-          }
-        />
+          {/* TIMER */}
+          <Timer
+            hours={
+              formattedTime.hours
+            }
+            minutes={
+              formattedTime.minutes
+            }
+            seconds={
+              formattedTime.seconds
+            }
+            containerStyle={styles.timerContainer}
+            textStyle={
+              isCompact
+                ? styles.timerTextCompact
+                : styles.timerTextRegular
+            }
+            secondsStyle={
+              isCompact
+                ? styles.timerSecondsCompact
+                : null
+            }
+          />
 
-        {/* ACTION BUTTONS */}
-        <MainActionButtons
-          isRunning={isRunning}
-          isPaused={isPaused}
-          loading={loadingShift}
-          onPlayPress={handlePlayPause}
-          onCameraPress={handleCameraPress}
-        />
+          {/* ACTION BUTTONS */}
+          <MainActionButtons
+            isRunning={isRunning}
+            isPaused={isPaused}
+            loading={loadingShift}
+            onPlayPress={handlePlayPause}
+            onCameraPress={handleCameraPress}
+            compact={isCompact}
+            veryCompact={isVeryCompact}
+          />
 
-        <View style={styles.quickActionsGrid}>
-          {mainButtons
-            .filter(function filterButton(button) {
-              return (
-                button.id !== "next" &&
-                enabledButtons.includes(button.id)
-              );
-            })
-            .map(function renderButton(button) {
+          <View style={styles.quickActionsGrid}>
+            {visibleQuickButtons.map(function renderButton(button) {
               return (
                 <TouchableOpacity
                   key={button.id}
@@ -349,12 +434,18 @@ export default function HomeVariant2() {
                 </TouchableOpacity>
               );
             })}
+          </View>
         </View>
 
-        {/* PROJECT FILES */}
-        <ProjectFilesSection
-          project={selectedProject}
-        />
+        {enabledSections.includes("shift-history") && (
+          <ShiftHistoryPreview />
+        )}
+
+        {enabledSections.includes("project-files") && (
+          <ProjectFilesSection
+            project={selectedProject}
+          />
+        )}
       </ScrollView>
 
       {/* FOOTER */}

@@ -5,17 +5,11 @@
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
-    "ios": "expo run:ios",
-    "ios:15": "expo run:ios --simulator \"iPhone 15\"",
-    "ios:15pro": "expo run:ios --simulator \"iPhone 15 Pro\"",
-    "ios:se": "expo run:ios --simulator \"iPhone SE (3rd generation)\"",
-    "ios:16": "expo run:ios --simulator \"iPhone 16\"",
-    "ios:16pro": "expo run:ios --simulator \"iPhone 16 Pro\"",
-    "ios:16promax": "expo run:ios --simulator \"iPhone 16 Pro Max\"",
-    "ios:16plus": "expo run:ios --simulator \"iPhone 16 Plus\"",
-    "ios:16mini": "expo run:ios --simulator \"iPhone 16 Mini\"",
-    "ios:16ultramax": "expo run:ios --simulator \"iPhone 16 Ultra Max\"",
-    "ios:16ultramaxpro": "expo run:ios --simulator \"iPhone 16 Ultra Max Pro\"",
+    "ios": "node scripts/run-ios-simulator.js",
+    "ios:18.2": "npm run ios",
+    "ios:se": "node scripts/run-ios-simulator.js se",
+    "ios:15": "node scripts/run-ios-simulator.js 15",
+    "ios:16": "node scripts/run-ios-simulator.js 16",
     "web": "expo start --web"
   },
   "dependencies": {

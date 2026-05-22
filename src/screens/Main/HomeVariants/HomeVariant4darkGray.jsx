@@ -26,6 +26,17 @@ import UnreadBadge from "../../../components/common/UnreadBadge/UnreadBadge";
 import { projectService, shiftService } from "../../../services";
 import { formatDuration } from "../../../utils/shifts";
 import { startShiftWithLocationGuard } from "../../../utils/shiftLocationGuard";
+import {
+  defaultEnabledButtons,
+  defaultEnabledSections,
+  mainButtons,
+} from "../../../constants/mainButtons";
+import {
+  getEnabledButtons,
+  getEnabledSections,
+} from "../../../utils/homeButtonsStorage";
+import ProjectFilesSection from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
+import ShiftHistoryPreview from "../../../components/common2/ShiftHistoryPreview/ShiftHistoryPreview";
 
 export default function MainScreen() {
   const { theme } = useTheme();
@@ -36,6 +47,8 @@ export default function MainScreen() {
   const [loadingShift, setLoadingShift] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [currentShift, setCurrentShift] = useState(null);
+  const [enabledButtons, setEnabledButtons] = useState(defaultEnabledButtons);
+  const [enabledSections, setEnabledSections] = useState(defaultEnabledSections);
   const { unreadCount } = useUnreadChats();
   const {
     formattedTime,
@@ -174,6 +187,22 @@ export default function MainScreen() {
     useCallback(() => {
       fetchProjects();
       loadCurrentShift(selectedProjectId);
+      async function loadHomeSettings() {
+        const [savedButtons, savedSections] = await Promise.all([
+          getEnabledButtons(),
+          getEnabledSections(),
+        ]);
+
+        if (savedButtons) {
+          setEnabledButtons(savedButtons);
+        }
+
+        if (savedSections) {
+          setEnabledSections(savedSections);
+        }
+      }
+
+      loadHomeSettings();
     }, [fetchProjects, loadCurrentShift, selectedProjectId]),
   );
 
@@ -264,6 +293,11 @@ export default function MainScreen() {
   const handleNav = (screen) => {
     navigation.navigate(screen);
   };
+  const visibleButtons = mainButtons.filter(
+    (button) =>
+      button.id !== "next" &&
+      enabledButtons.includes(button.id),
+  );
 
   const BackgroundComponent = Platform.OS === "web" ? View : LinearGradient;
 
@@ -409,158 +443,60 @@ export default function MainScreen() {
 
       {/* MAIN NAV BTNs */}
       <View style={styles.navButtonContainer}>
-        {/* 1ST BUTTON */}
-        <GlassView
-          style={[
-            styles.button,
-            {
-              borderColor: theme.colors.border,
-              backgroundColor: theme.colors.card,
-            },
-          ]}
-          intensity={60}
-        >
-          <TouchableOpacity onPress={openVariantTwo} style={styles.buttonInner}>
-            <Image
-              style={[
-                styles.buttonIcon,
-                {
-                  tintColor: theme.colors.icon,
-                },
-              ]}
-              source={require("../../../assets/next-screen.png")}
-            />
-
-            <Text
-              style={[
-                styles.text,
-                {
-                  fontFamily: theme.text.fontFamily["regular"],
-                  color: theme.colors.text,
-                },
-              ]}
-            >
-              NEXT SCREEN 5
-            </Text>
-          </TouchableOpacity>
-        </GlassView>
-
-        {/* CHATS */}
-        <GlassView
-          style={[
-            styles.button,
-            {
-              borderColor: theme.colors.border,
-              backgroundColor: theme.colors.card,
-            },
-          ]}
-          intensity={60}
-        >
-          <TouchableOpacity
-            onPress={() => handleNav("Chats")}
-            style={styles.buttonInner}
+        {visibleButtons.map((button) => (
+          <GlassView
+            key={button.id}
+            style={[
+              styles.button,
+              {
+                borderColor: theme.colors.border,
+                backgroundColor: theme.colors.card,
+              },
+            ]}
+            intensity={60}
           >
-            <View style={styles.iconWrapper}>
-              <Image
+            <TouchableOpacity
+              onPress={() => handleNav(button.screen)}
+              style={styles.buttonInner}
+            >
+              <View style={styles.iconWrapper}>
+                <Image
+                  style={[
+                    styles.buttonIcon,
+                    {
+                      tintColor: theme.colors.icon,
+                    },
+                  ]}
+                  source={button.icon}
+                />
+                {button.id === "chats" ? (
+                  <UnreadBadge count={unreadCount} />
+                ) : null}
+              </View>
+              <Text
                 style={[
-                  styles.buttonIcon,
+                  styles.text,
                   {
-                    tintColor: theme.colors.icon,
+                    fontFamily: theme.text.fontFamily["regular"],
+                    color: theme.colors.text,
                   },
                 ]}
-                source={require("../../../assets/mainButtons/messager.png")}
-              />
-              <UnreadBadge count={unreadCount} />
-            </View>
-            <Text
-              style={[
-                styles.text,
-                {
-                  fontFamily: theme.text.fontFamily["regular"],
-                  color: theme.colors.text,
-                },
-              ]}
-            >
-              Chats
-            </Text>
-          </TouchableOpacity>
-        </GlassView>
+              >
+                {button.title}
+              </Text>
+            </TouchableOpacity>
+          </GlassView>
+        ))}
+      </View>
 
-        {/* SHIFTS */}
-        <GlassView
-          style={[
-            styles.button,
-            {
-              borderColor: theme.colors.border,
-              backgroundColor: theme.colors.card,
-            },
-          ]}
-          intensity={60}
-        >
-          <TouchableOpacity
-            onPress={() => handleNav("Shifts")}
-            style={styles.buttonInner}
-          >
-            <Image
-              style={[
-                styles.buttonIcon,
-                {
-                  tintColor: theme.colors.icon,
-                },
-              ]}
-              source={require("../../../assets/mainButtons/shifts.png")}
-            />
-            <Text
-              style={[
-                styles.text,
-                {
-                  fontFamily: theme.text.fontFamily["regular"],
-                  color: theme.colors.text,
-                },
-              ]}
-            >
-              History
-            </Text>
-          </TouchableOpacity>
-        </GlassView>
+      <View style={styles.sectionsContainer}>
+        {enabledSections.includes("shift-history") && (
+          <ShiftHistoryPreview />
+        )}
 
-        {/* PROJECTS */}
-        <GlassView
-          style={[
-            styles.button,
-            {
-              borderColor: theme.colors.border,
-              backgroundColor: theme.colors.card,
-            },
-          ]}
-          intensity={60}
-        >
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Projects", { mode: "browse" })}
-            style={styles.buttonInner}
-          >
-            <Image
-              style={[
-                styles.buttonIcon,
-                {
-                  tintColor: theme.colors.icon,
-                },
-              ]}
-              source={require("../../../assets/mainButtons/projects.png")}
-            />
-            <Text
-              style={[
-                styles.text,
-                {
-                  fontFamily: theme.text.fontFamily["regular"],
-                  color: theme.colors.text,
-                },
-              ]}
-            >
-              Projects
-            </Text>
-          </TouchableOpacity>
-        </GlassView>
+        {enabledSections.includes("project-files") && (
+          <ProjectFilesSection project={selectedProject} />
+        )}
       </View>
 
       {/* BOTTOM MENU */}
@@ -695,6 +631,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     gap: 30,
+  },
+  sectionsContainer: {
+    gap: 16,
+    paddingHorizontal: 16,
+    marginTop: 8,
   },
   button: {
     width: "42%",
