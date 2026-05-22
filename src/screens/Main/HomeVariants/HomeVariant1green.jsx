@@ -25,6 +25,7 @@ import { getEnabledSections } from "@utils/homeButtonsStorage";
 import ProjectSelector from "@components/common/ProjectSelector/ProjectSelector";
 import MainButtonsGrid from "@components/common/NavButtonsGrid/MainButtonsGrid";
 import ProjectFilesSection from "@components/common/ProjectFilesSection/ProjectFilesSection";
+import ShiftHistoryPreview from "@components/common2/ShiftHistoryPreview/ShiftHistoryPreview";
 import TimerDisplay from "@components/common/TimerDisplay/TimerDisplay";
 import PlayButton from "@components/common/PlayButton/PlayButton";
 import TimerProgress from "@components/common/TimerProgress/TimerProgress";
@@ -257,6 +258,8 @@ export default function MainScreen() {
           seconds={formattedTime.seconds}
         />
 
+        <TimerProgress progress={timerProgress} />
+
 
         <PlayButton
           isRunning={isRunning}
@@ -267,15 +270,22 @@ export default function MainScreen() {
 
         <MainButtonsGrid />
 
-        {showProjectFiles &&
-          enabledSections.includes("project-files") && (
-            <ProjectFilesSection
-              project={selectedProject}
-              onClose={function handleClose() {
-                setShowProjectFiles(false);
-              }}
-            />
+        <View style={styles.sectionsContainer}>
+          {enabledSections.includes("shift-history") && (
+            <ShiftHistoryPreview colorMode="light" />
           )}
+
+          {showProjectFiles &&
+            enabledSections.includes("project-files") && (
+              <ProjectFilesSection
+                project={selectedProject}
+                colorMode="light"
+                onClose={function handleClose() {
+                  setShowProjectFiles(false);
+                }}
+              />
+            )}
+        </View>
       </View>
 
       <BottomBar

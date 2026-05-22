@@ -33,6 +33,10 @@ export const mainButtons = [
 
 export const homeSections = [
   {
+    id: "shift-history",
+    title: "Shift history",
+  },
+  {
     id: "project-files",
     title: "Project Files",
   },
@@ -48,5 +52,6 @@ export const defaultEnabledButtons = [
 ];
 
 export const defaultEnabledSections = [
+  "shift-history",
   "project-files",
 ];

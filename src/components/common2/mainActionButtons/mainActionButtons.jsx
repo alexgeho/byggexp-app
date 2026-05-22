@@ -15,12 +15,44 @@ export function MainActionButtons({
   loading,
   onPlayPress,
   onCameraPress,
+  compact = false,
+  veryCompact = false,
 }) {
+  const actionButtonSize = veryCompact
+    ? 96
+    : compact
+      ? 108
+      : 124;
+  const iconActionSize = veryCompact
+    ? 32
+    : compact
+      ? 36
+      : 40;
+  const secondaryButtonSize = veryCompact
+    ? 96
+    : compact
+      ? 108
+      : 124;
+  const buttonsGap = veryCompact
+    ? 20
+    : compact
+      ? 26
+      : 35;
+
   return (
-    <View style={styles.mainActionButtons}>
+    <View
+      style={[
+        styles.mainActionButtons,
+        { gap: buttonsGap },
+      ]}
+    >
       <TouchableOpacity
         style={[
           styles.actionButton,
+          {
+            width: actionButtonSize,
+            height: actionButtonSize,
+          },
           isPaused &&
             styles.actionButtonPaused,
         ]}
@@ -33,7 +65,13 @@ export function MainActionButtons({
           />
         ) : (
           <Image
-            style={styles.iconAction}
+            style={[
+              styles.iconAction,
+              {
+                width: iconActionSize,
+                height: iconActionSize,
+              },
+            ]}
             source={
               isRunning
                 ? require("../../../assets/HomeScreen2/Pause.png")
@@ -44,12 +82,24 @@ export function MainActionButtons({
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.actionButtonCamera}
+        style={[
+          styles.actionButtonCamera,
+          {
+            width: secondaryButtonSize,
+            height: secondaryButtonSize,
+          },
+        ]}
         onPress={onCameraPress}
       >
         <Image
           source={require("../../../assets/HomeScreen2/CircleCamera.png")}
-          style={styles.icon}
+          style={[
+            styles.icon,
+            {
+              width: secondaryButtonSize,
+              height: secondaryButtonSize,
+            },
+          ]}
         />
       </TouchableOpacity>
     </View>

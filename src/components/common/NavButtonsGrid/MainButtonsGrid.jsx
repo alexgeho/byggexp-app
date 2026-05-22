@@ -54,8 +54,11 @@ export default function MainButtonsGrid() {
     <View style={styles.container}>
       {mainButtons
         .filter(function filterButtons(button) {
-          return enabledButtons.includes(
-            button.id,
+          return (
+            button.id !== "next" &&
+            enabledButtons.includes(
+              button.id,
+            )
           );
         })
         .map(function renderButton(button) {

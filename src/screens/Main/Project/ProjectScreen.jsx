@@ -6,6 +6,7 @@ import {
 import React, {
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -137,8 +138,10 @@ export const ProjectScreen = () => {
   const navigation = useNavigation();
   const { user } = useContext(AuthContext);
   const { theme } = useTheme();
-  const { id } = route.params || {};
-  const [modal, setModal] = useState("Tasks");
+  const { id, initialTab } = route.params || {};
+  const [modal, setModal] = useState(
+    initialTab || "Tasks",
+  );
   const [selectedWorker, setSelectedWorker] = useState(null);
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -172,6 +175,10 @@ export const ProjectScreen = () => {
       fetchProject();
     }, [fetchProject]),
   );
+
+  useEffect(() => {
+    setModal(initialTab || "Tasks");
+  }, [initialTab, id]);
 
   const openWorkerModal = (worker) => {
     setSelectedWorker(worker);

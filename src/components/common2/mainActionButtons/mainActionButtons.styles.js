@@ -4,7 +4,7 @@ export const styles = StyleSheet.create({
   mainActionButtons: {
     flexDirection: "row",
     justifyContent: "center",
-    gap: 35,
+    alignItems: "center",
   },
 
   actionButton: {

@@ -22,5 +22,9 @@ export function createStyles(theme) {
       gap: 10,
       marginBottom: 140,
     },
+    sectionsContainer: {
+      gap: 16,
+      marginTop: 8,
+    },
   });
 }
