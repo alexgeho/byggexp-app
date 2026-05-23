@@ -203,7 +203,7 @@ export default function ShiftsScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <BackButton
-          backgroundColor={"rgb(253 253 253)"}
+          backgroundColor={"rgba(255, 255, 255, 0.6)"}
           tint={"light"}
           borderColor="#FFFFFF50"
           onPress={() => navigation.goBack()}
@@ -508,8 +508,10 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 16,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 9999,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.05,
@@ -638,10 +640,12 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   shiftCard: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 12,
     padding: 12,
     gap: 8,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   shiftInfoRow: {
     flexDirection: "row",
@@ -726,9 +730,11 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   modalContent: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 16,
     paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   exportModalCard: {
     backgroundColor: "#EEEEEE",
@@ -745,24 +751,28 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   exportSheetCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 20,
     padding: 0,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   exportButtonsContainer: {
     flexDirection: "row",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 20,
     padding: 0,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   exportButton: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 20,
     paddingVertical: 12,
     alignItems: "center",
-    borderWidth: 0,
-    borderColor: "transparent",
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   exportButtonActive: {
     borderWidth: 2,

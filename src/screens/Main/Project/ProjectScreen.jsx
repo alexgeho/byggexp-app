@@ -412,7 +412,7 @@ export const ProjectScreen = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <BackButton
-          backgroundColor={"rgb(253 253 253)"}
+          backgroundColor={"rgba(255, 255, 255, 0.6)"}
           tint={"light"}
           borderColor="#FFFFFF50"
           onPress={() => navigation.goBack()}
@@ -744,11 +744,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    paddingTop: 20,
+    paddingBottom: 10,
   },
   backButton: {
     padding: 16,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 9999,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.05,
@@ -781,7 +785,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingLeft: 8,
     paddingRight: 8,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 999,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
@@ -789,7 +793,7 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 1,
     borderWidth: 1,
-    borderColor: "transparent",
+    borderColor: "#FFFFFF",
   },
   activeTab: {
     borderColor: "#0785F4",
@@ -809,10 +813,12 @@ const styles = StyleSheet.create({
   },
   emptyState: {
     width: "100%",
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 16,
     padding: 20,
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.0625,
@@ -829,10 +835,12 @@ const styles = StyleSheet.create({
   },
   taskItem: {
     width: "100%",
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 16,
     gap: 16,
     padding: 16,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.0625,
@@ -872,10 +880,12 @@ const styles = StyleSheet.create({
   },
   documentItem: {
     width: "100%",
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 16,
     gap: 16,
     padding: 16,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.0625,
@@ -930,7 +940,9 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.0625,
@@ -980,9 +992,11 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   workerHeaderCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 20,
     padding: 16,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   workerModalTitle: {
     fontSize: 24,
@@ -999,8 +1013,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 16,
     paddingHorizontal: 16,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.05,
@@ -1017,7 +1033,7 @@ const styles = StyleSheet.create({
     tintColor: "#052D50",
   },
   addGroupChat: {
-    backgroundColor: "#FFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderColor: "#0091FF",
     borderWidth: 1,
   },

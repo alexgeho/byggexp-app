@@ -134,7 +134,7 @@ export default function TasksScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <BackButton
-          backgroundColor={"rgb(253 253 253)"}
+          backgroundColor={"rgba(255, 255, 255, 0.6)"}
           tint="light"
           borderColor="#FFFFFF50"
           onPress={() => navigation.goBack()}
@@ -259,6 +259,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    paddingTop: 20,
+    paddingBottom: 10,
   },
   headerTitle: {
     color: "#052D50",
@@ -309,10 +311,12 @@ const styles = StyleSheet.create({
   },
   taskItem: {
     width: "100%",
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 16,
     gap: 16,
     padding: 16,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.0625,

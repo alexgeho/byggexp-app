@@ -54,7 +54,7 @@ export default function TaskNotificationRepeatScreen() {
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.header}>
           <BackButton
-            backgroundColor={"rgb(253 253 253)"}
+            backgroundColor={"rgba(255, 255, 255, 0.6)"}
             tint="light"
             borderColor="#FFFFFF50"
             onPress={() => navigation.goBack()}
@@ -190,10 +190,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   card: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 24,
     overflow: "hidden",
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   optionRow: {
     paddingHorizontal: 16,
@@ -249,10 +251,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#0091FF",
   },
   noteCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 24,
     padding: 16,
     gap: 8,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   noteTitle: {
     color: "#052D50",

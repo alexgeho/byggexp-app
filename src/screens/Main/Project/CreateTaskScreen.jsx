@@ -290,7 +290,7 @@ export default function CreateTaskScreen() {
       >
         <View style={styles.header}>
           <BackButton
-            backgroundColor={"rgb(253 253 253)"}
+            backgroundColor={"rgba(255, 255, 255, 0.6)"}
             tint="light"
             borderColor="#FFFFFF50"
             onPress={() => navigation.goBack()}
@@ -586,10 +586,12 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   groupCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 24,
     overflow: "hidden",
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   groupRow: {
     minHeight: 60,
@@ -726,9 +728,11 @@ const styles = StyleSheet.create({
   datePickerCard: {
     width: "100%",
     maxWidth: 360,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 24,
     padding: 16,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   datePickerTitle: {
     color: "#052D50",

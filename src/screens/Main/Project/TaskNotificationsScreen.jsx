@@ -192,7 +192,7 @@ export default function TaskNotificationsScreen() {
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.header}>
           <BackButton
-            backgroundColor={"rgb(253 253 253)"}
+            backgroundColor={"rgba(255, 255, 255, 0.6)"}
             tint="light"
             borderColor="#FFFFFF50"
             onPress={() => navigation.goBack()}
@@ -343,7 +343,7 @@ export default function TaskNotificationsScreen() {
         <View style={styles.modalContainer}>
           <View style={styles.header}>
             <BackButton
-              backgroundColor={"rgb(253 253 253)"}
+              backgroundColor={"rgba(255, 255, 255, 0.6)"}
               tint="light"
               borderColor="#FFFFFF50"
               onPress={closeWorkersModal}
@@ -496,10 +496,12 @@ const styles = StyleSheet.create({
     height: 44,
   },
   groupCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 24,
     overflow: "hidden",
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   groupRow: {
     minHeight: 72,
@@ -555,10 +557,12 @@ const styles = StyleSheet.create({
     color: "rgba(5, 45, 80, 0.45)",
   },
   infoCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 24,
     padding: 16,
     gap: 8,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   infoTitle: {
     color: "#052D50",
@@ -604,12 +608,14 @@ const styles = StyleSheet.create({
   searchBar: {
     height: 52,
     borderRadius: 18,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
     gap: 10,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   searchInput: {
     flex: 1,
@@ -620,7 +626,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   workerCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 18,
     paddingHorizontal: 14,
     paddingVertical: 12,
@@ -628,6 +634,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   workerAvatarPlaceholder: {
     width: 44,
@@ -663,7 +671,8 @@ const styles = StyleSheet.create({
     borderColor: "rgba(5, 45, 80, 0.18)",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    borderColor: "#FFFFFF",
     shadowColor: "#052D50",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
@@ -671,7 +680,7 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   workerCheckboxSelected: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
   },
   emptyState: {
     paddingVertical: 48,
