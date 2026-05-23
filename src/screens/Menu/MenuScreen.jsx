@@ -169,6 +169,7 @@ export default function MenuScreen() {
   const settingsItems = [
     {
       id: "legal",
+      screen: "LegalPolicies",
       title: "Legal & Policies",
       icon: require("../../assets/Legal.png"),
       color: theme.colors.primary,

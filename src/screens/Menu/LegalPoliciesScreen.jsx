@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  ActivityIndicator,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
@@ -14,18 +7,72 @@ import { useAppInformation } from "../../hooks/useAppInformation";
 import { standardScreenHeaderSpacing } from "../../styles/screenLayout";
 import { useTheme } from "../../theme/ThemeContext";
 
-const APP_FEATURES = [
-  "Track working hours both manually and automatically using GPS",
-  "Receive and send drawings, tasks, and important documents between the office, foremen, and workers",
-  "Manage projects efficiently, receive timely notifications about new tasks, changes, and possible violations on site",
-  "Ensure transparency and control over all construction site activities",
+const COLLECTED_DATA = [
+  "Personal information provided during registration (name, phone number, email)",
+  "Work-related data such as time logs, project details, and GPS locations (only during working hours, as configured by your employer)",
+  "Communication and documents exchanged within the app",
 ];
 
-export default function AboutAppScreen() {
+const DATA_USAGE = [
+  "To provide and improve our services",
+  "To facilitate communication and project management between office, foremen, and workers",
+  "To comply with legal obligations and improve security",
+];
+
+const DATA_PROTECTION = [
+  "Your data is securely stored both locally and in the cloud",
+  "Access is protected by login/password and other secure authentication methods",
+  "We do not share your personal information with third parties except as required by law or with your consent",
+];
+
+const USER_RIGHTS = [
+  "You may request access, correction, or deletion of your personal data at any time",
+  "You can contact our support team regarding privacy questions or data removal requests",
+];
+
+const LEGAL_NOTICE = [
+  "By using Bygg App, you agree to our Terms of Service and this Privacy Policy",
+  "For more information, please review the full documents available in the app or on our website",
+];
+
+function BulletSection({ title, items, theme }) {
+  return (
+    <View style={styles.groupCard}>
+      <Text
+        style={[
+          styles.sectionTitle,
+          { fontFamily: theme.text.fontFamily.semiBold },
+        ]}
+      >
+        {title}
+      </Text>
+
+      {items.map((item) => (
+        <View key={item} style={styles.bulletRow}>
+          <View
+            style={[
+              styles.bullet,
+              { backgroundColor: theme.colors.primary },
+            ]}
+          />
+          <Text
+            style={[
+              styles.bulletText,
+              { fontFamily: theme.text.fontFamily.medium },
+            ]}
+          >
+            {item}
+          </Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+export default function LegalPoliciesScreen() {
   const navigation = useNavigation();
   const { theme } = useTheme();
   const { appInformationRows, loadingInfo } = useAppInformation();
-  const accentTint = { tintColor: theme.colors.primary };
 
   return (
     <View style={styles.container}>
@@ -43,7 +90,7 @@ export default function AboutAppScreen() {
             { fontFamily: theme.text.fontFamily.semiBold },
           ]}
         >
-          About the App
+          Legal & Policies
         </Text>
         <View style={styles.placeholder} />
       </View>
@@ -60,8 +107,8 @@ export default function AboutAppScreen() {
             ]}
           >
             <Image
-              source={require("../../assets/About.png")}
-              style={[styles.heroIcon, accentTint]}
+              source={require("../../assets/Legal.png")}
+              style={[styles.heroIcon, { tintColor: theme.colors.primary }]}
             />
           </View>
 
@@ -71,7 +118,7 @@ export default function AboutAppScreen() {
               { fontFamily: theme.text.fontFamily.semiBold },
             ]}
           >
-            Bygg App
+            Privacy Policy & Legal Information
           </Text>
 
           <Text
@@ -80,10 +127,41 @@ export default function AboutAppScreen() {
               { fontFamily: theme.text.fontFamily.medium },
             ]}
           >
-            Bygg App is a modern solution for construction project management
-            and work hour tracking on construction sites.
+            Your privacy is important to us. Bygg App is committed to
+            protecting your personal data and ensuring transparency in how your
+            information is collected, used, and stored.
           </Text>
         </View>
+
+        <BulletSection
+          title="What data do we collect?"
+          items={COLLECTED_DATA}
+          theme={theme}
+        />
+
+        <BulletSection
+          title="How do we use your data?"
+          items={DATA_USAGE}
+          theme={theme}
+        />
+
+        <BulletSection
+          title="Data Protection"
+          items={DATA_PROTECTION}
+          theme={theme}
+        />
+
+        <BulletSection
+          title="Your Rights"
+          items={USER_RIGHTS}
+          theme={theme}
+        />
+
+        <BulletSection
+          title="Legal Notice"
+          items={LEGAL_NOTICE}
+          theme={theme}
+        />
 
         <View style={styles.groupCard}>
           <Text
@@ -92,39 +170,7 @@ export default function AboutAppScreen() {
               { fontFamily: theme.text.fontFamily.semiBold },
             ]}
           >
-            The app allows you to
-          </Text>
-
-          {APP_FEATURES.map((item) => (
-            <View key={item} style={styles.bulletRow}>
-              <View
-                style={[
-                  styles.bullet,
-                  { backgroundColor: theme.colors.primary },
-                ]}
-              />
-              <Text
-                style={[
-                  styles.bulletText,
-                  { fontFamily: theme.text.fontFamily.medium },
-                ]}
-              >
-                {item}
-              </Text>
-            </View>
-          ))}
-        </View>
-
-        <View style={styles.groupCard}>
-          <Text
-            style={[
-              styles.paragraph,
-              { fontFamily: theme.text.fontFamily.medium },
-            ]}
-          >
-            Bygg App is available for Android and iOS, protected by modern
-            authentication methods, and fully complies with privacy and data
-            security standards.
+            Contact
           </Text>
 
           <Text
@@ -134,8 +180,8 @@ export default function AboutAppScreen() {
               { fontFamily: theme.text.fontFamily.medium },
             ]}
           >
-            If you have any questions or suggestions, please contact our
-            support team through the settings menu.
+            For any privacy-related questions, please contact us using the
+            details below.
           </Text>
         </View>
 
@@ -249,6 +295,7 @@ const styles = StyleSheet.create({
     color: "#052D50",
     fontSize: 24,
     marginBottom: 8,
+    textAlign: "center",
   },
   heroText: {
     color: "#698196",
