@@ -31,6 +31,7 @@ import Icon from "react-native-vector-icons/Feather";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import AuthContext from "../../../contexts/AuthContext";
+import { useFeedback } from "../../../contexts/FeedbackContext";
 import { useTheme } from "../../../theme/ThemeContext";
 import { chatService, projectService } from "../../../services";
 import { resolveUploadUrl } from "../../../utils/shifts";
@@ -138,6 +139,7 @@ export const ProjectScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { user } = useContext(AuthContext);
+  const { showSuccess } = useFeedback();
   const { theme } = useTheme();
   const { id, initialTab } = route.params || {};
   const [modal, setModal] = useState(
@@ -379,10 +381,10 @@ export const ProjectScreen = () => {
       }
 
       setModal("Documents");
-      Alert.alert(
-        "Success",
-        `${pickedAssets.length} document${pickedAssets.length > 1 ? "s" : ""} added to the project.`,
-      );
+      showSuccess({
+        title: "Documents added",
+        message: `${pickedAssets.length} document${pickedAssets.length > 1 ? "s" : ""} added to the project.`,
+      });
     } catch (uploadError) {
       console.error("Failed to upload project documents:", uploadError);
       Alert.alert(

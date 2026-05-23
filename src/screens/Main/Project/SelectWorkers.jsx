@@ -11,6 +11,7 @@ import {
   Alert,
 } from "react-native";
 import AuthContext from "../../../contexts/AuthContext";
+import { useFeedback } from "../../../contexts/FeedbackContext";
 import { useTheme } from "../../../theme/ThemeContext";
 import { userService, projectService } from "../../../services";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
@@ -21,6 +22,7 @@ export const SelectWorkers = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { user } = useContext(AuthContext);
+  const { showSuccess } = useFeedback();
   const { theme } = useTheme();
   const { projectId } = route.params || {};
 
@@ -108,7 +110,10 @@ export const SelectWorkers = () => {
     try {
       setSaving(true);
       await projectService.addWorkers(projectId, selectedWorkers);
-      Alert.alert("Успешно", "Работники добавлены в проект");
+      showSuccess({
+        title: "Workers added",
+        message: "Работники добавлены в проект",
+      });
       navigation.goBack();
     } catch (error) {
       console.error("Error adding workers:", error);

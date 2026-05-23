@@ -4,12 +4,14 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { BottomBar } from '../../../components/common/BottomBar/BottomBar';
+import { useFeedback } from '../../../contexts/FeedbackContext';
 import { shiftService } from '../../../services';
 import { formatDuration, formatShiftDate, resolveUploadUrl } from '../../../utils/shifts';
 
 export default function CameraScreen() {
   const navigation = useNavigation();
   const route = useRoute();
+  const { showSuccess } = useFeedback();
   const [shift, setShift] = useState(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -76,7 +78,10 @@ export default function CameraScreen() {
       }
 
       await uploadAssets(result.assets);
-      Alert.alert('Success', 'File attached to the current shift.');
+      showSuccess({
+        title: 'File attached',
+        message: 'File attached to the current shift.',
+      });
     } catch (error) {
       console.error('Failed to attach shift file:', error);
       Alert.alert(
@@ -161,7 +166,10 @@ export default function CameraScreen() {
       }
 
       await uploadAssets(result.assets);
-      Alert.alert('Success', 'Photo attached to the current shift.');
+      showSuccess({
+        title: 'Photo attached',
+        message: 'Photo attached to the current shift.',
+      });
     } catch (error) {
       console.error('Failed to capture shift photo:', error);
       Alert.alert(

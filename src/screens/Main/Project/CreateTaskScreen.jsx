@@ -19,6 +19,7 @@ import Icon from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
+import { useFeedback } from "../../../contexts/FeedbackContext";
 import { useTheme } from "../../../theme/ThemeContext";
 import { projectService, taskService } from "../../../services";
 import {
@@ -126,6 +127,7 @@ export default function CreateTaskScreen() {
   const navigation = useNavigation();
   const route = useRoute();
   const { theme } = useTheme();
+  const { showSuccess } = useFeedback();
   const { projectId, projectName: initialProjectName } = route.params || {};
 
   const [projectName, setProjectName] = useState(initialProjectName || "");
@@ -261,7 +263,10 @@ export default function CreateTaskScreen() {
       });
 
       await taskService.create(taskData);
-      Alert.alert("Success", "Task created successfully.");
+      showSuccess({
+        title: "Task created",
+        message: "Task created successfully.",
+      });
       navigation.goBack();
     } catch (error) {
       console.error("Error creating task:", error);

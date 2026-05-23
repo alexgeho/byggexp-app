@@ -27,6 +27,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AuthContext from "../../../contexts/AuthContext";
+import { useFeedback } from "../../../contexts/FeedbackContext";
 import { projectService, userService, companyService } from "../../../services";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { GlassView } from "../../../components/common/GlassView/GlassView";
@@ -345,6 +346,7 @@ const MapControlButton = ({ onPress, iconName, style, iconSize = 20 }) => {
 export default function CreateProjectScreen() {
   const navigation = useNavigation();
   const { theme } = useTheme();
+  const { showSuccess } = useFeedback();
   const { user } = useContext(AuthContext);
 
   // Проверка прав доступа - только для superadmin, companyAdmin и projectAdmin
@@ -979,7 +981,10 @@ export default function CreateProjectScreen() {
       const result = await projectService.create(projectData);
 
       console.log("Project created:", result);
-      Alert.alert("Success", "Project created successfully!");
+      showSuccess({
+        title: "Project created",
+        message: "Project created successfully!",
+      });
 
       navigation.goBack();
     } catch (error) {
