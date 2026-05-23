@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Font from 'expo-font';
 import AppNavigator from './src/navigation/AppNavigator';
 import { AuthProvider } from './src/contexts/AuthContext';
+import { FeedbackProvider } from './src/contexts/FeedbackContext';
 import { ThemeProvider } from './src/theme/ThemeContext';
 import NotificationBootstrap from './src/components/NotificationBootstrap';
 
@@ -61,8 +62,10 @@ export default function App() {
       <ThemeProvider>
         <AuthProvider>
           <SafeAreaProvider>
-            <NotificationBootstrap />
-            <AppNavigator />
+            <FeedbackProvider>
+              <NotificationBootstrap />
+              <AppNavigator />
+            </FeedbackProvider>
           </SafeAreaProvider>
         </AuthProvider>
       </ThemeProvider>

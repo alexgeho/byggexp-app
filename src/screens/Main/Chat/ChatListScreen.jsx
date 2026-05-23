@@ -100,14 +100,14 @@ export default function ChatListScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <BackButton
-          backgroundColor={"rgb(253 253 253)"}
+          backgroundColor={"rgba(255, 255, 255, 0.6)"}
           tint={"light"}
           borderColor="#FFFFFF50"
           onPress={() => navigation.goBack()}
           iconSource={require("../../../assets/Arrow-left.png")}
         />
         <BackButton
-          backgroundColor={"rgb(253 253 253)"}
+          backgroundColor={"rgba(255, 255, 255, 0.6)"}
           tint={"light"}
           borderColor="#FFFFFF50"
           onPress={loadChats}
@@ -258,8 +258,10 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 16,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 9999,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.05,
@@ -286,11 +288,13 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   filterButton: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 20,
     padding: 4,
     paddingRight: 12,
     paddingLeft: 12,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   activeFilterButton: {
     backgroundColor: "#0785F4",
@@ -312,10 +316,12 @@ const styles = StyleSheet.create({
   },
   stateCard: {
     width: "100%",
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 16,
     padding: 20,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.0625,
@@ -336,9 +342,11 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     padding: 8,
     borderRadius: 9999,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   chatImage: {
     width: 72,

@@ -137,7 +137,7 @@ export default function ProjectsScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <BackButton
-          backgroundColor={"rgb(253 253 253)"}
+          backgroundColor={"rgba(255, 255, 255, 0.6)"}
           tint="light"
           borderColor="#FFFFFF50"
           onPress={() => navigation.goBack()}
@@ -190,14 +190,22 @@ export default function ProjectsScreen() {
             >
               <View style={styles.cardHeader}>
                 <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
                   style={[
                     styles.projectName,
-                    { fontFamily: theme.text.fontFamily["bold"] },
+                    { fontFamily: theme.text.fontFamily["medium"] },
                   ]}
                 >
                   {project.name}
                 </Text>
-                <Text style={[styles.statusBadge, themedStatusBadgeStyle]}>
+                <Text
+                  style={[
+                    styles.statusBadge,
+                    themedStatusBadgeStyle,
+                    { fontFamily: theme.text.fontFamily["medium"] },
+                  ]}
+                >
                   {formatStatus(project.status)}
                 </Text>
               </View>
@@ -243,6 +251,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    paddingTop: 20,
+    paddingBottom: 10,
   },
   headerTitle: {
     color: "#052D50",
@@ -289,13 +299,13 @@ const styles = StyleSheet.create({
     paddingBottom: 140,
   },
   projectCard: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     width: "100%",
     padding: 20,
     borderRadius: 16,
     gap: 8,
-    borderWidth: 2,
-    borderColor: "transparent",
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   projectCardSelected: {
     borderColor: "#0785F4",
@@ -311,17 +321,23 @@ const styles = StyleSheet.create({
     color: "#052D50",
     flex: 1,
     flexShrink: 1,
+    fontSize: 17,
+    fontWeight: "500",
   },
   statusBadge: {
     color: "#2582D9",
     backgroundColor: "#2582D91A",
-    padding: 4,
-    paddingLeft: 12,
-    paddingRight: 12,
+    height: 28,
+    paddingHorizontal: 12,
+    paddingVertical: 3,
     borderRadius: 12,
     flexShrink: 0,
     alignSelf: "flex-start",
-    fontSize: 12,
+    fontWeight: "500",
+    fontSize: 13,
+    lineHeight: 22,
+    textAlign: "center",
+    textAlignVertical: "center",
     overflow: "hidden",
   },
   dateText: {

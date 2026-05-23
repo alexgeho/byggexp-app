@@ -32,15 +32,24 @@ export const SelectAdmin = () => {
       <View style={styles.container}>
         <View style={styles.header}>
           <BackButton
-            backgroundColor={"rgb(253 253 253)"}
+            backgroundColor={"rgba(255, 255, 255, 0.6)"}
             tint={"light"}
             borderColor="#FFFFFF50"
             onPress={() => navigation.goBack()}
             iconSource={require("../../../assets/Arrow-left.png")}
           />
-          <Text style={styles.projectName}>Select an Admin</Text>
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={[
+              styles.projectName,
+              { fontFamily: theme.text.fontFamily["medium"] },
+            ]}
+          >
+            Select an Admin
+          </Text>
           <BackButton
-            backgroundColor={"rgb(253 253 253)"}
+            backgroundColor={"rgba(255, 255, 255, 0.6)"}
             tint={"light"}
             borderColor="#FFFFFF50"
             onPress={() => navigation.goBack()}
@@ -61,15 +70,24 @@ export const SelectAdmin = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <BackButton
-          backgroundColor={"rgb(253 253 253)"}
+          backgroundColor={"rgba(255, 255, 255, 0.6)"}
           tint={"light"}
           borderColor="#FFFFFF50"
           onPress={() => navigation.goBack()}
           iconSource={require("../../../assets/Arrow-left.png")}
         />
-        <Text style={styles.projectName}>Select an Admin</Text>
+        <Text
+          numberOfLines={1}
+          ellipsizeMode="tail"
+          style={[
+            styles.projectName,
+            { fontFamily: theme.text.fontFamily["medium"] },
+          ]}
+        >
+          Select an Admin
+        </Text>
         <BackButton
-          backgroundColor={"rgb(253 253 253)"}
+          backgroundColor={"rgba(255, 255, 255, 0.6)"}
           tint={"light"}
           borderColor="#FFFFFF50"
           onPress={() => navigation.goBack()}
@@ -112,7 +130,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 12,
-    paddingTop: 48,
+    paddingTop: 0,
     paddingBottom: 48,
     gap: 24,
     backgroundColor: "#EEEEEE",
@@ -122,11 +140,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    paddingTop: 20,
+    paddingBottom: 30,
   },
   backButton: {
     padding: 16,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 9999,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.05,
@@ -142,7 +164,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: "center",
     fontSize: 17,
-    fontFamily: "DMSans-SemiBold",
+    fontWeight: "500",
   },
   tabContainer: {
     width: "100%",
@@ -155,7 +177,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingLeft: 8,
     paddingRight: 8,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 999,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
@@ -163,7 +185,7 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 1,
     borderWidth: 1,
-    borderColor: "transparent",
+    borderColor: "#FFFFFF",
   },
   activeTab: {
     borderColor: "#0785F4",
@@ -183,10 +205,12 @@ const styles = StyleSheet.create({
   },
   taskItem: {
     width: "100%",
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 16,
     gap: 16,
     padding: 16,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.0625,
@@ -238,10 +262,12 @@ const styles = StyleSheet.create({
   },
   documentItem: {
     width: "100%",
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 16,
     gap: 16,
     padding: 16,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.0625,
@@ -269,7 +295,9 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.0625,
@@ -289,11 +317,12 @@ const styles = StyleSheet.create({
   checkbox: {
     width: 24,
     height: 24,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderRadius: 7,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    borderColor: "#FFFFFF",
     marginRight: 8,
     shadowColor: "#052D50",
     shadowOffset: { width: 0, height: 2 },

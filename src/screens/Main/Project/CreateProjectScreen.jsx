@@ -27,6 +27,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AuthContext from "../../../contexts/AuthContext";
+import { useFeedback } from "../../../contexts/FeedbackContext";
 import { projectService, userService, companyService } from "../../../services";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { GlassView } from "../../../components/common/GlassView/GlassView";
@@ -219,7 +220,7 @@ const WorkersListModal = memo(function WorkersListModal({
       <SafeAreaView style={styles.workersModalContainer}>
         <View style={styles.workersModalHeader}>
           <BackButton
-            backgroundColor={"rgb(253 253 253)"}
+            backgroundColor={"rgba(255, 255, 255, 0.6)"}
             tint={"light"}
             borderColor="#FFFFFF50"
             onPress={onClose}
@@ -307,7 +308,7 @@ const WorkersListModal = memo(function WorkersListModal({
 const MapControlButton = ({ onPress, iconName, style, iconSize = 20 }) => {
   const content = (
     <GlassView
-      backgroundColor={"rgb(253 253 253)"}
+      backgroundColor={"rgba(255, 255, 255, 0.6)"}
       borderColor="#FFFFFF50"
       tint="light"
       intensity={85}
@@ -345,6 +346,7 @@ const MapControlButton = ({ onPress, iconName, style, iconSize = 20 }) => {
 export default function CreateProjectScreen() {
   const navigation = useNavigation();
   const { theme } = useTheme();
+  const { showSuccess } = useFeedback();
   const { user } = useContext(AuthContext);
 
   // Проверка прав доступа - только для superadmin, companyAdmin и projectAdmin
@@ -979,7 +981,10 @@ export default function CreateProjectScreen() {
       const result = await projectService.create(projectData);
 
       console.log("Project created:", result);
-      Alert.alert("Success", "Project created successfully!");
+      showSuccess({
+        title: "Project created",
+        message: "Project created successfully!",
+      });
 
       navigation.goBack();
     } catch (error) {
@@ -1128,7 +1133,7 @@ export default function CreateProjectScreen() {
       <SafeAreaView style={styles.workersModalContainer}>
         <View style={styles.workersModalHeader}>
           <BackButton
-            backgroundColor={"rgb(253 253 253)"}
+            backgroundColor={"rgba(255, 255, 255, 0.6)"}
             tint={"light"}
             borderColor="#FFFFFF50"
             onPress={onClose}
@@ -1226,7 +1231,7 @@ export default function CreateProjectScreen() {
       >
         <View style={styles.header}>
           <BackButton
-            backgroundColor={"rgb(253 253 253)"}
+            backgroundColor={"rgba(255, 255, 255, 0.6)"}
             tint={"light"}
             borderColor="#FFFFFF50"
             onPress={() => navigation.goBack()}
@@ -1835,8 +1840,10 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 16,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 9999,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.05,
@@ -1865,10 +1872,12 @@ const styles = StyleSheet.create({
   },
   groupCard: {
     width: "100%",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 24,
     overflow: "hidden",
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   groupedField: {
     backgroundColor: "transparent",
@@ -1902,19 +1911,23 @@ const styles = StyleSheet.create({
   },
   noteGroup: {
     width: "100%",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 24,
     paddingHorizontal: 16,
     paddingVertical: 12,
     marginBottom: 20,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   inputsContainer: {
     padding: 18,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 16,
     width: "100%",
     gap: 8,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   input: {
     paddingBottom: 12,
@@ -1927,21 +1940,25 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 56,
     position: "relative",
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 20,
     paddingHorizontal: 16,
     marginBottom: 8,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   switchField: {
     width: "100%",
     height: 56,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 20,
     paddingHorizontal: 16,
     marginBottom: 8,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   floatingLabel: {
     position: "absolute",
@@ -1970,13 +1987,15 @@ const styles = StyleSheet.create({
   locationField: {
     width: "100%",
     height: 56,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 20,
     paddingHorizontal: 16,
     marginBottom: 12,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   locationFieldContent: {
     flex: 1,
@@ -2057,13 +2076,15 @@ const styles = StyleSheet.create({
   },
   selectableRow: {
     width: "100%",
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 16,
     padding: 12,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   rowCenter: {
     flexDirection: "row",
@@ -2099,12 +2120,14 @@ const styles = StyleSheet.create({
   },
   datesContainer: {
     width: "100%",
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 16,
     padding: 12,
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   dateButton: {
     flex: 1,
@@ -2129,9 +2152,11 @@ const styles = StyleSheet.create({
   datePickerCard: {
     width: "100%",
     maxWidth: 360,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 24,
     padding: 16,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     shadowColor: "#052D50",
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.1,
@@ -2199,12 +2224,14 @@ const styles = StyleSheet.create({
   workersSearchBar: {
     height: 56,
     borderRadius: 20,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     paddingHorizontal: 16,
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   workersSearchInput: {
     flex: 1,
@@ -2217,12 +2244,14 @@ const styles = StyleSheet.create({
   workerCard: {
     height: 72,
     borderRadius: 100,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 12,
     gap: 12,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   workerAvatarPlaceholder: {
     width: 48,
@@ -2255,11 +2284,11 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 7,
-    borderWidth: 1.5,
-    borderColor: "rgba(5, 45, 80, 0.18)",
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     shadowColor: "#052D50",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
@@ -2267,7 +2296,7 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   workerCheckboxSelected: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
   },
   workersEmptyState: {
     paddingTop: 24,
@@ -2305,11 +2334,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalContent: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     width: "90%",
     maxHeight: "80%",
     borderRadius: 16,
     padding: 16,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   modalTitle: {
     fontSize: 18,
@@ -2444,9 +2475,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 18,
     padding: 8,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     shadowColor: "#052D50",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.08,

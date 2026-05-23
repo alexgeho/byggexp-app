@@ -333,13 +333,22 @@ export const ShiftHistory = ({ route }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <BackButton
-          backgroundColor={"rgb(253 253 253)"}
+          backgroundColor={"rgba(255, 255, 255, 0.6)"}
           tint={"light"}
           borderColor="#FFFFFF50"
           onPress={() => navigation.goBack()}
           iconSource={require("../../../assets/Arrow-left.png")}
         />
-        <Text style={styles.projectName}>Shift history</Text>
+        <Text
+          numberOfLines={1}
+          ellipsizeMode="tail"
+          style={[
+            styles.projectName,
+            { fontFamily: theme.text.fontFamily["medium"] },
+          ]}
+        >
+          Shift history
+        </Text>
         <View style={styles.backZeroButton} />
       </View>
 
@@ -613,7 +622,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 12,
-    paddingTop: 48,
+    paddingTop: 0,
     gap: 24,
     backgroundColor: "#EEEEEE",
   },
@@ -622,11 +631,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    paddingTop: 20,
+    paddingBottom: 30,
   },
   backButton: {
     padding: 16,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 9999,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.05,
@@ -645,7 +658,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: "center",
     fontSize: 17,
-    fontFamily: "DMSans-SemiBold",
+    fontWeight: "500",
   },
   titleRow: {
     width: "100%",
@@ -690,9 +703,11 @@ const styles = StyleSheet.create({
   },
   shiftItem: {
     width: "100%",
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 16,
     padding: 16,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.0625,
@@ -769,14 +784,18 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   sheetCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 20,
     padding: 16,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   exportSheetCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 20,
     padding: 0,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   workerModalTitle: {
     fontSize: 24,
@@ -797,23 +816,23 @@ const styles = StyleSheet.create({
   periodDropdown: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderWidth: 1,
-    borderColor: "#E6E6E6",
+    borderColor: "#FFFFFF",
   },
   periodOptions: {
     gap: 12,
   },
   periodOptionButton: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderWidth: 1,
-    borderColor: "#E6E6E6",
+    borderColor: "#FFFFFF",
   },
   periodOptionButtonActive: {
     borderColor: "#0091FF",
@@ -873,18 +892,20 @@ const styles = StyleSheet.create({
   },
   exportButtonsContainer: {
     flexDirection: "row",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 20,
     padding: 0,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   exportButton: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 20,
     paddingVertical: 12,
     alignItems: "center",
-    borderWidth: 0,
-    borderColor: "transparent",
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   exportButtonActive: {
     borderWidth: 2,
@@ -925,9 +946,11 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   datePickerCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 20,
     padding: 16,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   datePickerTitle: {
     color: "#052D50",

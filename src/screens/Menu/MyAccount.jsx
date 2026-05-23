@@ -2,6 +2,7 @@ import React, { useCallback, useContext, useMemo, useState } from "react";
 import { useTheme } from "../../theme/ThemeContext";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import AuthContext from "../../contexts/AuthContext";
+import { useFeedback } from "../../contexts/FeedbackContext";
 import {
   ActivityIndicator,
   Alert,
@@ -128,6 +129,7 @@ const getDocumentTypeMeta = (documentUrl) => {
 
 export const MyAccount = () => {
   const { theme } = useTheme();
+  const { showSuccess } = useFeedback();
   const navigation = useNavigation();
   const { user, userId, updateStoredUser } = useContext(AuthContext);
   const [profile, setProfile] = useState(null);
@@ -273,7 +275,10 @@ export const MyAccount = () => {
         ...updatedUser,
         id: updatedUser?._id || updatedUser?.id || profileId,
       });
-      Alert.alert("Saved", "Avatar updated.");
+      showSuccess({
+        title: "Avatar updated",
+        message: "Avatar updated.",
+      });
     } catch (error) {
       console.error("Failed to update avatar:", error);
       Alert.alert(
@@ -325,7 +330,10 @@ export const MyAccount = () => {
         ...updatedUser,
         id: updatedUser?._id || updatedUser?.id || profileId,
       });
-      Alert.alert("Saved", "Your account has been updated.");
+      showSuccess({
+        title: "Profile updated",
+        message: "Your account has been updated.",
+      });
     } catch (error) {
       console.error("Failed to update account:", error);
       Alert.alert(
@@ -388,7 +396,10 @@ export const MyAccount = () => {
         ...updatedUser,
         id: updatedUser?._id || updatedUser?.id || profileId,
       });
-      Alert.alert("Saved", "Documents uploaded.");
+      showSuccess({
+        title: "Documents uploaded",
+        message: "Documents uploaded.",
+      });
     } catch (error) {
       console.error("Failed to upload documents:", error);
       Alert.alert(

@@ -11,6 +11,7 @@ import {
   Alert,
 } from "react-native";
 import AuthContext from "../../../contexts/AuthContext";
+import { useFeedback } from "../../../contexts/FeedbackContext";
 import { useTheme } from "../../../theme/ThemeContext";
 import { userService, projectService } from "../../../services";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
@@ -21,6 +22,7 @@ export const SelectWorkers = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { user } = useContext(AuthContext);
+  const { showSuccess } = useFeedback();
   const { theme } = useTheme();
   const { projectId } = route.params || {};
 
@@ -42,15 +44,24 @@ export const SelectWorkers = () => {
       <View style={styles.container}>
         <View style={styles.header}>
           <BackButton
-            backgroundColor={"rgb(253 253 253)"}
+            backgroundColor={"rgba(255, 255, 255, 0.6)"}
             tint={"light"}
             borderColor="#FFFFFF50"
             onPress={() => navigation.goBack()}
             iconSource={require("../../../assets/Arrow-left.png")}
           />
-          <Text style={styles.projectName}>Select your workers</Text>
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={[
+              styles.projectName,
+              { fontFamily: theme.text.fontFamily["medium"] },
+            ]}
+          >
+            Select your workers
+          </Text>
           <BackButton
-            backgroundColor={"rgb(253 253 253)"}
+            backgroundColor={"rgba(255, 255, 255, 0.6)"}
             tint={"light"}
             borderColor="#FFFFFF50"
             onPress={() => navigation.goBack()}
@@ -99,7 +110,10 @@ export const SelectWorkers = () => {
     try {
       setSaving(true);
       await projectService.addWorkers(projectId, selectedWorkers);
-      Alert.alert("Успешно", "Работники добавлены в проект");
+      showSuccess({
+        title: "Workers added",
+        message: "Работники добавлены в проект",
+      });
       navigation.goBack();
     } catch (error) {
       console.error("Error adding workers:", error);
@@ -122,15 +136,24 @@ export const SelectWorkers = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <BackButton
-          backgroundColor={"rgb(253 253 253)"}
+          backgroundColor={"rgba(255, 255, 255, 0.6)"}
           tint={"light"}
           borderColor="#FFFFFF50"
           onPress={() => navigation.goBack()}
           iconSource={require("../../../assets/Arrow-left.png")}
         />
-        <Text style={styles.projectName}>Select your workers</Text>
+        <Text
+          numberOfLines={1}
+          ellipsizeMode="tail"
+          style={[
+            styles.projectName,
+            { fontFamily: theme.text.fontFamily["medium"] },
+          ]}
+        >
+          Select your workers
+        </Text>
         <BackButton
-          backgroundColor={"rgb(253 253 253)"}
+          backgroundColor={"rgba(255, 255, 255, 0.6)"}
           tint={"light"}
           borderColor="#FFFFFF50"
           onPress={() => navigation.goBack()}
@@ -211,7 +234,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 12,
-    paddingTop: 48,
+    paddingTop: 0,
     paddingBottom: 48,
     gap: 24,
     backgroundColor: "#EEEEEE",
@@ -227,11 +250,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    paddingTop: 20,
+    paddingBottom: 30,
   },
   backButton: {
     padding: 16,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 9999,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.05,
@@ -247,7 +274,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: "center",
     fontSize: 17,
-    fontFamily: "DMSans-SemiBold",
+    fontWeight: "500",
   },
   scrollContainer: {
     flex: 1,
@@ -263,7 +290,9 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.0625,
@@ -291,11 +320,12 @@ const styles = StyleSheet.create({
   checkbox: {
     width: 24,
     height: 24,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderRadius: 7,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    borderColor: "#FFFFFF",
     marginRight: 8,
     shadowColor: "#052D50",
     shadowOffset: { width: 0, height: 2 },
