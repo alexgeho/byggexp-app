@@ -1,6 +1,7 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
-import React, { useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Image,
   Linking,
@@ -10,9 +11,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import * as DocumentPicker from "expo-document-picker";
 import Icon from "react-native-vector-icons/Feather";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
+import AuthContext from "../../../contexts/AuthContext";
+import { useFeedback } from "../../../contexts/FeedbackContext";
+import { taskService } from "../../../services";
 import { isPdfDocument } from "../../../utils/documentPreview";
 import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
 import { resolveUploadUrl } from "../../../utils/shifts";
@@ -112,15 +117,24 @@ export default function TaskScreen() {
   const navigation = useNavigation();
   const route = useRoute();
   const { task, project } = route.params || {};
+  const { user } = useContext(AuthContext);
+  const { showSuccess } = useFeedback();
   const [tab, setTab] = useState("Edit");
-  const startDate = formatDateParts(task?.startDate);
-  const endDate = formatDateParts(task?.dueDate);
+  const [currentTask, setCurrentTask] = useState(task || null);
+  const [uploadingDocuments, setUploadingDocuments] = useState(false);
+  const startDate = formatDateParts(currentTask?.startDate);
+  const endDate = formatDateParts(currentTask?.dueDate);
+  const canManageDocuments = [
+    "superadmin",
+    "companyAdmin",
+    "projectAdmin",
+  ].includes(user?.role);
 
   const documents = useMemo(
     () =>
-      Array.isArray(task?.documents)
+      Array.isArray(currentTask?.documents)
         ? sortByNewest(
-            task.documents.map((document, index) => ({
+            currentTask.documents.map((document, index) => ({
               id: document?._id || document?.url || `${index}`,
               name: getDocumentName(document, index),
               url: resolveDocumentUrl(
@@ -141,7 +155,7 @@ export default function TaskScreen() {
             (document) => [document?.uploadedAt, document?.createdAt],
           )
         : [],
-    [task?.documents],
+    [currentTask?.documents],
   );
 
   const workers = useMemo(
@@ -176,6 +190,71 @@ export default function TaskScreen() {
     }
   };
 
+  const handleAddDocuments = async () => {
+    const taskId = currentTask?._id || currentTask?.id;
+
+    if (!taskId) {
+      Alert.alert("Task unavailable", "Task id is missing.");
+      return;
+    }
+
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: [
+          "image/*",
+          "application/pdf",
+          "text/*",
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "application/vnd.ms-excel",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        ],
+        multiple: true,
+        copyToCacheDirectory: true,
+      });
+
+      if (result.canceled) {
+        return;
+      }
+
+      const pickedAssets = result.assets || [];
+      if (!pickedAssets.length) {
+        return;
+      }
+
+      setUploadingDocuments(true);
+
+      const formData = new FormData();
+      pickedAssets.forEach((item, index) => {
+        formData.append("documents", {
+          uri: item.uri,
+          name: item.name || `task-document-${index + 1}`,
+          type: item.mimeType || "application/octet-stream",
+        });
+      });
+
+      const updatedTask = await taskService.uploadDocuments(taskId, formData);
+      if (updatedTask) {
+        setCurrentTask(updatedTask);
+      }
+
+      showSuccess({
+        title: "Documents added",
+        message: `${pickedAssets.length} document${pickedAssets.length > 1 ? "s" : ""} added to the task.`,
+      });
+    } catch (error) {
+      console.error("Failed to upload task documents:", error);
+      Alert.alert(
+        "Upload error",
+        error?.response?.data?.message ||
+          error?.message ||
+          "Unable to upload documents right now.",
+      );
+    } finally {
+      setUploadingDocuments(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -187,7 +266,7 @@ export default function TaskScreen() {
           iconSource={require("../../../assets/Arrow-left.png")}
         />
         <Text numberOfLines={1} style={styles.headerTitle}>
-          {task?.taskTitle || "Task"}
+          {currentTask?.taskTitle || "Task"}
         </Text>
         <View style={styles.placeholder} />
       </View>
@@ -215,7 +294,7 @@ export default function TaskScreen() {
                 <View style={styles.rowTextContainer}>
                   <Text style={styles.rowLabel}>Title</Text>
                   <Text style={styles.rowValue}>
-                    {task?.taskTitle || "No title"}
+                    {currentTask?.taskTitle || "No title"}
                   </Text>
                 </View>
               </GroupRow>
@@ -223,7 +302,7 @@ export default function TaskScreen() {
                 <View style={styles.rowTextContainer}>
                   <Text style={styles.rowLabel}>Description</Text>
                   <Text style={[styles.rowValue, styles.multilineValue]}>
-                    {task?.taskDescription || "No description provided"}
+                    {currentTask?.taskDescription || "No description provided"}
                   </Text>
                 </View>
               </GroupRow>
@@ -362,7 +441,16 @@ export default function TaskScreen() {
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
-        showAddButton={false}
+        showAddButton={tab === "Documents" && canManageDocuments}
+        onAddPress={handleAddDocuments}
+        addDisabled={uploadingDocuments}
+        renderAddContent={() =>
+          uploadingDocuments ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <Icon name="plus" size={22} color="#FFFFFF" />
+          )
+        }
       />
     </View>
   );
