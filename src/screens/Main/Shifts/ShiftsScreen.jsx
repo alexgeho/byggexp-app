@@ -11,6 +11,7 @@ import {
   Alert,
 } from "react-native";
 import { useTheme } from "../../../theme/ThemeContext";
+import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
@@ -504,7 +505,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 16,
+    ...standardScreenHeaderSpacing,
   },
   backButton: {
     padding: 16,

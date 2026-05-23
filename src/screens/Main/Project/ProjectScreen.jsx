@@ -32,8 +32,10 @@ import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
+import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
 import { useTheme } from "../../../theme/ThemeContext";
 import { chatService, projectService } from "../../../services";
+import { isPdfDocument } from "../../../utils/documentPreview";
 import { resolveUploadUrl } from "../../../utils/shifts";
 import { sortByNewest } from "../../../utils/sortByNewest";
 
@@ -315,8 +317,8 @@ export const ProjectScreen = () => {
     }
   };
 
-  const handleOpenDocument = async (documentUrl) => {
-    if (!documentUrl) {
+  const handleOpenDocument = async (document) => {
+    if (!document?.url) {
       Alert.alert(
         "Document unavailable",
         "This file does not have a valid link.",
@@ -325,7 +327,12 @@ export const ProjectScreen = () => {
     }
 
     try {
-      await Linking.openURL(documentUrl);
+      if (document?.isImage || isPdfDocument(document)) {
+        navigation.navigate("DocumentPreview", { document });
+        return;
+      }
+
+      await Linking.openURL(document.url);
     } catch (linkError) {
       console.error("Failed to open document:", linkError);
       Alert.alert("Unable to open document", "Please try again later.");
@@ -529,7 +536,7 @@ export const ProjectScreen = () => {
                 <TouchableOpacity
                   key={document.id}
                   style={styles.documentItem}
-                  onPress={() => handleOpenDocument(document.url)}
+                  onPress={() => handleOpenDocument(document)}
                   activeOpacity={0.85}
                 >
                   <View style={styles.documentPreviewContainer}>
@@ -746,8 +753,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingTop: 20,
-    paddingBottom: 10,
+    ...standardScreenHeaderSpacing,
   },
   backButton: {
     padding: 16,

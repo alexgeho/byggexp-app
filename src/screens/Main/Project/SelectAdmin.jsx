@@ -12,6 +12,7 @@ import AuthContext from "../../../contexts/AuthContext";
 import { useTheme } from "../../../theme/ThemeContext";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
+import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
 
 export const SelectAdmin = () => {
   const navigation = useNavigation();
@@ -140,8 +141,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingTop: 20,
-    paddingBottom: 30,
+    ...standardScreenHeaderSpacing,
   },
   backButton: {
     padding: 16,

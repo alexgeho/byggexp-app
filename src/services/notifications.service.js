@@ -278,10 +278,22 @@ export const unregisterPushToken = async () => {
   }
 };
 
+export const getNotificationPreferences = async () => {
+  const { data } = await api.get("/notifications/preferences");
+  return data;
+};
+
+export const updateNotificationPreferences = async (preferences) => {
+  const { data } = await api.put("/notifications/preferences", preferences);
+  return data;
+};
+
 export const notificationsService = {
   initializeNotificationListeners,
   syncPushTokenForUser,
   unregisterPushToken,
+  getNotificationPreferences,
+  updateNotificationPreferences,
   flushPendingNotificationNavigation,
 };
 

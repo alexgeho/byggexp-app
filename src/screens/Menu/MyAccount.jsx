@@ -20,6 +20,16 @@ import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/Feather";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../components/common/BackButton/BackButton";
+import {
+  standardScreenContainer,
+  standardScreenHeader,
+  standardScreenHeaderPlaceholder,
+} from "../../styles/screenLayout";
+import {
+  getDocumentNameFromUrl,
+  isImageDocument as isPreviewImageDocument,
+  isPdfDocument,
+} from "../../utils/documentPreview";
 import { userService } from "../../services";
 
 const API_BASE_URL =
@@ -411,6 +421,7 @@ export const MyAccount = () => {
 
   const handleOpenDocument = async (documentUrl) => {
     const resolvedUrl = resolveImageUrl(documentUrl);
+    const documentName = getDocumentNameFromUrl(resolvedUrl, "Document");
 
     if (!resolvedUrl) {
       Alert.alert(
@@ -421,6 +432,19 @@ export const MyAccount = () => {
     }
 
     try {
+      if (
+        isPreviewImageDocument({ url: resolvedUrl, name: documentName }) ||
+        isPdfDocument({ url: resolvedUrl, name: documentName })
+      ) {
+        navigation.navigate("DocumentPreview", {
+          document: {
+            url: resolvedUrl,
+            name: documentName,
+          },
+        });
+        return;
+      }
+
       await Linking.openURL(resolvedUrl);
     } catch (error) {
       console.error("Failed to open document:", error);
@@ -664,12 +688,8 @@ export const MyAccount = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 12,
-    paddingTop: 48,
-    paddingBottom: 48,
+    ...standardScreenContainer,
     gap: 12,
-    backgroundColor: "#EEEEEE",
   },
   centeredContainer: {
     flex: 1,
@@ -683,10 +703,7 @@ const styles = StyleSheet.create({
     color: "#698196",
   },
   header: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    ...standardScreenHeader,
   },
   backButton: {
     padding: 16,
@@ -708,7 +725,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   placeholder: {
-    width: 36,
+    ...standardScreenHeaderPlaceholder,
   },
   scrollContainer: {
     flex: 1,

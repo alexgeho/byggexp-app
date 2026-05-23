@@ -15,6 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { chatService } from "../../../services";
+import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
 import { resolveUploadUrl } from "../../../utils/shifts";
 
 const FILTERS = ["All", "Groups", "People", "Projects"];
@@ -255,6 +256,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    ...standardScreenHeaderSpacing,
   },
   backButton: {
     padding: 16,

@@ -15,6 +15,11 @@ import AuthContext from "../../../contexts/AuthContext";
 import { projectService } from "../../../services";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
+import {
+  standardScreenContainer,
+  standardScreenHeader,
+  standardScreenHeaderPlaceholder,
+} from "../../../styles/screenLayout";
 import { sortByNewest } from "../../../utils/sortByNewest";
 
 export default function ProjectsScreen() {
@@ -232,14 +237,10 @@ export default function ProjectsScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    ...standardScreenContainer,
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 12,
-    paddingTop: 48,
-    paddingBottom: 48,
     gap: 12,
-    backgroundColor: "#EEEEEE",
   },
   centeredContainer: {
     flex: 1,
@@ -247,12 +248,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   header: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingTop: 20,
-    paddingBottom: 10,
+    ...standardScreenHeader,
   },
   headerTitle: {
     color: "#052D50",
@@ -260,7 +256,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   placeholder: {
-    width: 36,
+    ...standardScreenHeaderPlaceholder,
   },
   searchContainer: {
     width: "100%",

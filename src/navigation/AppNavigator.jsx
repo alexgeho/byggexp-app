@@ -17,6 +17,7 @@ import TaskNotificationsScreen from "../screens/Main/Project/TaskNotificationsSc
 import TaskNotificationRepeatScreen from "../screens/Main/Project/TaskNotificationRepeatScreen";
 import { MyAccount } from "../screens/Menu/MyAccount";
 import GroupChatScreen from "../screens/Main/Chat/GroupChatScreen";
+import DocumentPreviewScreen from "../screens/Main/DocumentPreviewScreen";
 import { ProjectScreen } from "../screens/Main/Project/ProjectScreen";
 import { SelectWorkers } from "../screens/Main/Project/SelectWorkers";
 import { SelectAdmin } from "../screens/Main/Project/SelectAdmin";
@@ -36,6 +37,10 @@ import HomeVariant6blue from "../screens/Main/HomeVariants/HomeVariant6blue";
 import ThemeHomeScreen from "../screens/Main/HomeVariants/ThemeHomeScreen";
 
 import CustomizeHomeScreen from "../screens/Menu/CustomizeHomeScreen";
+import AboutAppScreen from "../screens/Menu/AboutAppScreen";
+import HelpSupportScreen from "../screens/Menu/HelpSupportScreen";
+import LegalPoliciesScreen from "../screens/Menu/LegalPoliciesScreen";
+import NotificationsSettingsScreen from "../screens/Menu/NotificationsSettingsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -114,6 +119,7 @@ export default function AppNavigator() {
             <Stack.Screen name="Tasks" component={TasksScreen} />
             <Stack.Screen name="GroupChat" component={GroupChatScreen} />
             <Stack.Screen name="SingleChat" component={SingleChatScreen} />
+            <Stack.Screen name="DocumentPreview" component={DocumentPreviewScreen} />
             <Stack.Screen name="Projects" component={ProjectsScreen} />
             <Stack.Screen name="Project" component={ProjectScreen} />
             <Stack.Screen name="Task" component={TaskScreen} />
@@ -154,6 +160,13 @@ export default function AppNavigator() {
             <Stack.Screen name="Shifts" component={ShiftsScreen} />
             <Stack.Screen name="Menu" component={MenuScreen} />
             <Stack.Screen name="MyAccount" component={MyAccount} />
+            <Stack.Screen
+              name="NotificationsSettings"
+              component={NotificationsSettingsScreen}
+            />
+            <Stack.Screen name="AboutApp" component={AboutAppScreen} />
+            <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
+            <Stack.Screen name="LegalPolicies" component={LegalPoliciesScreen} />
           </>
         ) : (
           <Stack.Screen

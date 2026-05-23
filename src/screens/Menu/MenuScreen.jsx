@@ -50,6 +50,7 @@ export default function MenuScreen() {
       },
       {
         id: "notifications",
+        screen: "NotificationsSettings",
         title: "Notifications",
         icon: require("../../assets/Notifications.png"),
         color: theme.colors.primary,
@@ -169,18 +170,21 @@ export default function MenuScreen() {
   const settingsItems = [
     {
       id: "legal",
+      screen: "LegalPolicies",
       title: "Legal & Policies",
       icon: require("../../assets/Legal.png"),
       color: theme.colors.primary,
     },
     {
       id: "help",
+      screen: "HelpSupport",
       title: "Help & Support",
       icon: require("../../assets/Help.png"),
       color: theme.colors.primary,
     },
     {
       id: "about",
+      screen: "AboutApp",
       title: "About the App",
       icon: require("../../assets/About.png"),
       color: theme.colors.primary,

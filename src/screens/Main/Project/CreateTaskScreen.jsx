@@ -20,6 +20,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { useFeedback } from "../../../contexts/FeedbackContext";
+import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
 import { useTheme } from "../../../theme/ThemeContext";
 import { projectService, taskService } from "../../../services";
 import {
@@ -571,7 +572,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 24,
+    ...standardScreenHeaderSpacing,
   },
   headerTitle: {
     color: "#052D50",

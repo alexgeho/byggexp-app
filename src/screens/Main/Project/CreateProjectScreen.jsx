@@ -32,6 +32,7 @@ import { projectService, userService, companyService } from "../../../services";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { GlassView } from "../../../components/common/GlassView/GlassView";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
+import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
 
 const DEFAULT_REGION = {
   latitude: 59.3293,
@@ -1836,7 +1837,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 12,
+    ...standardScreenHeaderSpacing,
   },
   backButton: {
     padding: 16,
