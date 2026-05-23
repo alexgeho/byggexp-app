@@ -36,6 +36,7 @@ import HomeVariant6blue from "../screens/Main/HomeVariants/HomeVariant6blue";
 import ThemeHomeScreen from "../screens/Main/HomeVariants/ThemeHomeScreen";
 
 import CustomizeHomeScreen from "../screens/Menu/CustomizeHomeScreen";
+import AboutAppScreen from "../screens/Menu/AboutAppScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -154,6 +155,7 @@ export default function AppNavigator() {
             <Stack.Screen name="Shifts" component={ShiftsScreen} />
             <Stack.Screen name="Menu" component={MenuScreen} />
             <Stack.Screen name="MyAccount" component={MyAccount} />
+            <Stack.Screen name="AboutApp" component={AboutAppScreen} />
           </>
         ) : (
           <Stack.Screen

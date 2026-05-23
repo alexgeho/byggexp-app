@@ -181,6 +181,7 @@ export default function MenuScreen() {
     },
     {
       id: "about",
+      screen: "AboutApp",
       title: "About the App",
       icon: require("../../assets/About.png"),
       color: theme.colors.primary,
