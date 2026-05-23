@@ -21,6 +21,11 @@ import Icon from "react-native-vector-icons/Feather";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { standardScreenHeaderSpacing } from "../../styles/screenLayout";
+import {
+  getDocumentNameFromUrl,
+  isImageDocument as isPreviewImageDocument,
+  isPdfDocument,
+} from "../../utils/documentPreview";
 import { userService } from "../../services";
 
 const API_BASE_URL =
@@ -412,6 +417,7 @@ export const MyAccount = () => {
 
   const handleOpenDocument = async (documentUrl) => {
     const resolvedUrl = resolveImageUrl(documentUrl);
+    const documentName = getDocumentNameFromUrl(resolvedUrl, "Document");
 
     if (!resolvedUrl) {
       Alert.alert(
@@ -422,6 +428,19 @@ export const MyAccount = () => {
     }
 
     try {
+      if (
+        isPreviewImageDocument({ url: resolvedUrl, name: documentName }) ||
+        isPdfDocument({ url: resolvedUrl, name: documentName })
+      ) {
+        navigation.navigate("DocumentPreview", {
+          document: {
+            url: resolvedUrl,
+            name: documentName,
+          },
+        });
+        return;
+      }
+
       await Linking.openURL(resolvedUrl);
     } catch (error) {
       console.error("Failed to open document:", error);

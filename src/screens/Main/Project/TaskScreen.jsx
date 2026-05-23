@@ -13,6 +13,7 @@ import {
 import Icon from "react-native-vector-icons/Feather";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
+import { isPdfDocument } from "../../../utils/documentPreview";
 import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
 import { resolveUploadUrl } from "../../../utils/shifts";
 import { sortByNewest } from "../../../utils/sortByNewest";
@@ -153,8 +154,8 @@ export default function TaskScreen() {
     [project?.workers],
   );
 
-  const handleOpenDocument = async (documentUrl) => {
-    if (!documentUrl) {
+  const handleOpenDocument = async (document) => {
+    if (!document?.url) {
       Alert.alert(
         "Document unavailable",
         "This file does not have a valid link.",
@@ -163,7 +164,12 @@ export default function TaskScreen() {
     }
 
     try {
-      await Linking.openURL(documentUrl);
+      if (document?.isImage || isPdfDocument(document)) {
+        navigation.navigate("DocumentPreview", { document });
+        return;
+      }
+
+      await Linking.openURL(document.url);
     } catch (error) {
       console.error("Failed to open document:", error);
       Alert.alert("Unable to open document", "Please try again later.");
@@ -280,7 +286,7 @@ export default function TaskScreen() {
                 <TouchableOpacity
                   key={document.id}
                   style={styles.documentItem}
-                  onPress={() => handleOpenDocument(document.url)}
+                  onPress={() => handleOpenDocument(document)}
                   activeOpacity={0.85}
                 >
                   <View style={styles.documentPreviewContainer}>

@@ -17,6 +17,7 @@ import TaskNotificationsScreen from "../screens/Main/Project/TaskNotificationsSc
 import TaskNotificationRepeatScreen from "../screens/Main/Project/TaskNotificationRepeatScreen";
 import { MyAccount } from "../screens/Menu/MyAccount";
 import GroupChatScreen from "../screens/Main/Chat/GroupChatScreen";
+import DocumentPreviewScreen from "../screens/Main/DocumentPreviewScreen";
 import { ProjectScreen } from "../screens/Main/Project/ProjectScreen";
 import { SelectWorkers } from "../screens/Main/Project/SelectWorkers";
 import { SelectAdmin } from "../screens/Main/Project/SelectAdmin";
@@ -117,6 +118,7 @@ export default function AppNavigator() {
             <Stack.Screen name="Tasks" component={TasksScreen} />
             <Stack.Screen name="GroupChat" component={GroupChatScreen} />
             <Stack.Screen name="SingleChat" component={SingleChatScreen} />
+            <Stack.Screen name="DocumentPreview" component={DocumentPreviewScreen} />
             <Stack.Screen name="Projects" component={ProjectsScreen} />
             <Stack.Screen name="Project" component={ProjectScreen} />
             <Stack.Screen name="Task" component={TaskScreen} />
