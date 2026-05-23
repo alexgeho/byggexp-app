@@ -16,6 +16,7 @@ import Icon from "react-native-vector-icons/Feather";
 import { useTheme } from "../../../theme/ThemeContext";
 
 import { API_BASE_URL } from "../../../services/api";
+import { sortByNewest } from "../../../utils/sortByNewest";
 
 import { createStyles } from "./ProjectFilesSection.style";
 
@@ -34,40 +35,47 @@ export default function ProjectFilesSection({
 
   const normalizedFiles = useMemo(
     () =>
-      files.map(function normalizeFile(file, index) {
-        const fileUrl =
-          typeof file === "string"
-            ? file
-            : file?.url;
-
-        const fileName =
-          typeof file === "string"
-            ? `Document ${index + 1}`
-            : file?.name || `Document ${index + 1}`;
-
-        const mimeType =
-          typeof file === "string"
-            ? ""
-            : file?.mimeType || "";
-
-        const isImage =
-          mimeType.startsWith("image/") ||
-          /\.(png|jpe?g|gif|webp|bmp|heic|heif|svg)$/i.test(
-            fileName,
-          );
-
-        return {
-          id:
+      sortByNewest(
+        files.map(function normalizeFile(file, index) {
+          const fileUrl =
             typeof file === "string"
-              ? `${file}-${index}`
-              : file?._id || file?.url || `${index}`,
-          name: fileName,
-          url: /^https?:\/\//i.test(fileUrl)
-            ? fileUrl
-            : `${API_BASE_URL}${fileUrl?.startsWith("/") ? fileUrl : `/${fileUrl}`}`,
-          isImage,
-        };
-      }),
+              ? file
+              : file?.url;
+
+          const fileName =
+            typeof file === "string"
+              ? `Document ${index + 1}`
+              : file?.name || `Document ${index + 1}`;
+
+          const mimeType =
+            typeof file === "string"
+              ? ""
+              : file?.mimeType || "";
+
+          const isImage =
+            mimeType.startsWith("image/") ||
+            /\.(png|jpe?g|gif|webp|bmp|heic|heif|svg)$/i.test(
+              fileName,
+            );
+
+          return {
+            id:
+              typeof file === "string"
+                ? `${file}-${index}`
+                : file?._id || file?.url || `${index}`,
+            name: fileName,
+            url: /^https?:\/\//i.test(fileUrl)
+              ? fileUrl
+              : `${API_BASE_URL}${fileUrl?.startsWith("/") ? fileUrl : `/${fileUrl}`}`,
+            uploadedAt:
+              typeof file === "string" ? null : file?.uploadedAt || null,
+            createdAt:
+              typeof file === "string" ? null : file?.createdAt || null,
+            isImage,
+          };
+        }),
+        (file) => [file?.uploadedAt, file?.createdAt],
+      ),
     [files],
   );
 

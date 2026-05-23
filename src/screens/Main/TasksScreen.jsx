@@ -15,6 +15,7 @@ import { useTheme } from "../../theme/ThemeContext";
 import { projectService } from "../../services";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../components/common/BackButton/BackButton";
+import { resolveNewestTimestamp, sortByNewest } from "../../utils/sortByNewest";
 
 export default function TasksScreen() {
   const navigation = useNavigation();
@@ -61,11 +62,19 @@ export default function TasksScreen() {
 
     return projects
       .map((project) => {
-        const tasks = Array.isArray(project.tasks) ? project.tasks : [];
+        const tasks = sortByNewest(
+          Array.isArray(project.tasks) ? project.tasks : [],
+          (task) => [
+            task?.createdAt,
+            task?.updatedAt,
+            task?.startDate,
+            task?.dueDate,
+          ],
+        );
         const projectMatches = project.name
           ?.toLowerCase()
           .includes(normalizedQuery);
-        const filteredTasks = normalizedQuery
+        const visibleTasks = normalizedQuery
           ? tasks.filter((task) => {
               const haystack = [
                 task?.taskTitle,
@@ -82,7 +91,15 @@ export default function TasksScreen() {
 
         return {
           ...project,
-          visibleTasks: projectMatches ? tasks : filteredTasks,
+          visibleTasks: projectMatches ? tasks : visibleTasks,
+          newestVisibleTaskTimestamp: resolveNewestTimestamp(
+            projectMatches ? tasks[0]?.createdAt : visibleTasks[0]?.createdAt,
+            projectMatches ? tasks[0]?.updatedAt : visibleTasks[0]?.updatedAt,
+            projectMatches ? tasks[0]?.startDate : visibleTasks[0]?.startDate,
+            projectMatches ? tasks[0]?.dueDate : visibleTasks[0]?.dueDate,
+            project?.createdAt,
+            project?.updatedAt,
+          ),
         };
       })
       .filter((project) => {
@@ -91,7 +108,12 @@ export default function TasksScreen() {
           project.visibleTasks.length > 0 ||
           project.name?.toLowerCase().includes(normalizedQuery)
         );
-      });
+      })
+      .sort(
+        (leftProject, rightProject) =>
+          rightProject.newestVisibleTaskTimestamp -
+          leftProject.newestVisibleTaskTimestamp,
+      );
   }, [projects, searchQuery]);
 
   const formatTaskDate = (date) => {

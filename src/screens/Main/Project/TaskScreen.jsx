@@ -14,6 +14,7 @@ import Icon from "react-native-vector-icons/Feather";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { resolveUploadUrl } from "../../../utils/shifts";
+import { sortByNewest } from "../../../utils/sortByNewest";
 
 const GroupCard = ({ children }) => (
   <View style={styles.groupCard}>{children}</View>
@@ -116,20 +117,27 @@ export default function TaskScreen() {
   const documents = useMemo(
     () =>
       Array.isArray(task?.documents)
-        ? task.documents.map((document, index) => ({
-            id: document?._id || document?.url || `${index}`,
-            name: getDocumentName(document, index),
-            url: resolveDocumentUrl(
-              typeof document === "string" ? document : document?.url,
-            ),
-            mimeType:
-              typeof document === "string" ? "" : document?.mimeType || "",
-            isImage: isImageDocument({
+        ? sortByNewest(
+            task.documents.map((document, index) => ({
+              id: document?._id || document?.url || `${index}`,
               name: getDocumentName(document, index),
+              url: resolveDocumentUrl(
+                typeof document === "string" ? document : document?.url,
+              ),
               mimeType:
                 typeof document === "string" ? "" : document?.mimeType || "",
-            }),
-          }))
+              uploadedAt:
+                typeof document === "string" ? null : document?.uploadedAt || null,
+              createdAt:
+                typeof document === "string" ? null : document?.createdAt || null,
+              isImage: isImageDocument({
+                name: getDocumentName(document, index),
+                mimeType:
+                  typeof document === "string" ? "" : document?.mimeType || "",
+              }),
+            })),
+            (document) => [document?.uploadedAt, document?.createdAt],
+          )
         : [],
     [task?.documents],
   );

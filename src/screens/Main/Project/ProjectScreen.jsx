@@ -34,6 +34,7 @@ import AuthContext from "../../../contexts/AuthContext";
 import { useTheme } from "../../../theme/ThemeContext";
 import { chatService, projectService } from "../../../services";
 import { resolveUploadUrl } from "../../../utils/shifts";
+import { sortByNewest } from "../../../utils/sortByNewest";
 
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, "") ||
@@ -201,7 +202,15 @@ export const ProjectScreen = () => {
   const tasks = useMemo(
     () =>
       Array.isArray(project?.tasks)
-        ? project.tasks.filter((task) => task && typeof task === "object")
+        ? sortByNewest(
+            project.tasks.filter((task) => task && typeof task === "object"),
+            (task) => [
+              task?.createdAt,
+              task?.updatedAt,
+              task?.startDate,
+              task?.dueDate,
+            ],
+          )
         : [],
     [project?.tasks],
   );
@@ -209,26 +218,34 @@ export const ProjectScreen = () => {
   const documents = useMemo(
     () =>
       Array.isArray(project?.documents)
-        ? project.documents.map((document, index) => ({
-            id: document?._id || document?.url || `${index}`,
-            name: getDocumentName(document, index),
-            url: resolveDocumentUrl(
-              typeof document === "string" ? document : document?.url,
-            ),
-            mimeType:
-              typeof document === "string" ? "" : document?.mimeType || "",
-            size:
-              typeof document === "string" ? null : (document?.size ?? null),
-            uploadedAt:
-              typeof document === "string"
-                ? null
-                : document?.uploadedAt || project?.createdAt || null,
-            isImage: isImageDocument({
+        ? sortByNewest(
+            project.documents.map((document, index) => ({
+              id: document?._id || document?.url || `${index}`,
               name: getDocumentName(document, index),
+              url: resolveDocumentUrl(
+                typeof document === "string" ? document : document?.url,
+              ),
               mimeType:
                 typeof document === "string" ? "" : document?.mimeType || "",
-            }),
-          }))
+              size:
+                typeof document === "string" ? null : (document?.size ?? null),
+              uploadedAt:
+                typeof document === "string"
+                  ? null
+                  : document?.uploadedAt ||
+                    document?.createdAt ||
+                    project?.createdAt ||
+                    null,
+              createdAt:
+                typeof document === "string" ? null : document?.createdAt || null,
+              isImage: isImageDocument({
+                name: getDocumentName(document, index),
+                mimeType:
+                  typeof document === "string" ? "" : document?.mimeType || "",
+              }),
+            })),
+            (document) => [document?.uploadedAt, document?.createdAt],
+          )
         : [],
     [project?.createdAt, project?.documents],
   );

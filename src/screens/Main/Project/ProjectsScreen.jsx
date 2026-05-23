@@ -15,6 +15,7 @@ import AuthContext from "../../../contexts/AuthContext";
 import { projectService } from "../../../services";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
+import { sortByNewest } from "../../../utils/sortByNewest";
 
 export default function ProjectsScreen() {
   const navigation = useNavigation();
@@ -80,25 +81,28 @@ export default function ProjectsScreen() {
 
   const filteredProjects = useMemo(() => {
     const normalizedQuery = searchQuery.trim().toLowerCase();
+    const visibleProjects = normalizedQuery
+      ? projects.filter((project) => {
+          const searchableText = [
+            project?.name,
+            project?.location,
+            project?.status,
+            project?.contractNumber,
+            project?.description,
+          ]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase();
 
-    if (!normalizedQuery) {
-      return projects;
-    }
+          return searchableText.includes(normalizedQuery);
+        })
+      : projects;
 
-    return projects.filter((project) => {
-      const searchableText = [
-        project?.name,
-        project?.location,
-        project?.status,
-        project?.contractNumber,
-        project?.description,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-
-      return searchableText.includes(normalizedQuery);
-    });
+    return sortByNewest(visibleProjects, (project) => [
+      project?.createdAt,
+      project?.updatedAt,
+      project?.beginningDate,
+    ]);
   }, [projects, searchQuery]);
 
   const handleProjectPress = (project) => {
