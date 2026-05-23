@@ -9,6 +9,7 @@ import {
 import Icon from "react-native-vector-icons/Feather";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
+import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
 import {
   getRepeatOptionState,
   getRepeatLabel,
@@ -171,7 +172,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 24,
+    ...standardScreenHeaderSpacing,
   },
   headerTitle: {
     color: "#052D50",

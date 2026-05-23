@@ -15,6 +15,7 @@ import { useTheme } from "../../theme/ThemeContext";
 import { projectService } from "../../services";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../components/common/BackButton/BackButton";
+import { standardScreenHeaderSpacing } from "../../styles/screenLayout";
 import { resolveNewestTimestamp, sortByNewest } from "../../utils/sortByNewest";
 
 export default function TasksScreen() {
@@ -259,8 +260,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingTop: 20,
-    paddingBottom: 10,
+    ...standardScreenHeaderSpacing,
   },
   headerTitle: {
     color: "#052D50",

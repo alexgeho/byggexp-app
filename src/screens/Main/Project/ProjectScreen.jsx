@@ -32,6 +32,7 @@ import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
+import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
 import { useTheme } from "../../../theme/ThemeContext";
 import { chatService, projectService } from "../../../services";
 import { resolveUploadUrl } from "../../../utils/shifts";
@@ -746,8 +747,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingTop: 20,
-    paddingBottom: 10,
+    ...standardScreenHeaderSpacing,
   },
   backButton: {
     padding: 16,

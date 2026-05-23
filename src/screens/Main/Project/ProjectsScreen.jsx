@@ -15,6 +15,7 @@ import AuthContext from "../../../contexts/AuthContext";
 import { projectService } from "../../../services";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
+import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
 import { sortByNewest } from "../../../utils/sortByNewest";
 
 export default function ProjectsScreen() {
@@ -251,8 +252,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingTop: 20,
-    paddingBottom: 10,
+    ...standardScreenHeaderSpacing,
   },
   headerTitle: {
     color: "#052D50",

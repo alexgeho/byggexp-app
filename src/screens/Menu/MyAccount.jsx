@@ -20,6 +20,7 @@ import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/Feather";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../components/common/BackButton/BackButton";
+import { standardScreenHeaderSpacing } from "../../styles/screenLayout";
 import { userService } from "../../services";
 
 const API_BASE_URL =
@@ -687,6 +688,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    ...standardScreenHeaderSpacing,
   },
   backButton: {
     padding: 16,

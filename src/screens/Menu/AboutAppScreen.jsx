@@ -1,8 +1,18 @@
-import React from "react";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import React, { useContext, useEffect, useMemo, useState } from "react";
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
+import AuthContext from "../../contexts/AuthContext";
+import { companyService, projectService } from "../../services";
+import { standardScreenHeaderSpacing } from "../../styles/screenLayout";
 import { useTheme } from "../../theme/ThemeContext";
 
 const APP_FEATURES = [
@@ -12,17 +22,171 @@ const APP_FEATURES = [
   "Ensure transparency and control over all construction site activities",
 ];
 
-const APP_INFO = [
-  { label: "Version", value: "1.0" },
-  { label: "Developer", value: "[Your Company Name]" },
-  { label: "Contact", value: "[email/website/phone]" },
-];
+const NOT_AVAILABLE = "N/A";
+
+const getFirstDefinedValue = (...values) =>
+  values.find((value) => typeof value === "string" && value.trim()) || "";
+
+const formatPhone = (source) => {
+  const phone = getFirstDefinedValue(
+    source?.phone,
+    source?.phoneNumber,
+    source?.contactPhone,
+  );
+
+  if (phone) {
+    const areaCode = source?.phoneAreaCode ? `+${source.phoneAreaCode} ` : "";
+    return `${areaCode}${phone}`.trim();
+  }
+
+  return "";
+};
+
+const buildContactValue = (project, company) => {
+  const values = [
+    getFirstDefinedValue(
+      company?.email,
+      company?.contactEmail,
+      project?.contactEmail,
+    ),
+    getFirstDefinedValue(
+      company?.website,
+      company?.site,
+      company?.url,
+      project?.website,
+    ),
+    formatPhone(company) || formatPhone(project),
+  ].filter(Boolean);
+
+  return values.length ? values.join(" / ") : NOT_AVAILABLE;
+};
 
 export default function AboutAppScreen() {
   const navigation = useNavigation();
   const { theme } = useTheme();
+  const { user, selectedProject } = useContext(AuthContext);
+  const [appInfo, setAppInfo] = useState({
+    developer: NOT_AVAILABLE,
+    contact: NOT_AVAILABLE,
+  });
+  const [loadingInfo, setLoadingInfo] = useState(false);
 
   const accentTint = { tintColor: theme.colors.primary };
+  const appInformationRows = useMemo(
+    () => [
+      { label: "Version", value: "1.0" },
+      { label: "Developer", value: appInfo.developer },
+      { label: "Contact", value: appInfo.contact },
+    ],
+    [appInfo.contact, appInfo.developer],
+  );
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadAppInfo = async () => {
+      if (user?.role === "superadmin") {
+        if (isMounted) {
+          setAppInfo({
+            developer: NOT_AVAILABLE,
+            contact: NOT_AVAILABLE,
+          });
+        }
+        return;
+      }
+
+      try {
+        setLoadingInfo(true);
+
+        let relevantProject = selectedProject || null;
+        let companyId =
+          relevantProject?.clientCompanyId ||
+          relevantProject?.clientCompany?._id ||
+          relevantProject?.clientCompany?.id ||
+          relevantProject?.companyId ||
+          relevantProject?.company?._id ||
+          relevantProject?.company?.id ||
+          null;
+
+        if (relevantProject && !companyId) {
+          const projectId = relevantProject?._id || relevantProject?.id;
+          if (projectId) {
+            relevantProject = await projectService.getById(projectId);
+            companyId =
+              relevantProject?.clientCompanyId ||
+              relevantProject?.clientCompany?._id ||
+              relevantProject?.clientCompany?.id ||
+              relevantProject?.companyId ||
+              relevantProject?.company?._id ||
+              relevantProject?.company?.id ||
+              null;
+          }
+        }
+
+        if (!relevantProject || !companyId) {
+          const projects = await projectService.getMyProjects();
+          const fallbackProject = Array.isArray(projects) ? projects[0] || null : null;
+
+          if (fallbackProject) {
+            relevantProject = fallbackProject;
+            companyId =
+              fallbackProject?.clientCompanyId ||
+              fallbackProject?.clientCompany?._id ||
+              fallbackProject?.clientCompany?.id ||
+              fallbackProject?.companyId ||
+              fallbackProject?.company?._id ||
+              fallbackProject?.company?.id ||
+              null;
+          }
+        }
+
+        if (!relevantProject) {
+          if (isMounted) {
+            setAppInfo({
+              developer: NOT_AVAILABLE,
+              contact: NOT_AVAILABLE,
+            });
+          }
+          return;
+        }
+
+        const company = companyId ? await companyService.getById(companyId) : null;
+
+        const developer = getFirstDefinedValue(
+          company?.name,
+          company?.companyName,
+          relevantProject?.clientCompany?.name,
+          relevantProject?.company?.name,
+        );
+
+        if (isMounted) {
+          setAppInfo({
+            developer: developer || NOT_AVAILABLE,
+            contact: buildContactValue(relevantProject, company),
+          });
+        }
+      } catch (error) {
+        console.error("Failed to load app info:", error);
+
+        if (isMounted) {
+          setAppInfo({
+            developer: NOT_AVAILABLE,
+            contact: NOT_AVAILABLE,
+          });
+        }
+      } finally {
+        if (isMounted) {
+          setLoadingInfo(false);
+        }
+      }
+    };
+
+    loadAppInfo();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedProject, user?.role]);
 
   return (
     <View style={styles.container}>
@@ -146,12 +310,12 @@ export default function AboutAppScreen() {
             App Information
           </Text>
 
-          {APP_INFO.map((item, index) => (
+          {appInformationRows.map((item, index) => (
             <View
               key={item.label}
               style={[
                 styles.infoRow,
-                index !== APP_INFO.length - 1 && styles.infoRowDivider,
+                index !== appInformationRows.length - 1 && styles.infoRowDivider,
               ]}
             >
               <Text
@@ -172,6 +336,12 @@ export default function AboutAppScreen() {
               </Text>
             </View>
           ))}
+
+          {loadingInfo ? (
+            <View style={styles.loadingRow}>
+              <ActivityIndicator size="small" color={theme.colors.primary} />
+            </View>
+          ) : null}
         </View>
       </ScrollView>
 
@@ -189,6 +359,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#EEEEEE",
     paddingHorizontal: 12,
+    paddingTop: 48,
     paddingBottom: 48,
   },
   header: {
@@ -196,8 +367,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingTop: 20,
-    paddingBottom: 10,
+    ...standardScreenHeaderSpacing,
   },
   headerTitle: {
     color: "#052D50",
@@ -303,5 +473,9 @@ const styles = StyleSheet.create({
     color: "#052D50",
     fontSize: 15,
     lineHeight: 22,
+  },
+  loadingRow: {
+    paddingTop: 12,
+    alignItems: "flex-start",
   },
 });

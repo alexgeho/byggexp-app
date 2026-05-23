@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { standardScreenHeaderSpacing } from "../../styles/screenLayout";
 
 export function createStyles(theme) {
   return StyleSheet.create({
@@ -14,7 +15,7 @@ export function createStyles(theme) {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 16,
+    ...standardScreenHeaderSpacing,
   },
   backButton: {
     padding: 16,

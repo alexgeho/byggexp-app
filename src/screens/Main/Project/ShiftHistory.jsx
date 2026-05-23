@@ -20,6 +20,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import AuthContext from "../../../contexts/AuthContext";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
+import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
 import { shiftService } from "../../../services";
 import {
   formatDuration,
@@ -631,8 +632,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingTop: 20,
-    paddingBottom: 30,
+    ...standardScreenHeaderSpacing,
   },
   backButton: {
     padding: 16,
