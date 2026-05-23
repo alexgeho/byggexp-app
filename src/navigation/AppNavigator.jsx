@@ -40,6 +40,7 @@ import CustomizeHomeScreen from "../screens/Menu/CustomizeHomeScreen";
 import AboutAppScreen from "../screens/Menu/AboutAppScreen";
 import HelpSupportScreen from "../screens/Menu/HelpSupportScreen";
 import LegalPoliciesScreen from "../screens/Menu/LegalPoliciesScreen";
+import NotificationsSettingsScreen from "../screens/Menu/NotificationsSettingsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -159,6 +160,10 @@ export default function AppNavigator() {
             <Stack.Screen name="Shifts" component={ShiftsScreen} />
             <Stack.Screen name="Menu" component={MenuScreen} />
             <Stack.Screen name="MyAccount" component={MyAccount} />
+            <Stack.Screen
+              name="NotificationsSettings"
+              component={NotificationsSettingsScreen}
+            />
             <Stack.Screen name="AboutApp" component={AboutAppScreen} />
             <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
             <Stack.Screen name="LegalPolicies" component={LegalPoliciesScreen} />

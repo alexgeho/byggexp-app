@@ -11,7 +11,11 @@ import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Feather";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
-import { standardScreenHeaderSpacing } from "../../styles/screenLayout";
+import {
+  standardScreenContainer,
+  standardScreenHeader,
+  standardScreenHeaderPlaceholder,
+} from "../../styles/screenLayout";
 import { useTheme } from "../../theme/ThemeContext";
 
 const SUPPORT_PHONE = "+46 812 410 276";
@@ -182,18 +186,10 @@ export default function HelpSupportScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#EEEEEE",
-    paddingHorizontal: 12,
-    paddingTop: 48,
-    paddingBottom: 48,
+    ...standardScreenContainer,
   },
   header: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    ...standardScreenHeaderSpacing,
+    ...standardScreenHeader,
   },
   headerTitle: {
     color: "#052D50",
@@ -201,7 +197,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   placeholder: {
-    width: 36,
+    ...standardScreenHeaderPlaceholder,
   },
   scrollContainer: {
     flex: 1,

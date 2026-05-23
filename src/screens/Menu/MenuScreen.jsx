@@ -50,6 +50,7 @@ export default function MenuScreen() {
       },
       {
         id: "notifications",
+        screen: "NotificationsSettings",
         title: "Notifications",
         icon: require("../../assets/Notifications.png"),
         color: theme.colors.primary,

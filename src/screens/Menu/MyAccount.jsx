@@ -20,7 +20,11 @@ import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/Feather";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../components/common/BackButton/BackButton";
-import { standardScreenHeaderSpacing } from "../../styles/screenLayout";
+import {
+  standardScreenContainer,
+  standardScreenHeader,
+  standardScreenHeaderPlaceholder,
+} from "../../styles/screenLayout";
 import {
   getDocumentNameFromUrl,
   isImageDocument as isPreviewImageDocument,
@@ -684,12 +688,8 @@ export const MyAccount = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 12,
-    paddingTop: 48,
-    paddingBottom: 48,
+    ...standardScreenContainer,
     gap: 12,
-    backgroundColor: "#EEEEEE",
   },
   centeredContainer: {
     flex: 1,
@@ -703,11 +703,7 @@ const styles = StyleSheet.create({
     color: "#698196",
   },
   header: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    ...standardScreenHeaderSpacing,
+    ...standardScreenHeader,
   },
   backButton: {
     padding: 16,
@@ -729,7 +725,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   placeholder: {
-    width: 36,
+    ...standardScreenHeaderPlaceholder,
   },
   scrollContainer: {
     flex: 1,

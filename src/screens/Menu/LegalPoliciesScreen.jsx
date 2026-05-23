@@ -4,7 +4,11 @@ import { useNavigation } from "@react-navigation/native";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { useAppInformation } from "../../hooks/useAppInformation";
-import { standardScreenHeaderSpacing } from "../../styles/screenLayout";
+import {
+  standardScreenContainer,
+  standardScreenHeader,
+  standardScreenHeaderPlaceholder,
+} from "../../styles/screenLayout";
 import { useTheme } from "../../theme/ThemeContext";
 
 const COLLECTED_DATA = [
@@ -241,18 +245,10 @@ export default function LegalPoliciesScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#EEEEEE",
-    paddingHorizontal: 12,
-    paddingTop: 48,
-    paddingBottom: 48,
+    ...standardScreenContainer,
   },
   header: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    ...standardScreenHeaderSpacing,
+    ...standardScreenHeader,
   },
   headerTitle: {
     color: "#052D50",
@@ -260,7 +256,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   placeholder: {
-    width: 36,
+    ...standardScreenHeaderPlaceholder,
   },
   scrollContainer: {
     flex: 1,

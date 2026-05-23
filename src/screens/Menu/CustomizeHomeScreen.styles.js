@@ -1,13 +1,14 @@
 import { StyleSheet } from "react-native";
-import { standardScreenHeaderSpacing } from "../../styles/screenLayout";
+import {
+  standardScreenContainer,
+  standardScreenHeader,
+} from "../../styles/screenLayout";
 
 export function createStyles(theme) {
   return StyleSheet.create({
     container: {
-      flex: 1,
-      backgroundColor: "#EEEEEE",
-      paddingTop: 48,
-      paddingHorizontal: 16,
+      ...standardScreenContainer,
+      paddingBottom: 0,
     },
     scrollContainer: {
       flex: 1,
@@ -17,10 +18,7 @@ export function createStyles(theme) {
     },
 
     header: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      ...standardScreenHeaderSpacing,
+      ...standardScreenHeader,
     },
 
     title: {

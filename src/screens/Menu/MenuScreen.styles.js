@@ -1,22 +1,18 @@
 import { StyleSheet } from "react-native";
-import { standardScreenHeaderSpacing } from "../../styles/screenLayout";
+import {
+  standardScreenContainer,
+  standardScreenHeader,
+  standardScreenHeaderPlaceholder,
+} from "../../styles/screenLayout";
 
 export function createStyles(theme) {
   return StyleSheet.create({
-   container: {
-    flex: 1,
-    backgroundColor: "#EEEEEE",
-    padding: 16,
-    paddingTop: 48,
-    paddingBottom: 48,
-  },
-  header: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    ...standardScreenHeaderSpacing,
-  },
+    container: {
+      ...standardScreenContainer,
+    },
+    header: {
+      ...standardScreenHeader,
+    },
   backButton: {
     padding: 16,
     backgroundColor: "#ffffff",
@@ -37,7 +33,7 @@ export function createStyles(theme) {
     textAlign: "center",
   },
   placeholder: {
-    width: 36,
+      ...standardScreenHeaderPlaceholder,
   },
   sectionTitle: {
     color: "#698196",
