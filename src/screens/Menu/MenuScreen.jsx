@@ -176,6 +176,7 @@ export default function MenuScreen() {
     },
     {
       id: "help",
+      screen: "HelpSupport",
       title: "Help & Support",
       icon: require("../../assets/Help.png"),
       color: theme.colors.primary,

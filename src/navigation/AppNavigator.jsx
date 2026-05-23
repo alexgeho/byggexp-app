@@ -37,6 +37,7 @@ import ThemeHomeScreen from "../screens/Main/HomeVariants/ThemeHomeScreen";
 
 import CustomizeHomeScreen from "../screens/Menu/CustomizeHomeScreen";
 import AboutAppScreen from "../screens/Menu/AboutAppScreen";
+import HelpSupportScreen from "../screens/Menu/HelpSupportScreen";
 import LegalPoliciesScreen from "../screens/Menu/LegalPoliciesScreen";
 
 const Stack = createNativeStackNavigator();
@@ -157,6 +158,7 @@ export default function AppNavigator() {
             <Stack.Screen name="Menu" component={MenuScreen} />
             <Stack.Screen name="MyAccount" component={MyAccount} />
             <Stack.Screen name="AboutApp" component={AboutAppScreen} />
+            <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
             <Stack.Screen name="LegalPolicies" component={LegalPoliciesScreen} />
           </>
         ) : (
