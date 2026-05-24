@@ -69,7 +69,7 @@ export function createStyles(
     },
 
     carouselRowRegular: {
-      gap: 10,
+      gap: 4,
     },
 
     peekTrack: {
@@ -97,7 +97,7 @@ export function createStyles(
 
     peekLeftSlot: {
       left: "50%",
-      marginLeft: -232,
+      marginLeft: -226,
     },
 
     peekCenterSlot: {
@@ -107,7 +107,7 @@ export function createStyles(
 
     peekRightSlot: {
       left: "50%",
-      marginLeft: 84,
+      marginLeft: 78,
     },
 
     fileTouchable: {
