@@ -1,6 +1,7 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
+  ScrollView,
   Text,
   TouchableOpacity,
   View,
@@ -49,6 +50,7 @@ function formatTimeRangeCompact(startedAt, endedAt) {
 
 export function ShiftHistoryPreview({
   colorMode = "dark",
+  onClose,
 }) {
   const navigation = useNavigation();
   const { theme } = useTheme();
@@ -86,23 +88,31 @@ export function ShiftHistoryPreview({
     }, [loadShifts]),
   );
 
-  const previewItems = useMemo(() => {
-    return shifts.slice(0, 4);
-  }, [shifts]);
-
   return (
     <View style={styles.section}>
       <View style={styles.header}>
         <Text style={styles.title}>Shift history</Text>
 
-        <TouchableOpacity
-          style={styles.linkButton}
-          onPress={() => navigation.navigate("Shifts")}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.linkText}>View all</Text>
-          <Icon name="arrow-right" size={18} color="#FFFFFF" style={styles.linkIcon} />
-        </TouchableOpacity>
+        <View style={styles.headerActions}>
+          <TouchableOpacity
+            style={styles.linkButton}
+            onPress={() => navigation.navigate("Shifts")}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.linkText}>View all</Text>
+            <Icon name="arrow-right" size={18} color="#FFFFFF" style={styles.linkIcon} />
+          </TouchableOpacity>
+
+          {onClose ? (
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={onClose}
+              activeOpacity={0.8}
+            >
+              <Icon name="x" size={18} color="#20384D" />
+            </TouchableOpacity>
+          ) : null}
+        </View>
       </View>
 
       <View style={styles.card}>
@@ -110,15 +120,20 @@ export function ShiftHistoryPreview({
           <View style={styles.loadingState}>
             <ActivityIndicator color="#FFFFFF" />
           </View>
-        ) : previewItems.length ? (
-          <View style={styles.list}>
-            {previewItems.map(function renderShift(shift, index) {
+        ) : shifts.length ? (
+          <ScrollView
+            style={styles.scrollArea}
+            contentContainerStyle={styles.list}
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled={true}
+          >
+            {shifts.map(function renderShift(shift, index) {
               return (
                 <View
                   key={shift.id || `${shift.startedAt}-${index}`}
                   style={[
                     styles.item,
-                    index !== previewItems.length - 1 &&
+                    index !== shifts.length - 1 &&
                       styles.itemDivider,
                   ]}
                 >
@@ -149,7 +164,7 @@ export function ShiftHistoryPreview({
                 </View>
               );
             })}
-          </View>
+          </ScrollView>
         ) : (
           <View style={styles.emptyState}>
             <Text style={styles.emptyText}>

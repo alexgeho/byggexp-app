@@ -50,6 +50,7 @@ import {
 import {
   getEnabledButtons,
   getEnabledSections,
+  saveEnabledSections,
 } from "../../../utils/homeButtonsStorage";
 import { useUnreadChats } from "../../../hooks/useUnreadChats";
 import UnreadBadge from "../../../components/common/UnreadBadge/UnreadBadge";
@@ -265,6 +266,12 @@ export default function HomeVariant2() {
     navigation.navigate(screen);
   }
 
+  const handleHideSection = useCallback(async (sectionId) => {
+    const updatedSections = enabledSections.filter((id) => id !== sectionId);
+    setEnabledSections(updatedSections);
+    await saveEnabledSections(updatedSections);
+  }, [enabledSections]);
+
   function handleCameraPress() {
     navigation.navigate("Camera");
   }
@@ -438,12 +445,15 @@ export default function HomeVariant2() {
         </View>
 
         {enabledSections.includes("shift-history") && (
-          <ShiftHistoryPreview />
+          <ShiftHistoryPreview
+            onClose={() => handleHideSection("shift-history")}
+          />
         )}
 
         {enabledSections.includes("project-files") && (
           <ProjectFilesSection
             project={selectedProject}
+            onClose={() => handleHideSection("project-files")}
           />
         )}
       </ScrollView>

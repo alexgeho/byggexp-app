@@ -23,6 +23,7 @@ import { createStyles } from "./ProjectFilesSection.style";
 export default function ProjectFilesSection({
   project,
   colorMode = "dark",
+  onClose,
 }) {
   const navigation = useNavigation();
   const { theme } = useTheme();
@@ -131,21 +132,33 @@ export default function ProjectFilesSection({
           Project Documents
         </Text>
 
-        <TouchableOpacity
-          onPress={handleViewAll}
-          activeOpacity={0.8}
-          style={styles.linkButton}
-        >
-          <Text style={styles.linkText}>
-            View all
-          </Text>
-          <Icon
-            name="arrow-right"
-            size={18}
-            color="#FFFFFF"
-            style={styles.linkIcon}
-          />
-        </TouchableOpacity>
+        <View style={styles.headerActions}>
+          <TouchableOpacity
+            onPress={handleViewAll}
+            activeOpacity={0.8}
+            style={styles.linkButton}
+          >
+            <Text style={styles.linkText}>
+              View all
+            </Text>
+            <Icon
+              name="arrow-right"
+              size={18}
+              color="#FFFFFF"
+              style={styles.linkIcon}
+            />
+          </TouchableOpacity>
+
+          {onClose ? (
+            <TouchableOpacity
+              onPress={onClose}
+              activeOpacity={0.8}
+              style={styles.closeButton}
+            >
+              <Icon name="x" size={18} color="#20384D" />
+            </TouchableOpacity>
+          ) : null}
+        </View>
       </View>
 
       <View style={styles.carouselViewport}>

@@ -41,10 +41,8 @@ export function createStyles(theme) {
       alignItems: "center",
     },
     navIcon: {
-      width: 30,
-      height: 30,
-      resizeMode: "contain",
-      tintColor: theme.colors.icon,
+      width: 45,
+      height: 45,
     },
     actionButton: {
       width: 81,

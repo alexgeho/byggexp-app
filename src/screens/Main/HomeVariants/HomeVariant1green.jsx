@@ -30,6 +30,7 @@ import TimerDisplay from "@components/common/TimerDisplay/TimerDisplay";
 import PlayButton from "@components/common/PlayButton/PlayButton";
 import TimerProgress from "@components/common/TimerProgress/TimerProgress";
 import { BottomBar } from "@components/common/BottomBar/BottomBar";
+import { saveEnabledSections } from "@utils/homeButtonsStorage";
 
 export default function MainScreen() {
 
@@ -43,7 +44,6 @@ export default function MainScreen() {
   const [actionLoading, setActionLoading] = useState(false);
   const [currentShift, setCurrentShift] = useState(null);
   const [enabledSections, setEnabledSections] = useState([]);
-  const [showProjectFiles, setShowProjectFiles] = useState(true);
   const {
     formattedTime,
     isRunning,
@@ -238,6 +238,12 @@ export default function MainScreen() {
     navigation.navigate("Menu");
   }
 
+  const handleHideSection = useCallback(async (sectionId) => {
+    const updatedSections = enabledSections.filter((id) => id !== sectionId);
+    setEnabledSections(updatedSections);
+    await saveEnabledSections(updatedSections);
+  }, [enabledSections]);
+
   return (
     <View style={styles.container}>
       <View style={styles.selectProjectContainer}>
@@ -272,19 +278,19 @@ export default function MainScreen() {
 
         <View style={styles.sectionsContainer}>
           {enabledSections.includes("shift-history") && (
-            <ShiftHistoryPreview colorMode="light" />
+            <ShiftHistoryPreview
+              colorMode="light"
+              onClose={() => handleHideSection("shift-history")}
+            />
           )}
 
-          {showProjectFiles &&
-            enabledSections.includes("project-files") && (
-              <ProjectFilesSection
-                project={selectedProject}
-                colorMode="light"
-                onClose={function handleClose() {
-                  setShowProjectFiles(false);
-                }}
-              />
-            )}
+          {enabledSections.includes("project-files") && (
+            <ProjectFilesSection
+              project={selectedProject}
+              colorMode="light"
+              onClose={() => handleHideSection("project-files")}
+            />
+          )}
         </View>
       </View>
 

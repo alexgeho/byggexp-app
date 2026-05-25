@@ -20,6 +20,11 @@ export function createStyles(
       justifyContent: "space-between",
       paddingHorizontal: 4,
     },
+    headerActions: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+    },
 
     title: {
       color: primaryTextColor,
@@ -43,6 +48,17 @@ export function createStyles(
     linkIcon: {
       opacity: 0.9,
       marginTop: 1,
+    },
+    closeButton: {
+      width: 44,
+      height: 44,
+      justifyContent: "center",
+      alignItems: "center",
+      borderRadius: 22,
+      borderWidth: 1,
+      borderColor: "#FFFFFF",
+      backgroundColor: "rgba(255,255,255,0.6)",
+      overflow: "hidden",
     },
 
     carouselViewport: {

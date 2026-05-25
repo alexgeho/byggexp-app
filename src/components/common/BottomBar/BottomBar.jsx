@@ -1,7 +1,6 @@
 import React from "react";
 
 import {
-  Image,
   Text,
   TouchableOpacity,
   View,
@@ -11,6 +10,10 @@ import Icon from "react-native-vector-icons/Feather";
 import { useTheme } from "../../../theme/ThemeContext";
 
 import { createStyles } from "./BottomBar.styles";
+import {
+  FooterHomeIcon,
+  FooterMenuIcon,
+} from "./BottomBarIcons";
 
 export function BottomBar({
   onLeftPress,
@@ -47,9 +50,9 @@ export function BottomBar({
           style={styles.navButton}
           onPress={onLeftPress}
         >
-          <Image
-            source={require("../../../assets/footer-home.png")}
-            style={styles.navIcon}
+          <FooterHomeIcon
+            size={styles.navIcon.width}
+            color={theme.colors.icon}
           />
 
           {showText && (
@@ -70,9 +73,9 @@ export function BottomBar({
           style={styles.navButton}
           onPress={onRightPress}
         >
-          <Image
-            source={require("../../../assets/footer-menu.png")}
-            style={styles.navIcon}
+          <FooterMenuIcon
+            size={styles.navIcon.width}
+            color={theme.colors.icon}
           />
 
           {showText && (

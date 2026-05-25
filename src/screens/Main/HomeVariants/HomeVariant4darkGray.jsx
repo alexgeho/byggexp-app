@@ -34,6 +34,7 @@ import {
 import {
   getEnabledButtons,
   getEnabledSections,
+  saveEnabledSections,
 } from "../../../utils/homeButtonsStorage";
 import ProjectFilesSection from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
 import ShiftHistoryPreview from "../../../components/common2/ShiftHistoryPreview/ShiftHistoryPreview";
@@ -67,6 +68,12 @@ export default function MainScreen() {
 
   const getErrorMessage = (error, fallbackMessage) =>
     error?.response?.data?.message || error?.message || fallbackMessage;
+
+  const handleHideSection = useCallback(async (sectionId) => {
+    const updatedSections = enabledSections.filter((id) => id !== sectionId);
+    setEnabledSections(updatedSections);
+    await saveEnabledSections(updatedSections);
+  }, [enabledSections]);
 
   const upsertProject = useCallback((projectLike) => {
     if (!projectLike) {
@@ -491,11 +498,16 @@ export default function MainScreen() {
 
       <View style={styles.sectionsContainer}>
         {enabledSections.includes("shift-history") && (
-          <ShiftHistoryPreview />
+          <ShiftHistoryPreview
+            onClose={() => handleHideSection("shift-history")}
+          />
         )}
 
         {enabledSections.includes("project-files") && (
-          <ProjectFilesSection project={selectedProject} />
+          <ProjectFilesSection
+            project={selectedProject}
+            onClose={() => handleHideSection("project-files")}
+          />
         )}
       </View>
 
