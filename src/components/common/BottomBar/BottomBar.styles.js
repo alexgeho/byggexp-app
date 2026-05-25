@@ -63,7 +63,7 @@ export function createStyles(theme) {
     logoutButtonText: {
       color: "#FFFFFF",
       fontSize: 15,
-      fontWeight: "600",
+      fontFamily: theme.text.fontFamily.semiBold,
     },
     menuWrapperTransparent: {
       backgroundColor: "transparent",

@@ -11,6 +11,7 @@ import ProjectsScreen from "../screens/Main/Project/ProjectsScreen";
 import ShiftsScreen from "../screens/Main/Shifts/ShiftsScreen";
 import MenuScreen from "../screens/Menu/MenuScreen";
 import CreateProjectScreen from "../screens/Main/Project/CreateProjectScreen";
+import ProjectAddressSearchScreen from "../screens/Main/Project/ProjectAddressSearchScreen";
 import CreateTaskScreen from "../screens/Main/Project/CreateTaskScreen";
 import TaskScreen from "../screens/Main/Project/TaskScreen";
 import TaskNotificationsScreen from "../screens/Main/Project/TaskNotificationsScreen";
@@ -130,6 +131,11 @@ export default function AppNavigator() {
             <Stack.Screen
               name="CreateProject"
               component={CreateProjectScreen}
+              options={{ gestureEnabled: canManageProjects }}
+            />
+            <Stack.Screen
+              name="ProjectAddressSearch"
+              component={ProjectAddressSearchScreen}
               options={{ gestureEnabled: canManageProjects }}
             />
             <Stack.Screen

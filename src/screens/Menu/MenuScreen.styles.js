@@ -129,8 +129,8 @@ export function createStyles(theme) {
   },
   logoutButtonText: {
     color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "600",
+    fontSize: 15,
+    fontFamily: theme.text.fontFamily.semiBold,
   },
   });
 }

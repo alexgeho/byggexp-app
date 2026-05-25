@@ -15,7 +15,7 @@ import {
   Platform,
 } from "react-native";
 import { useTheme } from "../../../theme/ThemeContext";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { memo, useState, useEffect, useContext, useRef } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as DocumentPicker from "expo-document-picker";
@@ -33,6 +33,11 @@ import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { GlassView } from "../../../components/common/GlassView/GlassView";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
+import {
+  formatResolvedAddress,
+  getCoordinateCacheKey,
+  reverseGeocodeWithNominatim,
+} from "../../../utils/projectLocationSearch";
 
 const DEFAULT_REGION = {
   latitude: 59.3293,
@@ -43,96 +48,6 @@ const DEFAULT_REGION = {
 const DEFAULT_EMULATOR_LOCATION_LABEL = "Stockholm, Sweden";
 const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "inline" : "calendar";
 const REVERSE_GEOCODE_MIN_INTERVAL_MS = 1200;
-
-const GEOCODER_HEADERS = {
-  Accept: "application/json",
-  "Accept-Language": "en",
-};
-
-const formatResolvedAddress = (address) => {
-  if (!address) {
-    return "";
-  }
-
-  const streetLine = [address.street, address.streetNumber]
-    .filter(Boolean)
-    .join(" ")
-    .trim();
-
-  return [
-    address.name,
-    streetLine,
-    address.city || address.subregion || address.region,
-    address.postalCode,
-    address.country,
-  ]
-    .filter(Boolean)
-    .join(", ");
-};
-
-const reverseGeocodeWithNominatim = async (latitude, longitude) => {
-  const response = await fetch(
-    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
-    {
-      headers: GEOCODER_HEADERS,
-    },
-  );
-
-  if (!response.ok) {
-    throw new Error(`Reverse geocoding failed with status ${response.status}`);
-  }
-
-  const data = await response.json();
-  return data?.display_name || "";
-};
-
-const searchAddressesWithNominatim = async (query, limit = 5) => {
-  const response = await fetch(
-    `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=${limit}&q=${encodeURIComponent(query)}`,
-    {
-      headers: GEOCODER_HEADERS,
-    },
-  );
-
-  if (!response.ok) {
-    throw new Error(`Address search failed with status ${response.status}`);
-  }
-
-  const data = await response.json();
-  return Array.isArray(data) ? data : [];
-};
-
-const normalizeLocationSuggestions = (matches = []) => {
-  const seenLabels = new Set();
-
-  return matches.reduce((suggestions, match, index) => {
-    const label = match?.display_name?.trim();
-    const latitude = Number(match?.lat);
-    const longitude = Number(match?.lon);
-
-    if (
-      !label ||
-      Number.isNaN(latitude) ||
-      Number.isNaN(longitude) ||
-      seenLabels.has(label)
-    ) {
-      return suggestions;
-    }
-
-    seenLabels.add(label);
-    suggestions.push({
-      id: String(match?.place_id || `${label}-${index}`),
-      label,
-      latitude,
-      longitude,
-    });
-
-    return suggestions;
-  }, []);
-};
-
-const getCoordinateCacheKey = (latitude, longitude) =>
-  `${latitude.toFixed(4)},${longitude.toFixed(4)}`;
 
 const getStockholmCoordinate = () => ({
   latitude: DEFAULT_REGION.latitude,
@@ -346,6 +261,7 @@ const MapControlButton = ({ onPress, iconName, style, iconSize = 20 }) => {
 
 export default function CreateProjectScreen() {
   const navigation = useNavigation();
+  const route = useRoute();
   const { theme } = useTheme();
   const { showSuccess } = useFeedback();
   const { user } = useContext(AuthContext);
@@ -382,11 +298,7 @@ export default function CreateProjectScreen() {
   const [mapRegion, setMapRegion] = useState(DEFAULT_REGION);
   const [selectedCoordinate, setSelectedCoordinate] = useState(null);
   const [isLocationPickerVisible, setIsLocationPickerVisible] = useState(false);
-  const [isLocationSearchVisible, setIsLocationSearchVisible] = useState(false);
   const [locationSearch, setLocationSearch] = useState("");
-  const [locationSuggestions, setLocationSuggestions] = useState([]);
-  const [isLocationSuggestionsLoading, setIsLocationSuggestionsLoading] =
-    useState(false);
   const [isLocationLoading, setIsLocationLoading] = useState(false);
   const [beginningDate, setBeginningDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -416,7 +328,9 @@ export default function CreateProjectScreen() {
   const isLocationLoadingRef = useRef(false);
   const lastReverseGeocodeAtRef = useRef(0);
   const reverseGeocodeCacheRef = useRef(new Map());
-  const locationSearchRequestIdRef = useRef(0);
+  const handledAddressSelectionNonceRef = useRef(null);
+  const mapRef = useRef(null);
+  const [mapRenderKey, setMapRenderKey] = useState(0);
 
   useEffect(() => {
     fetchUsersAndCompanies();
@@ -437,24 +351,30 @@ export default function CreateProjectScreen() {
   }, [useLocationAsName, location]);
 
   useEffect(() => {
-    if (!isLocationPickerVisible || !isLocationSearchVisible) {
+    const selection = route.params?.projectAddressSelection;
+    const selectionNonce = selection?.nonce;
+
+    if (!selection || !selectionNonce) {
       return;
     }
 
-    const query = locationSearch.trim();
-    if (query.length < 3) {
-      locationSearchRequestIdRef.current += 1;
-      setLocationSuggestions([]);
-      setIsLocationSuggestionsLoading(false);
+    if (handledAddressSelectionNonceRef.current === selectionNonce) {
       return;
     }
 
-    const debounceId = setTimeout(() => {
-      fetchLocationSuggestions(query);
-    }, 300);
+    handledAddressSelectionNonceRef.current = selectionNonce;
 
-    return () => clearTimeout(debounceId);
-  }, [locationSearch, isLocationPickerVisible, isLocationSearchVisible]);
+    void applyResolvedLocation(
+      selection.latitude,
+      selection.longitude,
+      {
+        ...mapRegion,
+        latitude: selection.latitude,
+        longitude: selection.longitude,
+      },
+      selection.label,
+    );
+  }, [mapRegion, route.params?.projectAddressSelection]);
 
   const fetchUsersByCompany = async (companyId) => {
     try {
@@ -588,10 +508,6 @@ export default function CreateProjectScreen() {
   };
 
   const closeLocationPicker = () => {
-    locationSearchRequestIdRef.current += 1;
-    setIsLocationSearchVisible(false);
-    setLocationSuggestions([]);
-    setIsLocationSuggestionsLoading(false);
     setIsLocationPickerVisible(false);
   };
 
@@ -658,14 +574,19 @@ export default function CreateProjectScreen() {
     nextRegion,
     resolvedAddressText,
   ) => {
-    setSelectedCoordinate({ latitude, longitude });
-    setMapRegion(
+    const targetRegion =
       nextRegion || {
         ...mapRegion,
         latitude,
         longitude,
-      },
-    );
+      };
+
+    setSelectedCoordinate({ latitude, longitude });
+    setMapRegion(targetRegion);
+
+    if (mapRef.current?.animateToRegion) {
+      mapRef.current.animateToRegion(targetRegion, 250);
+    }
 
     if (resolvedAddressText) {
       setLocation(resolvedAddressText);
@@ -711,8 +632,8 @@ export default function CreateProjectScreen() {
 
   const openLocationPicker = async () => {
     setLocationSearch(location);
-    setIsLocationSearchVisible(true);
     setIsLocationPickerVisible(true);
+    setMapRenderKey((previous) => previous + 1);
 
     if (selectedCoordinate || isLocationLoadingRef.current) {
       return;
@@ -755,73 +676,6 @@ export default function CreateProjectScreen() {
     } finally {
       setLocationLoadingState(false);
     }
-  };
-
-  const fetchLocationSuggestions = async (query) => {
-    const normalizedQuery = query.trim();
-
-    if (!normalizedQuery) {
-      locationSearchRequestIdRef.current += 1;
-      setLocationSuggestions([]);
-      setIsLocationSuggestionsLoading(false);
-      return [];
-    }
-
-    const requestId = ++locationSearchRequestIdRef.current;
-    setIsLocationSuggestionsLoading(true);
-
-    try {
-      const matches = await searchAddressesWithNominatim(normalizedQuery, 5);
-      const suggestions = normalizeLocationSuggestions(matches);
-
-      if (locationSearchRequestIdRef.current === requestId) {
-        setLocationSuggestions(suggestions);
-      }
-
-      return suggestions;
-    } catch (error) {
-      if (locationSearchRequestIdRef.current === requestId) {
-        setLocationSuggestions([]);
-      }
-      throw error;
-    } finally {
-      if (locationSearchRequestIdRef.current === requestId) {
-        setIsLocationSuggestionsLoading(false);
-      }
-    }
-  };
-
-  const handleLocationSuggestionPress = async (suggestion) => {
-    locationSearchRequestIdRef.current += 1;
-    setLocationSuggestions([]);
-    setIsLocationSuggestionsLoading(false);
-    setLocationSearch(suggestion.label);
-
-    await applyResolvedLocation(
-      suggestion.latitude,
-      suggestion.longitude,
-      {
-        ...mapRegion,
-        latitude: suggestion.latitude,
-        longitude: suggestion.longitude,
-      },
-      suggestion.label,
-    );
-    closeLocationPicker();
-  };
-
-  const toggleLocationSearch = () => {
-    setIsLocationSearchVisible((prev) => {
-      const nextVisible = !prev;
-
-      if (!nextVisible) {
-        locationSearchRequestIdRef.current += 1;
-        setLocationSuggestions([]);
-        setIsLocationSuggestionsLoading(false);
-      }
-
-      return nextVisible;
-    });
   };
 
   const handleMapPress = async (event) => {
@@ -887,28 +741,11 @@ export default function CreateProjectScreen() {
     }
   };
 
-  const handleSearchLocation = async () => {
-    const query = locationSearch.trim();
-
-    if (!query) {
-      return;
-    }
-
-    try {
-      const suggestions = await fetchLocationSuggestions(query);
-
-      if (!suggestions.length) {
-        Alert.alert("Nothing found", "Try a more specific address.");
-        return;
-      }
-
-      if (suggestions.length === 1) {
-        await handleLocationSuggestionPress(suggestions[0]);
-      }
-    } catch (error) {
-      console.error("Error searching location:", error);
-      Alert.alert("Search error", "Unable to find this address right now.");
-    }
+  const openProjectAddressSearch = () => {
+    navigation.navigate("ProjectAddressSearch", {
+      initialQuery: locationSearch || location || "",
+      originRouteKey: route.key,
+    });
   };
 
   const createProject = async () => {
@@ -1669,8 +1506,10 @@ export default function CreateProjectScreen() {
         >
           <View style={styles.mapModalContainer}>
             <MapView
+              key={mapRenderKey}
+              ref={mapRef}
               style={styles.map}
-              region={mapRegion}
+              initialRegion={mapRegion}
               onRegionChangeComplete={setMapRegion}
               onPress={handleMapPress}
               loadingEnabled
@@ -1689,87 +1528,10 @@ export default function CreateProjectScreen() {
                   onPress={closeLocationPicker}
                 />
                 <MapControlButton
-                  iconName={isLocationSearchVisible ? "x" : "search"}
-                  onPress={toggleLocationSearch}
+                  iconName="search"
+                  onPress={openProjectAddressSearch}
                 />
               </View>
-
-              {isLocationSearchVisible ? (
-                <>
-                  <View style={styles.mapSearchContainer}>
-                    <TextInput
-                      autoFocus={true}
-                      value={locationSearch}
-                      onChangeText={setLocationSearch}
-                      placeholder="Search address"
-                      placeholderTextColor="rgba(5, 45, 80, 0.5)"
-                      style={styles.mapSearchInput}
-                      returnKeyType="search"
-                      onSubmitEditing={handleSearchLocation}
-                    />
-                    <TouchableOpacity
-                      style={styles.mapSearchAction}
-                      onPress={handleSearchLocation}
-                    >
-                      <Text style={styles.mapSearchActionText}>Go</Text>
-                    </TouchableOpacity>
-                  </View>
-
-                  {isLocationSuggestionsLoading ? (
-                    <View style={styles.mapSuggestionsCard}>
-                      <View style={styles.mapSuggestionsLoadingRow}>
-                        <ActivityIndicator size="small" color="#052D50" />
-                        <Text style={styles.mapSuggestionsLoadingText}>
-                          Searching addresses...
-                        </Text>
-                      </View>
-                    </View>
-                  ) : null}
-
-                  {!isLocationSuggestionsLoading &&
-                  locationSearch.trim().length >= 3 &&
-                  locationSuggestions.length ? (
-                    <View style={styles.mapSuggestionsCard}>
-                      <FlatList
-                        data={locationSuggestions}
-                        keyExtractor={(item) => item.id}
-                        keyboardShouldPersistTaps="handled"
-                        showsVerticalScrollIndicator={false}
-                        renderItem={({ item, index }) => (
-                          <TouchableOpacity
-                            style={[
-                              styles.mapSuggestionItem,
-                              index === locationSuggestions.length - 1
-                                ? styles.mapSuggestionItemLast
-                                : null,
-                            ]}
-                            activeOpacity={0.85}
-                            onPress={() => handleLocationSuggestionPress(item)}
-                          >
-                            <Icon name="map-pin" size={16} color="#052D50" />
-                            <Text
-                              numberOfLines={2}
-                              style={styles.mapSuggestionText}
-                            >
-                              {item.label}
-                            </Text>
-                          </TouchableOpacity>
-                        )}
-                      />
-                    </View>
-                  ) : null}
-
-                  {!isLocationSuggestionsLoading &&
-                  locationSearch.trim().length >= 3 &&
-                  !locationSuggestions.length ? (
-                    <View style={styles.mapSuggestionsCard}>
-                      <Text style={styles.mapSuggestionsEmptyText}>
-                        No address options found. Try a more specific query.
-                      </Text>
-                    </View>
-                  ) : null}
-                </>
-              ) : null}
 
               {location ? (
                 <View style={styles.mapAddressBadge}>
@@ -1778,13 +1540,6 @@ export default function CreateProjectScreen() {
                   </Text>
                 </View>
               ) : null}
-
-              <View style={styles.mapBottomBar}>
-                <MapControlButton
-                  iconName="crosshair"
-                  onPress={handleUseCurrentLocation}
-                />
-              </View>
 
               {isLocationLoading ? (
                 <View style={styles.mapLoadingBadge}>
@@ -2426,13 +2181,11 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   mapTopBar: {
+    width: "100%",
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginTop: 4,
-  },
-  mapBottomBar: {
     alignItems: "center",
+    ...standardScreenHeaderSpacing,
   },
   mapControlButton: {
     width: 44,
