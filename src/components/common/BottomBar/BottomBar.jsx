@@ -1,6 +1,7 @@
 import React from "react";
 
 import {
+  Image,
   Text,
   TouchableOpacity,
   View,
@@ -46,10 +47,9 @@ export function BottomBar({
           style={styles.navButton}
           onPress={onLeftPress}
         >
-          <Icon
-            name="home"
-            size={24}
-            color={theme.colors.icon}
+          <Image
+            source={require("../../../assets/footer-home.png")}
+            style={styles.navIcon}
           />
 
           {showText && (
@@ -70,10 +70,9 @@ export function BottomBar({
           style={styles.navButton}
           onPress={onRightPress}
         >
-          <Icon
-            name="menu"
-            size={24}
-            color={theme.colors.icon}
+          <Image
+            source={require("../../../assets/footer-menu.png")}
+            style={styles.navIcon}
           />
 
           {showText && (

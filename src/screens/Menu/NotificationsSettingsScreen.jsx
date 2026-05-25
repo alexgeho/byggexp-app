@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
   },
   saveButtonText: {
     color: "#FFFFFF",
-    fontSize: 13,
-    fontWeight: "700",
+    fontSize: 15,
+    fontFamily: "DMSans-SemiBold",
   },
 });
