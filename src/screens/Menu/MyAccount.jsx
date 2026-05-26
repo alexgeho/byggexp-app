@@ -15,7 +15,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/Feather";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
@@ -30,6 +29,7 @@ import {
   isImageDocument as isPreviewImageDocument,
   isPdfDocument,
 } from "../../utils/documentPreview";
+import { pickUploadAssets } from "../../utils/uploadPicker";
 import { userService } from "../../services";
 
 const API_BASE_URL =
@@ -372,16 +372,15 @@ export const MyAccount = () => {
     }
 
     try {
-      const result = await DocumentPicker.getDocumentAsync({
-        multiple: true,
-        copyToCacheDirectory: true,
+      const pickedAssets = await pickUploadAssets({
+        fileNamePrefix: "account-document",
       });
 
-      if (result.canceled || !result.assets?.length) {
+      if (!pickedAssets.length) {
         return;
       }
 
-      if (result.assets.length > remainingSlots) {
+      if (pickedAssets.length > remainingSlots) {
         Alert.alert(
           "Too many files",
           `You can upload ${remainingSlots} more ${remainingSlots === 1 ? "document" : "documents"}.`,
@@ -391,7 +390,7 @@ export const MyAccount = () => {
 
       const updatedUser = await userService.uploadDocuments(
         profileId,
-        result.assets.map((asset, index) => ({
+        pickedAssets.map((asset, index) => ({
           uri: asset.uri,
           name: asset.name || `document-${Date.now()}-${index + 1}`,
           mimeType: asset.mimeType || asset.type || "application/octet-stream",

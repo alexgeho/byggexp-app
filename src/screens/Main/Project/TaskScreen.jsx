@@ -11,7 +11,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import * as DocumentPicker from "expo-document-picker";
 import Icon from "react-native-vector-icons/Feather";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
@@ -22,6 +21,7 @@ import { isPdfDocument } from "../../../utils/documentPreview";
 import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
 import { resolveUploadUrl } from "../../../utils/shifts";
 import { sortByNewest } from "../../../utils/sortByNewest";
+import { pickUploadAssets } from "../../../utils/uploadPicker";
 
 const GroupCard = ({ children }) => (
   <View style={styles.groupCard}>{children}</View>
@@ -199,25 +199,10 @@ export default function TaskScreen() {
     }
 
     try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: [
-          "image/*",
-          "application/pdf",
-          "text/*",
-          "application/msword",
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          "application/vnd.ms-excel",
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        ],
-        multiple: true,
-        copyToCacheDirectory: true,
+      const pickedAssets = await pickUploadAssets({
+        fileNamePrefix: "task-document",
       });
 
-      if (result.canceled) {
-        return;
-      }
-
-      const pickedAssets = result.assets || [];
       if (!pickedAssets.length) {
         return;
       }

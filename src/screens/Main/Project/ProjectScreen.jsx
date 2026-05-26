@@ -22,7 +22,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import * as DocumentPicker from "expo-document-picker";
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetView,
@@ -38,6 +37,7 @@ import { chatService, projectService } from "../../../services";
 import { isPdfDocument } from "../../../utils/documentPreview";
 import { resolveUploadUrl } from "../../../utils/shifts";
 import { sortByNewest } from "../../../utils/sortByNewest";
+import { pickUploadAssets } from "../../../utils/uploadPicker";
 
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, "") ||
@@ -346,25 +346,10 @@ export const ProjectScreen = () => {
     }
 
     try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: [
-          "image/*",
-          "application/pdf",
-          "text/*",
-          "application/msword",
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          "application/vnd.ms-excel",
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        ],
-        multiple: true,
-        copyToCacheDirectory: true,
+      const pickedAssets = await pickUploadAssets({
+        fileNamePrefix: "project-document",
       });
 
-      if (result.canceled) {
-        return;
-      }
-
-      const pickedAssets = result.assets || [];
       if (!pickedAssets.length) {
         return;
       }

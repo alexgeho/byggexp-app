@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Image, InteractionManager, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { BottomBar } from '../../../components/common/BottomBar/BottomBar';
 import { useFeedback } from '../../../contexts/FeedbackContext';
 import { shiftService } from '../../../services';
 import { formatDuration, formatShiftDate, resolveUploadUrl } from '../../../utils/shifts';
+import { IMAGE_DOCUMENT_TYPES, pickUploadAssets } from '../../../utils/uploadPicker';
 
 export default function CameraScreen() {
   const navigation = useNavigation();
@@ -67,17 +67,16 @@ export default function CameraScreen() {
 
     try {
       setUploading(true);
-      const result = await DocumentPicker.getDocumentAsync({
-        type: 'image/*',
-        multiple: true,
-        copyToCacheDirectory: true,
+      const pickedAssets = await pickUploadAssets({
+        documentTypes: IMAGE_DOCUMENT_TYPES,
+        fileNamePrefix: 'shift-photo',
       });
 
-      if (result.canceled || !result.assets?.length) {
+      if (!pickedAssets.length) {
         return;
       }
 
-      await uploadAssets(result.assets);
+      await uploadAssets(pickedAssets);
       showSuccess({
         title: 'File attached',
         message: 'File attached to the current shift.',

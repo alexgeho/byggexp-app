@@ -14,7 +14,6 @@ import {
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import * as DocumentPicker from "expo-document-picker";
 import Icon from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
@@ -23,6 +22,7 @@ import { useFeedback } from "../../../contexts/FeedbackContext";
 import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
 import { useTheme } from "../../../theme/ThemeContext";
 import { projectService, taskService } from "../../../services";
+import { pickUploadAssets } from "../../../utils/uploadPicker";
 import {
   buildTaskNotificationsPayload,
   createDefaultTaskNotificationSettings,
@@ -183,23 +183,13 @@ export default function CreateTaskScreen() {
 
   const pickDocuments = async () => {
     try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: [
-          "image/*",
-          "application/pdf",
-          "text/*",
-          "application/msword",
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        ],
-        multiple: true,
-        copyToCacheDirectory: true,
+      const pickedAssets = await pickUploadAssets({
+        fileNamePrefix: "task-document",
       });
 
-      if (result.canceled) {
+      if (!pickedAssets.length) {
         return;
       }
-
-      const pickedAssets = result.assets || [];
       setSelectedDocuments((prev) => [...prev, ...pickedAssets]);
     } catch (error) {
       console.error("Error picking task documents:", error);

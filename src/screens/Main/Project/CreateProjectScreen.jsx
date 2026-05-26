@@ -18,7 +18,6 @@ import { useTheme } from "../../../theme/ThemeContext";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { memo, useState, useEffect, useContext, useRef } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import * as DocumentPicker from "expo-document-picker";
 import * as Device from "expo-device";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
@@ -38,6 +37,7 @@ import {
   getCoordinateCacheKey,
   reverseGeocodeWithNominatim,
 } from "../../../utils/projectLocationSearch";
+import { pickUploadAssets } from "../../../utils/uploadPicker";
 
 const DEFAULT_REGION = {
   latitude: 59.3293,
@@ -476,27 +476,17 @@ export default function CreateProjectScreen() {
 
   const pickDocuments = async () => {
     try {
-      const result = await DocumentPicker.getDocumentAsync({
-        multiple: true,
-        copyToCacheDirectory: true,
-        type: [
-          "image/*",
-          "application/pdf",
-          "text/plain",
-          "application/msword",
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          "application/vnd.ms-excel",
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        ],
+      const pickedAssets = await pickUploadAssets({
+        fileNamePrefix: "project-document",
       });
 
-      if (result.canceled || !result.assets?.length) {
+      if (!pickedAssets.length) {
         return;
       }
 
       setSelectedDocuments((prev) => {
         const existingUris = new Set(prev.map((item) => item.uri));
-        const nextDocuments = result.assets.filter(
+        const nextDocuments = pickedAssets.filter(
           (item) => !existingUris.has(item.uri),
         );
         return [...prev, ...nextDocuments];
