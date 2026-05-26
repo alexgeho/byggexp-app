@@ -54,6 +54,12 @@ const getStockholmCoordinate = () => ({
   longitude: DEFAULT_REGION.longitude,
 });
 
+const buildRegionFromCoordinate = (latitude, longitude) => ({
+  ...DEFAULT_REGION,
+  latitude,
+  longitude,
+});
+
 const getUserInitials = (name = "") => {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   return (
@@ -633,36 +639,35 @@ export default function CreateProjectScreen() {
     try {
       if (!Device.isDevice) {
         const stockholmCoordinate = getStockholmCoordinate();
-        await centerLocationPickerOnCoordinate(
+        const nextRegion = buildRegionFromCoordinate(
           stockholmCoordinate.latitude,
           stockholmCoordinate.longitude,
-          DEFAULT_EMULATOR_LOCATION_LABEL,
         );
+        setMapRegion(nextRegion);
+        if (mapRef.current?.animateToRegion) {
+          mapRef.current.animateToRegion(nextRegion, 250);
+        }
         return;
       }
 
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert(
-          "Location access denied",
-          "Allow geolocation to center the map on your current position.",
-        );
         return;
       }
 
       const currentPosition = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.Balanced,
       });
-      await centerLocationPickerOnCoordinate(
+      const nextRegion = buildRegionFromCoordinate(
         currentPosition.coords.latitude,
         currentPosition.coords.longitude,
       );
+      setMapRegion(nextRegion);
+      if (mapRef.current?.animateToRegion) {
+        mapRef.current.animateToRegion(nextRegion, 250);
+      }
     } catch (error) {
       console.error("Error preparing location picker:", error);
-      Alert.alert(
-        "Location error",
-        "Unable to determine your current position.",
-      );
     } finally {
       setLocationLoadingState(false);
     }
@@ -1517,19 +1522,58 @@ export default function CreateProjectScreen() {
                   iconName="arrow-left"
                   onPress={closeLocationPicker}
                 />
-                <MapControlButton
-                  iconName="search"
-                  onPress={openProjectAddressSearch}
-                />
+                <View style={styles.mapTopBarSpacer} />
               </View>
 
-              {location ? (
-                <View style={styles.mapAddressBadge}>
-                  <Text numberOfLines={2} style={styles.mapAddressBadgeText}>
-                    {location}
+              <View style={styles.mapSearchPanel} pointerEvents="box-none">
+                <TouchableOpacity
+                  activeOpacity={0.9}
+                  style={styles.mapSearchContainer}
+                  onPress={openProjectAddressSearch}
+                >
+                  <Icon name="search" size={18} color="#052D50" />
+                  <View style={styles.mapSearchContent}>
+                    <Text style={styles.mapSearchLabel}>Project address</Text>
+                    <Text
+                      numberOfLines={2}
+                      style={[
+                        styles.mapSearchValue,
+                        !location && styles.mapSearchPlaceholder,
+                      ]}
+                    >
+                      {location || "Search address or choose a point on the map"}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  activeOpacity={0.9}
+                  style={styles.mapPrimaryAction}
+                  onPress={handleUseCurrentLocation}
+                >
+                  <Icon name="crosshair" size={18} color="#FFFFFF" />
+                  <Text style={styles.mapPrimaryActionText}>
+                    Use current location
                   </Text>
-                </View>
-              ) : null}
+                </TouchableOpacity>
+
+                {location ? (
+                  <View style={styles.mapAddressBadge}>
+                    <Text style={styles.mapAddressBadgeLabel}>
+                      Selected address
+                    </Text>
+                    <Text numberOfLines={3} style={styles.mapAddressBadgeText}>
+                      {location}
+                    </Text>
+                  </View>
+                ) : (
+                  <View style={styles.mapAddressHint}>
+                    <Text style={styles.mapAddressHintText}>
+                      Search for an address or tap anywhere on the map to set the project location.
+                    </Text>
+                  </View>
+                )}
+              </View>
 
               {isLocationLoading ? (
                 <View style={styles.mapLoadingBadge}>
@@ -2177,6 +2221,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     ...standardScreenHeaderSpacing,
   },
+  mapTopBarSpacer: {
+    width: 44,
+    height: 44,
+  },
   mapControlButton: {
     width: 44,
     height: 44,
@@ -2214,14 +2262,21 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: "rgba(5, 45, 80, 0.04)",
   },
-  mapSearchContainer: {
-    marginTop: 12,
-    flexDirection: "row",
+  mapSearchPanel: {
+    width: "100%",
     alignItems: "center",
-    gap: 8,
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 18,
-    padding: 8,
+    marginTop: 8,
+    gap: 10,
+  },
+  mapSearchContainer: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
     borderWidth: 1,
     borderColor: "#FFFFFF",
     shadowColor: "#052D50",
@@ -2230,12 +2285,47 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 4,
   },
-  mapSearchInput: {
+  mapSearchContent: {
     flex: 1,
-    height: 44,
-    paddingHorizontal: 12,
+    gap: 4,
+  },
+  mapSearchLabel: {
+    color: "#698196",
+    fontSize: 12,
+    fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  mapSearchValue: {
     color: "#052D50",
     fontSize: 16,
+    lineHeight: 22,
+    fontWeight: "600",
+  },
+  mapSearchPlaceholder: {
+    color: "#698196",
+    fontWeight: "500",
+  },
+  mapPrimaryAction: {
+    minHeight: 48,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    backgroundColor: "#052D50",
+    borderRadius: 16,
+    paddingHorizontal: 18,
+    paddingVertical: 13,
+    shadowColor: "#052D50",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    elevation: 4,
+  },
+  mapPrimaryActionText: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "600",
   },
   mapSearchAction: {
     height: 44,
@@ -2299,7 +2389,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   mapAddressBadge: {
-    marginTop: 12,
+    width: "100%",
     backgroundColor: "rgba(255, 255, 255, 0.94)",
     borderRadius: 16,
     paddingHorizontal: 14,
@@ -2310,8 +2400,33 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 4,
   },
+  mapAddressBadgeLabel: {
+    color: "#698196",
+    fontSize: 12,
+    fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
   mapAddressBadgeText: {
     color: "#052D50",
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  mapAddressHint: {
+    width: "100%",
+    backgroundColor: "rgba(255, 255, 255, 0.94)",
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    shadowColor: "#052D50",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 4,
+  },
+  mapAddressHintText: {
+    color: "#698196",
     fontSize: 14,
     lineHeight: 20,
   },

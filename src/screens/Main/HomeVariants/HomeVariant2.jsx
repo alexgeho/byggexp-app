@@ -32,6 +32,7 @@ import { useShiftExitAutoComplete } from "../../../hooks/useShiftExitAutoComplet
 import { Timer } from "../../../components/common2/Timer/Timer";
 
 import shiftService from "../../../services/shift.service";
+import { projectService } from "../../../services";
 import { startShiftWithLocationGuard } from "../../../utils/shiftLocationGuard";
 
 import { createStyles } from "./HomeVariant2.styles";
@@ -108,6 +109,7 @@ export default function HomeVariant2() {
     enabledSections,
     setEnabledSections,
   ] = useState(defaultEnabledSections);
+  const [previewRefreshKey, setPreviewRefreshKey] = useState(0);
   const { unreadCount } = useUnreadChats();
   const visibleQuickButtons = useMemo(
     () =>
@@ -214,6 +216,24 @@ export default function HomeVariant2() {
     loadCurrentShift(selectedProjectId);
   }, [loadCurrentShift, selectedProjectId]);
 
+  const refreshSelectedProject = useCallback(async () => {
+    if (!selectedProjectId) {
+      return;
+    }
+
+    try {
+      const populatedProject = await projectService.getPopulatedById(
+        selectedProjectId,
+      );
+
+      if (populatedProject) {
+        setSelectedProject(populatedProject);
+      }
+    } catch (error) {
+      console.error("Failed to refresh selected project on home:", error);
+    }
+  }, [selectedProjectId, setSelectedProject]);
+
   useShiftExitAutoComplete({
     currentShift,
     selectedProject,
@@ -249,10 +269,17 @@ export default function HomeVariant2() {
         if (savedSections) {
           setEnabledSections(savedSections);
         }
+
+        await Promise.all([
+          loadCurrentShift(selectedProjectId),
+          refreshSelectedProject(),
+        ]);
+
+        setPreviewRefreshKey((previousKey) => previousKey + 1);
       }
 
       fetchSettings();
-    }, []),
+    }, [loadCurrentShift, refreshSelectedProject, selectedProjectId]),
   );
 
   /* OPEN PROJECTS SCREEN */
@@ -453,6 +480,7 @@ export default function HomeVariant2() {
 
         {enabledSections.includes("shift-history") && (
           <ShiftHistoryPreview
+            refreshKey={previewRefreshKey}
             onClose={() => handleHideSection("shift-history")}
           />
         )}
@@ -460,6 +488,7 @@ export default function HomeVariant2() {
         {enabledSections.includes("project-files") && (
           <ProjectFilesSection
             project={selectedProject}
+            refreshKey={previewRefreshKey}
             onClose={() => handleHideSection("project-files")}
           />
         )}

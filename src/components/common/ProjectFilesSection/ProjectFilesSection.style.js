@@ -19,16 +19,18 @@ export function createStyles(
       alignItems: "center",
       justifyContent: "space-between",
       paddingHorizontal: 4,
+      paddingRight: 4,
     },
     headerActions: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 10,
+      gap: 6,
     },
 
     title: {
       color: primaryTextColor,
-      fontSize: 17,
+      fontSize: 15,
+      opacity: 0.72,
       fontFamily: theme.text.fontFamily.medium,
     },
 
@@ -41,24 +43,23 @@ export function createStyles(
     linkText: {
       color: primaryTextColor,
       fontSize: 15,
-      opacity: 0.9,
+      opacity: 0.72,
       fontFamily: theme.text.fontFamily.medium,
     },
 
     linkIcon: {
-      opacity: 0.9,
+      opacity: 0.72,
       marginTop: 1,
     },
     closeButton: {
-      width: 44,
-      height: 44,
+      position: "absolute",
+      top: 10,
+      right: 10,
+      width: 24,
+      height: 24,
       justifyContent: "center",
       alignItems: "center",
-      borderRadius: 22,
-      borderWidth: 1,
-      borderColor: "#FFFFFF",
-      backgroundColor: "rgba(255,255,255,0.6)",
-      overflow: "hidden",
+      zIndex: 4,
     },
 
     carouselViewport: {

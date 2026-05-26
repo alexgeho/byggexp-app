@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
@@ -51,6 +51,7 @@ function formatTimeRangeCompact(startedAt, endedAt) {
 export function ShiftHistoryPreview({
   colorMode = "dark",
   onClose,
+  refreshKey = 0,
 }) {
   const navigation = useNavigation();
   const { theme } = useTheme();
@@ -88,6 +89,10 @@ export function ShiftHistoryPreview({
     }, [loadShifts]),
   );
 
+  useEffect(() => {
+    void loadShifts();
+  }, [loadShifts, refreshKey]);
+
   return (
     <View style={styles.section}>
       <View style={styles.header}>
@@ -100,22 +105,27 @@ export function ShiftHistoryPreview({
             activeOpacity={0.8}
           >
             <Text style={styles.linkText}>View all</Text>
-            <Icon name="arrow-right" size={18} color="#FFFFFF" style={styles.linkIcon} />
+            <Icon
+              name="arrow-right"
+              size={18}
+              color="rgba(255,255,255,0.72)"
+              style={styles.linkIcon}
+            />
           </TouchableOpacity>
-
-          {onClose ? (
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={onClose}
-              activeOpacity={0.8}
-            >
-              <Icon name="x" size={18} color="#20384D" />
-            </TouchableOpacity>
-          ) : null}
         </View>
       </View>
 
       <View style={styles.card}>
+        {onClose ? (
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={onClose}
+            activeOpacity={0.8}
+          >
+            <Icon name="x" size={18} color="rgba(255,255,255,0.72)" />
+          </TouchableOpacity>
+        ) : null}
+
         {loading ? (
           <View style={styles.loadingState}>
             <ActivityIndicator color="#FFFFFF" />

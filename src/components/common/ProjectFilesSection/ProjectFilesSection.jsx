@@ -1,4 +1,5 @@
 import React, {
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -15,6 +16,7 @@ import Icon from "react-native-vector-icons/Feather";
 
 import { useTheme } from "../../../theme/ThemeContext";
 
+import { projectService } from "../../../services";
 import { API_BASE_URL } from "../../../services/api";
 import { sortByNewest } from "../../../utils/sortByNewest";
 
@@ -24,6 +26,7 @@ export default function ProjectFilesSection({
   project,
   colorMode = "dark",
   onClose,
+  refreshKey = 0,
 }) {
   const navigation = useNavigation();
   const { theme } = useTheme();
@@ -31,8 +34,32 @@ export default function ProjectFilesSection({
   const styles = createStyles(theme, colorMode);
 
   const [currentPage, setCurrentPage] = useState(0);
-  const files = project?.documents || [];
-  const projectId = project?._id || project?.id;
+  const [projectData, setProjectData] = useState(project || null);
+  const projectId = project?._id || project?.id || projectData?._id || projectData?.id;
+  const files = projectData?.documents || [];
+
+  useEffect(() => {
+    setProjectData(project || null);
+  }, [project]);
+
+  const refreshProjectFiles = useCallback(async () => {
+    if (!projectId) {
+      setProjectData(project || null);
+      return;
+    }
+
+    try {
+      const populatedProject = await projectService.getPopulatedById(projectId);
+      setProjectData(populatedProject || project || null);
+    } catch (error) {
+      console.error("Failed to refresh project files preview:", error);
+      setProjectData(project || null);
+    }
+  }, [project, projectId]);
+
+  useEffect(() => {
+    void refreshProjectFiles();
+  }, [refreshKey, refreshProjectFiles]);
 
   const normalizedFiles = useMemo(
     () =>
@@ -144,24 +171,24 @@ export default function ProjectFilesSection({
             <Icon
               name="arrow-right"
               size={18}
-              color="#FFFFFF"
+              color="rgba(255,255,255,0.72)"
               style={styles.linkIcon}
             />
           </TouchableOpacity>
-
-          {onClose ? (
-            <TouchableOpacity
-              onPress={onClose}
-              activeOpacity={0.8}
-              style={styles.closeButton}
-            >
-              <Icon name="x" size={18} color="#20384D" />
-            </TouchableOpacity>
-          ) : null}
         </View>
       </View>
 
       <View style={styles.carouselViewport}>
+        {onClose ? (
+          <TouchableOpacity
+            onPress={onClose}
+            activeOpacity={0.8}
+            style={styles.closeButton}
+          >
+            <Icon name="x" size={18} color="rgba(255,255,255,0.72)" />
+          </TouchableOpacity>
+        ) : null}
+
         <View
           style={
             usePeekLayout
