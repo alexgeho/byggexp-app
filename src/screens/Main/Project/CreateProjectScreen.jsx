@@ -1908,7 +1908,7 @@ const styles = StyleSheet.create({
   datePickerCard: {
     width: "100%",
     maxWidth: 360,
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "#FFFFFF",
     borderRadius: 24,
     padding: 16,
     borderWidth: 1,
@@ -1980,7 +1980,7 @@ const styles = StyleSheet.create({
   workersSearchBar: {
     height: 56,
     borderRadius: 20,
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "#FFFFFF",
     paddingHorizontal: 16,
     flexDirection: "row",
     alignItems: "center",
@@ -2000,7 +2000,7 @@ const styles = StyleSheet.create({
   workerCard: {
     height: 72,
     borderRadius: 100,
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "#FFFFFF",
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 12,
@@ -2044,7 +2044,7 @@ const styles = StyleSheet.create({
     borderColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "#FFFFFF",
     shadowColor: "#052D50",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
@@ -2052,7 +2052,7 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   workerCheckboxSelected: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "#FFFFFF",
   },
   workersEmptyState: {
     paddingTop: 24,
@@ -2090,7 +2090,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalContent: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "#FFFFFF",
     width: "90%",
     maxHeight: "80%",
     borderRadius: 16,

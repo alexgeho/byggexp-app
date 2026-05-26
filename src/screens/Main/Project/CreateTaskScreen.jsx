@@ -734,7 +734,7 @@ const styles = StyleSheet.create({
   datePickerCard: {
     width: "100%",
     maxWidth: 360,
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "#FFFFFF",
     borderRadius: 24,
     padding: 16,
     borderWidth: 1,

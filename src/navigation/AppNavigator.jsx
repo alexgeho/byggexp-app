@@ -42,6 +42,7 @@ import AboutAppScreen from "../screens/Menu/AboutAppScreen";
 import HelpSupportScreen from "../screens/Menu/HelpSupportScreen";
 import LegalPoliciesScreen from "../screens/Menu/LegalPoliciesScreen";
 import NotificationsSettingsScreen from "../screens/Menu/NotificationsSettingsScreen";
+import DocumentsScreen from "../screens/Menu/DocumentsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -170,6 +171,7 @@ export default function AppNavigator() {
               name="NotificationsSettings"
               component={NotificationsSettingsScreen}
             />
+            <Stack.Screen name="Documents" component={DocumentsScreen} />
             <Stack.Screen name="AboutApp" component={AboutAppScreen} />
             <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
             <Stack.Screen name="LegalPolicies" component={LegalPoliciesScreen} />

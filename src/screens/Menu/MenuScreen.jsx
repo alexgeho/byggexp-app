@@ -55,6 +55,13 @@ export default function MenuScreen() {
         icon: require("../../assets/Notifications.png"),
         color: theme.colors.primary,
       },
+      {
+        id: "documents",
+        screen: "Documents",
+        title: "Documents",
+        icon: require("../../assets/Documents.png"),
+        color: theme.colors.primary,
+      },
     ];
 
     // CompanyAdmin
@@ -70,7 +77,7 @@ export default function MenuScreen() {
         },
         {
           id: "shifts",
-          screen: "History",
+          screen: "Shifts",
           title: "Shifts",
           icon: require("../../assets/WorkShifts.png"),
           color: theme.colors.primary,
@@ -115,7 +122,7 @@ export default function MenuScreen() {
         },
         {
           id: "shifts",
-          screen: "History",
+          screen: "Shifts",
           title: "Shifts",
           icon: require("../../assets/WorkShifts.png"),
           color: theme.colors.primary,
@@ -152,20 +159,14 @@ export default function MenuScreen() {
         color: theme.colors.primary,
       },
       {
-        id: "documents",
-        title: "Documents",
-        icon: require("../../assets/Documents.png"),
-        color: theme.colors.primary,
-      },
-      {
         id: "workShifts",
-        screen: "History",
+        screen: "Shifts",
         title: "Work shifts",
         icon: require("../../assets/WorkShifts.png"),
         color: theme.colors.primary,
       },
     ];
-  }, [user?.role]);
+  }, [theme.colors.primary, user?.role]);
 
   const settingsItems = [
     {

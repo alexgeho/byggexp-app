@@ -1,11 +1,13 @@
 import React from "react";
 
 import {
+  Pressable,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
+import { useNavigationState } from "@react-navigation/native";
 
 import { useTheme } from "../../../theme/ThemeContext";
 
@@ -14,6 +16,18 @@ import {
   FooterHomeIcon,
   FooterMenuIcon,
 } from "./BottomBarIcons";
+
+const ACTIVE_ICON_COLOR = "#052D50";
+const MENU_ROUTES = new Set([
+  "Menu",
+  "MyAccount",
+  "NotificationsSettings",
+  "Documents",
+  "AboutApp",
+  "HelpSupport",
+  "LegalPolicies",
+  "CustomizeHomeScreen",
+]);
 
 export function BottomBar({
   onLeftPress,
@@ -28,8 +42,13 @@ export function BottomBar({
   showText = false,
 }) {
   const { theme } = useTheme();
+  const currentRouteName = useNavigationState(
+    (state) => state.routes[state.index]?.name,
+  );
 
   const styles = createStyles(theme);
+  const isMenuActive = MENU_ROUTES.has(currentRouteName);
+  const isHomeActive = !isMenuActive;
 
   const handleActionPress =
     onActionPress ?? onAddPress;
@@ -46,51 +65,78 @@ export function BottomBar({
             styles.menuWrapperTransparent,
         ]}
       >
-        <TouchableOpacity
+        <Pressable
           style={styles.navButton}
           onPress={onLeftPress}
         >
-          <FooterHomeIcon
-            size={styles.navIcon.width}
-            color={theme.colors.icon}
-          />
+          {({ hovered, pressed }) => {
+            const isActive = isHomeActive || hovered || pressed;
+            const iconColor = isActive
+              ? ACTIVE_ICON_COLOR
+              : theme.colors.icon;
 
-          {showText && (
-            <Text
-              style={[
-                styles.navText,
-                {
-                  color: theme.colors.bottomNav,
-                },
-              ]}
-            >
-              Home
-            </Text>
-          )}
-        </TouchableOpacity>
+            return (
+              <>
+                <FooterHomeIcon
+                  size={styles.navIcon.width}
+                  color={iconColor}
+                  filled={isActive}
+                />
 
-        <TouchableOpacity
+                {showText && (
+                  <Text
+                    style={[
+                      styles.navText,
+                      {
+                        color: isActive
+                          ? ACTIVE_ICON_COLOR
+                          : theme.colors.bottomNav,
+                      },
+                    ]}
+                  >
+                    Home
+                  </Text>
+                )}
+              </>
+            );
+          }}
+        </Pressable>
+
+        <Pressable
           style={styles.navButton}
           onPress={onRightPress}
         >
-          <FooterMenuIcon
-            size={styles.navIcon.width}
-            color={theme.colors.icon}
-          />
+          {({ hovered, pressed }) => {
+            const isActive = isMenuActive || hovered || pressed;
+            const iconColor = isActive
+              ? ACTIVE_ICON_COLOR
+              : theme.colors.icon;
 
-          {showText && (
-            <Text
-              style={[
-                styles.navText,
-                {
-                  color: theme.colors.bottomNav,
-                },
-              ]}
-            >
-              Menu
-            </Text>
-          )}
-        </TouchableOpacity>
+            return (
+              <>
+                <FooterMenuIcon
+                  size={styles.navIcon.width}
+                  color={iconColor}
+                />
+
+                {showText && (
+                  <Text
+                    style={[
+                      styles.navText,
+                      {
+                        color: isActive
+                          ? ACTIVE_ICON_COLOR
+                          : theme.colors.bottomNav,
+                      },
+                    ]}
+                  >
+                    Menu
+                  </Text>
+                )}
+              </>
+            );
+          }}
+        </Pressable>
       </View>
 
       {showAddButton && (

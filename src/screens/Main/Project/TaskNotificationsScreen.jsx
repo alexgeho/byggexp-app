@@ -609,7 +609,7 @@ const styles = StyleSheet.create({
   searchBar: {
     height: 52,
     borderRadius: 18,
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "#FFFFFF",
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
@@ -627,7 +627,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   workerCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "#FFFFFF",
     borderRadius: 18,
     paddingHorizontal: 14,
     paddingVertical: 12,
@@ -672,7 +672,7 @@ const styles = StyleSheet.create({
     borderColor: "rgba(5, 45, 80, 0.18)",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "#FFFFFF",
     borderColor: "#FFFFFF",
     shadowColor: "#052D50",
     shadowOffset: { width: 0, height: 2 },
@@ -681,7 +681,7 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   workerCheckboxSelected: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "#FFFFFF",
   },
   emptyState: {
     paddingVertical: 48,

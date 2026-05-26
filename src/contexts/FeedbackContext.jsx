@@ -60,8 +60,8 @@ export function FeedbackProvider({ children }) {
 
   const isDarkTheme = theme.colors.background === "#121212";
   const popupBackground = isDarkTheme
-    ? "rgba(28, 28, 28, 0.98)"
-    : "rgba(255, 255, 255, 0.96)";
+    ? "#1C1C1C"
+    : "#FFFFFF";
   const popupBorder = isDarkTheme ? "rgba(255, 255, 255, 0.12)" : "#FFFFFF";
   const popupTextColor = isDarkTheme ? "#FFFFFF" : "#052D50";
   const popupSubtextColor = isDarkTheme

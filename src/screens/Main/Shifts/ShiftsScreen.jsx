@@ -731,7 +731,7 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   modalContent: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "#FFFFFF",
     borderRadius: 16,
     paddingVertical: 8,
     borderWidth: 1,
@@ -752,7 +752,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   exportSheetCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "#FFFFFF",
     borderRadius: 20,
     padding: 0,
     borderWidth: 1,
@@ -760,7 +760,7 @@ const styles = StyleSheet.create({
   },
   exportButtonsContainer: {
     flexDirection: "row",
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "#FFFFFF",
     borderRadius: 20,
     padding: 0,
     borderWidth: 1,
@@ -768,7 +768,7 @@ const styles = StyleSheet.create({
   },
   exportButton: {
     flex: 1,
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "#FFFFFF",
     borderRadius: 20,
     paddingVertical: 12,
     alignItems: "center",
