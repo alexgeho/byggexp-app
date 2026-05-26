@@ -17,6 +17,11 @@ export function createStyles({
       ? 18
       : 24;
   const gridGap = veryCompact ? 10 : 16;
+  const heroSectionGap = veryCompact
+    ? 12
+    : compact
+      ? 16
+      : 20;
   const cardHeight = veryCompact
     ? 88
     : compact
@@ -50,8 +55,8 @@ export function createStyles({
     },
     heroSection: {
       flexGrow: hasSections ? 0 : 1,
-      gap: sectionGap,
-      justifyContent: "center",
+      gap: heroSectionGap,
+      justifyContent: "space-between",
     },
     quickActionsGrid: {
       flexDirection: "row",
@@ -69,6 +74,9 @@ export function createStyles({
       padding: cardPadding,
       borderRadius: 20,
       justifyContent: "space-between",
+    },
+    quickActionCardFullWidth: {
+      width: "100%",
     },
     quickActionIconWrapper: {
       position: "relative",

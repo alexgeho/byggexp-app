@@ -416,11 +416,18 @@ export default function HomeVariant2() {
           />
 
           <View style={styles.quickActionsGrid}>
-            {visibleQuickButtons.map(function renderButton(button) {
+            {visibleQuickButtons.map(function renderButton(button, index) {
+              const isSingleLastItem =
+                visibleQuickButtons.length % 2 === 1 &&
+                index === visibleQuickButtons.length - 1;
+
               return (
                 <TouchableOpacity
                   key={button.id}
-                  style={styles.quickActionCard}
+                  style={[
+                    styles.quickActionCard,
+                    isSingleLastItem && styles.quickActionCardFullWidth,
+                  ]}
                   onPress={function onButtonPress() {
                     openQuickAction(button.screen);
                   }}
