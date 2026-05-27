@@ -110,6 +110,8 @@ export default function HomeVariant2() {
     setEnabledSections,
   ] = useState(defaultEnabledSections);
   const [previewRefreshKey, setPreviewRefreshKey] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(0);
   const { unreadCount } = useUnreadChats();
   const visibleQuickButtons = useMemo(
     () =>
@@ -124,6 +126,10 @@ export default function HomeVariant2() {
   const hasSections =
     enabledSections.includes("shift-history") ||
     enabledSections.includes("project-files");
+  const shouldDistributeBlocksEvenly =
+    viewportHeight > 0 &&
+    contentHeight > 0 &&
+    contentHeight <= viewportHeight;
   const styles = useMemo(
     () =>
       createStyles({
@@ -382,31 +388,52 @@ export default function HomeVariant2() {
       style={styles.container}
     >
       <ScrollView
-        contentContainerStyle={styles.main}
+        contentContainerStyle={[
+          styles.main,
+          shouldDistributeBlocksEvenly &&
+            styles.mainEvenlyDistributed,
+        ]}
+        onLayout={function handleViewportLayout(event) {
+          setViewportHeight(event.nativeEvent.layout.height);
+        }}
+        onContentSizeChange={function handleContentSizeChange(
+          _width,
+          height,
+        ) {
+          setContentHeight(height);
+        }}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.heroSection}>
-          {/* PROJECT SELECTOR */}
-          <ProjectSelector2
-            value={selectedProject}
-            onPress={openProjects}
-            style={
-              isCompact
-                ? styles.selectorCompact
-                : null
-            }
-            textStyle={
-              isCompact
-                ? styles.selectorTextCompact
-                : null
-            }
-            iconStyle={
-              isCompact
-                ? styles.selectorIconCompact
-                : null
-            }
-          />
+        {/* PROJECT SELECTOR */}
+        <ProjectSelector2
+          value={selectedProject}
+          onPress={openProjects}
+          style={[
+            styles.selectorTop,
+            isCompact
+              ? styles.selectorCompact
+              : null,
+          ]}
+          textStyle={
+            isCompact
+              ? styles.selectorTextCompact
+              : null
+          }
+          iconStyle={
+            isCompact
+              ? styles.selectorIconCompact
+              : null
+          }
+        />
 
+        <View
+          style={[
+            styles.mainContent,
+            shouldDistributeBlocksEvenly
+              ? styles.mainContentEvenlySpaced
+              : styles.mainContentStacked,
+          ]}
+        >
           {/* TIMER */}
           <Timer
             hours={
@@ -476,7 +503,6 @@ export default function HomeVariant2() {
               );
             })}
           </View>
-        </View>
 
         {enabledSections.includes("shift-history") && (
           <ShiftHistoryPreview
@@ -492,6 +518,7 @@ export default function HomeVariant2() {
             onClose={() => handleHideSection("project-files")}
           />
         )}
+        </View>
       </ScrollView>
 
       {/* FOOTER */}

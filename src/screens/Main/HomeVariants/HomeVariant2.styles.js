@@ -17,11 +17,6 @@ export function createStyles({
       ? 18
       : 24;
   const gridGap = veryCompact ? 10 : 16;
-  const heroSectionGap = veryCompact
-    ? 12
-    : compact
-      ? 16
-      : 20;
   const cardHeight = veryCompact
     ? 88
     : compact
@@ -51,12 +46,23 @@ export function createStyles({
       flexGrow: 1,
       marginTop: compact ? 18 : 30,
       paddingBottom: hasSections ? 30 : 12,
+    },
+    mainEvenlyDistributed: {
+      marginTop: 0,
+      paddingBottom: compact ? 12 : 16,
+    },
+    selectorTop: {
+      marginBottom: compact ? 16 : 20,
+    },
+    mainContent: {
+      flexGrow: 1,
+      minHeight: "100%",
+    },
+    mainContentStacked: {
       gap: sectionGap,
     },
-    heroSection: {
-      flexGrow: hasSections ? 0 : 1,
-      gap: heroSectionGap,
-      justifyContent: "space-between",
+    mainContentEvenlySpaced: {
+      justifyContent: "space-evenly",
     },
     quickActionsGrid: {
       flexDirection: "row",
