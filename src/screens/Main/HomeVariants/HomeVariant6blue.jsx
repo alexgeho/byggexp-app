@@ -518,13 +518,8 @@ export default function MainScreen() {
       <View style={styles.bottomNavContainer}>
         <TouchableOpacity style={styles.bottomNavItem}>
           <Image
-            style={[
-              styles.bottomIcon,
-              {
-                tintColor: theme.colors.icon,
-              },
-            ]}
-            source={require("../../../assets/Home.png")}
+            style={styles.bottomIcon}
+            source={require("../../../assets/navigation/home-filled.png")}
           />
 
           <Text
@@ -545,13 +540,8 @@ export default function MainScreen() {
           style={styles.bottomNavItem}
         >
           <Image
-            style={[
-              styles.bottomIcon,
-              {
-                tintColor: theme.colors.icon,
-              },
-            ]}
-            source={require("../../../assets/Menu.png")}
+            style={styles.bottomIcon}
+            source={require("../../../assets/navigation/menu-outline.png")}
           />
 
           <Text
@@ -682,8 +672,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   bottomIcon: {
-    width: 28,
-    height: 28,
+    width: 24,
+    height: 24,
   },
   btnIcon:{
     width: 38,

@@ -71,15 +71,11 @@ export function BottomBar({
         >
           {({ hovered, pressed }) => {
             const isActive = isHomeActive || hovered || pressed;
-            const iconColor = isActive
-              ? ACTIVE_ICON_COLOR
-              : theme.colors.icon;
 
             return (
               <>
                 <FooterHomeIcon
                   size={styles.navIcon.width}
-                  color={iconColor}
                   filled={isActive}
                 />
 
@@ -108,15 +104,12 @@ export function BottomBar({
         >
           {({ hovered, pressed }) => {
             const isActive = isMenuActive || hovered || pressed;
-            const iconColor = isActive
-              ? ACTIVE_ICON_COLOR
-              : theme.colors.icon;
 
             return (
               <>
                 <FooterMenuIcon
                   size={styles.navIcon.width}
-                  color={iconColor}
+                  filled={isActive}
                 />
 
                 {showText && (

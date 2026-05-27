@@ -41,8 +41,8 @@ export function createStyles(theme) {
       alignItems: "center",
     },
     navIcon: {
-      width: 45,
-      height: 45,
+      width: 24,
+      height: 24,
     },
     actionButton: {
       width: 81,

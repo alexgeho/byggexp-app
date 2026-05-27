@@ -7,12 +7,16 @@ export const styles = StyleSheet.create({
 
   timerText: {
     fontSize: 140,
+    lineHeight: 132,
     fontFamily: "Landasans-Medium",
     letterSpacing: -2.5,
     color: "#FFFFFF",
+    includeFontPadding: false,
+    paddingVertical: 0,
   },
 
   timerTextSeconds: {
     opacity: 0.35,
+    includeFontPadding: false,
   },
 });
