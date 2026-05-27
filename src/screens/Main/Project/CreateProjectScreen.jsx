@@ -1076,7 +1076,6 @@ export default function CreateProjectScreen() {
           <View style={styles.placeholder} />
         </View>
 
-        <Text style={styles.formSectionTitle}>General</Text>
         <View style={styles.groupCard}>
           <TouchableOpacity
             style={[
@@ -1156,7 +1155,6 @@ export default function CreateProjectScreen() {
           </View>
         </View>
 
-        <Text style={styles.formSectionTitle}>Team</Text>
         <View style={styles.groupCard}>
           <TouchableOpacity
             style={[
@@ -1266,7 +1264,6 @@ export default function CreateProjectScreen() {
           />
         </View>
 
-        <Text style={styles.formSectionTitle}>Files</Text>
         <View style={styles.groupCard}>
           <TouchableOpacity
             style={[
@@ -1336,7 +1333,6 @@ export default function CreateProjectScreen() {
           </View>
         ) : null}
 
-        <Text style={styles.formSectionTitle}>Schedule</Text>
         <View style={styles.groupCard}>
           <TouchableOpacity
             style={[styles.groupedDateRow, styles.groupRowDivider]}
@@ -1424,7 +1420,6 @@ export default function CreateProjectScreen() {
           </View>
         </Modal>
 
-        <Text style={styles.formSectionTitle}>Notes</Text>
         <View style={styles.noteGroup}>
           <TextInput
             multiline={true}
@@ -1623,7 +1618,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 24,
     overflow: "hidden",
-    marginBottom: 12,
+    marginBottom: 20,
     borderWidth: 1,
     borderColor: "#FFFFFF",
   },
@@ -1663,7 +1658,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    marginBottom: 20,
+    marginBottom: 28,
     borderWidth: 1,
     borderColor: "#FFFFFF",
   },

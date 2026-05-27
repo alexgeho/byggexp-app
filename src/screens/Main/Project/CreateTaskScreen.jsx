@@ -82,9 +82,7 @@ const getDocumentTypeMeta = (document) => {
   return { icon: "file", label: extension || "FILE" };
 };
 
-const SectionLabel = ({ children }) => (
-  <Text style={styles.sectionLabel}>{children}</Text>
-);
+const SectionLabel = () => null;
 
 const GroupCard = ({ children }) => (
   <View style={styles.groupCard}>{children}</View>
@@ -585,7 +583,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 24,
     overflow: "hidden",
-    marginBottom: 12,
+    marginBottom: 20,
     borderWidth: 1,
     borderColor: "#FFFFFF",
   },

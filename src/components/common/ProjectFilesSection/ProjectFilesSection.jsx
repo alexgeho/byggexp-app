@@ -2,11 +2,13 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
 import {
   Image,
+  ScrollView,
   View,
   Text,
   TouchableOpacity,
@@ -34,7 +36,9 @@ export default function ProjectFilesSection({
   const styles = createStyles(theme, colorMode);
 
   const [currentPage, setCurrentPage] = useState(0);
+  const [viewportWidth, setViewportWidth] = useState(0);
   const [projectData, setProjectData] = useState(project || null);
+  const carouselRef = useRef(null);
   const projectId = project?._id || project?.id || projectData?._id || projectData?.id;
   const files = projectData?.documents || [];
 
@@ -123,23 +127,60 @@ export default function ProjectFilesSection({
     setCurrentPage(0);
   }, [projectId, normalizedFiles.length]);
 
+  const scrollToPage = useCallback(function scrollToPage(pageIndex, animated = true) {
+    if (!Number.isFinite(pageIndex)) {
+      return;
+    }
+
+    const nextPage = Math.max(0, Math.min(pageIndex, pages.length - 1));
+    setCurrentPage(nextPage);
+
+    if (!viewportWidth) {
+      return;
+    }
+
+    carouselRef.current?.scrollTo({
+      x: nextPage * viewportWidth,
+      animated,
+    });
+  }, [pages.length, viewportWidth]);
+
+  useEffect(() => {
+    scrollToPage(0, false);
+  }, [scrollToPage, projectId, normalizedFiles.length]);
+
   if (!normalizedFiles.length) {
     return null;
   }
 
-  const visibleFiles = pages[currentPage] || [];
   const canGoBack = currentPage > 0;
   const canGoForward =
     currentPage < pages.length - 1;
   const showCarouselControls =
     normalizedFiles.length > 3;
-  const usePeekLayout =
-    visibleFiles.length === 3;
-  const visibleSlotIndexes = visibleFiles.map(
-    function mapFile(_file, index) {
-      return index;
-    },
-  );
+
+  function handleCarouselLayout(event) {
+    const nextWidth = event.nativeEvent.layout.width;
+
+    if (!nextWidth || nextWidth === viewportWidth) {
+      return;
+    }
+
+    setViewportWidth(nextWidth);
+  }
+
+  function handleMomentumScrollEnd(event) {
+    if (!viewportWidth) {
+      return;
+    }
+
+    const nextPage = Math.round(
+      event.nativeEvent.contentOffset.x / viewportWidth,
+    );
+    setCurrentPage(
+      Math.max(0, Math.min(nextPage, pages.length - 1)),
+    );
+  }
 
   function handleViewAll() {
     if (!projectId) {
@@ -178,7 +219,10 @@ export default function ProjectFilesSection({
         </View>
       </View>
 
-      <View style={styles.carouselViewport}>
+      <View
+        style={styles.carouselViewport}
+        onLayout={handleCarouselLayout}
+      >
         {onClose ? (
           <TouchableOpacity
             onPress={onClose}
@@ -189,105 +233,132 @@ export default function ProjectFilesSection({
           </TouchableOpacity>
         ) : null}
 
-        <View
-          style={
-            usePeekLayout
-              ? styles.peekTrack
-              : [
-                  styles.carouselRow,
-                  styles.carouselRowRegular,
-                ]
-          }
+        <ScrollView
+          ref={carouselRef}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          scrollEventThrottle={16}
+          onMomentumScrollEnd={handleMomentumScrollEnd}
+          contentContainerStyle={styles.carouselPages}
         >
-          {visibleSlotIndexes.map(function renderSlot(slotIndex) {
-            const file = visibleFiles[slotIndex];
-            const isFirstVisible =
-              slotIndex === 0;
-            const isLastVisible =
-              slotIndex ===
-              visibleFiles.length - 1;
+          {pages.map(function renderPage(pageFiles, pageIndex) {
+            const usePeekLayout =
+              pageFiles.length === 3;
+            const visibleSlotIndexes = pageFiles.map(
+              function mapFile(_file, index) {
+                return index;
+              },
+            );
 
             return (
               <View
-                key={slotIndex}
+                key={`page-${pageIndex}`}
                 style={[
-                  styles.carouselSlot,
-                  usePeekLayout
-                    ? [
-                        styles.carouselSlotPeek,
-                        slotIndex === 0 &&
-                          styles.peekLeftSlot,
-                        slotIndex === 1 &&
-                          styles.peekCenterSlot,
-                        slotIndex === 2 &&
-                          styles.peekRightSlot,
-                      ]
-                    : styles.carouselSlotRegular,
+                  styles.carouselPage,
+                  viewportWidth
+                    ? { width: viewportWidth }
+                    : styles.carouselPagePending,
                 ]}
               >
-                {file ? (
-                  <TouchableOpacity
-                    activeOpacity={0.9}
-                    onPress={handleViewAll}
-                    style={styles.fileTouchable}
-                  >
-                    {file.isImage ? (
+                <View
+                  style={
+                    usePeekLayout
+                      ? styles.peekTrack
+                      : [
+                          styles.carouselRow,
+                          styles.carouselRowRegular,
+                        ]
+                  }
+                >
+                  {visibleSlotIndexes.map(function renderSlot(slotIndex) {
+                    const file = pageFiles[slotIndex];
+                    const isFirstVisible =
+                      slotIndex === 0;
+                    const isLastVisible =
+                      slotIndex ===
+                      pageFiles.length - 1;
+
+                    return (
                       <View
+                        key={slotIndex}
                         style={[
-                          styles.imageFrame,
-                          isFirstVisible &&
-                            styles.imageFirst,
-                          isLastVisible &&
-                            styles.imageLast,
+                          styles.carouselSlot,
+                          usePeekLayout
+                            ? [
+                                styles.carouselSlotPeek,
+                                slotIndex === 0 &&
+                                  styles.peekLeftSlot,
+                                slotIndex === 1 &&
+                                  styles.peekCenterSlot,
+                                slotIndex === 2 &&
+                                  styles.peekRightSlot,
+                              ]
+                            : styles.carouselSlotRegular,
                         ]}
                       >
-                        <Image
-                          source={{
-                            uri: file.url,
-                          }}
-                          style={styles.image}
-                        />
+                        {file ? (
+                          <TouchableOpacity
+                            activeOpacity={0.9}
+                            onPress={handleViewAll}
+                            style={styles.fileTouchable}
+                          >
+                            {file.isImage ? (
+                              <View
+                                style={[
+                                  styles.imageFrame,
+                                  isFirstVisible &&
+                                    styles.imageFirst,
+                                  isLastVisible &&
+                                    styles.imageLast,
+                                ]}
+                              >
+                                <Image
+                                  source={{
+                                    uri: file.url,
+                                  }}
+                                  style={styles.image}
+                                />
+                              </View>
+                            ) : (
+                              <View
+                                style={[
+                                  styles.fileFallback,
+                                  isFirstVisible &&
+                                    styles.imageFirst,
+                                  isLastVisible &&
+                                    styles.imageLast,
+                                ]}
+                              >
+                                <Icon
+                                  name="file-text"
+                                  size={24}
+                                  color="#052D50"
+                                />
+                                <Text
+                                  style={styles.fileFallbackText}
+                                  numberOfLines={2}
+                                >
+                                  {file.name}
+                                </Text>
+                              </View>
+                            )}
+                          </TouchableOpacity>
+                        ) : null}
                       </View>
-                    ) : (
-                      <View
-                        style={[
-                          styles.fileFallback,
-                          isFirstVisible &&
-                            styles.imageFirst,
-                          isLastVisible &&
-                            styles.imageLast,
-                        ]}
-                      >
-                        <Icon
-                          name="file-text"
-                          size={24}
-                          color="#052D50"
-                        />
-                        <Text
-                          style={styles.fileFallbackText}
-                          numberOfLines={2}
-                        >
-                          {file.name}
-                        </Text>
-                      </View>
-                    )}
-                  </TouchableOpacity>
-                ) : null}
+                    );
+                  })}
+                </View>
               </View>
             );
           })}
-        </View>
+        </ScrollView>
 
         {showCarouselControls && (
           <>
             <TouchableOpacity
               activeOpacity={0.9}
-              onPress={() =>
-                canGoBack &&
-                setCurrentPage((previousPage) =>
-                  Math.max(0, previousPage - 1),
-                )
-              }
+              onPress={() => canGoBack && scrollToPage(currentPage - 1)}
               disabled={!canGoBack}
               style={[
                 styles.navButton,
@@ -305,15 +376,7 @@ export default function ProjectFilesSection({
 
             <TouchableOpacity
               activeOpacity={0.9}
-              onPress={() =>
-                canGoForward &&
-                setCurrentPage((previousPage) =>
-                  Math.min(
-                    pages.length - 1,
-                    previousPage + 1,
-                  ),
-                )
-              }
+              onPress={() => canGoForward && scrollToPage(currentPage + 1)}
               disabled={!canGoForward}
               style={[
                 styles.navButton,

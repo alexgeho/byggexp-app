@@ -259,7 +259,6 @@ export default function MenuScreen() {
       {/* MAIN */}
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.menuSection}>
-          <Text style={styles.sectionTitle}>Main</Text>
           <View style={styles.groupCard}>
             {menuItems.map((item, index) => (
               <MenuButton
@@ -275,7 +274,6 @@ export default function MenuScreen() {
         </View>
 
         <View style={styles.settingsSection}>
-          <Text style={styles.sectionTitle}>Settings</Text>
           <View style={styles.groupCard}>
             {settingsItems.map((item, index) => (
               <MenuButton

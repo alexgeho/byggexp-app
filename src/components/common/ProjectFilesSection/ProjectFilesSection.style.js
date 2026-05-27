@@ -78,6 +78,19 @@ export function createStyles(
       overflow: "hidden",
     },
 
+    carouselPages: {
+      alignItems: "stretch",
+    },
+
+    carouselPage: {
+      height: 130,
+      justifyContent: "center",
+    },
+
+    carouselPagePending: {
+      width: "100%",
+    },
+
     carouselRow: {
       flexDirection: "row",
       height: 130,
