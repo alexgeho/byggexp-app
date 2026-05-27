@@ -6,12 +6,13 @@ import {
   Platform,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { WebView } from "react-native-webview";
+import Icon from "react-native-vector-icons/Feather";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { GlassIconButton } from "../../components/common/GlassIconButton/GlassIconButton";
 import { useTheme } from "../../theme/ThemeContext";
 import {
   buildPdfPreviewUrl,
@@ -74,16 +75,28 @@ export default function DocumentPreviewScreen() {
       >
         <View style={styles.actionsSpacer} />
         <View style={styles.actionsGroup}>
-          <GlassIconButton
+          <TouchableOpacity
             onPress={handleDownload}
-            iconName="download"
-            iconColor={theme.colors.primary}
-          />
-          <GlassIconButton
+            activeOpacity={0.8}
+            style={styles.actionButton}
+          >
+            <Icon
+              name="download"
+              size={20}
+              color={theme.colors.primary}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
             onPress={() => navigation.goBack()}
-            iconName="x"
-            iconColor={theme.colors.primary}
-          />
+            activeOpacity={0.8}
+            style={styles.actionButton}
+          >
+            <Icon
+              name="x"
+              size={20}
+              color={theme.colors.primary}
+            />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -190,6 +203,21 @@ const styles = StyleSheet.create({
   actionsGroup: {
     flexDirection: "row",
     gap: 10,
+  },
+  actionButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 2,
   },
   content: {
     flex: 1,
