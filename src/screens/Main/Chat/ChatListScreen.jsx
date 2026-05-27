@@ -107,6 +107,14 @@ export default function ChatListScreen() {
           onPress={() => navigation.goBack()}
           iconSource={require("../../../assets/Arrow-left.png")}
         />
+        <Text
+          style={[
+            styles.headerTitle,
+            { fontFamily: theme.text.fontFamily["semiBold"] },
+          ]}
+        >
+          Chat
+        </Text>
         <BackButton
           backgroundColor={"rgba(255, 255, 255, 0.6)"}
           tint={"light"}
@@ -116,14 +124,6 @@ export default function ChatListScreen() {
         />
       </View>
       <View style={styles.chatHeader}>
-        <Text
-          style={[
-            styles.chatTitle,
-            { fontFamily: theme.text.fontFamily["semiBold"] },
-          ]}
-        >
-          Chat
-        </Text>
         <View style={styles.filterRow}>
           {FILTERS.map((filter) => (
             <TouchableOpacity
@@ -147,6 +147,14 @@ export default function ChatListScreen() {
           ))}
         </View>
       </View>
+      {!loading && !error && filteredChats.length === 0 ? (
+        <View style={styles.emptyStateCard}>
+          <Text style={styles.stateTitle}>No chats yet</Text>
+          <Text style={styles.stateText}>
+            Your conversations will appear here.
+          </Text>
+        </View>
+      ) : null}
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         style={styles.scrollContainer}
@@ -163,15 +171,6 @@ export default function ChatListScreen() {
           <View style={styles.stateCard}>
             <Text style={styles.stateTitle}>Unable to load chats</Text>
             <Text style={styles.stateText}>{error}</Text>
-          </View>
-        ) : null}
-
-        {!loading && !error && filteredChats.length === 0 ? (
-          <View style={styles.stateCard}>
-            <Text style={styles.stateTitle}>No chats yet</Text>
-            <Text style={styles.stateText}>
-              Your conversations will appear here.
-            </Text>
           </View>
         ) : null}
 
@@ -258,6 +257,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     ...standardScreenHeaderSpacing,
   },
+  headerTitle: {
+    color: "#052D50",
+    fontSize: 17,
+    textAlign: "center",
+  },
+  placeholder: {
+    width: 44,
+    height: 44,
+  },
   backButton: {
     padding: 16,
     backgroundColor: "rgba(255, 255, 255, 0.6)",
@@ -278,11 +286,7 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: 12,
     paddingBottom: 12,
-    paddingTop: 24,
-  },
-  chatTitle: {
-    color: "#052D50",
-    fontSize: 17,
+    paddingTop: 8,
   },
   filterRow: {
     width: "100%",
@@ -319,7 +323,7 @@ const styles = StyleSheet.create({
   stateCard: {
     width: "100%",
     backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 16,
+    borderRadius: 24,
     padding: 20,
     alignItems: "center",
     borderWidth: 1,
@@ -329,6 +333,21 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.0625,
     shadowRadius: 10,
     elevation: 1,
+  },
+  emptyStateCard: {
+    width: "100%",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    borderRadius: 24,
+    padding: 20,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.0625,
+    shadowRadius: 10,
+    elevation: 1,
+    marginBottom: 12,
   },
   stateTitle: {
     color: "#052D50",
