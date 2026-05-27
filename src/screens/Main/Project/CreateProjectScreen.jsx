@@ -14,6 +14,7 @@ import {
   Switch,
   Platform,
 } from "react-native";
+import Slider from "@react-native-community/slider";
 import { useTheme } from "../../../theme/ThemeContext";
 import {
   useFocusEffect,
@@ -42,6 +43,7 @@ import { projectService, userService, companyService } from "../../../services";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { GlassView } from "../../../components/common/GlassView/GlassView";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
+import { shiftLocationPolicy } from "../../../config/shiftLocationPolicy";
 import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
 import {
   formatResolvedAddress,
@@ -306,6 +308,9 @@ export default function CreateProjectScreen() {
   const [useLocationAsName, setUseLocationAsName] = useState(true);
   const [note, setNote] = useState("");
   const [location, setLocation] = useState("");
+  const [locationRadiusMeters, setLocationRadiusMeters] = useState(
+    shiftLocationPolicy.maxDistanceMeters,
+  );
   const [mapRegion, setMapRegion] = useState(DEFAULT_REGION);
   const [selectedCoordinate, setSelectedCoordinate] = useState(null);
   const [isLocationPickerVisible, setIsLocationPickerVisible] = useState(false);
@@ -527,6 +532,18 @@ export default function CreateProjectScreen() {
     setIsLocationPickerVisible(false);
   };
 
+  const confirmLocationPickerSelection = () => {
+    if (!selectedCoordinate) {
+      Alert.alert(
+        "Location required",
+        "Choose a point on the map or search for an address first.",
+      );
+      return;
+    }
+
+    closeLocationPicker();
+  };
+
   const closeDatePickers = () => {
     setShowStartDatePicker(false);
     setShowEndDatePicker(false);
@@ -707,7 +724,6 @@ export default function CreateProjectScreen() {
         latitude,
         longitude,
       });
-      closeLocationPicker();
     } finally {
       setLocationLoadingState(false);
     }
@@ -723,7 +739,6 @@ export default function CreateProjectScreen() {
           stockholmCoordinate.longitude,
           DEFAULT_EMULATOR_LOCATION_LABEL,
         );
-        closeLocationPicker();
         return;
       }
 
@@ -745,7 +760,6 @@ export default function CreateProjectScreen() {
       const longitude = currentPosition.coords.longitude;
 
       await centerLocationPickerOnCoordinate(latitude, longitude);
-      closeLocationPicker();
     } catch (error) {
       console.error("Error getting current location:", error);
       Alert.alert(
@@ -809,6 +823,11 @@ export default function CreateProjectScreen() {
           String(selectedCoordinate.longitude),
         );
       }
+
+      projectData.append(
+        "locationRadiusMeters",
+        String(locationRadiusMeters),
+      );
 
       if (beginningDate) {
         projectData.append("beginningDate", beginningDate.toISOString());
@@ -1546,14 +1565,6 @@ export default function CreateProjectScreen() {
                     onPress={openProjectAddressSearch}
                   />
                 </View>
-
-                {location ? (
-                  <View style={styles.mapAddressBadge}>
-                    <Text numberOfLines={2} style={styles.mapAddressBadgeText}>
-                      {location}
-                    </Text>
-                  </View>
-                ) : null}
               </View>
 
               {isLocationLoading ? (
@@ -1562,6 +1573,66 @@ export default function CreateProjectScreen() {
                   <Text style={styles.mapLoadingText}>Loading location...</Text>
                 </View>
               ) : null}
+
+              <View style={styles.mapBottomPanel}>
+                <Text style={styles.mapBottomPanelTitle}>
+                  Selected location
+                </Text>
+                <Text
+                  numberOfLines={2}
+                  style={[
+                    styles.mapBottomLocationText,
+                    !location && styles.mapBottomLocationPlaceholder,
+                  ]}
+                >
+                  {location ||
+                    "Tap on the map or use search to choose a project location."}
+                </Text>
+
+                <View style={styles.activationAreaRow}>
+                  <View style={styles.activationAreaTextWrap}>
+                    <Text style={styles.activationAreaTitle}>
+                      Activation area
+                    </Text>
+                    <Text style={styles.activationAreaSubtitle}>
+                      Upon entry, the timer will start
+                    </Text>
+                  </View>
+
+                  <View style={styles.activationAreaBadge}>
+                    <Text style={styles.activationAreaBadgeText}>
+                      {locationRadiusMeters} m
+                    </Text>
+                  </View>
+                </View>
+
+                <Slider
+                  minimumValue={50}
+                  maximumValue={1500}
+                  step={50}
+                  value={locationRadiusMeters}
+                  onValueChange={setLocationRadiusMeters}
+                  minimumTrackTintColor={theme.colors.primary}
+                  maximumTrackTintColor="rgba(5, 45, 80, 0.12)"
+                  thumbTintColor={theme.colors.primary}
+                  style={styles.activationAreaSlider}
+                />
+
+                <TouchableOpacity
+                  style={[
+                    styles.mapChooseLocationButton,
+                    !selectedCoordinate &&
+                      styles.mapChooseLocationButtonDisabled,
+                  ]}
+                  activeOpacity={0.85}
+                  onPress={confirmLocationPickerSelection}
+                  disabled={!selectedCoordinate}
+                >
+                  <Text style={styles.mapChooseLocationButtonText}>
+                    Choose project location
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </SafeAreaView>
           </View>
         </Modal>
@@ -2192,7 +2263,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "space-between",
     paddingHorizontal: 12,
-    paddingTop: 48,
+    paddingTop: 0,
     paddingBottom: 16,
   },
   mapTopContent: {
@@ -2303,23 +2374,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
-  mapAddressBadge: {
-    marginTop: 12,
-    backgroundColor: "rgba(255, 255, 255, 0.94)",
-    borderRadius: 16,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    shadowColor: "#052D50",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.08,
-    shadowRadius: 16,
-    elevation: 4,
-  },
-  mapAddressBadgeText: {
-    color: "#052D50",
-    fontSize: 14,
-    lineHeight: 20,
-  },
   mapLoadingBadge: {
     position: "absolute",
     alignSelf: "center",
@@ -2341,5 +2395,94 @@ const styles = StyleSheet.create({
     color: "#052D50",
     fontSize: 14,
     fontWeight: "500",
+  },
+  mapBottomPanel: {
+    backgroundColor: "rgba(255, 255, 255, 0.96)",
+    borderRadius: 24,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 14,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+    shadowColor: "#052D50",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.08,
+    shadowRadius: 20,
+    elevation: 5,
+    gap: 12,
+  },
+  mapBottomPanelTitle: {
+    color: "#052D50",
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  mapBottomLocationText: {
+    color: "#052D50",
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  mapBottomLocationPlaceholder: {
+    color: "rgba(5, 45, 80, 0.5)",
+  },
+  activationAreaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  activationAreaTextWrap: {
+    flex: 1,
+    gap: 2,
+  },
+  activationAreaTitle: {
+    color: "#052D50",
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  activationAreaSubtitle: {
+    color: "#698196",
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  activationAreaBadge: {
+    minWidth: 78,
+    height: 36,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    backgroundColor: "rgba(5, 45, 80, 0.05)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  activationAreaBadgeText: {
+    color: "#052D50",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  activationAreaSlider: {
+    width: "100%",
+    height: 36,
+    marginTop: -2,
+  },
+  mapChooseLocationButton: {
+    width: "100%",
+    minHeight: 52,
+    borderRadius: 16,
+    backgroundColor: "#0091FF",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 18,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.18,
+    shadowRadius: 7,
+    elevation: 4,
+  },
+  mapChooseLocationButtonDisabled: {
+    opacity: 0.45,
+  },
+  mapChooseLocationButtonText: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "600",
   },
 });

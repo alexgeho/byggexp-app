@@ -80,6 +80,16 @@ const geocodeProjectLocation = async (address) => {
 const hasValidCoordinate = (value) =>
   typeof value === "number" && Number.isFinite(value);
 
+const getProjectMaxDistanceMeters = (project) => {
+  const radius = Number(project?.locationRadiusMeters);
+
+  if (Number.isFinite(radius) && radius > 0) {
+    return radius;
+  }
+
+  return shiftLocationPolicy.maxDistanceMeters;
+};
+
 const getSavedProjectCoordinate = (project) => {
   const latitude = project?.locationLatitude;
   const longitude = project?.locationLongitude;
@@ -150,6 +160,8 @@ export const getShiftLocationCheck = async ({
   project,
   fallbackProjectLocation,
 }) => {
+  const maxDistanceMeters =
+    getProjectMaxDistanceMeters(project);
   const resolvedProjectCoordinate = await resolveProjectCoordinate({
     project,
     fallbackProjectLocation,
@@ -159,7 +171,7 @@ export const getShiftLocationCheck = async ({
     return {
       enforced: false,
       distanceMeters: 0,
-      maxDistanceMeters: shiftLocationPolicy.maxDistanceMeters,
+      maxDistanceMeters,
     };
   }
 
@@ -174,7 +186,7 @@ export const getShiftLocationCheck = async ({
   return {
     enforced: true,
     distanceMeters,
-    maxDistanceMeters: shiftLocationPolicy.maxDistanceMeters,
+    maxDistanceMeters,
   };
 };
 
@@ -206,7 +218,7 @@ export const startShiftWithLocationGuard = async ({
     locationCheck.distanceMeters > locationCheck.maxDistanceMeters
   ) {
     throw new Error(
-      `You are not at the project location. Move within ${shiftLocationPolicy.maxDistanceMeters} meters of the project to start a shift.`,
+      `You are not at the project location. Move within ${locationCheck.maxDistanceMeters} meters of the project to start a shift.`,
     );
   }
 

@@ -8,6 +8,7 @@ import { AuthProvider } from './src/contexts/AuthContext';
 import { FeedbackProvider } from './src/contexts/FeedbackContext';
 import { ThemeProvider } from './src/theme/ThemeContext';
 import NotificationBootstrap from './src/components/NotificationBootstrap';
+import ShiftLocationMonitor from './src/components/ShiftLocationMonitor';
 
 const defaultTextStyle = { fontFamily: 'DMSans-Regular' };
 
@@ -64,6 +65,7 @@ export default function App() {
           <SafeAreaProvider>
             <FeedbackProvider>
               <NotificationBootstrap />
+              <ShiftLocationMonitor />
               <AppNavigator />
             </FeedbackProvider>
           </SafeAreaProvider>
