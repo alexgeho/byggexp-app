@@ -1,13 +1,9 @@
 import * as Device from "expo-device";
 import * as Location from "expo-location";
 
+import projectService from "../services/project.service";
 import { shiftService } from "../services";
 import { shiftLocationPolicy } from "../config/shiftLocationPolicy";
-
-const GEOCODER_HEADERS = {
-  Accept: "application/json",
-  "Accept-Language": "en",
-};
 
 const DEFAULT_EMULATOR_COORDINATE = {
   latitude: 59.3293,
@@ -62,27 +58,19 @@ const geocodeProjectLocation = async (address) => {
   } catch {}
 
   try {
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(normalizedAddress)}`,
-      {
-        headers: GEOCODER_HEADERS,
-      },
+    const data = await projectService.searchAddressSuggestions(
+      normalizedAddress,
+      1,
     );
-
-    if (!response.ok) {
-      throw new Error(`Address search failed with status ${response.status}`);
-    }
-
-    const data = await response.json();
     const firstMatch = Array.isArray(data) ? data[0] : null;
 
-    if (!firstMatch?.lat || !firstMatch?.lon) {
+    if (!firstMatch?.latitude || !firstMatch?.longitude) {
       return null;
     }
 
     return {
-      latitude: Number(firstMatch.lat),
-      longitude: Number(firstMatch.lon),
+      latitude: Number(firstMatch.latitude),
+      longitude: Number(firstMatch.longitude),
     };
   } catch {}
 

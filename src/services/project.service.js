@@ -36,6 +36,26 @@ export const projectService = {
     return data;
   },
 
+  searchAddressSuggestions: async (query, limit = 8) => {
+    const { data } = await api.get('/projects/geocode/search', {
+      params: {
+        query,
+        limit,
+      },
+    });
+    return data;
+  },
+
+  reverseGeocode: async (latitude, longitude) => {
+    const { data } = await api.get('/projects/geocode/reverse', {
+      params: {
+        lat: latitude,
+        lon: longitude,
+      },
+    });
+    return data;
+  },
+
   create: async (projectData) => {
     const isFormData = typeof FormData !== 'undefined' && projectData instanceof FormData;
     const { data } = await api.post('/projects', projectData, isFormData

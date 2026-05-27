@@ -15,8 +15,19 @@ import {
   Platform,
 } from "react-native";
 import { useTheme } from "../../../theme/ThemeContext";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { memo, useState, useEffect, useContext, useRef } from "react";
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
+import {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Device from "expo-device";
 import MapView, { Marker } from "react-native-maps";
@@ -329,6 +340,7 @@ export default function CreateProjectScreen() {
   const lastReverseGeocodeAtRef = useRef(0);
   const reverseGeocodeCacheRef = useRef(new Map());
   const handledAddressSelectionNonceRef = useRef(null);
+  const shouldRestoreLocationPickerRef = useRef(false);
   const mapRef = useRef(null);
   const [mapRenderKey, setMapRenderKey] = useState(0);
 
@@ -375,6 +387,20 @@ export default function CreateProjectScreen() {
       selection.label,
     );
   }, [mapRegion, route.params?.projectAddressSelection]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!shouldRestoreLocationPickerRef.current) {
+        return undefined;
+      }
+
+      shouldRestoreLocationPickerRef.current = false;
+      setMapRenderKey((previous) => previous + 1);
+      setIsLocationPickerVisible(true);
+
+      return undefined;
+    }, []),
+  );
 
   const fetchUsersByCompany = async (companyId) => {
     try {
@@ -732,6 +758,8 @@ export default function CreateProjectScreen() {
   };
 
   const openProjectAddressSearch = () => {
+    shouldRestoreLocationPickerRef.current = true;
+    setIsLocationPickerVisible(false);
     navigation.navigate("ProjectAddressSearch", {
       initialQuery: locationSearch || location || "",
       originRouteKey: route.key,

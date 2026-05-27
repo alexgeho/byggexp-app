@@ -1,7 +1,4 @@
-export const GEOCODER_HEADERS = {
-  Accept: "application/json",
-  "Accept-Language": "en",
-};
+import projectService from "../services/project.service";
 
 export const formatResolvedAddress = (address) => {
   if (!address) {
@@ -25,34 +22,12 @@ export const formatResolvedAddress = (address) => {
 };
 
 export const reverseGeocodeWithNominatim = async (latitude, longitude) => {
-  const response = await fetch(
-    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
-    {
-      headers: GEOCODER_HEADERS,
-    },
-  );
-
-  if (!response.ok) {
-    throw new Error(`Reverse geocoding failed with status ${response.status}`);
-  }
-
-  const data = await response.json();
-  return data?.display_name || "";
+  const data = await projectService.reverseGeocode(latitude, longitude);
+  return data?.label || "";
 };
 
 export const searchAddressesWithNominatim = async (query, limit = 5) => {
-  const response = await fetch(
-    `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=${limit}&q=${encodeURIComponent(query)}`,
-    {
-      headers: GEOCODER_HEADERS,
-    },
-  );
-
-  if (!response.ok) {
-    throw new Error(`Address search failed with status ${response.status}`);
-  }
-
-  const data = await response.json();
+  const data = await projectService.searchAddressSuggestions(query, limit);
   return Array.isArray(data) ? data : [];
 };
 
@@ -60,9 +35,10 @@ export const normalizeLocationSuggestions = (matches = []) => {
   const seenLabels = new Set();
 
   return matches.reduce((suggestions, match, index) => {
-    const label = match?.display_name?.trim();
-    const latitude = Number(match?.lat);
-    const longitude = Number(match?.lon);
+    const label =
+      match?.label?.trim?.() || match?.display_name?.trim();
+    const latitude = Number(match?.latitude ?? match?.lat);
+    const longitude = Number(match?.longitude ?? match?.lon);
 
     if (
       !label ||
@@ -75,7 +51,7 @@ export const normalizeLocationSuggestions = (matches = []) => {
 
     seenLabels.add(label);
     suggestions.push({
-      id: String(match?.place_id || `${label}-${index}`),
+      id: String(match?.id || match?.place_id || `${label}-${index}`),
       label,
       latitude,
       longitude,
