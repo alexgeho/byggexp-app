@@ -7,7 +7,7 @@ const menuOutlineIcon = require("../../../assets/navigation/menu-outline.png");
 const menuFilledIcon = require("../../../assets/navigation/menu-filled.png");
 
 export function FooterHomeIcon({
-  size = 30,
+  size = 24,
   filled = false,
 }) {
   return (
@@ -23,7 +23,7 @@ export function FooterHomeIcon({
 }
 
 export function FooterMenuIcon({
-  size = 30,
+  size = 24,
   filled = false,
 }) {
   return (

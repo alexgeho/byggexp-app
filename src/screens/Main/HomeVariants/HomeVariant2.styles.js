@@ -56,13 +56,23 @@ export function createStyles({
     },
     mainContent: {
       flexGrow: 1,
-      minHeight: "100%",
+      minHeight: 0,
     },
     mainContentStacked: {
-      gap: sectionGap,
+      flexGrow: 0,
     },
     mainContentEvenlySpaced: {
-      justifyContent: "space-evenly",
+      flexGrow: 1,
+    },
+    mainContentGroup: {
+      gap: sectionGap,
+    },
+    mainContentGroupStacked: {
+      justifyContent: "flex-start",
+    },
+    mainContentGroupEvenlySpaced: {
+      flex: 1,
+      justifyContent: "space-between",
     },
     quickActionsGrid: {
       flexDirection: "row",

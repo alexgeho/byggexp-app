@@ -434,90 +434,99 @@ export default function HomeVariant2() {
               : styles.mainContentStacked,
           ]}
         >
-          {/* TIMER */}
-          <Timer
-            hours={
-              formattedTime.hours
-            }
-            minutes={
-              formattedTime.minutes
-            }
-            seconds={
-              formattedTime.seconds
-            }
-            containerStyle={styles.timerContainer}
-            textStyle={
-              isCompact
-                ? styles.timerTextCompact
-                : styles.timerTextRegular
-            }
-            secondsStyle={
-              isCompact
-                ? styles.timerSecondsCompact
-                : null
-            }
-          />
+          <View
+            style={[
+              styles.mainContentGroup,
+              shouldDistributeBlocksEvenly
+                ? styles.mainContentGroupEvenlySpaced
+                : styles.mainContentGroupStacked,
+            ]}
+          >
+            {/* TIMER */}
+            <Timer
+              hours={
+                formattedTime.hours
+              }
+              minutes={
+                formattedTime.minutes
+              }
+              seconds={
+                formattedTime.seconds
+              }
+              containerStyle={styles.timerContainer}
+              textStyle={
+                isCompact
+                  ? styles.timerTextCompact
+                  : styles.timerTextRegular
+              }
+              secondsStyle={
+                isCompact
+                  ? styles.timerSecondsCompact
+                  : null
+              }
+            />
 
-          {/* ACTION BUTTONS */}
-          <MainActionButtons
-            isRunning={isRunning}
-            isPaused={isPaused}
-            loading={loadingShift}
-            onPlayPress={handlePlayPause}
-            onCameraPress={handleCameraPress}
-            compact={isCompact}
-            veryCompact={isVeryCompact}
-          />
+            {/* ACTION BUTTONS */}
+            <MainActionButtons
+              isRunning={isRunning}
+              isPaused={isPaused}
+              loading={loadingShift}
+              onPlayPress={handlePlayPause}
+              onCameraPress={handleCameraPress}
+              compact={isCompact}
+              veryCompact={isVeryCompact}
+            />
 
-          <View style={styles.quickActionsGrid}>
-            {visibleQuickButtons.map(function renderButton(button, index) {
-              const isSingleLastItem =
-                visibleQuickButtons.length % 2 === 1 &&
-                index === visibleQuickButtons.length - 1;
+            <View style={styles.quickActionsGrid}>
+              {visibleQuickButtons.map(function renderButton(button, index) {
+                const isSingleLastItem =
+                  visibleQuickButtons.length % 2 === 1 &&
+                  index === visibleQuickButtons.length - 1;
 
-              return (
-                <TouchableOpacity
-                  key={button.id}
-                  style={[
-                    styles.quickActionCard,
-                    isSingleLastItem && styles.quickActionCardFullWidth,
-                  ]}
-                  onPress={function onButtonPress() {
-                    openQuickAction(button.screen);
-                  }}
-                >
-                  <View style={styles.quickActionIconWrapper}>
-                    <Image
-                      source={button.icon}
-                      style={styles.quickActionIcon}
-                    />
-                    {button.id === "chats" ? (
-                      <UnreadBadge count={unreadCount} />
-                    ) : null}
-                  </View>
+                return (
+                  <TouchableOpacity
+                    key={button.id}
+                    style={[
+                      styles.quickActionCard,
+                      isSingleLastItem && styles.quickActionCardFullWidth,
+                    ]}
+                    onPress={function onButtonPress() {
+                      openQuickAction(button.screen);
+                    }}
+                  >
+                    <View style={styles.quickActionIconWrapper}>
+                      <Image
+                        source={button.icon}
+                        style={styles.quickActionIcon}
+                      />
+                      {button.id === "chats" ? (
+                        <UnreadBadge count={unreadCount} />
+                      ) : null}
+                    </View>
 
-                  <Text style={styles.quickActionText}>
-                    {button.title}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
+                    <Text style={styles.quickActionText}>
+                      {button.title}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            {enabledSections.includes("shift-history") && (
+              <ShiftHistoryPreview
+                refreshKey={previewRefreshKey}
+                onClose={() => handleHideSection("shift-history")}
+              />
+            )}
+
+            {enabledSections.includes("project-files") && (
+              <ProjectFilesSection
+                project={selectedProject}
+                refreshKey={previewRefreshKey}
+                onClose={() => handleHideSection("project-files")}
+              />
+            )}
           </View>
-
-        {enabledSections.includes("shift-history") && (
-          <ShiftHistoryPreview
-            refreshKey={previewRefreshKey}
-            onClose={() => handleHideSection("shift-history")}
-          />
-        )}
-
-        {enabledSections.includes("project-files") && (
-          <ProjectFilesSection
-            project={selectedProject}
-            refreshKey={previewRefreshKey}
-            onClose={() => handleHideSection("project-files")}
-          />
-        )}
         </View>
       </ScrollView>
 
