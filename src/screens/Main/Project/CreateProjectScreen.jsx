@@ -17,9 +17,7 @@ import {
 import Slider from "@react-native-community/slider";
 import { useTheme } from "../../../theme/ThemeContext";
 import {
-  useFocusEffect,
   useNavigation,
-  useRoute,
 } from "@react-navigation/native";
 import {
   memo,
@@ -31,24 +29,23 @@ import {
 } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Device from "expo-device";
-import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import Icon from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import { projectService, userService, companyService } from "../../../services";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
-import { GlassView } from "../../../components/common/GlassView/GlassView";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { shiftLocationPolicy } from "../../../config/shiftLocationPolicy";
 import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
 import {
   formatResolvedAddress,
   getCoordinateCacheKey,
+  normalizeLocationSuggestions,
   reverseGeocodeWithNominatim,
+  searchAddressesWithNominatim,
 } from "../../../utils/projectLocationSearch";
 import { pickUploadAssets } from "../../../utils/uploadPicker";
 
@@ -234,47 +231,8 @@ const WorkersListModal = memo(function WorkersListModal({
   );
 });
 
-const MapControlButton = ({ onPress, iconName, style, iconSize = 20 }) => {
-  const content = (
-    <GlassView
-      backgroundColor={"rgba(255, 255, 255, 0.6)"}
-      borderColor="#FFFFFF50"
-      tint="light"
-      intensity={85}
-      style={styles.mapControlButton}
-      onPress={Platform.OS === "web" ? onPress : undefined}
-    >
-      <LinearGradient
-        colors={["rgba(255,255,255,0.88)", "rgba(255,255,255,0.22)"]}
-        start={{ x: 0.2, y: 0 }}
-        end={{ x: 0.8, y: 1 }}
-        style={styles.mapControlBaseGradient}
-      />
-      <LinearGradient
-        colors={["rgba(255,255,255,0.95)", "rgba(255,255,255,0)"]}
-        start={{ x: 0.15, y: 0 }}
-        end={{ x: 0.85, y: 0.7 }}
-        style={styles.mapControlHighlight}
-      />
-      <View style={styles.mapControlGlow} />
-      <Icon name={iconName} size={iconSize} color="#052D50" />
-    </GlassView>
-  );
-
-  if (Platform.OS === "web") {
-    return <View style={style}>{content}</View>;
-  }
-
-  return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.7} style={style}>
-      {content}
-    </TouchableOpacity>
-  );
-};
-
 export default function CreateProjectScreen() {
   const navigation = useNavigation();
-  const route = useRoute();
   const { theme } = useTheme();
   const { showSuccess } = useFeedback();
   const { user } = useContext(AuthContext);
@@ -311,11 +269,12 @@ export default function CreateProjectScreen() {
   const [locationRadiusMeters, setLocationRadiusMeters] = useState(
     shiftLocationPolicy.maxDistanceMeters,
   );
-  const [mapRegion, setMapRegion] = useState(DEFAULT_REGION);
   const [selectedCoordinate, setSelectedCoordinate] = useState(null);
   const [isLocationPickerVisible, setIsLocationPickerVisible] = useState(false);
   const [locationSearch, setLocationSearch] = useState("");
   const [isLocationLoading, setIsLocationLoading] = useState(false);
+  const [locationSuggestions, setLocationSuggestions] = useState([]);
+  const [isLocationSearchLoading, setIsLocationSearchLoading] = useState(false);
   const [beginningDate, setBeginningDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
@@ -342,12 +301,9 @@ export default function CreateProjectScreen() {
   const [saving, setSaving] = useState(false);
   const projectNameLabelAnim = useRef(new Animated.Value(0)).current;
   const isLocationLoadingRef = useRef(false);
+  const locationSearchRequestIdRef = useRef(0);
   const lastReverseGeocodeAtRef = useRef(0);
   const reverseGeocodeCacheRef = useRef(new Map());
-  const handledAddressSelectionNonceRef = useRef(null);
-  const shouldRestoreLocationPickerRef = useRef(false);
-  const mapRef = useRef(null);
-  const [mapRenderKey, setMapRenderKey] = useState(0);
 
   useEffect(() => {
     fetchUsersAndCompanies();
@@ -368,44 +324,43 @@ export default function CreateProjectScreen() {
   }, [useLocationAsName, location]);
 
   useEffect(() => {
-    const selection = route.params?.projectAddressSelection;
-    const selectionNonce = selection?.nonce;
-
-    if (!selection || !selectionNonce) {
+    if (!isLocationPickerVisible) {
       return;
     }
 
-    if (handledAddressSelectionNonceRef.current === selectionNonce) {
+    const normalizedQuery = locationSearch.trim();
+    if (normalizedQuery.length < 2) {
+      locationSearchRequestIdRef.current += 1;
+      setLocationSuggestions([]);
+      setIsLocationSearchLoading(false);
       return;
     }
 
-    handledAddressSelectionNonceRef.current = selectionNonce;
+    const debounceId = setTimeout(async () => {
+      const requestId = ++locationSearchRequestIdRef.current;
+      setIsLocationSearchLoading(true);
 
-    void applyResolvedLocation(
-      selection.latitude,
-      selection.longitude,
-      {
-        ...mapRegion,
-        latitude: selection.latitude,
-        longitude: selection.longitude,
-      },
-      selection.label,
-    );
-  }, [mapRegion, route.params?.projectAddressSelection]);
+      try {
+        const matches = await searchAddressesWithNominatim(normalizedQuery, 8);
+        const nextSuggestions = normalizeLocationSuggestions(matches);
 
-  useFocusEffect(
-    useCallback(() => {
-      if (!shouldRestoreLocationPickerRef.current) {
-        return undefined;
+        if (locationSearchRequestIdRef.current === requestId) {
+          setLocationSuggestions(nextSuggestions);
+        }
+      } catch (error) {
+        if (locationSearchRequestIdRef.current === requestId) {
+          setLocationSuggestions([]);
+        }
+        console.error("Failed to search project addresses:", error);
+      } finally {
+        if (locationSearchRequestIdRef.current === requestId) {
+          setIsLocationSearchLoading(false);
+        }
       }
+    }, 250);
 
-      shouldRestoreLocationPickerRef.current = false;
-      setMapRenderKey((previous) => previous + 1);
-      setIsLocationPickerVisible(true);
-
-      return undefined;
-    }, []),
-  );
+    return () => clearTimeout(debounceId);
+  }, [isLocationPickerVisible, locationSearch]);
 
   const fetchUsersByCompany = async (companyId) => {
     try {
@@ -530,13 +485,16 @@ export default function CreateProjectScreen() {
 
   const closeLocationPicker = () => {
     setIsLocationPickerVisible(false);
+    setLocationSearch(location);
+    setLocationSuggestions([]);
+    setIsLocationSearchLoading(false);
   };
 
   const confirmLocationPickerSelection = () => {
     if (!selectedCoordinate) {
       Alert.alert(
         "Location required",
-        "Choose a point on the map or search for an address first.",
+        "Search for an address or use your current location first.",
       );
       return;
     }
@@ -604,22 +562,9 @@ export default function CreateProjectScreen() {
   const applyResolvedLocation = async (
     latitude,
     longitude,
-    nextRegion,
     resolvedAddressText,
   ) => {
-    const targetRegion =
-      nextRegion || {
-        ...mapRegion,
-        latitude,
-        longitude,
-      };
-
     setSelectedCoordinate({ latitude, longitude });
-    setMapRegion(targetRegion);
-
-    if (mapRef.current?.animateToRegion) {
-      mapRef.current.animateToRegion(targetRegion, 250);
-    }
 
     if (resolvedAddressText) {
       setLocation(resolvedAddressText);
@@ -651,82 +596,14 @@ export default function CreateProjectScreen() {
     longitude,
     resolvedAddressText,
   ) => {
-    await applyResolvedLocation(
-      latitude,
-      longitude,
-      {
-        ...DEFAULT_REGION,
-        latitude,
-        longitude,
-      },
-      resolvedAddressText,
-    );
+    await applyResolvedLocation(latitude, longitude, resolvedAddressText);
   };
 
-  const openLocationPicker = async () => {
+  const openLocationPicker = () => {
     setLocationSearch(location);
+    setLocationSuggestions([]);
+    setIsLocationSearchLoading(false);
     setIsLocationPickerVisible(true);
-    setMapRenderKey((previous) => previous + 1);
-
-    if (selectedCoordinate || isLocationLoadingRef.current) {
-      return;
-    }
-
-    setLocationLoadingState(true);
-    try {
-      if (!Device.isDevice) {
-        const stockholmCoordinate = getStockholmCoordinate();
-        await centerLocationPickerOnCoordinate(
-          stockholmCoordinate.latitude,
-          stockholmCoordinate.longitude,
-          DEFAULT_EMULATOR_LOCATION_LABEL,
-        );
-        return;
-      }
-
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert(
-          "Location access denied",
-          "Allow geolocation to center the map on your current position.",
-        );
-        return;
-      }
-
-      const currentPosition = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Balanced,
-      });
-      await centerLocationPickerOnCoordinate(
-        currentPosition.coords.latitude,
-        currentPosition.coords.longitude,
-      );
-    } catch (error) {
-      console.error("Error preparing location picker:", error);
-      Alert.alert(
-        "Location error",
-        "Unable to determine your current position.",
-      );
-    } finally {
-      setLocationLoadingState(false);
-    }
-  };
-
-  const handleMapPress = async (event) => {
-    if (isLocationLoadingRef.current) {
-      return;
-    }
-
-    const { latitude, longitude } = event.nativeEvent.coordinate;
-    setLocationLoadingState(true);
-    try {
-      await applyResolvedLocation(latitude, longitude, {
-        ...mapRegion,
-        latitude,
-        longitude,
-      });
-    } finally {
-      setLocationLoadingState(false);
-    }
   };
 
   const handleUseCurrentLocation = async () => {
@@ -771,13 +648,21 @@ export default function CreateProjectScreen() {
     }
   };
 
-  const openProjectAddressSearch = () => {
-    shouldRestoreLocationPickerRef.current = true;
-    setIsLocationPickerVisible(false);
-    navigation.navigate("ProjectAddressSearch", {
-      initialQuery: locationSearch || location || "",
-      originRouteKey: route.key,
-    });
+  const handleSelectLocationSuggestion = async (suggestion) => {
+    if (isLocationLoadingRef.current) {
+      return;
+    }
+
+    setLocationLoadingState(true);
+    try {
+      await applyResolvedLocation(
+        suggestion.latitude,
+        suggestion.longitude,
+        suggestion.label,
+      );
+    } finally {
+      setLocationLoadingState(false);
+    }
   };
 
   const createProject = async () => {
@@ -1097,6 +982,10 @@ export default function CreateProjectScreen() {
     backgroundColor: theme.colors.primary,
     borderColor: theme.colors.primary,
   };
+  const locationSearchEmptyText =
+    locationSearch.trim().length < 2
+      ? "Start typing to search for a project address."
+      : "No addresses found. Try a more specific search.";
 
   return (
     <View style={styles.screen}>
@@ -1536,105 +1425,144 @@ export default function CreateProjectScreen() {
           animationType="slide"
           onRequestClose={closeLocationPicker}
         >
-          <View style={styles.mapModalContainer}>
-            <MapView
-              key={mapRenderKey}
-              ref={mapRef}
-              style={styles.map}
-              initialRegion={mapRegion}
-              onRegionChangeComplete={setMapRegion}
-              onPress={handleMapPress}
-              loadingEnabled
-              showsCompass={false}
-              mapType="standard"
-            >
-              {selectedCoordinate ? (
-                <Marker coordinate={selectedCoordinate} />
-              ) : null}
-            </MapView>
+          <SafeAreaView style={styles.mapModalContainer}>
+            <View style={styles.mapTopBar}>
+              <BackButton
+                backgroundColor={"rgba(255, 255, 255, 0.6)"}
+                tint={"light"}
+                borderColor="#FFFFFF50"
+                onPress={closeLocationPicker}
+                iconSource={require("../../../assets/Arrow-left.png")}
+              />
+              <Text style={styles.mapModalTitle}>Project address</Text>
+              <View style={styles.placeholder} />
+            </View>
 
-            <SafeAreaView style={styles.mapOverlay} pointerEvents="box-none">
-              <View style={styles.mapTopContent}>
-                <View style={styles.mapTopBar}>
-                  <MapControlButton
-                    iconName="arrow-left"
-                    onPress={closeLocationPicker}
-                  />
-                  <MapControlButton
-                    iconName="search"
-                    onPress={openProjectAddressSearch}
-                  />
-                </View>
-              </View>
-
-              {isLocationLoading ? (
-                <View style={styles.mapLoadingBadge}>
-                  <ActivityIndicator size="small" color="#052D50" />
-                  <Text style={styles.mapLoadingText}>Loading location...</Text>
-                </View>
-              ) : null}
-
-              <View style={styles.mapBottomPanel}>
-                <Text style={styles.mapBottomPanelTitle}>
-                  Selected location
-                </Text>
-                <Text
-                  numberOfLines={2}
-                  style={[
-                    styles.mapBottomLocationText,
-                    !location && styles.mapBottomLocationPlaceholder,
-                  ]}
-                >
-                  {location ||
-                    "Tap on the map or use search to choose a project location."}
-                </Text>
-
-                <View style={styles.activationAreaRow}>
-                  <View style={styles.activationAreaTextWrap}>
-                    <Text style={styles.activationAreaTitle}>
-                      Activation area
-                    </Text>
-                    <Text style={styles.activationAreaSubtitle}>
-                      Upon entry, the timer will start
-                    </Text>
-                  </View>
-
-                  <View style={styles.activationAreaBadge}>
-                    <Text style={styles.activationAreaBadgeText}>
-                      {locationRadiusMeters} m
-                    </Text>
-                  </View>
-                </View>
-
-                <Slider
-                  minimumValue={50}
-                  maximumValue={1500}
-                  step={50}
-                  value={locationRadiusMeters}
-                  onValueChange={setLocationRadiusMeters}
-                  minimumTrackTintColor={theme.colors.primary}
-                  maximumTrackTintColor="rgba(5, 45, 80, 0.12)"
-                  thumbTintColor={theme.colors.primary}
-                  style={styles.activationAreaSlider}
+            <View style={styles.mapSearchSection}>
+              <View style={styles.mapSearchInputCard}>
+                <Icon name="search" size={18} color="rgba(5, 45, 80, 0.55)" />
+                <TextInput
+                  autoFocus={true}
+                  value={locationSearch}
+                  onChangeText={setLocationSearch}
+                  placeholder="Search address"
+                  placeholderTextColor="rgba(5, 45, 80, 0.45)"
+                  style={styles.mapSearchInput}
+                  returnKeyType="search"
                 />
-
-                <TouchableOpacity
-                  style={[
-                    styles.mapChooseLocationButton,
-                    !selectedCoordinate &&
-                      styles.mapChooseLocationButtonDisabled,
-                  ]}
-                  activeOpacity={0.85}
-                  onPress={confirmLocationPickerSelection}
-                  disabled={!selectedCoordinate}
-                >
-                  <Text style={styles.mapChooseLocationButtonText}>
-                    Choose project location
-                  </Text>
-                </TouchableOpacity>
               </View>
-            </SafeAreaView>
-          </View>
+
+              <TouchableOpacity
+                style={styles.mapCurrentLocationButton}
+                activeOpacity={0.85}
+                onPress={handleUseCurrentLocation}
+                disabled={isLocationLoading}
+              >
+                <Icon name="crosshair" size={16} color="#052D50" />
+                <Text style={styles.mapCurrentLocationButtonText}>
+                  Use current location
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.mapSuggestionsCard}>
+              {isLocationLoading || isLocationSearchLoading ? (
+                <View style={styles.mapSuggestionsLoadingRow}>
+                  <ActivityIndicator size="small" color={theme.colors.primary} />
+                  <Text style={styles.mapSuggestionsLoadingText}>
+                    {isLocationLoading
+                      ? "Loading location..."
+                      : "Searching addresses..."}
+                  </Text>
+                </View>
+              ) : locationSuggestions.length ? (
+                <FlatList
+                  data={locationSuggestions}
+                  keyExtractor={(item) => item.id}
+                  keyboardShouldPersistTaps="handled"
+                  renderItem={({ item, index }) => (
+                    <TouchableOpacity
+                      activeOpacity={0.85}
+                      style={[
+                        styles.mapSuggestionItem,
+                        index === locationSuggestions.length - 1 &&
+                          styles.mapSuggestionItemLast,
+                      ]}
+                      onPress={() => handleSelectLocationSuggestion(item)}
+                    >
+                      <Icon name="map-pin" size={16} color="#052D50" />
+                      <Text style={styles.mapSuggestionText}>{item.label}</Text>
+                    </TouchableOpacity>
+                  )}
+                />
+              ) : (
+                <View style={styles.mapSuggestionsEmptyState}>
+                  <Text style={styles.mapSuggestionsEmptyText}>
+                    {locationSearchEmptyText}
+                  </Text>
+                </View>
+              )}
+            </View>
+
+            <View style={styles.mapBottomPanel}>
+              <Text style={styles.mapBottomPanelTitle}>
+                Selected location
+              </Text>
+              <Text
+                numberOfLines={2}
+                style={[
+                  styles.mapBottomLocationText,
+                  !location && styles.mapBottomLocationPlaceholder,
+                ]}
+              >
+                {location || "Search and choose a project location."}
+              </Text>
+
+              <View style={styles.activationAreaRow}>
+                <View style={styles.activationAreaTextWrap}>
+                  <Text style={styles.activationAreaTitle}>
+                    Activation area
+                  </Text>
+                  <Text style={styles.activationAreaSubtitle}>
+                    Upon entry, the timer will start
+                  </Text>
+                </View>
+
+                <View style={styles.activationAreaBadge}>
+                  <Text style={styles.activationAreaBadgeText}>
+                    {locationRadiusMeters} m
+                  </Text>
+                </View>
+              </View>
+
+              <Slider
+                minimumValue={50}
+                maximumValue={1500}
+                step={50}
+                value={locationRadiusMeters}
+                onValueChange={setLocationRadiusMeters}
+                minimumTrackTintColor={theme.colors.primary}
+                maximumTrackTintColor="rgba(5, 45, 80, 0.12)"
+                thumbTintColor={theme.colors.primary}
+                style={styles.activationAreaSlider}
+              />
+
+              <TouchableOpacity
+                style={[
+                  styles.mapChooseLocationButton,
+                  !selectedCoordinate &&
+                    styles.mapChooseLocationButtonDisabled,
+                ]}
+                activeOpacity={0.85}
+                onPress={confirmLocationPickerSelection}
+                disabled={!selectedCoordinate}
+              >
+                <Text style={styles.mapChooseLocationButtonText}>
+                  Choose project location
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </SafeAreaView>
         </Modal>
       </ScrollView>
       <BottomBar
@@ -2254,20 +2182,9 @@ const styles = StyleSheet.create({
   },
   mapModalContainer: {
     flex: 1,
-    backgroundColor: "#EEEEEE",
-  },
-  map: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  mapOverlay: {
-    flex: 1,
-    justifyContent: "space-between",
+    backgroundColor: "#EEF5FB",
     paddingHorizontal: 12,
-    paddingTop: 0,
     paddingBottom: 16,
-  },
-  mapTopContent: {
-    width: "100%",
   },
   mapTopBar: {
     width: "100%",
@@ -2276,60 +2193,54 @@ const styles = StyleSheet.create({
     alignItems: "center",
     ...standardScreenHeaderSpacing,
   },
-  mapControlButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    overflow: "hidden",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#EEF5FB",
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-    shadowColor: "#052D50",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.08,
-    shadowRadius: 20,
-    elevation: 4,
-  },
-  mapControlBaseGradient: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: 22,
-  },
-  mapControlHighlight: {
-    position: "absolute",
-    top: 1,
-    left: 1,
-    right: 1,
-    height: 18,
-    borderRadius: 21,
-  },
-  mapControlGlow: {
-    position: "absolute",
-    top: 2,
-    left: 2,
-    right: 2,
-    bottom: 2,
-    borderRadius: 20,
-    backgroundColor: "rgba(5, 45, 80, 0.04)",
-  },
-  mapSearchAction: {
-    height: 44,
-    minWidth: 52,
-    borderRadius: 14,
-    backgroundColor: "#0091FF",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 14,
-  },
-  mapSearchActionText: {
-    color: "#ffffff",
-    fontSize: 15,
+  mapModalTitle: {
+    color: "#052D50",
+    fontSize: 17,
+    textAlign: "center",
     fontWeight: "600",
   },
+  mapSearchSection: {
+    marginTop: 18,
+    gap: 12,
+  },
+  mapSearchInputCard: {
+    minHeight: 60,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    paddingHorizontal: 16,
+  },
+  mapSearchInput: {
+    flex: 1,
+    color: "#052D50",
+    fontSize: 16,
+    paddingVertical: 16,
+  },
+  mapCurrentLocationButton: {
+    minHeight: 44,
+    alignSelf: "flex-start",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 14,
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+  },
+  mapCurrentLocationButtonText: {
+    color: "#052D50",
+    fontSize: 14,
+    fontWeight: "500",
+  },
   mapSuggestionsCard: {
-    marginTop: 12,
-    maxHeight: 240,
+    flex: 1,
+    marginTop: 16,
     backgroundColor: "rgba(255, 255, 255, 0.94)",
     borderRadius: 16,
     paddingHorizontal: 14,
@@ -2345,6 +2256,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
     minHeight: 32,
+    paddingVertical: 4,
   },
   mapSuggestionsLoadingText: {
     color: "#052D50",
@@ -2374,27 +2286,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
-  mapLoadingBadge: {
-    position: "absolute",
-    alignSelf: "center",
-    bottom: 28,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    backgroundColor: "rgba(255, 255, 255, 0.94)",
-    borderRadius: 16,
-    paddingHorizontal: 14,
+  mapSuggestionsEmptyState: {
     paddingVertical: 10,
-    shadowColor: "#052D50",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.08,
-    shadowRadius: 16,
-    elevation: 4,
-  },
-  mapLoadingText: {
-    color: "#052D50",
-    fontSize: 14,
-    fontWeight: "500",
   },
   mapBottomPanel: {
     backgroundColor: "rgba(255, 255, 255, 0.96)",
