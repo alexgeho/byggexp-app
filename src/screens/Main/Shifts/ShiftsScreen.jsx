@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -20,7 +20,6 @@ import {
   formatDuration,
   formatDurationShort,
   formatMonthLabel,
-  formatShiftDate,
   formatTimeRange,
   resolveUploadUrl,
 } from "../../../utils/shifts";
@@ -39,6 +38,7 @@ export default function ShiftsScreen() {
   const [exportModalVisible, setExportModalVisible] = useState(false);
   const [selectedExportType, setSelectedExportType] = useState("pdf");
   const [exporting, setExporting] = useState(false);
+  const [expandedShiftId, setExpandedShiftId] = useState(null);
 
   const loadMonths = useCallback(async () => {
     const months = await shiftService.getMonths();
@@ -96,6 +96,25 @@ export default function ShiftsScreen() {
 
   const selectedDay = selectedDate ? dayMap.get(selectedDate) : null;
   const selectedDayShifts = selectedDay?.shifts || [];
+  const selectedDaySummary = useMemo(() => {
+    if (!selectedDayShifts.length) {
+      return null;
+    }
+
+    const shiftCount = selectedDayShifts.length;
+    const totalDurationMs =
+      selectedDay?.totalDurationMs ??
+      selectedDayShifts.reduce(
+        (total, shift) => total + (shift.durationMs || 0),
+        0,
+      );
+
+    return `${shiftCount} ${shiftCount === 1 ? "shift" : "shifts"}, ${formatDuration(totalDurationMs)}`;
+  }, [selectedDay, selectedDayShifts]);
+
+  useEffect(() => {
+    setExpandedShiftId(null);
+  }, [selectedDate]);
 
   const calendarRows = useMemo(() => {
     if (!selectedMonth) {
@@ -123,27 +142,18 @@ export default function ShiftsScreen() {
           key={dateStr}
           style={[
             styles.calendarCell,
-            !shiftDay && styles.calendarCellMuted,
             isSelected && styles.calendarCellSelected,
           ]}
           onPress={() => shiftDay && setSelectedDate(dateStr)}
           disabled={!shiftDay}
         >
           <Text
-            style={[
-              styles.calendarDay,
-              isSelected && styles.calendarDaySelected,
-            ]}
+            style={styles.calendarDay}
           >
             {day}
           </Text>
           {shiftDay ? (
-            <Text
-              style={[
-                styles.calendarHours,
-                isSelected && styles.calendarHoursSelected,
-              ]}
-            >
+            <Text style={styles.calendarHours}>
               {formatDurationShort(shiftDay.totalDurationMs)}
             </Text>
           ) : null}
@@ -232,12 +242,24 @@ export default function ShiftsScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.exportSelector}>
-            <Text style={styles.exportLabel}>Select period for export</Text>
+            <Text
+              style={[
+                styles.exportLabel,
+                { fontFamily: theme.text.fontFamily["semiBold"] },
+              ]}
+            >
+              Period for export
+            </Text>
             <TouchableOpacity
               style={styles.dropdownButton}
               onPress={() => setPickerVisible(true)}
             >
-              <Text style={styles.dropdownText}>
+              <Text
+                style={[
+                  styles.dropdownText,
+                  { fontFamily: theme.text.fontFamily["semiBold"] },
+                ]}
+              >
                 {formatMonthLabel(selectedMonth)}
               </Text>
               <Image
@@ -267,15 +289,26 @@ export default function ShiftsScreen() {
           </View>
 
           <View style={styles.shiftDetailsContainer}>
-            <Text
-              style={[
-                styles.shiftTitle,
-                { fontFamily: theme.text.fontFamily["semiBold"] },
-              ]}
-            >
-              Shift details for{" "}
-              {selectedDay ? formatShiftDate(selectedDay.date) : "—"}
-            </Text>
+            <View style={styles.shiftDetailsHeader}>
+              <Text
+                style={[
+                  styles.shiftTitle,
+                  { fontFamily: theme.text.fontFamily["medium"] },
+                ]}
+              >
+                Shifts on selected day
+              </Text>
+              {selectedDaySummary ? (
+                <Text
+                  style={[
+                    styles.shiftSummary,
+                    { fontFamily: theme.text.fontFamily["regular"] },
+                  ]}
+                >
+                  {selectedDaySummary}
+                </Text>
+              ) : null}
+            </View>
 
             <View style={styles.shiftDetailsContent}>
               {selectedDayShifts.length === 0 ? (
@@ -283,53 +316,138 @@ export default function ShiftsScreen() {
                   Select a highlighted day to see shift details.
                 </Text>
               ) : (
-                selectedDayShifts.map((shift) => (
-                  <View key={shift.id} style={styles.shiftCard}>
-                    <View style={styles.shiftInfoRow}>
-                      <Text style={styles.shiftLabel}>Work hours:</Text>
-                      <Text style={styles.shiftValue}>
-                        {formatTimeRange(shift.startedAt, shift.endedAt)}
-                      </Text>
-                    </View>
-                    <View style={styles.shiftInfoRow}>
-                      <Text style={styles.shiftLabel}>Duration:</Text>
-                      <Text style={styles.shiftValue}>
-                        {formatDuration(shift.durationMs)}
-                      </Text>
-                    </View>
-                    <View style={styles.shiftInfoRow}>
-                      <Text style={styles.shiftLabel}>Project:</Text>
-                      <Text style={styles.shiftValue}>
-                        {shift.projectName || "—"}
-                      </Text>
-                    </View>
-                    <View style={styles.shiftInfoRow}>
-                      <Text style={styles.shiftLabel}>Location:</Text>
-                      <Text style={styles.shiftValue}>
-                        {shift.location || "—"}
-                      </Text>
-                    </View>
-                    <ScrollView
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      style={styles.shiftImagesRow}
+                selectedDayShifts.map((shift) => {
+                  const isExpanded = expandedShiftId === shift.id;
+
+                  return (
+                    <TouchableOpacity
+                      key={shift.id}
+                      style={styles.shiftCard}
+                      onPress={() =>
+                        setExpandedShiftId(isExpanded ? null : shift.id)
+                      }
+                      activeOpacity={0.85}
                     >
-                      {shift.photos?.length ? (
-                        shift.photos.map((photo, index) => (
-                          <Image
-                            key={`${shift.id}-photo-${index}`}
-                            style={styles.shiftImage}
-                            source={{ uri: resolveUploadUrl(photo.url) }}
-                          />
-                        ))
-                      ) : (
-                        <Text style={styles.noPhotosText}>
-                          No photos attached
+                      <View style={styles.shiftTimeRow}>
+                        <Text
+                          style={[
+                            styles.shiftTimeText,
+                            { fontFamily: theme.text.fontFamily["semiBold"] },
+                          ]}
+                        >
+                          {formatTimeRange(shift.startedAt, shift.endedAt)}
                         </Text>
+                        <Text
+                          style={[
+                            styles.shiftDurationText,
+                            { fontFamily: theme.text.fontFamily["medium"] },
+                          ]}
+                        >
+                          {formatDuration(shift.durationMs)}
+                        </Text>
+                      </View>
+
+                      {!isExpanded ? (
+                        <Text
+                          style={[
+                            styles.shiftProjectName,
+                            { fontFamily: theme.text.fontFamily["regular"] },
+                          ]}
+                        >
+                          {shift.projectName || "—"}
+                        </Text>
+                      ) : (
+                        <View style={styles.shiftExpandedContent}>
+                          <View style={styles.shiftDetailRow}>
+                            <Text
+                              style={[
+                                styles.shiftDetailLabel,
+                                {
+                                  fontFamily: theme.text.fontFamily["regular"],
+                                },
+                              ]}
+                            >
+                              Project
+                            </Text>
+                            <Text
+                              style={[
+                                styles.shiftDetailValue,
+                                { fontFamily: theme.text.fontFamily["medium"] },
+                              ]}
+                            >
+                              {shift.projectName || "—"}
+                            </Text>
+                          </View>
+                          <View style={styles.shiftDetailRow}>
+                            <Text
+                              style={[
+                                styles.shiftDetailLabel,
+                                {
+                                  fontFamily: theme.text.fontFamily["regular"],
+                                },
+                              ]}
+                            >
+                              Location
+                            </Text>
+                            <Text
+                              style={[
+                                styles.shiftDetailValue,
+                                { fontFamily: theme.text.fontFamily["medium"] },
+                              ]}
+                            >
+                              {shift.location || "—"}
+                            </Text>
+                          </View>
+                          <View style={styles.shiftDetailRow}>
+                            <Text
+                              style={[
+                                styles.shiftDetailLabel,
+                                {
+                                  fontFamily: theme.text.fontFamily["regular"],
+                                },
+                              ]}
+                            >
+                              Photos
+                            </Text>
+                            {shift.photos?.length ? (
+                              <View style={styles.shiftPhotosValue}>
+                                <ScrollView
+                                  horizontal
+                                  showsHorizontalScrollIndicator={false}
+                                  style={styles.shiftPhotosScroll}
+                                  contentContainerStyle={
+                                    styles.shiftPhotosScrollContent
+                                  }
+                                >
+                                  {shift.photos.map((photo, index) => (
+                                    <Image
+                                      key={`${shift.id}-photo-${index}`}
+                                      style={styles.shiftImage}
+                                      source={{
+                                        uri: resolveUploadUrl(photo.url),
+                                      }}
+                                    />
+                                  ))}
+                                </ScrollView>
+                              </View>
+                            ) : (
+                              <Text
+                                style={[
+                                  styles.shiftDetailValue,
+                                  {
+                                    fontFamily: theme.text.fontFamily["medium"],
+                                  },
+                                ]}
+                              >
+                                No photos attached
+                              </Text>
+                            )}
+                          </View>
+                        </View>
                       )}
-                    </ScrollView>
-                  </View>
-                ))
+                    </TouchableOpacity>
+                  );
+                })
               )}
             </View>
           </View>
@@ -547,24 +665,32 @@ const styles = StyleSheet.create({
   },
   exportLabel: {
     color: "#052D50",
-    fontSize: 14,
+    fontSize: 17,
+    lineHeight: 22,
+    fontWeight: "600",
   },
   dropdownButton: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    backgroundColor: "#f5f5f5",
-    borderRadius: 12,
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingLeft: 24,
+    paddingRight: 13,
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    borderWidth: 1,
+    borderColor: "rgba(7, 133, 244, 0.45)",
+    borderRadius: 71,
   },
   dropdownText: {
-    color: "#052D50",
-    fontSize: 14,
+    color: "rgba(7, 92, 158, 1)",
+    fontSize: 15,
+    fontWeight: "600",
   },
   dropdownIcon: {
     width: 16,
     height: 16,
+    tintColor: "rgba(7, 92, 158, 1)",
   },
   calendarContainer: {
     width: "100%",
@@ -593,13 +719,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 8,
-    backgroundColor: "#e0e0e0",
-  },
-  calendarCellMuted: {
-    backgroundColor: "#f3f3f3",
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
   },
   calendarCellSelected: {
-    backgroundColor: "#0088FF",
+    borderWidth: 1,
+    borderColor: "rgba(168, 183, 195, 1)",
   },
   calendarCellEmpty: {
     width: 40,
@@ -610,70 +734,116 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "500",
   },
-  calendarDaySelected: {
-    color: "#ffffff",
-  },
   calendarHours: {
-    color: "#ffffff",
+    color: "#052D50",
     fontSize: 10,
     marginTop: 2,
-    backgroundColor: "#0088FF",
+    backgroundColor: "rgba(228, 235, 240, 1)",
     paddingHorizontal: 4,
     borderRadius: 4,
   },
-  calendarHoursSelected: {
-    backgroundColor: "#ffffff",
-    color: "#0088FF",
-  },
   shiftDetailsContainer: {
     width: "100%",
-    backgroundColor: "#f9f9f9",
-    borderRadius: 16,
-    padding: 12,
     marginBottom: 12,
+  },
+  shiftDetailsHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
+    gap: 12,
   },
   shiftDetailsContent: {
     gap: 12,
   },
   shiftTitle: {
-    color: "#052D50",
-    fontSize: 17,
-    marginBottom: 12,
+    color: "rgba(5, 45, 80, 1)",
+    fontSize: 16,
+    lineHeight: 24,
+    fontWeight: "500",
+    flex: 1,
+  },
+  shiftSummary: {
+    color: "rgba(95, 117, 136, 1)",
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: "400",
   },
   shiftCard: {
     backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 12,
     padding: 12,
-    gap: 8,
     borderWidth: 1,
     borderColor: "#FFFFFF",
   },
-  shiftInfoRow: {
+  shiftTimeRow: {
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 8,
     gap: 12,
   },
-  shiftLabel: {
-    color: "#698196",
-    fontSize: 14,
-  },
-  shiftValue: {
-    color: "#052D50",
-    fontSize: 14,
-    fontWeight: "500",
+  shiftTimeText: {
+    color: "rgba(5, 45, 80, 1)",
+    fontSize: 16,
+    lineHeight: 24,
+    fontWeight: "600",
     flex: 1,
+  },
+  shiftDurationText: {
+    color: "rgba(95, 117, 136, 1)",
+    fontSize: 14,
+    lineHeight: 24,
+    fontWeight: "500",
     textAlign: "right",
   },
-  shiftImagesRow: {
+  shiftProjectName: {
+    color: "rgba(122, 148, 168, 1)",
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: "400",
+    marginTop: 4,
+  },
+  shiftExpandedContent: {
+    marginTop: 8,
+    gap: 8,
+  },
+  shiftDetailRow: {
     flexDirection: "row",
-    marginTop: 12,
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  shiftDetailLabel: {
+    color: "rgba(122, 148, 168, 1)",
+    fontSize: 15,
+    lineHeight: 22,
+    fontWeight: "400",
+  },
+  shiftDetailValue: {
+    color: "rgba(5, 45, 80, 1)",
+    fontSize: 15,
+    lineHeight: 22,
+    fontWeight: "500",
+    textAlign: "right",
+    flex: 1,
+  },
+  shiftPhotosValue: {
+    flex: 1,
+    alignItems: "flex-end",
+  },
+  shiftPhotosScroll: {
+    maxWidth: "100%",
+  },
+  shiftPhotosScrollContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
   },
   shiftImage: {
     width: 48,
     height: 48,
     borderRadius: 8,
-    marginRight: 8,
+    marginLeft: 8,
   },
   statsContainer: {
     width: "100%",
@@ -719,10 +889,6 @@ const styles = StyleSheet.create({
   emptyDetailsText: {
     color: "#698196",
     fontSize: 14,
-  },
-  noPhotosText: {
-    color: "#698196",
-    fontSize: 13,
   },
   modalOverlay: {
     flex: 1,
