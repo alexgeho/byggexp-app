@@ -110,8 +110,8 @@ export default function HomeVariant2() {
     setEnabledSections,
   ] = useState(defaultEnabledSections);
   const [previewRefreshKey, setPreviewRefreshKey] = useState(0);
+  const [scrollViewHeight, setScrollViewHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
-  const [viewportHeight, setViewportHeight] = useState(0);
   const { unreadCount } = useUnreadChats();
   const visibleQuickButtons = useMemo(
     () =>
@@ -126,10 +126,22 @@ export default function HomeVariant2() {
   const hasSections =
     enabledSections.includes("shift-history") ||
     enabledSections.includes("project-files");
-  const shouldDistributeBlocksEvenly =
-    viewportHeight > 0 &&
+  const quickButtonCount = visibleQuickButtons.length;
+  const useFixedCoreSpacing =
+    quickButtonCount === 4 ||
+    ((quickButtonCount === 1 || quickButtonCount === 2) &&
+      hasSections);
+  const contentFitsVisibleArea =
+    scrollViewHeight > 0 &&
     contentHeight > 0 &&
-    contentHeight <= viewportHeight;
+    contentHeight <= scrollViewHeight;
+  const distributeCoreControlsInternally =
+    !hasSections &&
+    !useFixedCoreSpacing &&
+    contentFitsVisibleArea;
+  const shouldDistributeBlocksEvenly =
+    distributeCoreControlsInternally;
+  const showCoreSpacers = !distributeCoreControlsInternally;
   const styles = useMemo(
     () =>
       createStyles({
@@ -388,13 +400,18 @@ export default function HomeVariant2() {
       style={styles.container}
     >
       <ScrollView
+        style={styles.scrollView}
         contentContainerStyle={[
           styles.main,
           shouldDistributeBlocksEvenly &&
             styles.mainEvenlyDistributed,
+          shouldDistributeBlocksEvenly &&
+            scrollViewHeight > 0 && {
+              minHeight: scrollViewHeight,
+            },
         ]}
-        onLayout={function handleViewportLayout(event) {
-          setViewportHeight(event.nativeEvent.layout.height);
+        onLayout={function handleScrollViewLayout(event) {
+          setScrollViewHeight(event.nativeEvent.layout.height);
         }}
         onContentSizeChange={function handleContentSizeChange(
           _width,
@@ -429,87 +446,101 @@ export default function HomeVariant2() {
         <View
           style={[
             styles.mainContent,
-            shouldDistributeBlocksEvenly
-              ? styles.mainContentEvenlySpaced
-              : styles.mainContentStacked,
+            shouldDistributeBlocksEvenly &&
+              styles.mainContentEvenlySpaced,
           ]}
         >
           <View
             style={[
               styles.mainContentGroup,
-              shouldDistributeBlocksEvenly
-                ? styles.mainContentGroupEvenlySpaced
-                : styles.mainContentGroupStacked,
+              shouldDistributeBlocksEvenly &&
+                styles.mainContentGroupExpanded,
             ]}
           >
-            {/* TIMER */}
-            <Timer
-              hours={
-                formattedTime.hours
-              }
-              minutes={
-                formattedTime.minutes
-              }
-              seconds={
-                formattedTime.seconds
-              }
-              containerStyle={styles.timerContainer}
-              textStyle={
-                isCompact
-                  ? styles.timerTextCompact
-                  : styles.timerTextRegular
-              }
-              secondsStyle={
-                isCompact
-                  ? styles.timerSecondsCompact
-                  : null
-              }
-            />
+            <View
+              style={[
+                styles.coreControlsGroup,
+                distributeCoreControlsInternally &&
+                  styles.coreControlsGroupEvenlySpaced,
+              ]}
+            >
+              {/* TIMER */}
+              <Timer
+                hours={
+                  formattedTime.hours
+                }
+                minutes={
+                  formattedTime.minutes
+                }
+                seconds={
+                  formattedTime.seconds
+                }
+                containerStyle={styles.timerContainer}
+                textStyle={
+                  isCompact
+                    ? styles.timerTextCompact
+                    : styles.timerTextRegular
+                }
+                secondsStyle={
+                  isCompact
+                    ? styles.timerSecondsCompact
+                    : null
+                }
+              />
 
-            {/* ACTION BUTTONS */}
-            <MainActionButtons
-              isRunning={isRunning}
-              isPaused={isPaused}
-              loading={loadingShift}
-              onPlayPress={handlePlayPause}
-              onCameraPress={handleCameraPress}
-              compact={isCompact}
-              veryCompact={isVeryCompact}
-            />
+              {showCoreSpacers ? (
+                <View style={styles.timerToActionsSpacer} />
+              ) : null}
 
-            <View style={styles.quickActionsGrid}>
-              {visibleQuickButtons.map(function renderButton(button, index) {
-                const isSingleLastItem =
-                  visibleQuickButtons.length % 2 === 1 &&
-                  index === visibleQuickButtons.length - 1;
+              {/* ACTION BUTTONS */}
+              <MainActionButtons
+                isRunning={isRunning}
+                isPaused={isPaused}
+                loading={loadingShift}
+                onPlayPress={handlePlayPause}
+                onCameraPress={handleCameraPress}
+                compact={isCompact}
+                veryCompact={isVeryCompact}
+              />
 
-                return (
-                  <TouchableOpacity
-                    key={button.id}
-                    style={[
-                      styles.quickActionCard,
-                      isSingleLastItem && styles.quickActionCardFullWidth,
-                    ]}
-                    onPress={function onButtonPress() {
-                      openQuickAction(button.screen);
-                    }}
-                  >
-                    <View style={styles.quickActionIconWrapper}>
-                      <Image
-                        source={button.icon}
-                        style={styles.quickActionIcon}
-                      />
-                      {button.id === "chats" ? (
-                        <UnreadBadge count={unreadCount} />
-                      ) : null}
-                    </View>
+              {showCoreSpacers ? (
+                <View style={styles.actionsToQuickActionsSpacer} />
+              ) : null}
 
-                    <Text style={styles.quickActionText}>
-                      {button.title}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
+              <View style={styles.quickActionsGrid}>
+                {visibleQuickButtons.map(function renderButton(button, index) {
+                  const isSingleLastItem =
+                    visibleQuickButtons.length % 2 === 1 &&
+                    index === visibleQuickButtons.length - 1;
+
+                  return (
+                    <TouchableOpacity
+                      key={button.id}
+                      style={[
+                        styles.quickActionCard,
+                        isSingleLastItem && styles.quickActionCardFullWidth,
+                      ]}
+                      onPress={function onButtonPress() {
+                        openQuickAction(button.screen);
+                      }}
+                    >
+                      <View style={styles.quickActionIconWrapper}>
+                        <Image
+                          source={button.icon}
+                          style={styles.quickActionIcon}
+                        />
+                        {button.id === "chats" ? (
+                          <UnreadBadge count={unreadCount} />
+                        ) : null}
+                      </View>
+
+                      <Text style={styles.quickActionText}>
+                        {button.title}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
             </View>
 
             {enabledSections.includes("shift-history") && (

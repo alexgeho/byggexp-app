@@ -29,6 +29,7 @@ export function createStyles({
       : 20;
   const iconSize = veryCompact ? 22 : compact ? 24 : 28;
   const textSize = veryCompact ? 14 : compact ? 15 : 16;
+  const timerBottomCompensation = veryCompact ? 8 : compact ? 12 : 16;
 
   return StyleSheet.create({
     container: {
@@ -41,6 +42,9 @@ export function createStyles({
       justifyContent: "space-between",
       alignItems: "center",
       paddingHorizontal: 30,
+    },
+    scrollView: {
+      flex: 1,
     },
     main: {
       flexGrow: 1,
@@ -58,21 +62,27 @@ export function createStyles({
       flexGrow: 1,
       minHeight: 0,
     },
-    mainContentStacked: {
-      flexGrow: 0,
-    },
     mainContentEvenlySpaced: {
-      flexGrow: 1,
+      flex: 1,
     },
     mainContentGroup: {
       gap: sectionGap,
     },
-    mainContentGroupStacked: {
-      justifyContent: "flex-start",
+    mainContentGroupExpanded: {
+      flex: 1,
     },
-    mainContentGroupEvenlySpaced: {
+    coreControlsGroup: {
+      alignItems: "stretch",
+    },
+    coreControlsGroupEvenlySpaced: {
       flex: 1,
       justifyContent: "space-between",
+    },
+    timerToActionsSpacer: {
+      height: Math.max(sectionGap - timerBottomCompensation, 0),
+    },
+    actionsToQuickActionsSpacer: {
+      height: sectionGap,
     },
     quickActionsGrid: {
       flexDirection: "row",
