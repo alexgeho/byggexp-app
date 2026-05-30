@@ -114,7 +114,6 @@ export default function AppNavigator() {
             <Stack.Screen
               name="Camera"
               component={CameraScreen}
-              options={{ headerShown: true }}
             />
             <Stack.Screen name="Chats" component={ChatListScreen} />
             <Stack.Screen name="Tasks" component={TasksScreen} />
