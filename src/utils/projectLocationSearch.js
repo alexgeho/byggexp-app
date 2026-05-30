@@ -1,5 +1,8 @@
 import projectService from "../services/project.service";
 
+const HOUSE_NUMBER_PATTERN =
+  /\b(\d+[a-zA-Z]?(?:\/\d+[a-zA-Z]?)?(?:-\d+[a-zA-Z]?)?)\b/;
+
 export const formatResolvedAddress = (address) => {
   if (!address) {
     return "";
@@ -19,6 +22,56 @@ export const formatResolvedAddress = (address) => {
   ]
     .filter(Boolean)
     .join(", ");
+};
+
+export const extractHouseNumberFromQuery = (query = "") => {
+  const normalizedQuery = query.trim();
+  if (!normalizedQuery) {
+    return "";
+  }
+
+  const matches = normalizedQuery.match(
+    new RegExp(HOUSE_NUMBER_PATTERN.source, "g"),
+  );
+
+  if (!matches?.length) {
+    return "";
+  }
+
+  return matches[matches.length - 1];
+};
+
+export const labelIncludesHouseNumber = (label = "", houseNumber = "") => {
+  if (!label || !houseNumber) {
+    return false;
+  }
+
+  return new RegExp(`\\b${houseNumber.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i").test(
+    label,
+  );
+};
+
+export const enrichAddressLabelWithQueryHouseNumber = (label = "", query = "") => {
+  const normalizedLabel = label.trim();
+  const houseNumber = extractHouseNumberFromQuery(query);
+
+  if (!normalizedLabel || !houseNumber) {
+    return normalizedLabel;
+  }
+
+  if (labelIncludesHouseNumber(normalizedLabel, houseNumber)) {
+    return normalizedLabel;
+  }
+
+  const [firstSegment, ...restSegments] = normalizedLabel.split(",");
+  const streetLine = firstSegment.trim();
+
+  if (!streetLine || HOUSE_NUMBER_PATTERN.test(streetLine)) {
+    return normalizedLabel;
+  }
+
+  const enrichedFirstSegment = `${streetLine} ${houseNumber}`;
+  return [enrichedFirstSegment, ...restSegments].join(", ").trim();
 };
 
 export const reverseGeocodeWithNominatim = async (latitude, longitude) => {

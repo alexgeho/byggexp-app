@@ -13,6 +13,7 @@ import {
   Animated,
   Switch,
   Platform,
+  Keyboard,
 } from "react-native";
 import Slider from "@react-native-community/slider";
 import { useTheme } from "../../../theme/ThemeContext";
@@ -41,6 +42,7 @@ import { shiftLocationPolicy } from "../../../config/shiftLocationPolicy";
 import { standardScreenContainer, standardScreenHeader, standardScreenHeaderPlaceholder } from "../../../styles/screenLayout";
 import {
   formatResolvedAddress,
+  enrichAddressLabelWithQueryHouseNumber,
   getCoordinateCacheKey,
   normalizeLocationSuggestions,
   reverseGeocodeWithNominatim,
@@ -289,6 +291,7 @@ export default function CreateProjectScreen() {
   const projectNameLabelAnim = useRef(new Animated.Value(0)).current;
   const isLocationLoadingRef = useRef(false);
   const locationSearchRequestIdRef = useRef(0);
+  const locationSearchInputRef = useRef(null);
   const lastReverseGeocodeAtRef = useRef(0);
   const reverseGeocodeCacheRef = useRef(new Map());
 
@@ -328,8 +331,18 @@ export default function CreateProjectScreen() {
       setIsLocationSearchLoading(true);
 
       try {
-        const matches = await searchAddressesWithNominatim(normalizedQuery, 8);
-        const nextSuggestions = normalizeLocationSuggestions(matches);
+        const matches = await searchAddressesWithNominatim(normalizedQuery, 2);
+        const nextSuggestions = normalizeLocationSuggestions(matches).map(
+          function enrichSuggestion(suggestion) {
+            return {
+              ...suggestion,
+              label: enrichAddressLabelWithQueryHouseNumber(
+                suggestion.label,
+                normalizedQuery,
+              ),
+            };
+          },
+        );
 
         if (locationSearchRequestIdRef.current === requestId) {
           setLocationSuggestions(nextSuggestions);
@@ -589,6 +602,9 @@ export default function CreateProjectScreen() {
     if (isLocationLoadingRef.current) {
       return;
     }
+
+    locationSearchInputRef.current?.blur();
+    Keyboard.dismiss();
 
     setLocationLoadingState(true);
     try {
@@ -942,6 +958,11 @@ export default function CreateProjectScreen() {
     locationSearch.trim().length < 2
       ? "Start typing to search for a project address."
       : "No addresses found. Try a more specific search.";
+  const showLocationSearchHint =
+    locationSearch.trim().length < 2 &&
+    !isLocationLoading &&
+    !isLocationSearchLoading &&
+    !locationSuggestions.length;
 
   return (
     <View style={styles.screen}>
@@ -1403,6 +1424,7 @@ export default function CreateProjectScreen() {
               <View style={styles.mapSearchInputCard}>
                 <Icon name="search" size={18} color="rgba(5, 45, 80, 0.55)" />
                 <TextInput
+                  ref={locationSearchInputRef}
                   autoFocus={true}
                   value={locationSearch}
                   onChangeText={setLocationSearch}
@@ -1413,6 +1435,13 @@ export default function CreateProjectScreen() {
                 />
               </View>
 
+              {showLocationSearchHint ? (
+                <View style={styles.mapSuggestionsEmptyState}>
+                  <Text style={styles.mapSuggestionsEmptyText}>
+                    {locationSearchEmptyText}
+                  </Text>
+                </View>
+              ) : (
               <View style={styles.mapSuggestionsCard}>
                 {isLocationLoading || isLocationSearchLoading ? (
                   <View style={styles.mapSuggestionsLoadingRow}>
@@ -1447,6 +1476,7 @@ export default function CreateProjectScreen() {
                   </View>
                 )}
               </View>
+              )}
 
               <View style={styles.mapBottomPanel}>
                 <Text style={styles.mapBottomPanelTitle}>
