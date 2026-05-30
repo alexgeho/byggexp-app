@@ -28,7 +28,6 @@ import {
   useState,
 } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import * as Device from "expo-device";
 import * as Location from "expo-location";
 import Icon from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -39,7 +38,7 @@ import { projectService, userService, companyService } from "../../../services";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { shiftLocationPolicy } from "../../../config/shiftLocationPolicy";
-import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
+import { standardScreenContainer, standardScreenHeader, standardScreenHeaderPlaceholder } from "../../../styles/screenLayout";
 import {
   formatResolvedAddress,
   getCoordinateCacheKey,
@@ -49,20 +48,8 @@ import {
 } from "../../../utils/projectLocationSearch";
 import { pickUploadAssets } from "../../../utils/uploadPicker";
 
-const DEFAULT_REGION = {
-  latitude: 59.3293,
-  longitude: 18.0686,
-  latitudeDelta: 0.012,
-  longitudeDelta: 0.012,
-};
-const DEFAULT_EMULATOR_LOCATION_LABEL = "Stockholm, Sweden";
 const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "inline" : "calendar";
 const REVERSE_GEOCODE_MIN_INTERVAL_MS = 1200;
-
-const getStockholmCoordinate = () => ({
-  latitude: DEFAULT_REGION.latitude,
-  longitude: DEFAULT_REGION.longitude,
-});
 
 const getUserInitials = (name = "") => {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -494,7 +481,7 @@ export default function CreateProjectScreen() {
     if (!selectedCoordinate) {
       Alert.alert(
         "Location required",
-        "Search for an address or use your current location first.",
+        "Search for an address first.",
       );
       return;
     }
@@ -591,61 +578,11 @@ export default function CreateProjectScreen() {
     setLocationSearch(fallbackAddress);
   };
 
-  const centerLocationPickerOnCoordinate = async (
-    latitude,
-    longitude,
-    resolvedAddressText,
-  ) => {
-    await applyResolvedLocation(latitude, longitude, resolvedAddressText);
-  };
-
   const openLocationPicker = () => {
     setLocationSearch(location);
     setLocationSuggestions([]);
     setIsLocationSearchLoading(false);
     setIsLocationPickerVisible(true);
-  };
-
-  const handleUseCurrentLocation = async () => {
-    try {
-      if (!Device.isDevice) {
-        setLocationLoadingState(true);
-        const stockholmCoordinate = getStockholmCoordinate();
-        await centerLocationPickerOnCoordinate(
-          stockholmCoordinate.latitude,
-          stockholmCoordinate.longitude,
-          DEFAULT_EMULATOR_LOCATION_LABEL,
-        );
-        return;
-      }
-
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert(
-          "Location access denied",
-          "Allow geolocation to use your current position.",
-        );
-        return;
-      }
-
-      setLocationLoadingState(true);
-      const currentPosition = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Balanced,
-      });
-
-      const latitude = currentPosition.coords.latitude;
-      const longitude = currentPosition.coords.longitude;
-
-      await centerLocationPickerOnCoordinate(latitude, longitude);
-    } catch (error) {
-      console.error("Error getting current location:", error);
-      Alert.alert(
-        "Location error",
-        "Unable to determine your current position.",
-      );
-    } finally {
-      setLocationLoadingState(false);
-    }
   };
 
   const handleSelectLocationSuggestion = async (suggestion) => {
@@ -967,9 +904,28 @@ export default function CreateProjectScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0091FF" />
-        <Text>Loading...</Text>
+      <View style={styles.screen}>
+        <View style={styles.pageContainer}>
+          <View style={styles.header}>
+            <BackButton
+              onPress={() => navigation.goBack()}
+              iconSource={require("../../../assets/Arrow-left.png")}
+            />
+            <Text
+              style={[
+                styles.headerTitle,
+                { fontFamily: theme.text.fontFamily["semiBold"] },
+              ]}
+            >
+              Create project
+            </Text>
+            <View style={styles.placeholder} />
+          </View>
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#0091FF" />
+            <Text>Loading...</Text>
+          </View>
+        </View>
       </View>
     );
   }
@@ -989,15 +945,9 @@ export default function CreateProjectScreen() {
 
   return (
     <View style={styles.screen}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.containerContent}
-      >
+      <View style={styles.pageContainer}>
         <View style={styles.header}>
           <BackButton
-            backgroundColor={"rgba(255, 255, 255, 0.6)"}
-            tint={"light"}
-            borderColor="#FFFFFF50"
             onPress={() => navigation.goBack()}
             iconSource={require("../../../assets/Arrow-left.png")}
           />
@@ -1011,6 +961,13 @@ export default function CreateProjectScreen() {
           </Text>
           <View style={styles.placeholder} />
         </View>
+
+        <ScrollView
+          style={styles.contentScroll}
+          contentContainerStyle={styles.contentScrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
 
         <View style={styles.groupCard}>
           <TouchableOpacity
@@ -1313,6 +1270,18 @@ export default function CreateProjectScreen() {
           </TouchableOpacity>
         </View>
 
+        <View style={styles.noteGroup}>
+          <TextInput
+            multiline={true}
+            placeholder="Note"
+            style={styles.noteInput}
+            value={note}
+            onChangeText={setNote}
+          />
+        </View>
+        </ScrollView>
+      </View>
+
         <Modal
           visible={showStartDatePicker || showEndDatePicker}
           transparent={true}
@@ -1355,16 +1324,6 @@ export default function CreateProjectScreen() {
             </View>
           </View>
         </Modal>
-
-        <View style={styles.noteGroup}>
-          <TextInput
-            multiline={true}
-            placeholder="Note"
-            style={styles.noteInput}
-            value={note}
-            onChangeText={setNote}
-          />
-        </View>
 
         <SingleUserPickerModal
           visible={showOwnersModal}
@@ -1425,12 +1384,9 @@ export default function CreateProjectScreen() {
           animationType="slide"
           onRequestClose={closeLocationPicker}
         >
-          <SafeAreaView style={styles.mapModalContainer}>
+          <View style={styles.mapModalScreen}>
             <View style={styles.mapTopBar}>
               <BackButton
-                backgroundColor={"rgba(255, 255, 255, 0.6)"}
-                tint={"light"}
-                borderColor="#FFFFFF50"
                 onPress={closeLocationPicker}
                 iconSource={require("../../../assets/Arrow-left.png")}
               />
@@ -1438,7 +1394,12 @@ export default function CreateProjectScreen() {
               <View style={styles.placeholder} />
             </View>
 
-            <View style={styles.mapSearchSection}>
+            <ScrollView
+              style={styles.mapModalScroll}
+              contentContainerStyle={styles.mapModalScrollContent}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+            >
               <View style={styles.mapSearchInputCard}>
                 <Icon name="search" size={18} color="rgba(5, 45, 80, 0.55)" />
                 <TextInput
@@ -1452,36 +1413,20 @@ export default function CreateProjectScreen() {
                 />
               </View>
 
-              <TouchableOpacity
-                style={styles.mapCurrentLocationButton}
-                activeOpacity={0.85}
-                onPress={handleUseCurrentLocation}
-                disabled={isLocationLoading}
-              >
-                <Icon name="crosshair" size={16} color="#052D50" />
-                <Text style={styles.mapCurrentLocationButtonText}>
-                  Use current location
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.mapSuggestionsCard}>
-              {isLocationLoading || isLocationSearchLoading ? (
-                <View style={styles.mapSuggestionsLoadingRow}>
-                  <ActivityIndicator size="small" color={theme.colors.primary} />
-                  <Text style={styles.mapSuggestionsLoadingText}>
-                    {isLocationLoading
-                      ? "Loading location..."
-                      : "Searching addresses..."}
-                  </Text>
-                </View>
-              ) : locationSuggestions.length ? (
-                <FlatList
-                  data={locationSuggestions}
-                  keyExtractor={(item) => item.id}
-                  keyboardShouldPersistTaps="handled"
-                  renderItem={({ item, index }) => (
+              <View style={styles.mapSuggestionsCard}>
+                {isLocationLoading || isLocationSearchLoading ? (
+                  <View style={styles.mapSuggestionsLoadingRow}>
+                    <ActivityIndicator size="small" color={theme.colors.primary} />
+                    <Text style={styles.mapSuggestionsLoadingText}>
+                      {isLocationLoading
+                        ? "Loading location..."
+                        : "Searching addresses..."}
+                    </Text>
+                  </View>
+                ) : locationSuggestions.length ? (
+                  locationSuggestions.map((item, index) => (
                     <TouchableOpacity
+                      key={item.id}
                       activeOpacity={0.85}
                       style={[
                         styles.mapSuggestionItem,
@@ -1493,78 +1438,77 @@ export default function CreateProjectScreen() {
                       <Icon name="map-pin" size={16} color="#052D50" />
                       <Text style={styles.mapSuggestionText}>{item.label}</Text>
                     </TouchableOpacity>
-                  )}
-                />
-              ) : (
-                <View style={styles.mapSuggestionsEmptyState}>
-                  <Text style={styles.mapSuggestionsEmptyText}>
-                    {locationSearchEmptyText}
-                  </Text>
-                </View>
-              )}
-            </View>
-
-            <View style={styles.mapBottomPanel}>
-              <Text style={styles.mapBottomPanelTitle}>
-                Selected location
-              </Text>
-              <Text
-                numberOfLines={2}
-                style={[
-                  styles.mapBottomLocationText,
-                  !location && styles.mapBottomLocationPlaceholder,
-                ]}
-              >
-                {location || "Search and choose a project location."}
-              </Text>
-
-              <View style={styles.activationAreaRow}>
-                <View style={styles.activationAreaTextWrap}>
-                  <Text style={styles.activationAreaTitle}>
-                    Activation area
-                  </Text>
-                  <Text style={styles.activationAreaSubtitle}>
-                    Upon entry, the timer will start
-                  </Text>
-                </View>
-
-                <View style={styles.activationAreaBadge}>
-                  <Text style={styles.activationAreaBadgeText}>
-                    {locationRadiusMeters} m
-                  </Text>
-                </View>
+                  ))
+                ) : (
+                  <View style={styles.mapSuggestionsEmptyState}>
+                    <Text style={styles.mapSuggestionsEmptyText}>
+                      {locationSearchEmptyText}
+                    </Text>
+                  </View>
+                )}
               </View>
 
-              <Slider
-                minimumValue={50}
-                maximumValue={1500}
-                step={50}
-                value={locationRadiusMeters}
-                onValueChange={setLocationRadiusMeters}
-                minimumTrackTintColor={theme.colors.primary}
-                maximumTrackTintColor="rgba(5, 45, 80, 0.12)"
-                thumbTintColor={theme.colors.primary}
-                style={styles.activationAreaSlider}
-              />
-
-              <TouchableOpacity
-                style={[
-                  styles.mapChooseLocationButton,
-                  !selectedCoordinate &&
-                    styles.mapChooseLocationButtonDisabled,
-                ]}
-                activeOpacity={0.85}
-                onPress={confirmLocationPickerSelection}
-                disabled={!selectedCoordinate}
-              >
-                <Text style={styles.mapChooseLocationButtonText}>
-                  Choose project location
+              <View style={styles.mapBottomPanel}>
+                <Text style={styles.mapBottomPanelTitle}>
+                  Selected location
                 </Text>
-              </TouchableOpacity>
-            </View>
-          </SafeAreaView>
+                <Text
+                  numberOfLines={2}
+                  style={[
+                    styles.mapBottomLocationText,
+                    !location && styles.mapBottomLocationPlaceholder,
+                  ]}
+                >
+                  {location || "Search and choose a project location."}
+                </Text>
+
+                <View style={styles.activationAreaRow}>
+                  <View style={styles.activationAreaTextWrap}>
+                    <Text style={styles.activationAreaTitle}>
+                      Activation area
+                    </Text>
+                    <Text style={styles.activationAreaSubtitle}>
+                      Upon entry, the timer will start
+                    </Text>
+                  </View>
+
+                  <View style={styles.activationAreaBadge}>
+                    <Text style={styles.activationAreaBadgeText}>
+                      {locationRadiusMeters} m
+                    </Text>
+                  </View>
+                </View>
+
+                <Slider
+                  minimumValue={50}
+                  maximumValue={1500}
+                  step={50}
+                  value={locationRadiusMeters}
+                  onValueChange={setLocationRadiusMeters}
+                  minimumTrackTintColor={theme.colors.primary}
+                  maximumTrackTintColor="rgba(5, 45, 80, 0.12)"
+                  thumbTintColor={theme.colors.primary}
+                  style={styles.activationAreaSlider}
+                />
+
+                <TouchableOpacity
+                  style={[
+                    styles.mapChooseLocationButton,
+                    !selectedCoordinate &&
+                      styles.mapChooseLocationButtonDisabled,
+                  ]}
+                  activeOpacity={0.85}
+                  onPress={confirmLocationPickerSelection}
+                  disabled={!selectedCoordinate}
+                >
+                  <Text style={styles.mapChooseLocationButtonText}>
+                    Choose project location
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          </View>
         </Modal>
-      </ScrollView>
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
@@ -1587,14 +1531,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#EEEEEE",
   },
-  container: {
-    flex: 1,
-    backgroundColor: "#EEEEEE",
-    paddingHorizontal: 12,
+  pageContainer: {
+    ...standardScreenContainer,
+    gap: 0,
   },
-  containerContent: {
-    paddingTop: 48,
+  contentScroll: {
+    flex: 1,
+    width: "100%",
+  },
+  contentScrollContent: {
     paddingBottom: 140,
+    gap: 12,
   },
   loadingContainer: {
     flex: 1,
@@ -1602,30 +1549,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   header: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    ...standardScreenHeaderSpacing,
-  },
-  backButton: {
-    padding: 16,
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 9999,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
+    ...standardScreenHeader,
   },
   placeholder: {
-    width: 36,
-  },
-  backIcon: {
-    width: 20,
-    height: 20,
+    ...standardScreenHeaderPlaceholder,
   },
   headerTitle: {
     color: "#052D50",
@@ -2180,28 +2107,27 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
-  mapModalContainer: {
+  mapModalScreen: {
     flex: 1,
     backgroundColor: "#EEF5FB",
-    paddingHorizontal: 12,
+    ...standardScreenContainer,
+    gap: 0,
+  },
+  mapModalScroll: {
+    flex: 1,
+  },
+  mapModalScrollContent: {
+    gap: 12,
     paddingBottom: 16,
   },
   mapTopBar: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    ...standardScreenHeaderSpacing,
+    ...standardScreenHeader,
   },
   mapModalTitle: {
     color: "#052D50",
     fontSize: 17,
     textAlign: "center",
     fontWeight: "600",
-  },
-  mapSearchSection: {
-    marginTop: 18,
-    gap: 12,
   },
   mapSearchInputCard: {
     minHeight: 60,
@@ -2220,27 +2146,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingVertical: 16,
   },
-  mapCurrentLocationButton: {
-    minHeight: 44,
-    alignSelf: "flex-start",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 14,
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  mapCurrentLocationButtonText: {
-    color: "#052D50",
-    fontSize: 14,
-    fontWeight: "500",
-  },
   mapSuggestionsCard: {
-    flex: 1,
-    marginTop: 16,
     backgroundColor: "rgba(255, 255, 255, 0.94)",
     borderRadius: 16,
     paddingHorizontal: 14,
