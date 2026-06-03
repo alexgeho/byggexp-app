@@ -1,4 +1,4 @@
-export const ICON_BADGE_BACKGROUND_ALPHA = 0.5;
+import { iconBadgeBackgroundAlpha } from "./settings";
 
 export function hexToRgba(hex, alpha = 1) {
   if (!hex || typeof hex !== "string") {
@@ -34,5 +34,5 @@ export function hexToRgba(hex, alpha = 1) {
 }
 
 export function iconBadgeBackground(color) {
-  return hexToRgba(color, ICON_BADGE_BACKGROUND_ALPHA);
+  return hexToRgba(color, iconBadgeBackgroundAlpha);
 }
