@@ -13,8 +13,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Icon from "react-native-vector-icons/Feather";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SuccessPopupIcon } from "../components/common/SuccessPopupIcon/SuccessPopupIcon";
 import { useTheme } from "../theme/ThemeContext";
 
 const FeedbackContext = createContext(null);
@@ -67,8 +67,6 @@ export function FeedbackProvider({ children }) {
   const popupSubtextColor = isDarkTheme
     ? "rgba(255, 255, 255, 0.72)"
     : "rgba(5, 45, 80, 0.65)";
-  const accentGlow = `${theme.colors.primary}1A`;
-
   return (
     <FeedbackContext.Provider value={value}>
       {children}
@@ -92,14 +90,7 @@ export function FeedbackProvider({ children }) {
               },
             ]}
           >
-            <View
-              style={[
-                styles.iconWrap,
-                { backgroundColor: accentGlow, borderColor: `${theme.colors.primary}33` },
-              ]}
-            >
-              <Icon name="check" size={28} color={theme.colors.primary} />
-            </View>
+            <SuccessPopupIcon />
 
             <Text
               style={[
@@ -171,15 +162,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.16,
     shadowRadius: 24,
     elevation: 8,
-  },
-  iconWrap: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    marginBottom: 16,
   },
   title: {
     fontSize: 22,
