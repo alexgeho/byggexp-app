@@ -313,6 +313,11 @@ export default function CreateProjectScreen() {
     }
   }, [useLocationAsName, location]);
 
+  const handleProjectNameFocus = useCallback(() => {
+    setIsProjectNameFocused(true);
+    setUseLocationAsName(false);
+  }, []);
+
   useEffect(() => {
     if (!isLocationPickerVisible) {
       return;
@@ -1042,6 +1047,7 @@ export default function CreateProjectScreen() {
             ]}
           >
             <Animated.Text
+              pointerEvents="none"
               style={[
                 styles.floatingLabel,
                 {
@@ -1062,9 +1068,8 @@ export default function CreateProjectScreen() {
               style={styles.floatingInput}
               value={projectName}
               onChangeText={setProjectName}
-              onFocus={() => setIsProjectNameFocused(true)}
+              onFocus={handleProjectNameFocus}
               onBlur={() => setIsProjectNameFocused(false)}
-              editable={!useLocationAsName}
             />
           </View>
         </View>
