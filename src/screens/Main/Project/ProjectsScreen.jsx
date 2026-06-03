@@ -1,5 +1,15 @@
-import { useNavigation, useRoute } from "@react-navigation/native";
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
+import React, {
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   View,
   Text,
@@ -54,35 +64,60 @@ export default function ProjectsScreen() {
     return normalizedStatus.charAt(0).toUpperCase() + normalizedStatus.slice(1);
   };
 
-  useEffect(() => {
-    if (!authLoading && userId) {
-      fetchProjects();
-    }
-  }, [userId, authLoading, user?.role]);
+  const projectsRef = useRef(projects);
+  projectsRef.current = projects;
 
-  const fetchProjects = async () => {
-    try {
-      setLoading(true);
-      const data =
-        user?.role === "superadmin"
-          ? await projectService.getAll()
-          : await projectService.getMyProjects();
+  const fetchProjects = useCallback(
+    async (silent = false) => {
+      try {
+        if (!silent) {
+          setLoading(true);
+        }
 
-      let userProjects = data;
-      if (user?.role === "worker" || user?.role === "projectAdmin") {
-        userProjects = data.filter(
-          (project) => project.workers && project.workers.includes(userId),
-        );
+        const data =
+          user?.role === "superadmin"
+            ? await projectService.getAll()
+            : await projectService.getMyProjects();
+
+        let userProjects = data;
+        if (user?.role === "worker" || user?.role === "projectAdmin") {
+          userProjects = data.filter((project) => {
+            if (!project.workers?.length) {
+              return false;
+            }
+
+            return project.workers.some((worker) => {
+              const workerId =
+                typeof worker === "string"
+                  ? worker
+                  : worker?._id || worker?.id;
+              return workerId === userId;
+            });
+          });
+        }
+
+        setProjects(userProjects);
+      } catch (err) {
+        console.error("Failed to fetch projects:", err);
+        setProjects([]);
+      } finally {
+        if (!silent) {
+          setLoading(false);
+        }
+      }
+    },
+    [user?.role, userId],
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      if (authLoading || !userId) {
+        return;
       }
 
-      setProjects(userProjects);
-    } catch (err) {
-      console.error("Failed to fetch projects:", err);
-      setProjects([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+      fetchProjects(projectsRef.current.length > 0);
+    }, [authLoading, fetchProjects, userId]),
+  );
 
   const filteredProjects = useMemo(() => {
     const normalizedQuery = searchQuery.trim().toLowerCase();
