@@ -293,7 +293,7 @@ export default function ShiftsScreen() {
               <Text
                 style={[
                   styles.shiftTitle,
-                  { fontFamily: theme.text.fontFamily["medium"] },
+                  { fontFamily: theme.text.fontFamily["regular"] },
                 ]}
               >
                 Shifts on selected day
@@ -332,7 +332,7 @@ export default function ShiftsScreen() {
                         <Text
                           style={[
                             styles.shiftTimeText,
-                            { fontFamily: theme.text.fontFamily["semiBold"] },
+                            { fontFamily: theme.text.fontFamily["regular"] },
                           ]}
                         >
                           {formatTimeRange(shift.startedAt, shift.endedAt)}
@@ -372,7 +372,7 @@ export default function ShiftsScreen() {
                             <Text
                               style={[
                                 styles.shiftDetailValue,
-                                { fontFamily: theme.text.fontFamily["medium"] },
+                                { fontFamily: theme.text.fontFamily["regular"] },
                               ]}
                             >
                               {shift.projectName || "—"}
@@ -392,7 +392,7 @@ export default function ShiftsScreen() {
                             <Text
                               style={[
                                 styles.shiftDetailValue,
-                                { fontFamily: theme.text.fontFamily["medium"] },
+                                { fontFamily: theme.text.fontFamily["regular"] },
                               ]}
                             >
                               {shift.location || "—"}
@@ -435,7 +435,7 @@ export default function ShiftsScreen() {
                                 style={[
                                   styles.shiftDetailValue,
                                   {
-                                    fontFamily: theme.text.fontFamily["medium"],
+                                    fontFamily: theme.text.fontFamily["regular"],
                                   },
                                 ]}
                               >
@@ -757,10 +757,10 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   shiftTitle: {
-    color: "rgba(5, 45, 80, 1)",
-    fontSize: 16,
-    lineHeight: 24,
-    fontWeight: "500",
+    color: "rgba(122, 148, 168, 1)",
+    fontSize: 15,
+    lineHeight: 22,
+    fontWeight: "400",
     flex: 1,
   },
   shiftSummary: {
@@ -783,10 +783,10 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   shiftTimeText: {
-    color: "rgba(5, 45, 80, 1)",
-    fontSize: 16,
-    lineHeight: 24,
-    fontWeight: "600",
+    color: "rgba(122, 148, 168, 1)",
+    fontSize: 15,
+    lineHeight: 22,
+    fontWeight: "400",
     flex: 1,
   },
   shiftDurationText: {
@@ -820,10 +820,10 @@ const styles = StyleSheet.create({
     fontWeight: "400",
   },
   shiftDetailValue: {
-    color: "rgba(5, 45, 80, 1)",
+    color: "rgba(122, 148, 168, 1)",
     fontSize: 15,
     lineHeight: 22,
-    fontWeight: "500",
+    fontWeight: "400",
     textAlign: "right",
     flex: 1,
   },
