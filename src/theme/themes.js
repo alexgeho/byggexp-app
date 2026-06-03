@@ -4,6 +4,14 @@ import {
   orangeColors,
   darkGrayColors,
 } from "./colors";
+import { iconBadgeBackground } from "./colorUtils";
+
+function withIconBadgeBackground(colors) {
+  return {
+    ...colors,
+    primaryIconBadge: iconBadgeBackground(colors.primary),
+  };
+}
 
 const common = {
   borderRadius: {
@@ -37,22 +45,22 @@ const common = {
 
 export const greenTheme = {
   ...common,
-  colors: greenColors,
+  colors: withIconBadgeBackground(greenColors),
 };
 
 export const blueTheme = {
   ...common,
-  colors: blueColors,
+  colors: withIconBadgeBackground(blueColors),
 };
 
 export const orangeTheme = {
   ...common,
-  colors: orangeColors,
+  colors: withIconBadgeBackground(orangeColors),
 };
 
 export const darkGrayTheme = {
   ...common,
-  colors: darkGrayColors,
+  colors: withIconBadgeBackground(darkGrayColors),
 };
 
 export const themeOptions = [

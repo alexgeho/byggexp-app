@@ -946,7 +946,7 @@ export default function CreateProjectScreen() {
     );
   }
 
-  const fieldIconBadgeStyle = { backgroundColor: theme.colors.primary };
+  const fieldIconBadgeStyle = { backgroundColor: theme.colors.primaryIconBadge };
   const themedCheckboxStyle = {
     borderColor: `${theme.colors.primary}66`,
   };

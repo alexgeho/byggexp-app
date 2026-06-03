@@ -1,16 +1,18 @@
 import React from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { useTheme } from '../../../theme/ThemeContext'
 
-export const MenuButton = ({ screen, title, color, icon, isLast = false }) => {
+export const MenuButton = ({ screen, title, icon, isLast = false }) => {
   const navigation = useNavigation();
+  const { theme } = useTheme();
 
   return <>
     <TouchableOpacity
         style={[styles.menuItem, !isLast && styles.menuItemDivider]}
         onPress={() => navigation.navigate(screen ? screen : 'Menu')}
     >
-        <View style={[styles.menuIconContainer, { backgroundColor: color }]}>
+        <View style={[styles.menuIconContainer, { backgroundColor: theme.colors.primaryIconBadge }]}>
         <Image style={styles.menuIcon} source={icon} />
         </View>
         <Text style={styles.menuTitle}>{title}</Text>

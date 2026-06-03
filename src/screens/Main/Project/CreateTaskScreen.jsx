@@ -274,7 +274,7 @@ export default function CreateTaskScreen() {
     );
   }
 
-  const fieldIconBadgeStyle = { backgroundColor: theme.colors.primary };
+  const fieldIconBadgeStyle = { backgroundColor: theme.colors.primaryIconBadge };
 
   return (
     <View style={styles.container}>
