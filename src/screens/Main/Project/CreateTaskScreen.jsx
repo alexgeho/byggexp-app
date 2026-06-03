@@ -211,7 +211,6 @@ export default function CreateTaskScreen() {
       const taskData = new FormData();
       const notifications = buildTaskNotificationsPayload({
         settings: notificationSettings,
-        startDate,
         dueDate,
       });
 

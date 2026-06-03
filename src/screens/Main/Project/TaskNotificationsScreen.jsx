@@ -39,7 +39,6 @@ export default function TaskNotificationsScreen() {
   const { theme } = useTheme();
   const projectId = route.params?.projectId;
   const dueDate = route.params?.dueDate || null;
-  const startDate = route.params?.startDate || null;
 
   const [settings, setSettings] = useState(() =>
     normalizeTaskNotificationSettings(route.params?.notificationSettings),
@@ -110,8 +109,11 @@ export default function TaskNotificationsScreen() {
     setSettings((previous) => ({
       ...previous,
       repeat: route.params.repeatSelection || "none",
+      ...(route.params?.repeatIntervalMinutes !== undefined
+        ? { repeatIntervalMinutes: route.params.repeatIntervalMinutes }
+        : {}),
     }));
-  }, [route.params?.repeatSelection]);
+  }, [route.params?.repeatIntervalMinutes, route.params?.repeatSelection]);
 
   const filteredWorkers = useMemo(() => {
     const normalizedSearch = workerSearch.trim().toLowerCase();
@@ -273,8 +275,8 @@ export default function TaskNotificationsScreen() {
             onPress={() =>
               navigation.navigate("TaskNotificationRepeat", {
                 dueDate,
-                startDate,
                 selectedRepeat: settings.repeat,
+                repeatIntervalMinutes: settings.repeatIntervalMinutes,
                 notificationSettings: settings,
               })
             }
@@ -282,7 +284,10 @@ export default function TaskNotificationsScreen() {
             <View style={styles.rowTextContainer}>
               <Text style={styles.rowLabel}>Repeat</Text>
               <Text style={styles.rowValue}>
-                {getRepeatLabel(settings.repeat)}
+                {getRepeatLabel(
+                  settings.repeat,
+                  settings.repeatIntervalMinutes,
+                )}
               </Text>
             </View>
             <Icon name="chevron-right" size={18} color="#052D50" />
@@ -317,9 +322,14 @@ export default function TaskNotificationsScreen() {
             reminder is turned on.
           </Text>
           <Text style={styles.infoText}>
-            Hourly is available only for tasks due within 24 hours. Daily is
-            available up to 30 days before due date. Weekly needs at least 7
-            days before due date.
+            Every N minutes uses your chosen interval (default 15 min). Minute
+            and hourly modes count from save time, not from the task start
+            date.
+          </Text>
+          <Text style={styles.infoText}>
+            Hourly needs at least 1 hour until the due date. Daily is available
+            up to 30 days before due date. Weekly needs at least 7 days before
+            due date.
           </Text>
         </View>
       </ScrollView>

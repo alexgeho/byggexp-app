@@ -1,9 +1,19 @@
-const HOUR_IN_MS = 60 * 60 * 1000;
+import {
+  defaultRepeatIntervalMinutes,
+  maxHourlyRepeatRuns,
+  maxMinuteRepeatRuns,
+  maxRepeatIntervalMinutes,
+  minRepeatIntervalMinutes,
+} from '../theme/settings';
+
+const MINUTE_IN_MS = 60 * 1000;
+const HOUR_IN_MS = 60 * MINUTE_IN_MS;
 const DAY_IN_MS = 24 * HOUR_IN_MS;
 const WEEK_IN_MS = 7 * DAY_IN_MS;
 
 export const REPEAT_OPTIONS = [
   { key: 'none', label: 'Does not repeat' },
+  { key: 'minutes', label: 'Every N minutes' },
   { key: 'hourly', label: 'Hourly' },
   { key: 'daily', label: 'Daily' },
   { key: 'weekly', label: 'Weekly' },
@@ -16,6 +26,7 @@ export const createDefaultTaskNotificationSettings = () => ({
   customReminder: false,
   customMessage: '',
   repeat: 'none',
+  repeatIntervalMinutes: defaultRepeatIntervalMinutes,
 });
 
 const normalizeDate = (value) => {
@@ -25,6 +36,19 @@ const normalizeDate = (value) => {
 
   const date = value instanceof Date ? value : new Date(value);
   return Number.isNaN(date.getTime()) ? null : date;
+};
+
+export const normalizeRepeatIntervalMinutes = (value) => {
+  const parsed = Number(value);
+
+  if (!Number.isFinite(parsed)) {
+    return defaultRepeatIntervalMinutes;
+  }
+
+  return Math.min(
+    maxRepeatIntervalMinutes,
+    Math.max(minRepeatIntervalMinutes, Math.round(parsed)),
+  );
 };
 
 export const normalizeTaskNotificationSettings = (value) => {
@@ -39,6 +63,10 @@ export const normalizeTaskNotificationSettings = (value) => {
         }))
     : [];
 
+  const repeat = REPEAT_OPTIONS.some((option) => option.key === value?.repeat)
+    ? value.repeat
+    : defaults.repeat;
+
   return {
     ...defaults,
     ...value,
@@ -47,25 +75,27 @@ export const normalizeTaskNotificationSettings = (value) => {
     autoReminder: Boolean(value?.autoReminder),
     customReminder: Boolean(value?.customReminder),
     customMessage: value?.customMessage || '',
-    repeat: value?.repeat || 'none',
+    repeat,
+    repeatIntervalMinutes: normalizeRepeatIntervalMinutes(
+      value?.repeatIntervalMinutes ?? defaults.repeatIntervalMinutes,
+    ),
   };
 };
 
 const hasReminderEnabled = (settings) => Boolean(settings?.autoReminder || settings?.customReminder);
 
-const getReminderWindowMs = ({ startDate, dueDate }) => {
-  const normalizedStartDate = normalizeDate(startDate);
+/** Time from now until due date (ignores start date — counting begins when saved). */
+const getReminderWindowMs = ({ dueDate }) => {
   const normalizedDueDate = normalizeDate(dueDate);
 
   if (!normalizedDueDate) {
     return null;
   }
 
-  const fromDate = normalizedStartDate || new Date();
-  return normalizedDueDate.getTime() - fromDate.getTime();
+  return normalizedDueDate.getTime() - Date.now();
 };
 
-export const getRepeatOptionState = ({ repeatKey, startDate, dueDate, settings }) => {
+export const getRepeatOptionState = ({ repeatKey, dueDate, settings }) => {
   if (repeatKey === 'none') {
     return { disabled: false, helperText: 'Notifications will be sent only once.' };
   }
@@ -77,7 +107,7 @@ export const getRepeatOptionState = ({ repeatKey, startDate, dueDate, settings }
     };
   }
 
-  const windowMs = getReminderWindowMs({ startDate, dueDate });
+  const windowMs = getReminderWindowMs({ dueDate });
   if (windowMs === null) {
     return {
       disabled: true,
@@ -85,24 +115,53 @@ export const getRepeatOptionState = ({ repeatKey, startDate, dueDate, settings }
     };
   }
 
+  if (windowMs <= 0) {
+    return {
+      disabled: true,
+      helperText: 'Due date must be in the future.',
+    };
+  }
+
+  const intervalMinutes = normalizeRepeatIntervalMinutes(
+    settings?.repeatIntervalMinutes,
+  );
+  const intervalMs = intervalMinutes * MINUTE_IN_MS;
+
+  if (repeatKey === 'minutes') {
+    if (windowMs < intervalMs) {
+      return {
+        disabled: true,
+        helperText: `Needs at least ${intervalMinutes} minutes until the due date.`,
+      };
+    }
+
+    const maxRuns = Math.min(
+      maxMinuteRepeatRuns,
+      Math.floor(windowMs / intervalMs),
+    );
+
+    return {
+      disabled: false,
+      helperText: `Sends up to ${maxRuns} reminders every ${intervalMinutes} minutes from save time until the due date.`,
+    };
+  }
+
   if (repeatKey === 'hourly') {
     if (windowMs < HOUR_IN_MS) {
       return {
         disabled: true,
-        helperText: 'Hourly repeat needs at least 1 hour until due date.',
+        helperText: 'Hourly repeat needs at least 1 hour until the due date.',
       };
     }
 
-    if (windowMs > DAY_IN_MS) {
-      return {
-        disabled: true,
-        helperText: 'Hourly repeat is limited to tasks due within 24 hours.',
-      };
-    }
+    const maxRuns = Math.min(
+      maxHourlyRepeatRuns,
+      Math.floor(windowMs / HOUR_IN_MS),
+    );
 
     return {
       disabled: false,
-      helperText: 'Sends at most 8 reminders, once per hour, and stops at the due date.',
+      helperText: `Sends up to ${maxRuns} reminders every hour from save time until the due date.`,
     };
   }
 
@@ -110,7 +169,7 @@ export const getRepeatOptionState = ({ repeatKey, startDate, dueDate, settings }
     if (windowMs < DAY_IN_MS) {
       return {
         disabled: true,
-        helperText: 'Daily repeat needs at least 1 day until due date.',
+        helperText: 'Daily repeat needs at least 1 day until the due date.',
       };
     }
 
@@ -123,7 +182,7 @@ export const getRepeatOptionState = ({ repeatKey, startDate, dueDate, settings }
 
     return {
       disabled: false,
-      helperText: 'Sends at most 14 reminders, once per day, and stops at the due date.',
+      helperText: 'Sends at most 14 reminders, once per day from save time, and stops at the due date.',
     };
   }
 
@@ -131,22 +190,27 @@ export const getRepeatOptionState = ({ repeatKey, startDate, dueDate, settings }
     if (windowMs < WEEK_IN_MS) {
       return {
         disabled: true,
-        helperText: 'Weekly repeat needs at least 7 days until due date.',
+        helperText: 'Weekly repeat needs at least 7 days until the due date.',
       };
     }
 
     return {
       disabled: false,
-      helperText: 'Sends at most 8 reminders, once per week, and stops at the due date.',
+      helperText: 'Sends at most 8 reminders, once per week from save time, and stops at the due date.',
     };
   }
 
   return { disabled: false, helperText: '' };
 };
 
-export const getRepeatLabel = (repeatKey) => (
-  REPEAT_OPTIONS.find((option) => option.key === repeatKey)?.label || 'Does not repeat'
-);
+export const getRepeatLabel = (repeatKey, repeatIntervalMinutes) => {
+  if (repeatKey === 'minutes') {
+    const minutes = normalizeRepeatIntervalMinutes(repeatIntervalMinutes);
+    return `Every ${minutes} min`;
+  }
+
+  return REPEAT_OPTIONS.find((option) => option.key === repeatKey)?.label || 'Does not repeat';
+};
 
 export const getTaskNotificationSummary = (settings) => {
   const normalizedSettings = normalizeTaskNotificationSettings(settings);
@@ -173,13 +237,18 @@ export const getTaskNotificationSummary = (settings) => {
   }
 
   if (normalizedSettings.repeat && normalizedSettings.repeat !== 'none') {
-    summaryParts.push(getRepeatLabel(normalizedSettings.repeat));
+    summaryParts.push(
+      getRepeatLabel(
+        normalizedSettings.repeat,
+        normalizedSettings.repeatIntervalMinutes,
+      ),
+    );
   }
 
   return summaryParts.length > 0 ? summaryParts.join(' • ') : 'Set notifications';
 };
 
-export const buildTaskNotificationsPayload = ({ settings, startDate, dueDate }) => {
+export const buildTaskNotificationsPayload = ({ settings, dueDate }) => {
   const normalizedSettings = normalizeTaskNotificationSettings(settings);
 
   if (
@@ -210,13 +279,17 @@ export const buildTaskNotificationsPayload = ({ settings, startDate, dueDate }) 
 
   const repeatState = getRepeatOptionState({
     repeatKey: normalizedSettings.repeat,
-    startDate,
     dueDate,
     settings: normalizedSettings,
   });
 
   if (normalizedSettings.repeat && normalizedSettings.repeat !== 'none' && !repeatState.disabled) {
-    lines.push(`Repeat: ${getRepeatLabel(normalizedSettings.repeat)}`);
+    lines.push(
+      `Repeat: ${getRepeatLabel(
+        normalizedSettings.repeat,
+        normalizedSettings.repeatIntervalMinutes,
+      )}`,
+    );
     if (repeatState.helperText) {
       lines.push(`Repeat limit: ${repeatState.helperText}`);
     }

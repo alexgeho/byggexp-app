@@ -3,6 +3,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -11,8 +12,14 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
 import {
+  defaultRepeatIntervalMinutes,
+  maxRepeatIntervalMinutes,
+  minRepeatIntervalMinutes,
+} from "../../../theme/settings";
+import {
   getRepeatOptionState,
   getRepeatLabel,
+  normalizeRepeatIntervalMinutes,
   normalizeTaskNotificationSettings,
   REPEAT_OPTIONS,
 } from "../../../utils/taskNotifications";
@@ -20,11 +27,24 @@ import {
 export default function TaskNotificationRepeatScreen() {
   const navigation = useNavigation();
   const route = useRoute();
-  const startDate = route.params?.startDate || null;
   const dueDate = route.params?.dueDate || null;
   const settings = useMemo(
     () => normalizeTaskNotificationSettings(route.params?.notificationSettings),
     [route.params?.notificationSettings],
+  );
+
+  const [intervalMinutes, setIntervalMinutes] = useState(
+    String(
+      route.params?.repeatIntervalMinutes ?? settings.repeatIntervalMinutes,
+    ),
+  );
+
+  const draftSettings = useMemo(
+    () => ({
+      ...settings,
+      repeatIntervalMinutes: normalizeRepeatIntervalMinutes(intervalMinutes),
+    }),
+    [intervalMinutes, settings],
   );
 
   const initialRepeat = useMemo(() => {
@@ -32,20 +52,41 @@ export default function TaskNotificationRepeatScreen() {
       route.params?.selectedRepeat || settings.repeat || "none";
     const repeatState = getRepeatOptionState({
       repeatKey: nextRepeat,
-      startDate,
       dueDate,
-      settings,
+      settings: draftSettings,
     });
 
     return repeatState.disabled ? "none" : nextRepeat;
-  }, [dueDate, route.params?.selectedRepeat, settings, startDate]);
+  }, [draftSettings, dueDate, route.params?.selectedRepeat, settings.repeat]);
 
   const [selectedRepeat, setSelectedRepeat] = useState(initialRepeat);
 
+  const selectedRepeatState = getRepeatOptionState({
+    repeatKey: selectedRepeat,
+    dueDate,
+    settings: draftSettings,
+  });
+
   const handleSave = () => {
+    const normalizedInterval = normalizeRepeatIntervalMinutes(intervalMinutes);
+    const repeatState = getRepeatOptionState({
+      repeatKey: selectedRepeat,
+      dueDate,
+      settings: {
+        ...draftSettings,
+        repeatIntervalMinutes: normalizedInterval,
+      },
+    });
+
     navigation.navigate({
       name: "TaskNotifications",
-      params: { repeatSelection: selectedRepeat },
+      params: {
+        repeatSelection:
+          repeatState.disabled && selectedRepeat !== "none"
+            ? "none"
+            : selectedRepeat,
+        repeatIntervalMinutes: normalizedInterval,
+      },
       merge: true,
     });
   };
@@ -66,17 +107,16 @@ export default function TaskNotificationRepeatScreen() {
         </View>
 
         <Text style={styles.description}>
-          Repeating notifications stop automatically at the due date and only
-          work when at least one reminder is enabled.
+          Repeating notifications stop at the due date. Minute and hourly modes
+          count from save time, not from the task start date.
         </Text>
 
         <View style={styles.card}>
           {REPEAT_OPTIONS.map((option, index) => {
             const optionState = getRepeatOptionState({
               repeatKey: option.key,
-              startDate,
               dueDate,
-              settings,
+              settings: draftSettings,
             });
             const isSelected = selectedRepeat === option.key;
 
@@ -98,7 +138,12 @@ export default function TaskNotificationRepeatScreen() {
                       optionState.disabled && styles.optionLabelDisabled,
                     ]}
                   >
-                    {option.label}
+                    {option.key === "minutes"
+                      ? getRepeatLabel(
+                          "minutes",
+                          draftSettings.repeatIntervalMinutes,
+                        )
+                      : option.label}
                   </Text>
                   <Text
                     style={[
@@ -123,22 +168,43 @@ export default function TaskNotificationRepeatScreen() {
           })}
         </View>
 
+        {selectedRepeat === "minutes" ? (
+          <View style={styles.intervalCard}>
+            <Text style={styles.intervalLabel}>Interval (minutes)</Text>
+            <TextInput
+              style={styles.intervalInput}
+              value={intervalMinutes}
+              onChangeText={setIntervalMinutes}
+              keyboardType="number-pad"
+              placeholder={String(defaultRepeatIntervalMinutes)}
+              placeholderTextColor="rgba(5, 45, 80, 0.45)"
+            />
+            <Text style={styles.intervalHint}>
+              Default is {defaultRepeatIntervalMinutes} minutes. Allowed range:{" "}
+              {minRepeatIntervalMinutes}–{maxRepeatIntervalMinutes}.
+            </Text>
+          </View>
+        ) : null}
+
         <View style={styles.noteCard}>
           <Text style={styles.noteTitle}>Applied limits</Text>
           <Text style={styles.noteText}>
-            {`Selected mode: ${getRepeatLabel(selectedRepeat)}.`}
+            {`Selected mode: ${getRepeatLabel(
+              selectedRepeat,
+              draftSettings.repeatIntervalMinutes,
+            )}.`}
+          </Text>
+          {selectedRepeatState.helperText ? (
+            <Text style={styles.noteText}>{selectedRepeatState.helperText}</Text>
+          ) : null}
+          <Text style={styles.noteText}>
+            Minute reminders use your interval (default{" "}
+            {defaultRepeatIntervalMinutes} min) and send up to 64 times until
+            the due date.
           </Text>
           <Text style={styles.noteText}>
-            Hourly works only for tasks due within 24 hours and sends up to 8
-            reminders.
-          </Text>
-          <Text style={styles.noteText}>
-            Daily works only for tasks due within 30 days and sends up to 14
-            reminders.
-          </Text>
-          <Text style={styles.noteText}>
-            Weekly works only for tasks that still have at least 7 days before
-            the due date and sends up to 8 reminders.
+            Hourly sends every hour from save time until the due date (up to the
+            configured maximum).
           </Text>
         </View>
       </ScrollView>
@@ -250,6 +316,36 @@ const styles = StyleSheet.create({
     height: 10,
     borderRadius: 999,
     backgroundColor: "#0091FF",
+  },
+  intervalCard: {
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    borderRadius: 24,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+    gap: 8,
+  },
+  intervalLabel: {
+    color: "#052D50",
+    fontSize: 15,
+    fontFamily: "DMSans-SemiBold",
+  },
+  intervalInput: {
+    height: 48,
+    borderRadius: 14,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "rgba(5, 45, 80, 0.12)",
+    paddingHorizontal: 14,
+    color: "#052D50",
+    fontSize: 16,
+    fontFamily: "DMSans-Medium",
+  },
+  intervalHint: {
+    color: "#698196",
+    fontSize: 13,
+    lineHeight: 18,
   },
   noteCard: {
     backgroundColor: "rgba(255, 255, 255, 0.6)",
