@@ -726,7 +726,7 @@ const styles = StyleSheet.create({
     height: 40,
   },
   calendarDay: {
-    color: "#052D50",
+    color: "#052D5066",
     fontSize: 14,
     fontWeight: "500",
   },
@@ -817,7 +817,7 @@ const styles = StyleSheet.create({
   },
   shiftDetailValue: {
     color: "rgba(122, 148, 168, 1)",
-    fontSize: 15,
+    fontSize: 13,
     lineHeight: 22,
     fontWeight: "400",
     textAlign: "right",
@@ -856,7 +856,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   statValue: {
-    color: "#052D50",
+    color: "#052D5099",
     fontSize: 16,
     fontWeight: "500",
   },
