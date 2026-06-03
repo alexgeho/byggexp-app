@@ -18,7 +18,10 @@ import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import { taskService } from "../../../services";
 import { isPdfDocument } from "../../../utils/documentPreview";
-import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
+import {
+  standardScreenContainer,
+  standardScreenHeader,
+} from "../../../styles/screenLayout";
 import { resolveUploadUrl } from "../../../utils/shifts";
 import { sortByNewest } from "../../../utils/sortByNewest";
 import { pickUploadAssets } from "../../../utils/uploadPicker";
@@ -443,20 +446,12 @@ export default function TaskScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    ...standardScreenContainer,
     alignItems: "center",
-    padding: 12,
-    paddingTop: 48,
     paddingBottom: 24,
-    gap: 16,
-    backgroundColor: "#EEEEEE",
   },
   header: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    ...standardScreenHeaderSpacing,
+    ...standardScreenHeader,
   },
   headerTitle: {
     color: "#052D50",

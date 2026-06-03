@@ -15,7 +15,11 @@ import { useTheme } from "../../theme/ThemeContext";
 import { projectService } from "../../services";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../components/common/BackButton/BackButton";
-import { standardScreenHeaderSpacing } from "../../styles/screenLayout";
+import {
+  standardScreenContainer,
+  standardScreenHeader,
+  standardScreenHeaderPlaceholder,
+} from "../../styles/screenLayout";
 import { resolveNewestTimestamp, sortByNewest } from "../../utils/sortByNewest";
 
 export default function TasksScreen() {
@@ -241,14 +245,9 @@ export default function TasksScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    ...standardScreenContainer,
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 12,
-    paddingTop: 48,
-    paddingBottom: 48,
-    gap: 12,
-    backgroundColor: "#EEEEEE",
   },
   centeredContainer: {
     flex: 1,
@@ -256,11 +255,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   header: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    ...standardScreenHeaderSpacing,
+    ...standardScreenHeader,
   },
   headerTitle: {
     color: "#052D50",
@@ -268,8 +263,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   placeholder: {
-    width: 44,
-    height: 44,
+    ...standardScreenHeaderPlaceholder,
   },
   searchContainer: {
     width: "100%",

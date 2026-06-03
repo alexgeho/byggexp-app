@@ -31,7 +31,10 @@ import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
-import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
+import {
+  standardScreenContainer,
+  standardScreenHeader,
+} from "../../../styles/screenLayout";
 import { useTheme } from "../../../theme/ThemeContext";
 import { chatService, projectService } from "../../../services";
 import { isPdfDocument } from "../../../utils/documentPreview";
@@ -714,14 +717,9 @@ export const ProjectScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    ...standardScreenContainer,
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 12,
-    paddingTop: 48,
-    paddingBottom: 48,
-    gap: 24,
-    backgroundColor: "#EEEEEE",
   },
   centeredContainer: {
     flex: 1,
@@ -734,11 +732,7 @@ const styles = StyleSheet.create({
     color: "#698196",
   },
   header: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    ...standardScreenHeaderSpacing,
+    ...standardScreenHeader,
   },
   backButton: {
     padding: 16,

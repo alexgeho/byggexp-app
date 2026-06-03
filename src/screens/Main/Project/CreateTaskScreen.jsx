@@ -19,7 +19,11 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { useFeedback } from "../../../contexts/FeedbackContext";
-import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
+import {
+  standardScreenHeader,
+  standardScreenHeaderPlaceholder,
+  standardScreenScrollContent,
+} from "../../../styles/screenLayout";
 import { useTheme } from "../../../theme/ThemeContext";
 import { projectService, taskService } from "../../../services";
 import { pickUploadAssets } from "../../../utils/uploadPicker";
@@ -540,9 +544,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#EEEEEE",
   },
   contentContainer: {
-    padding: 12,
-    paddingTop: 48,
-    paddingBottom: 140,
+    ...standardScreenScrollContent,
   },
   loadingContainer: {
     flex: 1,
@@ -555,11 +557,7 @@ const styles = StyleSheet.create({
     color: "#698196",
   },
   header: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    ...standardScreenHeaderSpacing,
+    ...standardScreenHeader,
   },
   headerTitle: {
     color: "#052D50",
@@ -567,8 +565,7 @@ const styles = StyleSheet.create({
     fontFamily: "DMSans-SemiBold",
   },
   placeholder: {
-    width: 44,
-    height: 44,
+    ...standardScreenHeaderPlaceholder,
   },
   sectionLabel: {
     marginBottom: 8,

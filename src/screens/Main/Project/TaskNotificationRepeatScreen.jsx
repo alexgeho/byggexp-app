@@ -10,7 +10,11 @@ import {
 import Icon from "react-native-vector-icons/Feather";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
-import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
+import {
+  standardScreenHeader,
+  standardScreenHeaderPlaceholder,
+  standardScreenScrollContent,
+} from "../../../styles/screenLayout";
 import {
   defaultRepeatIntervalMinutes,
   maxRepeatIntervalMinutes,
@@ -229,16 +233,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#EEEEEE",
   },
   contentContainer: {
-    padding: 12,
-    paddingTop: 48,
-    paddingBottom: 140,
+    ...standardScreenScrollContent,
   },
   header: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    ...standardScreenHeaderSpacing,
+    ...standardScreenHeader,
   },
   headerTitle: {
     color: "#052D50",
@@ -246,8 +244,7 @@ const styles = StyleSheet.create({
     fontFamily: "DMSans-SemiBold",
   },
   placeholder: {
-    width: 44,
-    height: 44,
+    ...standardScreenHeaderPlaceholder,
   },
   description: {
     color: "#698196",

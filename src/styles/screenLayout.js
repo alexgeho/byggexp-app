@@ -1,10 +1,21 @@
+/** Gap between screen header and the first block below (search, form, scroll, etc.). */
+export const standardScreenContentGap = 12;
+
 export const standardScreenContainer = {
   flex: 1,
   backgroundColor: "#EEEEEE",
   paddingHorizontal: 12,
   paddingTop: 48,
   paddingBottom: 48,
-  gap: 12,
+  gap: standardScreenContentGap,
+};
+
+/** Scroll screens that place the header inside contentContainerStyle. */
+export const standardScreenScrollContent = {
+  paddingHorizontal: 12,
+  paddingTop: 48,
+  paddingBottom: 140,
+  gap: standardScreenContentGap,
 };
 
 export const standardScreenHeaderSpacing = {

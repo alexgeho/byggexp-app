@@ -14,7 +14,12 @@ import {
 import Icon from "react-native-vector-icons/Feather";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
-import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
+import {
+  standardScreenContainer,
+  standardScreenHeader,
+  standardScreenHeaderPlaceholder,
+  standardScreenScrollContent,
+} from "../../../styles/screenLayout";
 import { useTheme } from "../../../theme/ThemeContext";
 import { projectService } from "../../../services";
 import {
@@ -486,16 +491,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#EEEEEE",
   },
   contentContainer: {
-    padding: 12,
-    paddingTop: 48,
-    paddingBottom: 140,
+    ...standardScreenScrollContent,
   },
   header: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    ...standardScreenHeaderSpacing,
+    ...standardScreenHeader,
   },
   headerTitle: {
     color: "#052D50",
@@ -503,8 +502,7 @@ const styles = StyleSheet.create({
     fontFamily: "DMSans-SemiBold",
   },
   placeholder: {
-    width: 44,
-    height: 44,
+    ...standardScreenHeaderPlaceholder,
   },
   groupCard: {
     backgroundColor: "rgba(255, 255, 255, 0.6)",
@@ -610,10 +608,7 @@ const styles = StyleSheet.create({
     fontFamily: "DMSans-SemiBold",
   },
   modalContainer: {
-    flex: 1,
-    backgroundColor: "#EEEEEE",
-    padding: 12,
-    paddingTop: 48,
+    ...standardScreenContainer,
     paddingBottom: 24,
   },
   searchBar: {
@@ -624,7 +619,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 16,
     gap: 10,
-    marginBottom: 12,
+    width: "100%",
     borderWidth: 1,
     borderColor: "#FFFFFF",
   },

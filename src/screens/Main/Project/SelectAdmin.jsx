@@ -12,7 +12,10 @@ import AuthContext from "../../../contexts/AuthContext";
 import { useTheme } from "../../../theme/ThemeContext";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
-import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
+import {
+  standardScreenContainer,
+  standardScreenHeader,
+} from "../../../styles/screenLayout";
 
 export const SelectAdmin = () => {
   const navigation = useNavigation();
@@ -127,21 +130,12 @@ export const SelectAdmin = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    ...standardScreenContainer,
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 12,
-    paddingTop: 0,
-    paddingBottom: 48,
-    gap: 24,
-    backgroundColor: "#EEEEEE",
   },
   header: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    ...standardScreenHeaderSpacing,
+    ...standardScreenHeader,
   },
   backButton: {
     padding: 16,

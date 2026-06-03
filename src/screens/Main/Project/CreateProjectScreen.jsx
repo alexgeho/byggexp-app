@@ -1568,7 +1568,6 @@ const styles = StyleSheet.create({
   },
   pageContainer: {
     ...standardScreenContainer,
-    gap: 0,
   },
   contentScroll: {
     flex: 1,

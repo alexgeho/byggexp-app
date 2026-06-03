@@ -17,7 +17,10 @@ import { userService, projectService } from "../../../services";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { resolveUploadUrl } from "../../../utils/shifts";
-import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
+import {
+  standardScreenContainer,
+  standardScreenHeader,
+} from "../../../styles/screenLayout";
 
 export const SelectWorkers = () => {
   const navigation = useNavigation();
@@ -231,14 +234,9 @@ export const SelectWorkers = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    ...standardScreenContainer,
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 12,
-    paddingTop: 0,
-    paddingBottom: 48,
-    gap: 24,
-    backgroundColor: "#EEEEEE",
   },
   centeredContainer: {
     flex: 1,
@@ -247,11 +245,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#EEEEEE",
   },
   header: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    ...standardScreenHeaderSpacing,
+    ...standardScreenHeader,
   },
   backButton: {
     padding: 16,

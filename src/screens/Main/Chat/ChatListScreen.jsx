@@ -15,7 +15,10 @@ import { useNavigation } from "@react-navigation/native";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { chatService } from "../../../services";
-import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
+import {
+  standardScreenContainer,
+  standardScreenHeader,
+} from "../../../styles/screenLayout";
 import { resolveUploadUrl } from "../../../utils/shifts";
 
 const FILTERS = ["All", "Groups", "People", "Projects"];
@@ -242,20 +245,12 @@ export default function ChatListScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    ...standardScreenContainer,
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 12,
-    paddingTop: 48,
-    paddingBottom: 48,
-    backgroundColor: "#EEEEEE",
   },
   header: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    ...standardScreenHeaderSpacing,
+    ...standardScreenHeader,
   },
   headerTitle: {
     color: "#052D50",

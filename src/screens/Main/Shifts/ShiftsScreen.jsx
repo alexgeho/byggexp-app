@@ -11,7 +11,11 @@ import {
   Alert,
 } from "react-native";
 import { useTheme } from "../../../theme/ThemeContext";
-import { standardScreenHeaderSpacing } from "../../../styles/screenLayout";
+import {
+  standardScreenContainer,
+  standardScreenHeader,
+  standardScreenHeaderPlaceholder,
+} from "../../../styles/screenLayout";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
@@ -612,18 +616,13 @@ export default function ShiftsScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#EEEEEE",
-    padding: 16,
-    paddingTop: 48,
-    paddingBottom: 48,
+    ...standardScreenContainer,
   },
   header: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    ...standardScreenHeaderSpacing,
+    ...standardScreenHeader,
+  },
+  placeholder: {
+    ...standardScreenHeaderPlaceholder,
   },
   backButton: {
     padding: 16,
@@ -645,9 +644,6 @@ const styles = StyleSheet.create({
     color: "#052D50",
     fontSize: 17,
     textAlign: "center",
-  },
-  placeholder: {
-    width: 36,
   },
   contentScroll: {
     flex: 1,
