@@ -11,6 +11,15 @@ export const authService = {
     return data;
   },
 
+  registerCompany: async ({ companyName, userName, email }) => {
+    const { data } = await api.post('/auth/register-company', {
+      companyName,
+      userName,
+      email,
+    });
+    return data;
+  },
+
   registerSuperAdmin: async (userData) => {
     const { data } = await api.post('/auth/register-superadmin', userData);
     return data;

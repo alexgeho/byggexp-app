@@ -69,28 +69,55 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const applyAuthSession = async ({ access_token, refresh_token, user: userData }) => {
+    await saveToken(access_token);
+    if (refresh_token) {
+      await saveRefreshToken(refresh_token);
+    }
+    await saveUser(userData);
+
+    const decodedToken = jwtDecode(access_token);
+    setUserId(decodedToken.sub);
+    setUser(userData);
+    setIsAuthenticated(true);
+  };
+
+  const getApiErrorMessage = (error, fallback) => {
+    const message = error?.response?.data?.message;
+    if (Array.isArray(message)) {
+      return message.join(', ');
+    }
+    return message || error?.message || fallback;
+  };
+
   const login = async (email, password) => {
     try {
       setIsLoading(true);
-      const { access_token, refresh_token, user: userData } = await authService.login(email, password);
-
-      await saveToken(access_token);
-      if (refresh_token) {
-        await saveRefreshToken(refresh_token);
-      }
-      await saveUser(userData);
-
-      const decodedToken = jwtDecode(access_token);
-      setUserId(decodedToken.sub);
-      setUser(userData);
-
-      setIsAuthenticated(true);
+      const data = await authService.login(email, password);
+      await applyAuthSession(data);
       setIsLoading(false);
       return true;
     } catch (error) {
       console.error('AuthContext: Ошибка входа:', error);
       setIsLoading(false);
       return false;
+    }
+  };
+
+  const registerCompany = async ({ companyName, userName, email }) => {
+    try {
+      setIsLoading(true);
+      const data = await authService.registerCompany({ companyName, userName, email });
+      await applyAuthSession(data);
+      setIsLoading(false);
+      return { success: true };
+    } catch (error) {
+      console.error('AuthContext: Ошибка регистрации:', error);
+      setIsLoading(false);
+      return {
+        success: false,
+        message: getApiErrorMessage(error, 'Registration failed'),
+      };
     }
   };
 
@@ -130,7 +157,8 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider value={{ 
       isAuthenticated, 
       isLoading, 
-      login, 
+      login,
+      registerCompany,
       logout, 
       userId, 
       user,
