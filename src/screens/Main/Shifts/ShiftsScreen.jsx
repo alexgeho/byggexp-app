@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Modal,
   Alert,
+  Linking,
 } from "react-native";
 import { useTheme } from "../../../theme/ThemeContext";
 import {
@@ -25,8 +26,14 @@ import {
   formatDurationShort,
   formatMonthLabel,
   formatTimeRange,
+  formatShiftListProjectName,
   resolveUploadUrl,
 } from "../../../utils/shifts";
+import {
+  getDocumentNameFromUrl,
+  isImageDocument,
+  isPdfDocument,
+} from "../../../utils/documentPreview";
 
 export default function ShiftsScreen() {
   const navigation = useNavigation();
@@ -185,6 +192,46 @@ export default function ShiftsScreen() {
 
     return rows;
   }, [dayMap, selectedDate, selectedMonth]);
+
+  const handleOpenShiftPhoto = useCallback(
+    async (photo) => {
+      const resolvedUrl = resolveUploadUrl(photo?.url);
+      const documentName =
+        photo?.name || getDocumentNameFromUrl(resolvedUrl, "Shift photo");
+
+      if (!resolvedUrl) {
+        Alert.alert(
+          "Document unavailable",
+          "This file does not have a valid link.",
+        );
+        return;
+      }
+
+      const document = {
+        url: resolvedUrl,
+        name: documentName,
+        mimeType: photo?.mimeType || "",
+        isImage: isImageDocument({
+          url: resolvedUrl,
+          name: documentName,
+          mimeType: photo?.mimeType,
+        }),
+      };
+
+      try {
+        if (document.isImage || isPdfDocument(document)) {
+          navigation.navigate("DocumentPreview", { document });
+          return;
+        }
+
+        await Linking.openURL(resolvedUrl);
+      } catch (error) {
+        console.error("Failed to open shift photo:", error);
+        Alert.alert("Unable to open document", "Please try again later.");
+      }
+    },
+    [navigation],
+  );
 
   const handleExport = useCallback(async () => {
     if (exporting) {
@@ -353,12 +400,13 @@ export default function ShiftsScreen() {
 
                       {!isExpanded ? (
                         <Text
+                          numberOfLines={1}
                           style={[
                             styles.shiftProjectName,
                             { fontFamily: theme.text.fontFamily["regular"] },
                           ]}
                         >
-                          {shift.projectName || "—"}
+                          {formatShiftListProjectName(shift.projectName)}
                         </Text>
                       ) : (
                         <View style={styles.shiftExpandedContent}>
@@ -424,13 +472,18 @@ export default function ShiftsScreen() {
                                   }
                                 >
                                   {shift.photos.map((photo, index) => (
-                                    <Image
+                                    <TouchableOpacity
                                       key={`${shift.id}-photo-${index}`}
-                                      style={styles.shiftImage}
-                                      source={{
-                                        uri: resolveUploadUrl(photo.url),
-                                      }}
-                                    />
+                                      activeOpacity={0.85}
+                                      onPress={() => handleOpenShiftPhoto(photo)}
+                                    >
+                                      <Image
+                                        style={styles.shiftImage}
+                                        source={{
+                                          uri: resolveUploadUrl(photo.url),
+                                        }}
+                                      />
+                                    </TouchableOpacity>
                                   ))}
                                 </ScrollView>
                               </View>

@@ -129,3 +129,17 @@ export const resolveUploadUrl = (url) => {
 
   return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`;
 };
+
+export const formatShiftListProjectName = (projectName, maxLength = 20) => {
+  const name = String(projectName || '').trim();
+
+  if (!name) {
+    return '—';
+  }
+
+  if (name.length <= maxLength) {
+    return name;
+  }
+
+  return `${name.slice(0, maxLength)}…`;
+};
