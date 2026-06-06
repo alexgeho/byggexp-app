@@ -73,31 +73,29 @@ export default function DocumentPreviewScreen() {
           },
         ]}
       >
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          activeOpacity={0.8}
+          style={styles.actionButton}
+        >
+          <Icon
+            name="arrow-left"
+            size={20}
+            color={theme.colors.primary}
+          />
+        </TouchableOpacity>
         <View style={styles.actionsSpacer} />
-        <View style={styles.actionsGroup}>
-          <TouchableOpacity
-            onPress={handleDownload}
-            activeOpacity={0.8}
-            style={styles.actionButton}
-          >
-            <Icon
-              name="download"
-              size={20}
-              color={theme.colors.primary}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            activeOpacity={0.8}
-            style={styles.actionButton}
-          >
-            <Icon
-              name="x"
-              size={20}
-              color={theme.colors.primary}
-            />
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          onPress={handleDownload}
+          activeOpacity={0.8}
+          style={styles.actionButton}
+        >
+          <Icon
+            name="download"
+            size={20}
+            color={theme.colors.primary}
+          />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.content}>
@@ -199,10 +197,6 @@ const styles = StyleSheet.create({
   },
   actionsSpacer: {
     flex: 1,
-  },
-  actionsGroup: {
-    flexDirection: "row",
-    gap: 10,
   },
   actionButton: {
     width: 44,

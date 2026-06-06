@@ -422,12 +422,13 @@ export default function ShiftsScreen() {
                               Project
                             </Text>
                             <Text
+                              numberOfLines={1}
                               style={[
                                 styles.shiftDetailValue,
                                 { fontFamily: theme.text.fontFamily["regular"] },
                               ]}
                             >
-                              {shift.projectName || "—"}
+                              {formatShiftListProjectName(shift.projectName)}
                             </Text>
                           </View>
                           <View style={styles.shiftDetailRow}>
