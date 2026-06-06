@@ -423,11 +423,6 @@ export default function ShiftsScreen() {
     [availableMonths, exportFromMonth, exportToMonth, selectedDates],
   );
 
-  const exportSnapPoints = useMemo(
-    () => (isSingleDateExport ? ["72%"] : ["38%"]),
-    [isSingleDateExport],
-  );
-
   const closeExportSheet = useCallback(() => {
     setDatePickerTarget(null);
     exportBottomSheetRef.current?.close();
@@ -887,16 +882,16 @@ export default function ShiftsScreen() {
       />
 
       <BottomSheet
-        key={isSingleDateExport ? "export-single" : "export-multi"}
         ref={exportBottomSheetRef}
         index={-1}
-        snapPoints={exportSnapPoints}
+        enableDynamicSizing
         enablePanDownToClose
         backgroundStyle={styles.bottomSheetBackground}
         handleIndicatorStyle={styles.handleIndicator}
         backdropComponent={renderExportBackdrop}
       >
         <BottomSheetView style={styles.bottomSheetContent}>
+          <View style={styles.exportSheetBody}>
           <Text
             style={[
               styles.exportSheetTitle,
@@ -1066,6 +1061,7 @@ export default function ShiftsScreen() {
               </View>
             </>
           ) : null}
+          </View>
 
           <TouchableOpacity
             style={[
@@ -1503,9 +1499,13 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   bottomSheetContent: {
-    padding: 20,
+    paddingHorizontal: 20,
     paddingTop: 12,
+    paddingBottom: 20,
+  },
+  exportSheetBody: {
     gap: 12,
+    marginBottom: 12,
   },
   exportSheetTitle: {
     color: "#052D50",
