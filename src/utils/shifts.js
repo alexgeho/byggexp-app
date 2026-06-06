@@ -24,6 +24,12 @@ const timeFormatter = new Intl.DateTimeFormat('en-US', {
   hour12: false,
 });
 
+const exportPickerDateFormatter = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+});
+
 export const formatDuration = (durationMs = 0) => {
   const totalMinutes = Math.floor(durationMs / 60000);
   const hours = Math.floor(totalMinutes / 60);
@@ -107,6 +113,75 @@ export const getCurrentMonthKey = () => {
 export const getTodayDateKey = () => {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+};
+
+export const getMonthDateRange = (monthKey) => {
+  if (!monthKey || !/^\d{4}-\d{2}$/.test(monthKey)) {
+    return { from: '', to: '' };
+  }
+
+  const [year, month] = monthKey.split('-').map(Number);
+  const lastDay = new Date(year, month, 0).getDate();
+
+  return {
+    from: `${monthKey}-01`,
+    to: `${monthKey}-${String(lastDay).padStart(2, '0')}`,
+  };
+};
+
+export const formatExportPickerDate = (dateString) => {
+  if (!dateString) {
+    return 'Select date';
+  }
+
+  const date = new Date(`${dateString}T12:00:00`);
+  if (Number.isNaN(date.getTime())) {
+    return dateString;
+  }
+
+  return exportPickerDateFormatter.format(date);
+};
+
+export const formatDateKey = (date) => {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+    return '';
+  }
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+};
+
+export const parseDateKey = (value) => {
+  if (!value) {
+    return new Date();
+  }
+
+  const date = new Date(`${value}T12:00:00`);
+  return Number.isNaN(date.getTime()) ? new Date() : date;
+};
+
+export const buildExportMonthOptions = (
+  availableMonths = [],
+  extraMonths = [],
+) => {
+  const monthSet = new Set([
+    ...availableMonths,
+    ...extraMonths,
+    getCurrentMonthKey(),
+  ]);
+  const now = new Date();
+
+  for (let index = 0; index < 36; index += 1) {
+    const date = new Date(now.getFullYear(), now.getMonth() - index, 1);
+    monthSet.add(
+      `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`,
+    );
+  }
+
+  return Array.from(monthSet).sort((left, right) => left.localeCompare(right));
 };
 
 export const getAdjacentMonthKey = (monthKey, delta) => {

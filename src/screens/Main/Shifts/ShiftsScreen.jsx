@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -10,7 +10,14 @@ import {
   Modal,
   Alert,
   Linking,
+  Platform,
 } from "react-native";
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetView,
+} from "@gorhom/bottom-sheet";
+import { Picker } from "@react-native-picker/picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTheme } from "../../../theme/ThemeContext";
 import {
   standardScreenContainer,
@@ -23,15 +30,20 @@ import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { shiftService } from "../../../services";
 import Icon from "react-native-vector-icons/Feather";
 import {
+  buildExportMonthOptions,
+  formatDateKey,
   formatDuration,
   formatDurationVerbose,
+  formatExportPickerDate,
   formatMonthLabel,
   formatTimeRange,
   formatShiftListProjectName,
   getAdjacentMonthKey,
   getCalendarWeekNumber,
   getCurrentMonthKey,
+  getMonthDateRange,
   getTodayDateKey,
+  parseDateKey,
   resolveUploadUrl,
 } from "../../../utils/shifts";
 import {
@@ -41,10 +53,13 @@ import {
 } from "../../../utils/documentPreview";
 
 const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const EXPORT_PERIOD_TABS = ["Month", "Custom"];
+const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "spinner" : "default";
 
 export default function ShiftsScreen() {
   const navigation = useNavigation();
   const { theme } = useTheme();
+  const exportBottomSheetRef = useRef(null);
   const [availableMonths, setAvailableMonths] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [selectedDates, setSelectedDates] = useState([]);
@@ -53,8 +68,13 @@ export default function ShiftsScreen() {
   const [previousMonthDuration, setPreviousMonthDuration] = useState(0);
   const [loading, setLoading] = useState(true);
   const [pickerVisible, setPickerVisible] = useState(false);
-  const [exportModalVisible, setExportModalVisible] = useState(false);
   const [selectedExportType, setSelectedExportType] = useState("pdf");
+  const [exportPeriodTab, setExportPeriodTab] = useState("Month");
+  const [exportFromMonth, setExportFromMonth] = useState("");
+  const [exportToMonth, setExportToMonth] = useState("");
+  const [exportFromDate, setExportFromDate] = useState("");
+  const [exportToDate, setExportToDate] = useState("");
+  const [datePickerTarget, setDatePickerTarget] = useState(null);
   const [exporting, setExporting] = useState(false);
   const [expandedShiftId, setExpandedShiftId] = useState(null);
 
@@ -391,23 +411,141 @@ export default function ShiftsScreen() {
     [currentMonthKey, refreshHistory, selectedMonth],
   );
 
+  const isSingleDateExport = selectedDates.length === 1;
+
+  const exportMonthOptions = useMemo(
+    () =>
+      buildExportMonthOptions(availableMonths, [
+        exportFromMonth,
+        exportToMonth,
+        selectedDates[0]?.slice(0, 7),
+      ]),
+    [availableMonths, exportFromMonth, exportToMonth, selectedDates],
+  );
+
+  const exportSnapPoints = useMemo(
+    () => (isSingleDateExport ? ["72%"] : ["38%"]),
+    [isSingleDateExport],
+  );
+
+  const closeExportSheet = useCallback(() => {
+    setDatePickerTarget(null);
+    exportBottomSheetRef.current?.close();
+  }, []);
+
+  const openExportSheet = useCallback(() => {
+    if (!selectedDates.length) {
+      Alert.alert("No dates selected", "Select at least one date to export.");
+      return;
+    }
+
+    setSelectedExportType("pdf");
+
+    if (selectedDates.length === 1) {
+      const selectedDate = selectedDates[0];
+      const monthKey = selectedDate.slice(0, 7);
+
+      setExportPeriodTab("Month");
+      setExportFromMonth(monthKey);
+      setExportToMonth(monthKey);
+      setExportFromDate(selectedDate);
+      setExportToDate(selectedDate);
+    }
+
+    setDatePickerTarget(null);
+    exportBottomSheetRef.current?.expand();
+  }, [selectedDates]);
+
+  const renderExportBackdrop = useCallback(
+    (props) => (
+      <BottomSheetBackdrop
+        {...props}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+        opacity={0.59}
+        pressBehavior="close"
+      />
+    ),
+    [],
+  );
+
+  const handleCustomDateChange = useCallback(
+    (_event, date) => {
+      if (!datePickerTarget || !date) {
+        return;
+      }
+
+      const formattedDate = formatDateKey(date);
+      if (datePickerTarget === "from") {
+        setExportFromDate(formattedDate);
+      } else {
+        setExportToDate(formattedDate);
+      }
+    },
+    [datePickerTarget],
+  );
+
   const handleExport = useCallback(async () => {
     if (exporting) {
       return;
     }
 
-    if (!selectedMonth) {
-      Alert.alert("No period selected", "Choose a month to export shifts.");
+    if (!selectedDates.length) {
+      Alert.alert("No dates selected", "Select at least one date to export.");
       return;
+    }
+
+    let from = "";
+    let to = "";
+
+    if (selectedDates.length === 1) {
+      if (exportPeriodTab === "Month") {
+        if (!exportFromMonth || !exportToMonth) {
+          Alert.alert("Invalid period", "Choose both months for export.");
+          return;
+        }
+
+        if (exportFromMonth > exportToMonth) {
+          Alert.alert(
+            "Invalid period",
+            'The "From" month must be earlier than the "To" month.',
+          );
+          return;
+        }
+
+        from = getMonthDateRange(exportFromMonth).from;
+        to = getMonthDateRange(exportToMonth).to;
+      } else {
+        from = exportFromDate;
+        to = exportToDate;
+
+        if (!from || !to) {
+          Alert.alert("Invalid period", "Choose both dates for export.");
+          return;
+        }
+
+        if (from > to) {
+          Alert.alert(
+            "Invalid period",
+            'The "From" date must be earlier than the "To" date.',
+          );
+          return;
+        }
+      }
+    } else {
+      const sortedDates = [...selectedDates].sort();
+      from = sortedDates[0];
+      to = sortedDates[sortedDates.length - 1];
     }
 
     try {
       setExporting(true);
       await shiftService.exportReport({
         format: selectedExportType,
-        month: selectedMonth,
+        from,
+        to,
       });
-      setExportModalVisible(false);
+      closeExportSheet();
     } catch (error) {
       const message =
         error?.response?.data?.message ||
@@ -417,7 +555,17 @@ export default function ShiftsScreen() {
     } finally {
       setExporting(false);
     }
-  }, [exporting, selectedExportType, selectedMonth]);
+  }, [
+    closeExportSheet,
+    exportFromDate,
+    exportFromMonth,
+    exportPeriodTab,
+    exportToDate,
+    exportToMonth,
+    exporting,
+    selectedDates,
+    selectedExportType,
+  ]);
 
   return (
     <View style={styles.container}>
@@ -730,7 +878,7 @@ export default function ShiftsScreen() {
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
-        onAddPress={() => setExportModalVisible(true)}
+        onAddPress={openExportSheet}
         showAddButton
         renderAddContent={() => (
           <Text style={styles.exportFabText}>Export</Text>
@@ -738,92 +886,231 @@ export default function ShiftsScreen() {
         addButtonStyle={styles.exportFabButton}
       />
 
+      <BottomSheet
+        key={isSingleDateExport ? "export-single" : "export-multi"}
+        ref={exportBottomSheetRef}
+        index={-1}
+        snapPoints={exportSnapPoints}
+        enablePanDownToClose
+        backgroundStyle={styles.bottomSheetBackground}
+        handleIndicatorStyle={styles.handleIndicator}
+        backdropComponent={renderExportBackdrop}
+      >
+        <BottomSheetView style={styles.bottomSheetContent}>
+          <Text
+            style={[
+              styles.exportSheetTitle,
+              { fontFamily: theme.text.fontFamily["semiBold"] },
+            ]}
+          >
+            Export shifts
+          </Text>
+
+          <View style={styles.exportSheetCard}>
+            <View style={styles.exportButtonsContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.exportButton,
+                  selectedExportType === "pdf" && styles.exportButtonActive,
+                ]}
+                onPress={() => setSelectedExportType("pdf")}
+                activeOpacity={0.85}
+              >
+                <Text
+                  style={[
+                    styles.exportButtonText,
+                    selectedExportType === "pdf" &&
+                      styles.exportButtonTextActive,
+                  ]}
+                >
+                  PDF
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.exportButton,
+                  selectedExportType === "excel" && styles.exportButtonActive,
+                ]}
+                onPress={() => setSelectedExportType("excel")}
+                activeOpacity={0.85}
+              >
+                <Text
+                  style={[
+                    styles.exportButtonText,
+                    selectedExportType === "excel" &&
+                      styles.exportButtonTextActive,
+                  ]}
+                >
+                  Excel
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {isSingleDateExport ? (
+            <>
+              <Text
+                style={[
+                  styles.exportPeriodLabel,
+                  { fontFamily: theme.text.fontFamily["medium"] },
+                ]}
+              >
+                Period
+              </Text>
+
+              <View style={styles.periodTabs}>
+                {EXPORT_PERIOD_TABS.map((tab) => (
+                  <TouchableOpacity
+                    key={tab}
+                    style={[
+                      styles.periodTab,
+                      exportPeriodTab === tab && styles.periodTabActive,
+                    ]}
+                    onPress={() => setExportPeriodTab(tab)}
+                    activeOpacity={0.85}
+                  >
+                    <Text
+                      style={[
+                        styles.periodTabText,
+                        exportPeriodTab === tab && styles.periodTabTextActive,
+                      ]}
+                    >
+                      {tab}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <View style={styles.periodCard}>
+                {exportPeriodTab === "Month" ? (
+                  <View style={styles.dateContainer}>
+                    <View style={styles.monthDateField}>
+                      <Text style={styles.monthDateLabel}>From</Text>
+                      <View style={styles.monthWheelContainer}>
+                        <Picker
+                          selectedValue={exportFromMonth}
+                          onValueChange={setExportFromMonth}
+                          style={styles.monthWheel}
+                          itemStyle={styles.monthWheelItem}
+                          selectionColor="rgb(245, 245, 245)"
+                        >
+                          {exportMonthOptions.map((month) => (
+                            <Picker.Item
+                              key={`from-${month}`}
+                              label={formatMonthLabel(month)}
+                              value={month}
+                            />
+                          ))}
+                        </Picker>
+                      </View>
+                    </View>
+                    <View style={styles.monthDateField}>
+                      <Text style={styles.monthDateLabel}>To</Text>
+                      <View style={styles.monthWheelContainer}>
+                        <Picker
+                          selectedValue={exportToMonth}
+                          onValueChange={setExportToMonth}
+                          style={styles.monthWheel}
+                          itemStyle={styles.monthWheelItem}
+                          selectionColor="rgb(245, 245, 245)"
+                        >
+                          {exportMonthOptions.map((month) => (
+                            <Picker.Item
+                              key={`to-${month}`}
+                              label={formatMonthLabel(month)}
+                              value={month}
+                            />
+                          ))}
+                        </Picker>
+                      </View>
+                    </View>
+                  </View>
+                ) : (
+                  <View style={styles.dateContainer}>
+                    <View style={styles.monthDateField}>
+                      <Text style={styles.monthDateLabel}>From</Text>
+                      <TouchableOpacity
+                        style={styles.dateValueCard}
+                        onPress={() => setDatePickerTarget("from")}
+                        activeOpacity={0.85}
+                      >
+                        <Text
+                          style={[
+                            styles.dateValueText,
+                            !exportFromDate && styles.dateValuePlaceholder,
+                          ]}
+                        >
+                          {formatExportPickerDate(exportFromDate)}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.monthDateField}>
+                      <Text style={styles.monthDateLabel}>To</Text>
+                      <TouchableOpacity
+                        style={styles.dateValueCard}
+                        onPress={() => setDatePickerTarget("to")}
+                        activeOpacity={0.85}
+                      >
+                        <Text
+                          style={[
+                            styles.dateValueText,
+                            !exportToDate && styles.dateValuePlaceholder,
+                          ]}
+                        >
+                          {formatExportPickerDate(exportToDate)}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+              </View>
+            </>
+          ) : null}
+
+          <TouchableOpacity
+            style={[
+              styles.exportMainButton,
+              exporting && styles.exportMainButtonDisabled,
+            ]}
+            onPress={handleExport}
+            disabled={exporting}
+          >
+            {exporting ? (
+              <ActivityIndicator color="#FFFFFF" />
+            ) : (
+              <Text style={styles.exportMainButtonText}>Export</Text>
+            )}
+          </TouchableOpacity>
+        </BottomSheetView>
+      </BottomSheet>
+
       <Modal
-        visible={exportModalVisible}
+        visible={Boolean(datePickerTarget)}
         transparent
         animationType="fade"
-        onRequestClose={() => setExportModalVisible(false)}
+        onRequestClose={() => setDatePickerTarget(null)}
       >
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={() => setExportModalVisible(false)}
-        >
-          <TouchableOpacity
-            style={styles.exportModalCard}
-            activeOpacity={1}
-            onPress={() => {}}
-          >
-            <Text
-              style={[
-                styles.exportModalTitle,
-                { fontFamily: theme.text.fontFamily["semiBold"] },
-              ]}
-            >
-              Export shifts
+        <View style={styles.datePickerOverlay}>
+          <View style={styles.datePickerCard}>
+            <Text style={styles.datePickerTitle}>
+              {datePickerTarget === "from" ? "From date" : "To date"}
             </Text>
-            <Text style={styles.exportModalSubtitle}>
-              Period:{" "}
-              {selectedMonth ? formatMonthLabel(selectedMonth) : "Not selected"}
-            </Text>
-
-            <View style={styles.exportSheetCard}>
-              <View style={styles.exportButtonsContainer}>
-                <TouchableOpacity
-                  style={[
-                    styles.exportButton,
-                    selectedExportType === "pdf" && styles.exportButtonActive,
-                  ]}
-                  onPress={() => setSelectedExportType("pdf")}
-                  activeOpacity={0.85}
-                >
-                  <Text
-                    style={[
-                      styles.exportButtonText,
-                      selectedExportType === "pdf" &&
-                        styles.exportButtonTextActive,
-                    ]}
-                  >
-                    PDF
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[
-                    styles.exportButton,
-                    selectedExportType === "excel" && styles.exportButtonActive,
-                  ]}
-                  onPress={() => setSelectedExportType("excel")}
-                  activeOpacity={0.85}
-                >
-                  <Text
-                    style={[
-                      styles.exportButtonText,
-                      selectedExportType === "excel" &&
-                        styles.exportButtonTextActive,
-                    ]}
-                  >
-                    Excel
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            <TouchableOpacity
-              style={[
-                styles.exportMainButton,
-                exporting && styles.exportMainButtonDisabled,
-              ]}
-              onPress={handleExport}
-              disabled={exporting}
-            >
-              {exporting ? (
-                <ActivityIndicator color="#FFFFFF" />
-              ) : (
-                <Text style={styles.exportMainButtonText}>Export</Text>
+            <DateTimePicker
+              value={parseDateKey(
+                datePickerTarget === "from" ? exportFromDate : exportToDate,
               )}
+              mode="date"
+              display={DATE_PICKER_DISPLAY}
+              onChange={handleCustomDateChange}
+            />
+            <TouchableOpacity
+              style={styles.datePickerButton}
+              onPress={() => setDatePickerTarget(null)}
+            >
+              <Text style={styles.datePickerButtonText}>Done</Text>
             </TouchableOpacity>
-          </TouchableOpacity>
-        </TouchableOpacity>
+          </View>
+        </View>
       </Modal>
 
       <Modal
@@ -1204,22 +1491,113 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#FFFFFF",
   },
-  exportModalCard: {
+  bottomSheetBackground: {
     backgroundColor: "#EEEEEE",
-    borderRadius: 24,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+  },
+  handleIndicator: {
+    backgroundColor: "#CCCCCC",
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+  },
+  bottomSheetContent: {
     padding: 20,
+    paddingTop: 12,
     gap: 12,
   },
-  exportModalTitle: {
+  exportSheetTitle: {
     color: "#052D50",
     fontSize: 22,
   },
-  exportModalSubtitle: {
-    color: "#698196",
+  exportPeriodLabel: {
+    color: "#052D50",
+    fontSize: 16,
+  },
+  periodTabs: {
+    flexDirection: "row",
+    gap: 8,
+    alignSelf: "flex-start",
+  },
+  periodTab: {
+    height: 44,
+    paddingHorizontal: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 20,
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+  },
+  periodTabActive: {
+    backgroundColor: "#0785F4",
+    borderColor: "#0785F4",
+  },
+  periodTabText: {
+    fontSize: 15,
+    color: "#052D50",
+  },
+  periodTabTextActive: {
+    color: "#FFFFFF",
+    fontWeight: "600",
+  },
+  periodCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+  },
+  dateContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  monthDateField: {
+    flex: 1,
+    alignItems: "center",
+  },
+  monthDateLabel: {
     fontSize: 14,
+    color: "#052D50",
+    marginBottom: 4,
+    textAlign: "center",
+    width: "100%",
+  },
+  monthWheelContainer: {
+    width: "100%",
+    backgroundColor: "transparent",
+    overflow: "hidden",
+  },
+  monthWheel: {
+    height: Platform.OS === "ios" ? 150 : 48,
+    width: "100%",
+    backgroundColor: "transparent",
+  },
+  monthWheelItem: {
+    color: "#052D50",
+    fontSize: 16,
+  },
+  dateValueCard: {
+    width: "100%",
+    backgroundColor: "rgba(245, 245, 245, 1)",
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    height: 44,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  dateValueText: {
+    fontSize: 15,
+    color: "#052D50",
+    textAlign: "center",
+  },
+  dateValuePlaceholder: {
+    color: "#698196",
   },
   exportSheetCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 20,
     padding: 0,
     borderWidth: 1,
@@ -1227,7 +1605,7 @@ const styles = StyleSheet.create({
   },
   exportButtonsContainer: {
     flexDirection: "row",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 20,
     padding: 0,
     borderWidth: 1,
@@ -1235,7 +1613,7 @@ const styles = StyleSheet.create({
   },
   exportButton: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 20,
     paddingVertical: 12,
     alignItems: "center",
@@ -1255,10 +1633,48 @@ const styles = StyleSheet.create({
   },
   exportMainButton: {
     width: "100%",
+    height: 60,
+    backgroundColor: "#0091FF",
+    borderRadius: 999,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 7,
+    elevation: 4,
+  },
+  datePickerOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.35)",
+    justifyContent: "center",
+    padding: 24,
+  },
+  datePickerCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+  },
+  datePickerTitle: {
+    color: "#052D50",
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 12,
+  },
+  datePickerButton: {
+    alignSelf: "flex-end",
+    marginTop: 12,
     backgroundColor: "#0091FF",
     borderRadius: 12,
-    paddingVertical: 12,
-    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  datePickerButtonText: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "700",
   },
   exportMainButtonDisabled: {
     opacity: 0.7,
