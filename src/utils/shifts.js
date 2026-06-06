@@ -99,6 +99,54 @@ export const formatMonthLabel = (monthKey) => {
   return shortMonthFormatter.format(date);
 };
 
+export const getCurrentMonthKey = () => {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+};
+
+export const getTodayDateKey = () => {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+};
+
+export const getAdjacentMonthKey = (monthKey, delta) => {
+  if (!monthKey || !/^\d{4}-\d{2}$/.test(monthKey)) {
+    return null;
+  }
+
+  const [year, month] = monthKey.split('-').map(Number);
+  const date = new Date(year, month - 1 + delta, 1);
+
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+};
+
+export const getISOWeekNumber = (date) => {
+  const normalizedDate = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+  );
+  const dayNum = normalizedDate.getDay() || 7;
+  normalizedDate.setDate(normalizedDate.getDate() + 4 - dayNum);
+  const yearStart = new Date(normalizedDate.getFullYear(), 0, 1);
+
+  return Math.ceil(
+    ((normalizedDate - yearStart) / 86400000 + 1) / 7,
+  );
+};
+
+export const getCalendarWeekNumber = (
+  year,
+  month,
+  firstDayIndex,
+  rowStartCellIndex,
+) => {
+  const mondayOffsetFromFirst = rowStartCellIndex - firstDayIndex;
+  const mondayDate = new Date(year, month - 1, 1 + mondayOffsetFromFirst);
+
+  return getISOWeekNumber(mondayDate);
+};
+
 export const formatTimeRange = (startedAt, endedAt) => {
   if (!startedAt) return '—';
 

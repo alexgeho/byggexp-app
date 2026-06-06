@@ -21,12 +21,17 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { shiftService } from "../../../services";
+import Icon from "react-native-vector-icons/Feather";
 import {
   formatDuration,
-  formatDurationShort,
+  formatDurationVerbose,
   formatMonthLabel,
   formatTimeRange,
   formatShiftListProjectName,
+  getAdjacentMonthKey,
+  getCalendarWeekNumber,
+  getCurrentMonthKey,
+  getTodayDateKey,
   resolveUploadUrl,
 } from "../../../utils/shifts";
 import {
@@ -35,12 +40,14 @@ import {
   isPdfDocument,
 } from "../../../utils/documentPreview";
 
+const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
 export default function ShiftsScreen() {
   const navigation = useNavigation();
   const { theme } = useTheme();
   const [availableMonths, setAvailableMonths] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDates, setSelectedDates] = useState([]);
   const [days, setDays] = useState([]);
   const [currentMonthDuration, setCurrentMonthDuration] = useState(0);
   const [previousMonthDuration, setPreviousMonthDuration] = useState(0);
@@ -64,28 +71,25 @@ export default function ShiftsScreen() {
     setPreviousMonthDuration(data.previousMonthTotalDurationMs || 0);
     setDays(data.days || []);
     setSelectedMonth(data.month);
-    setSelectedDate((previousDate) => {
-      const nextDate =
-        previousDate &&
-        (data.days || []).some((day) => day.date === previousDate)
-          ? previousDate
-          : data.days?.[0]?.date || null;
-      return nextDate;
-    });
+    setSelectedDates((previousDates) =>
+      previousDates.filter((date) =>
+        (data.days || []).some((day) => day.date === date),
+      ),
+    );
   }, []);
 
   const refreshHistory = useCallback(
     async (preferredMonth) => {
       try {
         setLoading(true);
-        const months = await loadMonths();
-        const nextMonth = preferredMonth || months[0];
+        await loadMonths();
+        const nextMonth = preferredMonth || getCurrentMonthKey();
         await loadHistory(nextMonth);
       } catch (error) {
         console.error("Failed to load shifts history:", error);
         setDays([]);
         setAvailableMonths([]);
-        setSelectedDate(null);
+        setSelectedDates([]);
       } finally {
         setLoading(false);
       }
@@ -105,93 +109,219 @@ export default function ShiftsScreen() {
     return map;
   }, [days]);
 
-  const selectedDay = selectedDate ? dayMap.get(selectedDate) : null;
-  const selectedDayShifts = selectedDay?.shifts || [];
-  const selectedDaySummary = useMemo(() => {
-    if (!selectedDayShifts.length) {
+  const selectedShifts = useMemo(() => {
+    const shifts = [];
+
+    selectedDates.forEach((date) => {
+      const day = dayMap.get(date);
+      (day?.shifts || []).forEach((shift) => {
+        shifts.push({ ...shift, date });
+      });
+    });
+
+    return shifts.sort((left, right) => {
+      const leftTime = new Date(left.startedAt || 0).getTime();
+      const rightTime = new Date(right.startedAt || 0).getTime();
+      return leftTime - rightTime;
+    });
+  }, [dayMap, selectedDates]);
+
+  const selectionSummary = useMemo(() => {
+    if (!selectedDates.length) {
       return null;
     }
 
-    const shiftCount = selectedDayShifts.length;
-    const totalDurationMs =
-      selectedDay?.totalDurationMs ??
-      selectedDayShifts.reduce(
-        (total, shift) => total + (shift.durationMs || 0),
-        0,
+    const totalDurationMs = selectedDates.reduce((total, date) => {
+      const day = dayMap.get(date);
+      if (!day) {
+        return total;
+      }
+
+      return (
+        total +
+        (day.totalDurationMs ??
+          (day.shifts || []).reduce(
+            (dayTotal, shift) => dayTotal + (shift.durationMs || 0),
+            0,
+          ))
       );
+    }, 0);
 
-    return `${shiftCount} ${shiftCount === 1 ? "shift" : "shifts"}, ${formatDuration(totalDurationMs)}`;
-  }, [selectedDay, selectedDayShifts]);
+    const dayLabel = selectedDates.length === 1 ? "day" : "days";
 
-  useEffect(() => {
-    setExpandedShiftId(null);
-  }, [selectedDate]);
+    return `${formatDurationVerbose(totalDurationMs)} (${selectedDates.length} ${dayLabel})`;
+  }, [dayMap, selectedDates]);
 
-  const calendarRows = useMemo(() => {
+  const toggleDateGroup = useCallback((dates) => {
+    if (!dates.length) {
+      return;
+    }
+
+    setSelectedDates((previousDates) => {
+      const allSelected = dates.every((date) => previousDates.includes(date));
+
+      if (allSelected) {
+        return previousDates.filter((date) => !dates.includes(date));
+      }
+
+      return Array.from(new Set([...previousDates, ...dates])).sort();
+    });
+  }, []);
+
+  const toggleSelectedDate = useCallback(
+    (dateStr) => {
+      toggleDateGroup([dateStr]);
+    },
+    [toggleDateGroup],
+  );
+
+  const clearSelectedDates = useCallback(() => {
+    setSelectedDates([]);
+  }, []);
+
+  const calendarLayout = useMemo(() => {
     if (!selectedMonth) {
-      return [];
+      return {
+        columnDates: [],
+        rowDates: [],
+        rows: [],
+      };
     }
 
     const [year, month] = selectedMonth.split("-").map(Number);
     const daysInMonth = new Date(year, month, 0).getDate();
     const firstDayIndex = (new Date(year, month - 1, 1).getDay() + 6) % 7;
-
     const cells = [];
+
     for (let index = 0; index < firstDayIndex; index += 1) {
-      cells.push(
-        <View key={`empty-start-${index}`} style={styles.calendarCellEmpty} />,
-      );
+      cells.push(null);
     }
 
     for (let day = 1; day <= daysInMonth; day += 1) {
-      const dateStr = `${selectedMonth}-${day.toString().padStart(2, "0")}`;
-      const shiftDay = dayMap.get(dateStr);
-      const isSelected = selectedDate === dateStr;
-
-      cells.push(
-        <TouchableOpacity
-          key={dateStr}
-          style={[
-            styles.calendarCell,
-            isSelected && styles.calendarCellSelected,
-          ]}
-          onPress={() => shiftDay && setSelectedDate(dateStr)}
-          disabled={!shiftDay}
-        >
-          <Text
-            style={styles.calendarDay}
-          >
-            {day}
-          </Text>
-          {shiftDay ? (
-            <Text style={styles.calendarHours}>
-              {formatDurationShort(shiftDay.totalDurationMs)}
-            </Text>
-          ) : null}
-        </TouchableOpacity>,
-      );
+      cells.push(`${selectedMonth}-${day.toString().padStart(2, "0")}`);
     }
 
     while (cells.length % 7 !== 0) {
-      cells.push(
-        <View
-          key={`empty-end-${cells.length}`}
-          style={styles.calendarCellEmpty}
-        />,
-      );
+      cells.push(null);
+    }
+
+    const columnDates = Array.from({ length: 7 }, () => []);
+    const rowDates = [];
+
+    for (let rowIndex = 0; rowIndex < cells.length / 7; rowIndex += 1) {
+      const rowStartIndex = rowIndex * 7;
+      const datesInRow = [];
+
+      for (let columnIndex = 0; columnIndex < 7; columnIndex += 1) {
+        const dateStr = cells[rowStartIndex + columnIndex];
+        if (dateStr) {
+          columnDates[columnIndex].push(dateStr);
+          datesInRow.push(dateStr);
+        }
+      }
+
+      rowDates.push(datesInRow);
     }
 
     const rows = [];
-    for (let index = 0; index < cells.length; index += 7) {
-      rows.push(
-        <View key={`row-${index}`} style={styles.calendarRow}>
-          {cells.slice(index, index + 7)}
-        </View>,
+    for (let rowIndex = 0; rowIndex < cells.length / 7; rowIndex += 1) {
+      const rowStartIndex = rowIndex * 7;
+      const weekNumber = getCalendarWeekNumber(
+        year,
+        month,
+        firstDayIndex,
+        rowStartIndex,
       );
+
+      rows.push({
+        rowIndex,
+        weekNumber,
+        cells: cells.slice(rowStartIndex, rowStartIndex + 7),
+      });
     }
 
-    return rows;
-  }, [dayMap, selectedDate, selectedMonth]);
+    return {
+      columnDates,
+      rowDates,
+      rows,
+    };
+  }, [selectedMonth]);
+
+  const toggleWeekdayColumn = useCallback(
+    (columnIndex) => {
+      toggleDateGroup(calendarLayout.columnDates[columnIndex] || []);
+    },
+    [calendarLayout.columnDates, toggleDateGroup],
+  );
+
+  const toggleWeekRow = useCallback(
+    (rowIndex) => {
+      toggleDateGroup(calendarLayout.rowDates[rowIndex] || []);
+    },
+    [calendarLayout.rowDates, toggleDateGroup],
+  );
+
+  useEffect(() => {
+    setExpandedShiftId(null);
+  }, [selectedDates]);
+
+  const calendarRows = useMemo(() => {
+    return calendarLayout.rows.map((row) => (
+      <View key={`row-${row.rowIndex}`} style={styles.calendarRow}>
+        <TouchableOpacity
+          style={styles.calendarWeekNumberCell}
+          onPress={() => toggleWeekRow(row.rowIndex)}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.calendarWeekNumberText}>{row.weekNumber}</Text>
+        </TouchableOpacity>
+        <View style={styles.calendarDaysRow}>
+          {row.cells.map((dateStr, columnIndex) => {
+            if (!dateStr) {
+              return (
+                <View
+                  key={`empty-${row.rowIndex}-${columnIndex}`}
+                  style={styles.calendarCellEmpty}
+                />
+              );
+            }
+
+            const day = Number(dateStr.split("-")[2]);
+            const isSelected = selectedDates.includes(dateStr);
+            const isToday = dateStr === todayDateKey;
+
+            return (
+              <TouchableOpacity
+                key={dateStr}
+                style={[
+                  styles.calendarCell,
+                  isToday && !isSelected && styles.calendarCellToday,
+                  isSelected && styles.calendarCellSelected,
+                ]}
+                onPress={() => toggleSelectedDate(dateStr)}
+                activeOpacity={0.85}
+              >
+                <Text
+                  style={[
+                    styles.calendarDay,
+                    isSelected && styles.calendarDaySelected,
+                  ]}
+                >
+                  {day}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </View>
+    ));
+  }, [
+    calendarLayout.rows,
+    selectedDates,
+    todayDateKey,
+    toggleSelectedDate,
+    toggleWeekRow,
+  ]);
 
   const handleOpenShiftPhoto = useCallback(
     async (photo) => {
@@ -231,6 +361,34 @@ export default function ShiftsScreen() {
       }
     },
     [navigation],
+  );
+
+  const currentMonthKey = useMemo(() => getCurrentMonthKey(), []);
+  const todayDateKey = useMemo(() => getTodayDateKey(), []);
+
+  const canGoBackMonth = Boolean(selectedMonth);
+  const canGoForwardMonth = Boolean(
+    selectedMonth && selectedMonth < currentMonthKey,
+  );
+
+  const handleChangeMonth = useCallback(
+    async (delta) => {
+      if (!selectedMonth) {
+        return;
+      }
+
+      const nextMonth = getAdjacentMonthKey(selectedMonth, delta);
+      if (!nextMonth) {
+        return;
+      }
+
+      if (delta > 0 && nextMonth > currentMonthKey) {
+        return;
+      }
+
+      await refreshHistory(nextMonth);
+    },
+    [currentMonthKey, refreshHistory, selectedMonth],
   );
 
   const handleExport = useCallback(async () => {
@@ -293,14 +451,6 @@ export default function ShiftsScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.exportSelector}>
-            <Text
-              style={[
-                styles.exportLabel,
-                { fontFamily: theme.text.fontFamily["semiBold"] },
-              ]}
-            >
-              Period for export
-            </Text>
             <TouchableOpacity
               style={styles.dropdownButton}
               onPress={() => setPickerVisible(true)}
@@ -308,10 +458,17 @@ export default function ShiftsScreen() {
               <Text
                 style={[
                   styles.dropdownText,
-                  { fontFamily: theme.text.fontFamily["semiBold"] },
+                  !selectedMonth && styles.dropdownPlaceholderText,
+                  {
+                    fontFamily: theme.text.fontFamily[
+                      selectedMonth ? "semiBold" : "regular"
+                    ],
+                  },
                 ]}
               >
-                {formatMonthLabel(selectedMonth)}
+                {selectedMonth
+                  ? formatMonthLabel(selectedMonth)
+                  : "Select period for export"}
               </Text>
               <Image
                 style={styles.dropdownIcon}
@@ -321,14 +478,54 @@ export default function ShiftsScreen() {
           </View>
 
           <View style={styles.calendarContainer}>
+            <View style={styles.calendarMonthBar}>
+            <View style={styles.calendarNav}>
+              <TouchableOpacity
+                style={[
+                  styles.calendarNavButton,
+                  !canGoBackMonth && styles.calendarNavButtonDisabled,
+                ]}
+                onPress={() => handleChangeMonth(-1)}
+                disabled={!canGoBackMonth}
+                activeOpacity={0.85}
+              >
+                <Icon name="chevron-left" size={16} color="#0177DE" />
+              </TouchableOpacity>
+              <Text
+                style={[
+                  styles.calendarNavLabel,
+                  { fontFamily: theme.text.fontFamily["semiBold"] },
+                ]}
+              >
+                {selectedMonth ? formatMonthLabel(selectedMonth) : ""}
+              </Text>
+              <TouchableOpacity
+                style={[
+                  styles.calendarNavButton,
+                  !canGoForwardMonth && styles.calendarNavButtonDisabled,
+                ]}
+                onPress={() => handleChangeMonth(1)}
+                disabled={!canGoForwardMonth}
+                activeOpacity={0.85}
+              >
+                <Icon name="chevron-right" size={16} color="#0177DE" />
+              </TouchableOpacity>
+            </View>
+            </View>
             <View style={styles.calendarHeader}>
-              <Text style={styles.calendarHeaderDay}>Mon</Text>
-              <Text style={styles.calendarHeaderDay}>Tue</Text>
-              <Text style={styles.calendarHeaderDay}>Wed</Text>
-              <Text style={styles.calendarHeaderDay}>Thu</Text>
-              <Text style={styles.calendarHeaderDay}>Fri</Text>
-              <Text style={styles.calendarHeaderDay}>Sat</Text>
-              <Text style={styles.calendarHeaderDay}>Sun</Text>
+              <View style={styles.calendarWeekHeaderCell} />
+              <View style={styles.calendarDaysHeader}>
+                {WEEKDAY_LABELS.map((label, columnIndex) => (
+                  <TouchableOpacity
+                    key={label}
+                    style={styles.calendarHeaderDayButton}
+                    onPress={() => toggleWeekdayColumn(columnIndex)}
+                    activeOpacity={0.85}
+                  >
+                    <Text style={styles.calendarHeaderDay}>{label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
             {calendarRows.length ? (
               calendarRows
@@ -340,34 +537,37 @@ export default function ShiftsScreen() {
           </View>
 
           <View style={styles.shiftDetailsContainer}>
-            <View style={styles.shiftDetailsHeader}>
-              <Text
-                style={[
-                  styles.shiftTitle,
-                  { fontFamily: theme.text.fontFamily["regular"] },
-                ]}
-              >
-                Shifts on selected day
-              </Text>
-              {selectedDaySummary ? (
+            {selectedDates.length > 0 ? (
+              <View style={styles.shiftDetailsHeader}>
                 <Text
                   style={[
-                    styles.shiftSummary,
-                    { fontFamily: theme.text.fontFamily["regular"] },
+                    styles.shiftSelectionSummary,
+                    { fontFamily: theme.text.fontFamily["medium"] },
                   ]}
                 >
-                  {selectedDaySummary}
+                  {selectionSummary}
                 </Text>
-              ) : null}
-            </View>
+                <TouchableOpacity
+                  style={styles.clearSelectionButton}
+                  onPress={clearSelectedDates}
+                  activeOpacity={0.85}
+                >
+                  <Icon name="x" size={18} color="#698196" />
+                </TouchableOpacity>
+              </View>
+            ) : null}
 
             <View style={styles.shiftDetailsContent}>
-              {selectedDayShifts.length === 0 ? (
+              {selectedDates.length === 0 ? (
                 <Text style={styles.emptyDetailsText}>
-                  Select a highlighted day to see shift details.
+                  Select dates to see shifts.
+                </Text>
+              ) : selectedShifts.length === 0 ? (
+                <Text style={styles.emptyDetailsText}>
+                  No shifts on selected dates.
                 </Text>
               ) : (
-                selectedDayShifts.map((shift) => {
+                selectedShifts.map((shift) => {
                   const isExpanded = expandedShiftId === shift.id;
 
                   return (
@@ -708,60 +908,111 @@ const styles = StyleSheet.create({
   },
   exportSelector: {
     width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  exportLabel: {
-    color: "#052D50",
-    fontSize: 17,
-    lineHeight: 22,
-    fontWeight: "600",
   },
   dropdownButton: {
+    width: "100%",
+    height: 48,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     gap: 8,
-    paddingTop: 10,
-    paddingBottom: 10,
     paddingLeft: 24,
     paddingRight: 13,
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
-    borderWidth: 1,
-    borderColor: "rgba(7, 133, 244, 0.45)",
+    backgroundColor: "rgba(5, 45, 80, 0.05)",
     borderRadius: 71,
   },
   dropdownText: {
-    color: "rgba(7, 92, 158, 1)",
+    flex: 1,
+    color: "#052D50",
     fontSize: 15,
     fontWeight: "600",
+  },
+  dropdownPlaceholderText: {
+    color: "#052D50",
+    fontWeight: "400",
   },
   dropdownIcon: {
     width: 16,
     height: 16,
-    tintColor: "rgba(7, 92, 158, 1)",
+    tintColor: "#052D50",
   },
   calendarContainer: {
     width: "100%",
     marginBottom: 12,
   },
+  calendarMonthBar: {
+    paddingTop: 28,
+    paddingBottom: 20,
+  },
+  calendarNav: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  calendarNavButton: {
+    width: 16,
+    height: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  calendarNavButtonDisabled: {
+    opacity: 0.45,
+  },
+  calendarNavLabel: {
+    flex: 1,
+    color: "#052D50",
+    fontSize: 17,
+    lineHeight: 22,
+    textAlign: "center",
+  },
   calendarHeader: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 8,
+    gap: 8,
+  },
+  calendarWeekHeaderCell: {
+    width: 28,
+  },
+  calendarDaysHeader: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  calendarHeaderDayButton: {
+    width: 40,
+    alignItems: "center",
+    justifyContent: "center",
   },
   calendarHeaderDay: {
     color: "#698196",
     fontSize: 12,
     fontWeight: "500",
-    width: 40,
     textAlign: "center",
   },
   calendarRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 8,
+    gap: 8,
+  },
+  calendarWeekNumberCell: {
+    width: 28,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  calendarWeekNumberText: {
+    color: "#698196",
+    fontSize: 12,
+    fontWeight: "500",
+    textAlign: "center",
+  },
+  calendarDaysRow: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   calendarCell: {
     width: 40,
@@ -769,28 +1020,29 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 8,
-    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    backgroundColor: "rgba(255, 255, 255, 0.4)",
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+  },
+  calendarCellToday: {
+    backgroundColor: "#FFFFFF",
   },
   calendarCellSelected: {
+    backgroundColor: "rgba(7, 133, 244, 0.6)",
     borderWidth: 1,
-    borderColor: "rgba(168, 183, 195, 1)",
+    borderColor: "#FFFFFF",
   },
   calendarCellEmpty: {
     width: 40,
     height: 40,
   },
   calendarDay: {
-    color: "#052D5066",
+    color: "#052D50",
     fontSize: 14,
     fontWeight: "500",
   },
-  calendarHours: {
-    color: "#052D50",
-    fontSize: 10,
-    marginTop: 2,
-    backgroundColor: "rgba(228, 235, 240, 1)",
-    paddingHorizontal: 4,
-    borderRadius: 4,
+  calendarDaySelected: {
+    color: "#FFFFFF",
   },
   shiftDetailsContainer: {
     width: "100%",
@@ -806,18 +1058,17 @@ const styles = StyleSheet.create({
   shiftDetailsContent: {
     gap: 12,
   },
-  shiftTitle: {
-    color: "rgba(122, 148, 168, 1)",
+  shiftSelectionSummary: {
+    color: "rgba(95, 117, 136, 1)",
     fontSize: 15,
     lineHeight: 22,
-    fontWeight: "400",
     flex: 1,
   },
-  shiftSummary: {
-    color: "rgba(95, 117, 136, 1)",
-    fontSize: 13,
-    lineHeight: 18,
-    fontWeight: "400",
+  clearSelectionButton: {
+    width: 28,
+    height: 28,
+    alignItems: "center",
+    justifyContent: "center",
   },
   shiftCard: {
     backgroundColor: "rgba(255, 255, 255, 0.6)",
