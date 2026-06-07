@@ -34,9 +34,14 @@ const sanitizeFilePart = (value) => (
     .toLowerCase()
 );
 
-const buildExportFileName = ({ format = 'pdf', from, to, month, workerName, projectName }) => {
+const buildExportFileName = ({ format = 'pdf', from, to, month, dates, workerName, projectName }) => {
   const extension = format === 'excel' ? 'xlsx' : 'pdf';
-  const rangePart = sanitizeFilePart(month || `${from || 'from'}-${to || 'to'}` || 'all-time') || 'all-time';
+  const rangePart = sanitizeFilePart(
+    month ||
+      dates?.replace(/,/g, '-') ||
+      `${from || 'from'}-${to || 'to'}` ||
+      'all-time',
+  ) || 'all-time';
   const workerPart = sanitizeFilePart(workerName);
   const projectPart = sanitizeFilePart(projectName);
   const nameParts = ['shift-report', rangePart, workerPart, projectPart].filter(Boolean);

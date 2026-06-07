@@ -167,9 +167,12 @@ export const buildExportMonthOptions = (
   availableMonths = [],
   extraMonths = [],
 ) => {
+  const isValidMonthKey = (value) =>
+    typeof value === 'string' && /^\d{4}-\d{2}$/.test(value);
+
   const monthSet = new Set([
-    ...availableMonths,
-    ...extraMonths,
+    ...availableMonths.filter(isValidMonthKey),
+    ...extraMonths.filter(isValidMonthKey),
     getCurrentMonthKey(),
   ]);
   const now = new Date();
