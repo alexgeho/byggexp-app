@@ -411,7 +411,7 @@ export default function ShiftsScreen() {
     [currentMonthKey, refreshHistory, selectedMonth],
   );
 
-  const isSingleDateExport = selectedDates.length === 1;
+  const showExportPeriodOptions = selectedDates.length <= 1;
 
   const exportMonthOptions = useMemo(
     () =>
@@ -419,8 +419,9 @@ export default function ShiftsScreen() {
         exportFromMonth,
         exportToMonth,
         selectedDates[0]?.slice(0, 7),
+        selectedMonth,
       ]),
-    [availableMonths, exportFromMonth, exportToMonth, selectedDates],
+    [availableMonths, exportFromMonth, exportToMonth, selectedDates, selectedMonth],
   );
 
   const closeExportSheet = useCallback(() => {
@@ -429,27 +430,24 @@ export default function ShiftsScreen() {
   }, []);
 
   const openExportSheet = useCallback(() => {
-    if (!selectedDates.length) {
-      Alert.alert("No dates selected", "Select at least one date to export.");
-      return;
-    }
-
     setSelectedExportType("pdf");
 
-    if (selectedDates.length === 1) {
+    if (selectedDates.length <= 1) {
       const selectedDate = selectedDates[0];
-      const monthKey = selectedDate.slice(0, 7);
+      const monthKey =
+        selectedDate?.slice(0, 7) || selectedMonth || getCurrentMonthKey();
+      const defaultDate = selectedDate || getTodayDateKey();
 
       setExportPeriodTab("Month");
       setExportFromMonth(monthKey);
       setExportToMonth(monthKey);
-      setExportFromDate(selectedDate);
-      setExportToDate(selectedDate);
+      setExportFromDate(defaultDate);
+      setExportToDate(defaultDate);
     }
 
     setDatePickerTarget(null);
     exportBottomSheetRef.current?.expand();
-  }, [selectedDates]);
+  }, [selectedDates, selectedMonth]);
 
   const renderExportBackdrop = useCallback(
     (props) => (
@@ -485,52 +483,45 @@ export default function ShiftsScreen() {
       return;
     }
 
-    if (!selectedDates.length) {
-      Alert.alert("No dates selected", "Select at least one date to export.");
-      return;
-    }
-
     let from = "";
     let to = "";
 
-    if (selectedDates.length === 1) {
-      if (exportPeriodTab === "Month") {
-        if (!exportFromMonth || !exportToMonth) {
-          Alert.alert("Invalid period", "Choose both months for export.");
-          return;
-        }
-
-        if (exportFromMonth > exportToMonth) {
-          Alert.alert(
-            "Invalid period",
-            'The "From" month must be earlier than the "To" month.',
-          );
-          return;
-        }
-
-        from = getMonthDateRange(exportFromMonth).from;
-        to = getMonthDateRange(exportToMonth).to;
-      } else {
-        from = exportFromDate;
-        to = exportToDate;
-
-        if (!from || !to) {
-          Alert.alert("Invalid period", "Choose both dates for export.");
-          return;
-        }
-
-        if (from > to) {
-          Alert.alert(
-            "Invalid period",
-            'The "From" date must be earlier than the "To" date.',
-          );
-          return;
-        }
-      }
-    } else {
+    if (selectedDates.length > 1) {
       const sortedDates = [...selectedDates].sort();
       from = sortedDates[0];
       to = sortedDates[sortedDates.length - 1];
+    } else if (exportPeriodTab === "Month") {
+      if (!exportFromMonth || !exportToMonth) {
+        Alert.alert("Invalid period", "Choose both months for export.");
+        return;
+      }
+
+      if (exportFromMonth > exportToMonth) {
+        Alert.alert(
+          "Invalid period",
+          'The "From" month must be earlier than the "To" month.',
+        );
+        return;
+      }
+
+      from = getMonthDateRange(exportFromMonth).from;
+      to = getMonthDateRange(exportToMonth).to;
+    } else {
+      from = exportFromDate;
+      to = exportToDate;
+
+      if (!from || !to) {
+        Alert.alert("Invalid period", "Choose both dates for export.");
+        return;
+      }
+
+      if (from > to) {
+        Alert.alert(
+          "Invalid period",
+          'The "From" date must be earlier than the "To" date.',
+        );
+        return;
+      }
     }
 
     try {
@@ -942,7 +933,7 @@ export default function ShiftsScreen() {
             </View>
           </View>
 
-          {isSingleDateExport ? (
+          {showExportPeriodOptions ? (
             <>
               <Text
                 style={[
