@@ -41,11 +41,12 @@ import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 
 import { createStyles } from "./CustomizeHomeScreen.styles";
+import { canManageEmployees } from "../../utils/userRoles";
 
 export default function CustomizeHomeScreen() {
   const navigation = useNavigation();
 
-  const { selectedProject } =
+  const { selectedProject, user } =
     useContext(AuthContext);
 
   const {
@@ -227,9 +228,18 @@ export default function CustomizeHomeScreen() {
 
         {/* BUTTON LIST */}
         <View style={styles.list}>
-          {mainButtons.map(function renderButton(
+          {mainButtons
+            .filter(function filterButton(button) {
+              if (button.adminOnly) {
+                return canManageEmployees(user?.role);
+              }
+
+              return true;
+            })
+            .map(function renderButton(
             button,
             index,
+            filteredButtons,
           ) {
             const isEnabled =
               enabledButtons.includes(button.id);
@@ -240,7 +250,7 @@ export default function CustomizeHomeScreen() {
                 style={[
                   styles.item,
                   index !==
-                    mainButtons.length - 1 &&
+                    filteredButtons.length - 1 &&
                     styles.itemBorder,
                 ]}
                 onPress={function handlePress() {

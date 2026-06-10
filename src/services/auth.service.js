@@ -32,6 +32,11 @@ export const authService = {
     return data;
   },
 
+  magicLogin: async (code) => {
+    const { data } = await api.post('/auth/magic-login', { code });
+    return data;
+  },
+
   logout: async () => {
   },
 };

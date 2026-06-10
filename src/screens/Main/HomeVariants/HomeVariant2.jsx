@@ -56,6 +56,7 @@ import {
 import { useUnreadChats } from "../../../hooks/useUnreadChats";
 import UnreadBadge from "../../../components/common/UnreadBadge/UnreadBadge";
 import ShiftHistoryPreview from "../../../components/common2/ShiftHistoryPreview/ShiftHistoryPreview";
+import { isHomeButtonVisible } from "../../../utils/userRoles";
 
 export default function HomeVariant2() {
   const {
@@ -81,6 +82,7 @@ export default function HomeVariant2() {
   const {
     selectedProject,
     setSelectedProject,
+    user,
   } =
     useContext(AuthContext);
   const selectedProjectId =
@@ -116,12 +118,13 @@ export default function HomeVariant2() {
   const visibleQuickButtons = useMemo(
     () =>
       mainButtons.filter(function filterButton(button) {
-        return (
-          button.id !== "next" &&
-          enabledButtons.includes(button.id)
+        return isHomeButtonVisible(
+          button,
+          enabledButtons,
+          user?.role,
         );
       }),
-    [enabledButtons],
+    [enabledButtons, user?.role],
   );
   const hasSections =
     enabledSections.includes("shift-history") ||

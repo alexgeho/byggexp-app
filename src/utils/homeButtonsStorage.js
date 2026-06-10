@@ -1,6 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { defaultEnabledSections } from "../constants/mainButtons";
+import {
+  defaultEnabledButtons,
+  defaultEnabledSections,
+} from "../constants/mainButtons";
 
 const STORAGE_KEY = "enabled-home-buttons";
 
@@ -15,6 +18,22 @@ export async function saveEnabledButtons(buttons) {
   );
 }
 
+export function mergeEnabledButtons(savedButtons) {
+  if (!savedButtons) {
+    return [...defaultEnabledButtons];
+  }
+
+  const merged = [...savedButtons];
+
+  defaultEnabledButtons.forEach((buttonId) => {
+    if (!merged.includes(buttonId)) {
+      merged.push(buttonId);
+    }
+  });
+
+  return merged;
+}
+
 export async function getEnabledButtons() {
   const data = await AsyncStorage.getItem(STORAGE_KEY);
 
@@ -22,7 +41,14 @@ export async function getEnabledButtons() {
     return null;
   }
 
-  return JSON.parse(data);
+  const saved = JSON.parse(data);
+  const merged = mergeEnabledButtons(saved);
+
+  if (merged.length !== saved.length) {
+    await saveEnabledButtons(merged);
+  }
+
+  return merged;
 }
 
 export async function getEnabledSections() {

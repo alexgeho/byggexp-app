@@ -42,6 +42,8 @@ import HelpSupportScreen from "../screens/Menu/HelpSupportScreen";
 import LegalPoliciesScreen from "../screens/Menu/LegalPoliciesScreen";
 import NotificationsSettingsScreen from "../screens/Menu/NotificationsSettingsScreen";
 import DocumentsScreen from "../screens/Menu/DocumentsScreen";
+import EmployeesScreen from "../screens/Menu/EmployeesScreen";
+import CreateEmployeeScreen from "../screens/Menu/CreateEmployeeScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -62,6 +64,11 @@ export default function AppNavigator() {
     user?.role,
   );
   const isCompanyAdmin = user?.role === "companyAdmin";
+  const canManageEmployees = [
+    "superadmin",
+    "companyAdmin",
+    "projectAdmin",
+  ].includes(user?.role);
   const navigationTheme = {
     ...DefaultTheme,
     colors: {
@@ -165,6 +172,16 @@ export default function AppNavigator() {
               component={NotificationsSettingsScreen}
             />
             <Stack.Screen name="Documents" component={DocumentsScreen} />
+            <Stack.Screen
+              name="Employees"
+              component={EmployeesScreen}
+              options={{ gestureEnabled: canManageEmployees }}
+            />
+            <Stack.Screen
+              name="CreateEmployee"
+              component={CreateEmployeeScreen}
+              options={{ gestureEnabled: canManageEmployees }}
+            />
             <Stack.Screen name="AboutApp" component={AboutAppScreen} />
             <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
             <Stack.Screen name="LegalPolicies" component={LegalPoliciesScreen} />

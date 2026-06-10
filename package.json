@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "expo start",
+    "start": "expo start --localhost",
+    "start:lan": "expo start",
     "android": "expo run:android",
     "ios": "node scripts/run-ios-simulator.js",
     "ios:18.2": "npm run ios",

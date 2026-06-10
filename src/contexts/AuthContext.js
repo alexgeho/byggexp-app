@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { saveToken, saveUser, getUser, removeToken, removeUser, saveRefreshToken, removeRefreshToken } from '../utils/storage';
+import { canManageEmployees as checkCanManageEmployees } from '../utils/userRoles';
 import { authService, userService, logUserActivity } from '../services';
 import { jwtDecode } from 'jwt-decode';
 import { unregisterPushToken } from '../services/notifications.service';
@@ -104,6 +105,20 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const magicLogin = async (code) => {
+    try {
+      setIsLoading(true);
+      const data = await authService.magicLogin(code);
+      await applyAuthSession(data);
+      setIsLoading(false);
+      return true;
+    } catch (error) {
+      console.error('AuthContext: Magic login failed:', error);
+      setIsLoading(false);
+      return false;
+    }
+  };
+
   const registerCompany = async ({ companyName, userName, email }) => {
     try {
       setIsLoading(true);
@@ -148,16 +163,19 @@ export const AuthProvider = ({ children }) => {
 
   // Хелперы для проверки ролей
   const isWorker = () => user?.role === 'worker';
+  const isSuperAdmin = () => user?.role === 'superadmin';
   const isProjectAdmin = () => user?.role === 'projectAdmin';
   const isCompanyAdmin = () => user?.role === 'companyAdmin';
   const canManageProjects = () => ['superadmin', 'companyAdmin', 'projectAdmin'].includes(user?.role);
   const canManageWorkers = () => ['companyAdmin', 'projectAdmin'].includes(user?.role);
+  const canManageEmployees = () => checkCanManageEmployees(user?.role);
 
   return (
     <AuthContext.Provider value={{ 
       isAuthenticated, 
       isLoading, 
       login,
+      magicLogin,
       registerCompany,
       logout, 
       userId, 
@@ -168,10 +186,12 @@ export const AuthProvider = ({ children }) => {
       updateStoredUser,
       fetchUserInfo,
       isWorker,
+      isSuperAdmin,
       isProjectAdmin,
       isCompanyAdmin,
       canManageProjects,
       canManageWorkers,
+      canManageEmployees,
     }}>
       {children}
     </AuthContext.Provider>

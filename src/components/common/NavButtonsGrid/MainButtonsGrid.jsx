@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   View,
   Text,
@@ -15,14 +15,15 @@ import {
   defaultEnabledButtons,
 } from "../../../constants/mainButtons";
 import { getEnabledButtons } from "../../../utils/homeButtonsStorage";
+import { isHomeButtonVisible } from "../../../utils/userRoles";
+import AuthContext from "../../../contexts/AuthContext";
 import { useUnreadChats } from "../../../hooks/useUnreadChats";
 import UnreadBadge from "../UnreadBadge/UnreadBadge";
 import { createStyles } from "./MainButtonsGrid.styles";
 
 export default function MainButtonsGrid() {
-  
   const navigation = useNavigation();
-
+  const { user } = useContext(AuthContext);
   const { theme } = useTheme();
 
   const styles = createStyles(theme);
@@ -54,11 +55,10 @@ export default function MainButtonsGrid() {
     <View style={styles.container}>
       {mainButtons
         .filter(function filterButtons(button) {
-          return (
-            button.id !== "next" &&
-            enabledButtons.includes(
-              button.id,
-            )
+          return isHomeButtonVisible(
+            button,
+            enabledButtons,
+            user?.role,
           );
         })
         .map(function renderButton(button) {

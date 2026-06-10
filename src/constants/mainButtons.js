@@ -6,6 +6,13 @@ export const mainButtons = [
     screen: "HomeVariant2",
   },
   {
+    id: "employees",
+    title: "Employees",
+    icon: require("../assets/mainButtons/employees.png"),
+    screen: "Employees",
+    adminOnly: true,
+  },
+  {
     id: "camera",
     title: "Camera",
     icon: require("../assets/mainButtons/Camera.png"),
@@ -44,11 +51,11 @@ export const homeSections = [
 
 export const defaultEnabledButtons = [
   "next",
+  "employees",
   "camera",
   "chats",
   "shifts",
   "projects",
-  
 ];
 
 export const defaultEnabledSections = [

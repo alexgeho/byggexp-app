@@ -34,6 +34,7 @@ import {
 } from "../../../utils/homeButtonsStorage";
 import ProjectFilesSection from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
 import ShiftHistoryPreview from "../../../components/common2/ShiftHistoryPreview/ShiftHistoryPreview";
+import { isHomeButtonVisible } from "../../../utils/userRoles";
 
 export default function MainScreen() {
   const { theme } = useTheme();
@@ -296,10 +297,8 @@ export default function MainScreen() {
   const handleNav = (screen) => {
     navigation.navigate(screen);
   };
-  const visibleButtons = mainButtons.filter(
-    (button) =>
-      button.id !== "next" &&
-      enabledButtons.includes(button.id),
+  const visibleButtons = mainButtons.filter((button) =>
+    isHomeButtonVisible(button, enabledButtons, user?.role),
   );
 
   const BackgroundComponent = Platform.OS === "web" ? View : LinearGradient;

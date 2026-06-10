@@ -9,6 +9,7 @@ import { FeedbackProvider } from './src/contexts/FeedbackContext';
 import { ThemeProvider } from './src/theme/ThemeContext';
 import NotificationBootstrap from './src/components/NotificationBootstrap';
 import ShiftLocationMonitor from './src/components/ShiftLocationMonitor';
+import MagicLinkHandler from './src/components/MagicLinkHandler';
 
 const defaultTextStyle = { fontFamily: 'DMSans-Regular' };
 
@@ -66,6 +67,7 @@ export default function App() {
             <FeedbackProvider>
               <NotificationBootstrap />
               <ShiftLocationMonitor />
+              <MagicLinkHandler />
               <AppNavigator />
             </FeedbackProvider>
           </SafeAreaProvider>

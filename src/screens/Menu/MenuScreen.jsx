@@ -64,6 +64,43 @@ export default function MenuScreen() {
       },
     ];
 
+    const employeesItem = {
+      id: "employees",
+      screen: "Employees",
+      title: "Employees",
+      icon: require("../../assets/mainButtons/employees.png"),
+      color: theme.colors.primary,
+    };
+
+    // SuperAdmin
+    if (user?.role === "superadmin") {
+      return [
+        ...baseItems,
+        {
+          id: "tasks",
+          screen: "Tasks",
+          title: "Tasks",
+          icon: require("../../assets/Tasks.png"),
+          color: theme.colors.primary,
+        },
+        {
+          id: "shifts",
+          screen: "Shifts",
+          title: "Shifts",
+          icon: require("../../assets/WorkShifts.png"),
+          color: theme.colors.primary,
+        },
+        employeesItem,
+        {
+          id: "projects",
+          screen: "Projects",
+          title: "Projects",
+          icon: require("../../assets/Projekts.png"),
+          color: theme.colors.primary,
+        },
+      ];
+    }
+
     // CompanyAdmin
     if (user?.role === "companyAdmin") {
       return [
@@ -88,12 +125,7 @@ export default function MenuScreen() {
           icon: require("../../assets/About.png"),
           color: theme.colors.primary,
         },
-        {
-          id: "users",
-          title: "Users",
-          icon: require("../../assets/Tasks.png"),
-          color: theme.colors.primary,
-        },
+        employeesItem,
         {
           id: "projects",
           title: "Projects",
@@ -133,12 +165,7 @@ export default function MenuScreen() {
           icon: require("../../assets/Projekts.png"),
           color: theme.colors.primary,
         },
-        {
-          id: "team",
-          title: "My Team",
-          icon: require("../../assets/Tasks.png"),
-          color: theme.colors.primary,
-        },
+        employeesItem,
         {
           id: "reports",
           title: "Reports",
@@ -244,13 +271,15 @@ export default function MenuScreen() {
           {/* BADGE */}
           <View style={styles.roleBadge}>
             <Text style={styles.roleText}>
-              {user.role === "companyAdmin"
-                ? "Company Admin"
-                : user.role === "projectAdmin"
-                  ? "Project Admin"
-                  : user.role === "worker"
-                    ? "Worker"
-                    : "User"}
+              {user.role === "superadmin"
+                ? "Super Admin"
+                : user.role === "companyAdmin"
+                  ? "Company Admin"
+                  : user.role === "projectAdmin"
+                    ? "Project Admin"
+                    : user.role === "worker"
+                      ? "Worker"
+                      : "User"}
             </Text>
           </View>
         </View>
