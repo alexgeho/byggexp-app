@@ -232,33 +232,27 @@ export default function CreateEmployeeScreen() {
       return;
     }
 
-    if (!trimmedName) {
-      setFormError("Please fill in first and last name.");
-      return;
-    }
-
-    if (!areaCode || !phoneNumber) {
-      setFormError("Please enter a valid phone number.");
-      return;
-    }
-
-    if (!selectedRole) {
-      setFormError("Please select a role.");
-      return;
-    }
-
     setFormError("");
     setSaving(true);
 
     try {
       const payload = {
-        name: trimmedName,
         email: trimmedEmail,
-        phoneAreaCode: areaCode,
-        phoneNumber,
-        role: selectedRole,
         inviteViaEmail: true,
       };
+
+      if (trimmedName) {
+        payload.name = trimmedName;
+      }
+
+      if (areaCode && phoneNumber) {
+        payload.phoneAreaCode = areaCode;
+        payload.phoneNumber = phoneNumber;
+      }
+
+      if (selectedRole) {
+        payload.role = selectedRole;
+      }
 
       if (selectedProjectIds.length > 0) {
         payload.projectIds = selectedProjectIds;
@@ -271,7 +265,7 @@ export default function CreateEmployeeScreen() {
       await userService.create(payload);
       showSuccess({
         title: "Invitation sent",
-        message: `${trimmedName} will receive an email with a password and confirmation link.`,
+        message: `${trimmedName || trimmedEmail} will receive an email with a password and confirmation link.`,
       });
       navigation.goBack();
     } catch (error) {
@@ -346,14 +340,14 @@ export default function CreateEmployeeScreen() {
               autoCapitalize="none"
             />
             <PlainFormRow
-              label="First and Last name *"
+              label="First and Last name"
               value={name}
               onChangeText={setName}
               placeholder="Employee name"
               autoCapitalize="words"
             />
             <PlainFormRow
-              label="Phone number *"
+              label="Phone number"
               value={phone}
               onChangeText={setPhone}
               placeholder="+46 701234567"
@@ -373,7 +367,7 @@ export default function CreateEmployeeScreen() {
             />
             <SelectRow
               icon="flag"
-              label="Role *"
+              label="Role"
               value={selectedRoleLabel}
               placeholder="Select role"
               onPress={() => setShowRoleModal(true)}
