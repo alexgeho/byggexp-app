@@ -14,8 +14,8 @@ export const mainButtons = [
   },
   {
     id: "tools",
-    title: "Instruments",
-    icon: require("../assets/Tracker.png"),
+    title: "Tools",
+    icon: require("../assets/mainButtons/tools.png"),
     screen: "Tools",
   },
   {
