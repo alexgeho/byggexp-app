@@ -72,6 +72,14 @@ export default function MenuScreen() {
       color: theme.colors.primary,
     };
 
+    const toolsItem = {
+      id: "tools",
+      screen: "Tools",
+      title: "Instruments",
+      icon: require("../../assets/Tracker.png"),
+      color: theme.colors.primary,
+    };
+
     // SuperAdmin
     if (user?.role === "superadmin") {
       return [
@@ -91,6 +99,7 @@ export default function MenuScreen() {
           color: theme.colors.primary,
         },
         employeesItem,
+        toolsItem,
         {
           id: "projects",
           screen: "Projects",
@@ -126,6 +135,7 @@ export default function MenuScreen() {
           color: theme.colors.primary,
         },
         employeesItem,
+        toolsItem,
         {
           id: "projects",
           title: "Projects",
@@ -166,6 +176,7 @@ export default function MenuScreen() {
           color: theme.colors.primary,
         },
         employeesItem,
+        toolsItem,
         {
           id: "reports",
           title: "Reports",
@@ -178,6 +189,7 @@ export default function MenuScreen() {
     // Worker
     return [
       ...baseItems,
+      toolsItem,
       {
         id: "tasks",
         screen: "Tasks",

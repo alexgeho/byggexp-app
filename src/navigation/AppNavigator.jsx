@@ -44,6 +44,8 @@ import NotificationsSettingsScreen from "../screens/Menu/NotificationsSettingsSc
 import DocumentsScreen from "../screens/Menu/DocumentsScreen";
 import EmployeesScreen from "../screens/Menu/EmployeesScreen";
 import CreateEmployeeScreen from "../screens/Menu/CreateEmployeeScreen";
+import ToolsScreen from "../screens/Menu/ToolsScreen";
+import CreateToolScreen from "../screens/Menu/CreateToolScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -181,6 +183,12 @@ export default function AppNavigator() {
               name="CreateEmployee"
               component={CreateEmployeeScreen}
               options={{ gestureEnabled: canManageEmployees }}
+            />
+            <Stack.Screen name="Tools" component={ToolsScreen} />
+            <Stack.Screen
+              name="CreateTool"
+              component={CreateToolScreen}
+              options={{ gestureEnabled: canManageProjects }}
             />
             <Stack.Screen name="AboutApp" component={AboutAppScreen} />
             <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />

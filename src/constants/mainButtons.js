@@ -13,6 +13,12 @@ export const mainButtons = [
     adminOnly: true,
   },
   {
+    id: "tools",
+    title: "Instruments",
+    icon: require("../assets/Tracker.png"),
+    screen: "Tools",
+  },
+  {
     id: "camera",
     title: "Camera",
     icon: require("../assets/mainButtons/Camera.png"),
@@ -52,6 +58,7 @@ export const homeSections = [
 export const defaultEnabledButtons = [
   "next",
   "employees",
+  "tools",
   "camera",
   "chats",
   "shifts",

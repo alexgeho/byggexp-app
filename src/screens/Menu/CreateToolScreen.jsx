@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
+  Image,
   Modal,
   ScrollView,
   StyleSheet,
@@ -23,44 +25,15 @@ import {
   standardScreenHeader,
   standardScreenHeaderPlaceholder,
 } from "../../styles/screenLayout";
-import {
-  canManageEmployees,
-  getCreatableRoleOptions,
-  USER_ROLES,
-} from "../../utils/userRoles";
+import { pickUploadAssets } from "../../utils/uploadPicker";
 
 const getEntityId = (entity) => {
   const id = entity?._id || entity?.id;
   return id ? String(id) : "";
 };
 
-const parsePhoneFields = (value) => {
-  const digits = String(value || "").replace(/\D/g, "");
-
-  if (!digits) {
-    return { areaCode: undefined, phone: undefined };
-  }
-
-  if (digits.length <= 2) {
-    return {
-      areaCode: parseInt(digits, 10),
-      phone: undefined,
-    };
-  }
-
-  return {
-    areaCode: parseInt(digits.slice(0, 2), 10),
-    phone: parseInt(digits.slice(2), 10),
-  };
-};
-
-const getApiErrorMessage = (error, fallback) => {
-  const message = error?.response?.data?.message;
-  if (Array.isArray(message)) {
-    return message.join(", ");
-  }
-  return message || error?.message || fallback;
-};
+const canManageTools = (role) =>
+  ["superadmin", "companyAdmin", "projectAdmin"].includes(role);
 
 const FieldIcon = ({ name, theme }) => (
   <View
@@ -78,8 +51,6 @@ const PlainFormRow = ({
   value,
   onChangeText,
   placeholder,
-  keyboardType,
-  autoCapitalize,
   isLast = false,
   multiline = false,
 }) => (
@@ -98,8 +69,6 @@ const PlainFormRow = ({
         onChangeText={onChangeText}
         placeholder={placeholder}
         placeholderTextColor="rgba(5, 45, 80, 0.35)"
-        keyboardType={keyboardType}
-        autoCapitalize={autoCapitalize}
         multiline={multiline}
         textAlignVertical={multiline ? "top" : "auto"}
       />
@@ -141,55 +110,39 @@ const SelectRow = ({
   </TouchableOpacity>
 );
 
-export default function CreateEmployeeScreen() {
+export default function CreateToolScreen() {
   const navigation = useNavigation();
   const { theme } = useTheme();
   const { user } = useContext(AuthContext);
   const { showSuccess } = useFeedback();
 
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
+  const [photo, setPhoto] = useState(null);
+  const [workers, setWorkers] = useState([]);
   const [projects, setProjects] = useState([]);
+  const [selectedWorkerIds, setSelectedWorkerIds] = useState([]);
   const [selectedProjectIds, setSelectedProjectIds] = useState([]);
-  const [selectedRole, setSelectedRole] = useState("");
-  const [showRoleModal, setShowRoleModal] = useState(false);
+  const [showWorkerModal, setShowWorkerModal] = useState(false);
   const [showProjectModal, setShowProjectModal] = useState(false);
-  const [tools, setTools] = useState([]);
-  const [selectedToolIds, setSelectedToolIds] = useState([]);
-  const [showToolModal, setShowToolModal] = useState(false);
-  const [loadingProjects, setLoadingProjects] = useState(true);
-  const [loadingTools, setLoadingTools] = useState(true);
+  const [loadingData, setLoadingData] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState("");
 
-  const roleOptions = useMemo(
-    () => getCreatableRoleOptions(user?.role),
-    [user?.role],
-  );
-
-  const selectedRoleLabel = useMemo(() => {
-    const option = roleOptions.find((item) => item.value === selectedRole);
-    return option?.label || "";
-  }, [roleOptions, selectedRole]);
-
-  const isWorkerRole = selectedRole === USER_ROLES.WORKER;
-
-  const selectedToolsLabel = useMemo(() => {
-    if (selectedToolIds.length === 0) {
+  const selectedWorkersLabel = useMemo(() => {
+    if (selectedWorkerIds.length === 0) {
       return "";
     }
 
-    const names = selectedToolIds
-      .map((toolId) => {
-        const tool = tools.find((item) => getEntityId(item) === toolId);
-        return tool?.name || "";
+    const names = selectedWorkerIds
+      .map((workerId) => {
+        const worker = workers.find((item) => getEntityId(item) === workerId);
+        return worker?.name || "";
       })
       .filter(Boolean);
 
     return names.join(", ");
-  }, [selectedToolIds, tools]);
+  }, [selectedWorkerIds, workers]);
 
   const selectedProjectsLabel = useMemo(() => {
     if (selectedProjectIds.length === 0) {
@@ -198,9 +151,7 @@ export default function CreateEmployeeScreen() {
 
     const names = selectedProjectIds
       .map((projectId) => {
-        const project = projects.find(
-          (item) => getEntityId(item) === projectId,
-        );
+        const project = projects.find((item) => getEntityId(item) === projectId);
         return project?.name || "";
       })
       .filter(Boolean);
@@ -209,47 +160,56 @@ export default function CreateEmployeeScreen() {
   }, [projects, selectedProjectIds]);
 
   useEffect(() => {
-    if (!selectedRole && roleOptions[0]?.value) {
-      setSelectedRole(roleOptions[0].value);
-    }
-  }, [roleOptions, selectedRole]);
-
-  useEffect(() => {
-    const loadProjects = async () => {
+    const loadData = async () => {
       try {
-        setLoadingProjects(true);
-        const projectsData =
+        setLoadingData(true);
+        const [workersData, projectsData] = await Promise.all([
+          userService.getWorkers(),
           user?.role === "superadmin"
-            ? await projectService.getAll()
-            : await projectService.getMyProjects();
+            ? projectService.getAll()
+            : projectService.getMyProjects(),
+        ]);
+
+        setWorkers(Array.isArray(workersData) ? workersData : []);
         setProjects(Array.isArray(projectsData) ? projectsData : []);
       } catch (error) {
-        console.error("Failed to load projects:", error);
+        console.error("Failed to load tool form data:", error);
+        setWorkers([]);
         setProjects([]);
       } finally {
-        setLoadingProjects(false);
+        setLoadingData(false);
       }
     };
 
-    loadProjects();
+    loadData();
   }, [user?.role]);
 
-  useEffect(() => {
-    const loadTools = async () => {
-      try {
-        setLoadingTools(true);
-        const toolsData = await toolService.getAll();
-        setTools(Array.isArray(toolsData) ? toolsData : []);
-      } catch (error) {
-        console.error("Failed to load tools:", error);
-        setTools([]);
-      } finally {
-        setLoadingTools(false);
-      }
-    };
+  const pickPhoto = async () => {
+    try {
+      const assets = await pickUploadAssets({
+        allowsMultipleSelection: false,
+        fileNamePrefix: "tool-photo",
+        documentTypes: ["image/*"],
+      });
 
-    loadTools();
-  }, []);
+      if (assets.length > 0) {
+        setPhoto(assets[0]);
+      }
+    } catch (error) {
+      console.error("Failed to pick tool photo:", error);
+      Alert.alert("Photo error", "Unable to select photo right now.");
+    }
+  };
+
+  const toggleWorkerSelection = (workerId) => {
+    setSelectedWorkerIds((previous) => {
+      if (previous.includes(workerId)) {
+        return previous.filter((id) => id !== workerId);
+      }
+
+      return [...previous, workerId];
+    });
+  };
 
   const toggleProjectSelection = (projectId) => {
     setSelectedProjectIds((previous) => {
@@ -261,23 +221,11 @@ export default function CreateEmployeeScreen() {
     });
   };
 
-  const toggleToolSelection = (toolId) => {
-    setSelectedToolIds((previous) => {
-      if (previous.includes(toolId)) {
-        return previous.filter((id) => id !== toolId);
-      }
-
-      return [...previous, toolId];
-    });
-  };
-
-  const handleCreateEmployee = async () => {
+  const handleCreateTool = async () => {
     const trimmedName = name.trim();
-    const trimmedEmail = email.trim();
-    const { areaCode, phone: phoneNumber } = parsePhoneFields(phone);
 
-    if (!trimmedEmail) {
-      setFormError("Please fill in email.");
+    if (!trimmedName) {
+      setFormError("Please enter instrument name.");
       return;
     }
 
@@ -285,53 +233,49 @@ export default function CreateEmployeeScreen() {
     setSaving(true);
 
     try {
-      const payload = {
-        email: trimmedEmail,
-        inviteViaEmail: true,
-      };
+      const formData = new FormData();
+      formData.append("name", trimmedName);
 
-      if (trimmedName) {
-        payload.name = trimmedName;
+      if (notes.trim()) {
+        formData.append("notes", notes.trim());
       }
 
-      if (areaCode && phoneNumber) {
-        payload.phoneAreaCode = areaCode;
-        payload.phoneNumber = phoneNumber;
-      }
-
-      if (selectedRole) {
-        payload.role = selectedRole;
+      if (selectedWorkerIds.length > 0) {
+        formData.append("workerIds", JSON.stringify(selectedWorkerIds));
       }
 
       if (selectedProjectIds.length > 0) {
-        payload.projectIds = selectedProjectIds;
+        formData.append("projectIds", JSON.stringify(selectedProjectIds));
       }
 
-      if (user?.role === "companyAdmin" && user?.companyId) {
-        payload.companyId = user.companyId;
+      if (photo) {
+        formData.append("photo", {
+          uri: photo.uri,
+          name: photo.name || "tool-photo.jpg",
+          type: photo.mimeType || "image/jpeg",
+        });
       }
 
-      const createdUser = await userService.create(payload);
-      const workerId = getEntityId(createdUser);
-
-      if (isWorkerRole && selectedToolIds.length > 0 && workerId) {
-        await toolService.attachToWorker(workerId, selectedToolIds);
-      }
-
+      await toolService.create(formData);
       showSuccess({
-        title: "Invitation sent",
-        message: `${trimmedName || trimmedEmail} will receive an email with a password and confirmation link.`,
+        title: "Instrument created",
+        message: "Instrument created successfully.",
       });
       navigation.goBack();
     } catch (error) {
-      console.error("Failed to create employee:", error);
-      setFormError(getApiErrorMessage(error, "Unable to create employee."));
+      console.error("Failed to create tool:", error);
+      const message = error?.response?.data?.message;
+      setFormError(
+        Array.isArray(message)
+          ? message.join(", ")
+          : message || error?.message || "Unable to create instrument.",
+      );
     } finally {
       setSaving(false);
     }
   };
 
-  if (!canManageEmployees(user?.role)) {
+  if (!canManageTools(user?.role)) {
     return (
       <View style={styles.screen}>
         <View style={styles.pageContainer}>
@@ -346,7 +290,7 @@ export default function CreateEmployeeScreen() {
                 { fontFamily: theme.text.fontFamily.semiBold },
               ]}
             >
-              Add employee
+              Add instrument
             </Text>
             <View style={standardScreenHeaderPlaceholder} />
           </View>
@@ -372,7 +316,7 @@ export default function CreateEmployeeScreen() {
               { fontFamily: theme.text.fontFamily.semiBold },
             ]}
           >
-            Add employee
+            Add instrument
           </Text>
           <View style={standardScreenHeaderPlaceholder} />
         </View>
@@ -387,59 +331,60 @@ export default function CreateEmployeeScreen() {
 
           <View style={styles.groupCard}>
             <PlainFormRow
-              label="Email *"
-              value={email}
-              onChangeText={setEmail}
-              placeholder="email@company.com"
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-            <PlainFormRow
-              label="First and Last name"
+              label="Name *"
               value={name}
               onChangeText={setName}
-              placeholder="Employee name"
-              autoCapitalize="words"
+              placeholder="Instrument name"
             />
-            <PlainFormRow
-              label="Phone number"
-              value={phone}
-              onChangeText={setPhone}
-              placeholder="+46 701234567"
-              keyboardType="phone-pad"
-              isLast
-            />
+            <TouchableOpacity
+              style={[styles.selectRow, styles.groupRowLast]}
+              onPress={pickPhoto}
+              activeOpacity={0.85}
+            >
+              <View style={styles.fieldRowContent}>
+                <FieldIcon name="camera" theme={theme} />
+                <View style={styles.fieldInputWrap}>
+                  <Text style={styles.fieldLabel}>Add photo</Text>
+                  <Text
+                    style={[
+                      styles.selectValue,
+                      !photo && styles.selectPlaceholder,
+                    ]}
+                  >
+                    {photo ? photo.name || "Photo selected" : "Select photo"}
+                  </Text>
+                </View>
+              </View>
+              {photo ? (
+                <Image source={{ uri: photo.uri }} style={styles.photoPreview} />
+              ) : (
+                <Icon name="chevron-right" size={18} color="#052D50" />
+              )}
+            </TouchableOpacity>
           </View>
 
           <View style={styles.groupCard}>
             <SelectRow
-              icon="briefcase"
-              label="Add project"
-              value={selectedProjectsLabel}
-              placeholder={loadingProjects ? "Loading projects..." : "Select project"}
-              onPress={() => setShowProjectModal(true)}
+              icon="users"
+              label="Attach to workers"
+              value={selectedWorkersLabel}
+              placeholder={
+                loadingData ? "Loading workers..." : "Select workers"
+              }
+              onPress={() => setShowWorkerModal(true)}
               theme={theme}
             />
             <SelectRow
-              icon="flag"
-              label="Role"
-              value={selectedRoleLabel}
-              placeholder="Select role"
-              onPress={() => setShowRoleModal(true)}
+              icon="briefcase"
+              label="Attach to projects"
+              value={selectedProjectsLabel}
+              placeholder={
+                loadingData ? "Loading projects..." : "Select projects"
+              }
+              onPress={() => setShowProjectModal(true)}
               theme={theme}
-              isLast={!isWorkerRole}
+              isLast
             />
-            {isWorkerRole ? (
-              <SelectRow
-                icon="tool"
-                label="Attach instruments"
-                value={selectedToolsLabel}
-                placeholder={loadingTools ? "Loading instruments..." : "Select instruments"}
-                onPress={() => setShowToolModal(true)}
-                theme={theme}
-                isLast
-              />
-            ) : null}
           </View>
 
           <View style={styles.groupCard}>
@@ -457,7 +402,7 @@ export default function CreateEmployeeScreen() {
         <BottomBar
           onLeftPress={() => navigation.navigate("Main")}
           onRightPress={() => navigation.navigate("Menu")}
-          onAddPress={handleCreateEmployee}
+          onAddPress={handleCreateTool}
           addDisabled={saving}
           renderAddContent={() =>
             saving ? (
@@ -470,9 +415,9 @@ export default function CreateEmployeeScreen() {
       </View>
 
       <Modal
-        visible={showRoleModal}
+        visible={showWorkerModal}
         animationType="slide"
-        onRequestClose={() => setShowRoleModal(false)}
+        onRequestClose={() => setShowWorkerModal(false)}
       >
         <SafeAreaView style={styles.pickerModalContainer}>
           <View style={styles.pickerModalHeader}>
@@ -480,7 +425,7 @@ export default function CreateEmployeeScreen() {
               backgroundColor="rgba(255, 255, 255, 0.6)"
               tint="light"
               borderColor="#FFFFFF50"
-              onPress={() => setShowRoleModal(false)}
+              onPress={() => setShowWorkerModal(false)}
               iconSource={require("../../assets/Arrow-left.png")}
             />
             <Text
@@ -489,34 +434,42 @@ export default function CreateEmployeeScreen() {
                 { fontFamily: theme.text.fontFamily.semiBold },
               ]}
             >
-              Select role
+              Attach to workers
             </Text>
             <View style={standardScreenHeaderPlaceholder} />
           </View>
 
           <ScrollView contentContainerStyle={styles.pickerListContent}>
-            {roleOptions.map((option, index) => {
-              const isSelected = selectedRole === option.value;
+            {workers.length === 0 ? (
+              <View style={styles.pickerEmptyState}>
+                <Text style={styles.pickerEmptyStateText}>
+                  {loadingData ? "Loading workers..." : "No workers found"}
+                </Text>
+              </View>
+            ) : (
+              workers.map((worker, index) => {
+                const workerId = getEntityId(worker);
+                const isSelected = selectedWorkerIds.includes(workerId);
 
-              return (
-                <TouchableOpacity
-                  key={option.value}
-                  style={[
-                    styles.pickerOptionRow,
-                    index !== roleOptions.length - 1 && styles.groupRowDivider,
-                  ]}
-                  onPress={() => {
-                    setSelectedRole(option.value);
-                    setShowRoleModal(false);
-                  }}
-                >
-                  <Text style={styles.pickerOptionLabel}>{option.label}</Text>
-                  {isSelected ? (
-                    <Icon name="check" size={18} color={theme.colors.primary} />
-                  ) : null}
-                </TouchableOpacity>
-              );
-            })}
+                return (
+                  <TouchableOpacity
+                    key={workerId}
+                    style={[
+                      styles.pickerOptionRow,
+                      index !== workers.length - 1 && styles.groupRowDivider,
+                    ]}
+                    onPress={() => toggleWorkerSelection(workerId)}
+                  >
+                    <Text style={styles.pickerOptionLabel}>
+                      {worker.name || worker.email}
+                    </Text>
+                    {isSelected ? (
+                      <Icon name="check" size={18} color={theme.colors.primary} />
+                    ) : null}
+                  </TouchableOpacity>
+                );
+              })
+            )}
           </ScrollView>
         </SafeAreaView>
       </Modal>
@@ -541,7 +494,7 @@ export default function CreateEmployeeScreen() {
                 { fontFamily: theme.text.fontFamily.semiBold },
               ]}
             >
-              Add project
+              Attach to projects
             </Text>
             <View style={standardScreenHeaderPlaceholder} />
           </View>
@@ -550,7 +503,7 @@ export default function CreateEmployeeScreen() {
             {projects.length === 0 ? (
               <View style={styles.pickerEmptyState}>
                 <Text style={styles.pickerEmptyStateText}>
-                  {loadingProjects ? "Loading projects..." : "No projects found"}
+                  {loadingData ? "Loading projects..." : "No projects found"}
                 </Text>
               </View>
             ) : (
@@ -568,64 +521,6 @@ export default function CreateEmployeeScreen() {
                     onPress={() => toggleProjectSelection(projectId)}
                   >
                     <Text style={styles.pickerOptionLabel}>{project.name}</Text>
-                    {isSelected ? (
-                      <Icon name="check" size={18} color={theme.colors.primary} />
-                    ) : null}
-                  </TouchableOpacity>
-                );
-              })
-            )}
-          </ScrollView>
-        </SafeAreaView>
-      </Modal>
-
-      <Modal
-        visible={showToolModal}
-        animationType="slide"
-        onRequestClose={() => setShowToolModal(false)}
-      >
-        <SafeAreaView style={styles.pickerModalContainer}>
-          <View style={styles.pickerModalHeader}>
-            <BackButton
-              backgroundColor="rgba(255, 255, 255, 0.6)"
-              tint="light"
-              borderColor="#FFFFFF50"
-              onPress={() => setShowToolModal(false)}
-              iconSource={require("../../assets/Arrow-left.png")}
-            />
-            <Text
-              style={[
-                styles.pickerModalTitle,
-                { fontFamily: theme.text.fontFamily.semiBold },
-              ]}
-            >
-              Attach instruments
-            </Text>
-            <View style={standardScreenHeaderPlaceholder} />
-          </View>
-
-          <ScrollView contentContainerStyle={styles.pickerListContent}>
-            {tools.length === 0 ? (
-              <View style={styles.pickerEmptyState}>
-                <Text style={styles.pickerEmptyStateText}>
-                  {loadingTools ? "Loading instruments..." : "No instruments found"}
-                </Text>
-              </View>
-            ) : (
-              tools.map((tool, index) => {
-                const toolId = getEntityId(tool);
-                const isSelected = selectedToolIds.includes(toolId);
-
-                return (
-                  <TouchableOpacity
-                    key={toolId}
-                    style={[
-                      styles.pickerOptionRow,
-                      index !== tools.length - 1 && styles.groupRowDivider,
-                    ]}
-                    onPress={() => toggleToolSelection(toolId)}
-                  >
-                    <Text style={styles.pickerOptionLabel}>{tool.name}</Text>
                     {isSelected ? (
                       <Icon name="check" size={18} color={theme.colors.primary} />
                     ) : null}
@@ -728,6 +623,11 @@ const styles = StyleSheet.create({
   },
   selectPlaceholder: {
     color: "rgba(5, 45, 80, 0.35)",
+  },
+  photoPreview: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
   },
   formError: {
     color: "#c62828",

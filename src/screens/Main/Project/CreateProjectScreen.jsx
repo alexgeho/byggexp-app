@@ -35,7 +35,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { SafeAreaView } from "react-native-safe-area-context";
 import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
-import { projectService, userService, companyService } from "../../../services";
+import { projectService, toolService, userService, companyService } from "../../../services";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { shiftLocationPolicy } from "../../../config/shiftLocationPolicy";
@@ -112,6 +112,111 @@ const getDocumentTypeMeta = (document) => {
 
   return { icon: "file", label: extension || "FILE" };
 };
+
+const ToolsListModal = memo(function ToolsListModal({
+  visible,
+  onClose,
+  selectedTools,
+  toggleSelection,
+  onSave,
+  toolSearch,
+  onToolSearchChange,
+  filteredTools,
+  checkboxStyle,
+  checkboxSelectedStyle,
+}) {
+  return (
+    <Modal
+      animationType="slide"
+      transparent={false}
+      visible={visible}
+      onRequestClose={onClose}
+    >
+      <SafeAreaView style={styles.workersModalContainer}>
+        <View style={styles.workersModalHeader}>
+          <BackButton
+            backgroundColor={"rgba(255, 255, 255, 0.6)"}
+            tint={"light"}
+            borderColor="#FFFFFF50"
+            onPress={onClose}
+            iconSource={require("../../../assets/Arrow-left.png")}
+          />
+          <Text style={styles.workersModalTitle}>Attach instruments</Text>
+          <View style={styles.placeholder} />
+        </View>
+
+        <View style={styles.workersSearchBar}>
+          <Icon name="search" size={18} color="rgba(5, 45, 80, 0.5)" />
+          <TextInput
+            value={toolSearch}
+            onChangeText={onToolSearchChange}
+            placeholder="Search instruments"
+            placeholderTextColor="rgba(5, 45, 80, 0.5)"
+            style={styles.workersSearchInput}
+          />
+        </View>
+
+        <FlatList
+          data={filteredTools}
+          keyExtractor={(item) => item._id}
+          contentContainerStyle={styles.workersListContent}
+          keyboardShouldPersistTaps="handled"
+          extraData={selectedTools}
+          renderItem={({ item }) => {
+            const toolId = item._id;
+            const isSelected = selectedTools.includes(toolId);
+
+            return (
+              <TouchableOpacity
+                style={styles.workerCard}
+                onPress={() => toggleSelection(toolId)}
+                activeOpacity={0.85}
+              >
+                <View style={styles.workerCardInfo}>
+                  <Text numberOfLines={1} style={styles.workerCardName}>
+                    {item.name || "Unnamed instrument"}
+                  </Text>
+                  {item.notes ? (
+                    <Text numberOfLines={1} style={styles.workerCardProfession}>
+                      {item.notes}
+                    </Text>
+                  ) : null}
+                </View>
+                <View
+                  style={[
+                    styles.workerCheckbox,
+                    checkboxStyle,
+                    isSelected && styles.workerCheckboxSelected,
+                    isSelected && checkboxSelectedStyle,
+                  ]}
+                >
+                  {isSelected ? (
+                    <Icon name="check" size={12} color="#FFFFFF" />
+                  ) : null}
+                </View>
+              </TouchableOpacity>
+            );
+          }}
+          ListEmptyComponent={
+            <View style={styles.workersEmptyState}>
+              <Text style={styles.workersEmptyText}>No instruments found</Text>
+            </View>
+          }
+        />
+
+        <View style={styles.workersModalFooter}>
+          <TouchableOpacity style={styles.closeButton} onPress={onSave}>
+            <Text style={styles.closeButtonText}>
+              {selectedTools.length > 0
+                ? `Save (${selectedTools.length})`
+                : "Save"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </Modal>
+  );
+});
 
 const WorkersListModal = memo(function WorkersListModal({
   visible,
@@ -275,15 +380,20 @@ export default function CreateProjectScreen() {
   const [selectedManager, setSelectedManager] = useState(null);
   const [selectedClientCompany, setSelectedClientCompany] = useState(null);
   const [selectedWorkers, setSelectedWorkers] = useState([]);
+  const [tools, setTools] = useState([]);
+  const [selectedTools, setSelectedTools] = useState([]);
 
   const [showOwnersModal, setShowOwnersModal] = useState(false);
   const [showManagersModal, setShowManagersModal] = useState(false);
   const [showCompaniesModal, setShowCompaniesModal] = useState(false);
   const [showWorkersModal, setShowWorkersModal] = useState(false);
+  const [showToolsModal, setShowToolsModal] = useState(false);
   const [workerSearch, setWorkerSearch] = useState("");
+  const [toolSearch, setToolSearch] = useState("");
   const [ownerSearch, setOwnerSearch] = useState("");
   const [managerSearch, setManagerSearch] = useState("");
   const [pendingWorkers, setPendingWorkers] = useState([]);
+  const [pendingTools, setPendingTools] = useState([]);
   const [selectedDocuments, setSelectedDocuments] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -380,12 +490,14 @@ export default function CreateProjectScreen() {
   const fetchUsersAndCompanies = async () => {
     try {
       if (user?.role === "superadmin") {
-        const [allCompanies, allUsers] = await Promise.all([
+        const [allCompanies, allUsers, toolsData] = await Promise.all([
           companyService.getAll(),
           userService.getAll(),
+          toolService.getAll(),
         ]);
         setCompanies(allCompanies);
         setUsers(allUsers);
+        setTools(Array.isArray(toolsData) ? toolsData : []);
 
         const initialCompanyId = allCompanies[0]?._id || null;
         setSelectedClientCompany(initialCompanyId);
@@ -395,8 +507,12 @@ export default function CreateProjectScreen() {
         setCompanies([myCompany]);
         setSelectedClientCompany(myCompany._id);
 
-        const usersData = await userService.getMyCompanyUsers();
+        const [usersData, toolsData] = await Promise.all([
+          userService.getMyCompanyUsers(),
+          toolService.getAll(),
+        ]);
         setUsers(usersData);
+        setTools(Array.isArray(toolsData) ? toolsData : []);
       }
 
       setLoading(false);
@@ -463,6 +579,33 @@ export default function CreateProjectScreen() {
   const saveWorkersSelection = () => {
     setSelectedWorkers(pendingWorkers);
     closeWorkersModal();
+  };
+
+  const openToolsModal = () => {
+    setPendingTools(selectedTools);
+    setToolSearch("");
+    setShowToolsModal(true);
+  };
+
+  const closeToolsModal = () => {
+    setShowToolsModal(false);
+    setToolSearch("");
+    setPendingTools([]);
+  };
+
+  const togglePendingToolSelection = (toolId) => {
+    setPendingTools((prev) => {
+      if (prev.includes(toolId)) {
+        return prev.filter((id) => id !== toolId);
+      }
+
+      return [...prev, toolId];
+    });
+  };
+
+  const saveToolsSelection = () => {
+    setSelectedTools(pendingTools);
+    closeToolsModal();
   };
 
   const pickDocuments = async () => {
@@ -697,6 +840,11 @@ export default function CreateProjectScreen() {
       });
 
       const result = await projectService.create(projectData);
+      const projectId = result?._id || result?.id;
+
+      if (selectedTools.length > 0 && projectId) {
+        await toolService.attachToProject(String(projectId), selectedTools);
+      }
 
       console.log("Project created:", result);
       showSuccess({
@@ -827,6 +975,25 @@ export default function CreateProjectScreen() {
   const selectedWorkersLabel =
     selectedWorkers.length > 0
       ? `${selectedWorkers.length} worker${selectedWorkers.length > 1 ? "s" : ""}`
+      : "";
+
+  const normalizedToolSearch = toolSearch.trim().toLowerCase();
+  const filteredTools = tools.filter((tool) => {
+    if (!normalizedToolSearch) {
+      return true;
+    }
+
+    const searchableText = [tool.name, tool.notes]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    return searchableText.includes(normalizedToolSearch);
+  });
+
+  const selectedToolsLabel =
+    selectedTools.length > 0
+      ? `${selectedTools.length} instrument${selectedTools.length > 1 ? "s" : ""}`
       : "";
 
   const filteredOwners = getFilteredUsers(ownerSearch);
@@ -1100,6 +1267,36 @@ export default function CreateProjectScreen() {
                 ]}
               >
                 {selectedWorkersLabel || "Project team"}
+              </Text>
+            </View>
+            <Icon name="chevron-right" size={18} color="#052D50" />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.locationField,
+              styles.groupedField,
+              styles.groupRowDivider,
+            ]}
+            onPress={openToolsModal}
+            activeOpacity={0.85}
+          >
+            <View style={styles.locationFieldContent}>
+              <View
+                style={[styles.locationFieldIconContainer, fieldIconBadgeStyle]}
+              >
+                <FieldIcon name="tool" size={14} color="#FFFFFF" />
+              </View>
+              <Text
+                numberOfLines={1}
+                style={[
+                  styles.locationFieldText,
+                  selectedTools.length
+                    ? styles.locationFieldValue
+                    : styles.locationFieldPlaceholder,
+                ]}
+              >
+                {selectedToolsLabel || "Attach instruments"}
               </Text>
             </View>
             <Icon name="chevron-right" size={18} color="#052D50" />
@@ -1401,6 +1598,19 @@ export default function CreateProjectScreen() {
           workerSearch={workerSearch}
           onWorkerSearchChange={setWorkerSearch}
           filteredWorkers={filteredWorkers}
+          checkboxStyle={themedCheckboxStyle}
+          checkboxSelectedStyle={themedCheckboxSelectedStyle}
+        />
+
+        <ToolsListModal
+          visible={showToolsModal}
+          onClose={closeToolsModal}
+          onSave={saveToolsSelection}
+          selectedTools={pendingTools}
+          toggleSelection={togglePendingToolSelection}
+          toolSearch={toolSearch}
+          onToolSearchChange={setToolSearch}
+          filteredTools={filteredTools}
           checkboxStyle={themedCheckboxStyle}
           checkboxSelectedStyle={themedCheckboxSelectedStyle}
         />
