@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Modal,
@@ -15,7 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AuthContext from "../../contexts/AuthContext";
 import { useFeedback } from "../../contexts/FeedbackContext";
 import { useTheme } from "../../theme/ThemeContext";
-import { userService } from "../../services";
+import { projectService, userService } from "../../services";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import {
@@ -28,9 +28,29 @@ import {
   getCreatableRoleOptions,
 } from "../../utils/userRoles";
 
-const parseOptionalNumber = (value) => {
-  const normalized = String(value || "").replace(/\D/g, "");
-  return normalized ? parseInt(normalized, 10) : undefined;
+const getEntityId = (entity) => {
+  const id = entity?._id || entity?.id;
+  return id ? String(id) : "";
+};
+
+const parsePhoneFields = (value) => {
+  const digits = String(value || "").replace(/\D/g, "");
+
+  if (!digits) {
+    return { areaCode: undefined, phone: undefined };
+  }
+
+  if (digits.length <= 2) {
+    return {
+      areaCode: parseInt(digits, 10),
+      phone: undefined,
+    };
+  }
+
+  return {
+    areaCode: parseInt(digits.slice(0, 2), 10),
+    phone: parseInt(digits.slice(2), 10),
+  };
 };
 
 const getApiErrorMessage = (error, fallback) => {
@@ -52,16 +72,15 @@ const FieldIcon = ({ name, theme }) => (
   </View>
 );
 
-const FormRow = ({
-  icon,
+const PlainFormRow = ({
   label,
   value,
   onChangeText,
   placeholder,
   keyboardType,
   autoCapitalize,
-  theme,
   isLast = false,
+  multiline = false,
 }) => (
   <View
     style={[
@@ -70,22 +89,55 @@ const FormRow = ({
       isLast && styles.groupRowLast,
     ]}
   >
+    <View style={styles.fieldInputWrap}>
+      <Text style={styles.fieldLabel}>{label}</Text>
+      <TextInput
+        style={[styles.fieldInput, multiline && styles.fieldInputMultiline]}
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        placeholderTextColor="rgba(5, 45, 80, 0.35)"
+        keyboardType={keyboardType}
+        autoCapitalize={autoCapitalize}
+        multiline={multiline}
+        textAlignVertical={multiline ? "top" : "auto"}
+      />
+    </View>
+  </View>
+);
+
+const SelectRow = ({
+  icon,
+  label,
+  value,
+  placeholder,
+  onPress,
+  theme,
+  isLast = false,
+}) => (
+  <TouchableOpacity
+    style={[
+      styles.selectRow,
+      !isLast && styles.groupRowDivider,
+      isLast && styles.groupRowLast,
+    ]}
+    onPress={onPress}
+    activeOpacity={0.85}
+  >
     <View style={styles.fieldRowContent}>
       <FieldIcon name={icon} theme={theme} />
       <View style={styles.fieldInputWrap}>
         <Text style={styles.fieldLabel}>{label}</Text>
-        <TextInput
-          style={styles.fieldInput}
-          value={value}
-          onChangeText={onChangeText}
-          placeholder={placeholder}
-          placeholderTextColor="rgba(5, 45, 80, 0.35)"
-          keyboardType={keyboardType}
-          autoCapitalize={autoCapitalize}
-        />
+        <Text
+          numberOfLines={2}
+          style={[styles.selectValue, !value && styles.selectPlaceholder]}
+        >
+          {value || placeholder}
+        </Text>
       </View>
     </View>
-  </View>
+    <Icon name="chevron-right" size={18} color="#052D50" />
+  </TouchableOpacity>
 );
 
 export default function CreateEmployeeScreen() {
@@ -96,11 +148,14 @@ export default function CreateEmployeeScreen() {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [profession, setProfession] = useState("");
-  const [phoneAreaCode, setPhoneAreaCode] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phone, setPhone] = useState("");
+  const [notes, setNotes] = useState("");
+  const [projects, setProjects] = useState([]);
+  const [selectedProjectIds, setSelectedProjectIds] = useState([]);
   const [selectedRole, setSelectedRole] = useState("");
   const [showRoleModal, setShowRoleModal] = useState(false);
+  const [showProjectModal, setShowProjectModal] = useState(false);
+  const [loadingProjects, setLoadingProjects] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState("");
 
@@ -114,25 +169,76 @@ export default function CreateEmployeeScreen() {
     return option?.label || "";
   }, [roleOptions, selectedRole]);
 
-  React.useEffect(() => {
+  const selectedProjectsLabel = useMemo(() => {
+    if (selectedProjectIds.length === 0) {
+      return "";
+    }
+
+    const names = selectedProjectIds
+      .map((projectId) => {
+        const project = projects.find(
+          (item) => getEntityId(item) === projectId,
+        );
+        return project?.name || "";
+      })
+      .filter(Boolean);
+
+    return names.join(", ");
+  }, [projects, selectedProjectIds]);
+
+  useEffect(() => {
     if (!selectedRole && roleOptions[0]?.value) {
       setSelectedRole(roleOptions[0].value);
     }
   }, [roleOptions, selectedRole]);
 
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        setLoadingProjects(true);
+        const projectsData =
+          user?.role === "superadmin"
+            ? await projectService.getAll()
+            : await projectService.getMyProjects();
+        setProjects(Array.isArray(projectsData) ? projectsData : []);
+      } catch (error) {
+        console.error("Failed to load projects:", error);
+        setProjects([]);
+      } finally {
+        setLoadingProjects(false);
+      }
+    };
+
+    loadProjects();
+  }, [user?.role]);
+
+  const toggleProjectSelection = (projectId) => {
+    setSelectedProjectIds((previous) => {
+      if (previous.includes(projectId)) {
+        return previous.filter((id) => id !== projectId);
+      }
+
+      return [...previous, projectId];
+    });
+  };
+
   const handleCreateEmployee = async () => {
     const trimmedName = name.trim();
     const trimmedEmail = email.trim();
-    const areaCode = parseOptionalNumber(phoneAreaCode);
-    const phone = parseOptionalNumber(phoneNumber);
+    const { areaCode, phone: phoneNumber } = parsePhoneFields(phone);
 
-    if (!trimmedName || !trimmedEmail) {
-      setFormError("Please fill in name and email.");
+    if (!trimmedEmail) {
+      setFormError("Please fill in email.");
       return;
     }
 
-    if (!areaCode || !phone) {
-      setFormError("Please enter a valid phone area code and number.");
+    if (!trimmedName) {
+      setFormError("Please fill in first and last name.");
+      return;
+    }
+
+    if (!areaCode || !phoneNumber) {
+      setFormError("Please enter a valid phone number.");
       return;
     }
 
@@ -149,13 +255,13 @@ export default function CreateEmployeeScreen() {
         name: trimmedName,
         email: trimmedEmail,
         phoneAreaCode: areaCode,
-        phoneNumber: phone,
+        phoneNumber,
         role: selectedRole,
         inviteViaEmail: true,
       };
 
-      if (profession.trim()) {
-        payload.profession = profession.trim();
+      if (selectedProjectIds.length > 0) {
+        payload.projectIds = selectedProjectIds;
       }
 
       if (user?.role === "companyAdmin" && user?.companyId) {
@@ -230,93 +336,61 @@ export default function CreateEmployeeScreen() {
         >
           {formError ? <Text style={styles.formError}>{formError}</Text> : null}
 
-          <Text style={styles.formSectionTitle}>Profile</Text>
           <View style={styles.groupCard}>
-            <FormRow
-              icon="user"
-              label="Full name *"
-              value={name}
-              onChangeText={setName}
-              placeholder="Employee name"
-              autoCapitalize="words"
-              theme={theme}
-            />
-            <FormRow
-              icon="mail"
+            <PlainFormRow
               label="Email *"
               value={email}
               onChangeText={setEmail}
               placeholder="email@company.com"
               keyboardType="email-address"
               autoCapitalize="none"
-              theme={theme}
             />
-            <FormRow
-              icon="briefcase"
-              label="Profession"
-              value={profession}
-              onChangeText={setProfession}
-              placeholder="Electrician"
+            <PlainFormRow
+              label="First and Last name *"
+              value={name}
+              onChangeText={setName}
+              placeholder="Employee name"
               autoCapitalize="words"
-              theme={theme}
-              isLast
             />
-          </View>
-
-          <Text style={styles.formSectionTitle}>Contact</Text>
-          <View style={styles.groupCard}>
-            <FormRow
-              icon="hash"
-              label="Phone area code *"
-              value={phoneAreaCode}
-              onChangeText={setPhoneAreaCode}
-              placeholder="46"
-              keyboardType="number-pad"
-              theme={theme}
-            />
-            <FormRow
-              icon="phone"
+            <PlainFormRow
               label="Phone number *"
-              value={phoneNumber}
-              onChangeText={setPhoneNumber}
-              placeholder="701234567"
-              keyboardType="number-pad"
+              value={phone}
+              onChangeText={setPhone}
+              placeholder="+46 701234567"
+              keyboardType="phone-pad"
+              isLast
+            />
+          </View>
+
+          <View style={styles.groupCard}>
+            <SelectRow
+              icon="briefcase"
+              label="Add project"
+              value={selectedProjectsLabel}
+              placeholder={loadingProjects ? "Loading projects..." : "Select project"}
+              onPress={() => setShowProjectModal(true)}
+              theme={theme}
+            />
+            <SelectRow
+              icon="flag"
+              label="Role *"
+              value={selectedRoleLabel}
+              placeholder="Select role"
+              onPress={() => setShowRoleModal(true)}
               theme={theme}
               isLast
             />
           </View>
 
-          <Text style={styles.formSectionTitle}>Access</Text>
           <View style={styles.groupCard}>
-            <TouchableOpacity
-              style={[styles.selectRow, styles.groupRowLast]}
-              onPress={() => setShowRoleModal(true)}
-              activeOpacity={0.85}
-            >
-              <View style={styles.fieldRowContent}>
-                <FieldIcon name="shield" theme={theme} />
-                <View style={styles.fieldInputWrap}>
-                  <Text style={styles.fieldLabel}>Role *</Text>
-                  <Text
-                    style={[
-                      styles.selectValue,
-                      !selectedRoleLabel && styles.selectPlaceholder,
-                    ]}
-                  >
-                    {selectedRoleLabel || "Select role"}
-                  </Text>
-                </View>
-              </View>
-              <Icon name="chevron-right" size={18} color="#052D50" />
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.noteCard}>
-            <Text style={styles.noteTitle}>Email invitation</Text>
-            <Text style={styles.noteText}>
-              A temporary password and confirmation link will be sent by email.
-              After opening the link, the employee is signed in automatically.
-            </Text>
+            <PlainFormRow
+              label="Notes"
+              value={notes}
+              onChangeText={setNotes}
+              placeholder="Add notes"
+              multiline
+              isLast
+            />
           </View>
         </ScrollView>
 
@@ -340,8 +414,8 @@ export default function CreateEmployeeScreen() {
         animationType="slide"
         onRequestClose={() => setShowRoleModal(false)}
       >
-        <SafeAreaView style={styles.roleModalContainer}>
-          <View style={styles.roleModalHeader}>
+        <SafeAreaView style={styles.pickerModalContainer}>
+          <View style={styles.pickerModalHeader}>
             <BackButton
               backgroundColor="rgba(255, 255, 255, 0.6)"
               tint="light"
@@ -351,7 +425,7 @@ export default function CreateEmployeeScreen() {
             />
             <Text
               style={[
-                styles.roleModalTitle,
+                styles.pickerModalTitle,
                 { fontFamily: theme.text.fontFamily.semiBold },
               ]}
             >
@@ -360,7 +434,7 @@ export default function CreateEmployeeScreen() {
             <View style={standardScreenHeaderPlaceholder} />
           </View>
 
-          <ScrollView contentContainerStyle={styles.roleListContent}>
+          <ScrollView contentContainerStyle={styles.pickerListContent}>
             {roleOptions.map((option, index) => {
               const isSelected = selectedRole === option.value;
 
@@ -368,7 +442,7 @@ export default function CreateEmployeeScreen() {
                 <TouchableOpacity
                   key={option.value}
                   style={[
-                    styles.roleOptionRow,
+                    styles.pickerOptionRow,
                     index !== roleOptions.length - 1 && styles.groupRowDivider,
                   ]}
                   onPress={() => {
@@ -376,13 +450,71 @@ export default function CreateEmployeeScreen() {
                     setShowRoleModal(false);
                   }}
                 >
-                  <Text style={styles.roleOptionLabel}>{option.label}</Text>
+                  <Text style={styles.pickerOptionLabel}>{option.label}</Text>
                   {isSelected ? (
                     <Icon name="check" size={18} color={theme.colors.primary} />
                   ) : null}
                 </TouchableOpacity>
               );
             })}
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
+
+      <Modal
+        visible={showProjectModal}
+        animationType="slide"
+        onRequestClose={() => setShowProjectModal(false)}
+      >
+        <SafeAreaView style={styles.pickerModalContainer}>
+          <View style={styles.pickerModalHeader}>
+            <BackButton
+              backgroundColor="rgba(255, 255, 255, 0.6)"
+              tint="light"
+              borderColor="#FFFFFF50"
+              onPress={() => setShowProjectModal(false)}
+              iconSource={require("../../assets/Arrow-left.png")}
+            />
+            <Text
+              style={[
+                styles.pickerModalTitle,
+                { fontFamily: theme.text.fontFamily.semiBold },
+              ]}
+            >
+              Add project
+            </Text>
+            <View style={standardScreenHeaderPlaceholder} />
+          </View>
+
+          <ScrollView contentContainerStyle={styles.pickerListContent}>
+            {projects.length === 0 ? (
+              <View style={styles.pickerEmptyState}>
+                <Text style={styles.pickerEmptyStateText}>
+                  {loadingProjects ? "Loading projects..." : "No projects found"}
+                </Text>
+              </View>
+            ) : (
+              projects.map((project, index) => {
+                const projectId = getEntityId(project);
+                const isSelected = selectedProjectIds.includes(projectId);
+
+                return (
+                  <TouchableOpacity
+                    key={projectId}
+                    style={[
+                      styles.pickerOptionRow,
+                      index !== projects.length - 1 && styles.groupRowDivider,
+                    ]}
+                    onPress={() => toggleProjectSelection(projectId)}
+                  >
+                    <Text style={styles.pickerOptionLabel}>{project.name}</Text>
+                    {isSelected ? (
+                      <Icon name="check" size={18} color={theme.colors.primary} />
+                    ) : null}
+                  </TouchableOpacity>
+                );
+              })
+            )}
           </ScrollView>
         </SafeAreaView>
       </Modal>
@@ -414,22 +546,13 @@ const styles = StyleSheet.create({
   },
   contentScrollContent: {
     paddingBottom: 140,
-    gap: 4,
-  },
-  formSectionTitle: {
-    color: "#698196",
-    fontSize: 13,
-    fontWeight: "600",
-    marginBottom: 8,
-    marginTop: 8,
-    paddingHorizontal: 8,
+    gap: 20,
   },
   groupCard: {
     width: "100%",
     backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 24,
     overflow: "hidden",
-    marginBottom: 20,
     borderWidth: 1,
     borderColor: "#FFFFFF",
   },
@@ -470,6 +593,10 @@ const styles = StyleSheet.create({
     color: "#052D50",
     paddingVertical: 0,
   },
+  fieldInputMultiline: {
+    minHeight: 96,
+    paddingTop: 4,
+  },
   selectRow: {
     minHeight: 56,
     paddingHorizontal: 16,
@@ -483,24 +610,6 @@ const styles = StyleSheet.create({
   },
   selectPlaceholder: {
     color: "rgba(5, 45, 80, 0.35)",
-  },
-  noteCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 24,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-    gap: 6,
-  },
-  noteTitle: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#052D50",
-  },
-  noteText: {
-    fontSize: 14,
-    lineHeight: 20,
-    color: "#5a6b7d",
   },
   formError: {
     color: "#c62828",
@@ -518,38 +627,49 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#151515",
   },
-  roleModalContainer: {
+  pickerModalContainer: {
     flex: 1,
     backgroundColor: "#EEEEEE",
     paddingHorizontal: 12,
     paddingTop: 12,
   },
-  roleModalHeader: {
+  pickerModalHeader: {
     ...standardScreenHeader,
     marginBottom: 12,
   },
-  roleModalTitle: {
+  pickerModalTitle: {
     flex: 1,
     textAlign: "center",
     fontSize: 17,
     color: "#052D50",
   },
-  roleListContent: {
+  pickerListContent: {
     backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 24,
     borderWidth: 1,
     borderColor: "#FFFFFF",
     overflow: "hidden",
   },
-  roleOptionRow: {
+  pickerOptionRow: {
     minHeight: 56,
     paddingHorizontal: 16,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-  roleOptionLabel: {
+  pickerOptionLabel: {
     fontSize: 16,
     color: "#052D50",
+    flex: 1,
+    paddingRight: 12,
+  },
+  pickerEmptyState: {
+    minHeight: 56,
+    paddingHorizontal: 16,
+    justifyContent: "center",
+  },
+  pickerEmptyStateText: {
+    fontSize: 16,
+    color: "rgba(5, 45, 80, 0.55)",
   },
 });
