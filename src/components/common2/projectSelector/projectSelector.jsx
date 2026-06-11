@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import { styles } from "./projectSelector.styles";
 
-export function ProjectSelector2({
+export default function ProjectSelector2({
   value,
   onPress,
   style,

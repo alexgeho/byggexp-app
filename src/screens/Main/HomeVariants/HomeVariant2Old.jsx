@@ -19,7 +19,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Audio } from "expo-av";
 import { useTheme } from "@theme/ThemeContext";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import ProjectSelector from "@components/common/ProjectSelector/ProjectSelector";
+import ProjectSelector from "@components/common2/ProjectSelector/projectSelector";
 import AuthContext from "@contexts/AuthContext";
 import { useTimer } from "@hooks/useTimer";
 import { useShiftExitAutoComplete } from "@hooks/useShiftExitAutoComplete";

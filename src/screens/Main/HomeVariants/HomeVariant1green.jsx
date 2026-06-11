@@ -22,7 +22,7 @@ import { shiftService } from "@services";
 import { startShiftWithLocationGuard } from "@utils/shiftLocationGuard";
 import { createStyles } from "./HomeVariant1green.styles";
 import { getEnabledSections } from "@utils/homeButtonsStorage";
-import ProjectSelector from "@components/common/ProjectSelector/ProjectSelector";
+import ProjectSelector from "@components/common2/projectSelector/projectSelector";
 import MainButtonsGrid from "@components/common/NavButtonsGrid/MainButtonsGrid";
 import ProjectFilesSection from "@components/common/ProjectFilesSection/ProjectFilesSection";
 import ShiftHistoryPreview from "@components/common2/ShiftHistoryPreview/ShiftHistoryPreview";

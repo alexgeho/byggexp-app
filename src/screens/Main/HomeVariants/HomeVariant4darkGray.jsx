@@ -16,7 +16,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "../../../theme/ThemeContext";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import ProjectSelector from "../../../components/common/ProjectSelector/ProjectSelector";
+import ProjectSelector2 from "../../../components/common2/projectSelector/projectSelector";
 import AuthContext from "../../../contexts/AuthContext";
 import { useTimer } from "../../../hooks/useTimer";
 import { useShiftExitAutoComplete } from "../../../hooks/useShiftExitAutoComplete";
@@ -330,7 +330,7 @@ export default function MainScreen() {
     >
       {/* PROJECT SELECTOR */}
       <View style={styles.selectProjectContainer}>
-        <ProjectSelector
+        <ProjectSelector2
           value={selectedProject}
           onChange={handleProjectChange}
           projects={projects}
