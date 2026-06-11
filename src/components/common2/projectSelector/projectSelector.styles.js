@@ -19,7 +19,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
 
     paddingHorizontal: 20,
-    paddingVertical: 20,
+    paddingVertical: 12,
 
     borderRadius: 100,
     borderWidth: 1,

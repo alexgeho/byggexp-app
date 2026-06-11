@@ -22,7 +22,7 @@ export default function ProjectSelector({ value, onPress, style }) {
         ]}
         onPress={onPress}
         activeOpacity={0.7}
-      >
+        >
         <Text
           numberOfLines={1}
           ellipsizeMode="tail"
@@ -51,7 +51,7 @@ export default function ProjectSelector({ value, onPress, style }) {
   );
 }
 
-const createStyles = (theme) =>
+/* const createStyles = (theme) =>
   StyleSheet.create({
     container: {
       width: "100%",
@@ -86,3 +86,4 @@ const createStyles = (theme) =>
       opacity: 0.8,
     },
   });
+ */
