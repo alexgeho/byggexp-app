@@ -225,7 +225,7 @@ export default function CreateToolScreen() {
     const trimmedName = name.trim();
 
     if (!trimmedName) {
-      setFormError("Please enter instrument name.");
+      setFormError("Please enter tool name.");
       return;
     }
 
@@ -258,8 +258,8 @@ export default function CreateToolScreen() {
 
       await toolService.create(formData);
       showSuccess({
-        title: "Instrument created",
-        message: "Instrument created successfully.",
+        title: "Tool created",
+        message: "Tool created successfully.",
       });
       navigation.goBack();
     } catch (error) {
@@ -268,7 +268,7 @@ export default function CreateToolScreen() {
       setFormError(
         Array.isArray(message)
           ? message.join(", ")
-          : message || error?.message || "Unable to create instrument.",
+          : message || error?.message || "Unable to create tool.",
       );
     } finally {
       setSaving(false);
@@ -290,7 +290,7 @@ export default function CreateToolScreen() {
                 { fontFamily: theme.text.fontFamily.semiBold },
               ]}
             >
-              Add instrument
+              Add tool
             </Text>
             <View style={standardScreenHeaderPlaceholder} />
           </View>
@@ -316,7 +316,7 @@ export default function CreateToolScreen() {
               { fontFamily: theme.text.fontFamily.semiBold },
             ]}
           >
-            Add instrument
+            Add tool
           </Text>
           <View style={standardScreenHeaderPlaceholder} />
         </View>
@@ -334,7 +334,7 @@ export default function CreateToolScreen() {
               label="Name *"
               value={name}
               onChangeText={setName}
-              placeholder="Instrument name"
+              placeholder="Tool name"
             />
             <TouchableOpacity
               style={[styles.selectRow, styles.groupRowLast]}

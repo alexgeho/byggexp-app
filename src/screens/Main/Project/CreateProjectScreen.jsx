@@ -141,7 +141,7 @@ const ToolsListModal = memo(function ToolsListModal({
             onPress={onClose}
             iconSource={require("../../../assets/Arrow-left.png")}
           />
-          <Text style={styles.workersModalTitle}>Attach instruments</Text>
+          <Text style={styles.workersModalTitle}>Attach tools</Text>
           <View style={styles.placeholder} />
         </View>
 
@@ -150,7 +150,7 @@ const ToolsListModal = memo(function ToolsListModal({
           <TextInput
             value={toolSearch}
             onChangeText={onToolSearchChange}
-            placeholder="Search instruments"
+            placeholder="Search tools"
             placeholderTextColor="rgba(5, 45, 80, 0.5)"
             style={styles.workersSearchInput}
           />
@@ -174,7 +174,7 @@ const ToolsListModal = memo(function ToolsListModal({
               >
                 <View style={styles.workerCardInfo}>
                   <Text numberOfLines={1} style={styles.workerCardName}>
-                    {item.name || "Unnamed instrument"}
+                    {item.name || "Unnamed tool"}
                   </Text>
                   {item.notes ? (
                     <Text numberOfLines={1} style={styles.workerCardProfession}>
@@ -199,7 +199,7 @@ const ToolsListModal = memo(function ToolsListModal({
           }}
           ListEmptyComponent={
             <View style={styles.workersEmptyState}>
-              <Text style={styles.workersEmptyText}>No instruments found</Text>
+              <Text style={styles.workersEmptyText}>No tools found</Text>
             </View>
           }
         />
@@ -993,7 +993,7 @@ export default function CreateProjectScreen() {
 
   const selectedToolsLabel =
     selectedTools.length > 0
-      ? `${selectedTools.length} instrument${selectedTools.length > 1 ? "s" : ""}`
+      ? `${selectedTools.length} tool${selectedTools.length > 1 ? "s" : ""}`
       : "";
 
   const filteredOwners = getFilteredUsers(ownerSearch);
@@ -1296,7 +1296,7 @@ export default function CreateProjectScreen() {
                     : styles.locationFieldPlaceholder,
                 ]}
               >
-                {selectedToolsLabel || "Attach instruments"}
+                {selectedToolsLabel || "Attach tools"}
               </Text>
             </View>
             <Icon name="chevron-right" size={18} color="#052D50" />

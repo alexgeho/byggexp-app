@@ -101,7 +101,7 @@ export default function ToolsScreen() {
               { fontFamily: theme.text.fontFamily.semiBold },
             ]}
           >
-            Instruments
+            Tools
           </Text>
           <View style={standardScreenHeaderPlaceholder} />
         </View>
@@ -133,13 +133,13 @@ export default function ToolsScreen() {
           >
             {filteredTools.length === 0 ? (
               <View style={styles.emptyState}>
-                <Text style={styles.emptyTitle}>No instruments found</Text>
+                <Text style={styles.emptyTitle}>No tools found</Text>
                 <Text style={styles.emptySubtitle}>
                   {searchQuery.trim()
                     ? "Try a different search query."
                     : canManageTools(user?.role)
-                      ? "Tap the add button below to create the first instrument."
-                      : "No instruments are assigned yet."}
+                      ? "Tap the add button below to create the first tool."
+                      : "No tools are assigned yet."}
                 </Text>
               </View>
             ) : (
