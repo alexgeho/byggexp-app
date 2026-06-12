@@ -37,7 +37,7 @@ import { startShiftWithLocationGuard } from "../../../utils/shiftLocationGuard";
 
 import { createStyles } from "./HomeVariant2.styles";
 
-import { ProjectSelector2 } from "../../../components/common2/projectSelector/projectSelector";
+import ProjectSelector2 from "../../../components/common2/projectSelector/projectSelector";
 import { MainActionButtons } from "../../../components/common2/mainActionButtons/mainActionButtons";
 
 import { FooterButtonsVariant2 } from "../../../components/common2/footer/footer";
