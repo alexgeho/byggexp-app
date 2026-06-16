@@ -63,10 +63,13 @@ export default function HomeVariant2() {
     theme,
     themeName,
   } = useTheme();
+  const isLightBlueTheme =
+    themeName === "lightBlue";
   const gradientColors = useMemo(
     () =>
       ({
         blue: ["#5BC8FF", "#0D5DB8"],
+        lightBlue: ["#ECF6FF", "#ECF6FF"],
         green: ["#8ED057", "#4C9E3C"],
         orange: ["#FFAE63", "#F97316"],
         darkGray: ["#363636", "#121212"],
@@ -151,10 +154,14 @@ export default function HomeVariant2() {
         compact: isCompact,
         veryCompact: isVeryCompact,
         hasSections,
+        theme,
+        isLightBlue: isLightBlueTheme,
       }),
     [
       hasSections,
       isCompact,
+      isLightBlueTheme,
+      theme,
       isVeryCompact,
     ],
   );
@@ -430,19 +437,29 @@ export default function HomeVariant2() {
           onPress={openProjects}
           style={[
             styles.selectorTop,
+            isLightBlueTheme &&
+              styles.selectorLightBlue,
             isCompact
               ? styles.selectorCompact
               : null,
           ]}
           textStyle={
-            isCompact
-              ? styles.selectorTextCompact
-              : null
+            [
+              isLightBlueTheme &&
+                styles.selectorTextLightBlue,
+              isCompact
+                ? styles.selectorTextCompact
+                : null,
+            ]
           }
           iconStyle={
-            isCompact
-              ? styles.selectorIconCompact
-              : null
+            [
+              isLightBlueTheme &&
+                styles.selectorIconLightBlue,
+              isCompact
+                ? styles.selectorIconCompact
+                : null,
+            ]
           }
         />
 
@@ -480,14 +497,22 @@ export default function HomeVariant2() {
                 }
                 containerStyle={styles.timerContainer}
                 textStyle={
-                  isCompact
-                    ? styles.timerTextCompact
-                    : styles.timerTextRegular
+                  [
+                    isCompact
+                      ? styles.timerTextCompact
+                      : styles.timerTextRegular,
+                    isLightBlueTheme &&
+                      styles.timerTextLightBlue,
+                  ]
                 }
                 secondsStyle={
-                  isCompact
-                    ? styles.timerSecondsCompact
-                    : null
+                  [
+                    isCompact
+                      ? styles.timerSecondsCompact
+                      : null,
+                    isLightBlueTheme &&
+                      styles.timerSecondsLightBlue,
+                  ]
                 }
               />
 
@@ -504,6 +529,26 @@ export default function HomeVariant2() {
                 onCameraPress={handleCameraPress}
                 compact={isCompact}
                 veryCompact={isVeryCompact}
+                actionButtonColor={
+                  isLightBlueTheme
+                    ? theme.colors.primary
+                    : undefined
+                }
+                actionIconColor={
+                  isLightBlueTheme
+                    ? "#FFFFFF"
+                    : undefined
+                }
+                cameraButtonColor={
+                  isLightBlueTheme
+                    ? "#FFFFFF"
+                    : undefined
+                }
+                cameraIconColor={
+                  isLightBlueTheme
+                    ? theme.colors.text
+                    : undefined
+                }
               />
 
               {showCoreSpacers ? (
@@ -548,6 +593,7 @@ export default function HomeVariant2() {
 
             {enabledSections.includes("shift-history") && (
               <ShiftHistoryPreview
+                colorMode={isLightBlueTheme ? "light" : "dark"}
                 refreshKey={previewRefreshKey}
                 onClose={() => handleHideSection("shift-history")}
               />
@@ -556,6 +602,7 @@ export default function HomeVariant2() {
             {enabledSections.includes("project-files") && (
               <ProjectFilesSection
                 project={selectedProject}
+                colorMode={isLightBlueTheme ? "light" : "dark"}
                 refreshKey={previewRefreshKey}
                 onClose={() => handleHideSection("project-files")}
               />
@@ -565,7 +612,13 @@ export default function HomeVariant2() {
       </ScrollView>
 
       {/* FOOTER */}
-      <FooterButtonsVariant2 />
+      <FooterButtonsVariant2
+        iconStyle={
+          isLightBlueTheme
+            ? styles.footerIconLightBlue
+            : null
+        }
+      />
     </LinearGradient>
   );
 }

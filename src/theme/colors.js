@@ -74,6 +74,34 @@ export const blueColors = {
   bottomNav: "#282828",
 };
 
+export const lightBlueColors = {
+  background: "#ECF6FF",
+
+  primary: "#3097F7",
+
+  glow: "#3097F7",
+
+  text: "#010D18",
+
+  hourBlockFilled: "#3097F7",
+
+  hourBlockEmpty: "#3097F74D",
+
+  border: "#010D184D",
+
+  card: "#FFFFFF",
+
+  selectorBackground: "#FFFFFF",
+
+  selectorBorder: "#010D1833",
+
+  selectorArrow: "#010D18",
+
+  icon: "#010D18",
+
+  bottomNav: "#010D18",
+};
+
 export const orangeColors = {
   background: "#EEEEEE",
 

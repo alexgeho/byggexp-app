@@ -34,6 +34,10 @@ export default function ProjectFilesSection({
   const { theme } = useTheme();
 
   const styles = createStyles(theme, colorMode);
+  const secondaryIconColor =
+    colorMode === "light"
+      ? `${theme.colors.text}80`
+      : "rgba(255,255,255,0.72)";
 
   const [currentPage, setCurrentPage] = useState(0);
   const [viewportWidth, setViewportWidth] = useState(0);
@@ -212,7 +216,7 @@ export default function ProjectFilesSection({
             <Icon
               name="arrow-right"
               size={18}
-              color="rgba(255,255,255,0.72)"
+              color={secondaryIconColor}
               style={styles.linkIcon}
             />
           </TouchableOpacity>
@@ -229,7 +233,7 @@ export default function ProjectFilesSection({
             activeOpacity={0.8}
             style={styles.closeButton}
           >
-            <Icon name="x" size={18} color="rgba(255,255,255,0.72)" />
+            <Icon name="x" size={18} color={secondaryIconColor} />
           </TouchableOpacity>
         ) : null}
 

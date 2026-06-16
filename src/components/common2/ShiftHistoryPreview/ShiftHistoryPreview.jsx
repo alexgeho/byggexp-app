@@ -56,6 +56,10 @@ export function ShiftHistoryPreview({
   const navigation = useNavigation();
   const { theme } = useTheme();
   const styles = createStyles(theme, colorMode);
+  const secondaryIconColor =
+    colorMode === "light"
+      ? `${theme.colors.text}80`
+      : "rgba(255,255,255,0.72)";
   const [loading, setLoading] = useState(true);
   const [shifts, setShifts] = useState([]);
 
@@ -108,7 +112,7 @@ export function ShiftHistoryPreview({
             <Icon
               name="arrow-right"
               size={18}
-              color="rgba(255,255,255,0.72)"
+              color={secondaryIconColor}
               style={styles.linkIcon}
             />
           </TouchableOpacity>
@@ -122,7 +126,7 @@ export function ShiftHistoryPreview({
             onPress={onClose}
             activeOpacity={0.8}
           >
-            <Icon name="x" size={18} color="rgba(255,255,255,0.72)" />
+            <Icon name="x" size={18} color={secondaryIconColor} />
           </TouchableOpacity>
         ) : null}
 

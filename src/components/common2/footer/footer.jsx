@@ -4,7 +4,9 @@ import { useNavigation } from "@react-navigation/native";
 import { styles } from "./footer.styles";
 import { footerButtons } from "../../../constants/footerButtonsVariant2";
 
-export function FooterButtonsVariant2() {
+export function FooterButtonsVariant2({
+  iconStyle,
+}) {
   const navigation = useNavigation();
 
 function handlePress(button) {
@@ -26,7 +28,10 @@ function handlePress(button) {
               handlePress(button);
             }}
           >
-            <Image source={button.icon} />
+            <Image
+              source={button.icon}
+              style={iconStyle}
+            />
           </TouchableOpacity>
         );
       })}

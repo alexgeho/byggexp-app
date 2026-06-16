@@ -4,6 +4,8 @@ export function createStyles({
   compact = false,
   veryCompact = false,
   hasSections = false,
+  theme,
+  isLightBlue = false,
 }) {
   const topPadding = veryCompact
     ? 34
@@ -30,6 +32,7 @@ export function createStyles({
   const iconSize = veryCompact ? 22 : compact ? 24 : 28;
   const textSize = veryCompact ? 14 : compact ? 15 : 16;
   const timerBottomCompensation = veryCompact ? 8 : compact ? 12 : 16;
+  const textColor = theme?.colors?.text || "#FFFFFF";
 
   return StyleSheet.create({
     container: {
@@ -94,9 +97,13 @@ export function createStyles({
     quickActionCard: {
       width: "47%",
       minHeight: cardHeight,
-      backgroundColor: "rgba(255,255,255,0.3)",
+      backgroundColor: isLightBlue
+        ? "#FFFFFF"
+        : "rgba(255,255,255,0.3)",
       borderWidth: 1,
-      borderColor: "rgba(255,255,255,0.2)",
+      borderColor: isLightBlue
+        ? "rgba(1,13,24,0.08)"
+        : "rgba(255,255,255,0.2)",
       padding: cardPadding,
       borderRadius: 20,
       justifyContent: "space-between",
@@ -112,10 +119,10 @@ export function createStyles({
       width: iconSize,
       height: iconSize,
       resizeMode: "contain",
-      tintColor: "#fff",
+      tintColor: isLightBlue ? textColor : "#fff",
     },
     quickActionText: {
-      color: "#fff",
+      color: isLightBlue ? textColor : "#fff",
       fontSize: textSize,
       lineHeight: compact ? textSize + 2 : 20,
       fontWeight: "600",
@@ -131,8 +138,21 @@ export function createStyles({
     selectorIconCompact: {
       transform: [{ scale: veryCompact ? 0.9 : 0.95 }],
     },
+    selectorLightBlue: {
+      backgroundColor: "#FFFFFF",
+      borderColor: "rgba(1,13,24,0.08)",
+    },
+    selectorTextLightBlue: {
+      color: textColor,
+    },
+    selectorIconLightBlue: {
+      tintColor: textColor,
+    },
     timerContainer: {
       width: "100%",
+    },
+    timerTextLightBlue: {
+      color: textColor,
     },
     timerTextCompact: {
       fontSize: veryCompact ? 100 : 118,
@@ -143,8 +163,14 @@ export function createStyles({
     timerTextRegular: {
       textAlign: "center",
     },
+    timerSecondsLightBlue: {
+      opacity: 0.5,
+    },
     timerSecondsCompact: {
-      opacity: 0.35,
+      opacity: isLightBlue ? 0.5 : 0.35,
+    },
+    footerIconLightBlue: {
+      tintColor: textColor,
     },
   });
 }

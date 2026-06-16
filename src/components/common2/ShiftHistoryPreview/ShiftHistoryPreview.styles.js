@@ -41,7 +41,7 @@ export function createStyles(
     title: {
       color: primaryTextColor,
       fontSize: 15,
-      opacity: 0.72,
+      opacity: isLightMode ? 1 : 0.72,
       fontFamily: theme.text.fontFamily.medium,
     },
     linkButton: {
@@ -52,7 +52,7 @@ export function createStyles(
     linkText: {
       color: primaryTextColor,
       fontSize: 15,
-      opacity: 0.72,
+      opacity: isLightMode ? 1 : 0.72,
       fontFamily: theme.text.fontFamily.medium,
     },
     linkIcon: {

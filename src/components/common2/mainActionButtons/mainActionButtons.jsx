@@ -6,6 +6,7 @@ import {
   Image,
   ActivityIndicator,
 } from "react-native";
+import Icon from "react-native-vector-icons/Feather";
 
 import { styles } from "./mainActionButtons.styles";
 
@@ -17,6 +18,10 @@ export function MainActionButtons({
   onCameraPress,
   compact = false,
   veryCompact = false,
+  actionButtonColor,
+  actionIconColor,
+  cameraButtonColor,
+  cameraIconColor,
 }) {
   const actionButtonSize = veryCompact
     ? 96
@@ -53,6 +58,9 @@ export function MainActionButtons({
             width: actionButtonSize,
             height: actionButtonSize,
           },
+          actionButtonColor && {
+            backgroundColor: actionButtonColor,
+          },
           isPaused &&
             styles.actionButtonPaused,
         ]}
@@ -61,7 +69,7 @@ export function MainActionButtons({
       >
         {loading ? (
           <ActivityIndicator
-            color="#2F80ED"
+            color={actionIconColor || "#2F80ED"}
           />
         ) : (
           <Image
@@ -70,6 +78,9 @@ export function MainActionButtons({
               {
                 width: iconActionSize,
                 height: iconActionSize,
+              },
+              actionIconColor && {
+                tintColor: actionIconColor,
               },
             ]}
             source={
@@ -88,19 +99,32 @@ export function MainActionButtons({
             width: secondaryButtonSize,
             height: secondaryButtonSize,
           },
+          cameraButtonColor && {
+            backgroundColor: cameraButtonColor,
+          },
+          cameraButtonColor &&
+            styles.actionButtonCameraThemed,
         ]}
         onPress={onCameraPress}
       >
-        <Image
-          source={require("../../../assets/HomeScreen2/CircleCamera.png")}
-          style={[
-            styles.icon,
-            {
-              width: secondaryButtonSize,
-              height: secondaryButtonSize,
-            },
-          ]}
-        />
+        {cameraIconColor ? (
+          <Icon
+            name="camera"
+            size={iconActionSize}
+            color={cameraIconColor}
+          />
+        ) : (
+          <Image
+            source={require("../../../assets/HomeScreen2/CircleCamera.png")}
+            style={[
+              styles.icon,
+              {
+                width: secondaryButtonSize,
+                height: secondaryButtonSize,
+              },
+            ]}
+          />
+        )}
       </TouchableOpacity>
     </View>
   );

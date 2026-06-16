@@ -26,6 +26,11 @@ export const styles = StyleSheet.create({
     opacity: 0.3,
   },
 
+  actionButtonCameraThemed: {
+    borderRadius: 999,
+    opacity: 1,
+  },
+
   iconAction: {
     width: 40,
     height: 40,
