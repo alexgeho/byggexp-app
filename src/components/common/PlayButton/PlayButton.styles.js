@@ -1,6 +1,20 @@
 import { StyleSheet } from "react-native";
 
 export function createStyles(theme) {
+  const playButtonSize =
+    theme.colors.playButtonSize || 150;
+  const playButtonColor =
+    theme.colors.playButtonColor ||
+    theme.colors.primary;
+  const playIconSize =
+    theme.colors.playIconSize || 52;
+  const shadowOpacity =
+    theme.colors.playButtonShadowOpacity ?? 0.7;
+  const shadowRadius =
+    theme.colors.playButtonShadowRadius ?? 40;
+  const elevation =
+    theme.colors.playButtonElevation ?? 25;
+
   return StyleSheet.create({
     playButtonContainer: {
       alignItems: "center",
@@ -8,21 +22,21 @@ export function createStyles(theme) {
     },
 
     playButton: {
-      width: 150,
-      height: 150,
+      width: playButtonSize,
+      height: playButtonSize,
       borderRadius: 999,
       alignItems: "center",
       justifyContent: "center",
 
-      backgroundColor: theme.colors.primary,
+      backgroundColor: playButtonColor,
 
-      shadowColor: theme.colors.glow,
-      borderColor: theme.colors.glow,
+      shadowColor: playButtonColor,
+      borderColor: playButtonColor,
 
-      shadowOpacity: 0.7,
-      shadowRadius: 40,
+      shadowOpacity,
+      shadowRadius,
 
-      elevation: 25,
+      elevation,
     },
 
     playButtonPaused: {
@@ -30,8 +44,8 @@ export function createStyles(theme) {
     },
 
     playIcon: {
-      width: 52,
-      height: 52,
+      width: playIconSize,
+      height: playIconSize,
       tintColor: "#ffffff",
     },
   });

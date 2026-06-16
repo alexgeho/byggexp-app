@@ -3,6 +3,7 @@ import { StyleSheet, Text, TextInput } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Font from 'expo-font';
+import { Oswald_500Medium } from '@expo-google-fonts/oswald';
 import AppNavigator from './src/navigation/AppNavigator';
 import { AuthProvider } from './src/contexts/AuthContext';
 import { FeedbackProvider } from './src/contexts/FeedbackContext';
@@ -44,6 +45,7 @@ export default function App() {
           'DMSans-Medium': require('./src/assets/fonts/DMSans-Medium.ttf'),
           'DMSans-SemiBold': require('./src/assets/fonts/DMSans-Medium.ttf'),
           'Landasans-Medium': require('./src/assets/fonts/Landasans-Medium.otf'),
+          Oswald_500Medium,
         });
         setFontsLoaded(true);
       } catch (error) {

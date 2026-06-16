@@ -7,24 +7,38 @@ export function createStyles(theme) {
       height: "100%",
       paddingTop: 32,
       justifyContent: "space-between",
+      backgroundColor: theme.colors.background,
     },
     selectProjectContainer: {
       paddingTop: 46,
       paddingHorizontal: 46,
       
     },
-    contentContainer: {
+    contentScrollView: {
       flex: 1,
+    },
+    contentContainer: {
+      flexGrow: 1,
       justifyContent: "space-evenly",
       paddingHorizontal: 20,
+      paddingBottom: 150,
       zIndex: 1000,
       position: "relative",
       gap: 10,
-      marginBottom: 140,
     },
     sectionsContainer: {
       gap: 16,
       marginTop: 8,
+    },
+    projectSelector: {
+      backgroundColor: theme.colors.selectorBackground,
+      borderColor: theme.colors.selectorBorder,
+    },
+    projectSelectorText: {
+      color: theme.colors.selectorText || theme.colors.text,
+    },
+    projectSelectorIcon: {
+      tintColor: theme.colors.selectorArrow,
     },
   });
 }

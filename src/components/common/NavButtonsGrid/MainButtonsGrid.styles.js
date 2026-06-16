@@ -6,8 +6,8 @@ export function createStyles(theme) {
       flexWrap: "wrap",
       width: "100%",
       flexDirection: "row",
-      justifyContent: "center",
-      gap: 15,
+      justifyContent: theme.colors.homeButtonGridJustify || "center",
+      gap: theme.colors.homeButtonGridGap || 15,
     },
 
     linesContainer: {
@@ -18,6 +18,10 @@ export function createStyles(theme) {
       gap: 6,
     },
 
+    linesContainerHidden: {
+      display: "none",
+    },
+
     line: {
       width: 80,
       height: 1,
@@ -26,8 +30,9 @@ export function createStyles(theme) {
     },
 
     button: {
-      width: "42%",
-      borderRadius: 16,
+      width: theme.colors.homeButtonWidth || "42%",
+      minHeight: theme.colors.homeButtonMinHeight,
+      borderRadius: theme.colors.homeButtonRadius || 16,
       overflow: "hidden",
       borderWidth: 1,
       borderColor: theme.colors.border,
@@ -36,18 +41,21 @@ export function createStyles(theme) {
 
     buttonInner: {
       flexDirection: "column",
-      padding: 16,
+      padding: theme.colors.homeButtonPadding || 16,
       gap: 18,
-      alignItems: "center",
+      alignItems: theme.colors.homeButtonAlignItems || "center",
+      justifyContent: "space-between",
+      minHeight: theme.colors.homeButtonMinHeight,
     },
 
     iconWrapper: {
       position: "relative",
+      alignSelf: theme.colors.homeButtonIconAlignSelf,
     },
 
     buttonIcon: {
-      width: 26,
-      height: 26,
+      width: theme.colors.homeButtonIconSize || 26,
+      height: theme.colors.homeButtonIconSize || 26,
       tintColor: theme.colors.icon,
     },
 
@@ -55,6 +63,7 @@ export function createStyles(theme) {
       color: theme.colors.textBtn,
       fontFamily: theme.text.fontFamily.regular,
       fontSize: theme.text.sizes.medium,
+      fontWeight: theme.colors.homeButtonTextWeight,
     },
   });
 }

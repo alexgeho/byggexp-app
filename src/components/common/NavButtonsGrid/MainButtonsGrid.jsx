@@ -74,7 +74,11 @@ export default function MainButtonsGrid() {
                 }}
               >
                 <View
-                  style={styles.linesContainer}
+                  style={[
+                    styles.linesContainer,
+                    theme.colors.hideButtonLines &&
+                      styles.linesContainerHidden,
+                  ]}
                 >
                   <View style={styles.line} />
                   <View style={styles.line} />

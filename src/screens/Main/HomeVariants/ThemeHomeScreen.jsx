@@ -13,6 +13,8 @@ export default function ThemeHomeScreen() {
   switch (themeName) {
     case "green":
       return <HomeVariant1green key="green" />;
+    case "light":
+      return <HomeVariant1green key="light" />;
     case "orange":
       return <HomeVariant5orange key="orange" />;
     case "darkGray":

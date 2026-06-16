@@ -1,5 +1,6 @@
 import {
   greenColors,
+  lightColors,
   blueColors,
   blueDarkTextColors,
   lightBlueColors,
@@ -50,6 +51,11 @@ export const greenTheme = {
   colors: withIconBadgeBackground(greenColors),
 };
 
+export const lightTheme = {
+  ...common,
+  colors: withIconBadgeBackground(lightColors),
+};
+
 export const blueTheme = {
   ...common,
   colors: withIconBadgeBackground(blueColors),
@@ -79,6 +85,11 @@ export const themeOptions = [
   {
     id: "green",
     color: greenColors.primary,
+  },
+  {
+    id: "light",
+    color: lightColors.background,
+    secondaryColor: lightColors.primary,
   },
   {
     id: "blue",

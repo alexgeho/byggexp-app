@@ -7,6 +7,7 @@ import React, {
 import {
   View,
   Alert,
+  ScrollView,
 } from "react-native";
 
 import {
@@ -252,6 +253,9 @@ export default function MainScreen() {
       <View style={styles.selectProjectContainer}>
         <ProjectSelector
           value={selectedProject}
+          style={styles.projectSelector}
+          textStyle={styles.projectSelectorText}
+          iconStyle={styles.projectSelectorIcon}
           onPress={function handleProjectPress() {
             navigation.navigate("Projects", {
               mode: "select",
@@ -260,14 +264,20 @@ export default function MainScreen() {
         />
       </View>
 
-      <View style={styles.contentContainer}>
+      <ScrollView
+        style={styles.contentScrollView}
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
         <TimerDisplay
           hours={formattedTime.hours}
           minutes={formattedTime.minutes}
           seconds={formattedTime.seconds}
         />
 
-        <TimerProgress progress={timerProgress} />
+        {!theme.colors.hideTimerProgress && (
+          <TimerProgress progress={timerProgress} />
+        )}
 
 
         <PlayButton
@@ -295,12 +305,12 @@ export default function MainScreen() {
             />
           )}
         </View>
-      </View>
+      </ScrollView>
 
       <BottomBar
         showAddButton={false}
-        showBackground={false}
-        showText={true}
+        showBackground={theme.colors.showBottomMenuBackground}
+        showText={theme.colors.showBottomMenuText ?? true}
         onLeftPress={handleHomePress}
         onRightPress={handleMenuPress}
       />
