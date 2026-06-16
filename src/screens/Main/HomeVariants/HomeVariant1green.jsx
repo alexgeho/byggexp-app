@@ -22,6 +22,7 @@ import { shiftService } from "@services";
 import { startShiftWithLocationGuard } from "@utils/shiftLocationGuard";
 import { createStyles } from "./HomeVariant1green.styles";
 import { getEnabledSections } from "@utils/homeButtonsStorage";
+import { defaultEnabledSections } from "@constants/mainButtons";
 import ProjectSelector from "@components/common2/projectSelector/projectSelector";
 import MainButtonsGrid from "@components/common/NavButtonsGrid/MainButtonsGrid";
 import ProjectFilesSection from "@components/common/ProjectFilesSection/ProjectFilesSection";
@@ -43,7 +44,9 @@ export default function MainScreen() {
   } = useContext(AuthContext);
   const [actionLoading, setActionLoading] = useState(false);
   const [currentShift, setCurrentShift] = useState(null);
-  const [enabledSections, setEnabledSections] = useState([]);
+  const [enabledSections, setEnabledSections] = useState(
+    defaultEnabledSections,
+  );
   const {
     formattedTime,
     isRunning,

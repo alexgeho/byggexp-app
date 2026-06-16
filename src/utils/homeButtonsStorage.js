@@ -1,7 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {
-  defaultEnabledButtons,
   defaultEnabledSections,
 } from "../constants/mainButtons";
 
@@ -18,22 +17,6 @@ export async function saveEnabledButtons(buttons) {
   );
 }
 
-export function mergeEnabledButtons(savedButtons) {
-  if (!savedButtons) {
-    return [...defaultEnabledButtons];
-  }
-
-  const merged = [...savedButtons];
-
-  defaultEnabledButtons.forEach((buttonId) => {
-    if (!merged.includes(buttonId)) {
-      merged.push(buttonId);
-    }
-  });
-
-  return merged;
-}
-
 export async function getEnabledButtons() {
   const data = await AsyncStorage.getItem(STORAGE_KEY);
 
@@ -41,14 +24,7 @@ export async function getEnabledButtons() {
     return null;
   }
 
-  const saved = JSON.parse(data);
-  const merged = mergeEnabledButtons(saved);
-
-  if (merged.length !== saved.length) {
-    await saveEnabledButtons(merged);
-  }
-
-  return merged;
+  return JSON.parse(data);
 }
 
 export async function getEnabledSections() {
