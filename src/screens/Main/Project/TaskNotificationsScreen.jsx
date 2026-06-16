@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Image,
   Modal,
   ScrollView,
   StyleSheet,
@@ -208,6 +209,22 @@ export default function TaskNotificationsScreen() {
           />
           <Text style={styles.headerTitle}>Notifications</Text>
           <View style={styles.placeholder} />
+        </View>
+
+        <View style={styles.reminderHeroCard}>
+          <View style={styles.reminderLogoFrame}>
+            <Image
+              source={require("../../../assets/icon.png")}
+              style={styles.reminderLogo}
+              resizeMode="contain"
+            />
+          </View>
+          <View style={styles.reminderHeroText}>
+            <Text style={styles.reminderHeroTitle}>Task Reminder</Text>
+            <Text style={styles.reminderHeroSubtitle}>
+              Set up reminders with the ByggExp notification style.
+            </Text>
+          </View>
         </View>
 
         <View style={styles.groupCard}>
@@ -503,6 +520,48 @@ const styles = StyleSheet.create({
   },
   placeholder: {
     ...standardScreenHeaderPlaceholder,
+  },
+  reminderHeroCard: {
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+    padding: 16,
+    marginBottom: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+  },
+  reminderLogoFrame: {
+    width: 58,
+    height: 58,
+    borderRadius: 18,
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#052D50",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 2,
+  },
+  reminderLogo: {
+    width: 42,
+    height: 42,
+  },
+  reminderHeroText: {
+    flex: 1,
+  },
+  reminderHeroTitle: {
+    color: "#052D50",
+    fontSize: 17,
+    fontFamily: "DMSans-SemiBold",
+    marginBottom: 4,
+  },
+  reminderHeroSubtitle: {
+    color: "#698196",
+    fontSize: 13,
+    lineHeight: 18,
   },
   groupCard: {
     backgroundColor: "rgba(255, 255, 255, 0.6)",
