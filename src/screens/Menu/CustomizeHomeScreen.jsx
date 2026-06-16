@@ -220,7 +220,30 @@ export default function CustomizeHomeScreen() {
                   onPress={function handleThemePress() {
                     changeTheme(item.id);
                   }}
-                />
+                >
+                  {item.secondaryColor ? (
+                    <View style={styles.splitThemePreview}>
+                      <View
+                        style={[
+                          styles.splitThemeHalf,
+                          {
+                            backgroundColor: item.color,
+                          },
+                        ]}
+                      />
+
+                      <View
+                        style={[
+                          styles.splitThemeHalf,
+                          {
+                            backgroundColor:
+                              item.secondaryColor,
+                          },
+                        ]}
+                      />
+                    </View>
+                  ) : null}
+                </TouchableOpacity>
               );
             })}
           </View>

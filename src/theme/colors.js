@@ -74,6 +74,11 @@ export const blueColors = {
   bottomNav: "#282828",
 };
 
+export const blueDarkTextColors = {
+  ...blueColors,
+  homeButtonText: "#1C1C1C",
+};
+
 export const lightBlueColors = {
   background: "#ECF6FF",
 

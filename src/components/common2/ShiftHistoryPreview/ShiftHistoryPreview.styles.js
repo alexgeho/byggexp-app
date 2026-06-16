@@ -6,12 +6,17 @@ export function createStyles(
 ) {
   const isLightMode =
     colorMode === "light";
+  const themedTextColor =
+    theme.colors.homeButtonText;
   const primaryTextColor = isLightMode
+    ? theme.colors.text
+    : themedTextColor || "#FFFFFF";
+  const headerTextColor = isLightMode
     ? theme.colors.text
     : "#FFFFFF";
   const secondaryTextColor = isLightMode
     ? `${theme.colors.text}B3`
-    : "rgba(255,255,255,0.72)";
+    : themedTextColor || "rgba(255,255,255,0.72)";
   const cardBackgroundColor = isLightMode
     ? "#FFFFFF"
     : "rgba(255,255,255,0.3)";
@@ -39,7 +44,7 @@ export function createStyles(
       gap: 6,
     },
     title: {
-      color: primaryTextColor,
+      color: headerTextColor,
       fontSize: 15,
       opacity: isLightMode ? 1 : 0.72,
       fontFamily: theme.text.fontFamily.medium,
@@ -50,7 +55,7 @@ export function createStyles(
       gap: 6,
     },
     linkText: {
-      color: primaryTextColor,
+      color: headerTextColor,
       fontSize: 15,
       opacity: isLightMode ? 1 : 0.72,
       fontFamily: theme.text.fontFamily.medium,

@@ -33,6 +33,7 @@ export function createStyles({
   const textSize = veryCompact ? 14 : compact ? 15 : 16;
   const timerBottomCompensation = veryCompact ? 8 : compact ? 12 : 16;
   const textColor = theme?.colors?.text || "#FFFFFF";
+  const homeButtonTextColor = theme?.colors?.homeButtonText;
 
   return StyleSheet.create({
     container: {
@@ -119,10 +120,10 @@ export function createStyles({
       width: iconSize,
       height: iconSize,
       resizeMode: "contain",
-      tintColor: isLightBlue ? textColor : "#fff",
+      tintColor: homeButtonTextColor || (isLightBlue ? textColor : "#fff"),
     },
     quickActionText: {
-      color: isLightBlue ? textColor : "#fff",
+      color: homeButtonTextColor || (isLightBlue ? textColor : "#fff"),
       fontSize: textSize,
       lineHeight: compact ? textSize + 2 : 20,
       fontWeight: "600",

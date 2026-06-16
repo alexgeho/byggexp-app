@@ -19,6 +19,8 @@ export default function ThemeHomeScreen() {
       return <HomeVariant4darkGray key="darkGray" />;
     case "lightBlue":
       return <HomeVariant2 key="lightBlue" />;
+    case "blueDarkText":
+      return <HomeVariant2 key="blueDarkText" />;
     case "blue":
     default:
       return <HomeVariant2 key="blue" />;

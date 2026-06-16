@@ -52,6 +52,16 @@ export function createStyles(theme) {
       width: 42,
       height: 42,
       borderRadius: 999,
+      overflow: "hidden",
+    },
+
+    splitThemePreview: {
+      flex: 1,
+      flexDirection: "row",
+    },
+
+    splitThemeHalf: {
+      flex: 1,
     },
 
     activeThemeButton: {

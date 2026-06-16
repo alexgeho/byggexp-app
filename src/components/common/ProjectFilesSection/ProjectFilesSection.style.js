@@ -6,7 +6,12 @@ export function createStyles(
 ) {
   const isLightMode =
     colorMode === "light";
+  const themedTextColor =
+    theme.colors.homeButtonText;
   const primaryTextColor = isLightMode
+    ? theme.colors.text
+    : themedTextColor || "#FFFFFF";
+  const headerTextColor = isLightMode
     ? theme.colors.text
     : "#FFFFFF";
 
@@ -28,7 +33,7 @@ export function createStyles(
     },
 
     title: {
-      color: primaryTextColor,
+      color: headerTextColor,
       fontSize: 15,
       opacity: isLightMode ? 1 : 0.72,
       fontFamily: theme.text.fontFamily.medium,
@@ -41,7 +46,7 @@ export function createStyles(
     },
 
     linkText: {
-      color: primaryTextColor,
+      color: headerTextColor,
       fontSize: 15,
       opacity: isLightMode ? 1 : 0.72,
       fontFamily: theme.text.fontFamily.medium,
