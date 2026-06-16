@@ -45,7 +45,9 @@ export function createStyles(theme) {
 
     themeRow: {
       flexDirection: "row",
+      flexWrap: "wrap",
       gap: 12,
+      rowGap: 12,
     },
 
     themeButton: {

@@ -124,6 +124,23 @@ export const blueDarkTextColors = {
   homeButtonText: "#1C1C1C",
 };
 
+export const blackColors = {
+  ...blueColors,
+  background: "#1C1C1C",
+  primary: "#3B82F6",
+  glow: "#3B82F6",
+  text: "#FFFFFF",
+  card: "#232323",
+  border: "rgba(255,255,255,0.2)",
+  selectorBackground: "transparent",
+  selectorBorder: "rgba(255,255,255,0.2)",
+  selectorArrow: "#FFFFFF",
+  icon: "#FFFFFF",
+  bottomNav: "#FFFFFF",
+  homeButtonBackground: "#232323",
+  homeButtonBorder: "rgba(255,255,255,0.2)",
+};
+
 export const lightBlueColors = {
   background: "#ECF6FF",
 

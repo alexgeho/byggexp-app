@@ -34,6 +34,10 @@ export function createStyles({
   const timerBottomCompensation = veryCompact ? 8 : compact ? 12 : 16;
   const textColor = theme?.colors?.text || "#FFFFFF";
   const homeButtonTextColor = theme?.colors?.homeButtonText;
+  const homeButtonBackground =
+    theme?.colors?.homeButtonBackground;
+  const homeButtonBorder =
+    theme?.colors?.homeButtonBorder;
 
   return StyleSheet.create({
     container: {
@@ -98,13 +102,13 @@ export function createStyles({
     quickActionCard: {
       width: "47%",
       minHeight: cardHeight,
-      backgroundColor: isLightBlue
+      backgroundColor: homeButtonBackground || (isLightBlue
         ? "#FFFFFF"
-        : "rgba(255,255,255,0.3)",
+        : "rgba(255,255,255,0.3)"),
       borderWidth: 1,
-      borderColor: isLightBlue
+      borderColor: homeButtonBorder || (isLightBlue
         ? "rgba(1,13,24,0.08)"
-        : "rgba(255,255,255,0.2)",
+        : "rgba(255,255,255,0.2)"),
       padding: cardPadding,
       borderRadius: 20,
       justifyContent: "space-between",

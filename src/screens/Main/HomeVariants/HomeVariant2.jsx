@@ -70,6 +70,7 @@ export default function HomeVariant2() {
       ({
         blue: ["#5BC8FF", "#0D5DB8"],
         blueDarkText: ["#5BC8FF", "#0D5DB8"],
+        black: ["#1C1C1C", "#1C1C1C"],
         lightBlue: ["#ECF6FF", "#ECF6FF"],
         green: ["#8ED057", "#4C9E3C"],
         orange: ["#FFAE63", "#F97316"],
