@@ -781,7 +781,7 @@ export default function ShiftsScreen() {
                     { fontFamily: theme.text.fontFamily["medium"] },
                   ]}
                 >
-                  {selectionSummary}
+                {`Selected: ${selectionSummary}`}
                 </Text>
                 <TouchableOpacity
                   style={styles.clearSelectionButton}
@@ -1475,8 +1475,8 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   shiftSelectionSummary: {
-    color: "rgba(95, 117, 136, 1)",
-    fontSize: 15,
+    color: "#007AFF",
+    fontSize: 16,
     lineHeight: 22,
     flex: 1,
   },
