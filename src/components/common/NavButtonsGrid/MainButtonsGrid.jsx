@@ -89,7 +89,10 @@ export default function MainButtonsGrid() {
                 <View style={styles.iconWrapper}>
                   <Image
                     source={button.icon}
-                    style={styles.buttonIcon}
+                    style={[
+                      styles.buttonIcon,
+                      button.iconStyle,
+                    ]}
                   />
 
                   {button.id === "chats" ? (

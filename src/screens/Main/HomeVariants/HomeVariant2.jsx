@@ -577,7 +577,10 @@ export default function HomeVariant2() {
                       <View style={styles.quickActionIconWrapper}>
                         <Image
                           source={button.icon}
-                          style={styles.quickActionIcon}
+                          style={[
+                            styles.quickActionIcon,
+                            button.iconStyle,
+                          ]}
                         />
                         {button.id === "chats" ? (
                           <UnreadBadge count={unreadCount} />

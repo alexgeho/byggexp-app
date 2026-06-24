@@ -1,10 +1,17 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {
+  defaultEnabledButtons,
   defaultEnabledSections,
 } from "../constants/mainButtons";
 
 const STORAGE_KEY = "enabled-home-buttons";
+
+const STORAGE_MIGRATIONS_KEY = "enabled-home-buttons-migrations";
+
+const ENABLED_BUTTON_MIGRATIONS = [
+  "tasks",
+];
 
 const ENABLED_SECTIONS_KEY = "enabled-home-sections";
 
@@ -24,7 +31,43 @@ export async function getEnabledButtons() {
     return null;
   }
 
-  return JSON.parse(data);
+  const savedButtons = JSON.parse(data);
+  const appliedMigrationsData = await AsyncStorage.getItem(
+    STORAGE_MIGRATIONS_KEY,
+  );
+  const appliedMigrations = appliedMigrationsData
+    ? JSON.parse(appliedMigrationsData)
+    : [];
+  const pendingButtonIds = ENABLED_BUTTON_MIGRATIONS.filter(
+    function filterPendingMigration(buttonId) {
+      return !appliedMigrations.includes(buttonId);
+    },
+  );
+
+  if (pendingButtonIds.length === 0) {
+    return savedButtons;
+  }
+
+  const migratedButtons = [
+    ...savedButtons,
+    ...pendingButtonIds.filter(function filterDefaultButton(buttonId) {
+      return (
+        defaultEnabledButtons.includes(buttonId) &&
+        !savedButtons.includes(buttonId)
+      );
+    }),
+  ];
+
+  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(migratedButtons));
+  await AsyncStorage.setItem(
+    STORAGE_MIGRATIONS_KEY,
+    JSON.stringify([
+      ...appliedMigrations,
+      ...pendingButtonIds,
+    ]),
+  );
+
+  return migratedButtons;
 }
 
 export async function getEnabledSections() {

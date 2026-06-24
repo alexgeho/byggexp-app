@@ -1,5 +1,5 @@
-import { useNavigation } from "@react-navigation/native";
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -30,13 +30,7 @@ export default function TasksScreen() {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    if (!authLoading && user?.role) {
-      fetchProjectsWithTasks();
-    }
-  }, [authLoading, user?.role, userId]);
-
-  const fetchProjectsWithTasks = async () => {
+  const fetchProjectsWithTasks = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -60,7 +54,15 @@ export default function TasksScreen() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.role]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!authLoading && user?.role) {
+        fetchProjectsWithTasks();
+      }
+    }, [authLoading, fetchProjectsWithTasks, user?.role, userId]),
+  );
 
   const groupedTasks = useMemo(() => {
     const normalizedQuery = searchQuery.trim().toLowerCase();
@@ -237,7 +239,7 @@ export default function TasksScreen() {
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
-        showAddButton={false}
+        onAddPress={() => navigation.navigate("CreateTask")}
       />
     </View>
   );

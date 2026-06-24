@@ -56,6 +56,7 @@ export function createStyles(theme) {
     buttonIcon: {
       width: theme.colors.homeButtonIconSize || 26,
       height: theme.colors.homeButtonIconSize || 26,
+      resizeMode: "contain",
       tintColor: theme.colors.icon,
     },
 

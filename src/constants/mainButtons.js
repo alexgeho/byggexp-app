@@ -42,6 +42,15 @@ export const mainButtons = [
     icon: require("../assets/mainButtons/projects.png"),
     screen: "Projects",
   },
+  {
+    id: "tasks",
+    title: "Tasks",
+    icon: require("../assets/Tasks.png"),
+    iconStyle: {
+      transform: [{ scale: 0.82 }],
+    },
+    screen: "Tasks",
+  },
 ];
 
 export const homeSections = [
@@ -63,6 +72,7 @@ export const defaultEnabledButtons = [
   "chats",
   "shifts",
   "projects",
+  "tasks",
 ];
 
 export const defaultEnabledSections = [

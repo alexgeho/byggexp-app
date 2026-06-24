@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -26,6 +26,7 @@ import {
 } from "../../../styles/screenLayout";
 import { useTheme } from "../../../theme/ThemeContext";
 import { projectService, taskService } from "../../../services";
+import AuthContext from "../../../contexts/AuthContext";
 import { pickUploadAssets } from "../../../utils/uploadPicker";
 import {
   buildTaskNotificationsPayload,
@@ -126,37 +127,134 @@ const DateFieldModal = ({ visible, title, value, onChange, onClose }) => (
   </Modal>
 );
 
+const getProjectId = (project) => project?._id || project?.id;
+
+const parseDraftDate = (date) => {
+  if (!date) {
+    return null;
+  }
+
+  const parsedDate = new Date(date);
+  return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+};
+
+const ProjectPickerModal = ({
+  visible,
+  projects,
+  selectedProjectId,
+  onSelect,
+  onClose,
+}) => (
+  <Modal
+    visible={visible}
+    transparent={true}
+    animationType="fade"
+    onRequestClose={onClose}
+  >
+    <View style={styles.projectPickerOverlay}>
+      <View style={styles.projectPickerCard}>
+        <View style={styles.projectPickerHeader}>
+          <Text style={styles.projectPickerTitle}>Select project</Text>
+          <TouchableOpacity onPress={onClose} style={styles.projectPickerClose}>
+            <Icon name="x" size={20} color="#052D50" />
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView
+          style={styles.projectPickerList}
+          contentContainerStyle={styles.projectPickerListContent}
+        >
+          {projects.length === 0 ? (
+            <Text style={styles.projectPickerEmpty}>No projects found.</Text>
+          ) : (
+            projects.map((project) => {
+              const id = getProjectId(project);
+              const isSelected = id === selectedProjectId;
+
+              return (
+                <TouchableOpacity
+                  key={id}
+                  style={[
+                    styles.projectPickerItem,
+                    isSelected && styles.projectPickerItemSelected,
+                  ]}
+                  onPress={() => onSelect(project)}
+                  activeOpacity={0.85}
+                >
+                  <View style={styles.projectPickerItemText}>
+                    <Text style={styles.projectPickerItemTitle}>
+                      {project.name || "Untitled project"}
+                    </Text>
+                    {!!project.location && (
+                      <Text style={styles.projectPickerItemSubtitle}>
+                        {project.location}
+                      </Text>
+                    )}
+                  </View>
+
+                  {isSelected ? (
+                    <Icon name="check" size={18} color="#0091FF" />
+                  ) : null}
+                </TouchableOpacity>
+              );
+            })
+          )}
+        </ScrollView>
+      </View>
+    </View>
+  </Modal>
+);
+
 export default function CreateTaskScreen() {
   const navigation = useNavigation();
   const route = useRoute();
   const { theme } = useTheme();
   const { showSuccess } = useFeedback();
-  const { projectId, projectName: initialProjectName } = route.params || {};
+  const { user, userId } = useContext(AuthContext);
+  const { projectId: initialProjectId, projectName: initialProjectName } =
+    route.params || {};
+  const initialTaskDraft = route.params?.taskDraft || {};
 
-  const [projectName, setProjectName] = useState(initialProjectName || "");
-  const [taskTitle, setTaskTitle] = useState("");
-  const [taskDescription, setTaskDescription] = useState("");
-  const [notes, setNotes] = useState("");
+  const [selectedProjectId, setSelectedProjectId] = useState(
+    initialTaskDraft.selectedProjectId || initialProjectId || "",
+  );
+  const [projectName, setProjectName] = useState(
+    initialTaskDraft.projectName || initialProjectName || "",
+  );
+  const [projects, setProjects] = useState([]);
+  const [taskTitle, setTaskTitle] = useState(initialTaskDraft.taskTitle || "");
+  const [taskDescription, setTaskDescription] = useState(
+    initialTaskDraft.taskDescription || "",
+  );
+  const [notes, setNotes] = useState(initialTaskDraft.notes || "");
   const [notificationSettings, setNotificationSettings] = useState(() =>
     createDefaultTaskNotificationSettings(),
   );
-  const [selectedDocuments, setSelectedDocuments] = useState([]);
-  const [startDate, setStartDate] = useState(null);
-  const [dueDate, setDueDate] = useState(null);
+  const [selectedDocuments, setSelectedDocuments] = useState(
+    initialTaskDraft.selectedDocuments || [],
+  );
+  const [startDate, setStartDate] = useState(
+    parseDraftDate(initialTaskDraft.startDate),
+  );
+  const [dueDate, setDueDate] = useState(
+    parseDraftDate(initialTaskDraft.dueDate),
+  );
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showDueDatePicker, setShowDueDatePicker] = useState(false);
   const [loadingProject, setLoadingProject] = useState(false);
+  const [loadingProjects, setLoadingProjects] = useState(false);
+  const [showProjectPicker, setShowProjectPicker] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!projectId || projectName) {
+    if (!selectedProjectId || projectName) {
       return;
     }
 
     const fetchProject = async () => {
       try {
         setLoadingProject(true);
-        const project = await projectService.getById(projectId);
+        const project = await projectService.getById(selectedProjectId);
         setProjectName(project?.name || "");
       } catch (error) {
         console.error("Failed to load project for task creation:", error);
@@ -166,7 +264,48 @@ export default function CreateTaskScreen() {
     };
 
     fetchProject();
-  }, [projectId, projectName]);
+  }, [selectedProjectId, projectName]);
+
+  useEffect(() => {
+    if (!user?.role) {
+      return;
+    }
+
+    const fetchProjects = async () => {
+      try {
+        setLoadingProjects(true);
+        const data =
+          user.role === "superadmin"
+            ? await projectService.getAll()
+            : await projectService.getMyProjects();
+        const userProjects =
+          user.role === "worker" || user.role === "projectAdmin"
+            ? data.filter((project) => {
+                if (!project.workers?.length) {
+                  return false;
+                }
+
+                return project.workers.some((worker) => {
+                  const workerId =
+                    typeof worker === "string"
+                      ? worker
+                      : worker?._id || worker?.id;
+                  return workerId === userId;
+                });
+              })
+            : data;
+
+        setProjects(userProjects);
+      } catch (error) {
+        console.error("Failed to load projects for task creation:", error);
+        setProjects([]);
+      } finally {
+        setLoadingProjects(false);
+      }
+    };
+
+    fetchProjects();
+  }, [user?.role, userId]);
 
   useEffect(() => {
     if (!route.params?.notificationSettings) {
@@ -177,6 +316,23 @@ export default function CreateTaskScreen() {
       normalizeTaskNotificationSettings(route.params.notificationSettings),
     );
   }, [route.params?.notificationSettings]);
+
+  useEffect(() => {
+    const taskDraft = route.params?.taskDraft;
+
+    if (!taskDraft) {
+      return;
+    }
+
+    setSelectedProjectId(taskDraft.selectedProjectId || "");
+    setProjectName(taskDraft.projectName || "");
+    setTaskTitle(taskDraft.taskTitle || "");
+    setTaskDescription(taskDraft.taskDescription || "");
+    setNotes(taskDraft.notes || "");
+    setSelectedDocuments(taskDraft.selectedDocuments || []);
+    setStartDate(parseDraftDate(taskDraft.startDate));
+    setDueDate(parseDraftDate(taskDraft.dueDate));
+  }, [route.params?.taskDraft]);
 
   const notificationsSummary = useMemo(
     () => getTaskNotificationSummary(notificationSettings),
@@ -199,8 +355,25 @@ export default function CreateTaskScreen() {
     }
   };
 
+  const selectProject = (project) => {
+    setSelectedProjectId(getProjectId(project) || "");
+    setProjectName(project?.name || "");
+    setShowProjectPicker(false);
+  };
+
+  const buildTaskDraft = () => ({
+    selectedProjectId,
+    projectName,
+    taskTitle,
+    taskDescription,
+    notes,
+    selectedDocuments,
+    startDate: startDate ? startDate.toISOString() : null,
+    dueDate: dueDate ? dueDate.toISOString() : null,
+  });
+
   const createTask = async () => {
-    if (!projectId) {
+    if (!selectedProjectId) {
       Alert.alert("Validation error", "Project is required to create a task.");
       return;
     }
@@ -218,7 +391,7 @@ export default function CreateTaskScreen() {
         dueDate,
       });
 
-      taskData.append("projectId", projectId);
+      taskData.append("projectId", selectedProjectId);
       taskData.append("taskTitle", taskTitle.trim());
 
       if (taskDescription.trim()) {
@@ -299,24 +472,32 @@ export default function CreateTaskScreen() {
 
         <SectionLabel>General</SectionLabel>
         <GroupCard>
-          <GroupRow>
+          <TouchableOpacity
+            style={styles.groupRow}
+            onPress={() => setShowProjectPicker(true)}
+            activeOpacity={0.85}
+            disabled={loadingProjects}
+          >
             <View style={styles.rowContent}>
               <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
                 <FieldIcon name="folder" size={14} color="#FFFFFF" />
               </View>
               <View style={styles.rowTextContainer}>
-                <Text style={styles.rowLabel}>Project</Text>
+                <Text style={styles.rowLabel}>Project *</Text>
                 <Text
                   style={[
                     styles.rowValue,
                     !projectName && styles.rowPlaceholder,
                   ]}
                 >
-                  {projectName || "Project not selected"}
+                  {loadingProjects
+                    ? "Loading projects..."
+                    : projectName || "Select project"}
                 </Text>
               </View>
             </View>
-          </GroupRow>
+            <Icon name="chevron-right" size={18} color="#052D50" />
+          </TouchableOpacity>
           <GroupRow isLast={true}>
             <View style={styles.inputWrapper}>
               <Text style={styles.inputLabel}>Task title *</Text>
@@ -399,10 +580,11 @@ export default function CreateTaskScreen() {
             activeOpacity={0.85}
             onPress={() =>
               navigation.navigate("TaskNotifications", {
-                projectId,
+                projectId: selectedProjectId,
                 startDate: startDate ? startDate.toISOString() : null,
                 dueDate: dueDate ? dueDate.toISOString() : null,
                 notificationSettings,
+                taskDraft: buildTaskDraft(),
               })
             }
           >
@@ -519,6 +701,13 @@ export default function CreateTaskScreen() {
           value={dueDate}
           onChange={setDueDate}
           onClose={() => setShowDueDatePicker(false)}
+        />
+        <ProjectPickerModal
+          visible={showProjectPicker}
+          projects={projects}
+          selectedProjectId={selectedProjectId}
+          onSelect={selectProject}
+          onClose={() => setShowProjectPicker(false)}
         />
       </ScrollView>
       <BottomBar
@@ -684,6 +873,84 @@ const styles = StyleSheet.create({
     color: "#052D50",
     fontSize: 10,
     fontWeight: "700",
+  },
+  projectPickerOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(5, 45, 80, 0.28)",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+  projectPickerCard: {
+    width: "100%",
+    maxWidth: 420,
+    maxHeight: "75%",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 24,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+  },
+  projectPickerHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  projectPickerTitle: {
+    color: "#052D50",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  projectPickerClose: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(5, 45, 80, 0.06)",
+  },
+  projectPickerList: {
+    width: "100%",
+  },
+  projectPickerListContent: {
+    gap: 8,
+  },
+  projectPickerEmpty: {
+    color: "#698196",
+    fontSize: 15,
+    textAlign: "center",
+    paddingVertical: 20,
+  },
+  projectPickerItem: {
+    minHeight: 58,
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    backgroundColor: "rgba(5, 45, 80, 0.04)",
+    borderWidth: 1,
+    borderColor: "rgba(5, 45, 80, 0.06)",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  projectPickerItemSelected: {
+    borderColor: "#0091FF",
+    backgroundColor: "rgba(0, 145, 255, 0.08)",
+  },
+  projectPickerItemText: {
+    flex: 1,
+  },
+  projectPickerItemTitle: {
+    color: "#052D50",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  projectPickerItemSubtitle: {
+    color: "#698196",
+    fontSize: 13,
+    marginTop: 2,
   },
   createButton: {
     height: 56,
