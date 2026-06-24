@@ -16,6 +16,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "../../../theme/ThemeContext";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/Feather";
 import ProjectSelector2 from "../../../components/common2/projectSelector/projectSelector";
 import AuthContext from "../../../contexts/AuthContext";
 import { useTimer } from "../../../hooks/useTimer";
@@ -466,15 +467,23 @@ export default function MainScreen() {
               style={styles.buttonInner}
             >
               <View style={styles.iconWrapper}>
-                <Image
-                  style={[
-                    styles.buttonIcon,
-                    {
-                      tintColor: theme.colors.icon,
-                    },
-                  ]}
-                  source={button.icon}
-                />
+                {button.vectorIcon ? (
+                  <Icon
+                    name={button.vectorIcon}
+                    size={theme.colors.homeButtonIconSize || 26}
+                    color={theme.colors.icon}
+                  />
+                ) : (
+                  <Image
+                    style={[
+                      styles.buttonIcon,
+                      {
+                        tintColor: theme.colors.icon,
+                      },
+                    ]}
+                    source={button.icon}
+                  />
+                )}
                 {button.id === "chats" ? (
                   <UnreadBadge count={unreadCount} />
                 ) : null}

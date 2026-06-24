@@ -45,10 +45,7 @@ export const mainButtons = [
   {
     id: "tasks",
     title: "Tasks",
-    icon: require("../assets/Tasks.png"),
-    iconStyle: {
-      transform: [{ scale: 0.82 }],
-    },
+    vectorIcon: "check-square",
     screen: "Tasks",
   },
 ];

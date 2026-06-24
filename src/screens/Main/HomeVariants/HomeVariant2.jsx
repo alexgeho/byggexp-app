@@ -22,6 +22,7 @@ import {
   useFocusEffect,
   useNavigation,
 } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/Feather";
 
 import AuthContext from "../../../contexts/AuthContext";
 import { useTheme } from "../../../theme/ThemeContext";
@@ -575,13 +576,21 @@ export default function HomeVariant2() {
                       }}
                     >
                       <View style={styles.quickActionIconWrapper}>
-                        <Image
-                          source={button.icon}
-                          style={[
-                            styles.quickActionIcon,
-                            button.iconStyle,
-                          ]}
-                        />
+                        {button.vectorIcon ? (
+                          <Icon
+                            name={button.vectorIcon}
+                            size={theme.colors.homeButtonIconSize || 28}
+                            color={
+                              theme.colors.homeButtonText ||
+                              (isLightBlueTheme ? theme.colors.text : "#FFFFFF")
+                            }
+                          />
+                        ) : (
+                          <Image
+                            source={button.icon}
+                            style={styles.quickActionIcon}
+                          />
+                        )}
                         {button.id === "chats" ? (
                           <UnreadBadge count={unreadCount} />
                         ) : null}

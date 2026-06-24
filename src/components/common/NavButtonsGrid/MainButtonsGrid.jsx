@@ -9,6 +9,7 @@ import {
   useNavigation,
   useFocusEffect,
 } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/Feather";
 import { useTheme } from "../../../theme/ThemeContext";
 import {
   mainButtons,
@@ -87,13 +88,18 @@ export default function MainButtonsGrid() {
                 </View>
 
                 <View style={styles.iconWrapper}>
-                  <Image
-                    source={button.icon}
-                    style={[
-                      styles.buttonIcon,
-                      button.iconStyle,
-                    ]}
-                  />
+                  {button.vectorIcon ? (
+                    <Icon
+                      name={button.vectorIcon}
+                      size={theme.colors.homeButtonIconSize || 26}
+                      color={theme.colors.icon}
+                    />
+                  ) : (
+                    <Image
+                      source={button.icon}
+                      style={styles.buttonIcon}
+                    />
+                  )}
 
                   {button.id === "chats" ? (
                     <UnreadBadge count={unreadCount} />

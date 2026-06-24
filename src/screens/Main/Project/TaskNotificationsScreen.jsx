@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  Image,
   Modal,
   ScrollView,
   StyleSheet,
@@ -225,22 +224,6 @@ export default function TaskNotificationsScreen() {
           <View style={styles.placeholder} />
         </View>
 
-        <View style={styles.reminderHeroCard}>
-          <View style={styles.reminderLogoFrame}>
-            <Image
-              source={require("../../../assets/icon.png")}
-              style={styles.reminderLogo}
-              resizeMode="contain"
-            />
-          </View>
-          <View style={styles.reminderHeroText}>
-            <Text style={styles.reminderHeroTitle}>Task Reminder</Text>
-            <Text style={styles.reminderHeroSubtitle}>
-              Set up reminders with the ByggExp notification style.
-            </Text>
-          </View>
-        </View>
-
         <View style={styles.groupCard}>
           <TouchableOpacity
             style={styles.groupRow}
@@ -352,23 +335,6 @@ export default function TaskNotificationsScreen() {
           </View>
         ) : null}
 
-        <View style={styles.infoCard}>
-          <Text style={styles.infoTitle}>How repeat limits work</Text>
-          <Text style={styles.infoText}>
-            Repeat options stop at the task due date and stay disabled until a
-            reminder is turned on.
-          </Text>
-          <Text style={styles.infoText}>
-            Every N minutes uses your chosen interval (default 15 min). Minute
-            and hourly modes count from save time, not from the task start
-            date.
-          </Text>
-          <Text style={styles.infoText}>
-            Hourly needs at least 1 hour until the due date. Daily is available
-            up to 30 days before due date. Weekly needs at least 7 days before
-            due date.
-          </Text>
-        </View>
       </ScrollView>
 
       <View style={styles.footer}>
@@ -536,48 +502,6 @@ const styles = StyleSheet.create({
   placeholder: {
     ...standardScreenHeaderPlaceholder,
   },
-  reminderHeroCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-    padding: 16,
-    marginBottom: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 14,
-  },
-  reminderLogoFrame: {
-    width: 58,
-    height: 58,
-    borderRadius: 18,
-    backgroundColor: "#FFFFFF",
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#052D50",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 2,
-  },
-  reminderLogo: {
-    width: 42,
-    height: 42,
-  },
-  reminderHeroText: {
-    flex: 1,
-  },
-  reminderHeroTitle: {
-    color: "#052D50",
-    fontSize: 17,
-    fontFamily: "DMSans-SemiBold",
-    marginBottom: 4,
-  },
-  reminderHeroSubtitle: {
-    color: "#698196",
-    fontSize: 13,
-    lineHeight: 18,
-  },
   groupCard: {
     backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 24,
@@ -638,24 +562,6 @@ const styles = StyleSheet.create({
   },
   messageInputDisabled: {
     color: "rgba(5, 45, 80, 0.45)",
-  },
-  infoCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 24,
-    padding: 16,
-    gap: 8,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  infoTitle: {
-    color: "#052D50",
-    fontSize: 15,
-    fontFamily: "DMSans-SemiBold",
-  },
-  infoText: {
-    color: "#698196",
-    fontSize: 13,
-    lineHeight: 18,
   },
   footer: {
     position: "absolute",

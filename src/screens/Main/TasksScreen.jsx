@@ -110,11 +110,7 @@ export default function TasksScreen() {
         };
       })
       .filter((project) => {
-        if (!normalizedQuery) return true;
-        return (
-          project.visibleTasks.length > 0 ||
-          project.name?.toLowerCase().includes(normalizedQuery)
-        );
+        return project.visibleTasks.length > 0;
       })
       .sort(
         (leftProject, rightProject) =>
@@ -297,7 +293,7 @@ const styles = StyleSheet.create({
   },
   projectTitle: {
     color: "#052D50",
-    fontSize: 20,
+    fontSize: 17,
     flex: 1,
     marginRight: 12,
   },
