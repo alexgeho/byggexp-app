@@ -109,6 +109,16 @@ export default function TaskNotificationsScreen() {
   }, [projectId]);
 
   useEffect(() => {
+    if (!route.params?.notificationSettings) {
+      return;
+    }
+
+    setSettings(
+      normalizeTaskNotificationSettings(route.params.notificationSettings),
+    );
+  }, [route.params?.notificationSettings]);
+
+  useEffect(() => {
     if (route.params?.repeatSelection === undefined) {
       return;
     }

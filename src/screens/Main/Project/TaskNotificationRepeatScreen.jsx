@@ -82,14 +82,21 @@ export default function TaskNotificationRepeatScreen() {
         repeatIntervalMinutes: normalizedInterval,
       },
     });
+    const nextRepeat =
+      repeatState.disabled && selectedRepeat !== "none"
+        ? "none"
+        : selectedRepeat;
+    const nextSettings = normalizeTaskNotificationSettings({
+      ...settings,
+      repeat: nextRepeat,
+      repeatIntervalMinutes: normalizedInterval,
+    });
 
     navigation.navigate({
       name: "TaskNotifications",
       params: {
-        repeatSelection:
-          repeatState.disabled && selectedRepeat !== "none"
-            ? "none"
-            : selectedRepeat,
+        notificationSettings: nextSettings,
+        repeatSelection: nextRepeat,
         repeatIntervalMinutes: normalizedInterval,
         taskDraft,
       },

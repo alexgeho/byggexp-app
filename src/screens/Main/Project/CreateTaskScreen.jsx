@@ -214,6 +214,8 @@ export default function CreateTaskScreen() {
   const { projectId: initialProjectId, projectName: initialProjectName } =
     route.params || {};
   const initialTaskDraft = route.params?.taskDraft || {};
+  const returnTarget =
+    initialTaskDraft.returnTarget || (initialProjectId ? "project" : "tasks");
 
   const [selectedProjectId, setSelectedProjectId] = useState(
     initialTaskDraft.selectedProjectId || initialProjectId || "",
@@ -362,6 +364,7 @@ export default function CreateTaskScreen() {
   };
 
   const buildTaskDraft = () => ({
+    returnTarget,
     selectedProjectId,
     projectName,
     taskTitle,
@@ -432,7 +435,16 @@ export default function CreateTaskScreen() {
         title: "Task created",
         message: "Task created successfully.",
       });
-      navigation.goBack();
+
+      if (returnTarget === "project") {
+        navigation.navigate("Project", {
+          id: selectedProjectId,
+          initialTab: "Tasks",
+        });
+        return;
+      }
+
+      navigation.navigate("Tasks");
     } catch (error) {
       console.error("Error creating task:", error);
       Alert.alert("Error", error?.message || "Failed to create task.");
