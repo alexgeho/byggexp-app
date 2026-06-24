@@ -32,6 +32,7 @@ export default function TaskNotificationRepeatScreen() {
   const navigation = useNavigation();
   const route = useRoute();
   const dueDate = route.params?.dueDate || null;
+  const taskDraft = route.params?.taskDraft;
   const settings = useMemo(
     () => normalizeTaskNotificationSettings(route.params?.notificationSettings),
     [route.params?.notificationSettings],
@@ -90,6 +91,7 @@ export default function TaskNotificationRepeatScreen() {
             ? "none"
             : selectedRepeat,
         repeatIntervalMinutes: normalizedInterval,
+        taskDraft,
       },
       merge: true,
     });

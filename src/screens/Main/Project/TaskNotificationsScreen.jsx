@@ -45,6 +45,7 @@ export default function TaskNotificationsScreen() {
   const { theme } = useTheme();
   const projectId = route.params?.projectId;
   const dueDate = route.params?.dueDate || null;
+  const taskDraft = route.params?.taskDraft;
 
   const [settings, setSettings] = useState(() =>
     normalizeTaskNotificationSettings(route.params?.notificationSettings),
@@ -191,7 +192,10 @@ export default function TaskNotificationsScreen() {
 
     navigation.navigate({
       name: "CreateTask",
-      params: { notificationSettings: nextSettings },
+      params: {
+        notificationSettings: nextSettings,
+        taskDraft,
+      },
       merge: true,
     });
   };
@@ -300,6 +304,7 @@ export default function TaskNotificationsScreen() {
                 selectedRepeat: settings.repeat,
                 repeatIntervalMinutes: settings.repeatIntervalMinutes,
                 notificationSettings: settings,
+                taskDraft,
               })
             }
           >
