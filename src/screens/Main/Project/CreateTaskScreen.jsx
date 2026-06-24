@@ -36,6 +36,7 @@ import {
 } from "../../../utils/taskNotifications";
 
 const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "inline" : "calendar";
+const TIME_PICKER_DISPLAY = Platform.OS === "ios" ? "spinner" : "clock";
 
 const FieldIcon = ({
   library = "feather",
@@ -99,7 +100,15 @@ const GroupRow = ({ children, isLast = false }) => (
   </View>
 );
 
-const DateFieldModal = ({ visible, title, value, onChange, onClose }) => (
+const DateFieldModal = ({
+  visible,
+  title,
+  value,
+  mode = "date",
+  display = DATE_PICKER_DISPLAY,
+  onChange,
+  onClose,
+}) => (
   <Modal
     visible={visible}
     transparent={true}
@@ -111,8 +120,8 @@ const DateFieldModal = ({ visible, title, value, onChange, onClose }) => (
         <Text style={styles.datePickerTitle}>{title}</Text>
         <DateTimePicker
           value={value || new Date()}
-          mode="date"
-          display={DATE_PICKER_DISPLAY}
+          mode={mode}
+          display={display}
           onChange={(_event, date) => {
             if (date) {
               onChange(date);
@@ -243,6 +252,7 @@ export default function CreateTaskScreen() {
   );
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showDueDatePicker, setShowDueDatePicker] = useState(false);
+  const [showDueTimePicker, setShowDueTimePicker] = useState(false);
   const [loadingProject, setLoadingProject] = useState(false);
   const [loadingProjects, setLoadingProjects] = useState(false);
   const [showProjectPicker, setShowProjectPicker] = useState(false);
@@ -362,6 +372,37 @@ export default function CreateTaskScreen() {
     setProjectName(project?.name || "");
     setShowProjectPicker(false);
   };
+
+  const updateDueDate = (date) => {
+    setDueDate((previousDate) => {
+      const nextDate = new Date(date);
+
+      if (previousDate) {
+        nextDate.setHours(
+          previousDate.getHours(),
+          previousDate.getMinutes(),
+          0,
+          0,
+        );
+      }
+
+      return nextDate;
+    });
+  };
+
+  const updateDueTime = (time) => {
+    setDueDate((previousDate) => {
+      const nextDate = previousDate ? new Date(previousDate) : new Date();
+      nextDate.setHours(time.getHours(), time.getMinutes(), 0, 0);
+      return nextDate;
+    });
+  };
+
+  const formatTime = (date) =>
+    date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
 
   const buildTaskDraft = () => ({
     returnTarget,
@@ -547,7 +588,7 @@ export default function CreateTaskScreen() {
             <Icon name="chevron-right" size={18} color="#052D50" />
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.groupRow, styles.groupRowLast]}
+            style={styles.groupRow}
             onPress={() => setShowDueDatePicker(true)}
             activeOpacity={0.85}
           >
@@ -561,6 +602,26 @@ export default function CreateTaskScreen() {
                   style={[styles.rowValue, !dueDate && styles.rowPlaceholder]}
                 >
                   {dueDate ? dueDate.toLocaleDateString() : "Select date"}
+                </Text>
+              </View>
+            </View>
+            <Icon name="chevron-right" size={18} color="#052D50" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.groupRow, styles.groupRowLast]}
+            onPress={() => setShowDueTimePicker(true)}
+            activeOpacity={0.85}
+          >
+            <View style={styles.rowContent}>
+              <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
+                <FieldIcon name="clock" size={14} color="#FFFFFF" />
+              </View>
+              <View style={styles.rowTextContainer}>
+                <Text style={styles.rowLabel}>Due time</Text>
+                <Text
+                  style={[styles.rowValue, !dueDate && styles.rowPlaceholder]}
+                >
+                  {dueDate ? formatTime(dueDate) : "Select time"}
                 </Text>
               </View>
             </View>
@@ -711,8 +772,17 @@ export default function CreateTaskScreen() {
           visible={showDueDatePicker}
           title="Due date"
           value={dueDate}
-          onChange={setDueDate}
+          onChange={updateDueDate}
           onClose={() => setShowDueDatePicker(false)}
+        />
+        <DateFieldModal
+          visible={showDueTimePicker}
+          title="Due time"
+          value={dueDate}
+          mode="time"
+          display={TIME_PICKER_DISPLAY}
+          onChange={updateDueTime}
+          onClose={() => setShowDueTimePicker(false)}
         />
         <ProjectPickerModal
           visible={showProjectPicker}
