@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import AuthContext from "../../contexts/AuthContext";
 import { useTheme } from "../../theme/ThemeContext";
-import { projectService } from "../../services";
+import { projectService, taskService } from "../../services";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import {
@@ -22,11 +22,35 @@ import {
 } from "../../styles/screenLayout";
 import { resolveNewestTimestamp, sortByNewest } from "../../utils/sortByNewest";
 
+const getTaskDisplayStatus = (task) => {
+  if (task?.status === "completed") {
+    return {
+      label: "Completed",
+      tone: "completed",
+    };
+  }
+
+  const dueTime = task?.dueDate ? new Date(task.dueDate).getTime() : null;
+
+  if (dueTime && !Number.isNaN(dueTime) && dueTime < Date.now()) {
+    return {
+      label: "Overdue",
+      tone: "overdue",
+    };
+  }
+
+  return {
+    label: "Open",
+    tone: "open",
+  };
+};
+
 export default function TasksScreen() {
   const navigation = useNavigation();
   const { theme } = useTheme();
   const { user, userId, isLoading: authLoading } = useContext(AuthContext);
   const [projects, setProjects] = useState([]);
+  const [personalTasks, setPersonalTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -41,20 +65,55 @@ export default function TasksScreen() {
         baseProjects = await projectService.getMyProjects();
       }
 
-      const populatedProjects = await Promise.all(
-        baseProjects.map((project) =>
-          projectService.getPopulatedById(project._id),
+      const [populatedProjects, accessibleTasks] = await Promise.all([
+        Promise.all(
+          baseProjects.map((project) =>
+            projectService.getPopulatedById(project._id),
+          ),
         ),
-      );
+        taskService.getAll(),
+      ]);
 
       setProjects(populatedProjects);
+      setPersonalTasks(
+        Array.isArray(accessibleTasks)
+          ? accessibleTasks.filter((task) => !task?.projectId)
+          : [],
+      );
     } catch (error) {
       console.error("Failed to fetch tasks:", error);
       setProjects([]);
+      setPersonalTasks([]);
     } finally {
       setLoading(false);
     }
   }, [user?.role]);
+
+  const visiblePersonalTasks = useMemo(() => {
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+    const visibleTasks = normalizedQuery
+      ? personalTasks.filter((task) => {
+          const haystack = [
+            task?.taskTitle,
+            task?.taskDescription,
+            task?.assigneeUserName,
+            "personal",
+          ]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase();
+
+          return haystack.includes(normalizedQuery);
+        })
+      : personalTasks;
+
+    return sortByNewest(visibleTasks, (task) => [
+      task?.createdAt,
+      task?.updatedAt,
+      task?.startDate,
+      task?.dueDate,
+    ]);
+  }, [personalTasks, searchQuery]);
 
   useFocusEffect(
     useCallback(() => {
@@ -167,15 +226,16 @@ export default function TasksScreen() {
         style={styles.scrollContainer}
         contentContainerStyle={styles.scrollContent}
       >
-        {groupedTasks.length === 0 ? (
+        {visiblePersonalTasks.length === 0 && groupedTasks.length === 0 ? (
           <Text style={styles.emptyText}>
             {searchQuery.trim()
               ? "No tasks found."
               : "No projects or tasks found."}
           </Text>
         ) : (
-          groupedTasks.map((project) => (
-            <View key={project._id} style={styles.projectGroup}>
+          <>
+            {visiblePersonalTasks.length > 0 ? (
+              <View style={styles.projectGroup}>
               <View style={styles.projectGroupHeader}>
                 <Text
                   style={[
@@ -183,21 +243,96 @@ export default function TasksScreen() {
                     { fontFamily: theme.text.fontFamily["bold"] },
                   ]}
                 >
-                  {project.name}
+                  Personal tasks
                 </Text>
                 <Text style={styles.projectCount}>
-                  {project.visibleTasks.length}{" "}
-                  {project.visibleTasks.length === 1 ? "task" : "tasks"}
+                  {visiblePersonalTasks.length}{" "}
+                  {visiblePersonalTasks.length === 1 ? "task" : "tasks"}
                 </Text>
               </View>
 
-              {project.visibleTasks.length === 0 ? (
-                <Text style={styles.noTasksText}>
-                  No tasks in this project.
-                </Text>
-              ) : (
-                project.visibleTasks.map((task, index) => (
+              {visiblePersonalTasks.map((task, index) => {
+                const status = getTaskDisplayStatus(task);
+
+                return (
                   <TouchableOpacity
+                    key={task._id || `personal-${index}`}
+                    style={styles.taskItem}
+                    activeOpacity={0.85}
+                    onPress={() =>
+                      navigation.navigate("Task", {
+                        task,
+                        project: null,
+                      })
+                    }
+                  >
+                    <Text style={styles.taskTitle}>
+                      {task.taskTitle || "Untitled task"}
+                    </Text>
+                    {!!task.taskDescription && (
+                      <Text style={styles.taskDescription}>
+                        {task.taskDescription}
+                      </Text>
+                    )}
+                    <View style={styles.taskFooter}>
+                      {!!task.assigneeUserName && (
+                        <Text style={styles.assigneeText}>
+                          {task.assigneeUserName}
+                        </Text>
+                      )}
+                      <View
+                        style={[
+                          styles.statusBadge,
+                          styles[`statusBadge_${status.tone}`],
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.statusBadgeText,
+                            styles[`statusBadgeText_${status.tone}`],
+                          ]}
+                        >
+                          {status.label}
+                        </Text>
+                      </View>
+                      <View style={styles.taskProjectInfo}>
+                        <Image
+                          style={styles.dateIcon}
+                          source={require("../../assets/TasksCalendar.png")}
+                        />
+                        <Text style={styles.dateText}>
+                          {formatTaskDate(task.dueDate)}
+                        </Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+            ) : null}
+
+            {groupedTasks.map((project) => (
+              <View key={project._id} style={styles.projectGroup}>
+                <View style={styles.projectGroupHeader}>
+                  <Text
+                    style={[
+                      styles.projectTitle,
+                      { fontFamily: theme.text.fontFamily["bold"] },
+                    ]}
+                  >
+                    {project.name}
+                  </Text>
+                  <Text style={styles.projectCount}>
+                    {project.visibleTasks.length}{" "}
+                    {project.visibleTasks.length === 1 ? "task" : "tasks"}
+                  </Text>
+                </View>
+
+                {project.visibleTasks.map((task, index) => {
+                  const status = getTaskDisplayStatus(task);
+
+                  return (
+                    <TouchableOpacity
                     key={task._id || `${project._id}-${index}`}
                     style={styles.taskItem}
                     activeOpacity={0.85}
@@ -214,6 +349,21 @@ export default function TasksScreen() {
                       </Text>
                     )}
                     <View style={styles.taskFooter}>
+                      <View
+                        style={[
+                          styles.statusBadge,
+                          styles[`statusBadge_${status.tone}`],
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.statusBadgeText,
+                            styles[`statusBadgeText_${status.tone}`],
+                          ]}
+                        >
+                          {status.label}
+                        </Text>
+                      </View>
                       <View style={styles.taskProjectInfo}>
                         <Image
                           style={styles.dateIcon}
@@ -225,10 +375,11 @@ export default function TasksScreen() {
                       </View>
                     </View>
                   </TouchableOpacity>
-                ))
-              )}
-            </View>
-          ))
+                  );
+                })}
+              </View>
+            ))}
+          </>
         )}
       </ScrollView>
 
@@ -327,6 +478,42 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "flex-end",
     alignItems: "center",
+  },
+  assigneeText: {
+    color: "#698196",
+    fontSize: 13,
+    flex: 1,
+    marginRight: 12,
+  },
+  statusBadge: {
+    paddingHorizontal: 10,
+    height: 28,
+    borderRadius: 999,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 8,
+  },
+  statusBadge_open: {
+    backgroundColor: "rgba(7, 133, 244, 0.12)",
+  },
+  statusBadge_overdue: {
+    backgroundColor: "rgba(255, 59, 48, 0.12)",
+  },
+  statusBadge_completed: {
+    backgroundColor: "rgba(52, 199, 89, 0.14)",
+  },
+  statusBadgeText: {
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  statusBadgeText_open: {
+    color: "#0785F4",
+  },
+  statusBadgeText_overdue: {
+    color: "#FF3B30",
+  },
+  statusBadgeText_completed: {
+    color: "#248A3D",
   },
   taskProjectInfo: {
     flexDirection: "row",

@@ -116,6 +116,29 @@ const getDocumentTypeMeta = (document) => {
   return { icon: "file", label: extension || "FILE" };
 };
 
+const getTaskDisplayStatus = (task) => {
+  if (task?.status === "completed") {
+    return {
+      label: "Completed",
+      tone: "completed",
+    };
+  }
+
+  const dueTime = task?.dueDate ? new Date(task.dueDate).getTime() : null;
+
+  if (dueTime && !Number.isNaN(dueTime) && dueTime < Date.now()) {
+    return {
+      label: "Overdue",
+      tone: "overdue",
+    };
+  }
+
+  return {
+    label: "Open",
+    tone: "open",
+  };
+};
+
 export default function TaskScreen() {
   const navigation = useNavigation();
   const route = useRoute();
@@ -125,13 +148,16 @@ export default function TaskScreen() {
   const [tab, setTab] = useState("Edit");
   const [currentTask, setCurrentTask] = useState(task || null);
   const [uploadingDocuments, setUploadingDocuments] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
   const startDate = formatDateParts(currentTask?.startDate);
   const endDate = formatDateParts(currentTask?.dueDate);
+  const taskStatus = getTaskDisplayStatus(currentTask);
   const canManageDocuments = [
     "superadmin",
     "companyAdmin",
     "projectAdmin",
   ].includes(user?.role);
+  const visibleTabs = project ? ["Edit", "Documents", "Workers"] : ["Edit", "Documents"];
 
   const documents = useMemo(
     () =>
@@ -243,6 +269,45 @@ export default function TaskScreen() {
     }
   };
 
+  const handleToggleCompletion = async () => {
+    const taskId = currentTask?._id || currentTask?.id;
+
+    if (!taskId) {
+      Alert.alert("Task unavailable", "Task id is missing.");
+      return;
+    }
+
+    try {
+      setUpdatingStatus(true);
+      const updatedTask =
+        currentTask?.status === "completed"
+          ? await taskService.reopen(taskId)
+          : await taskService.complete(taskId);
+
+      setCurrentTask(updatedTask);
+      showSuccess({
+        title:
+          updatedTask?.status === "completed"
+            ? "Task completed"
+            : "Task reopened",
+        message:
+          updatedTask?.status === "completed"
+            ? "Task marked as completed."
+            : "Task moved back to open.",
+      });
+    } catch (error) {
+      console.error("Failed to update task status:", error);
+      Alert.alert(
+        "Task error",
+        error?.response?.data?.message ||
+          error?.message ||
+          "Unable to update task status right now.",
+      );
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -260,7 +325,7 @@ export default function TaskScreen() {
       </View>
 
       <View style={styles.tabContainer}>
-        {["Edit", "Documents", "Workers"].map((tabName) => (
+        {visibleTabs.map((tabName) => (
           <TouchableOpacity
             key={tabName}
             onPress={() => setTab(tabName)}
@@ -280,6 +345,16 @@ export default function TaskScreen() {
             <GroupCard>
               <GroupRow>
                 <View style={styles.rowTextContainer}>
+                  <Text style={styles.rowLabel}>Status</Text>
+                  <View style={[styles.statusBadge, styles[`statusBadge_${taskStatus.tone}`]]}>
+                    <Text style={[styles.statusBadgeText, styles[`statusBadgeText_${taskStatus.tone}`]]}>
+                      {taskStatus.label}
+                    </Text>
+                  </View>
+                </View>
+              </GroupRow>
+              <GroupRow>
+                <View style={styles.rowTextContainer}>
                   <Text style={styles.rowLabel}>Title</Text>
                   <Text style={styles.rowValue}>
                     {currentTask?.taskTitle || "No title"}
@@ -296,9 +371,11 @@ export default function TaskScreen() {
               </GroupRow>
               <GroupRow>
                 <View style={styles.rowTextContainer}>
-                  <Text style={styles.rowLabel}>Project</Text>
+                  <Text style={styles.rowLabel}>
+                    {project ? "Project" : "Assignee"}
+                  </Text>
                   <Text style={styles.rowValue}>
-                    {project?.name || "No project"}
+                    {project?.name || currentTask?.assigneeUserName || "No assignee"}
                   </Text>
                 </View>
               </GroupRow>
@@ -429,12 +506,18 @@ export default function TaskScreen() {
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
-        showAddButton={tab === "Documents" && canManageDocuments}
-        onAddPress={handleAddDocuments}
-        addDisabled={uploadingDocuments}
+        showAddButton={
+          (tab === "Documents" && canManageDocuments) || tab === "Edit"
+        }
+        onAddPress={tab === "Edit" ? handleToggleCompletion : handleAddDocuments}
+        addDisabled={uploadingDocuments || updatingStatus}
         renderAddContent={() =>
-          uploadingDocuments ? (
+          uploadingDocuments || updatingStatus ? (
             <ActivityIndicator color="#FFFFFF" />
+          ) : tab === "Edit" && currentTask?.status === "completed" ? (
+            <Icon name="rotate-ccw" size={22} color="#FFFFFF" />
+          ) : tab === "Edit" ? (
+            <Icon name="check" size={22} color="#FFFFFF" />
           ) : (
             <Icon name="plus" size={22} color="#FFFFFF" />
           )
@@ -533,6 +616,35 @@ const styles = StyleSheet.create({
   rowValue: {
     color: "#052D50",
     fontSize: 16,
+  },
+  statusBadge: {
+    alignSelf: "flex-start",
+    paddingHorizontal: 12,
+    height: 30,
+    borderRadius: 999,
+    justifyContent: "center",
+  },
+  statusBadge_open: {
+    backgroundColor: "rgba(7, 133, 244, 0.12)",
+  },
+  statusBadge_overdue: {
+    backgroundColor: "rgba(255, 59, 48, 0.12)",
+  },
+  statusBadge_completed: {
+    backgroundColor: "rgba(52, 199, 89, 0.14)",
+  },
+  statusBadgeText: {
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  statusBadgeText_open: {
+    color: "#0785F4",
+  },
+  statusBadgeText_overdue: {
+    color: "#FF3B30",
+  },
+  statusBadgeText_completed: {
+    color: "#248A3D",
   },
   multilineValue: {
     lineHeight: 22,

@@ -66,6 +66,29 @@ const formatDate = (value, withTime = false) => {
       });
 };
 
+const getTaskDisplayStatus = (task) => {
+  if (task?.status === "completed") {
+    return {
+      label: "Completed",
+      tone: "completed",
+    };
+  }
+
+  const dueTime = task?.dueDate ? new Date(task.dueDate).getTime() : null;
+
+  if (dueTime && !Number.isNaN(dueTime) && dueTime < Date.now()) {
+    return {
+      label: "Overdue",
+      tone: "overdue",
+    };
+  }
+
+  return {
+    label: "Open",
+    tone: "open",
+  };
+};
+
 const formatFileSize = (value) => {
   const size = Number(value);
 
@@ -480,32 +503,51 @@ export const ProjectScreen = () => {
 
         {modal === "Tasks" &&
           (tasks.length > 0 ? (
-            tasks.map((task) => (
-              <TouchableOpacity
-                key={task._id || task.id || task.taskTitle}
-                style={styles.taskItem}
-                activeOpacity={0.85}
-                onPress={() => navigation.navigate("Task", { task, project })}
-              >
-                <Text style={styles.taskTitle}>
-                  {task.taskTitle || "Untitled task"}
-                </Text>
-                <Text style={styles.taskDescription}>
-                  {task.taskDescription || "No description provided."}
-                </Text>
-                <View style={styles.taskFooter}>
-                  <View style={styles.taskDate}>
-                    <Image
-                      style={styles.dateIcon}
-                      source={require("../../../assets/TasksCalendar.png")}
-                    />
-                    <Text style={styles.dateText}>
-                      {formatDate(task.dueDate, true)}
-                    </Text>
+            tasks.map((task) => {
+              const status = getTaskDisplayStatus(task);
+
+              return (
+                <TouchableOpacity
+                  key={task._id || task.id || task.taskTitle}
+                  style={styles.taskItem}
+                  activeOpacity={0.85}
+                  onPress={() => navigation.navigate("Task", { task, project })}
+                >
+                  <Text style={styles.taskTitle}>
+                    {task.taskTitle || "Untitled task"}
+                  </Text>
+                  <Text style={styles.taskDescription}>
+                    {task.taskDescription || "No description provided."}
+                  </Text>
+                  <View style={styles.taskFooter}>
+                    <View
+                      style={[
+                        styles.statusBadge,
+                        styles[`statusBadge_${status.tone}`],
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.statusBadgeText,
+                          styles[`statusBadgeText_${status.tone}`],
+                        ]}
+                      >
+                        {status.label}
+                      </Text>
+                    </View>
+                    <View style={styles.taskDate}>
+                      <Image
+                        style={styles.dateIcon}
+                        source={require("../../../assets/TasksCalendar.png")}
+                      />
+                      <Text style={styles.dateText}>
+                        {formatDate(task.dueDate, true)}
+                      </Text>
+                    </View>
                   </View>
-                </View>
-              </TouchableOpacity>
-            ))
+                </TouchableOpacity>
+              );
+            })
           ) : (
             <View style={styles.emptyState}>
               <Text style={styles.emptyStateTitle}>No tasks yet</Text>
@@ -845,8 +887,38 @@ const styles = StyleSheet.create({
   taskFooter: {
     flexDirection: "row",
     width: "100%",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
     alignItems: "center",
+  },
+  statusBadge: {
+    paddingHorizontal: 10,
+    height: 28,
+    borderRadius: 999,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 8,
+  },
+  statusBadge_open: {
+    backgroundColor: "rgba(7, 133, 244, 0.12)",
+  },
+  statusBadge_overdue: {
+    backgroundColor: "rgba(255, 59, 48, 0.12)",
+  },
+  statusBadge_completed: {
+    backgroundColor: "rgba(52, 199, 89, 0.14)",
+  },
+  statusBadgeText: {
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  statusBadgeText_open: {
+    color: "#0785F4",
+  },
+  statusBadgeText_overdue: {
+    color: "#FF3B30",
+  },
+  statusBadgeText_completed: {
+    color: "#248A3D",
   },
   taskDate: {
     flexDirection: "row",

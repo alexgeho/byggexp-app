@@ -225,26 +225,28 @@ export default function TaskNotificationsScreen() {
         </View>
 
         <View style={styles.groupCard}>
-          <TouchableOpacity
-            style={styles.groupRow}
-            onPress={openWorkersModal}
-            activeOpacity={0.85}
-          >
-            <View style={styles.rowTextContainer}>
-              <Text style={styles.rowLabel}>Assign to</Text>
-              <Text
-                style={[
-                  styles.rowValue,
-                  settings.assignees.length === 0 &&
-                    !settings.allMembersNotification &&
-                    styles.rowPlaceholder,
-                ]}
-              >
-                {assigneesLabel}
-              </Text>
-            </View>
-            <Icon name="chevron-right" size={18} color="#052D50" />
-          </TouchableOpacity>
+          {projectId ? (
+            <TouchableOpacity
+              style={styles.groupRow}
+              onPress={openWorkersModal}
+              activeOpacity={0.85}
+            >
+              <View style={styles.rowTextContainer}>
+                <Text style={styles.rowLabel}>Assign to</Text>
+                <Text
+                  style={[
+                    styles.rowValue,
+                    settings.assignees.length === 0 &&
+                      !settings.allMembersNotification &&
+                      styles.rowPlaceholder,
+                  ]}
+                >
+                  {assigneesLabel}
+                </Text>
+              </View>
+              <Icon name="chevron-right" size={18} color="#052D50" />
+            </TouchableOpacity>
+          ) : null}
 
           <View style={styles.groupRow}>
             <View style={styles.rowTextContainer}>

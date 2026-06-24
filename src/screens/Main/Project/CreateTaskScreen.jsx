@@ -25,7 +25,7 @@ import {
   standardScreenScrollContent,
 } from "../../../styles/screenLayout";
 import { useTheme } from "../../../theme/ThemeContext";
-import { projectService, taskService } from "../../../services";
+import { projectService, taskService, userService } from "../../../services";
 import AuthContext from "../../../contexts/AuthContext";
 import { pickUploadAssets } from "../../../utils/uploadPicker";
 import {
@@ -138,6 +138,8 @@ const DateFieldModal = ({
 
 const getProjectId = (project) => project?._id || project?.id;
 
+const getUserId = (user) => user?._id || user?.id;
+
 const parseDraftDate = (date) => {
   if (!date) {
     return null;
@@ -214,6 +216,71 @@ const ProjectPickerModal = ({
   </Modal>
 );
 
+const UserPickerModal = ({
+  visible,
+  users,
+  selectedUserId,
+  onSelect,
+  onClose,
+}) => (
+  <Modal
+    visible={visible}
+    transparent={true}
+    animationType="fade"
+    onRequestClose={onClose}
+  >
+    <View style={styles.projectPickerOverlay}>
+      <View style={styles.projectPickerCard}>
+        <View style={styles.projectPickerHeader}>
+          <Text style={styles.projectPickerTitle}>Select user</Text>
+          <TouchableOpacity onPress={onClose} style={styles.projectPickerClose}>
+            <Icon name="x" size={20} color="#052D50" />
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView
+          style={styles.projectPickerList}
+          contentContainerStyle={styles.projectPickerListContent}
+        >
+          {users.length === 0 ? (
+            <Text style={styles.projectPickerEmpty}>No users found.</Text>
+          ) : (
+            users.map((item) => {
+              const id = getUserId(item);
+              const isSelected = id === selectedUserId;
+
+              return (
+                <TouchableOpacity
+                  key={id}
+                  style={[
+                    styles.projectPickerItem,
+                    isSelected && styles.projectPickerItemSelected,
+                  ]}
+                  onPress={() => onSelect(item)}
+                  activeOpacity={0.85}
+                >
+                  <View style={styles.projectPickerItemText}>
+                    <Text style={styles.projectPickerItemTitle}>
+                      {item.name || item.email || "Unnamed user"}
+                    </Text>
+                    <Text style={styles.projectPickerItemSubtitle}>
+                      {item.profession || item.role || "User"}
+                    </Text>
+                  </View>
+
+                  {isSelected ? (
+                    <Icon name="check" size={18} color="#0091FF" />
+                  ) : null}
+                </TouchableOpacity>
+              );
+            })
+          )}
+        </ScrollView>
+      </View>
+    </View>
+  </Modal>
+);
+
 export default function CreateTaskScreen() {
   const navigation = useNavigation();
   const route = useRoute();
@@ -233,6 +300,16 @@ export default function CreateTaskScreen() {
     initialTaskDraft.projectName || initialProjectName || "",
   );
   const [projects, setProjects] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [selectedAssigneeUserId, setSelectedAssigneeUserId] = useState(
+    initialTaskDraft.selectedAssigneeUserId || "",
+  );
+  const [selectedAssigneeName, setSelectedAssigneeName] = useState(
+    initialTaskDraft.selectedAssigneeName || "",
+  );
+  const [selectedAssigneeRole, setSelectedAssigneeRole] = useState(
+    initialTaskDraft.selectedAssigneeRole || "",
+  );
   const [taskTitle, setTaskTitle] = useState(initialTaskDraft.taskTitle || "");
   const [taskDescription, setTaskDescription] = useState(
     initialTaskDraft.taskDescription || "",
@@ -255,7 +332,9 @@ export default function CreateTaskScreen() {
   const [showDueTimePicker, setShowDueTimePicker] = useState(false);
   const [loadingProject, setLoadingProject] = useState(false);
   const [loadingProjects, setLoadingProjects] = useState(false);
+  const [loadingUsers, setLoadingUsers] = useState(false);
   const [showProjectPicker, setShowProjectPicker] = useState(false);
+  const [showUserPicker, setShowUserPicker] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -320,6 +399,34 @@ export default function CreateTaskScreen() {
   }, [user?.role, userId]);
 
   useEffect(() => {
+    if (!user?.role) {
+      return;
+    }
+
+    const fetchUsers = async () => {
+      try {
+        setLoadingUsers(true);
+        const data =
+          user.role === "superadmin"
+            ? await userService.getAll()
+            : await userService.getMyCompanyUsers();
+        const assignableUsers = data.filter((item) =>
+          ["worker", "projectAdmin"].includes(item?.role),
+        );
+
+        setUsers(assignableUsers);
+      } catch (error) {
+        console.error("Failed to load users for personal task:", error);
+        setUsers([]);
+      } finally {
+        setLoadingUsers(false);
+      }
+    };
+
+    fetchUsers();
+  }, [user?.role]);
+
+  useEffect(() => {
     if (!route.params?.notificationSettings) {
       return;
     }
@@ -338,6 +445,9 @@ export default function CreateTaskScreen() {
 
     setSelectedProjectId(taskDraft.selectedProjectId || "");
     setProjectName(taskDraft.projectName || "");
+    setSelectedAssigneeUserId(taskDraft.selectedAssigneeUserId || "");
+    setSelectedAssigneeName(taskDraft.selectedAssigneeName || "");
+    setSelectedAssigneeRole(taskDraft.selectedAssigneeRole || "");
     setTaskTitle(taskDraft.taskTitle || "");
     setTaskDescription(taskDraft.taskDescription || "");
     setNotes(taskDraft.notes || "");
@@ -370,7 +480,25 @@ export default function CreateTaskScreen() {
   const selectProject = (project) => {
     setSelectedProjectId(getProjectId(project) || "");
     setProjectName(project?.name || "");
+    setSelectedAssigneeUserId("");
+    setSelectedAssigneeName("");
+    setSelectedAssigneeRole("");
     setShowProjectPicker(false);
+  };
+
+  const selectUser = (nextUser) => {
+    setSelectedAssigneeUserId(getUserId(nextUser) || "");
+    setSelectedAssigneeName(nextUser?.name || nextUser?.email || "");
+    setSelectedAssigneeRole(nextUser?.profession || nextUser?.role || "");
+    setSelectedProjectId("");
+    setProjectName("");
+    setShowUserPicker(false);
+  };
+
+  const clearSelectedUser = () => {
+    setSelectedAssigneeUserId("");
+    setSelectedAssigneeName("");
+    setSelectedAssigneeRole("");
   };
 
   const updateDueDate = (date) => {
@@ -408,6 +536,9 @@ export default function CreateTaskScreen() {
     returnTarget,
     selectedProjectId,
     projectName,
+    selectedAssigneeUserId,
+    selectedAssigneeName,
+    selectedAssigneeRole,
     taskTitle,
     taskDescription,
     notes,
@@ -417,8 +548,11 @@ export default function CreateTaskScreen() {
   });
 
   const createTask = async () => {
-    if (!selectedProjectId) {
-      Alert.alert("Validation error", "Project is required to create a task.");
+    if (!selectedProjectId && !selectedAssigneeUserId) {
+      Alert.alert(
+        "Validation error",
+        "Select a project or one user to create a task.",
+      );
       return;
     }
 
@@ -430,12 +564,29 @@ export default function CreateTaskScreen() {
     try {
       setSaving(true);
       const taskData = new FormData();
+      const effectiveNotificationSettings = selectedAssigneeUserId
+        ? {
+            ...notificationSettings,
+            assignees: [
+              {
+                id: selectedAssigneeUserId,
+                name: selectedAssigneeName,
+                profession: selectedAssigneeRole,
+              },
+            ],
+          }
+        : notificationSettings;
       const notifications = buildTaskNotificationsPayload({
-        settings: notificationSettings,
+        settings: effectiveNotificationSettings,
         dueDate,
       });
 
-      taskData.append("projectId", selectedProjectId);
+      if (selectedAssigneeUserId) {
+        taskData.append("assigneeUserId", selectedAssigneeUserId);
+      } else {
+        taskData.append("projectId", selectedProjectId);
+      }
+
       taskData.append("taskTitle", taskTitle.trim());
 
       if (taskDescription.trim()) {
@@ -452,7 +603,7 @@ export default function CreateTaskScreen() {
 
       taskData.append(
         "notificationSettings",
-        JSON.stringify(notificationSettings),
+        JSON.stringify(effectiveNotificationSettings),
       );
 
       if (startDate) {
@@ -477,7 +628,7 @@ export default function CreateTaskScreen() {
         message: "Task created successfully.",
       });
 
-      if (returnTarget === "project") {
+      if (returnTarget === "project" && !selectedAssigneeUserId) {
         navigation.navigate("Project", {
           id: selectedProjectId,
           initialTab: "Tasks",
@@ -526,17 +677,20 @@ export default function CreateTaskScreen() {
         <SectionLabel>General</SectionLabel>
         <GroupCard>
           <TouchableOpacity
-            style={styles.groupRow}
+            style={[
+              styles.groupRow,
+              selectedAssigneeUserId && styles.groupRowDisabled,
+            ]}
             onPress={() => setShowProjectPicker(true)}
             activeOpacity={0.85}
-            disabled={loadingProjects}
+            disabled={loadingProjects || Boolean(selectedAssigneeUserId)}
           >
             <View style={styles.rowContent}>
               <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
                 <FieldIcon name="folder" size={14} color="#FFFFFF" />
               </View>
               <View style={styles.rowTextContainer}>
-                <Text style={styles.rowLabel}>Project *</Text>
+                <Text style={styles.rowLabel}>Project</Text>
                 <Text
                   style={[
                     styles.rowValue,
@@ -550,6 +704,41 @@ export default function CreateTaskScreen() {
               </View>
             </View>
             <Icon name="chevron-right" size={18} color="#052D50" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.groupRow}
+            onPress={() => setShowUserPicker(true)}
+            activeOpacity={0.85}
+            disabled={loadingUsers}
+          >
+            <View style={styles.rowContent}>
+              <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
+                <FieldIcon name="user" size={14} color="#FFFFFF" />
+              </View>
+              <View style={styles.rowTextContainer}>
+                <Text style={styles.rowLabel}>Personal task user</Text>
+                <Text
+                  style={[
+                    styles.rowValue,
+                    !selectedAssigneeName && styles.rowPlaceholder,
+                  ]}
+                >
+                  {loadingUsers
+                    ? "Loading users..."
+                    : selectedAssigneeName || "Select worker or foreman"}
+                </Text>
+              </View>
+            </View>
+            {selectedAssigneeUserId ? (
+              <TouchableOpacity
+                style={styles.clearInlineButton}
+                onPress={clearSelectedUser}
+              >
+                <Icon name="x" size={16} color="#052D50" />
+              </TouchableOpacity>
+            ) : (
+              <Icon name="chevron-right" size={18} color="#052D50" />
+            )}
           </TouchableOpacity>
           <GroupRow isLast={true}>
             <View style={styles.inputWrapper}>
@@ -791,6 +980,13 @@ export default function CreateTaskScreen() {
           onSelect={selectProject}
           onClose={() => setShowProjectPicker(false)}
         />
+        <UserPickerModal
+          visible={showUserPicker}
+          users={users}
+          selectedUserId={selectedAssigneeUserId}
+          onSelect={selectUser}
+          onClose={() => setShowUserPicker(false)}
+        />
       </ScrollView>
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
@@ -867,6 +1063,9 @@ const styles = StyleSheet.create({
   groupRowLast: {
     borderBottomWidth: 0,
   },
+  groupRowDisabled: {
+    opacity: 0.45,
+  },
   rowContent: {
     flex: 1,
     flexDirection: "row",
@@ -894,6 +1093,14 @@ const styles = StyleSheet.create({
   },
   rowPlaceholder: {
     color: "rgba(5, 45, 80, 0.45)",
+  },
+  clearInlineButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(5, 45, 80, 0.06)",
   },
   inputWrapper: {
     width: "100%",

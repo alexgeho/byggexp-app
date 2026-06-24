@@ -1,6 +1,11 @@
 import api from './api';
 
 export const taskService = {
+  getAll: async () => {
+    const { data } = await api.get('/tasks');
+    return data;
+  },
+
   create: async (taskData) => {
     const isFormData = typeof FormData !== 'undefined' && taskData instanceof FormData;
     const { data } = await api.post('/tasks', taskData, isFormData
@@ -15,6 +20,16 @@ export const taskService = {
 
   getByProject: async (projectId) => {
     const { data } = await api.get(`/tasks/project/${projectId}`);
+    return data;
+  },
+
+  complete: async (id) => {
+    const { data } = await api.patch(`/tasks/${id}/complete`);
+    return data;
+  },
+
+  reopen: async (id) => {
+    const { data } = await api.patch(`/tasks/${id}/reopen`);
     return data;
   },
 
