@@ -4,6 +4,10 @@ import * as Location from "expo-location";
 import projectService from "../services/project.service";
 import { shiftService } from "../services";
 import { shiftLocationPolicy } from "../config/shiftLocationPolicy";
+import {
+  getShiftScheduleWindow,
+  getStartWindowErrorMessage,
+} from "./shiftSchedule";
 
 const DEFAULT_EMULATOR_COORDINATE = {
   latitude: 59.3293,
@@ -199,6 +203,14 @@ export const isWithinProjectLocation = async (options) => {
   );
 };
 
+export const assertShiftScheduleAllowsStart = (project) => {
+  const window = getShiftScheduleWindow(project?.shiftSchedule);
+
+  if (window.enforced && !window.canStart) {
+    throw new Error(getStartWindowErrorMessage(window));
+  }
+};
+
 export const startShiftWithLocationGuard = async ({
   projectId,
   project,
@@ -207,6 +219,8 @@ export const startShiftWithLocationGuard = async ({
   if (!projectId) {
     throw new Error("Project is required to start a shift.");
   }
+
+  assertShiftScheduleAllowsStart(project);
 
   const locationCheck = await getShiftLocationCheck({
     project,
@@ -223,4 +237,13 @@ export const startShiftWithLocationGuard = async ({
   }
 
   return shiftService.start(projectId);
+};
+
+export const resumeShiftWithGuards = async ({ shiftId, project }) => {
+  if (!shiftId) {
+    throw new Error("Shift is required to resume.");
+  }
+
+  assertShiftScheduleAllowsStart(project);
+  return shiftService.resume(shiftId);
 };

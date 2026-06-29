@@ -34,7 +34,7 @@ import { Timer } from "../../../components/common2/Timer/Timer";
 
 import shiftService from "../../../services/shift.service";
 import { projectService } from "../../../services";
-import { startShiftWithLocationGuard } from "../../../utils/shiftLocationGuard";
+import { resumeShiftWithGuards, startShiftWithLocationGuard } from "../../../utils/shiftLocationGuard";
 
 import { createStyles } from "./HomeVariant2.styles";
 
@@ -370,7 +370,10 @@ export default function HomeVariant2() {
         currentShift.status === "paused"
       ) {
         const resumedShift =
-          await shiftService.resume(currentShift.id);
+          await resumeShiftWithGuards({
+            shiftId: currentShift.id,
+            project: selectedProject,
+          });
 
         setCurrentShift(resumedShift);
         start(resumedShift);

@@ -26,7 +26,7 @@ import { GlassView } from "../../../components/common/GlassView/GlassView";
 import UnreadBadge from "../../../components/common/UnreadBadge/UnreadBadge";
 import { projectService, shiftService } from "../../../services";
 import { formatDuration } from "../../../utils/shifts";
-import { startShiftWithLocationGuard } from "../../../utils/shiftLocationGuard";
+import { resumeShiftWithGuards, startShiftWithLocationGuard } from "../../../utils/shiftLocationGuard";
 import {
   defaultEnabledButtons,
   defaultEnabledSections,
@@ -276,7 +276,10 @@ export default function MainScreen() {
         currentShift.projectId === selectedProjectId &&
         currentShift.status === "paused"
       ) {
-        const resumedShift = await shiftService.resume(currentShift.id);
+        const resumedShift = await resumeShiftWithGuards({
+          shiftId: currentShift.id,
+          project: selectedProject,
+        });
         setCurrentShift(resumedShift);
         start(resumedShift);
         return;

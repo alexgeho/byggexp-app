@@ -49,8 +49,16 @@ import {
   searchAddressesWithNominatim,
 } from "../../../utils/projectLocationSearch";
 import { pickUploadAssets } from "../../../utils/uploadPicker";
+import {
+  SHIFT_GRACE_MINUTE_OPTIONS,
+  buildShiftSchedulePayload,
+  createDefaultShiftSchedule,
+  parseTimeFromDate,
+  parseTimeStringToDate,
+} from "../../../utils/shiftSchedule";
 
 const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "inline" : "calendar";
+const TIME_PICKER_DISPLAY = Platform.OS === "ios" ? "spinner" : "clock";
 const REVERSE_GEOCODE_MIN_INTERVAL_MS = 1200;
 
 const getUserInitials = (name = "") => {
@@ -373,6 +381,24 @@ export default function CreateProjectScreen() {
   const [endDate, setEndDate] = useState(null);
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
+  const defaultShiftSchedule = createDefaultShiftSchedule();
+  const [shiftScheduleEnabled, setShiftScheduleEnabled] = useState(
+    defaultShiftSchedule.enabled,
+  );
+  const [workDayStartTime, setWorkDayStartTime] = useState(() =>
+    parseTimeStringToDate(defaultShiftSchedule.workDayStartTime),
+  );
+  const [workDayEndTime, setWorkDayEndTime] = useState(() =>
+    parseTimeStringToDate(defaultShiftSchedule.workDayEndTime),
+  );
+  const [startGraceMinutes, setStartGraceMinutes] = useState(
+    defaultShiftSchedule.startGraceMinutes,
+  );
+  const [endGraceMinutes, setEndGraceMinutes] = useState(
+    defaultShiftSchedule.endGraceMinutes,
+  );
+  const [showWorkStartPicker, setShowWorkStartPicker] = useState(false);
+  const [showWorkEndPicker, setShowWorkEndPicker] = useState(false);
 
   const [users, setUsers] = useState([]);
   const [companies, setCompanies] = useState([]);
@@ -655,6 +681,25 @@ export default function CreateProjectScreen() {
     setShowEndDatePicker(false);
   };
 
+  const closeWorkTimePickers = () => {
+    setShowWorkStartPicker(false);
+    setShowWorkEndPicker(false);
+  };
+
+  const pickGraceMinutes = (title, onSelect) => {
+    Alert.alert(
+      title,
+      undefined,
+      [
+        ...SHIFT_GRACE_MINUTE_OPTIONS.map((minutes) => ({
+          text: `${minutes} min`,
+          onPress: () => onSelect(minutes),
+        })),
+        { text: "Cancel", style: "cancel" },
+      ],
+    );
+  };
+
   const setLocationLoadingState = (value) => {
     isLocationLoadingRef.current = value;
     setIsLocationLoading(value);
@@ -813,6 +858,19 @@ export default function CreateProjectScreen() {
       projectData.append(
         "locationRadiusMeters",
         String(locationRadiusMeters),
+      );
+
+      projectData.append(
+        "shiftSchedule",
+        JSON.stringify(
+          buildShiftSchedulePayload({
+            enabled: shiftScheduleEnabled,
+            workDayStartTime: parseTimeFromDate(workDayStartTime),
+            workDayEndTime: parseTimeFromDate(workDayEndTime),
+            startGraceMinutes,
+            endGraceMinutes,
+          }),
+        ),
       );
 
       if (beginningDate) {
@@ -1450,6 +1508,139 @@ export default function CreateProjectScreen() {
         ) : null}
 
         <View style={styles.groupCard}>
+          <View
+            style={[
+              styles.switchField,
+              styles.groupedField,
+              styles.groupRowDivider,
+            ]}
+          >
+            <View style={styles.locationFieldContent}>
+              <View
+                style={[styles.locationFieldIconContainer, fieldIconBadgeStyle]}
+              >
+                <FieldIcon name="clock" size={14} color="#FFFFFF" />
+              </View>
+              <Text style={styles.switchLabel}>Limit shift by work hours</Text>
+            </View>
+            <Switch
+              value={shiftScheduleEnabled}
+              onValueChange={setShiftScheduleEnabled}
+              trackColor={{ false: "#D9E3EC", true: theme.colors.primary }}
+              thumbColor="#FFFFFF"
+              ios_backgroundColor="#D9E3EC"
+              style={styles.switchControl}
+            />
+          </View>
+
+          <TouchableOpacity
+            style={[
+              styles.groupedDateRow,
+              styles.groupRowDivider,
+              !shiftScheduleEnabled && styles.groupRowDisabled,
+            ]}
+            onPress={() => shiftScheduleEnabled && setShowWorkStartPicker(true)}
+            activeOpacity={0.85}
+            disabled={!shiftScheduleEnabled}
+          >
+            <View style={styles.locationFieldContent}>
+              <View
+                style={[styles.locationFieldIconContainer, fieldIconBadgeStyle]}
+              >
+                <FieldIcon name="clock" size={14} color="#FFFFFF" />
+              </View>
+              <View>
+                <Text style={styles.dateLabel}>Work day starts</Text>
+                <Text style={styles.dateValue}>
+                  {parseTimeFromDate(workDayStartTime)}
+                </Text>
+              </View>
+            </View>
+            <Icon name="chevron-right" size={18} color="#052D50" />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.groupedDateRow,
+              styles.groupRowDivider,
+              !shiftScheduleEnabled && styles.groupRowDisabled,
+            ]}
+            onPress={() => shiftScheduleEnabled && setShowWorkEndPicker(true)}
+            activeOpacity={0.85}
+            disabled={!shiftScheduleEnabled}
+          >
+            <View style={styles.locationFieldContent}>
+              <View
+                style={[styles.locationFieldIconContainer, fieldIconBadgeStyle]}
+              >
+                <FieldIcon name="clock" size={14} color="#FFFFFF" />
+              </View>
+              <View>
+                <Text style={styles.dateLabel}>Work day ends</Text>
+                <Text style={styles.dateValue}>
+                  {parseTimeFromDate(workDayEndTime)}
+                </Text>
+              </View>
+            </View>
+            <Icon name="chevron-right" size={18} color="#052D50" />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.groupedDateRow,
+              styles.groupRowDivider,
+              !shiftScheduleEnabled && styles.groupRowDisabled,
+            ]}
+            onPress={() =>
+              shiftScheduleEnabled &&
+              pickGraceMinutes("Start grace (minutes before work day)", setStartGraceMinutes)
+            }
+            activeOpacity={0.85}
+            disabled={!shiftScheduleEnabled}
+          >
+            <View style={styles.locationFieldContent}>
+              <View
+                style={[styles.locationFieldIconContainer, fieldIconBadgeStyle]}
+              >
+                <FieldIcon name="clock" size={14} color="#FFFFFF" />
+              </View>
+              <View>
+                <Text style={styles.dateLabel}>Start grace</Text>
+                <Text style={styles.dateValue}>{startGraceMinutes} min</Text>
+              </View>
+            </View>
+            <Icon name="chevron-right" size={18} color="#052D50" />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.groupedDateRow,
+              styles.groupRowLast,
+              !shiftScheduleEnabled && styles.groupRowDisabled,
+            ]}
+            onPress={() =>
+              shiftScheduleEnabled &&
+              pickGraceMinutes("End grace (minutes after work day)", setEndGraceMinutes)
+            }
+            activeOpacity={0.85}
+            disabled={!shiftScheduleEnabled}
+          >
+            <View style={styles.locationFieldContent}>
+              <View
+                style={[styles.locationFieldIconContainer, fieldIconBadgeStyle]}
+              >
+                <FieldIcon name="clock" size={14} color="#FFFFFF" />
+              </View>
+              <View>
+                <Text style={styles.dateLabel}>End grace</Text>
+                <Text style={styles.dateValue}>{endGraceMinutes} min</Text>
+              </View>
+            </View>
+            <Icon name="chevron-right" size={18} color="#052D50" />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.groupCard}>
           <TouchableOpacity
             style={[styles.groupedDateRow, styles.groupRowDivider]}
             onPress={() => setShowStartDatePicker(true)}
@@ -1754,6 +1945,43 @@ export default function CreateProjectScreen() {
             </ScrollView>
           </View>
         </Modal>
+
+        <Modal
+          visible={showWorkStartPicker || showWorkEndPicker}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={closeWorkTimePickers}
+        >
+          <View style={styles.datePickerOverlay}>
+            <View style={styles.datePickerCard}>
+              <Text style={styles.datePickerTitle}>
+                {showWorkStartPicker ? "Work day starts" : "Work day ends"}
+              </Text>
+              <DateTimePicker
+                value={showWorkStartPicker ? workDayStartTime : workDayEndTime}
+                mode="time"
+                display={TIME_PICKER_DISPLAY}
+                onChange={(_event, date) => {
+                  if (!date) {
+                    return;
+                  }
+
+                  if (showWorkStartPicker) {
+                    setWorkDayStartTime(date);
+                  } else {
+                    setWorkDayEndTime(date);
+                  }
+                }}
+              />
+              <TouchableOpacity
+                style={styles.datePickerSecondaryButton}
+                onPress={closeWorkTimePickers}
+              >
+                <Text style={styles.datePickerSecondaryButtonText}>Done</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
@@ -1831,6 +2059,9 @@ const styles = StyleSheet.create({
   },
   groupRowLast: {
     borderBottomWidth: 0,
+  },
+  groupRowDisabled: {
+    opacity: 0.45,
   },
   groupedSelectableRow: {
     backgroundColor: "transparent",

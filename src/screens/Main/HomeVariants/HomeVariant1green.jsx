@@ -20,7 +20,7 @@ import AuthContext from "@contexts/AuthContext";
 import { useTimer } from "@hooks/useTimer";
 import { useShiftExitAutoComplete } from "@hooks/useShiftExitAutoComplete";
 import { shiftService } from "@services";
-import { startShiftWithLocationGuard } from "@utils/shiftLocationGuard";
+import { resumeShiftWithGuards, startShiftWithLocationGuard } from "@utils/shiftLocationGuard";
 import { createStyles } from "./HomeVariant1green.styles";
 import { getEnabledSections } from "@utils/homeButtonsStorage";
 import { defaultEnabledSections } from "@constants/mainButtons";
@@ -201,7 +201,10 @@ export default function MainScreen() {
         currentShift.status === "paused"
       ) {
         const resumedShift =
-          await shiftService.resume(currentShift.id);
+          await resumeShiftWithGuards({
+            shiftId: currentShift.id,
+            project: selectedProject,
+          });
 
         setCurrentShift(resumedShift);
 
