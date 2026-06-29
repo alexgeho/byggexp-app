@@ -47,13 +47,15 @@ const formatDateParts = (value) => {
   }
 
   return {
-    date: date.toLocaleDateString("en-US", {
-      month: "long",
+    date: date.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
       year: "numeric",
     }),
-    time: date.toLocaleTimeString("en-US", {
-      hour: "numeric",
+    time: date.toLocaleTimeString("en-GB", {
+      hour: "2-digit",
       minute: "2-digit",
+      hour12: false,
     }),
   };
 };
@@ -380,8 +382,8 @@ export default function TaskScreen() {
                 </View>
               </GroupRow>
               <GroupRow>
-                <View style={styles.rowTextContainer}>
-                  <Text style={styles.rowLabel}>Start date</Text>
+                <View style={styles.scheduleRowContent}>
+                  <Text style={styles.scheduleLabel}>Starts</Text>
                   {startDate ? (
                     <View style={styles.dateChips}>
                       <View style={styles.dateChip}>
@@ -401,8 +403,8 @@ export default function TaskScreen() {
                 </View>
               </GroupRow>
               <GroupRow isLast={true}>
-                <View style={styles.rowTextContainer}>
-                  <Text style={styles.rowLabel}>End date</Text>
+                <View style={styles.scheduleRowContent}>
+                  <Text style={styles.scheduleLabel}>Ends</Text>
                   {endDate ? (
                     <View style={styles.dateChips}>
                       <View style={styles.dateChip}>
@@ -652,19 +654,28 @@ const styles = StyleSheet.create({
   dateChips: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 6,
-    marginTop: 4,
+    gap: 8,
+  },
+  scheduleRowContent: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  scheduleLabel: {
+    color: "#052D50",
+    fontSize: 16,
   },
   dateChip: {
     backgroundColor: "#7676801F",
     paddingHorizontal: 12,
     height: 34,
-    borderRadius: 6,
+    borderRadius: 17,
     justifyContent: "center",
   },
   dateChipText: {
     color: "#052D50",
-    lineHeight: 34,
     fontSize: 14,
   },
   documentItem: {
