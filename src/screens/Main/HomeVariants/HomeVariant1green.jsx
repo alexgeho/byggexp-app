@@ -1,6 +1,7 @@
 import React, {
   useCallback,
   useContext,
+  useMemo,
   useState,
 } from "react";
 
@@ -21,6 +22,7 @@ import { useTimer } from "@hooks/useTimer";
 import { useShiftExitAutoComplete } from "@hooks/useShiftExitAutoComplete";
 import { shiftService } from "@services";
 import { resumeShiftWithGuards, startShiftWithLocationGuard } from "@utils/shiftLocationGuard";
+import { createShiftGeofenceHandlers } from "@utils/shiftGeofenceHandlers";
 import { createStyles } from "./HomeVariant1green.styles";
 import { getEnabledSections } from "@utils/homeButtonsStorage";
 import { defaultEnabledSections } from "@constants/mainButtons";
@@ -143,24 +145,21 @@ export default function MainScreen() {
     ),
   );
 
+  const geofenceHandlers = useMemo(
+    () =>
+      createShiftGeofenceHandlers({
+        applyShiftState,
+        reset,
+        setCurrentShift,
+        start,
+      }),
+    [applyShiftState, reset, start],
+  );
+
   useShiftExitAutoComplete({
     currentShift,
     selectedProject,
-    onShiftAutoCompleted: useCallback(
-      function handleShiftAutoCompleted() {
-        setCurrentShift(null);
-        reset();
-
-        Alert.alert(
-          "Shift completed",
-          "You left the project area, so your current shift was ended automatically.",
-        );
-      },
-      [reset],
-    ),
-    onCheckError: useCallback(function handleShiftLocationError(error) {
-      console.error("Failed to verify shift location:", error);
-    }, []),
+    ...geofenceHandlers,
   });
 
   async function handlePlayPause() {

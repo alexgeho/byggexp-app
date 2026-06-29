@@ -35,6 +35,7 @@ import { Timer } from "../../../components/common2/Timer/Timer";
 import shiftService from "../../../services/shift.service";
 import { projectService } from "../../../services";
 import { resumeShiftWithGuards, startShiftWithLocationGuard } from "../../../utils/shiftLocationGuard";
+import { createShiftGeofenceHandlers } from "../../../utils/shiftGeofenceHandlers";
 
 import { createStyles } from "./HomeVariant2.styles";
 
@@ -265,21 +266,21 @@ export default function HomeVariant2() {
     }
   }, [selectedProjectId, setSelectedProject]);
 
+  const geofenceHandlers = useMemo(
+    () =>
+      createShiftGeofenceHandlers({
+        applyShiftState,
+        reset,
+        setCurrentShift,
+        start,
+      }),
+    [applyShiftState, reset, start],
+  );
+
   useShiftExitAutoComplete({
     currentShift,
     selectedProject,
-    onShiftAutoCompleted: () => {
-      setCurrentShift(null);
-      reset();
-
-      Alert.alert(
-        "Shift completed",
-        "You left the project area, so your current shift was ended automatically.",
-      );
-    },
-    onCheckError: (error) => {
-      console.error("Failed to verify shift location:", error);
-    },
+    ...geofenceHandlers,
   });
 
   useFocusEffect(

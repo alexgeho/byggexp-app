@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -22,6 +22,7 @@ import UnreadBadge from "../../components/common/UnreadBadge/UnreadBadge";
 import { projectService, shiftService } from "../../services";
 import { formatDuration } from "../../utils/shifts";
 import { resumeShiftWithGuards, startShiftWithLocationGuard } from "../../utils/shiftLocationGuard";
+import { createShiftGeofenceHandlers } from "../../utils/shiftGeofenceHandlers";
 
 export default function MainScreen() {
   const { theme } = useTheme();
@@ -173,21 +174,21 @@ export default function MainScreen() {
     }, [fetchProjects, loadCurrentShift, selectedProjectId]),
   );
 
+  const geofenceHandlers = useMemo(
+    () =>
+      createShiftGeofenceHandlers({
+        applyShiftState,
+        reset,
+        setCurrentShift,
+        start,
+      }),
+    [applyShiftState, reset, start],
+  );
+
   useShiftExitAutoComplete({
     currentShift,
     selectedProject,
-    onShiftAutoCompleted: useCallback(() => {
-      setCurrentShift(null);
-      reset();
-
-      Alert.alert(
-        "Shift completed",
-        "You left the project area, so your current shift was ended automatically.",
-      );
-    }, [reset]),
-    onCheckError: useCallback((error) => {
-      console.error("Failed to verify shift location:", error);
-    }, []),
+    ...geofenceHandlers,
   });
 
   const handleProjectChange = (project) => {

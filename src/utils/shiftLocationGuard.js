@@ -215,6 +215,7 @@ export const startShiftWithLocationGuard = async ({
   projectId,
   project,
   fallbackProjectLocation,
+  skipLocationCheck = false,
 }) => {
   if (!projectId) {
     throw new Error("Project is required to start a shift.");
@@ -222,18 +223,20 @@ export const startShiftWithLocationGuard = async ({
 
   assertShiftScheduleAllowsStart(project);
 
-  const locationCheck = await getShiftLocationCheck({
-    project,
-    fallbackProjectLocation,
-  });
+  if (!skipLocationCheck) {
+    const locationCheck = await getShiftLocationCheck({
+      project,
+      fallbackProjectLocation,
+    });
 
-  if (
-    locationCheck.enforced &&
-    locationCheck.distanceMeters > locationCheck.maxDistanceMeters
-  ) {
-    throw new Error(
-      `You are not at the project location. Move within ${locationCheck.maxDistanceMeters} meters of the project to start a shift.`,
-    );
+    if (
+      locationCheck.enforced &&
+      locationCheck.distanceMeters > locationCheck.maxDistanceMeters
+    ) {
+      throw new Error(
+        `You are not at the project location. Move within ${locationCheck.maxDistanceMeters} meters of the project to start a shift.`,
+      );
+    }
   }
 
   return shiftService.start(projectId);

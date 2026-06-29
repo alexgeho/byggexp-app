@@ -3,4 +3,6 @@ export const shiftLocationPolicy = {
   enabled: true,
   maxDistanceMeters: 500,
   checkIntervalMs: 15 * 1000,
+  autoCheckInEnabled: true,
+  autoCheckOutEnabled: true,
 };
