@@ -8,8 +8,8 @@ import {
   ScrollView,
   StyleSheet,
   ActivityIndicator,
-  Image,
 } from "react-native";
+import Icon from "react-native-vector-icons/Feather";
 import AuthContext from "../../contexts/AuthContext";
 import { useTheme } from "../../theme/ThemeContext";
 import { projectService, taskService } from "../../services";
@@ -192,6 +192,59 @@ export default function TasksScreen() {
     );
   }
 
+  const themedAccentTextStyle = { color: theme.colors.primary };
+
+  const renderTaskCard = (task, { project = null, key }) => {
+    const status = getTaskDisplayStatus(task);
+
+    return (
+      <TouchableOpacity
+        key={key}
+        style={styles.taskCard}
+        activeOpacity={0.85}
+        onPress={() =>
+          navigation.navigate("Task", {
+            task,
+            project,
+          })
+        }
+      >
+        <View style={styles.cardHeader}>
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={[
+              styles.taskTitle,
+              { fontFamily: theme.text.fontFamily["medium"] },
+            ]}
+          >
+            {task.taskTitle || "Untitled task"}
+          </Text>
+          <View style={styles.cardHeaderRight}>
+            <Text
+              style={[
+                styles.statusBadge,
+                styles[`statusBadge_${status.tone}`],
+                { fontFamily: theme.text.fontFamily["medium"] },
+              ]}
+            >
+              {status.label}
+            </Text>
+            <Text style={[styles.headerDateText, themedAccentTextStyle]}>
+              {formatTaskDate(task.dueDate)}
+            </Text>
+          </View>
+        </View>
+        {!!task.taskDescription && (
+          <Text style={styles.taskDescription}>{task.taskDescription}</Text>
+        )}
+        {!!task.assigneeUserName && (
+          <Text style={styles.assigneeText}>{task.assigneeUserName}</Text>
+        )}
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -214,12 +267,18 @@ export default function TasksScreen() {
       </View>
 
       <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search tasks..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
+        <View style={styles.searchInputWrapper}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search tasks..."
+            placeholderTextColor="rgba(5, 45, 80, 0.45)"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          <View style={styles.searchIconWrapper} pointerEvents="none">
+            <Icon name="search" size={18} color="rgba(5, 45, 80, 0.5)" />
+          </View>
+        </View>
       </View>
 
       <ScrollView
@@ -251,63 +310,12 @@ export default function TasksScreen() {
                 </Text>
               </View>
 
-              {visiblePersonalTasks.map((task, index) => {
-                const status = getTaskDisplayStatus(task);
-
-                return (
-                  <TouchableOpacity
-                    key={task._id || `personal-${index}`}
-                    style={styles.taskItem}
-                    activeOpacity={0.85}
-                    onPress={() =>
-                      navigation.navigate("Task", {
-                        task,
-                        project: null,
-                      })
-                    }
-                  >
-                    <Text style={styles.taskTitle}>
-                      {task.taskTitle || "Untitled task"}
-                    </Text>
-                    {!!task.taskDescription && (
-                      <Text style={styles.taskDescription}>
-                        {task.taskDescription}
-                      </Text>
-                    )}
-                    <View style={styles.taskFooter}>
-                      {!!task.assigneeUserName && (
-                        <Text style={styles.assigneeText}>
-                          {task.assigneeUserName}
-                        </Text>
-                      )}
-                      <View
-                        style={[
-                          styles.statusBadge,
-                          styles[`statusBadge_${status.tone}`],
-                        ]}
-                      >
-                        <Text
-                          style={[
-                            styles.statusBadgeText,
-                            styles[`statusBadgeText_${status.tone}`],
-                          ]}
-                        >
-                          {status.label}
-                        </Text>
-                      </View>
-                      <View style={styles.taskProjectInfo}>
-                        <Image
-                          style={styles.dateIcon}
-                          source={require("../../assets/TasksCalendar.png")}
-                        />
-                        <Text style={styles.dateText}>
-                          {formatTaskDate(task.dueDate)}
-                        </Text>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                );
-              })}
+              {visiblePersonalTasks.map((task, index) =>
+                renderTaskCard(task, {
+                  project: null,
+                  key: task._id || `personal-${index}`,
+                }),
+              )}
             </View>
             ) : null}
 
@@ -328,55 +336,12 @@ export default function TasksScreen() {
                   </Text>
                 </View>
 
-                {project.visibleTasks.map((task, index) => {
-                  const status = getTaskDisplayStatus(task);
-
-                  return (
-                    <TouchableOpacity
-                    key={task._id || `${project._id}-${index}`}
-                    style={styles.taskItem}
-                    activeOpacity={0.85}
-                    onPress={() =>
-                      navigation.navigate("Task", { task, project })
-                    }
-                  >
-                    <Text style={styles.taskTitle}>
-                      {task.taskTitle || "Untitled task"}
-                    </Text>
-                    {!!task.taskDescription && (
-                      <Text style={styles.taskDescription}>
-                        {task.taskDescription}
-                      </Text>
-                    )}
-                    <View style={styles.taskFooter}>
-                      <View
-                        style={[
-                          styles.statusBadge,
-                          styles[`statusBadge_${status.tone}`],
-                        ]}
-                      >
-                        <Text
-                          style={[
-                            styles.statusBadgeText,
-                            styles[`statusBadgeText_${status.tone}`],
-                          ]}
-                        >
-                          {status.label}
-                        </Text>
-                      </View>
-                      <View style={styles.taskProjectInfo}>
-                        <Image
-                          style={styles.dateIcon}
-                          source={require("../../assets/TasksCalendar.png")}
-                        />
-                        <Text style={styles.dateText}>
-                          {formatTaskDate(task.dueDate)}
-                        </Text>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                  );
-                })}
+                {project.visibleTasks.map((task, index) =>
+                  renderTaskCard(task, {
+                    project,
+                    key: task._id || `${project._id}-${index}`,
+                  }),
+                )}
               </View>
             ))}
           </>
@@ -397,6 +362,7 @@ const styles = StyleSheet.create({
     ...standardScreenContainer,
     justifyContent: "space-between",
     alignItems: "center",
+    gap: 12,
   },
   centeredContainer: {
     flex: 1,
@@ -417,12 +383,29 @@ const styles = StyleSheet.create({
   searchContainer: {
     width: "100%",
   },
-  searchInput: {
+  searchInputWrapper: {
     width: "100%",
-    height: 64,
+    height: 48,
     backgroundColor: "#052D500D",
     borderRadius: 20,
-    padding: 16,
+    paddingLeft: 16,
+    paddingRight: 14,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  searchInput: {
+    flex: 1,
+    height: "100%",
+    color: "#052D50",
+    fontSize: 16,
+    paddingVertical: 0,
+    paddingRight: 12,
+  },
+  searchIconWrapper: {
+    width: 20,
+    height: 20,
+    alignItems: "center",
+    justifyContent: "center",
   },
   scrollContainer: {
     flex: 1,
@@ -430,8 +413,8 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     width: "100%",
-    gap: 16,
-    paddingBottom: 96,
+    gap: 12,
+    paddingBottom: 140,
   },
   projectGroup: {
     width: "100%",
@@ -452,89 +435,71 @@ const styles = StyleSheet.create({
     color: "#698196",
     fontSize: 14,
   },
-  taskItem: {
-    width: "100%",
+  taskCard: {
     backgroundColor: "rgba(255, 255, 255, 0.6)",
+    width: "100%",
+    padding: 20,
     borderRadius: 16,
-    gap: 16,
-    padding: 16,
+    gap: 8,
     borderWidth: 1,
     borderColor: "#FFFFFF",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.0625,
-    shadowRadius: 10,
-    elevation: 1,
+  },
+  cardHeader: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    gap: 8,
   },
   taskTitle: {
     color: "#052D50",
-    fontSize: 20,
+    flex: 1,
+    flexShrink: 1,
+    fontSize: 17,
+    fontWeight: "500",
+  },
+  cardHeaderRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    flexShrink: 0,
   },
   taskDescription: {
-    color: "#052D5050",
-  },
-  taskFooter: {
-    flexDirection: "row",
-    width: "100%",
-    justifyContent: "flex-end",
-    alignItems: "center",
+    color: "#698196",
   },
   assigneeText: {
     color: "#698196",
-    fontSize: 13,
-    flex: 1,
-    marginRight: 12,
+    fontSize: 14,
   },
   statusBadge: {
-    paddingHorizontal: 10,
     height: 28,
-    borderRadius: 999,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 3,
+    borderRadius: 12,
+    flexShrink: 0,
+    alignSelf: "flex-start",
+    fontWeight: "500",
+    fontSize: 13,
+    lineHeight: 22,
+    textAlign: "center",
+    textAlignVertical: "center",
+    overflow: "hidden",
   },
   statusBadge_open: {
-    backgroundColor: "rgba(7, 133, 244, 0.12)",
+    color: "#0785F4",
+    backgroundColor: "#0785F41A",
   },
   statusBadge_overdue: {
-    backgroundColor: "rgba(255, 59, 48, 0.12)",
+    color: "#FF3B30",
+    backgroundColor: "#FF3B301F",
   },
   statusBadge_completed: {
-    backgroundColor: "rgba(52, 199, 89, 0.14)",
-  },
-  statusBadgeText: {
-    fontSize: 12,
-    fontWeight: "700",
-  },
-  statusBadgeText_open: {
-    color: "#0785F4",
-  },
-  statusBadgeText_overdue: {
-    color: "#FF3B30",
-  },
-  statusBadgeText_completed: {
     color: "#248A3D",
+    backgroundColor: "#34C75924",
   },
-  taskProjectInfo: {
-    flexDirection: "row",
-    gap: 8,
-    alignItems: "center",
-    padding: 4,
-    paddingLeft: 12,
-    paddingRight: 12,
-    backgroundColor: "#0177DE0D",
-    borderRadius: 999,
-  },
-  dateIcon: {
-    width: 14,
-    height: 14,
-  },
-  dateText: {
-    color: "#0785F4",
-  },
-  noTasksText: {
-    color: "#698196",
-    fontSize: 14,
+  headerDateText: {
+    fontSize: 13,
+    flexShrink: 0,
   },
   emptyText: {
     textAlign: "center",
