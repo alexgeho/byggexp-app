@@ -1,6 +1,11 @@
 import { StyleSheet } from "react-native";
 
 export function createStyles(theme) {
+  const buttonBackground =
+    theme.colors.homeButtonBackground || theme.colors.card;
+  const buttonBorder =
+    theme.colors.homeButtonBorder || theme.colors.border;
+
   return StyleSheet.create({
     container: {
       flexWrap: "wrap",
@@ -35,22 +40,29 @@ export function createStyles(theme) {
       borderRadius: theme.colors.homeButtonRadius || 16,
       overflow: "hidden",
       borderWidth: 1,
-      borderColor: theme.colors.border,
-      backgroundColor: theme.colors.card,
+      borderColor: buttonBorder,
+      backgroundColor: buttonBackground,
     },
 
     buttonInner: {
       flexDirection: "column",
       padding: theme.colors.homeButtonPadding || 16,
-      gap: 18,
-      alignItems: theme.colors.homeButtonAlignItems || "center",
-      justifyContent: "space-between",
+      gap: theme.colors.homeButtonContentGap || 8,
+      alignItems: theme.colors.homeButtonAlignItems || "stretch",
+      justifyContent: "center",
       minHeight: theme.colors.homeButtonMinHeight,
     },
 
     iconWrapper: {
       position: "relative",
-      alignSelf: theme.colors.homeButtonIconAlignSelf,
+      alignSelf: theme.colors.homeButtonIconAlignSelf || "flex-start",
+    },
+
+    infoBadgesRow: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      alignSelf: "flex-start",
+      gap: 6,
     },
 
     buttonIcon: {
@@ -61,7 +73,7 @@ export function createStyles(theme) {
     },
 
     buttonText: {
-      color: theme.colors.textBtn,
+      color: theme.colors.textBtn || theme.colors.text,
       fontFamily: theme.text.fontFamily.regular,
       fontSize: theme.text.sizes.medium,
       fontWeight: theme.colors.homeButtonTextWeight,

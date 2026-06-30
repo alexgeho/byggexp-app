@@ -45,6 +45,8 @@ import { MainActionButtons } from "../../../components/common2/mainActionButtons
 import { FooterButtonsVariant2 } from "../../../components/common2/footer/footer";
 
 import ProjectFilesSection from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
+import { HomeButtonExtraInfo } from "../../../components/common/NavButtonsGrid/HomeButtonExtraInfo";
+import { useHomeButtonStats } from "../../../hooks/useHomeButtonStats";
 import {
   mainButtons,
   defaultEnabledButtons,
@@ -58,7 +60,10 @@ import {
 import { useUnreadChats } from "../../../hooks/useUnreadChats";
 import UnreadBadge from "../../../components/common/UnreadBadge/UnreadBadge";
 import ShiftHistoryPreview from "../../../components/common2/ShiftHistoryPreview/ShiftHistoryPreview";
-import { isHomeButtonVisible } from "../../../utils/userRoles";
+import {
+  canManageEmployees,
+  isHomeButtonVisible,
+} from "../../../utils/userRoles";
 
 export default function HomeVariant2() {
   const {
@@ -122,6 +127,11 @@ export default function HomeVariant2() {
   const [scrollViewHeight, setScrollViewHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
   const { unreadCount } = useUnreadChats();
+  const showEmployeeStats = canManageEmployees(user?.role);
+  const { employeeStats, shiftStats } = useHomeButtonStats({
+    projectId: selectedProjectId,
+    loadEmployeeStats: showEmployeeStats,
+  });
   const visibleQuickButtons = useMemo(
     () =>
       mainButtons.filter(function filterButton(button) {
@@ -603,6 +613,14 @@ export default function HomeVariant2() {
                       <Text style={styles.quickActionText}>
                         {button.title}
                       </Text>
+
+                      <HomeButtonExtraInfo
+                        buttonId={button.id}
+                        showEmployeeStats={showEmployeeStats}
+                        employeeStats={employeeStats}
+                        shiftStats={shiftStats}
+                        style={styles.quickActionBadgesRow}
+                      />
                     </TouchableOpacity>
                   );
                 })}

@@ -84,6 +84,7 @@ export const lightColors = {
   homeButtonGridGap: 16,
   homeButtonAlignItems: "stretch",
   homeButtonIconAlignSelf: "flex-start",
+  homeButtonContentGap: 8,
   homeButtonTextWeight: "600",
   hideButtonLines: true,
   hideTimerProgress: true,

@@ -16,19 +16,28 @@ import {
   defaultEnabledButtons,
 } from "../../../constants/mainButtons";
 import { getEnabledButtons } from "../../../utils/homeButtonsStorage";
-import { isHomeButtonVisible } from "../../../utils/userRoles";
+import { isHomeButtonVisible, canManageEmployees } from "../../../utils/userRoles";
 import AuthContext from "../../../contexts/AuthContext";
 import { useUnreadChats } from "../../../hooks/useUnreadChats";
+import { useHomeButtonStats } from "../../../hooks/useHomeButtonStats";
 import UnreadBadge from "../UnreadBadge/UnreadBadge";
+import { HomeButtonExtraInfo } from "./HomeButtonExtraInfo";
 import { createStyles } from "./MainButtonsGrid.styles";
 
 export default function MainButtonsGrid() {
   const navigation = useNavigation();
-  const { user } = useContext(AuthContext);
+  const { user, selectedProject } = useContext(AuthContext);
   const { theme } = useTheme();
+  const selectedProjectId =
+    selectedProject?._id || selectedProject?.id;
 
   const styles = createStyles(theme);
   const { unreadCount } = useUnreadChats();
+  const showEmployeeStats = canManageEmployees(user?.role);
+  const { employeeStats, shiftStats } = useHomeButtonStats({
+    projectId: selectedProjectId,
+    loadEmployeeStats: showEmployeeStats,
+  });
 
   const [enabledButtons, setEnabledButtons] =
     useState(defaultEnabledButtons);
@@ -109,6 +118,14 @@ export default function MainButtonsGrid() {
                 <Text style={styles.buttonText}>
                   {button.title}
                 </Text>
+
+                <HomeButtonExtraInfo
+                  buttonId={button.id}
+                  showEmployeeStats={showEmployeeStats}
+                  employeeStats={employeeStats}
+                  shiftStats={shiftStats}
+                  style={styles.infoBadgesRow}
+                />
               </TouchableOpacity>
             </View>
           );

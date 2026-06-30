@@ -111,7 +111,8 @@ export function createStyles({
         : "rgba(255,255,255,0.2)"),
       padding: cardPadding,
       borderRadius: 20,
-      justifyContent: "space-between",
+      justifyContent: "center",
+      gap: 8,
     },
     quickActionCardFullWidth: {
       width: "100%",
@@ -131,6 +132,12 @@ export function createStyles({
       fontSize: textSize,
       lineHeight: compact ? textSize + 2 : 20,
       fontWeight: "600",
+    },
+    quickActionBadgesRow: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      alignSelf: "flex-start",
+      gap: 6,
     },
     selectorCompact: {
       paddingHorizontal: veryCompact ? 16 : 18,

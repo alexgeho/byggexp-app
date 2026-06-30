@@ -17,6 +17,7 @@ import ProjectSelector2 from "../../../components/common2/projectSelector/projec
 import AuthContext from "../../../contexts/AuthContext";
 import { useTimer } from "../../../hooks/useTimer";
 import { useShiftExitAutoComplete } from "../../../hooks/useShiftExitAutoComplete";
+import { useHomeButtonStats } from "../../../hooks/useHomeButtonStats";
 import { useUnreadChats } from "../../../hooks/useUnreadChats";
 import { GlassView } from "../../../components/common/GlassView/GlassView";
 import UnreadBadge from "../../../components/common/UnreadBadge/UnreadBadge";
@@ -36,12 +37,17 @@ import {
 } from "../../../utils/homeButtonsStorage";
 import ProjectFilesSection from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
 import ShiftHistoryPreview from "../../../components/common2/ShiftHistoryPreview/ShiftHistoryPreview";
-import { isHomeButtonVisible } from "../../../utils/userRoles";
+import { HomeButtonExtraInfo } from "../../../components/common/NavButtonsGrid/HomeButtonExtraInfo";
+import {
+  canManageEmployees,
+  isHomeButtonVisible,
+} from "../../../utils/userRoles";
 
 export default function MainScreen() {
   const { theme } = useTheme();
   const navigation = useNavigation();
   const { user, selectedProject, setSelectedProject } = useContext(AuthContext);
+  const selectedProjectId = selectedProject?._id || selectedProject?.id;
   const [projects, setProjects] = useState([]);
   const [projectsLoading, setProjectsLoading] = useState(true);
   const [loadingShift, setLoadingShift] = useState(true);
@@ -49,6 +55,11 @@ export default function MainScreen() {
   const [currentShift, setCurrentShift] = useState(null);
   const [enabledButtons, setEnabledButtons] = useState(defaultEnabledButtons);
   const [enabledSections, setEnabledSections] = useState(defaultEnabledSections);
+  const showEmployeeStats = canManageEmployees(user?.role);
+  const { employeeStats, shiftStats } = useHomeButtonStats({
+    projectId: selectedProjectId,
+    loadEmployeeStats: showEmployeeStats,
+  });
   const { unreadCount } = useUnreadChats();
   const {
     formattedTime,
@@ -60,8 +71,6 @@ export default function MainScreen() {
     sync,
     reset,
   } = useTimer();
-
-  const selectedProjectId = selectedProject?._id || selectedProject?.id;
 
   const getProjectId = (project) => project?._id || project?.id;
 
@@ -511,6 +520,13 @@ export default function MainScreen() {
                 >
                   {button.title}
                 </Text>
+                <HomeButtonExtraInfo
+                  buttonId={button.id}
+                  showEmployeeStats={showEmployeeStats}
+                  employeeStats={employeeStats}
+                  shiftStats={shiftStats}
+                  style={styles.infoBadgesRow}
+                />
               </TouchableOpacity>
             </GlassView>
           ))}
@@ -684,8 +700,16 @@ const styles = StyleSheet.create({
   buttonInner: {
     flexDirection: "column",
     padding: 10,
-    gap: 10,
+    gap: 8,
     alignItems: "center",
+    justifyContent: "center",
+    minHeight: 116,
+  },
+  infoBadgesRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    gap: 6,
   },
   iconWrapper: {
     position: "relative",
