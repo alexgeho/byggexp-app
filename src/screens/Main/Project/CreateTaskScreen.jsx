@@ -7,6 +7,7 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
@@ -36,6 +37,8 @@ import {
 } from "../../../utils/taskNotifications";
 
 const DATETIME_PICKER_DISPLAY = Platform.OS === "ios" ? "inline" : "default";
+const DEFAULT_ALL_DAY_START_TIME = "08:00";
+const DEFAULT_ALL_DAY_DURATION_MINUTES = 8 * 60;
 
 const FieldIcon = ({
   library = "feather",
@@ -112,6 +115,60 @@ const formatScheduleTime = (date) =>
     minute: "2-digit",
     hour12: false,
   });
+
+const parseScheduleTimeToMinutes = (time) => {
+  const [hours, minutes] = String(time || "").split(":").map(Number);
+
+  if (
+    !Number.isInteger(hours) ||
+    !Number.isInteger(minutes) ||
+    hours < 0 ||
+    hours > 23 ||
+    minutes < 0 ||
+    minutes > 59
+  ) {
+    return null;
+  }
+
+  return hours * 60 + minutes;
+};
+
+const createDateAtMinutes = (baseDate, minutes) => {
+  const date = new Date(baseDate);
+  const dayOffset = Math.floor(minutes / (24 * 60));
+  const minutesOfDay = ((minutes % (24 * 60)) + 24 * 60) % (24 * 60);
+
+  date.setDate(date.getDate() + dayOffset);
+  date.setHours(Math.floor(minutesOfDay / 60), minutesOfDay % 60, 0, 0);
+
+  return date;
+};
+
+const buildAllDayRange = (project, baseDate = new Date()) => {
+  const shiftSchedule = project?.shiftSchedule;
+  const hasProjectWorkday =
+    shiftSchedule?.enabled &&
+    shiftSchedule?.workDayStartTime &&
+    shiftSchedule?.workDayEndTime;
+  const fallbackStartMinutes =
+    parseScheduleTimeToMinutes(DEFAULT_ALL_DAY_START_TIME) || 0;
+  let startMinutes = hasProjectWorkday
+    ? parseScheduleTimeToMinutes(shiftSchedule.workDayStartTime)
+    : fallbackStartMinutes;
+  let endMinutes = hasProjectWorkday
+    ? parseScheduleTimeToMinutes(shiftSchedule.workDayEndTime)
+    : fallbackStartMinutes + DEFAULT_ALL_DAY_DURATION_MINUTES;
+
+  if (startMinutes === null || endMinutes === null || endMinutes <= startMinutes) {
+    startMinutes = startMinutes ?? fallbackStartMinutes;
+    endMinutes = startMinutes + DEFAULT_ALL_DAY_DURATION_MINUTES;
+  }
+
+  return {
+    start: createDateAtMinutes(baseDate, startMinutes),
+    end: createDateAtMinutes(baseDate, endMinutes),
+  };
+};
 
 const DateTimeFieldModal = ({ visible, title, value, onChange, onClose }) => {
   const [draftDate, setDraftDate] = useState(value || new Date());
@@ -407,6 +464,7 @@ export default function CreateTaskScreen() {
     initialTaskDraft.projectName || initialProjectName || "",
   );
   const [projects, setProjects] = useState([]);
+  const [selectedProject, setSelectedProject] = useState(null);
   const [users, setUsers] = useState([]);
   const [selectedAssigneeUserId, setSelectedAssigneeUserId] = useState(
     initialTaskDraft.selectedAssigneeUserId || "",
@@ -434,6 +492,7 @@ export default function CreateTaskScreen() {
   const [dueDate, setDueDate] = useState(
     parseDraftDate(initialTaskDraft.dueDate),
   );
+  const [allDay, setAllDay] = useState(Boolean(initialTaskDraft.allDay));
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showDueDatePicker, setShowDueDatePicker] = useState(false);
   const [loadingProject, setLoadingProject] = useState(false);
@@ -444,7 +503,10 @@ export default function CreateTaskScreen() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!selectedProjectId || projectName) {
+    if (
+      !selectedProjectId ||
+      (selectedProject && getProjectId(selectedProject) === selectedProjectId)
+    ) {
       return;
     }
 
@@ -453,6 +515,7 @@ export default function CreateTaskScreen() {
         setLoadingProject(true);
         const project = await projectService.getById(selectedProjectId);
         setProjectName(project?.name || "");
+        setSelectedProject(project || null);
       } catch (error) {
         console.error("Failed to load project for task creation:", error);
       } finally {
@@ -461,7 +524,7 @@ export default function CreateTaskScreen() {
     };
 
     fetchProject();
-  }, [selectedProjectId, projectName]);
+  }, [selectedProject, selectedProjectId]);
 
   useEffect(() => {
     if (!user?.role) {
@@ -503,6 +566,23 @@ export default function CreateTaskScreen() {
 
     fetchProjects();
   }, [user?.role, userId]);
+
+  useEffect(() => {
+    if (!selectedProjectId) {
+      setSelectedProject(null);
+      return;
+    }
+
+    const project = projects.find((item) => getProjectId(item) === selectedProjectId);
+
+    if (project) {
+      setSelectedProject(project);
+
+      if (!projectName) {
+        setProjectName(project?.name || "");
+      }
+    }
+  }, [projects, selectedProjectId, projectName]);
 
   useEffect(() => {
     if (!user?.role) {
@@ -560,12 +640,54 @@ export default function CreateTaskScreen() {
     setSelectedDocuments(taskDraft.selectedDocuments || []);
     setStartDate(parseDraftDate(taskDraft.startDate));
     setDueDate(parseDraftDate(taskDraft.dueDate));
+    setAllDay(Boolean(taskDraft.allDay));
   }, [route.params?.taskDraft]);
 
   const notificationsSummary = useMemo(
     () => getTaskNotificationSummary(notificationSettings),
     [notificationSettings],
   );
+
+  const effectiveSelectedProject = useMemo(() => {
+    if (selectedProject && getProjectId(selectedProject) === selectedProjectId) {
+      return selectedProject;
+    }
+
+    return (
+      projects.find((project) => getProjectId(project) === selectedProjectId) ||
+      null
+    );
+  }, [projects, selectedProject, selectedProjectId]);
+
+  const applyAllDayRange = (project = effectiveSelectedProject) => {
+    const { start, end } = buildAllDayRange(
+      project,
+      startDate || dueDate || new Date(),
+    );
+    setStartDate(start);
+    setDueDate(end);
+  };
+
+  const handleAllDayChange = (enabled) => {
+    setAllDay(enabled);
+
+    if (enabled) {
+      applyAllDayRange();
+    }
+  };
+
+  useEffect(() => {
+    if (!allDay) {
+      return;
+    }
+
+    const { start, end } = buildAllDayRange(
+      effectiveSelectedProject,
+      startDate || dueDate || new Date(),
+    );
+    setStartDate(start);
+    setDueDate(end);
+  }, [allDay, effectiveSelectedProject]);
 
   const pickDocuments = async () => {
     try {
@@ -585,11 +707,16 @@ export default function CreateTaskScreen() {
 
   const selectProject = (project) => {
     setSelectedProjectId(getProjectId(project) || "");
+    setSelectedProject(project || null);
     setProjectName(project?.name || "");
     setSelectedAssigneeUserId("");
     setSelectedAssigneeName("");
     setSelectedAssigneeRole("");
     setShowProjectPicker(false);
+
+    if (allDay) {
+      applyAllDayRange(project);
+    }
   };
 
   const selectUser = (nextUser) => {
@@ -597,8 +724,13 @@ export default function CreateTaskScreen() {
     setSelectedAssigneeName(nextUser?.name || nextUser?.email || "");
     setSelectedAssigneeRole(nextUser?.profession || nextUser?.role || "");
     setSelectedProjectId("");
+    setSelectedProject(null);
     setProjectName("");
     setShowUserPicker(false);
+
+    if (allDay) {
+      applyAllDayRange(null);
+    }
   };
 
   const clearSelectedUser = () => {
@@ -620,6 +752,7 @@ export default function CreateTaskScreen() {
     selectedDocuments,
     startDate: startDate ? startDate.toISOString() : null,
     dueDate: dueDate ? dueDate.toISOString() : null,
+    allDay,
   });
 
   const createTask = async () => {
@@ -831,6 +964,20 @@ export default function CreateTaskScreen() {
 
         <SectionLabel>Schedule</SectionLabel>
         <GroupCard>
+          <GroupRow>
+            <View style={styles.allDayTextContainer}>
+              <Text style={styles.scheduleLabel}>All day</Text>
+              <Text style={styles.allDayHint}>
+                Use project workday or default 8 hours
+              </Text>
+            </View>
+            <Switch
+              value={allDay}
+              onValueChange={handleAllDayChange}
+              trackColor={{ false: "#D9E3EC", true: theme.colors.primary }}
+              thumbColor="#FFFFFF"
+            />
+          </GroupRow>
           <ScheduleDateRow
             label="Starts"
             value={startDate}
@@ -980,14 +1127,20 @@ export default function CreateTaskScreen() {
           visible={showStartDatePicker}
           title="Starts"
           value={startDate}
-          onChange={setStartDate}
+          onChange={(date) => {
+            setAllDay(false);
+            setStartDate(date);
+          }}
           onClose={() => setShowStartDatePicker(false)}
         />
         <DateTimeFieldModal
           visible={showDueDatePicker}
           title="Ends"
           value={dueDate}
-          onChange={setDueDate}
+          onChange={(date) => {
+            setAllDay(false);
+            setDueDate(date);
+          }}
           onClose={() => setShowDueDatePicker(false)}
         />
         <ProjectPickerModal
@@ -1337,6 +1490,15 @@ const styles = StyleSheet.create({
     color: "#052D50",
     fontSize: 16,
     fontFamily: "DMSans-Regular",
+  },
+  allDayTextContainer: {
+    flex: 1,
+    paddingRight: 12,
+  },
+  allDayHint: {
+    color: "#698196",
+    fontSize: 12,
+    marginTop: 2,
   },
   dateChips: {
     flexDirection: "row",
