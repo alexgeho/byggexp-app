@@ -39,6 +39,7 @@ import ThemeHomeScreen from "../screens/Main/HomeVariants/ThemeHomeScreen";
 import CustomizeHomeScreen from "../screens/Menu/CustomizeHomeScreen";
 import AboutAppScreen from "../screens/Menu/AboutAppScreen";
 import HelpSupportScreen from "../screens/Menu/HelpSupportScreen";
+import ReportBugScreen from "../screens/Menu/ReportBugScreen";
 import LegalPoliciesScreen from "../screens/Menu/LegalPoliciesScreen";
 import NotificationsSettingsScreen from "../screens/Menu/NotificationsSettingsScreen";
 import DocumentsScreen from "../screens/Menu/DocumentsScreen";
@@ -192,6 +193,7 @@ export default function AppNavigator() {
             />
             <Stack.Screen name="AboutApp" component={AboutAppScreen} />
             <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
+            <Stack.Screen name="ReportBug" component={ReportBugScreen} />
             <Stack.Screen name="LegalPolicies" component={LegalPoliciesScreen} />
           </>
         ) : (

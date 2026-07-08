@@ -25,6 +25,7 @@ const MENU_ROUTES = new Set([
   "Documents",
   "AboutApp",
   "HelpSupport",
+  "ReportBug",
   "LegalPolicies",
   "CustomizeHomeScreen",
 ]);

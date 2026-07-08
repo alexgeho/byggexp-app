@@ -223,6 +223,13 @@ export default function MenuScreen() {
       color: theme.colors.primary,
     },
     {
+      id: "reportBug",
+      screen: "ReportBug",
+      title: "Report a bug",
+      icon: require("../../assets/Help.png"),
+      color: theme.colors.primary,
+    },
+    {
       id: "about",
       screen: "AboutApp",
       title: "About the App",
