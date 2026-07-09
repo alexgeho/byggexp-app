@@ -19,7 +19,6 @@ export default function ActionButton({ title, onPress, variant = 'regular' }) {
     );
   }
 
-  // Для iOS/Android оборачиваем в TouchableOpacity
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
       <GlassView
