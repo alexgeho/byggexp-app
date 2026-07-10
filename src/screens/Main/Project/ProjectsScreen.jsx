@@ -1,3 +1,5 @@
+/* PROJECTS LIST */
+
 import {
   useFocusEffect,
   useNavigation,
@@ -31,6 +33,7 @@ import {
   standardScreenHeaderPlaceholder,
 } from "../../../styles/screenLayout";
 import { sortByNewest } from "../../../utils/sortByNewest";
+import { cardStyles } from "../../../styles/cards";
 
 export default function ProjectsScreen() {
   const navigation = useNavigation();
@@ -88,9 +91,7 @@ export default function ProjectsScreen() {
 
             return project.workers.some((worker) => {
               const workerId =
-                typeof worker === "string"
-                  ? worker
-                  : worker?._id || worker?.id;
+                typeof worker === "string" ? worker : worker?._id || worker?.id;
               return workerId === userId;
             });
           });
@@ -217,31 +218,36 @@ export default function ProjectsScreen() {
           <Text style={styles.noProjectsText}>No projects found.</Text>
         ) : (
           filteredProjects.map((project) => (
+            /* PROJECTS CARD =========================== */
             <TouchableOpacity
               key={getProjectId(project)}
               onPress={() => handleProjectPress(project)}
               style={[
-                styles.projectCard,
+                cardStyles.card,
                 selectedProjectId === getProjectId(project) &&
-                  styles.projectCardSelected,
+                  cardStyles.cardSelected,
                 selectedProjectId === getProjectId(project) &&
                   themedSelectionStyle,
               ]}
             >
-              <View style={styles.cardHeader}>
+              {/* cardHeader */}
+              <View style={cardStyles.cardHeader}>
+                {/* projectName */}
                 <Text
                   numberOfLines={1}
                   ellipsizeMode="tail"
                   style={[
-                    styles.projectName,
+                    cardStyles.cardTitle,
                     { fontFamily: theme.text.fontFamily["medium"] },
                   ]}
                 >
                   {project.name}
                 </Text>
+
+                {/* statusBadge */}
                 <Text
                   style={[
-                    styles.statusBadge,
+                    cardStyles.cardBadge,
                     themedStatusBadgeStyle,
                     { fontFamily: theme.text.fontFamily["medium"] },
                   ]}
@@ -249,13 +255,19 @@ export default function ProjectsScreen() {
                   {formatStatus(project.status)}
                 </Text>
               </View>
-              <Text style={[styles.dateText, themedAccentTextStyle]}>
+
+              {/* data */}
+              <Text style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}>
                 Start: {new Date(project.beginningDate).toLocaleDateString()}
               </Text>
-              <Text style={styles.locationText}>
+
+              {/* location */}
+              <Text style={cardStyles.cardSecondaryText}>
                 Location: {project.location}
               </Text>
             </TouchableOpacity>
+
+            /* END PROJECTS CARD =========================== */
           ))
         )}
       </ScrollView>
@@ -329,54 +341,7 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingBottom: 140,
   },
-  projectCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    width: "100%",
-    padding: 20,
-    borderRadius: 16,
-    gap: 8,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  projectCardSelected: {
-    borderColor: "#0785F4",
-  },
-  cardHeader: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    gap: 8,
-  },
-  projectName: {
-    color: "#052D50",
-    flex: 1,
-    flexShrink: 1,
-    fontSize: 17,
-    fontWeight: "500",
-  },
-  statusBadge: {
-    color: "#2582D9",
-    backgroundColor: "#2582D91A",
-    height: 28,
-    paddingHorizontal: 12,
-    paddingVertical: 3,
-    borderRadius: 12,
-    flexShrink: 0,
-    alignSelf: "flex-start",
-    fontWeight: "500",
-    fontSize: 13,
-    lineHeight: 22,
-    textAlign: "center",
-    textAlignVertical: "center",
-    overflow: "hidden",
-  },
-  dateText: {
-    color: "#0785F4",
-  },
-  locationText: {
-    color: "#698196",
-  },
+
   noProjectsText: {
     textAlign: "center",
     marginTop: 20,
