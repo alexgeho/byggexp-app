@@ -21,6 +21,7 @@ import {
   standardScreenHeaderPlaceholder,
 } from "../../styles/screenLayout";
 import { resolveNewestTimestamp, sortByNewest } from "../../utils/sortByNewest";
+import { cardStyles } from "../../styles/cards";
 
 const getTaskDisplayStatus = (task) => {
   if (task?.status === "completed") {
@@ -197,10 +198,11 @@ export default function TasksScreen() {
   const renderTaskCard = (task, { project = null, key }) => {
     const status = getTaskDisplayStatus(task);
 
+    /* CARDS */
     return (
       <TouchableOpacity
         key={key}
-        style={styles.taskCard}
+        style={cardStyles.card}
         activeOpacity={0.85}
         onPress={() =>
           navigation.navigate("Task", {
@@ -209,37 +211,40 @@ export default function TasksScreen() {
           })
         }
       >
-        <View style={styles.cardHeader}>
+        <View style={cardStyles.cardHeader}>
           <Text
             numberOfLines={1}
             ellipsizeMode="tail"
             style={[
-              styles.taskTitle,
+              cardStyles.cardTitle,
               { fontFamily: theme.text.fontFamily["medium"] },
             ]}
           >
             {task.taskTitle || "Untitled task"}
           </Text>
-          <View style={styles.cardHeaderRight}>
             <Text
               style={[
-                styles.statusBadge,
+                cardStyles.cardBadge,
                 styles[`statusBadge_${status.tone}`],
                 { fontFamily: theme.text.fontFamily["medium"] },
               ]}
             >
               {status.label}
             </Text>
-            <Text style={[styles.headerDateText, themedAccentTextStyle]}>
-              {formatTaskDate(task.dueDate)}
-            </Text>
-          </View>
+          
         </View>
+
+        {/* date */}
+        <Text style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}>
+          {formatTaskDate(task.dueDate)}
+        </Text>
+
+        {/* taskDescription */}
         {!!task.taskDescription && (
-          <Text style={styles.taskDescription}>{task.taskDescription}</Text>
+          <Text style={cardStyles.cardSecondaryText}>{task.taskDescription}</Text>
         )}
         {!!task.assigneeUserName && (
-          <Text style={styles.assigneeText}>{task.assigneeUserName}</Text>
+          <Text style={cardStyles.cardAssignee}>{task.assigneeUserName}</Text>
         )}
       </TouchableOpacity>
     );
@@ -295,28 +300,28 @@ export default function TasksScreen() {
           <>
             {visiblePersonalTasks.length > 0 ? (
               <View style={styles.projectGroup}>
-              <View style={styles.projectGroupHeader}>
-                <Text
-                  style={[
-                    styles.projectTitle,
-                    { fontFamily: theme.text.fontFamily["bold"] },
-                  ]}
-                >
-                  Personal tasks
-                </Text>
-                <Text style={styles.projectCount}>
-                  {visiblePersonalTasks.length}{" "}
-                  {visiblePersonalTasks.length === 1 ? "task" : "tasks"}
-                </Text>
-              </View>
+                <View style={styles.projectGroupHeader}>
+                  <Text
+                    style={[
+                      styles.projectTitle,
+                      { fontFamily: theme.text.fontFamily["bold"] },
+                    ]}
+                  >
+                    Personal tasks
+                  </Text>
+                  <Text style={styles.projectCount}>
+                    {visiblePersonalTasks.length}{" "}
+                    {visiblePersonalTasks.length === 1 ? "task" : "tasks"}
+                  </Text>
+                </View>
 
-              {visiblePersonalTasks.map((task, index) =>
-                renderTaskCard(task, {
-                  project: null,
-                  key: task._id || `personal-${index}`,
-                }),
-              )}
-            </View>
+                {visiblePersonalTasks.map((task, index) =>
+                  renderTaskCard(task, {
+                    project: null,
+                    key: task._id || `personal-${index}`,
+                  }),
+                )}
+              </View>
             ) : null}
 
             {groupedTasks.map((project) => (
@@ -435,42 +440,7 @@ const styles = StyleSheet.create({
     color: "#698196",
     fontSize: 14,
   },
-  taskCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    width: "100%",
-    padding: 20,
-    borderRadius: 16,
-    gap: 8,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  cardHeader: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    gap: 8,
-  },
-  taskTitle: {
-    color: "#052D50",
-    flex: 1,
-    flexShrink: 1,
-    fontSize: 17,
-    fontWeight: "500",
-  },
-  cardHeaderRight: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    flexShrink: 0,
-  },
-  taskDescription: {
-    color: "#698196",
-  },
-  assigneeText: {
-    color: "#698196",
-    fontSize: 14,
-  },
+
   statusBadge: {
     height: 28,
     paddingHorizontal: 12,

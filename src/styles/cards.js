@@ -55,4 +55,12 @@ export const cardStyles = StyleSheet.create({
   cardSecondaryText: {
     color: "#698196",
   },
+
+  cardDescription: {
+    color: "#698196",
+  },
+
+  cardAssignee: {
+    color: "#698196",
+  },
 });
