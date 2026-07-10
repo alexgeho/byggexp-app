@@ -63,4 +63,34 @@ export const cardStyles = StyleSheet.create({
   cardAssignee: {
     color: "#698196",
   },
+
+  cardBadge: {
+    height: 28,
+    paddingHorizontal: 12,
+    paddingVertical: 3,
+    borderRadius: 12,
+    flexShrink: 0,
+    alignSelf: "flex-start",
+    fontWeight: "500",
+    fontSize: 13,
+    lineHeight: 22,
+    textAlign: "center",
+    textAlignVertical: "center",
+    overflow: "hidden",
+  },
+
+  cardBadgeOpen: {
+    color: "#0785F4",
+    backgroundColor: "#0785F41A",
+  },
+
+  cardBadgeOverdue: {
+    color: "#FF3B30",
+    backgroundColor: "#FF3B301F",
+  },
+
+  cardBadgeCompleted: {
+    color: "#248A3D",
+    backgroundColor: "#34C75924",
+  },
 });

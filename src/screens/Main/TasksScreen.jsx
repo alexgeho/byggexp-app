@@ -198,6 +198,13 @@ export default function TasksScreen() {
   const renderTaskCard = (task, { project = null, key }) => {
     const status = getTaskDisplayStatus(task);
 
+    /* badge style */
+    const badgeStyles = {
+      open: cardStyles.cardBadgeOpen,
+      overdue: cardStyles.cardBadgeOverdue,
+      completed: cardStyles.cardBadgeCompleted,
+    };
+
     /* CARDS */
     return (
       <TouchableOpacity
@@ -211,6 +218,8 @@ export default function TasksScreen() {
           })
         }
       >
+
+        {/* card header */}
         <View style={cardStyles.cardHeader}>
           <Text
             numberOfLines={1}
@@ -222,16 +231,17 @@ export default function TasksScreen() {
           >
             {task.taskTitle || "Untitled task"}
           </Text>
-            <Text
-              style={[
-                cardStyles.cardBadge,
-                styles[`statusBadge_${status.tone}`],
-                { fontFamily: theme.text.fontFamily["medium"] },
-              ]}
-            >
-              {status.label}
-            </Text>
-          
+
+          {/* Badge */}
+          <Text
+            style={[
+              cardStyles.cardBadge,
+              badgeStyles[status.tone],
+              { fontFamily: theme.text.fontFamily["medium"] },
+            ]}
+          >
+            {status.label}
+          </Text>
         </View>
 
         {/* date */}
@@ -241,7 +251,9 @@ export default function TasksScreen() {
 
         {/* taskDescription */}
         {!!task.taskDescription && (
-          <Text style={cardStyles.cardSecondaryText}>{task.taskDescription}</Text>
+          <Text style={cardStyles.cardSecondaryText}>
+            {task.taskDescription}
+          </Text>
         )}
         {!!task.assigneeUserName && (
           <Text style={cardStyles.cardAssignee}>{task.assigneeUserName}</Text>
@@ -441,32 +453,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 
-  statusBadge: {
-    height: 28,
-    paddingHorizontal: 12,
-    paddingVertical: 3,
-    borderRadius: 12,
-    flexShrink: 0,
-    alignSelf: "flex-start",
-    fontWeight: "500",
-    fontSize: 13,
-    lineHeight: 22,
-    textAlign: "center",
-    textAlignVertical: "center",
-    overflow: "hidden",
-  },
-  statusBadge_open: {
-    color: "#0785F4",
-    backgroundColor: "#0785F41A",
-  },
-  statusBadge_overdue: {
-    color: "#FF3B30",
-    backgroundColor: "#FF3B301F",
-  },
-  statusBadge_completed: {
-    color: "#248A3D",
-    backgroundColor: "#34C75924",
-  },
   headerDateText: {
     fontSize: 13,
     flexShrink: 0,
