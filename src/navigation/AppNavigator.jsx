@@ -13,8 +13,6 @@ import MenuScreen from "../screens/Menu/MenuScreen";
 import CreateProjectScreen from "../screens/Main/Project/CreateProjectScreen";
 import CreateTaskScreen from "../screens/Main/Project/CreateTaskScreen";
 import TaskScreen from "../screens/Main/Project/TaskScreen";
-import TaskNotificationsScreen from "../screens/Main/Project/TaskNotificationsScreen";
-import TaskNotificationRepeatScreen from "../screens/Main/Project/TaskNotificationRepeatScreen";
 import { MyAccount } from "../screens/Menu/MyAccount";
 import GroupChatScreen from "../screens/Main/Chat/GroupChatScreen";
 import DocumentPreviewScreen from "../screens/Main/DocumentPreviewScreen";
@@ -145,16 +143,6 @@ export default function AppNavigator() {
             <Stack.Screen
               name="CreateTask"
               component={CreateTaskScreen}
-              options={{ gestureEnabled: canManageProjects }}
-            />
-            <Stack.Screen
-              name="TaskNotifications"
-              component={TaskNotificationsScreen}
-              options={{ gestureEnabled: canManageProjects }}
-            />
-            <Stack.Screen
-              name="TaskNotificationRepeat"
-              component={TaskNotificationRepeatScreen}
               options={{ gestureEnabled: canManageProjects }}
             />
             <Stack.Screen

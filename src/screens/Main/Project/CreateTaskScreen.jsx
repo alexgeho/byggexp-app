@@ -32,9 +32,17 @@ import { pickUploadAssets } from "../../../utils/uploadPicker";
 import {
   buildTaskNotificationsPayload,
   createDefaultTaskNotificationSettings,
+  deriveNotificationReminderFlags,
   getTaskNotificationSummary,
+  getRepeatLabel,
+  getRepeatOptionState,
   normalizeTaskNotificationSettings,
+  normalizeRepeatIntervalMinutes,
+  REPEAT_OPTIONS,
 } from "../../../utils/taskNotifications";
+import {
+  defaultRepeatIntervalMinutes,
+} from "../../../theme/settings";
 
 const DATETIME_PICKER_DISPLAY = Platform.OS === "ios" ? "inline" : "default";
 const DEFAULT_ALL_DAY_START_TIME = "08:00";
@@ -101,6 +109,16 @@ const GroupRow = ({ children, isLast = false }) => (
     {children}
   </View>
 );
+
+const getUserInitials = (name = "") => {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  return (
+    parts
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase() || "")
+      .join("") || "?"
+  );
+};
 
 const formatScheduleDate = (date) =>
   date.toLocaleDateString("en-GB", {
@@ -483,6 +501,10 @@ export default function CreateTaskScreen() {
   const [notificationSettings, setNotificationSettings] = useState(() =>
     createDefaultTaskNotificationSettings(),
   );
+  const [notificationRepeatInput, setNotificationRepeatInput] = useState(() =>
+    String(defaultRepeatIntervalMinutes),
+  );
+  const [showNotificationsSheet, setShowNotificationsSheet] = useState(false);
   const [selectedDocuments, setSelectedDocuments] = useState(
     initialTaskDraft.selectedDocuments || [],
   );
@@ -623,6 +645,12 @@ export default function CreateTaskScreen() {
   }, [route.params?.notificationSettings]);
 
   useEffect(() => {
+    setNotificationRepeatInput(
+      String(notificationSettings.repeatIntervalMinutes),
+    );
+  }, [notificationSettings.repeatIntervalMinutes]);
+
+  useEffect(() => {
     const taskDraft = route.params?.taskDraft;
 
     if (!taskDraft) {
@@ -676,6 +704,50 @@ export default function CreateTaskScreen() {
     }
   };
 
+  const updateNotificationSettings = (updater) => {
+    setNotificationSettings((previous) => {
+      const nextSettings =
+        typeof updater === "function" ? updater(previous) : updater;
+      return normalizeTaskNotificationSettings({
+        ...previous,
+        ...nextSettings,
+      });
+    });
+  };
+
+  const openNotificationsSheet = () => {
+    setNotificationRepeatInput(
+      String(notificationSettings.repeatIntervalMinutes),
+    );
+    setShowNotificationsSheet(true);
+  };
+
+  const closeNotificationsSheet = () => {
+    const normalizedInterval =
+      normalizeRepeatIntervalMinutes(notificationRepeatInput);
+
+    setNotificationSettings(
+      deriveNotificationReminderFlags({
+        ...normalizeTaskNotificationSettings({
+          ...notificationSettings,
+          customMessage: notificationSettings.customMessage.trim(),
+          repeatIntervalMinutes: normalizedInterval,
+        }),
+      }),
+    );
+    setNotificationRepeatInput(String(normalizedInterval));
+    setShowNotificationsSheet(false);
+  };
+
+  const selectRepeatOption = (repeatKey) => {
+    updateNotificationSettings({
+      repeat: repeatKey,
+      repeatIntervalMinutes: normalizeRepeatIntervalMinutes(
+        notificationRepeatInput,
+      ),
+    });
+  };
+
   useEffect(() => {
     if (!allDay) {
       return;
@@ -713,6 +785,7 @@ export default function CreateTaskScreen() {
     setSelectedAssigneeName("");
     setSelectedAssigneeRole("");
     setShowProjectPicker(false);
+    updateNotificationSettings(createDefaultTaskNotificationSettings());
 
     if (allDay) {
       applyAllDayRange(project);
@@ -727,6 +800,7 @@ export default function CreateTaskScreen() {
     setSelectedProject(null);
     setProjectName("");
     setShowUserPicker(false);
+    updateNotificationSettings(createDefaultTaskNotificationSettings());
 
     if (allDay) {
       applyAllDayRange(null);
@@ -738,22 +812,6 @@ export default function CreateTaskScreen() {
     setSelectedAssigneeName("");
     setSelectedAssigneeRole("");
   };
-
-  const buildTaskDraft = () => ({
-    returnTarget,
-    selectedProjectId,
-    projectName,
-    selectedAssigneeUserId,
-    selectedAssigneeName,
-    selectedAssigneeRole,
-    taskTitle,
-    taskDescription,
-    notes,
-    selectedDocuments,
-    startDate: startDate ? startDate.toISOString() : null,
-    dueDate: dueDate ? dueDate.toISOString() : null,
-    allDay,
-  });
 
   const createTask = async () => {
     if (!selectedProjectId && !selectedAssigneeUserId) {
@@ -774,7 +832,8 @@ export default function CreateTaskScreen() {
       const taskData = new FormData();
       const effectiveNotificationSettings = selectedAssigneeUserId
         ? {
-            ...notificationSettings,
+            ...deriveNotificationReminderFlags(notificationSettings),
+            allMembersNotification: false,
             assignees: [
               {
                 id: selectedAssigneeUserId,
@@ -783,7 +842,7 @@ export default function CreateTaskScreen() {
               },
             ],
           }
-        : notificationSettings;
+        : deriveNotificationReminderFlags(notificationSettings);
       const notifications = buildTaskNotificationsPayload({
         settings: effectiveNotificationSettings,
         dueDate,
@@ -1013,15 +1072,7 @@ export default function CreateTaskScreen() {
           <TouchableOpacity
             style={[styles.groupRow, styles.groupRowLast]}
             activeOpacity={0.85}
-            onPress={() =>
-              navigation.navigate("TaskNotifications", {
-                projectId: selectedProjectId,
-                startDate: startDate ? startDate.toISOString() : null,
-                dueDate: dueDate ? dueDate.toISOString() : null,
-                notificationSettings,
-                taskDraft: buildTaskDraft(),
-              })
-            }
+            onPress={openNotificationsSheet}
           >
             <View style={styles.rowContent}>
               <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
@@ -1032,7 +1083,7 @@ export default function CreateTaskScreen() {
                 <Text
                   style={[
                     styles.rowValue,
-                    notificationsSummary === "Set notifications" &&
+                    notificationsSummary === "Off" &&
                       styles.rowPlaceholder,
                   ]}
                 >
@@ -1158,6 +1209,141 @@ export default function CreateTaskScreen() {
           onClose={() => setShowUserPicker(false)}
         />
       </ScrollView>
+
+      <Modal
+        visible={showNotificationsSheet}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={closeNotificationsSheet}
+      >
+        <View style={styles.sheetOverlay}>
+          <TouchableOpacity
+            style={styles.sheetBackdrop}
+            activeOpacity={1}
+            onPress={closeNotificationsSheet}
+          />
+          <View style={styles.sheetCard}>
+            <View style={styles.sheetHandle} />
+            <View style={styles.sheetHeader}>
+              <Text style={styles.sheetTitle}>Notifications</Text>
+              <TouchableOpacity
+                style={styles.sheetCloseButton}
+                onPress={closeNotificationsSheet}
+              >
+                <Icon name="x" size={20} color="#052D50" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView
+              style={styles.sheetScroll}
+              contentContainerStyle={styles.sheetContent}
+              keyboardShouldPersistTaps="handled"
+            >
+              <View style={styles.sheetSection}>
+                <Text style={styles.sheetSectionTitle}>When to notify</Text>
+                <View style={styles.repeatCard}>
+                  {REPEAT_OPTIONS.map((option, index) => {
+                    const optionState = getRepeatOptionState({
+                      repeatKey: option.key,
+                      dueDate,
+                      settings: notificationSettings,
+                    });
+                    const isSelected = notificationSettings.repeat === option.key;
+
+                    return (
+                      <TouchableOpacity
+                        key={option.key}
+                        style={[
+                          styles.repeatOptionRow,
+                          index === REPEAT_OPTIONS.length - 1 &&
+                            styles.groupRowLast,
+                        ]}
+                        activeOpacity={0.85}
+                        onPress={() => selectRepeatOption(option.key)}
+                      >
+                        <View style={styles.rowTextContainer}>
+                          <Text style={styles.repeatOptionTitle}>
+                            {option.key === "minutes"
+                              ? getRepeatLabel(
+                                  "minutes",
+                                  normalizeRepeatIntervalMinutes(
+                                    notificationRepeatInput,
+                                  ),
+                                )
+                              : option.label}
+                          </Text>
+                          {optionState.helperText ? (
+                            <Text style={styles.repeatOptionHint}>
+                              {optionState.helperText}
+                            </Text>
+                          ) : null}
+                        </View>
+                        <View
+                          style={[
+                            styles.radioOuter,
+                            isSelected && styles.radioOuterSelected,
+                          ]}
+                        >
+                          {isSelected ? <View style={styles.radioInner} /> : null}
+                        </View>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+
+                {notificationSettings.repeat === "minutes" ? (
+                  <View style={styles.intervalBox}>
+                    <Text style={styles.inputLabel}>Interval (minutes)</Text>
+                    <TextInput
+                      style={styles.intervalInput}
+                      value={notificationRepeatInput}
+                      onChangeText={setNotificationRepeatInput}
+                      onBlur={() => {
+                        const normalized =
+                          normalizeRepeatIntervalMinutes(notificationRepeatInput);
+                        setNotificationRepeatInput(String(normalized));
+                        updateNotificationSettings({
+                          repeatIntervalMinutes: normalized,
+                        });
+                      }}
+                      keyboardType="number-pad"
+                      placeholder={String(defaultRepeatIntervalMinutes)}
+                      placeholderTextColor="rgba(5, 45, 80, 0.45)"
+                    />
+                  </View>
+                ) : null}
+
+                <View style={styles.messageBox}>
+                  <Text style={styles.inputLabel}>Custom reminder</Text>
+                  <TextInput
+                    style={[styles.input, styles.notificationMessageInput]}
+                    value={notificationSettings.customMessage}
+                    onChangeText={(value) =>
+                      updateNotificationSettings({
+                        customMessage: value,
+                        autoReminder: !value.trim(),
+                        customReminder: Boolean(value.trim()),
+                      })
+                    }
+                    placeholder="Leave empty for auto reminder"
+                    placeholderTextColor="rgba(5, 45, 80, 0.45)"
+                  />
+                </View>
+              </View>
+            </ScrollView>
+
+            <TouchableOpacity
+              style={styles.sheetDoneButton}
+              activeOpacity={0.85}
+              onPress={closeNotificationsSheet}
+            >
+              <Icon name="check" size={18} color="#FFFFFF" />
+              <Text style={styles.sheetDoneButtonText}>Done</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
@@ -1263,6 +1449,11 @@ const styles = StyleSheet.create({
   },
   rowPlaceholder: {
     color: "rgba(5, 45, 80, 0.45)",
+  },
+  rowHint: {
+    color: "#698196",
+    fontSize: 13,
+    lineHeight: 18,
   },
   clearInlineButton: {
     width: 32,
@@ -1519,5 +1710,277 @@ const styles = StyleSheet.create({
   },
   dateChipPlaceholder: {
     color: "rgba(5, 45, 80, 0.45)",
+  },
+  sheetOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(5, 45, 80, 0.32)",
+    justifyContent: "flex-end",
+  },
+  sheetBackdrop: {
+    flex: 1,
+  },
+  sheetCard: {
+    maxHeight: "88%",
+    backgroundColor: "#EEF5FB",
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    paddingHorizontal: 16,
+    paddingTop: 10,
+    paddingBottom: 24,
+  },
+  sheetHandle: {
+    width: 42,
+    height: 5,
+    borderRadius: 999,
+    backgroundColor: "rgba(5, 45, 80, 0.22)",
+    alignSelf: "center",
+    marginBottom: 12,
+  },
+  sheetHeader: {
+    minHeight: 44,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  sheetTitle: {
+    color: "#052D50",
+    fontSize: 20,
+    fontFamily: "DMSans-SemiBold",
+  },
+  sheetCloseButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(5, 45, 80, 0.06)",
+  },
+  sheetScroll: {
+    width: "100%",
+  },
+  sheetContent: {
+    paddingBottom: 16,
+  },
+  sheetSection: {
+    marginBottom: 16,
+  },
+  sheetSectionTitle: {
+    color: "#052D50",
+    fontSize: 16,
+    fontFamily: "DMSans-SemiBold",
+    marginBottom: 8,
+  },
+  sheetGroupCard: {
+    backgroundColor: "rgba(255, 255, 255, 0.7)",
+    borderRadius: 22,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+  },
+  notificationRow: {
+    minHeight: 68,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(5, 45, 80, 0.08)",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  sheetSearchBar: {
+    height: 48,
+    borderRadius: 16,
+    backgroundColor: "#FFFFFF",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 14,
+    gap: 10,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+  },
+  sheetSearchInput: {
+    flex: 1,
+    color: "#052D50",
+    fontSize: 15,
+  },
+  sheetLoadingContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 18,
+    gap: 8,
+  },
+  sheetLoadingText: {
+    color: "#698196",
+    fontSize: 13,
+  },
+  sheetEmptyText: {
+    color: "#698196",
+    fontSize: 13,
+    textAlign: "center",
+    paddingVertical: 18,
+  },
+  workerPickerList: {
+    gap: 8,
+    marginTop: 10,
+  },
+  workerPickerItem: {
+    minHeight: 62,
+    borderRadius: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    backgroundColor: "#FFFFFF",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+  },
+  workerAvatarPlaceholder: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "#D9E8F5",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  workerAvatarInitials: {
+    color: "#052D50",
+    fontSize: 13,
+    fontFamily: "DMSans-SemiBold",
+  },
+  workerPickerText: {
+    flex: 1,
+  },
+  workerName: {
+    color: "#052D50",
+    fontSize: 15,
+    fontFamily: "DMSans-SemiBold",
+    marginBottom: 2,
+  },
+  workerRole: {
+    color: "#698196",
+    fontSize: 13,
+  },
+  workerCheckbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 7,
+    borderWidth: 1.5,
+    borderColor: "rgba(5, 45, 80, 0.18)",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFFFFF",
+  },
+  workerCheckboxSelected: {
+    backgroundColor: "#0091FF",
+    borderColor: "#0091FF",
+  },
+  messageBox: {
+    backgroundColor: "rgba(255, 255, 255, 0.7)",
+    borderRadius: 22,
+    padding: 16,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+  },
+  notificationMessageInput: {
+    minHeight: 44,
+  },
+  repeatDescription: {
+    color: "#698196",
+    fontSize: 13,
+    lineHeight: 18,
+    marginBottom: 8,
+  },
+  repeatCard: {
+    backgroundColor: "rgba(255, 255, 255, 0.7)",
+    borderRadius: 22,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+  },
+  repeatOptionRow: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(5, 45, 80, 0.08)",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  repeatOptionTitle: {
+    color: "#052D50",
+    fontSize: 15,
+    fontFamily: "DMSans-SemiBold",
+    marginBottom: 4,
+  },
+  repeatOptionTitleDisabled: {
+    color: "rgba(5, 45, 80, 0.45)",
+  },
+  repeatOptionHint: {
+    color: "#698196",
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  repeatOptionHintDisabled: {
+    color: "rgba(105, 129, 150, 0.8)",
+  },
+  radioOuter: {
+    width: 22,
+    height: 22,
+    borderRadius: 999,
+    borderWidth: 2,
+    borderColor: "#C5D4E2",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  radioOuterSelected: {
+    borderColor: "#0091FF",
+  },
+  radioOuterDisabled: {
+    opacity: 0.55,
+  },
+  radioInner: {
+    width: 10,
+    height: 10,
+    borderRadius: 999,
+    backgroundColor: "#0091FF",
+  },
+  intervalBox: {
+    backgroundColor: "rgba(255, 255, 255, 0.7)",
+    borderRadius: 22,
+    padding: 16,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+    gap: 8,
+  },
+  intervalInput: {
+    height: 46,
+    borderRadius: 14,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "rgba(5, 45, 80, 0.12)",
+    paddingHorizontal: 14,
+    color: "#052D50",
+    fontSize: 16,
+    fontFamily: "DMSans-Medium",
+  },
+  sheetDoneButton: {
+    height: 54,
+    borderRadius: 18,
+    backgroundColor: "#0091FF",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    gap: 8,
+  },
+  sheetDoneButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontFamily: "DMSans-SemiBold",
   },
 });
