@@ -281,15 +281,9 @@ export default function DocumentsScreen() {
           : projectService.getMyProjects(),
       ]);
 
-      let visibleProjects = baseProjects;
-      if (user?.role === "worker" || user?.role === "projectAdmin") {
-        visibleProjects = baseProjects.filter(
-          (project) => project.workers && project.workers.includes(userId),
-        );
-      }
-
+      // Backend already scopes projects by role.
       const populatedProjects = await Promise.all(
-        visibleProjects.map((project) =>
+        (Array.isArray(baseProjects) ? baseProjects : []).map((project) =>
           projectService.getPopulatedById(getEntityId(project)),
         ),
       );

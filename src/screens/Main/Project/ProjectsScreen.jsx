@@ -34,6 +34,7 @@ import {
 } from "../../../styles/screenLayout";
 import { sortByNewest } from "../../../utils/sortByNewest";
 import { cardStyles } from "../../../styles/cards";
+import { canCreateProjects } from "../../../utils/userRoles";
 
 export default function ProjectsScreen() {
   const navigation = useNavigation();
@@ -51,11 +52,7 @@ export default function ProjectsScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const isSelectionMode = route.params?.mode === "select";
 
-  const canManageProjects = [
-    "superadmin",
-    "companyAdmin",
-    "projectAdmin",
-  ].includes(user?.role);
+  const showCreateProject = canCreateProjects(user?.role);
   const selectedProjectId = selectedProject?._id || selectedProject?.id;
 
   const getProjectId = (project) => project?._id || project?.id;
@@ -77,27 +74,13 @@ export default function ProjectsScreen() {
           setLoading(true);
         }
 
+        // Backend already scopes projects by role (getMy / getAll).
         const data =
           user?.role === "superadmin"
             ? await projectService.getAll()
             : await projectService.getMyProjects();
 
-        let userProjects = data;
-        if (user?.role === "worker" || user?.role === "projectAdmin") {
-          userProjects = data.filter((project) => {
-            if (!project.workers?.length) {
-              return false;
-            }
-
-            return project.workers.some((worker) => {
-              const workerId =
-                typeof worker === "string" ? worker : worker?._id || worker?.id;
-              return workerId === userId;
-            });
-          });
-        }
-
-        setProjects(userProjects);
+        setProjects(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Failed to fetch projects:", err);
         setProjects([]);
@@ -107,7 +90,7 @@ export default function ProjectsScreen() {
         }
       }
     },
-    [user?.role, userId],
+    [user?.role],
   );
 
   useFocusEffect(
@@ -275,7 +258,7 @@ export default function ProjectsScreen() {
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
-        showAddButton={canManageProjects}
+        showAddButton={showCreateProject}
         onAddPress={() => navigation.navigate("CreateProject")}
       />
     </View>

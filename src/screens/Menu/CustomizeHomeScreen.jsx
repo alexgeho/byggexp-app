@@ -41,7 +41,7 @@ import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 
 import { createStyles } from "./CustomizeHomeScreen.styles";
-import { canManageEmployees } from "../../utils/userRoles";
+import { isHomeButtonCustomizable } from "../../utils/userRoles";
 
 export default function CustomizeHomeScreen() {
   const navigation = useNavigation();
@@ -253,11 +253,7 @@ export default function CustomizeHomeScreen() {
         <View style={styles.list}>
           {mainButtons
             .filter(function filterButton(button) {
-              if (button.adminOnly) {
-                return canManageEmployees(user?.role);
-              }
-
-              return true;
+              return isHomeButtonCustomizable(button, user?.role);
             })
             .map(function renderButton(
             button,

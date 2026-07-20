@@ -43,6 +43,7 @@ import {
 import {
   defaultRepeatIntervalMinutes,
 } from "../../../theme/settings";
+import { canCreateTasks } from "../../../utils/userRoles";
 
 const DATETIME_PICKER_DISPLAY = Platform.OS === "ios" ? "inline" : "default";
 const DEFAULT_ALL_DAY_START_TIME = "08:00";
@@ -468,12 +469,13 @@ export default function CreateTaskScreen() {
   const route = useRoute();
   const { theme } = useTheme();
   const { showSuccess } = useFeedback();
-  const { user, userId } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const { projectId: initialProjectId, projectName: initialProjectName } =
     route.params || {};
   const initialTaskDraft = route.params?.taskDraft || {};
   const returnTarget =
     initialTaskDraft.returnTarget || (initialProjectId ? "project" : "tasks");
+  const allowedToCreate = canCreateTasks(user?.role);
 
   const [selectedProjectId, setSelectedProjectId] = useState(
     initialTaskDraft.selectedProjectId || initialProjectId || "",
@@ -560,24 +562,8 @@ export default function CreateTaskScreen() {
           user.role === "superadmin"
             ? await projectService.getAll()
             : await projectService.getMyProjects();
-        const userProjects =
-          user.role === "worker" || user.role === "projectAdmin"
-            ? data.filter((project) => {
-                if (!project.workers?.length) {
-                  return false;
-                }
 
-                return project.workers.some((worker) => {
-                  const workerId =
-                    typeof worker === "string"
-                      ? worker
-                      : worker?._id || worker?.id;
-                  return workerId === userId;
-                });
-              })
-            : data;
-
-        setProjects(userProjects);
+        setProjects(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Failed to load projects for task creation:", error);
         setProjects([]);
@@ -587,7 +573,7 @@ export default function CreateTaskScreen() {
     };
 
     fetchProjects();
-  }, [user?.role, userId]);
+  }, [user?.role]);
 
   useEffect(() => {
     if (!selectedProjectId) {
@@ -917,6 +903,23 @@ export default function CreateTaskScreen() {
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#0091FF" />
         <Text style={styles.loadingText}>Loading project...</Text>
+      </View>
+    );
+  }
+
+  if (!allowedToCreate) {
+    return (
+      <View style={styles.accessDeniedContainer}>
+        <Text style={styles.accessDeniedText}>Access denied</Text>
+        <Text style={styles.accessDeniedSubtext}>
+          Only project admins can create tasks
+        </Text>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={styles.backButtonText}>Go back</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -1378,6 +1381,36 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 12,
     color: "#698196",
+  },
+  accessDeniedContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 24,
+    backgroundColor: "#EEEEEE",
+  },
+  accessDeniedText: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#052D50",
+    marginBottom: 8,
+  },
+  accessDeniedSubtext: {
+    fontSize: 15,
+    color: "#698196",
+    textAlign: "center",
+    marginBottom: 24,
+  },
+  backButton: {
+    backgroundColor: "#0091FF",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+  },
+  backButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "600",
   },
   header: {
     ...standardScreenHeader,

@@ -45,6 +45,13 @@ import EmployeesScreen from "../screens/Menu/EmployeesScreen";
 import CreateEmployeeScreen from "../screens/Menu/CreateEmployeeScreen";
 import ToolsScreen from "../screens/Menu/ToolsScreen";
 import CreateToolScreen from "../screens/Menu/CreateToolScreen";
+import {
+  canCreateProjects as checkCanCreateProjects,
+  canCreateTasks as checkCanCreateTasks,
+  canManageTools as checkCanManageTools,
+  canManageWorkers as checkCanManageWorkers,
+  canManageEmployees as checkCanManageEmployees,
+} from "../utils/userRoles";
 
 const Stack = createNativeStackNavigator();
 
@@ -56,20 +63,12 @@ export default function AppNavigator() {
     return <LoaderScreen />;
   }
 
-  const canManageProjects = [
-    "superadmin",
-    "companyAdmin",
-    "projectAdmin",
-  ].includes(user?.role);
-  const canManageWorkers = ["companyAdmin", "projectAdmin"].includes(
-    user?.role,
-  );
+  const canCreateProjects = checkCanCreateProjects(user?.role);
+  const canCreateTasks = checkCanCreateTasks(user?.role);
+  const canManageTools = checkCanManageTools(user?.role);
+  const canManageWorkers = checkCanManageWorkers(user?.role);
   const isCompanyAdmin = user?.role === "companyAdmin";
-  const canManageEmployees = [
-    "superadmin",
-    "companyAdmin",
-    "projectAdmin",
-  ].includes(user?.role);
+  const canManageEmployees = checkCanManageEmployees(user?.role);
   const navigationTheme = {
     ...DefaultTheme,
     colors: {
@@ -138,12 +137,12 @@ export default function AppNavigator() {
             <Stack.Screen
               name="CreateProject"
               component={CreateProjectScreen}
-              options={{ gestureEnabled: canManageProjects }}
+              options={{ gestureEnabled: canCreateProjects }}
             />
             <Stack.Screen
               name="CreateTask"
               component={CreateTaskScreen}
-              options={{ gestureEnabled: canManageProjects }}
+              options={{ gestureEnabled: canCreateTasks }}
             />
             <Stack.Screen
               name="SelectWorkers"
@@ -177,7 +176,7 @@ export default function AppNavigator() {
             <Stack.Screen
               name="CreateTool"
               component={CreateToolScreen}
-              options={{ gestureEnabled: canManageProjects }}
+              options={{ gestureEnabled: canManageTools }}
             />
             <Stack.Screen name="AboutApp" component={AboutAppScreen} />
             <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />

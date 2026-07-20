@@ -26,14 +26,12 @@ import {
   standardScreenHeaderPlaceholder,
 } from "../../styles/screenLayout";
 import { pickUploadAssets } from "../../utils/uploadPicker";
+import { canManageTools } from "../../utils/userRoles";
 
 const getEntityId = (entity) => {
   const id = entity?._id || entity?.id;
   return id ? String(id) : "";
 };
-
-const canManageTools = (role) =>
-  ["superadmin", "companyAdmin", "projectAdmin"].includes(role);
 
 const FieldIcon = ({ name, theme }) => (
   <View

@@ -21,6 +21,7 @@ import {
   standardScreenContainer,
   standardScreenHeader,
 } from "../../../styles/screenLayout";
+import { canManageWorkers } from "../../../utils/userRoles";
 
 export const SelectWorkers = () => {
   const navigation = useNavigation();
@@ -42,45 +43,7 @@ export const SelectWorkers = () => {
     borderColor: theme.colors.primary,
   };
 
-  // Проверка прав доступа - только для companyAdmin и projectAdmin
-  if (!["companyAdmin", "projectAdmin"].includes(user?.role)) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <BackButton
-            backgroundColor={"rgba(255, 255, 255, 0.6)"}
-            tint={"light"}
-            borderColor="#FFFFFF50"
-            onPress={() => navigation.goBack()}
-            iconSource={require("../../../assets/Arrow-left.png")}
-          />
-          <Text
-            numberOfLines={1}
-            ellipsizeMode="tail"
-            style={[
-              styles.projectName,
-              { fontFamily: theme.text.fontFamily["medium"] },
-            ]}
-          >
-            Select your workers
-          </Text>
-          <BackButton
-            backgroundColor={"rgba(255, 255, 255, 0.6)"}
-            tint={"light"}
-            borderColor="#FFFFFF50"
-            onPress={() => navigation.goBack()}
-            iconSource={require("../../../assets/Search.png")}
-          />
-        </View>
-        <View style={styles.accessDeniedContainer}>
-          <Text style={styles.accessDeniedText}>Доступ запрещён</Text>
-          <Text style={styles.accessDeniedSubtext}>
-            Только администраторы могут управлять работниками
-          </Text>
-        </View>
-      </View>
-    );
-  }
+  const allowedToManageWorkers = canManageWorkers(user?.role);
 
   useEffect(() => {
     fetchWorkers();
@@ -126,6 +89,39 @@ export const SelectWorkers = () => {
       setSaving(false);
     }
   };
+
+  if (!allowedToManageWorkers) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <BackButton
+            backgroundColor={"rgba(255, 255, 255, 0.6)"}
+            tint={"light"}
+            borderColor="#FFFFFF50"
+            onPress={() => navigation.goBack()}
+            iconSource={require("../../../assets/Arrow-left.png")}
+          />
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={[
+              styles.projectName,
+              { fontFamily: theme.text.fontFamily["medium"] },
+            ]}
+          >
+            Select your workers
+          </Text>
+          <View style={{ width: 40 }} />
+        </View>
+        <View style={styles.accessDeniedContainer}>
+          <Text style={styles.accessDeniedText}>Доступ запрещён</Text>
+          <Text style={styles.accessDeniedSubtext}>
+            Только администраторы могут управлять работниками
+          </Text>
+        </View>
+      </View>
+    );
+  }
 
   if (loading) {
     return (

@@ -41,6 +41,10 @@ import { isPdfDocument } from "../../../utils/documentPreview";
 import { resolveUploadUrl } from "../../../utils/shifts";
 import { sortByNewest } from "../../../utils/sortByNewest";
 import { pickUploadAssets } from "../../../utils/uploadPicker";
+import {
+  canCreateTasks,
+  canManageDocuments,
+} from "../../../utils/userRoles";
 
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, "") ||
@@ -289,12 +293,8 @@ export const ProjectScreen = () => {
         : [],
     [project?.workers],
   );
-  const canCreateTasks = [
-    "superadmin",
-    "companyAdmin",
-    "projectAdmin",
-  ].includes(user?.role);
-  const canManageDocuments = canCreateTasks;
+  const canCreateProjectTasks = canCreateTasks(user?.role);
+  const canUploadDocuments = canManageDocuments(user?.role);
 
   const handleOpenPersonalChat = async () => {
     const participantId = selectedWorker?._id || selectedWorker?.id;
@@ -652,8 +652,8 @@ export const ProjectScreen = () => {
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
         showAddButton={
-          (modal === "Tasks" && canCreateTasks) ||
-          (modal === "Documents" && canManageDocuments)
+          (modal === "Tasks" && canCreateProjectTasks) ||
+          (modal === "Documents" && canUploadDocuments)
         }
         onAddPress={() => {
           if (modal === "Documents") {

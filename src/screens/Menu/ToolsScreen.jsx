@@ -21,6 +21,7 @@ import {
   standardScreenHeader,
   standardScreenHeaderPlaceholder,
 } from "../../styles/screenLayout";
+import { canManageTools } from "../../utils/userRoles";
 
 const getEntityId = (entity) => {
   const id = entity?._id || entity?.id;
@@ -38,9 +39,6 @@ const resolvePhotoUrl = (value) => {
 
   return `${API_BASE_URL}${value.startsWith("/") ? value : `/${value}`}`;
 };
-
-const canManageTools = (role) =>
-  ["superadmin", "companyAdmin", "projectAdmin"].includes(role);
 
 export default function ToolsScreen() {
   const navigation = useNavigation();

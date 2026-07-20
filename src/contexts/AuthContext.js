@@ -1,6 +1,17 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { saveToken, saveUser, getUser, removeToken, removeUser, saveRefreshToken, removeRefreshToken } from '../utils/storage';
-import { canManageEmployees as checkCanManageEmployees } from '../utils/userRoles';
+import {
+  canManageEmployees as checkCanManageEmployees,
+  canCreateProjects as checkCanCreateProjects,
+  canManageProjects as checkCanManageProjects,
+  canCreateTasks as checkCanCreateTasks,
+  canManageTasks as checkCanManageTasks,
+  canReopenTasks as checkCanReopenTasks,
+  canCompleteTasks as checkCanCompleteTasks,
+  canManageTools as checkCanManageTools,
+  canManageWorkers as checkCanManageWorkers,
+  canManageDocuments as checkCanManageDocuments,
+} from '../utils/userRoles';
 import { authService, userService, logUserActivity } from '../services';
 import { jwtDecode } from 'jwt-decode';
 import { unregisterPushToken } from '../services/notifications.service';
@@ -161,14 +172,21 @@ export const AuthProvider = ({ children }) => {
     setSelectedProject(null);
   };
 
-  // Хелперы для проверки ролей
+  // Хелперы для проверки ролей (синхронизированы с бэкенд @Roles)
   const isWorker = () => user?.role === 'worker';
   const isSuperAdmin = () => user?.role === 'superadmin';
   const isProjectAdmin = () => user?.role === 'projectAdmin';
   const isCompanyAdmin = () => user?.role === 'companyAdmin';
-  const canManageProjects = () => ['superadmin', 'companyAdmin', 'projectAdmin'].includes(user?.role);
-  const canManageWorkers = () => ['companyAdmin', 'projectAdmin'].includes(user?.role);
+  const canCreateProjects = () => checkCanCreateProjects(user?.role);
+  const canManageProjects = () => checkCanManageProjects(user?.role);
+  const canCreateTasks = () => checkCanCreateTasks(user?.role);
+  const canManageTasks = () => checkCanManageTasks(user?.role);
+  const canReopenTasks = () => checkCanReopenTasks(user?.role);
+  const canCompleteTasks = () => checkCanCompleteTasks(user?.role);
+  const canManageTools = () => checkCanManageTools(user?.role);
+  const canManageWorkers = () => checkCanManageWorkers(user?.role);
   const canManageEmployees = () => checkCanManageEmployees(user?.role);
+  const canManageDocuments = () => checkCanManageDocuments(user?.role);
 
   return (
     <AuthContext.Provider value={{ 
@@ -189,9 +207,16 @@ export const AuthProvider = ({ children }) => {
       isSuperAdmin,
       isProjectAdmin,
       isCompanyAdmin,
+      canCreateProjects,
       canManageProjects,
+      canCreateTasks,
+      canManageTasks,
+      canReopenTasks,
+      canCompleteTasks,
+      canManageTools,
       canManageWorkers,
       canManageEmployees,
+      canManageDocuments,
     }}>
       {children}
     </AuthContext.Provider>

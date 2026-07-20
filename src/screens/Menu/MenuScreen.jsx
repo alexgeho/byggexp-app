@@ -128,24 +128,13 @@ export default function MenuScreen() {
           icon: require("../../assets/WorkShifts.png"),
           color: theme.colors.primary,
         },
-        {
-          id: "company",
-          title: "Company",
-          icon: require("../../assets/About.png"),
-          color: theme.colors.primary,
-        },
         employeesItem,
         toolsItem,
         {
           id: "projects",
+          screen: "Projects",
           title: "Projects",
           icon: require("../../assets/Projekts.png"),
-          color: theme.colors.primary,
-        },
-        {
-          id: "finance",
-          title: "Finance",
-          icon: require("../../assets/Tracker.png"),
           color: theme.colors.primary,
         },
       ];
@@ -171,24 +160,26 @@ export default function MenuScreen() {
         },
         {
           id: "projects",
+          screen: "Projects",
           title: "Projects",
           icon: require("../../assets/Projekts.png"),
           color: theme.colors.primary,
         },
         employeesItem,
         toolsItem,
-        {
-          id: "reports",
-          title: "Reports",
-          icon: require("../../assets/Documents.png"),
-          color: theme.colors.primary,
-        },
       ];
     }
 
-    // Worker
+    // Worker — only screens they can actually open
     return [
       ...baseItems,
+      {
+        id: "projects",
+        screen: "Projects",
+        title: "Projects",
+        icon: require("../../assets/Projekts.png"),
+        color: theme.colors.primary,
+      },
       toolsItem,
       {
         id: "tasks",

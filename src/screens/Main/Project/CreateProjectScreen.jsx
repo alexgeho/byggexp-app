@@ -63,6 +63,7 @@ import {
   parseTimeFromDate,
   parseTimeStringToDate,
 } from "../../../utils/shiftSchedule";
+import { canCreateProjects } from "../../../utils/userRoles";
 
 import FloatingActionButton from "../../../components/common2/FloatingActionButton/FloatingActionButton";
 
@@ -347,30 +348,7 @@ export default function CreateProjectScreen() {
   const { theme } = useTheme();
   const { showSuccess } = useFeedback();
   const { user } = useContext(AuthContext);
-
-  // Проверка прав доступа - только для superadmin, companyAdmin и projectAdmin
-  const canManageProjects = [
-    "superadmin",
-    "companyAdmin",
-    "projectAdmin",
-  ].includes(user?.role);
-
-  if (!canManageProjects) {
-    return (
-      <View style={styles.accessDeniedContainer}>
-        <Text style={styles.accessDeniedText}>Доступ запрещён</Text>
-        <Text style={styles.accessDeniedSubtext}>
-          Только администраторы могут создавать проекты
-        </Text>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.backButtonText}>Вернуться назад</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
+  const allowedToCreate = canCreateProjects(user?.role);
 
   const [projectName, setProjectName] = useState("");
   const [isProjectNameFocused, setIsProjectNameFocused] = useState(false);
@@ -1195,6 +1173,22 @@ export default function CreateProjectScreen() {
     !isLocationSearchLoading &&
     !locationSuggestions.length;
 
+  if (!allowedToCreate) {
+    return (
+      <View style={styles.accessDeniedContainer}>
+        <Text style={styles.accessDeniedText}>Доступ запрещён</Text>
+        <Text style={styles.accessDeniedSubtext}>
+          Только администраторы компании могут создавать проекты
+        </Text>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={styles.backButtonText}>Вернуться назад</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
     /* RENDER SCREEN */
   return (

@@ -22,6 +22,7 @@ import {
 } from "../../styles/screenLayout";
 import { resolveNewestTimestamp, sortByNewest } from "../../utils/sortByNewest";
 import { cardStyles } from "../../styles/cards";
+import { canCreateTasks } from "../../utils/userRoles";
 
 const getTaskDisplayStatus = (task) => {
   if (task?.status === "completed") {
@@ -54,6 +55,7 @@ export default function TasksScreen() {
   const [personalTasks, setPersonalTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const showCreateTask = canCreateTasks(user?.role);
 
   const fetchProjectsWithTasks = useCallback(async () => {
     try {
@@ -368,6 +370,7 @@ export default function TasksScreen() {
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
+        showAddButton={showCreateTask}
         onAddPress={() => navigation.navigate("CreateTask")}
       />
     </View>

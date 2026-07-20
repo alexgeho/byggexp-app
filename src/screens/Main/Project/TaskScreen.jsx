@@ -25,6 +25,11 @@ import {
 import { resolveUploadUrl } from "../../../utils/shifts";
 import { sortByNewest } from "../../../utils/sortByNewest";
 import { pickUploadAssets } from "../../../utils/uploadPicker";
+import {
+  canCompleteTasks,
+  canManageDocuments,
+  canReopenTasks,
+} from "../../../utils/userRoles";
 
 const GroupCard = ({ children }) => (
   <View style={styles.groupCard}>{children}</View>
@@ -154,11 +159,11 @@ export default function TaskScreen() {
   const startDate = formatDateParts(currentTask?.startDate);
   const endDate = formatDateParts(currentTask?.dueDate);
   const taskStatus = getTaskDisplayStatus(currentTask);
-  const canManageDocuments = [
-    "superadmin",
-    "companyAdmin",
-    "projectAdmin",
-  ].includes(user?.role);
+  const canUploadDocuments = canManageDocuments(user?.role);
+  const canComplete = canCompleteTasks(user?.role);
+  const canReopen = canReopenTasks(user?.role);
+  const canToggleCompletion =
+    currentTask?.status === "completed" ? canReopen : canComplete;
   const visibleTabs = project ? ["Edit", "Documents", "Workers"] : ["Edit", "Documents"];
 
   const documents = useMemo(
@@ -509,7 +514,8 @@ export default function TaskScreen() {
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
         showAddButton={
-          (tab === "Documents" && canManageDocuments) || tab === "Edit"
+          (tab === "Documents" && canUploadDocuments) ||
+          (tab === "Edit" && canToggleCompletion)
         }
         onAddPress={tab === "Edit" ? handleToggleCompletion : handleAddDocuments}
         addDisabled={uploadingDocuments || updatingStatus}
