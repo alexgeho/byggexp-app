@@ -21,15 +21,47 @@ const buildDefaultFileName = (asset, prefix, index) => {
     : `${prefix}-${Date.now()}-${index + 1}`;
 };
 
-const normalizeImageAsset = (asset, fileNamePrefix, index) => ({
-  uri: asset.uri,
-  name:
+const guessMimeTypeFromName = (name = "") => {
+  const extension = name.split(".").pop()?.toLowerCase();
+
+  if (!extension) {
+    return null;
+  }
+
+  if (["jpg", "jpeg"].includes(extension)) {
+    return "image/jpeg";
+  }
+
+  if (["png", "gif", "webp", "heic", "bmp"].includes(extension)) {
+    return `image/${extension === "jpg" ? "jpeg" : extension}`;
+  }
+
+  if (["mp4", "mov", "m4v", "webm", "avi", "mkv"].includes(extension)) {
+    const mimeExtension =
+      extension === "mov" ? "quicktime" : extension === "mkv" ? "x-matroska" : extension;
+    return `video/${mimeExtension}`;
+  }
+
+  return null;
+};
+
+const normalizeMediaAsset = (asset, fileNamePrefix, index) => {
+  const name =
     asset.fileName ||
     asset.name ||
-    buildDefaultFileName(asset, fileNamePrefix, index),
-  mimeType: asset.mimeType || "image/jpeg",
-  type: asset.mimeType || "image/jpeg",
-});
+    buildDefaultFileName(asset, fileNamePrefix, index);
+  const mimeType =
+    asset.mimeType ||
+    guessMimeTypeFromName(name) ||
+    (asset.type === "video" ? "video/mp4" : "image/jpeg");
+
+  return {
+    uri: asset.uri,
+    name,
+    mimeType,
+    type: mimeType,
+  };
+};
 
 const ensureMediaLibraryAccess = async () => {
   let permission = await ImagePicker.getMediaLibraryPermissionsAsync();
@@ -41,7 +73,7 @@ const ensureMediaLibraryAccess = async () => {
   if (!permission.granted) {
     Alert.alert(
       "Photo access needed",
-      "Allow access to your photo library to upload images from Photos.",
+      "Allow access to your photo library to upload images or videos from Photos.",
     );
     return false;
   }
@@ -49,14 +81,20 @@ const ensureMediaLibraryAccess = async () => {
   return true;
 };
 
-const pickFromPhotoLibrary = async ({ allowsMultipleSelection, fileNamePrefix }) => {
+const pickFromPhotoLibrary = async ({
+  allowsMultipleSelection,
+  fileNamePrefix,
+  allowVideos = false,
+}) => {
   const hasAccess = await ensureMediaLibraryAccess();
   if (!hasAccess) {
     return [];
   }
 
   const result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    mediaTypes: allowVideos
+      ? ImagePicker.MediaTypeOptions.All
+      : ImagePicker.MediaTypeOptions.Images,
     allowsMultipleSelection,
     quality: 1,
     selectionLimit: allowsMultipleSelection ? 0 : 1,
@@ -67,7 +105,7 @@ const pickFromPhotoLibrary = async ({ allowsMultipleSelection, fileNamePrefix })
   }
 
   return result.assets.map((asset, index) =>
-    normalizeImageAsset(asset, fileNamePrefix, index),
+    normalizeMediaAsset(asset, fileNamePrefix, index),
   );
 };
 
@@ -131,19 +169,24 @@ export const pickUploadAssets = async ({
   allowsMultipleSelection = true,
   documentTypes = DEFAULT_DOCUMENT_TYPES,
   fileNamePrefix = DEFAULT_FILE_NAME_PREFIX,
+  allowVideos = false,
 } = {}) => {
   const source = await chooseSource();
+  const resolvedDocumentTypes = allowVideos
+    ? Array.from(new Set([...documentTypes, "video/*"]))
+    : documentTypes;
 
   if (source === "photos") {
     return pickFromPhotoLibrary({
       allowsMultipleSelection,
       fileNamePrefix,
+      allowVideos,
     });
   }
 
   if (source === "files") {
     return pickFromFiles({
-      documentTypes,
+      documentTypes: resolvedDocumentTypes,
       fileNamePrefix,
     });
   }
@@ -151,5 +194,16 @@ export const pickUploadAssets = async ({
   return [];
 };
 
+export const isVideoAsset = (asset) => {
+  const mimeType = asset?.mimeType || asset?.type || "";
+  if (mimeType.startsWith("video/")) {
+    return true;
+  }
+
+  const name = (asset?.name || asset?.uri || "").toLowerCase();
+  return /\.(mp4|mov|m4v|webm|avi|mkv)(\?|$)/i.test(name);
+};
+
 export const IMAGE_DOCUMENT_TYPES = ["image/*"];
+export const IMAGE_AND_VIDEO_DOCUMENT_TYPES = ["image/*", "video/*"];
 export const DEFAULT_UPLOAD_DOCUMENT_TYPES = DEFAULT_DOCUMENT_TYPES;

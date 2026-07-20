@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { Video, ResizeMode } from "expo-av";
 import Icon from "react-native-vector-icons/Feather";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
@@ -22,7 +23,11 @@ import {
   standardScreenHeaderPlaceholder,
 } from "../../styles/screenLayout";
 import { useTheme } from "../../theme/ThemeContext";
-import { IMAGE_DOCUMENT_TYPES, pickUploadAssets } from "../../utils/uploadPicker";
+import {
+  IMAGE_AND_VIDEO_DOCUMENT_TYPES,
+  isVideoAsset,
+  pickUploadAssets,
+} from "../../utils/uploadPicker";
 
 export default function ReportBugScreen() {
   const navigation = useNavigation();
@@ -31,13 +36,15 @@ export default function ReportBugScreen() {
   const [message, setMessage] = useState("");
   const [attachment, setAttachment] = useState(null);
   const [saving, setSaving] = useState(false);
+  const attachmentIsVideo = isVideoAsset(attachment);
 
   const pickAttachment = async () => {
     try {
       const assets = await pickUploadAssets({
         allowsMultipleSelection: false,
-        documentTypes: IMAGE_DOCUMENT_TYPES,
+        documentTypes: IMAGE_AND_VIDEO_DOCUMENT_TYPES,
         fileNamePrefix: "bug-report",
+        allowVideos: true,
       });
 
       if (assets.length > 0) {
@@ -45,7 +52,10 @@ export default function ReportBugScreen() {
       }
     } catch (error) {
       console.error("Error picking bug report attachment:", error);
-      Alert.alert("Attachment error", "Unable to select an image right now.");
+      Alert.alert(
+        "Attachment error",
+        "Unable to select an image or video right now.",
+      );
     }
   };
 
@@ -53,7 +63,10 @@ export default function ReportBugScreen() {
     const trimmedMessage = message.trim();
 
     if (!trimmedMessage && !attachment) {
-      Alert.alert("Validation error", "Add a description or attach an image.");
+      Alert.alert(
+        "Validation error",
+        "Add a description or attach an image or video.",
+      );
       return;
     }
 
@@ -66,10 +79,16 @@ export default function ReportBugScreen() {
       }
 
       if (attachment) {
+        const isVideo = isVideoAsset(attachment);
         formData.append("attachment", {
           uri: attachment.uri,
-          name: attachment.name || "bug-report.jpg",
-          type: attachment.mimeType || attachment.type || "image/jpeg",
+          name:
+            attachment.name ||
+            (isVideo ? "bug-report.mp4" : "bug-report.jpg"),
+          type:
+            attachment.mimeType ||
+            attachment.type ||
+            (isVideo ? "video/mp4" : "image/jpeg"),
         });
       }
 
@@ -138,8 +157,8 @@ export default function ReportBugScreen() {
               { fontFamily: theme.text.fontFamily.medium },
             ]}
           >
-            Send a short description, a screenshot, or both. It helps us fix
-            issues faster.
+            Send a short description, a screenshot, a screen recording, or
+            both. It helps us fix issues faster.
           </Text>
         </View>
 
@@ -160,18 +179,40 @@ export default function ReportBugScreen() {
             onPress={pickAttachment}
             activeOpacity={0.85}
           >
-            <Icon name="image" size={18} color={theme.colors.primary} />
+            <Icon
+              name={attachmentIsVideo ? "video" : "image"}
+              size={18}
+              color={theme.colors.primary}
+            />
             <Text style={styles.attachmentButtonText}>
-              {attachment ? "Change image" : "Attach image"}
+              {attachment
+                ? attachmentIsVideo
+                  ? "Change video"
+                  : "Change image"
+                : "Attach image or video"}
             </Text>
           </TouchableOpacity>
 
           {attachment ? (
             <View style={styles.attachmentPreview}>
-              <Image source={{ uri: attachment.uri }} style={styles.previewImage} />
+              {attachmentIsVideo ? (
+                <Video
+                  source={{ uri: attachment.uri }}
+                  style={styles.previewMedia}
+                  useNativeControls
+                  resizeMode={ResizeMode.COVER}
+                  isLooping={false}
+                />
+              ) : (
+                <Image
+                  source={{ uri: attachment.uri }}
+                  style={styles.previewMedia}
+                />
+              )}
               <View style={styles.attachmentInfo}>
                 <Text numberOfLines={1} style={styles.attachmentName}>
-                  {attachment.name || "Selected image"}
+                  {attachment.name ||
+                    (attachmentIsVideo ? "Selected video" : "Selected image")}
                 </Text>
                 <TouchableOpacity onPress={() => setAttachment(null)}>
                   <Text style={styles.removeAttachmentText}>Remove</Text>
@@ -296,9 +337,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
   },
-  previewImage: {
-    width: 64,
-    height: 64,
+  previewMedia: {
+    width: 96,
+    height: 96,
     borderRadius: 16,
     backgroundColor: "#EFEFF0",
   },
