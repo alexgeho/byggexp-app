@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     boxShadow: '0px 2px 7px 0px rgba(0, 0, 0, 0.25)',
   },
   text: {
-    fontSize: 16,
+    fontSize: 22,
     color: '#ffffff',
     textShadowColor: '#ffffff',
     textShadowRadius: 12
