@@ -6,9 +6,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  ActivityIndicator,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import Icon from "react-native-vector-icons/Feather";
 import AuthContext from "../../contexts/AuthContext";
-import ActionButton from "../../components/common/ActionButton/ActionButton";
 import { useTheme } from "../../theme/ThemeContext";
 
 export default function LoginScreen({ navigation }) {
@@ -25,67 +27,157 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text
-        style={[styles.text, { fontFamily: theme.text.fontFamily["regular"] }]}
-      >
-        Nice to meet You!
-      </Text>
-      <TextInput
-        placeholder="Email"
-        style={styles.input}
-        placeholderTextColor="#888"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TextInput
-        placeholder="Password"
-        placeholderTextColor="#999"
-        style={styles.input}
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <ActionButton
-        onPress={handleLogin}
-        title={isLoading ? "Login..." : "Login"}
-        disabled={isLoading}
-      />
-      <TouchableOpacity
-        onPress={() => navigation.navigate("Register")}
-        style={styles.registerLink}
-      >
-        <Text style={styles.registerText}>
-          No account? <Text style={styles.registerTextLink}>Register</Text>
-        </Text>
-      </TouchableOpacity>
-    </View>
+    <LinearGradient
+      colors={["#eaf2fb", "#dce9f6"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.page}
+    >
+      <View style={styles.card}>
+        <View style={styles.header}>
+          <Text style={[styles.welcome, { fontFamily: theme.text.fontFamily.regular }]}>
+            Welcome!
+          </Text>
+          <Text style={[styles.heading, { fontFamily: theme.text.fontFamily.regular }]}>
+            Log In to your account
+          </Text>
+        </View>
+
+        <Text style={styles.label}>E-Mail or Username</Text>
+        <View style={styles.inputWrapper}>
+          <Icon name="mail" size={16} color="#687898" style={styles.inputIcon} />
+          <TextInput
+            placeholder="example@gmail.com"
+            placeholderTextColor="#a7b3c2"
+            style={styles.input}
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoComplete="username"
+          />
+        </View>
+
+        <Text style={styles.label}>Password</Text>
+        <View style={styles.inputWrapper}>
+          <Icon name="lock" size={16} color="#687898" style={styles.inputIcon} />
+          <TextInput
+            placeholder="your password here"
+            placeholderTextColor="#a7b3c2"
+            style={styles.input}
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            autoComplete="current-password"
+          />
+        </View>
+
+        <TouchableOpacity
+          onPress={handleLogin}
+          disabled={isLoading}
+          activeOpacity={0.85}
+          style={[styles.button, isLoading && styles.buttonDisabled]}
+        >
+          {isLoading ? (
+            <ActivityIndicator color="#ffffff" />
+          ) : (
+            <Text style={styles.buttonText}>Log In</Text>
+          )}
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Register")}
+          style={styles.footerLink}
+        >
+          <Text style={styles.footerText}>
+            Don&apos;t have an account? <Text style={styles.footerLinkText}>Create here →</Text>
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 20 },
-  input: {
-    borderWidth: 1,
-    padding: 16,
-    fontSize: 22,
-    marginBottom: 10,
-    borderRadius: 20,
-    borderColor: "transparent",
-    outlineColor: "#0785F4",
-    color: "#151515",
-    boxShadow: "0 0 10px #00203A10",
+  page: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
   },
-  text: {
+  card: {
     width: "100%",
-    textAlign: "center",
-    marginBottom: 20,
-    fontSize: 22,
-    color: "#C7C7CD",
+    maxWidth: 404,
+    padding: 32,
+    backgroundColor: "#ffffff",
+    borderRadius: 16,
   },
-  registerLink: { marginTop: 16, alignItems: "center" },
-  registerText: { color: "#C7C7CD", fontSize: 22 },
-  registerTextLink: { color: "#77BCF9" },
+  header: {
+    marginBottom: 28,
+  },
+  welcome: {
+    color: "#687898",
+    fontSize: 16,
+    fontWeight: "500",
+    marginBottom: 4,
+  },
+  heading: {
+    color: "#052d50",
+    fontSize: 24,
+    lineHeight: 32,
+    fontWeight: "700",
+  },
+  label: {
+    color: "#052d50",
+    fontSize: 12,
+    marginBottom: 8,
+  },
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    height: 44,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: "#e7ecf0",
+    borderRadius: 24,
+    backgroundColor: "#ffffff",
+    marginBottom: 20,
+  },
+  inputIcon: {
+    marginRight: 8,
+  },
+  input: {
+    flex: 1,
+    height: "100%",
+    color: "#052d50",
+    fontSize: 14,
+  },
+  button: {
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: "#3183ff",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+  },
+  buttonDisabled: {
+    opacity: 0.7,
+  },
+  buttonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  footerLink: {
+    marginTop: 24,
+    alignItems: "center",
+  },
+  footerText: {
+    color: "#687898",
+    fontSize: 12,
+  },
+  footerLinkText: {
+    color: "#052d50",
+    fontWeight: "500",
+  },
 });

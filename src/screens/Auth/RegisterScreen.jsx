@@ -8,9 +8,11 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import Icon from 'react-native-vector-icons/Feather';
 import AuthContext from '../../contexts/AuthContext';
-import ActionButton from '../../components/common/ActionButton/ActionButton';
 import { useTheme } from '../../theme/ThemeContext';
 
 export default function RegisterScreen({ navigation }) {
@@ -53,100 +55,184 @@ export default function RegisterScreen({ navigation }) {
       style={styles.flex}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <ScrollView
-        contentContainerStyle={styles.container}
-        keyboardShouldPersistTaps="handled"
+      <LinearGradient
+        colors={['#eaf2fb', '#dce9f6']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.flex}
       >
-        <View style={styles.header}>
-          <Text style={[styles.title, { fontFamily: theme.text.fontFamily.regular }]}>
-            Try for free
-          </Text>
-          <Text style={[styles.subtitle, { fontFamily: theme.text.fontFamily.regular }]}>
-            Register your company in a few seconds
-          </Text>
-        </View>
+        <ScrollView
+          contentContainerStyle={styles.page}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.card}>
+            <View style={styles.header}>
+              <Text style={[styles.welcome, { fontFamily: theme.text.fontFamily.regular }]}>
+                Welcome!
+              </Text>
+              <Text style={[styles.heading, { fontFamily: theme.text.fontFamily.regular }]}>
+                Create an account
+              </Text>
+            </View>
 
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+            {error ? <Text style={styles.error}>{error}</Text> : null}
 
-        <TextInput
-          placeholder="Company name"
-          style={styles.input}
-          value={companyName}
-          onChangeText={setCompanyName}
-          autoCapitalize="words"
-        />
-        <TextInput
-          placeholder="Your name"
-          style={styles.input}
-          value={userName}
-          onChangeText={setUserName}
-          autoCapitalize="words"
-          autoComplete="name"
-        />
-        <TextInput
-          placeholder="Email"
-          style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoComplete="email"
-        />
+            <Text style={styles.label}>Company name</Text>
+            <View style={styles.inputWrapper}>
+              <Icon name="briefcase" size={16} color="#687898" style={styles.inputIcon} />
+              <TextInput
+                placeholder="Your company name"
+                placeholderTextColor="#a7b3c2"
+                style={styles.input}
+                value={companyName}
+                onChangeText={setCompanyName}
+                autoCapitalize="words"
+              />
+            </View>
 
-        <ActionButton
-          onPress={handleSignup}
-          title={isLoading ? 'Creating account...' : 'Create account'}
-        />
+            <Text style={styles.label}>Your name</Text>
+            <View style={styles.inputWrapper}>
+              <Icon name="user" size={16} color="#687898" style={styles.inputIcon} />
+              <TextInput
+                placeholder="Your name"
+                placeholderTextColor="#a7b3c2"
+                style={styles.input}
+                value={userName}
+                onChangeText={setUserName}
+                autoCapitalize="words"
+                autoComplete="name"
+              />
+            </View>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Login')} style={styles.loginLink}>
-          <Text style={styles.loginText}>
-            Already have an account? <Text style={styles.loginTextBold}>Login</Text>
-          </Text>
-        </TouchableOpacity>
-      </ScrollView>
+            <Text style={styles.label}>E-Mail</Text>
+            <View style={styles.inputWrapper}>
+              <Icon name="mail" size={16} color="#687898" style={styles.inputIcon} />
+              <TextInput
+                placeholder="example@gmail.com"
+                placeholderTextColor="#a7b3c2"
+                style={styles.input}
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+              />
+            </View>
+
+            <TouchableOpacity
+              onPress={handleSignup}
+              disabled={isLoading}
+              activeOpacity={0.85}
+              style={[styles.button, isLoading && styles.buttonDisabled]}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#ffffff" />
+              ) : (
+                <Text style={styles.buttonText}>Sign Up</Text>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Login')}
+              style={styles.footerLink}
+            >
+              <Text style={styles.footerText}>
+                Already a member? <Text style={styles.footerLinkText}>Login here →</Text>
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </LinearGradient>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  container: {
+  page: {
     flexGrow: 1,
+    alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
   },
+  card: {
+    width: '100%',
+    maxWidth: 404,
+    padding: 32,
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+  },
   header: {
-    marginBottom: 24,
-    alignItems: 'center',
+    marginBottom: 28,
   },
-  title: {
-    fontSize: 32,
-    color: '#052D50',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  subtitle: {
+  welcome: {
+    color: '#687898',
     fontSize: 16,
-    color: '#5a6b7d',
-    textAlign: 'center',
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  heading: {
+    color: '#052d50',
+    fontSize: 24,
+    lineHeight: 32,
+    fontWeight: '700',
   },
   error: {
     color: '#c62828',
-    textAlign: 'center',
-    marginBottom: 12,
-    fontSize: 14,
+    marginBottom: 16,
+    fontSize: 13,
+  },
+  label: {
+    color: '#052d50',
+    fontSize: 12,
+    marginBottom: 8,
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 44,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#e7ecf0',
+    borderRadius: 24,
+    backgroundColor: '#ffffff',
+    marginBottom: 20,
+  },
+  inputIcon: {
+    marginRight: 8,
   },
   input: {
-    borderWidth: 1,
-    padding: 16,
-    marginBottom: 10,
-    borderRadius: 20,
-    borderColor: 'transparent',
-    outlineColor: '#0785F4',
-    color: '#151515',
-    boxShadow: '0 0 10px #00203A10',
+    flex: 1,
+    height: '100%',
+    color: '#052d50',
+    fontSize: 14,
   },
-  loginLink: { marginTop: 16, alignItems: 'center' },
-  loginText: { color: '#888', fontSize: 14 },
-  loginTextBold: { color: '#0785F4', fontWeight: 'bold' },
+  button: {
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#3183ff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  buttonDisabled: {
+    opacity: 0.7,
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  footerLink: {
+    marginTop: 24,
+    alignItems: 'center',
+  },
+  footerText: {
+    color: '#687898',
+    fontSize: 12,
+  },
+  footerLinkText: {
+    color: '#052d50',
+    fontWeight: '500',
+  },
 });
