@@ -1,11 +1,5 @@
 export const mainButtons = [
   {
-    id: "next",
-    title: "NEXT SCREEN 2",
-    icon: require("../assets/next-screen.png"),
-    screen: "HomeVariant2",
-  },
-  {
     id: "employees",
     title: "Employees",
     icon: require("../assets/mainButtons/employees.png"),
@@ -62,7 +56,6 @@ export const homeSections = [
 ];
 
 export const defaultEnabledButtons = [
-  "next",
   "employees",
   "tools",
   "camera",

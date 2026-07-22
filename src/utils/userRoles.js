@@ -157,10 +157,6 @@ export function isUserAssignedToProject(project, userId) {
 }
 
 export function isHomeButtonVisible(button, enabledButtonIds, userRole) {
-  if (button.id === "next") {
-    return false;
-  }
-
   if (!enabledButtonIds.includes(button.id)) {
     return false;
   }
