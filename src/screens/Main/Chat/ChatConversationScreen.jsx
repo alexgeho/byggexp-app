@@ -3,6 +3,8 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -99,7 +101,10 @@ export default function ChatConversationScreen({ variant }) {
   }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
       <Image
         style={styles.backgroundBlur}
         source={require("../../../assets/ChatBlur.png")}
@@ -244,7 +249,7 @@ export default function ChatConversationScreen({ variant }) {
           )}
         </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
