@@ -77,7 +77,7 @@ export const lightColors = {
   homeButtonText: "#1C1C1C",
   homeButtonWidth: "47%",
   homeButtonRadius: 20,
-  homeButtonMinHeight: 116,
+  homeButtonMinHeight: 150,
   homeButtonPadding: 20,
   homeButtonIconSize: 28,
   homeButtonGridJustify: "space-between",

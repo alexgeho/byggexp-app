@@ -29,6 +29,7 @@ import BottomSheet, {
 import Icon from "react-native-vector-icons/Feather";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
+import { ListCard } from "../../../components/common/ListCard/ListCard";
 import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import {
@@ -40,6 +41,7 @@ import { chatService, projectService } from "../../../services";
 import { isPdfDocument } from "../../../utils/documentPreview";
 import { resolveUploadUrl } from "../../../utils/shifts";
 import { sortByNewest } from "../../../utils/sortByNewest";
+import { cardStyles } from "../../../styles/cards";
 import { pickUploadAssets } from "../../../utils/uploadPicker";
 import {
   canCreateTasks,
@@ -91,6 +93,12 @@ const getTaskDisplayStatus = (task) => {
     label: "Open",
     tone: "open",
   };
+};
+
+const taskBadgeStyles = {
+  open: cardStyles.cardBadgeOpen,
+  overdue: cardStyles.cardBadgeOverdue,
+  completed: cardStyles.cardBadgeCompleted,
 };
 
 const formatFileSize = (value) => {
@@ -508,44 +516,24 @@ export const ProjectScreen = () => {
               const status = getTaskDisplayStatus(task);
 
               return (
-                <TouchableOpacity
+                <ListCard
                   key={task._id || task.id || task.taskTitle}
-                  style={styles.taskCard}
-                  activeOpacity={0.85}
                   onPress={() => navigation.navigate("Task", { task, project })}
+                  title={task.taskTitle || "Untitled task"}
+                  badgeLabel={status.label}
+                  badgeStyle={taskBadgeStyles[status.tone]}
                 >
-                  <View style={styles.cardHeader}>
-                    <Text
-                      numberOfLines={1}
-                      ellipsizeMode="tail"
-                      style={[
-                        styles.taskTitle,
-                        { fontFamily: theme.text.fontFamily["medium"] },
-                      ]}
-                    >
-                      {task.taskTitle || "Untitled task"}
-                    </Text>
-                    <View style={styles.cardHeaderRight}>
-                      <Text
-                        style={[
-                          styles.statusBadge,
-                          styles[`statusBadge_${status.tone}`],
-                          { fontFamily: theme.text.fontFamily["medium"] },
-                        ]}
-                      >
-                        {status.label}
-                      </Text>
-                      <Text
-                        style={[styles.headerDateText, themedAccentTextStyle]}
-                      >
-                        {formatDate(task.dueDate, true)}
-                      </Text>
-                    </View>
-                  </View>
-                  <Text style={styles.taskDescription}>
-                    {task.taskDescription || "No description provided."}
+                  <Text style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}>
+                    {formatDate(task.dueDate, true)}
                   </Text>
-                </TouchableOpacity>
+                  <Text
+                    style={cardStyles.cardSecondaryText}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {task.taskDescription || task.assigneeUserName || "No description"}
+                  </Text>
+                </ListCard>
               );
             })
           ) : (
@@ -862,68 +850,6 @@ const styles = StyleSheet.create({
   },
   emptyStateText: {
     color: "#698196",
-  },
-  taskCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    width: "100%",
-    padding: 20,
-    borderRadius: 16,
-    gap: 8,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  cardHeader: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    gap: 8,
-  },
-  taskTitle: {
-    color: "#052D50",
-    flex: 1,
-    flexShrink: 1,
-    fontSize: 17,
-    fontWeight: "500",
-  },
-  cardHeaderRight: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    flexShrink: 0,
-  },
-  taskDescription: {
-    color: "#698196",
-  },
-  statusBadge: {
-    height: 28,
-    paddingHorizontal: 12,
-    paddingVertical: 3,
-    borderRadius: 12,
-    flexShrink: 0,
-    alignSelf: "flex-start",
-    fontWeight: "500",
-    fontSize: 13,
-    lineHeight: 22,
-    textAlign: "center",
-    textAlignVertical: "center",
-    overflow: "hidden",
-  },
-  statusBadge_open: {
-    color: "#0785F4",
-    backgroundColor: "#0785F41A",
-  },
-  statusBadge_overdue: {
-    color: "#FF3B30",
-    backgroundColor: "#FF3B301F",
-  },
-  statusBadge_completed: {
-    color: "#248A3D",
-    backgroundColor: "#34C75924",
-  },
-  headerDateText: {
-    fontSize: 13,
-    flexShrink: 0,
   },
   documentItem: {
     width: "100%",

@@ -11,6 +11,7 @@ export function createStyles(theme) {
       flexWrap: "wrap",
       width: "100%",
       flexDirection: "row",
+      alignItems: "stretch",
       justifyContent: theme.colors.homeButtonGridJustify || "center",
       gap: theme.colors.homeButtonGridGap || 15,
     },
@@ -36,7 +37,7 @@ export function createStyles(theme) {
 
     button: {
       width: theme.colors.homeButtonWidth || "42%",
-      minHeight: theme.colors.homeButtonMinHeight,
+      minHeight: theme.colors.homeButtonMinHeight || 150,
       borderRadius: theme.colors.homeButtonRadius || 16,
       overflow: "hidden",
       borderWidth: 1,
@@ -45,12 +46,12 @@ export function createStyles(theme) {
     },
 
     buttonInner: {
+      flex: 1,
       flexDirection: "column",
       padding: theme.colors.homeButtonPadding || 16,
       gap: theme.colors.homeButtonContentGap || 8,
       alignItems: theme.colors.homeButtonAlignItems || "stretch",
       justifyContent: "center",
-      minHeight: theme.colors.homeButtonMinHeight,
     },
 
     iconWrapper: {

@@ -65,18 +65,11 @@ export default function MainButtonsGrid() {
     <View style={styles.container}>
       {mainButtons
         .filter(function filterButtons(button) {
-          return isHomeButtonVisible(
-            button,
-            enabledButtons,
-            user?.role,
-          );
+          return isHomeButtonVisible(button, enabledButtons, user?.role);
         })
         .map(function renderButton(button) {
           return (
-            <View
-              key={button.id}
-              style={styles.button}
-            >
+            <View key={button.id} style={styles.button}>
               <TouchableOpacity
                 style={styles.buttonInner}
                 onPress={function onButtonPress() {
@@ -104,10 +97,7 @@ export default function MainButtonsGrid() {
                       color={theme.colors.icon}
                     />
                   ) : (
-                    <Image
-                      source={button.icon}
-                      style={styles.buttonIcon}
-                    />
+                    <Image source={button.icon} style={styles.buttonIcon} />
                   )}
 
                   {button.id === "chats" ? (
@@ -115,9 +105,7 @@ export default function MainButtonsGrid() {
                   ) : null}
                 </View>
 
-                <Text style={styles.buttonText}>
-                  {button.title}
-                </Text>
+                <Text style={styles.buttonText}>{button.title}</Text>
 
                 <HomeButtonExtraInfo
                   buttonId={button.id}
