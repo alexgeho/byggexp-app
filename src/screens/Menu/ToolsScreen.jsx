@@ -16,11 +16,13 @@ import { toolService } from "../../services";
 import { API_BASE_URL } from "../../services/api";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
+import { ListCard } from "../../components/common/ListCard/ListCard";
 import {
   standardScreenContainer,
   standardScreenHeader,
   standardScreenHeaderPlaceholder,
 } from "../../styles/screenLayout";
+import { cardStyles } from "../../styles/cards";
 import { canManageTools } from "../../utils/userRoles";
 
 const getEntityId = (entity) => {
@@ -85,6 +87,8 @@ export default function ToolsScreen() {
     }, [loadTools]),
   );
 
+  const themedAccentTextStyle = { color: theme.colors.primary };
+
   return (
     <View style={styles.screen}>
       <View style={styles.pageContainer}>
@@ -146,34 +150,38 @@ export default function ToolsScreen() {
                 const photoUrl = resolvePhotoUrl(tool.photoUrl);
 
                 return (
-                  <View key={toolId} style={styles.toolCard}>
-                    {photoUrl ? (
-                      <Image source={{ uri: photoUrl }} style={styles.toolPhoto} />
-                    ) : (
-                      <View style={styles.toolPhotoPlaceholder}>
-                        <Icon name="tool" size={20} color="rgba(5, 45, 80, 0.35)" />
-                      </View>
-                    )}
-                    <View style={styles.toolInfo}>
-                      <Text
-                        style={[
-                          styles.toolName,
-                          { fontFamily: theme.text.fontFamily.semiBold },
-                        ]}
-                      >
-                        {tool.name}
-                      </Text>
-                      {tool.notes ? (
-                        <Text style={styles.toolNotes} numberOfLines={2}>
-                          {tool.notes}
-                        </Text>
-                      ) : null}
-                      <Text style={styles.toolMeta}>
-                        {tool.workerIds?.length || 0} workers ·{" "}
-                        {tool.projectIds?.length || 0} projects
-                      </Text>
-                    </View>
-                  </View>
+                  <ListCard
+                    key={toolId}
+                    title={tool.name}
+                    leading={
+                      photoUrl ? (
+                        <Image
+                          source={{ uri: photoUrl }}
+                          style={styles.toolPhoto}
+                        />
+                      ) : (
+                        <View style={styles.toolPhotoPlaceholder}>
+                          <Icon
+                            name="tool"
+                            size={20}
+                            color="rgba(5, 45, 80, 0.35)"
+                          />
+                        </View>
+                      )
+                    }
+                  >
+                    <Text
+                      style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                    >
+                      {tool.notes || "No notes"}
+                    </Text>
+                    <Text style={cardStyles.cardSecondaryText}>
+                      {tool.workerIds?.length || 0} workers ·{" "}
+                      {tool.projectIds?.length || 0} projects
+                    </Text>
+                  </ListCard>
                 );
               })
             )}
@@ -247,44 +255,20 @@ const styles = StyleSheet.create({
     paddingBottom: 140,
     gap: 12,
   },
-  toolCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-    padding: 14,
-    flexDirection: "row",
-    gap: 12,
-    alignItems: "center",
-  },
   toolPhoto: {
-    width: 56,
-    height: 56,
-    borderRadius: 12,
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    marginRight: 12,
   },
   toolPhotoPlaceholder: {
-    width: 56,
-    height: 56,
-    borderRadius: 12,
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    marginRight: 12,
     backgroundColor: "rgba(5, 45, 80, 0.06)",
     alignItems: "center",
     justifyContent: "center",
-  },
-  toolInfo: {
-    flex: 1,
-    gap: 4,
-  },
-  toolName: {
-    color: "#052D50",
-    fontSize: 16,
-  },
-  toolNotes: {
-    color: "rgba(5, 45, 80, 0.65)",
-    fontSize: 13,
-  },
-  toolMeta: {
-    color: "rgba(5, 45, 80, 0.45)",
-    fontSize: 12,
   },
   emptyState: {
     paddingVertical: 48,

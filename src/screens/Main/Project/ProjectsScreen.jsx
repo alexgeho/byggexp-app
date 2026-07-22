@@ -15,7 +15,6 @@ import React, {
 import {
   View,
   Text,
-  TouchableOpacity,
   TextInput,
   ScrollView,
   StyleSheet,
@@ -27,6 +26,7 @@ import AuthContext from "../../../contexts/AuthContext";
 import { projectService } from "../../../services";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
+import { ListCard } from "../../../components/common/ListCard/ListCard";
 import {
   standardScreenContainer,
   standardScreenHeader,
@@ -150,7 +150,6 @@ export default function ProjectsScreen() {
     );
   }
 
-  const themedSelectionStyle = { borderColor: theme.colors.primary };
   const themedStatusBadgeStyle = {
     color: theme.colors.primary,
     backgroundColor: `${theme.colors.primary}1A`,
@@ -201,56 +200,22 @@ export default function ProjectsScreen() {
           <Text style={styles.noProjectsText}>No projects found.</Text>
         ) : (
           filteredProjects.map((project) => (
-            /* PROJECTS CARD =========================== */
-            <TouchableOpacity
+            <ListCard
               key={getProjectId(project)}
               onPress={() => handleProjectPress(project)}
-              style={[
-                cardStyles.card,
-                selectedProjectId === getProjectId(project) &&
-                  cardStyles.cardSelected,
-                selectedProjectId === getProjectId(project) &&
-                  themedSelectionStyle,
-              ]}
+              selected={selectedProjectId === getProjectId(project)}
+              title={project.name}
+              badgeLabel={formatStatus(project.status)}
+              badgeStyle={themedStatusBadgeStyle}
             >
-              {/* cardHeader */}
-              <View style={cardStyles.cardHeader}>
-                {/* projectName */}
-                <Text
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                  style={[
-                    cardStyles.cardTitle,
-                    { fontFamily: theme.text.fontFamily["medium"] },
-                  ]}
-                >
-                  {project.name}
-                </Text>
-
-                {/* statusBadge */}
-                <Text
-                  style={[
-                    cardStyles.cardBadge,
-                    themedStatusBadgeStyle,
-                    { fontFamily: theme.text.fontFamily["medium"] },
-                  ]}
-                >
-                  {formatStatus(project.status)}
-                </Text>
-              </View>
-
-              {/* data */}
               <Text style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}>
                 Start: {new Date(project.beginningDate).toLocaleDateString()}
               </Text>
 
-              {/* location */}
               <Text style={cardStyles.cardSecondaryText}>
                 Location: {project.location}
               </Text>
-            </TouchableOpacity>
-
-            /* END PROJECTS CARD =========================== */
+            </ListCard>
           ))
         )}
       </ScrollView>

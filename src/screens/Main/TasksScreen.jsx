@@ -3,7 +3,6 @@ import React, { useCallback, useContext, useMemo, useState } from "react";
 import {
   View,
   Text,
-  TouchableOpacity,
   TextInput,
   ScrollView,
   StyleSheet,
@@ -15,6 +14,7 @@ import { useTheme } from "../../theme/ThemeContext";
 import { projectService, taskService } from "../../services";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../components/common/BackButton/BackButton";
+import { ListCard } from "../../components/common/ListCard/ListCard";
 import {
   standardScreenContainer,
   standardScreenHeader,
@@ -207,60 +207,26 @@ export default function TasksScreen() {
       completed: cardStyles.cardBadgeCompleted,
     };
 
-    /* CARDS */
     return (
-      <TouchableOpacity
+      <ListCard
         key={key}
-        style={cardStyles.card}
-        activeOpacity={0.85}
-        onPress={() =>
-          navigation.navigate("Task", {
-            task,
-            project,
-          })
-        }
+        onPress={() => navigation.navigate("Task", { task, project })}
+        title={task.taskTitle || "Untitled task"}
+        badgeLabel={status.label}
+        badgeStyle={badgeStyles[status.tone]}
       >
-
-        {/* card header */}
-        <View style={cardStyles.cardHeader}>
-          <Text
-            numberOfLines={1}
-            ellipsizeMode="tail"
-            style={[
-              cardStyles.cardTitle,
-              { fontFamily: theme.text.fontFamily["medium"] },
-            ]}
-          >
-            {task.taskTitle || "Untitled task"}
-          </Text>
-
-          {/* Badge */}
-          <Text
-            style={[
-              cardStyles.cardBadge,
-              badgeStyles[status.tone],
-              { fontFamily: theme.text.fontFamily["medium"] },
-            ]}
-          >
-            {status.label}
-          </Text>
-        </View>
-
-        {/* date */}
         <Text style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}>
           {formatTaskDate(task.dueDate)}
         </Text>
 
-        {/* taskDescription */}
-        {!!task.taskDescription && (
-          <Text style={cardStyles.cardSecondaryText}>
-            {task.taskDescription}
-          </Text>
-        )}
-        {!!task.assigneeUserName && (
-          <Text style={cardStyles.cardAssignee}>{task.assigneeUserName}</Text>
-        )}
-      </TouchableOpacity>
+        <Text
+          style={cardStyles.cardSecondaryText}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {task.taskDescription || task.assigneeUserName || "No description"}
+        </Text>
+      </ListCard>
     );
   };
 

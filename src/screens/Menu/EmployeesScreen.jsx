@@ -16,11 +16,13 @@ import { useTheme } from "../../theme/ThemeContext";
 import { projectService, userService } from "../../services";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
+import { ListCard } from "../../components/common/ListCard/ListCard";
 import {
   standardScreenContainer,
   standardScreenHeader,
   standardScreenHeaderPlaceholder,
 } from "../../styles/screenLayout";
+import { cardStyles } from "../../styles/cards";
 import {
   canManageEmployees,
   getAccountStatusLabel,
@@ -224,6 +226,8 @@ export default function EmployeesScreen() {
     );
   }
 
+  const themedAccentTextStyle = { color: theme.colors.primary };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -294,55 +298,42 @@ export default function EmployeesScreen() {
                 employee.accountStatus,
               );
 
+              const themedRoleBadgeStyle = {
+                color: theme.colors.primary,
+                backgroundColor: `${theme.colors.primary}1A`,
+              };
+
               return (
-                <View key={employeeId} style={styles.employeeCard}>
-                  <View style={styles.employeeInfo}>
-                    <Text
-                      style={[
-                        styles.employeeName,
-                        { fontFamily: theme.text.fontFamily.semiBold },
-                      ]}
-                    >
-                      {employee.name || "Unnamed"}
-                    </Text>
-                    {projectLabel ? (
-                      <Text
-                        style={styles.employeeProject}
-                        numberOfLines={1}
-                        ellipsizeMode="tail"
-                      >
-                        {projectLabel}
-                      </Text>
-                    ) : null}
-                    {employee.profession ? (
-                      <Text style={styles.employeeProfession}>
-                        {employee.profession}
-                      </Text>
-                    ) : null}
-                    {showAccountStatus && accountStatusLabel ? (
-                      <Text style={styles.approvalStatus}>
-                        {accountStatusLabel}
-                      </Text>
-                    ) : null}
-                  </View>
-                  <View style={styles.cardMeta}>
-                    <View
-                      style={[
-                        styles.roleBadge,
-                        { backgroundColor: `${theme.colors.primary}22` },
-                      ]}
-                    >
-                      <Text
-                        style={[
-                          styles.roleBadgeText,
-                          { color: theme.colors.primary },
-                        ]}
-                      >
-                        {getRoleLabel(employee.role)}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
+                <ListCard
+                  key={employeeId}
+                  title={employee.name || "Unnamed"}
+                  badgeLabel={
+                    showAccountStatus
+                      ? accountStatusLabel
+                      : getRoleLabel(employee.role)
+                  }
+                  badgeStyle={
+                    showAccountStatus
+                      ? cardStyles.cardBadgeWarning
+                      : themedRoleBadgeStyle
+                  }
+                >
+                  <Text
+                    style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {employee.profession || "No profession"}
+                  </Text>
+
+                  <Text
+                    style={cardStyles.cardSecondaryText}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {projectLabel || "No project assigned"}
+                  </Text>
+                </ListCard>
               );
             })
           )}
@@ -419,53 +410,6 @@ const styles = StyleSheet.create({
   listContent: {
     paddingBottom: 140,
     gap: 10,
-  },
-  employeeCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 16,
-    padding: 16,
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-    gap: 12,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  employeeInfo: {
-    flex: 1,
-    minWidth: 0,
-    gap: 4,
-  },
-  employeeName: {
-    fontSize: 16,
-    color: "#052D50",
-  },
-  employeeProject: {
-    fontSize: 14,
-    color: "#5a6b7d",
-    flexShrink: 1,
-  },
-  employeeProfession: {
-    fontSize: 13,
-    color: "#7a8796",
-  },
-  approvalStatus: {
-    fontSize: 13,
-    color: "#C77700",
-    fontWeight: "600",
-  },
-  cardMeta: {
-    alignItems: "flex-end",
-    gap: 6,
-  },
-  roleBadge: {
-    borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-  },
-  roleBadgeText: {
-    fontSize: 12,
-    fontWeight: "600",
   },
   emptyState: {
     backgroundColor: "#fff",
