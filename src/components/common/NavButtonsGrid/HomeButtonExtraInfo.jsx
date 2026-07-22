@@ -22,7 +22,7 @@ export function HomeButtonExtraInfo({
     return (
       <View style={style}>
         <HomeButtonInfoBadge
-          label={`• Live - ${employeeStats.live}`}
+          label={`• At work - ${employeeStats.live}`}
           variant="live"
         />
         <HomeButtonInfoBadge
