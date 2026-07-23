@@ -19,10 +19,10 @@ import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/Feather";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../components/common/BackButton/BackButton";
+import FloatingActionButton from "../../components/common2/FloatingActionButton/FloatingActionButton";
 import {
   standardScreenContainer,
   standardScreenHeader,
-  standardScreenHeaderPlaceholder,
 } from "../../styles/screenLayout";
 import {
   getDocumentNameFromUrl,
@@ -481,7 +481,17 @@ export const MyAccount = () => {
         >
           My account
         </Text>
-        <View style={styles.placeholder} />
+        <FloatingActionButton
+          onPress={handleSave}
+          disabled={saving}
+          renderContent={() =>
+            saving ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Icon name="check" size={24} color="#FFFFFF" />
+            )
+          }
+        />
       </View>
 
       <ScrollView
@@ -722,9 +732,6 @@ const styles = StyleSheet.create({
     color: "#052D50",
     fontSize: 17,
     textAlign: "center",
-  },
-  placeholder: {
-    ...standardScreenHeaderPlaceholder,
   },
   scrollContainer: {
     flex: 1,

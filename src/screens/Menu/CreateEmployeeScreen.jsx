@@ -18,6 +18,7 @@ import { useTheme } from "../../theme/ThemeContext";
 import { projectService, toolService, userService } from "../../services";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
+import FloatingActionButton from "../../components/common2/FloatingActionButton/FloatingActionButton";
 import {
   standardScreenContainer,
   standardScreenHeader,
@@ -374,7 +375,17 @@ export default function CreateEmployeeScreen() {
           >
             Add employee
           </Text>
-          <View style={standardScreenHeaderPlaceholder} />
+          <FloatingActionButton
+            onPress={handleCreateEmployee}
+            disabled={saving}
+            renderContent={() =>
+              saving ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <Icon name="check" size={24} color="#FFFFFF" />
+              )
+            }
+          />
         </View>
 
         <ScrollView
