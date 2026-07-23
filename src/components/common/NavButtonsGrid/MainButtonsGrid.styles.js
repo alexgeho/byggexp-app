@@ -37,7 +37,7 @@ export function createStyles(theme) {
 
     button: {
       width: theme.homeButton.width,
-      height: theme.homeButton.height,
+      minHeight: theme.homeButton.height,
       borderRadius: theme.homeButton.radius,
       overflow: "hidden",
       borderWidth: 1,
