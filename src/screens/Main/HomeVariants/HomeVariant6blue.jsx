@@ -373,11 +373,7 @@ export default function MainScreen() {
               styles.playButton,
               {
                 backgroundColor: theme.colors.primary,
-                shadowColor: theme.colors.glow,
                 borderColor: theme.colors.glow,
-                shadowOpacity: 0.7,
-                shadowRadius: 40,
-                elevation: 25,
               },
               isPaused && styles.playButtonPaused,
             ]}
@@ -585,7 +581,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
 
-    elevation: 3,
   },
   timerNumber: {
     fontSize: 48,
@@ -598,7 +593,6 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "space-between",
-    elevation: 3,
   },
   dot: {
     width: "6%",
@@ -618,10 +612,6 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     borderWidth: 1,
 
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
 
     alignItems: "center",
     justifyContent: "center",

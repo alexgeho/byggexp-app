@@ -106,11 +106,6 @@ export function createStyles(theme) {
 
       alignItems: "center",
       justifyContent: "center",
-      shadowColor: "#052D50",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.06,
-      shadowRadius: 4,
-      elevation: 1,
     },
 
     checkboxActive: {

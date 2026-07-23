@@ -556,7 +556,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginTop: 32,
-    elevation: 3,
   },
   timerNumber: {
     color: "#ffffff",
@@ -572,7 +571,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginTop: 12,
-    elevation: 3,
   },
   dot: {
     width: "6%",
@@ -599,11 +597,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     borderWidth: 1,
     borderColor: "#ffffff60",
-    shadowColor: "#0088FF",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.605,
-    shadowRadius: 80,
-    elevation: 10,
     alignItems: "center",
     justifyContent: "center",
   },
