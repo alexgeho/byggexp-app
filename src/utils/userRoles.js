@@ -156,6 +156,23 @@ export function isUserAssignedToProject(project, userId) {
   return false;
 }
 
+/**
+ * Home-screen Employees badge (At work / Not at work) visibility.
+ * SuperAdmin/CompanyAdmin see it for any selected project; ProjectAdmin
+ * only sees it for projects they actually own/manage/admin.
+ */
+export function canViewEmployeeStatsForProject(role, userId, project) {
+  if (hasRole(role, [USER_ROLES.SUPERADMIN, USER_ROLES.COMPANY_ADMIN])) {
+    return true;
+  }
+
+  if (role === USER_ROLES.PROJECT_ADMIN) {
+    return isUserAssignedToProject(project, userId);
+  }
+
+  return false;
+}
+
 export function isHomeButtonVisible(button, enabledButtonIds, userRole) {
   if (!enabledButtonIds.includes(button.id)) {
     return false;

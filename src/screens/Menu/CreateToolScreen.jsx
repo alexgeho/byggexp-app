@@ -27,6 +27,7 @@ import {
 } from "../../styles/screenLayout";
 import { pickUploadAssets } from "../../utils/uploadPicker";
 import { canManageTools } from "../../utils/userRoles";
+import { DEFAULT_TOOL_STATUS } from "../../constants/toolStatus";
 
 const getEntityId = (entity) => {
   const id = entity?._id || entity?.id;
@@ -233,6 +234,7 @@ export default function CreateToolScreen() {
     try {
       const formData = new FormData();
       formData.append("name", trimmedName);
+      formData.append("status", DEFAULT_TOOL_STATUS);
 
       if (notes.trim()) {
         formData.append("notes", notes.trim());

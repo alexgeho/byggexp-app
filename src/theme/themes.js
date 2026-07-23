@@ -48,7 +48,7 @@ const common = {
 
   homeButton: {
     width: "47%",
-    height: 1 50,
+    height: 150,
     radius: 20,
     padding: 20,
     iconSize: 28,

@@ -1,6 +1,7 @@
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Image,
   ScrollView,
   StyleSheet,
@@ -24,6 +25,17 @@ import {
 } from "../../styles/screenLayout";
 import { cardStyles } from "../../styles/cards";
 import { canManageTools } from "../../utils/userRoles";
+import {
+  TOOL_STATUS_OPTIONS,
+  getToolStatusMeta,
+} from "../../constants/toolStatus";
+
+const TOOL_STATUS_BADGE_STYLES = {
+  available: cardStyles.cardBadgeAvailable,
+  broken: cardStyles.cardBadgeBroken,
+  in_repair: cardStyles.cardBadgeInRepair,
+  occupied: cardStyles.cardBadgeOccupied,
+};
 
 const getEntityId = (entity) => {
   const id = entity?._id || entity?.id;
@@ -87,6 +99,46 @@ export default function ToolsScreen() {
     }, [loadTools]),
   );
 
+  const canEditStatus = canManageTools(user?.role);
+
+  const handleChangeStatus = (tool) => {
+    if (!canEditStatus) {
+      return;
+    }
+
+    const toolId = getEntityId(tool);
+
+    Alert.alert(
+      "Change tool status",
+      tool.name,
+      [
+        ...TOOL_STATUS_OPTIONS.map((option) => ({
+          text: option.label,
+          onPress: async () => {
+            if (option.value === tool.status) {
+              return;
+            }
+
+            try {
+              await toolService.update(toolId, { status: option.value });
+              setTools((previousTools) =>
+                previousTools.map((item) =>
+                  getEntityId(item) === toolId
+                    ? { ...item, status: option.value }
+                    : item,
+                ),
+              );
+            } catch (error) {
+              console.error("Failed to update tool status:", error);
+              Alert.alert("Error", "Unable to update tool status right now.");
+            }
+          },
+        })),
+        { text: "Cancel", style: "cancel" },
+      ],
+    );
+  };
+
   const themedAccentTextStyle = { color: theme.colors.primary };
 
   return (
@@ -148,11 +200,17 @@ export default function ToolsScreen() {
               filteredTools.map((tool) => {
                 const toolId = getEntityId(tool);
                 const photoUrl = resolvePhotoUrl(tool.photoUrl);
+                const statusMeta = getToolStatusMeta(tool.status);
 
                 return (
                   <ListCard
                     key={toolId}
                     title={tool.name}
+                    onPress={
+                      canEditStatus ? () => handleChangeStatus(tool) : undefined
+                    }
+                    badgeLabel={statusMeta.label}
+                    badgeStyle={TOOL_STATUS_BADGE_STYLES[statusMeta.tone]}
                     leading={
                       photoUrl ? (
                         <Image

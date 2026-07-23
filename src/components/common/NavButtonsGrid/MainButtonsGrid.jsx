@@ -16,7 +16,10 @@ import {
   defaultEnabledButtons,
 } from "../../../constants/mainButtons";
 import { getEnabledButtons } from "../../../utils/homeButtonsStorage";
-import { isHomeButtonVisible, canManageEmployees } from "../../../utils/userRoles";
+import {
+  isHomeButtonVisible,
+  canViewEmployeeStatsForProject,
+} from "../../../utils/userRoles";
 import AuthContext from "../../../contexts/AuthContext";
 import { useUnreadChats } from "../../../hooks/useUnreadChats";
 import { useHomeButtonStats } from "../../../hooks/useHomeButtonStats";
@@ -26,14 +29,18 @@ import { createStyles } from "./MainButtonsGrid.styles";
 
 export default function MainButtonsGrid() {
   const navigation = useNavigation();
-  const { user, selectedProject } = useContext(AuthContext);
+  const { user, userId, selectedProject } = useContext(AuthContext);
   const { theme } = useTheme();
   const selectedProjectId =
     selectedProject?._id || selectedProject?.id;
 
   const styles = createStyles(theme);
   const { unreadCount } = useUnreadChats();
-  const showEmployeeStats = canManageEmployees(user?.role);
+  const showEmployeeStats = canViewEmployeeStatsForProject(
+    user?.role,
+    userId || user?._id || user?.id,
+    selectedProject,
+  );
   const { employeeStats, shiftStats } = useHomeButtonStats({
     projectId: selectedProjectId,
     loadEmployeeStats: showEmployeeStats,

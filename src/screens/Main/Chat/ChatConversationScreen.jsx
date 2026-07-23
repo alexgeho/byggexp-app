@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
     zIndex: 0,
   },
   messagesContent: {
-    paddingBottom: 120,
+    paddingBottom: 16,
   },
   centeredContainer: {
     flex: 1,
@@ -416,12 +416,7 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingHorizontal: 12,
     paddingBottom: 24,
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
     backgroundColor: "#EEEEEE",
-    zIndex: 3,
   },
   inputButton: {
     width: 48,

@@ -73,4 +73,24 @@ export const cardStyles = StyleSheet.create({
     color: "#C77700",
     backgroundColor: "#FF95001F",
   },
+
+  cardBadgeAvailable: {
+    color: "#248A3D",
+    backgroundColor: "#34C75924",
+  },
+
+  cardBadgeBroken: {
+    color: "#FF3B30",
+    backgroundColor: "#FF3B301F",
+  },
+
+  cardBadgeInRepair: {
+    color: "#C77700",
+    backgroundColor: "#FF95001F",
+  },
+
+  cardBadgeOccupied: {
+    color: "#0785F4",
+    backgroundColor: "#0785F41A",
+  },
 });
