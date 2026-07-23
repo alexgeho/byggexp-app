@@ -75,7 +75,7 @@ export default function MenuScreen() {
     const toolsItem = {
       id: "tools",
       screen: "Tools",
-      title: "Tools",
+      title: "Instruments",
       icon: require("../../assets/Tracker.png"),
       color: theme.colors.primary,
     };

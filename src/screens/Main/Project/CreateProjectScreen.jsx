@@ -168,7 +168,7 @@ const ToolsListModal = memo(function ToolsListModal({
           <TextInput
             value={toolSearch}
             onChangeText={onToolSearchChange}
-            placeholder="Search tools"
+            placeholder="Search instruments"
             placeholderTextColor="rgba(5, 45, 80, 0.5)"
             style={styles.workersSearchInput}
           />
@@ -192,7 +192,7 @@ const ToolsListModal = memo(function ToolsListModal({
               >
                 <View style={styles.workerCardInfo}>
                   <Text numberOfLines={1} style={styles.workerCardName}>
-                    {item.name || "Unnamed tool"}
+                    {item.name || "Unnamed instrument"}
                   </Text>
                   {item.notes ? (
                     <Text numberOfLines={1} style={styles.workerCardProfession}>
@@ -217,7 +217,7 @@ const ToolsListModal = memo(function ToolsListModal({
           }}
           ListEmptyComponent={
             <View style={styles.workersEmptyState}>
-              <Text style={styles.workersEmptyText}>No tools found</Text>
+              <Text style={styles.workersEmptyText}>No instruments found</Text>
             </View>
           }
         />
@@ -1025,7 +1025,7 @@ export default function CreateProjectScreen() {
 
   const selectedToolsLabel =
     selectedTools.length > 0
-      ? `${selectedTools.length} tool${selectedTools.length > 1 ? "s" : ""}`
+      ? `${selectedTools.length} instrument${selectedTools.length > 1 ? "s" : ""}`
       : "";
 
   const filteredOwners = getFilteredUsers(ownerSearch);
@@ -1369,7 +1369,7 @@ export default function CreateProjectScreen() {
                       : styles.locationFieldPlaceholder,
                   ]}
                 >
-                  {selectedToolsLabel || "Attach tools"}
+                  {selectedToolsLabel || "Attach instruments"}
                 </Text>
               </View>
               <Icon name="chevron-right" size={18} color="#052D50" />

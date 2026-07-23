@@ -443,9 +443,9 @@ export default function CreateEmployeeScreen() {
             {isWorkerRole ? (
               <SelectRow
                 icon="tool"
-                label="Attach tools"
+                label="Attach instruments"
                 value={selectedToolsLabel}
-                placeholder={loadingTools ? "Loading tools..." : "Select tools"}
+                placeholder={loadingTools ? "Loading instruments..." : "Select instruments"}
                 onPress={() => setShowToolModal(true)}
                 theme={theme}
                 isLast
@@ -610,7 +610,7 @@ export default function CreateEmployeeScreen() {
                 { fontFamily: theme.text.fontFamily.semiBold },
               ]}
             >
-              Attach tools
+              Attach instruments
             </Text>
             <View style={standardScreenHeaderPlaceholder} />
           </View>
@@ -619,7 +619,7 @@ export default function CreateEmployeeScreen() {
             {tools.length === 0 ? (
               <View style={styles.pickerEmptyState}>
                 <Text style={styles.pickerEmptyStateText}>
-                  {loadingTools ? "Loading tools..." : "No tools found"}
+                  {loadingTools ? "Loading instruments..." : "No instruments found"}
                 </Text>
               </View>
             ) : (
