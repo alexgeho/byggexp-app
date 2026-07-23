@@ -181,7 +181,7 @@ export const ProjectScreen = () => {
   const { user } = useContext(AuthContext);
   const { showSuccess } = useFeedback();
   const { theme } = useTheme();
-  const { id, initialTab } = route.params || {};
+  const { id, initialTab, refreshKey } = route.params || {};
   const [modal, setModal] = useState(
     initialTab || "Tasks",
   );
@@ -222,6 +222,14 @@ export const ProjectScreen = () => {
   useEffect(() => {
     setModal(initialTab || "Tasks");
   }, [initialTab, id]);
+
+  useEffect(() => {
+    if (!refreshKey) {
+      return;
+    }
+
+    fetchProject();
+  }, [fetchProject, refreshKey]);
 
   const openWorkerModal = (worker) => {
     setSelectedWorker(worker);

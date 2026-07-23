@@ -876,7 +876,7 @@ export default function CreateTaskScreen() {
         });
       });
 
-      await taskService.create(taskData);
+      const createdTask = await taskService.create(taskData);
       showSuccess({
         title: "Task created",
         message: "Task created successfully.",
@@ -886,6 +886,7 @@ export default function CreateTaskScreen() {
         navigation.navigate("Project", {
           id: selectedProjectId,
           initialTab: "Tasks",
+          refreshKey: createdTask?._id || createdTask?.id || Date.now(),
         });
         return;
       }
