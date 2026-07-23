@@ -75,17 +75,6 @@ export const lightColors = {
   playButtonShadowRadius: 0,
   playButtonElevation: 0,
   homeButtonText: "#1C1C1C",
-  homeButtonWidth: "47%",
-  homeButtonRadius: 20,
-  homeButtonMinHeight: 150,
-  homeButtonPadding: 20,
-  homeButtonIconSize: 28,
-  homeButtonGridJustify: "space-between",
-  homeButtonGridGap: 16,
-  homeButtonAlignItems: "stretch",
-  homeButtonIconAlignSelf: "flex-start",
-  homeButtonContentGap: 8,
-  homeButtonTextWeight: "600",
   hideButtonLines: true,
   hideTimerProgress: true,
   showBottomMenuBackground: true,
@@ -118,6 +107,10 @@ export const blueColors = {
   icon: "#1C1C1C80",
 
   bottomNav: "#282828",
+
+  homeButtonBackground: "rgba(255,255,255,0.3)",
+  homeButtonBorder: "rgba(255,255,255,0.2)",
+  homeButtonText: "#FFFFFF",
 };
 
 export const blueDarkTextColors = {
@@ -168,6 +161,10 @@ export const lightBlueColors = {
   icon: "#010D18",
 
   bottomNav: "#010D18",
+
+  homeButtonBackground: "#FFFFFF",
+  homeButtonBorder: "rgba(1,13,24,0.08)",
+  homeButtonText: "#010D18",
 };
 
 export const orangeColors = {

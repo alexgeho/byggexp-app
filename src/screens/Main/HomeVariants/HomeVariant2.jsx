@@ -9,9 +9,6 @@ import React, {
 import {
   View,
   ScrollView,
-  Text,
-  TouchableOpacity,
-  Image,
   Alert,
   useWindowDimensions,
 } from "react-native";
@@ -22,7 +19,6 @@ import {
   useFocusEffect,
   useNavigation,
 } from "@react-navigation/native";
-import Icon from "react-native-vector-icons/Feather";
 
 import AuthContext from "../../../contexts/AuthContext";
 import { useTheme } from "../../../theme/ThemeContext";
@@ -45,8 +41,7 @@ import { MainActionButtons } from "../../../components/common2/mainActionButtons
 import { FooterButtonsVariant2 } from "../../../components/common2/footer/footer";
 
 import ProjectFilesSection from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
-import { HomeButtonExtraInfo } from "../../../components/common/NavButtonsGrid/HomeButtonExtraInfo";
-import { useHomeButtonStats } from "../../../hooks/useHomeButtonStats";
+import MainButtonsGrid from "../../../components/common/NavButtonsGrid/MainButtonsGrid";
 import {
   mainButtons,
   defaultEnabledButtons,
@@ -57,13 +52,8 @@ import {
   getEnabledSections,
   saveEnabledSections,
 } from "../../../utils/homeButtonsStorage";
-import { useUnreadChats } from "../../../hooks/useUnreadChats";
-import UnreadBadge from "../../../components/common/UnreadBadge/UnreadBadge";
 import ShiftHistoryPreview from "../../../components/common2/ShiftHistoryPreview/ShiftHistoryPreview";
-import {
-  canManageEmployees,
-  isHomeButtonVisible,
-} from "../../../utils/userRoles";
+import { isHomeButtonVisible } from "../../../utils/userRoles";
 
 export default function HomeVariant2() {
   const {
@@ -126,12 +116,6 @@ export default function HomeVariant2() {
   const [previewRefreshKey, setPreviewRefreshKey] = useState(0);
   const [scrollViewHeight, setScrollViewHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
-  const { unreadCount } = useUnreadChats();
-  const showEmployeeStats = canManageEmployees(user?.role);
-  const { employeeStats, shiftStats } = useHomeButtonStats({
-    projectId: selectedProjectId,
-    loadEmployeeStats: showEmployeeStats,
-  });
   const visibleQuickButtons = useMemo(
     () =>
       mainButtons.filter(function filterButton(button) {
@@ -329,10 +313,6 @@ export default function HomeVariant2() {
     navigation.navigate("Projects", {
       mode: "select",
     });
-  }
-
-  function openQuickAction(screen) {
-    navigation.navigate(screen);
   }
 
   const handleHideSection = useCallback(async (sectionId) => {
@@ -572,59 +552,7 @@ export default function HomeVariant2() {
                 <View style={styles.actionsToQuickActionsSpacer} />
               ) : null}
 
-              <View style={styles.quickActionsGrid}>
-                {visibleQuickButtons.map(function renderButton(button, index) {
-                  const isSingleLastItem =
-                    visibleQuickButtons.length % 2 === 1 &&
-                    index === visibleQuickButtons.length - 1;
-
-                  return (
-                    <TouchableOpacity
-                      key={button.id}
-                      style={[
-                        styles.quickActionCard,
-                        isSingleLastItem && styles.quickActionCardFullWidth,
-                      ]}
-                      onPress={function onButtonPress() {
-                        openQuickAction(button.screen);
-                      }}
-                    >
-                      <View style={styles.quickActionIconWrapper}>
-                        {button.vectorIcon ? (
-                          <Icon
-                            name={button.vectorIcon}
-                            size={theme.colors.homeButtonIconSize || 28}
-                            color={
-                              theme.colors.homeButtonText ||
-                              (isLightBlueTheme ? theme.colors.text : "#FFFFFF")
-                            }
-                          />
-                        ) : (
-                          <Image
-                            source={button.icon}
-                            style={styles.quickActionIcon}
-                          />
-                        )}
-                        {button.id === "chats" ? (
-                          <UnreadBadge count={unreadCount} />
-                        ) : null}
-                      </View>
-
-                      <Text style={styles.quickActionText}>
-                        {button.title}
-                      </Text>
-
-                      <HomeButtonExtraInfo
-                        buttonId={button.id}
-                        showEmployeeStats={showEmployeeStats}
-                        employeeStats={employeeStats}
-                        shiftStats={shiftStats}
-                        style={styles.quickActionBadgesRow}
-                      />
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
+              <MainButtonsGrid />
             </View>
 
             {enabledSections.includes("shift-history") && (

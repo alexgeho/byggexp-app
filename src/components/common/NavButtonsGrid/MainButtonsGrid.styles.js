@@ -12,8 +12,8 @@ export function createStyles(theme) {
       width: "100%",
       flexDirection: "row",
       alignItems: "stretch",
-      justifyContent: theme.colors.homeButtonGridJustify || "center",
-      gap: theme.colors.homeButtonGridGap || 15,
+      justifyContent: theme.homeButton.gridJustify,
+      gap: theme.homeButton.gridGap,
     },
 
     linesContainer: {
@@ -36,9 +36,9 @@ export function createStyles(theme) {
     },
 
     button: {
-      width: theme.colors.homeButtonWidth || "42%",
-      minHeight: theme.colors.homeButtonMinHeight || 150,
-      borderRadius: theme.colors.homeButtonRadius || 16,
+      width: theme.homeButton.width,
+      height: theme.homeButton.height,
+      borderRadius: theme.homeButton.radius,
       overflow: "hidden",
       borderWidth: 1,
       borderColor: buttonBorder,
@@ -48,15 +48,15 @@ export function createStyles(theme) {
     buttonInner: {
       flex: 1,
       flexDirection: "column",
-      padding: theme.colors.homeButtonPadding || 16,
-      gap: theme.colors.homeButtonContentGap || 8,
-      alignItems: theme.colors.homeButtonAlignItems || "stretch",
+      padding: theme.homeButton.padding,
+      gap: theme.homeButton.contentGap,
+      alignItems: theme.homeButton.alignItems,
       justifyContent: "center",
     },
 
     iconWrapper: {
       position: "relative",
-      alignSelf: theme.colors.homeButtonIconAlignSelf || "flex-start",
+      alignSelf: theme.homeButton.iconAlignSelf,
     },
 
     infoBadgesRow: {
@@ -67,17 +67,17 @@ export function createStyles(theme) {
     },
 
     buttonIcon: {
-      width: theme.colors.homeButtonIconSize || 26,
-      height: theme.colors.homeButtonIconSize || 26,
+      width: theme.homeButton.iconSize,
+      height: theme.homeButton.iconSize,
       resizeMode: "contain",
-      tintColor: theme.colors.icon,
+      tintColor: theme.colors.homeButtonText || theme.colors.icon,
     },
 
     buttonText: {
-      color: theme.colors.textBtn || theme.colors.text,
+      color: theme.colors.homeButtonText || theme.colors.textBtn || theme.colors.text,
       fontFamily: theme.text.fontFamily.regular,
       fontSize: theme.text.sizes.medium,
-      fontWeight: theme.colors.homeButtonTextWeight,
+      fontWeight: theme.homeButton.textWeight,
     },
   });
 }

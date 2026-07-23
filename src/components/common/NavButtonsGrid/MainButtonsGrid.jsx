@@ -93,8 +93,8 @@ export default function MainButtonsGrid() {
                   {button.vectorIcon ? (
                     <Icon
                       name={button.vectorIcon}
-                      size={theme.colors.homeButtonIconSize || 26}
-                      color={theme.colors.icon}
+                      size={theme.homeButton.iconSize}
+                      color={theme.colors.homeButtonText || theme.colors.icon}
                     />
                   ) : (
                     <Image source={button.icon} style={styles.buttonIcon} />

@@ -18,26 +18,8 @@ export function createStyles({
     : compact
       ? 18
       : 24;
-  const gridGap = veryCompact ? 10 : 16;
-  const cardHeight = veryCompact
-    ? 88
-    : compact
-      ? 98
-      : 116;
-  const cardPadding = veryCompact
-    ? 14
-    : compact
-      ? 16
-      : 20;
-  const iconSize = veryCompact ? 22 : compact ? 24 : 28;
-  const textSize = veryCompact ? 14 : compact ? 15 : 16;
   const timerBottomCompensation = veryCompact ? 8 : compact ? 12 : 16;
   const textColor = theme?.colors?.text || "#FFFFFF";
-  const homeButtonTextColor = theme?.colors?.homeButtonText;
-  const homeButtonBackground =
-    theme?.colors?.homeButtonBackground;
-  const homeButtonBorder =
-    theme?.colors?.homeButtonBorder;
 
   return StyleSheet.create({
     container: {
@@ -91,53 +73,6 @@ export function createStyles({
     },
     actionsToQuickActionsSpacer: {
       height: sectionGap,
-    },
-    quickActionsGrid: {
-      flexDirection: "row",
-      flexWrap: "wrap",
-      justifyContent: "space-between",
-      rowGap: gridGap,
-      columnGap: gridGap,
-    },
-    quickActionCard: {
-      width: "47%",
-      minHeight: cardHeight,
-      backgroundColor: homeButtonBackground || (isLightBlue
-        ? "#FFFFFF"
-        : "rgba(255,255,255,0.3)"),
-      borderWidth: 1,
-      borderColor: homeButtonBorder || (isLightBlue
-        ? "rgba(1,13,24,0.08)"
-        : "rgba(255,255,255,0.2)"),
-      padding: cardPadding,
-      borderRadius: 20,
-      justifyContent: "center",
-      gap: 8,
-    },
-    quickActionCardFullWidth: {
-      width: "100%",
-    },
-    quickActionIconWrapper: {
-      position: "relative",
-      alignSelf: "flex-start",
-    },
-    quickActionIcon: {
-      width: iconSize,
-      height: iconSize,
-      resizeMode: "contain",
-      tintColor: homeButtonTextColor || (isLightBlue ? textColor : "#fff"),
-    },
-    quickActionText: {
-      color: homeButtonTextColor || (isLightBlue ? textColor : "#fff"),
-      fontSize: textSize,
-      lineHeight: compact ? textSize + 2 : 20,
-      fontWeight: "600",
-    },
-    quickActionBadgesRow: {
-      flexDirection: "row",
-      flexWrap: "wrap",
-      alignSelf: "flex-start",
-      gap: 6,
     },
     selectorCompact: {
       paddingHorizontal: veryCompact ? 16 : 18,

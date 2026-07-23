@@ -17,36 +17,22 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "../../../theme/ThemeContext";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import Icon from "react-native-vector-icons/Feather";
 import ProjectSelector2 from "../../../components/common2/projectSelector/projectSelector";
 import AuthContext from "../../../contexts/AuthContext";
 import { useTimer } from "../../../hooks/useTimer";
 import { useShiftExitAutoComplete } from "../../../hooks/useShiftExitAutoComplete";
-import { useHomeButtonStats } from "../../../hooks/useHomeButtonStats";
-import { useUnreadChats } from "../../../hooks/useUnreadChats";
-import { GlassView } from "../../../components/common/GlassView/GlassView";
-import UnreadBadge from "../../../components/common/UnreadBadge/UnreadBadge";
 import { projectService, shiftService } from "../../../services";
 import { formatDuration } from "../../../utils/shifts";
 import { resumeShiftWithGuards, startShiftWithLocationGuard } from "../../../utils/shiftLocationGuard";
 import { createShiftGeofenceHandlers } from "../../../utils/shiftGeofenceHandlers";
+import { defaultEnabledSections } from "../../../constants/mainButtons";
 import {
-  defaultEnabledButtons,
-  defaultEnabledSections,
-  mainButtons,
-} from "../../../constants/mainButtons";
-import {
-  getEnabledButtons,
   getEnabledSections,
   saveEnabledSections,
 } from "../../../utils/homeButtonsStorage";
 import ProjectFilesSection from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
 import ShiftHistoryPreview from "../../../components/common2/ShiftHistoryPreview/ShiftHistoryPreview";
-import { HomeButtonExtraInfo } from "../../../components/common/NavButtonsGrid/HomeButtonExtraInfo";
-import {
-  canManageEmployees,
-  isHomeButtonVisible,
-} from "../../../utils/userRoles";
+import MainButtonsGrid from "../../../components/common/NavButtonsGrid/MainButtonsGrid";
 
 export default function MainScreen() {
   const { theme } = useTheme();
@@ -58,14 +44,7 @@ export default function MainScreen() {
   const [loadingShift, setLoadingShift] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [currentShift, setCurrentShift] = useState(null);
-  const [enabledButtons, setEnabledButtons] = useState(defaultEnabledButtons);
   const [enabledSections, setEnabledSections] = useState(defaultEnabledSections);
-  const showEmployeeStats = canManageEmployees(user?.role);
-  const { employeeStats, shiftStats } = useHomeButtonStats({
-    projectId: selectedProjectId,
-    loadEmployeeStats: showEmployeeStats,
-  });
-  const { unreadCount } = useUnreadChats();
   const {
     formattedTime,
     isRunning,
@@ -208,14 +187,7 @@ export default function MainScreen() {
       fetchProjects();
       loadCurrentShift(selectedProjectId);
       async function loadHomeSettings() {
-        const [savedButtons, savedSections] = await Promise.all([
-          getEnabledButtons(),
-          getEnabledSections(),
-        ]);
-
-        if (savedButtons) {
-          setEnabledButtons(savedButtons);
-        }
+        const savedSections = await getEnabledSections();
 
         if (savedSections) {
           setEnabledSections(savedSections);
@@ -316,9 +288,6 @@ export default function MainScreen() {
   const handleNav = (screen) => {
     navigation.navigate(screen);
   };
-  const visibleButtons = mainButtons.filter((button) =>
-    isHomeButtonVisible(button, enabledButtons, user?.role),
-  );
 
   const BackgroundComponent = Platform.OS === "web" ? View : LinearGradient;
 
@@ -463,67 +432,7 @@ export default function MainScreen() {
       </View>
 
       {/* MAIN NAV BTNs */}
-      <View style={styles.navButtonContainer}>
-        {visibleButtons.map((button) => (
-          <GlassView
-            key={button.id}
-            style={[
-              styles.button,
-              {
-                borderColor: theme.colors.border,
-                backgroundColor: theme.colors.card,
-              },
-            ]}
-            intensity={60}
-          >
-            <TouchableOpacity
-              onPress={() => handleNav(button.screen)}
-              style={styles.buttonInner}
-            >
-              <View style={styles.iconWrapper}>
-                {button.vectorIcon ? (
-                  <Icon
-                    name={button.vectorIcon}
-                    size={theme.colors.homeButtonIconSize || 26}
-                    color={theme.colors.icon}
-                  />
-                ) : (
-                  <Image
-                    style={[
-                      styles.buttonIcon,
-                      {
-                        tintColor: theme.colors.icon,
-                      },
-                    ]}
-                    source={button.icon}
-                  />
-                )}
-                {button.id === "chats" ? (
-                  <UnreadBadge count={unreadCount} />
-                ) : null}
-              </View>
-              <Text
-                style={[
-                  styles.text,
-                  {
-                    fontFamily: theme.text.fontFamily["regular"],
-                    color: theme.colors.text,
-                  },
-                ]}
-              >
-                {button.title}
-              </Text>
-              <HomeButtonExtraInfo
-                buttonId={button.id}
-                showEmployeeStats={showEmployeeStats}
-                employeeStats={employeeStats}
-                shiftStats={shiftStats}
-                style={styles.infoBadgesRow}
-              />
-            </TouchableOpacity>
-          </GlassView>
-        ))}
-      </View>
+      <MainButtonsGrid />
 
       <View style={styles.sectionsContainer}>
         {enabledSections.includes("shift-history") && (
@@ -655,49 +564,10 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
   },
-  navButtonContainer: {
-    flexWrap: "wrap",
-    padding: 16,
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 30,
-  },
   sectionsContainer: {
     gap: 16,
     paddingHorizontal: 16,
     marginTop: 8,
-  },
-  button: {
-    width: "42%",
-    borderRadius: 16,
-    overflow: "hidden",
-
-    borderWidth: 1,
-  },
-  buttonInner: {
-    flexDirection: "column",
-    padding: 16,
-    gap: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: 116,
-  },
-  infoBadgesRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    gap: 6,
-  },
-  iconWrapper: {
-    position: "relative",
-  },
-  buttonIcon: {
-    width: 26,
-    height: 26,
-  },
-  text: {
-    color: "#ffffff",
   },
   bottomNavContainer: {
     flexDirection: "row",

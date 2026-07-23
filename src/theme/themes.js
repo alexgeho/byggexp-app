@@ -45,6 +45,20 @@ const common = {
       large: 20,
     },
   },
+
+  homeButton: {
+    width: "47%",
+    height: 1 50,
+    radius: 20,
+    padding: 20,
+    iconSize: 28,
+    gridJustify: "space-between",
+    gridGap: 16,
+    alignItems: "stretch",
+    iconAlignSelf: "flex-start",
+    contentGap: 8,
+    textWeight: "600",
+  },
 };
 
 export const greenTheme = {
