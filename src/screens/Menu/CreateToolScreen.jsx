@@ -20,6 +20,7 @@ import { useTheme } from "../../theme/ThemeContext";
 import { projectService, toolService, userService } from "../../services";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
+import FloatingActionButton from "../../components/common2/FloatingActionButton/FloatingActionButton";
 import {
   standardScreenContainer,
   standardScreenHeader,
@@ -224,7 +225,7 @@ export default function CreateToolScreen() {
     const trimmedName = name.trim();
 
     if (!trimmedName) {
-      setFormError("Please enter tool name.");
+      setFormError("Please enter an instrument name.");
       return;
     }
 
@@ -258,8 +259,8 @@ export default function CreateToolScreen() {
 
       await toolService.create(formData);
       showSuccess({
-        title: "Tool created",
-        message: "Tool created successfully.",
+        title: "Instrument created",
+        message: "Instrument created successfully.",
       });
       navigation.goBack();
     } catch (error) {
@@ -268,7 +269,7 @@ export default function CreateToolScreen() {
       setFormError(
         Array.isArray(message)
           ? message.join(", ")
-          : message || error?.message || "Unable to create tool.",
+          : message || error?.message || "Unable to create instrument.",
       );
     } finally {
       setSaving(false);
@@ -290,7 +291,7 @@ export default function CreateToolScreen() {
                 { fontFamily: theme.text.fontFamily.semiBold },
               ]}
             >
-              Add tool
+              Add instrument
             </Text>
             <View style={standardScreenHeaderPlaceholder} />
           </View>
@@ -316,9 +317,19 @@ export default function CreateToolScreen() {
               { fontFamily: theme.text.fontFamily.semiBold },
             ]}
           >
-            Add tool
+            Add instrument
           </Text>
-          <View style={standardScreenHeaderPlaceholder} />
+          <FloatingActionButton
+            onPress={handleCreateTool}
+            disabled={saving}
+            renderContent={() =>
+              saving ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <Icon name="check" size={24} color="#FFFFFF" />
+              )
+            }
+          />
         </View>
 
         <ScrollView
@@ -334,7 +345,7 @@ export default function CreateToolScreen() {
               label="Name *"
               value={name}
               onChangeText={setName}
-              placeholder="Tool name"
+              placeholder="Instrument name"
             />
             <TouchableOpacity
               style={[styles.selectRow, styles.groupRowLast]}

@@ -168,7 +168,7 @@ const ToolsListModal = memo(function ToolsListModal({
           <TextInput
             value={toolSearch}
             onChangeText={onToolSearchChange}
-            placeholder="Search tools"
+            placeholder="Search instruments"
             placeholderTextColor="rgba(5, 45, 80, 0.5)"
             style={styles.workersSearchInput}
           />
@@ -192,7 +192,7 @@ const ToolsListModal = memo(function ToolsListModal({
               >
                 <View style={styles.workerCardInfo}>
                   <Text numberOfLines={1} style={styles.workerCardName}>
-                    {item.name || "Unnamed tool"}
+                    {item.name || "Unnamed instrument"}
                   </Text>
                   {item.notes ? (
                     <Text numberOfLines={1} style={styles.workerCardProfession}>
@@ -217,7 +217,7 @@ const ToolsListModal = memo(function ToolsListModal({
           }}
           ListEmptyComponent={
             <View style={styles.workersEmptyState}>
-              <Text style={styles.workersEmptyText}>No tools found</Text>
+              <Text style={styles.workersEmptyText}>No instruments found</Text>
             </View>
           }
         />
@@ -1025,7 +1025,7 @@ export default function CreateProjectScreen() {
 
   const selectedToolsLabel =
     selectedTools.length > 0
-      ? `${selectedTools.length} tool${selectedTools.length > 1 ? "s" : ""}`
+      ? `${selectedTools.length} instrument${selectedTools.length > 1 ? "s" : ""}`
       : "";
 
   const filteredOwners = getFilteredUsers(ownerSearch);
@@ -1369,7 +1369,7 @@ export default function CreateProjectScreen() {
                       : styles.locationFieldPlaceholder,
                   ]}
                 >
-                  {selectedToolsLabel || "Attach tools"}
+                  {selectedToolsLabel || "Attach instruments"}
                 </Text>
               </View>
               <Icon name="chevron-right" size={18} color="#052D50" />
@@ -2392,11 +2392,6 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: 1,
     borderColor: "#FFFFFF",
-    shadowColor: "#052D50",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.1,
-    shadowRadius: 24,
-    elevation: 6,
   },
   datePickerTitle: {
     color: "#052D50",
@@ -2417,12 +2412,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 18,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 7,
-    elevation: 4,
-    boxShadow: "0px 2px 7px 0px rgba(0, 0, 0, 0.25)",
   },
   datePickerSecondaryButtonText: {
     color: "#FFFFFF",
@@ -2524,11 +2513,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#FFFFFF",
-    shadowColor: "#052D50",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 1,
   },
   workerCheckboxSelected: {
     backgroundColor: "#FFFFFF",
@@ -2550,12 +2534,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: "center",
     marginBottom: 100,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 7,
-    elevation: 4,
-    boxShadow: "0px 2px 7px 0px rgba(0, 0, 0, 0.25)",
   },
   createButtonText: {
     color: "#ffffff",
@@ -2605,12 +2583,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#0091FF",
     borderRadius: 8,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 7,
-    elevation: 4,
-    boxShadow: "0px 2px 7px 0px rgba(0, 0, 0, 0.25)",
   },
   closeButtonText: {
     color: "#ffffff",
@@ -2689,11 +2661,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingHorizontal: 14,
     paddingVertical: 10,
-    shadowColor: "#052D50",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.08,
-    shadowRadius: 16,
-    elevation: 4,
   },
   mapSuggestionsLoadingRow: {
     flexDirection: "row",
@@ -2741,11 +2708,6 @@ const styles = StyleSheet.create({
     paddingBottom: 14,
     borderWidth: 1,
     borderColor: "#FFFFFF",
-    shadowColor: "#052D50",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.08,
-    shadowRadius: 20,
-    elevation: 5,
     gap: 12,
   },
   mapBottomPanelTitle: {
@@ -2808,11 +2770,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 18,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.18,
-    shadowRadius: 7,
-    elevation: 4,
   },
   mapChooseLocationButtonDisabled: {
     opacity: 0.45,

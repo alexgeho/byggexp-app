@@ -207,11 +207,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#FFFFFF",
     backgroundColor: "#FFFFFF",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 2,
   },
   content: {
     flex: 1,

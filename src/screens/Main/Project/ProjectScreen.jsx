@@ -181,7 +181,7 @@ export const ProjectScreen = () => {
   const { user } = useContext(AuthContext);
   const { showSuccess } = useFeedback();
   const { theme } = useTheme();
-  const { id, initialTab } = route.params || {};
+  const { id, initialTab, refreshKey } = route.params || {};
   const [modal, setModal] = useState(
     initialTab || "Tasks",
   );
@@ -222,6 +222,14 @@ export const ProjectScreen = () => {
   useEffect(() => {
     setModal(initialTab || "Tasks");
   }, [initialTab, id]);
+
+  useEffect(() => {
+    if (!refreshKey) {
+      return;
+    }
+
+    fetchProject();
+  }, [fetchProject, refreshKey]);
 
   const openWorkerModal = (worker) => {
     setSelectedWorker(worker);
@@ -770,11 +778,6 @@ const styles = StyleSheet.create({
     borderRadius: 9999,
     borderWidth: 1,
     borderColor: "#FFFFFF",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
   },
   backIcon: {
     width: 20,
@@ -804,11 +807,6 @@ const styles = StyleSheet.create({
     paddingRight: 8,
     backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 999,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.0625,
-    shadowRadius: 10,
-    elevation: 1,
     borderWidth: 1,
     borderColor: "#FFFFFF",
   },
@@ -837,11 +835,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderWidth: 1,
     borderColor: "#FFFFFF",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.0625,
-    shadowRadius: 10,
-    elevation: 1,
   },
   emptyStateTitle: {
     color: "#052D50",
@@ -859,11 +852,6 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: 1,
     borderColor: "#FFFFFF",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.0625,
-    shadowRadius: 10,
-    elevation: 1,
     marginBottom: 16,
     flexDirection: "row",
     alignItems: "center",
@@ -916,11 +904,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderWidth: 1,
     borderColor: "#FFFFFF",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.0625,
-    shadowRadius: 10,
-    elevation: 1,
     gap: 16,
     marginBottom: 12,
   },
@@ -990,11 +973,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "#FFFFFF",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 1,
   },
   optionText: {
     fontSize: 16,
@@ -1025,11 +1003,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     zIndex: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 7,
-    elevation: 6,
-    boxShadow: "0px 2px 7px 0px rgba(0, 0, 0, 0.25)",
   },
 });

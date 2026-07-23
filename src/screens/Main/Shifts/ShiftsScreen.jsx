@@ -1288,11 +1288,6 @@ const styles = StyleSheet.create({
     borderRadius: 9999,
     borderWidth: 1,
     borderColor: "#FFFFFF",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
   },
   backIcon: {
     width: 20,
@@ -1771,11 +1766,6 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 7,
-    elevation: 4,
   },
   datePickerOverlay: {
     flex: 1,

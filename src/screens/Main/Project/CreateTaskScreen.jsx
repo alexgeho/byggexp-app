@@ -19,11 +19,12 @@ import Icon from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
+import FloatingActionButton from "../../../components/common2/FloatingActionButton/FloatingActionButton";
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import {
+  standardScreenContainer,
   standardScreenHeader,
   standardScreenHeaderPlaceholder,
-  standardScreenScrollContent,
 } from "../../../styles/screenLayout";
 import { useTheme } from "../../../theme/ThemeContext";
 import { projectService, taskService, userService } from "../../../services";
@@ -875,7 +876,7 @@ export default function CreateTaskScreen() {
         });
       });
 
-      await taskService.create(taskData);
+      const createdTask = await taskService.create(taskData);
       showSuccess({
         title: "Task created",
         message: "Task created successfully.",
@@ -885,6 +886,7 @@ export default function CreateTaskScreen() {
         navigation.navigate("Project", {
           id: selectedProjectId,
           initialTab: "Tasks",
+          refreshKey: createdTask?._id || createdTask?.id || Date.now(),
         });
         return;
       }
@@ -928,10 +930,7 @@ export default function CreateTaskScreen() {
 
   return (
     <View style={styles.container}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
-      >
+      <View style={styles.pageContainer}>
         <View style={styles.header}>
           <BackButton
             backgroundColor={"rgba(255, 255, 255, 0.6)"}
@@ -941,8 +940,25 @@ export default function CreateTaskScreen() {
             iconSource={require("../../../assets/Arrow-left.png")}
           />
           <Text style={styles.headerTitle}>Create task</Text>
-          <View style={styles.placeholder} />
+          <FloatingActionButton
+            onPress={createTask}
+            disabled={saving}
+            renderContent={() =>
+              saving ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <Icon name="check" size={24} color="#FFFFFF" />
+              )
+            }
+          />
         </View>
+
+        <ScrollView
+          style={styles.contentScroll}
+          contentContainerStyle={styles.contentContainer}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
 
         <SectionLabel>General</SectionLabel>
         <GroupCard>
@@ -1211,7 +1227,8 @@ export default function CreateTaskScreen() {
           onSelect={selectUser}
           onClose={() => setShowUserPicker(false)}
         />
-      </ScrollView>
+        </ScrollView>
+      </View>
 
       <Modal
         visible={showNotificationsSheet}
@@ -1369,8 +1386,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#EEEEEE",
   },
+  pageContainer: {
+    ...standardScreenContainer,
+    paddingBottom: 0,
+  },
+  contentScroll: {
+    flex: 1,
+    width: "100%",
+  },
   contentContainer: {
-    ...standardScreenScrollContent,
+    paddingBottom: 140,
+    gap: 12,
   },
   loadingContainer: {
     flex: 1,
@@ -1419,9 +1445,6 @@ const styles = StyleSheet.create({
     color: "#052D50",
     fontSize: 17,
     fontFamily: "DMSans-SemiBold",
-  },
-  placeholder: {
-    ...standardScreenHeaderPlaceholder,
   },
   sectionLabel: {
     marginBottom: 8,
@@ -1643,12 +1666,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#0091FF",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 7,
-    elevation: 4,
-    boxShadow: "0px 2px 7px 0px rgba(0, 0, 0, 0.25)",
   },
   createButtonDisabled: {
     opacity: 0.7,
@@ -1688,12 +1705,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 14,
     backgroundColor: "#0091FF",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 7,
-    elevation: 4,
-    boxShadow: "0px 2px 7px 0px rgba(0, 0, 0, 0.25)",
   },
   datePickerButtonText: {
     color: "#FFFFFF",

@@ -362,11 +362,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#0091FF",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 7,
-    elevation: 4,
   },
   submitButtonDisabled: {
     opacity: 0.7,

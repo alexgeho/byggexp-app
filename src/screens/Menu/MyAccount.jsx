@@ -19,10 +19,10 @@ import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/Feather";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../components/common/BackButton/BackButton";
+import FloatingActionButton from "../../components/common2/FloatingActionButton/FloatingActionButton";
 import {
   standardScreenContainer,
   standardScreenHeader,
-  standardScreenHeaderPlaceholder,
 } from "../../styles/screenLayout";
 import {
   getDocumentNameFromUrl,
@@ -481,7 +481,17 @@ export const MyAccount = () => {
         >
           My account
         </Text>
-        <View style={styles.placeholder} />
+        <FloatingActionButton
+          onPress={handleSave}
+          disabled={saving}
+          renderContent={() =>
+            saving ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Icon name="check" size={24} color="#FFFFFF" />
+            )
+          }
+        />
       </View>
 
       <ScrollView
@@ -708,11 +718,6 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#ffffff",
     borderRadius: 9999,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
   },
   backIcon: {
     width: 20,
@@ -722,9 +727,6 @@ const styles = StyleSheet.create({
     color: "#052D50",
     fontSize: 17,
     textAlign: "center",
-  },
-  placeholder: {
-    ...standardScreenHeaderPlaceholder,
   },
   scrollContainer: {
     flex: 1,
@@ -758,11 +760,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.125,
-    shadowRadius: 10,
-    elevation: 2,
   },
   editAvatarIcon: {
     width: 11,
@@ -792,11 +789,6 @@ const styles = StyleSheet.create({
     paddingRight: 24,
     backgroundColor: "#ffffff",
     borderRadius: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.125,
-    shadowRadius: 10,
-    elevation: 2,
   },
   inputLabelRow: {
     flexDirection: "row",
@@ -828,11 +820,6 @@ const styles = StyleSheet.create({
     paddingRight: 24,
     backgroundColor: "#ffffff",
     borderRadius: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.125,
-    shadowRadius: 10,
-    elevation: 2,
   },
   phoneContainer: {
     flex: 1,
@@ -841,11 +828,6 @@ const styles = StyleSheet.create({
     paddingRight: 24,
     backgroundColor: "#ffffff",
     borderRadius: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.125,
-    shadowRadius: 10,
-    elevation: 2,
   },
   documentsContainer: {
     width: "100%",
@@ -853,11 +835,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     borderRadius: 12,
     gap: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.125,
-    shadowRadius: 10,
-    elevation: 2,
     position: "relative",
   },
   documentsLabel: {
@@ -870,11 +847,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#EEEEEE",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.0625,
-    shadowRadius: 10,
-    elevation: 1,
     position: "absolute",
     top: 12,
     right: 12,

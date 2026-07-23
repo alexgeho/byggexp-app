@@ -8,12 +8,6 @@ export function createStyles(theme) {
     theme.colors.primary;
   const playIconSize =
     theme.colors.playIconSize || 52;
-  const shadowOpacity =
-    theme.colors.playButtonShadowOpacity ?? 0.7;
-  const shadowRadius =
-    theme.colors.playButtonShadowRadius ?? 40;
-  const elevation =
-    theme.colors.playButtonElevation ?? 25;
 
   return StyleSheet.create({
     playButtonContainer: {
@@ -30,13 +24,7 @@ export function createStyles(theme) {
 
       backgroundColor: playButtonColor,
 
-      shadowColor: playButtonColor,
       borderColor: playButtonColor,
-
-      shadowOpacity,
-      shadowRadius,
-
-      elevation,
     },
 
     playButtonPaused: {

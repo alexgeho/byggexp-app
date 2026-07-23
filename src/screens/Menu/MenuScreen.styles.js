@@ -17,11 +17,6 @@ export function createStyles(theme) {
     padding: 16,
     backgroundColor: "#ffffff",
     borderRadius: 9999,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
   },
   backIcon: {
     width: 20,
@@ -97,11 +92,6 @@ export function createStyles(theme) {
     borderRadius: 89,
     padding: 12,
     marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.0625,
-    shadowRadius: 10,
-    elevation: 2,
   },
   userAvatar: {
     width: 48,
