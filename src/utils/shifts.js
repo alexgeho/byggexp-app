@@ -72,6 +72,22 @@ export const formatDurationShort = (durationMs = 0) => {
   return `${minutes}m`;
 };
 
+export const formatDurationCompact = (durationMs = 0) => {
+  const totalMinutes = Math.floor(durationMs / 60000);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  if (hours && minutes) {
+    return `${hours}h ${minutes}m`;
+  }
+
+  if (hours) {
+    return `${hours}h`;
+  }
+
+  return `${minutes}m`;
+};
+
 export const formatShiftDate = (dateString) => {
   if (!dateString) return '—';
 

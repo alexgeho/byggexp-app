@@ -25,7 +25,6 @@ import { cardStyles } from "../../styles/cards";
 import {
   canManageEmployees,
   getAccountStatusLabel,
-  getRoleLabel,
   shouldShowAccountStatus,
 } from "../../utils/userRoles";
 
@@ -105,6 +104,18 @@ const truncateProjectName = (name) => {
   return `${name.slice(0, MAX_PROJECT_NAME_LENGTH - 3)}...`;
 };
 
+const isEmployeeAtWork = (employee, selectedProjectId) => {
+  if (employee?.workStatus !== "working") {
+    return false;
+  }
+
+  if (!selectedProjectId) {
+    return true;
+  }
+
+  return getEntityId({ id: employee?.workStatusProjectId }) === selectedProjectId;
+};
+
 const getEmployeeProjectLabel = (employee, projectNameById, projects) => {
   const projectNames = getEmployeeProjectIds(employee, projects)
     .map((projectId) => truncateProjectName(projectNameById.get(projectId)))
@@ -160,7 +171,19 @@ export default function EmployeesScreen() {
     }
   }, [selectedProjectId, user?.role]);
 
-  const filteredEmployees = employees;
+  const filteredEmployees = useMemo(() => {
+    const getSortPriority = (employee) => {
+      if (shouldShowAccountStatus(employee?.accountStatus)) {
+        return 2;
+      }
+
+      return isEmployeeAtWork(employee, selectedProjectId) ? 0 : 1;
+    };
+
+    return [...employees].sort(
+      (left, right) => getSortPriority(left) - getSortPriority(right),
+    );
+  }, [employees, selectedProjectId]);
 
   useFocusEffect(
     useCallback(() => {
@@ -265,26 +288,25 @@ export default function EmployeesScreen() {
               const showAccountStatus = shouldShowAccountStatus(
                 employee.accountStatus,
               );
+              const atWork = isEmployeeAtWork(employee, selectedProjectId);
 
-              const themedRoleBadgeStyle = {
-                color: theme.colors.primary,
-                backgroundColor: `${theme.colors.primary}1A`,
-              };
+              const badgeLabel = showAccountStatus
+                ? accountStatusLabel
+                : atWork
+                  ? "At work"
+                  : "Not at work";
+              const badgeStyle = showAccountStatus
+                ? cardStyles.cardBadgeWarning
+                : atWork
+                  ? cardStyles.cardBadgeAtWork
+                  : cardStyles.cardBadgeAbsent;
 
               return (
                 <ListCard
                   key={employeeId}
                   title={employee.name || "Unnamed"}
-                  badgeLabel={
-                    showAccountStatus
-                      ? accountStatusLabel
-                      : getRoleLabel(employee.role)
-                  }
-                  badgeStyle={
-                    showAccountStatus
-                      ? cardStyles.cardBadgeWarning
-                      : themedRoleBadgeStyle
-                  }
+                  badgeLabel={badgeLabel}
+                  badgeStyle={badgeStyle}
                 >
                   <Text
                     style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}

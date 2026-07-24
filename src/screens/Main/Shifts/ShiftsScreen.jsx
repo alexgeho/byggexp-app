@@ -33,8 +33,8 @@ import {
   buildExportMonthOptions,
   formatDateKey,
   formatDuration,
+  formatDurationCompact,
   formatDurationShort,
-  formatDurationVerbose,
   formatExportPickerDate,
   formatMonthLabel,
   formatTimeRange,
@@ -170,9 +170,7 @@ export default function ShiftsScreen() {
       );
     }, 0);
 
-    const dayLabel = selectedDates.length === 1 ? "day" : "days";
-
-    return `${formatDurationVerbose(totalDurationMs)} (${selectedDates.length} ${dayLabel})`;
+    return { totalDurationMs, dayCount: selectedDates.length };
   }, [dayMap, selectedDates]);
 
   const toggleDateGroup = useCallback((dates) => {
@@ -328,18 +326,14 @@ export default function ShiftsScreen() {
                 <Text
                   style={[
                     styles.calendarDay,
+                    isToday && !isSelected && styles.calendarDayToday,
                     isSelected && styles.calendarDaySelected,
                   ]}
                 >
                   {day}
                 </Text>
                 {shiftDay ? (
-                  <Text
-                    style={[
-                      styles.calendarHours,
-                      isSelected && styles.calendarHoursSelected,
-                    ]}
-                  >
+                  <Text style={styles.calendarHours}>
                     {formatDurationShort(shiftDay.totalDurationMs)}
                   </Text>
                 ) : null}
@@ -773,16 +767,35 @@ export default function ShiftsScreen() {
           </View>
 
           <View style={styles.shiftDetailsContainer}>
-            {selectedDates.length > 0 ? (
-              <View style={styles.shiftDetailsHeader}>
-                <Text
-                  style={[
-                    styles.shiftSelectionSummary,
-                    { fontFamily: theme.text.fontFamily["medium"] },
-                  ]}
-                >
-                {`Selected: ${selectionSummary}`}
-                </Text>
+            {selectedDates.length > 0 && selectionSummary ? (
+              <View style={styles.selectionSummaryCard}>
+                <View style={styles.selectionSummaryStat}>
+                  <Text
+                    style={[
+                      styles.selectionSummaryValue,
+                      { fontFamily: theme.text.fontFamily["semiBold"] },
+                    ]}
+                  >
+                    {formatDurationCompact(selectionSummary.totalDurationMs)}
+                  </Text>
+                  <Text style={styles.selectionSummaryLabel}>Selected</Text>
+                </View>
+
+                <View style={styles.selectionSummaryDivider} />
+
+                <View style={styles.selectionSummaryStat}>
+                  <Text
+                    style={[
+                      styles.selectionSummaryValue,
+                      { fontFamily: theme.text.fontFamily["semiBold"] },
+                    ]}
+                  >
+                    {selectionSummary.dayCount}{" "}
+                    {selectionSummary.dayCount === 1 ? "day" : "days"}
+                  </Text>
+                  <Text style={styles.selectionSummaryLabel}>Selected</Text>
+                </View>
+
                 <TouchableOpacity
                   style={styles.clearSelectionButton}
                   onPress={clearSelectedDates}
@@ -1310,20 +1323,20 @@ const styles = StyleSheet.create({
   },
   dropdownButton: {
     width: "100%",
-    height: 48,
+    height: 56,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     gap: 8,
     paddingLeft: 24,
-    paddingRight: 13,
+    paddingRight: 16,
     backgroundColor: "rgba(5, 45, 80, 0.05)",
     borderRadius: 71,
   },
   dropdownText: {
     flex: 1,
     color: "#052D50",
-    fontSize: 15,
+    fontSize: 19,
     fontWeight: "600",
   },
   dropdownPlaceholderText: {
@@ -1414,11 +1427,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   calendarCell: {
-    width: 40,
-    height: 40,
+    width: 42,
+    height: 42,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 8,
+    gap: 1,
+    paddingVertical: 5,
+    borderRadius: 6,
     backgroundColor: "rgba(255, 255, 255, 0.4)",
     borderWidth: 1,
     borderColor: "#FFFFFF",
@@ -1432,50 +1447,71 @@ const styles = StyleSheet.create({
     borderColor: "#FFFFFF",
   },
   calendarCellEmpty: {
-    width: 40,
-    height: 40,
+    width: 42,
+    height: 42,
   },
   calendarDay: {
+    fontFamily: "DMSans-Regular",
     color: "#052D50",
-    fontSize: 14,
-    fontWeight: "500",
+    fontSize: 17,
+    opacity: 0.5,
+  },
+  calendarDayToday: {
+    opacity: 1,
   },
   calendarDaySelected: {
     color: "#FFFFFF",
+    opacity: 1,
   },
   calendarHours: {
+    fontFamily: "DMSans-Medium",
     color: "#052D50",
     fontSize: 10,
-    marginTop: 2,
-    backgroundColor: "rgba(228, 235, 240, 1)",
-    paddingHorizontal: 4,
-    borderRadius: 4,
-  },
-  calendarHoursSelected: {
-    color: "#052D50",
+    opacity: 0.5,
     backgroundColor: "#FFFFFF",
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+    borderRadius: 20,
   },
   shiftDetailsContainer: {
     width: "100%",
     marginBottom: 12,
   },
-  shiftDetailsHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 12,
-    gap: 12,
-  },
   shiftDetailsContent: {
     gap: 12,
   },
-  shiftSelectionSummary: {
-    color: "#007AFF",
-    fontSize: 16,
-    lineHeight: 22,
+  selectionSummaryCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "rgba(5, 45, 80, 0.08)",
+    paddingVertical: 16,
+    marginBottom: 12,
+  },
+  selectionSummaryStat: {
     flex: 1,
+    alignItems: "center",
+    gap: 2,
+  },
+  selectionSummaryValue: {
+    color: "#052D50",
+    fontSize: 20,
+  },
+  selectionSummaryLabel: {
+    color: "#698196",
+    fontSize: 13,
+  },
+  selectionSummaryDivider: {
+    width: 1,
+    height: 32,
+    backgroundColor: "rgba(5, 45, 80, 0.08)",
   },
   clearSelectionButton: {
+    position: "absolute",
+    top: 8,
+    right: 8,
     width: 28,
     height: 28,
     alignItems: "center",

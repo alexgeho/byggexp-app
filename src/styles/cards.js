@@ -93,4 +93,19 @@ export const cardStyles = StyleSheet.create({
     color: "#0785F4",
     backgroundColor: "#0785F41A",
   },
+
+  cardBadgeNeutral: {
+    color: "#698196",
+    backgroundColor: "#69819624",
+  },
+
+  cardBadgeAtWork: {
+    color: "#338600",
+    backgroundColor: "rgba(51, 134, 0, 0.1)",
+  },
+
+  cardBadgeAbsent: {
+    color: "#FF0000",
+    backgroundColor: "rgba(255, 0, 0, 0.1)",
+  },
 });
