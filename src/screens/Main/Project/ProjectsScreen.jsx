@@ -51,9 +51,13 @@ export default function ProjectsScreen() {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const isSelectionMode = route.params?.mode === "select";
+  const isLocalSelectionMode = route.params?.mode === "select-local";
+  const allowAllProjectsOption = isLocalSelectionMode && route.params?.allowAll;
 
   const showCreateProject = canCreateProjects(user?.role);
-  const selectedProjectId = selectedProject?._id || selectedProject?.id;
+  const selectedProjectId = isLocalSelectionMode
+    ? route.params?.currentProjectId ?? null
+    : selectedProject?._id || selectedProject?.id;
 
   const getProjectId = (project) => project?._id || project?.id;
 
@@ -138,6 +142,12 @@ export default function ProjectsScreen() {
       return;
     }
 
+    if (isLocalSelectionMode) {
+      route.params?.onSelect?.(project);
+      navigation.goBack();
+      return;
+    }
+
     navigation.navigate("Project", { id: getProjectId(project) });
   };
 
@@ -196,6 +206,17 @@ export default function ProjectsScreen() {
         contentContainerStyle={styles.scrollContent}
         style={styles.scrollContainer}
       >
+        {allowAllProjectsOption ? (
+          <ListCard
+            onPress={() => {
+              route.params?.onSelect?.(null);
+              navigation.goBack();
+            }}
+            selected={!selectedProjectId}
+            title="All projects"
+          />
+        ) : null}
+
         {filteredProjects.length === 0 ? (
           <Text style={styles.noProjectsText}>No projects found.</Text>
         ) : (

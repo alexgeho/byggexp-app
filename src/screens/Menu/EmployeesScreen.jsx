@@ -6,17 +6,16 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import Icon from "react-native-vector-icons/Feather";
 import AuthContext from "../../contexts/AuthContext";
 import { useTheme } from "../../theme/ThemeContext";
 import { projectService, userService } from "../../services";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { ListCard } from "../../components/common/ListCard/ListCard";
+import { ProjectFilterSelector } from "../../components/common/ProjectFilterSelector/ProjectFilterSelector";
 import {
   standardScreenContainer,
   standardScreenHeader,
@@ -121,12 +120,14 @@ const getEmployeeProjectLabel = (employee, projectNameById, projects) => {
 export default function EmployeesScreen() {
   const navigation = useNavigation();
   const { theme } = useTheme();
-  const { user } = useContext(AuthContext);
+  const { user, selectedProject } = useContext(AuthContext);
 
   const [employees, setEmployees] = useState([]);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedProjectId, setSelectedProjectId] = useState(
+    () => selectedProject?._id || selectedProject?.id || null,
+  );
 
   const projectNameById = useMemo(
     () => buildProjectNameById(projects),
@@ -138,7 +139,9 @@ export default function EmployeesScreen() {
       setLoading(true);
 
       const [employeesData, projectsData] = await Promise.all([
-        userService.getMyCompanyUsers(),
+        selectedProjectId
+          ? userService.getByProject(selectedProjectId)
+          : userService.getMyCompanyUsers(),
         user?.role === "superadmin"
           ? projectService.getAll()
           : projectService.getMyProjects(),
@@ -155,37 +158,9 @@ export default function EmployeesScreen() {
     } finally {
       setLoading(false);
     }
-  }, [user?.role]);
+  }, [selectedProjectId, user?.role]);
 
-  const filteredEmployees = useMemo(() => {
-    const normalizedQuery = searchQuery.trim().toLowerCase();
-
-    if (!normalizedQuery) {
-      return employees;
-    }
-
-    return employees.filter((employee) => {
-      const projectLabel = getEmployeeProjectLabel(
-        employee,
-        projectNameById,
-        projects,
-      );
-
-      const searchableText = [
-        employee?.name,
-        employee?.profession,
-        employee?.email,
-        getRoleLabel(employee?.role),
-        getAccountStatusLabel(employee?.accountStatus),
-        projectLabel,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-
-      return searchableText.includes(normalizedQuery);
-    });
-  }, [employees, projectNameById, projects, searchQuery]);
+  const filteredEmployees = employees;
 
   useFocusEffect(
     useCallback(() => {
@@ -250,18 +225,11 @@ export default function EmployeesScreen() {
       </View>
 
       <View style={styles.searchContainer}>
-        <View style={styles.searchInputWrapper}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search..."
-            placeholderTextColor="rgba(5, 45, 80, 0.45)"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-          <View style={styles.searchIconWrapper} pointerEvents="none">
-            <Icon name="search" size={18} color="rgba(5, 45, 80, 0.5)" />
-          </View>
-        </View>
+        <ProjectFilterSelector
+          projects={projects}
+          selectedProjectId={selectedProjectId}
+          onSelect={setSelectedProjectId}
+        />
       </View>
 
       {loading ? (
@@ -278,8 +246,8 @@ export default function EmployeesScreen() {
             <View style={styles.emptyState}>
               <Text style={styles.emptyTitle}>No employees found</Text>
               <Text style={styles.emptySubtitle}>
-                {searchQuery.trim()
-                  ? "Try a different search query."
+                {selectedProjectId
+                  ? "No employees assigned to this project."
                   : "Tap the add button below to create the first employee."}
               </Text>
             </View>
@@ -373,30 +341,6 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     width: "100%",
-  },
-  searchInputWrapper: {
-    width: "100%",
-    height: 48,
-    backgroundColor: "#052D500D",
-    borderRadius: 20,
-    paddingLeft: 16,
-    paddingRight: 14,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  searchInput: {
-    flex: 1,
-    height: "100%",
-    color: "#052D50",
-    fontSize: 16,
-    paddingVertical: 0,
-    paddingRight: 12,
-  },
-  searchIconWrapper: {
-    width: 20,
-    height: 20,
-    alignItems: "center",
-    justifyContent: "center",
   },
   loadingContainer: {
     flex: 1,

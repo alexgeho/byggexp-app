@@ -6,18 +6,18 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Feather";
 import AuthContext from "../../contexts/AuthContext";
 import { useTheme } from "../../theme/ThemeContext";
-import { toolService } from "../../services";
+import { projectService, toolService } from "../../services";
 import { API_BASE_URL } from "../../services/api";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { ListCard } from "../../components/common/ListCard/ListCard";
+import { ProjectFilterSelector } from "../../components/common/ProjectFilterSelector/ProjectFilterSelector";
 import {
   standardScreenContainer,
   standardScreenHeader,
@@ -42,6 +42,11 @@ const getEntityId = (entity) => {
   return id ? String(id) : "";
 };
 
+const getRefId = (ref) => {
+  const id = typeof ref === "string" ? ref : ref?._id || ref?.id;
+  return id ? String(id) : "";
+};
+
 const resolvePhotoUrl = (value) => {
   if (!value) {
     return null;
@@ -57,41 +62,51 @@ const resolvePhotoUrl = (value) => {
 export default function ToolsScreen() {
   const navigation = useNavigation();
   const { theme } = useTheme();
-  const { user } = useContext(AuthContext);
+  const { user, selectedProject } = useContext(AuthContext);
 
   const [tools, setTools] = useState([]);
+  const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedProjectId, setSelectedProjectId] = useState(
+    () => selectedProject?._id || selectedProject?.id || null,
+  );
 
   const loadTools = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await toolService.getAll();
-      setTools(Array.isArray(data) ? data : []);
+
+      const [toolsData, projectsData] = await Promise.all([
+        toolService.getAll(),
+        user?.role === "superadmin"
+          ? projectService.getAll()
+          : projectService.getMyProjects(),
+      ]);
+
+      setTools(Array.isArray(toolsData) ? toolsData : []);
+      setProjects(Array.isArray(projectsData) ? projectsData : []);
     } catch (error) {
       console.error("Failed to load tools:", error);
       setTools([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user?.role]);
 
   const filteredTools = useMemo(() => {
-    const normalizedQuery = searchQuery.trim().toLowerCase();
-
-    if (!normalizedQuery) {
+    if (!selectedProjectId) {
       return tools;
     }
 
     return tools.filter((tool) => {
-      const searchableText = [tool?.name, tool?.notes]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
+      if (!Array.isArray(tool?.projectIds)) {
+        return false;
+      }
 
-      return searchableText.includes(normalizedQuery);
+      return tool.projectIds.some(
+        (projectId) => getRefId(projectId) === selectedProjectId,
+      );
     });
-  }, [searchQuery, tools]);
+  }, [selectedProjectId, tools]);
 
   useFocusEffect(
     useCallback(() => {
@@ -161,18 +176,11 @@ export default function ToolsScreen() {
         </View>
 
         <View style={styles.searchContainer}>
-          <View style={styles.searchInputWrapper}>
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search..."
-              placeholderTextColor="rgba(5, 45, 80, 0.45)"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
-            <View style={styles.searchIconWrapper} pointerEvents="none">
-              <Icon name="search" size={18} color="rgba(5, 45, 80, 0.5)" />
-            </View>
-          </View>
+          <ProjectFilterSelector
+            projects={projects}
+            selectedProjectId={selectedProjectId}
+            onSelect={setSelectedProjectId}
+          />
         </View>
 
         {loading ? (
@@ -189,8 +197,8 @@ export default function ToolsScreen() {
               <View style={styles.emptyState}>
                 <Text style={styles.emptyTitle}>No instruments found</Text>
                 <Text style={styles.emptySubtitle}>
-                  {searchQuery.trim()
-                    ? "Try a different search query."
+                  {selectedProjectId
+                    ? "No instruments assigned to this project."
                     : canManageTools(user?.role)
                       ? "Tap the add button below to create the first instrument."
                       : "No instruments are assigned yet."}
@@ -221,7 +229,7 @@ export default function ToolsScreen() {
                         <View style={styles.toolPhotoPlaceholder}>
                           <Icon
                             name="tool"
-                            size={20}
+                            size={14}
                             color="rgba(5, 45, 80, 0.35)"
                           />
                         </View>
@@ -279,27 +287,6 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 12,
   },
-  searchInputWrapper: {
-    position: "relative",
-  },
-  searchInput: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-    minHeight: 48,
-    paddingHorizontal: 16,
-    paddingRight: 44,
-    fontSize: 16,
-    color: "#052D50",
-  },
-  searchIconWrapper: {
-    position: "absolute",
-    right: 16,
-    top: 0,
-    bottom: 0,
-    justifyContent: "center",
-  },
   loadingContainer: {
     flex: 1,
     alignItems: "center",
@@ -314,15 +301,15 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   toolPhoto: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
+    width: 28,
+    height: 28,
+    borderRadius: 8,
     marginRight: 12,
   },
   toolPhotoPlaceholder: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
+    width: 28,
+    height: 28,
+    borderRadius: 8,
     marginRight: 12,
     backgroundColor: "rgba(5, 45, 80, 0.06)",
     alignItems: "center",
