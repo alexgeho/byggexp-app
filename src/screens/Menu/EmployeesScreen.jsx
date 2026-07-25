@@ -26,6 +26,7 @@ import {
   canManageEmployees,
   getAccountStatusLabel,
   shouldShowAccountStatus,
+  USER_ROLES,
 } from "../../utils/userRoles";
 
 const getApiErrorMessage = (error, fallback) => {
@@ -180,9 +181,13 @@ export default function EmployeesScreen() {
       return isEmployeeAtWork(employee, selectedProjectId) ? 0 : 1;
     };
 
-    return [...employees].sort(
-      (left, right) => getSortPriority(left) - getSortPriority(right),
-    );
+    // The company/owner account (companyAdmin) and platform superadmin are not
+    // employees, so keep them out of the list.
+    const nonStaffRoles = [USER_ROLES.COMPANY_ADMIN, USER_ROLES.SUPERADMIN];
+
+    return [...employees]
+      .filter((employee) => !nonStaffRoles.includes(employee?.role))
+      .sort((left, right) => getSortPriority(left) - getSortPriority(right));
   }, [employees, selectedProjectId]);
 
   useFocusEffect(
