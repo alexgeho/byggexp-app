@@ -17,6 +17,7 @@ import {
   lightBlueTheme,
   orangeTheme,
   darkGrayTheme,
+  colorfulTheme,
 } from "./themes";
 
 const ThemeContext = createContext();
@@ -30,6 +31,7 @@ const themes = {
   lightBlue: lightBlueTheme,
   orange: orangeTheme,
   darkGray: darkGrayTheme,
+  colorful: colorfulTheme,
 };
 
 const THEME_STORAGE_KEY = "app-theme";

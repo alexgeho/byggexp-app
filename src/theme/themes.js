@@ -7,6 +7,7 @@ import {
   lightBlueColors,
   orangeColors,
   darkGrayColors,
+  colorfulColors,
 } from "./colors";
 import { iconBadgeBackground } from "./colorUtils";
 
@@ -101,6 +102,19 @@ export const darkGrayTheme = {
   colors: withIconBadgeBackground(darkGrayColors),
 };
 
+export const colorfulTheme = {
+  ...common,
+  // Pixel-perfect grid geometry from the Figma "colorful" mockup.
+  homeButton: {
+    ...common.homeButton,
+    height: 110,
+    radius: 24,
+    padding: 14,
+    gridGap: 11,
+  },
+  colors: withIconBadgeBackground(colorfulColors),
+};
+
 export const themeOptions = [
   {
     id: "green",
@@ -136,5 +150,10 @@ export const themeOptions = [
   {
     id: "darkGray",
     color: darkGrayColors.primary,
+  },
+  {
+    id: "colorful",
+    color: colorfulColors.buttonColors.employees,
+    secondaryColor: colorfulColors.buttonColors.camera,
   },
 ];
