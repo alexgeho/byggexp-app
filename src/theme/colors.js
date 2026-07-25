@@ -195,6 +195,21 @@ export const orangeColors = {
   bottomNav: "#282828",
 };
 
+export const colorfulColors = {
+  ...lightColors,
+  // Per-button background colors for the colorful home grid.
+  buttonColors: {
+    employees: "#0785F4",
+    tools: "#5222FF",
+    camera: "#FF5454",
+    chats: "#F3B530",
+    shifts: "#282828",
+    projects: "#0785F4",
+    tasks: "#0785F4",
+  },
+  homeButtonText: "#FFFFFF",
+};
+
 export const darkGrayColors = {
   background: "#121212",
 

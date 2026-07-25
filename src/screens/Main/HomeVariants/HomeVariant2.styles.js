@@ -95,6 +95,19 @@ export function createStyles({
     selectorIconLightBlue: {
       tintColor: textColor,
     },
+    selectorColorful: {
+      backgroundColor: "rgba(5, 45, 80, 0.05)",
+      borderColor: "transparent",
+      borderRadius: 16,
+      minHeight: 52,
+    },
+    selectorTextColorful: {
+      color: "#052D50",
+      opacity: 0.5,
+    },
+    selectorIconColorful: {
+      tintColor: "#052D50",
+    },
     timerContainer: {
       width: "100%",
     },

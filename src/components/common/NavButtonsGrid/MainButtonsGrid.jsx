@@ -75,8 +75,22 @@ export default function MainButtonsGrid() {
           return isHomeButtonVisible(button, enabledButtons, user?.role);
         })
         .map(function renderButton(button) {
+          const buttonColor = theme.colors.buttonColors?.[button.id];
+          const iconColor = buttonColor
+            ? "#FFFFFF"
+            : theme.colors.homeButtonText || theme.colors.icon;
+
           return (
-            <View key={button.id} style={styles.button}>
+            <View
+              key={button.id}
+              style={[
+                styles.button,
+                buttonColor && {
+                  backgroundColor: buttonColor,
+                  borderColor: "#FFFFFF",
+                },
+              ]}
+            >
               <TouchableOpacity
                 style={styles.buttonInner}
                 onPress={function onButtonPress() {
@@ -86,7 +100,7 @@ export default function MainButtonsGrid() {
                 <View
                   style={[
                     styles.linesContainer,
-                    theme.colors.hideButtonLines &&
+                    (theme.colors.hideButtonLines || buttonColor) &&
                       styles.linesContainerHidden,
                   ]}
                 >
@@ -101,10 +115,16 @@ export default function MainButtonsGrid() {
                     <Icon
                       name={button.vectorIcon}
                       size={theme.homeButton.iconSize}
-                      color={theme.colors.homeButtonText || theme.colors.icon}
+                      color={iconColor}
                     />
                   ) : (
-                    <Image source={button.icon} style={styles.buttonIcon} />
+                    <Image
+                      source={button.icon}
+                      style={[
+                        styles.buttonIcon,
+                        buttonColor && { tintColor: "#FFFFFF" },
+                      ]}
+                    />
                   )}
 
                   {button.id === "chats" ? (
@@ -112,7 +132,14 @@ export default function MainButtonsGrid() {
                   ) : null}
                 </View>
 
-                <Text style={styles.buttonText}>{button.title}</Text>
+                <Text
+                  style={[
+                    styles.buttonText,
+                    buttonColor && { color: "#FFFFFF" },
+                  ]}
+                >
+                  {button.title}
+                </Text>
 
                 <HomeButtonExtraInfo
                   buttonId={button.id}

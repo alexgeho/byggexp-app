@@ -39,6 +39,7 @@ import ProjectSelector2 from "../../../components/common2/projectSelector/projec
 import { MainActionButtons } from "../../../components/common2/mainActionButtons/mainActionButtons";
 
 import { FooterButtonsVariant2 } from "../../../components/common2/footer/footer";
+import { FooterColorful } from "../../../components/common2/footer/FooterColorful";
 
 import ProjectFilesSection from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
 import MainButtonsGrid from "../../../components/common/NavButtonsGrid/MainButtonsGrid";
@@ -60,8 +61,10 @@ export default function HomeVariant2() {
     theme,
     themeName,
   } = useTheme();
+  // Light-background home themes share the same "light" treatment
+  // (dark timer text, blue play button, white camera, dark footer icons).
   const isLightBlueTheme =
-    themeName === "lightBlue";
+    themeName === "lightBlue" || themeName === "colorful";
   const gradientColors = useMemo(
     () =>
       ({
@@ -69,6 +72,7 @@ export default function HomeVariant2() {
         blueDarkText: ["#5BC8FF", "#0D5DB8"],
         black: ["#1C1C1C", "#1C1C1C"],
         lightBlue: ["#ECF6FF", "#ECF6FF"],
+        colorful: ["#EEEEEE", "#EEEEEE"],
         green: ["#8ED057", "#4C9E3C"],
         orange: ["#FFAE63", "#F97316"],
         darkGray: ["#363636", "#121212"],
@@ -416,6 +420,7 @@ export default function HomeVariant2() {
             scrollViewHeight > 0 && {
               minHeight: scrollViewHeight,
             },
+          themeName === "colorful" && { paddingBottom: 104 },
         ]}
         onLayout={function handleScrollViewLayout(event) {
           setScrollViewHeight(event.nativeEvent.layout.height);
@@ -436,6 +441,8 @@ export default function HomeVariant2() {
             styles.selectorTop,
             isLightBlueTheme &&
               styles.selectorLightBlue,
+            themeName === "colorful" &&
+              styles.selectorColorful,
             isCompact
               ? styles.selectorCompact
               : null,
@@ -444,6 +451,8 @@ export default function HomeVariant2() {
             [
               isLightBlueTheme &&
                 styles.selectorTextLightBlue,
+              themeName === "colorful" &&
+                styles.selectorTextColorful,
               isCompact
                 ? styles.selectorTextCompact
                 : null,
@@ -453,6 +462,8 @@ export default function HomeVariant2() {
             [
               isLightBlueTheme &&
                 styles.selectorIconLightBlue,
+              themeName === "colorful" &&
+                styles.selectorIconColorful,
               isCompact
                 ? styles.selectorIconCompact
                 : null,
@@ -576,13 +587,17 @@ export default function HomeVariant2() {
       </ScrollView>
 
       {/* FOOTER */}
-      <FooterButtonsVariant2
-        iconStyle={
-          isLightBlueTheme
-            ? styles.footerIconLightBlue
-            : null
-        }
-      />
+      {themeName === "colorful" ? (
+        <FooterColorful />
+      ) : (
+        <FooterButtonsVariant2
+          iconStyle={
+            isLightBlueTheme
+              ? styles.footerIconLightBlue
+              : null
+          }
+        />
+      )}
     </LinearGradient>
   );
 }
