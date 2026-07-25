@@ -1,19 +1,53 @@
 import api from './api';
 
+const getProjectSortTimestamp = (project) => {
+  const value =
+    project?.createdAt || project?.updatedAt || project?.beginningDate || null;
+
+  if (!value) {
+    return 0;
+  }
+
+  const timestamp = new Date(value).getTime();
+  return Number.isFinite(timestamp) ? timestamp : 0;
+};
+
+const sortProjects = (projects, sort) => {
+  if (!Array.isArray(projects) || !sort) {
+    return projects;
+  }
+
+  const sorted = [...projects];
+
+  if (sort === 'newest') {
+    return sorted.sort(
+      (left, right) => getProjectSortTimestamp(right) - getProjectSortTimestamp(left),
+    );
+  }
+
+  if (sort === 'oldest') {
+    return sorted.sort(
+      (left, right) => getProjectSortTimestamp(left) - getProjectSortTimestamp(right),
+    );
+  }
+
+  return projects;
+};
+
 export const projectService = {
-  getAll: async () => {
+  getAll: async (options = {}) => {
     const { data } = await api.get('/projects');
-    return data;
+    return sortProjects(data, options.sort);
   },
 
-  getMyProjects: async () => {
+  getMyProjects: async (options = {}) => {
     const { data } = await api.get('/projects/my');
-    return data;
+    return sortProjects(data, options.sort);
   },
 
-  getByCompany: async (companyId) => {
+  getByCompany: async (companyId, options = {}) => {
     const { data } = await api.get(`/projects/company/${companyId}`);
-    return data;
+    return sortProjects(data, options.sort);
   },
 
   getPopulated: async () => {

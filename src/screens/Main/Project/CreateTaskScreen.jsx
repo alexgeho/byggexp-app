@@ -564,8 +564,8 @@ export default function CreateTaskScreen() {
         setLoadingProjects(true);
         const data =
           user.role === "superadmin"
-            ? await projectService.getAll()
-            : await projectService.getMyProjects();
+            ? await projectService.getAll({ sort: "newest" })
+            : await projectService.getMyProjects({ sort: "newest" });
 
         setProjects(Array.isArray(data) ? data : []);
       } catch (error) {
