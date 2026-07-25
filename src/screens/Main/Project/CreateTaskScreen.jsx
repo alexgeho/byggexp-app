@@ -471,9 +471,12 @@ export default function CreateTaskScreen() {
   const { theme } = useTheme();
   const { showSuccess } = useFeedback();
   const { user } = useContext(AuthContext);
+  const isWorkerCreator = user?.role === "worker";
   const { projectId: initialProjectId, projectName: initialProjectName } =
     route.params || {};
   const initialTaskDraft = route.params?.taskDraft || {};
+  const isWorkerProjectTaskFlow =
+    isWorkerCreator && Boolean(initialTaskDraft.selectedProjectId || initialProjectId);
   const returnTarget =
     initialTaskDraft.returnTarget || (initialProjectId ? "project" : "tasks");
   const allowedToCreate = canCreateTasks(user?.role);
@@ -599,6 +602,11 @@ export default function CreateTaskScreen() {
     }
 
     const fetchUsers = async () => {
+      if (user.role === "worker") {
+        setUsers(user ? [user] : []);
+        return;
+      }
+
       try {
         setLoadingUsers(true);
         const data =
@@ -657,6 +665,26 @@ export default function CreateTaskScreen() {
     setDueDate(parseDraftDate(taskDraft.dueDate));
     setAllDay(Boolean(taskDraft.allDay));
   }, [route.params?.taskDraft]);
+
+  useEffect(() => {
+    if (!isWorkerCreator) {
+      return;
+    }
+
+    const currentUserId = getUserId(user);
+    setSelectedAssigneeUserId(currentUserId || "");
+    setSelectedAssigneeName(user?.name || user?.email || "");
+    setSelectedAssigneeRole(user?.profession || user?.role || "");
+
+    if (isWorkerProjectTaskFlow) {
+      setSelectedProjectId(initialTaskDraft.selectedProjectId || initialProjectId || "");
+      setProjectName(initialTaskDraft.projectName || initialProjectName || "");
+    } else {
+      setSelectedProjectId("");
+      setSelectedProject(null);
+      setProjectName("");
+    }
+  }, [isWorkerCreator, user, route.params?.taskDraft]);
 
   const notificationsSummary = useMemo(
     () => getTaskNotificationSummary(notificationSettings),
@@ -765,6 +793,10 @@ export default function CreateTaskScreen() {
   };
 
   const selectProject = (project) => {
+    if (isWorkerCreator) {
+      return;
+    }
+
     setSelectedProjectId(getProjectId(project) || "");
     setSelectedProject(project || null);
     setProjectName(project?.name || "");
@@ -780,6 +812,10 @@ export default function CreateTaskScreen() {
   };
 
   const selectUser = (nextUser) => {
+    if (isWorkerCreator) {
+      return;
+    }
+
     setSelectedAssigneeUserId(getUserId(nextUser) || "");
     setSelectedAssigneeName(nextUser?.name || nextUser?.email || "");
     setSelectedAssigneeRole(nextUser?.profession || nextUser?.role || "");
@@ -795,6 +831,10 @@ export default function CreateTaskScreen() {
   };
 
   const clearSelectedUser = () => {
+    if (isWorkerCreator) {
+      return;
+    }
+
     setSelectedAssigneeUserId("");
     setSelectedAssigneeName("");
     setSelectedAssigneeRole("");
@@ -835,10 +875,12 @@ export default function CreateTaskScreen() {
         dueDate,
       });
 
+      if (selectedProjectId) {
+        taskData.append("projectId", selectedProjectId);
+      }
+
       if (selectedAssigneeUserId) {
         taskData.append("assigneeUserId", selectedAssigneeUserId);
-      } else {
-        taskData.append("projectId", selectedProjectId);
       }
 
       taskData.append("taskTitle", taskTitle.trim());
@@ -882,7 +924,7 @@ export default function CreateTaskScreen() {
         message: "Task created successfully.",
       });
 
-      if (returnTarget === "project" && !selectedAssigneeUserId) {
+      if (returnTarget === "project" && selectedProjectId) {
         navigation.navigate("Project", {
           id: selectedProjectId,
           initialTab: "Tasks",
@@ -914,7 +956,7 @@ export default function CreateTaskScreen() {
       <View style={styles.accessDeniedContainer}>
         <Text style={styles.accessDeniedText}>Access denied</Text>
         <Text style={styles.accessDeniedSubtext}>
-          Only project admins can create tasks
+          Only assigned workers and admins can create tasks
         </Text>
         <TouchableOpacity
           style={styles.backButton}
@@ -965,11 +1007,13 @@ export default function CreateTaskScreen() {
           <TouchableOpacity
             style={[
               styles.groupRow,
-              selectedAssigneeUserId && styles.groupRowDisabled,
+              (selectedAssigneeUserId || isWorkerCreator) && styles.groupRowDisabled,
             ]}
-            onPress={() => setShowProjectPicker(true)}
+            onPress={() => !isWorkerCreator && setShowProjectPicker(true)}
             activeOpacity={0.85}
-            disabled={loadingProjects || Boolean(selectedAssigneeUserId)}
+            disabled={
+              loadingProjects || Boolean(selectedAssigneeUserId) || isWorkerCreator
+            }
           >
             <View style={styles.rowContent}>
               <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
@@ -983,7 +1027,11 @@ export default function CreateTaskScreen() {
                     !projectName && styles.rowPlaceholder,
                   ]}
                 >
-                  {loadingProjects
+                  {isWorkerProjectTaskFlow
+                    ? projectName || initialProjectName || "Current project"
+                    : isWorkerCreator
+                    ? "Workers can only create personal tasks here"
+                    : loadingProjects
                     ? "Loading projects..."
                     : projectName || "Select project"}
                 </Text>
@@ -993,16 +1041,18 @@ export default function CreateTaskScreen() {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.groupRow}
-            onPress={() => setShowUserPicker(true)}
+            onPress={() => !isWorkerCreator && setShowUserPicker(true)}
             activeOpacity={0.85}
-            disabled={loadingUsers}
+            disabled={loadingUsers || isWorkerCreator}
           >
             <View style={styles.rowContent}>
               <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
                 <FieldIcon name="user" size={14} color="#FFFFFF" />
               </View>
               <View style={styles.rowTextContainer}>
-                <Text style={styles.rowLabel}>Personal task user</Text>
+                <Text style={styles.rowLabel}>
+                  {isWorkerCreator ? "Assigned to" : "Personal task user"}
+                </Text>
                 <Text
                   style={[
                     styles.rowValue,
@@ -1011,11 +1061,14 @@ export default function CreateTaskScreen() {
                 >
                   {loadingUsers
                     ? "Loading users..."
-                    : selectedAssigneeName || "Select worker or foreman"}
+                    : selectedAssigneeName ||
+                      (isWorkerCreator
+                        ? "Current user"
+                        : "Select worker or foreman")}
                 </Text>
               </View>
             </View>
-            {selectedAssigneeUserId ? (
+            {selectedAssigneeUserId && !isWorkerCreator ? (
               <TouchableOpacity
                 style={styles.clearInlineButton}
                 onPress={clearSelectedUser}

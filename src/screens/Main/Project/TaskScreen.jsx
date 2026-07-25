@@ -149,7 +149,7 @@ const getTaskDisplayStatus = (task) => {
 export default function TaskScreen() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { task, project } = route.params || {};
+  const { task, project, projectRouteKey, tasksRouteKey } = route.params || {};
   const { user } = useContext(AuthContext);
   const { showSuccess } = useFeedback();
   const [tab, setTab] = useState("Edit");
@@ -203,6 +203,37 @@ export default function TaskScreen() {
         : [],
     [project?.workers],
   );
+
+  const notifyProjectTaskUpdated = (updatedTask) => {
+    if (!projectRouteKey || !project) {
+      return;
+    }
+
+    navigation.navigate({
+      name: "Project",
+      key: projectRouteKey,
+      params: {
+        initialTab: "Tasks",
+        refreshKey: `${updatedTask?._id || updatedTask?.id || task?._id || task?.id || Date.now()}-${Date.now()}`,
+      },
+      merge: true,
+    });
+  };
+
+  const notifyTasksListUpdated = (updatedTask) => {
+    if (!tasksRouteKey) {
+      return;
+    }
+
+    navigation.navigate({
+      name: "Tasks",
+      key: tasksRouteKey,
+      params: {
+        refreshKey: `${updatedTask?._id || updatedTask?.id || task?._id || task?.id || Date.now()}-${Date.now()}`,
+      },
+      merge: true,
+    });
+  };
 
   const handleOpenDocument = async (document) => {
     if (!document?.url) {
@@ -292,6 +323,8 @@ export default function TaskScreen() {
           : await taskService.complete(taskId);
 
       setCurrentTask(updatedTask);
+      notifyProjectTaskUpdated(updatedTask);
+      notifyTasksListUpdated(updatedTask);
       showSuccess({
         title:
           updatedTask?.status === "completed"
@@ -302,6 +335,10 @@ export default function TaskScreen() {
             ? "Task marked as completed."
             : "Task moved back to open.",
       });
+
+      if (projectRouteKey || tasksRouteKey) {
+        navigation.goBack();
+      }
     } catch (error) {
       console.error("Failed to update task status:", error);
       Alert.alert(

@@ -65,15 +65,15 @@ export function canManageProjects(role) {
 
 /** Create / update / delete tasks, reopen, upload task docs */
 export function canCreateTasks(role) {
-  return hasRole(role, MANAGEMENT_ROLES);
+  return hasRole(role, [...MANAGEMENT_ROLES, USER_ROLES.WORKER]);
 }
 
 export function canManageTasks(role) {
-  return canCreateTasks(role);
+  return hasRole(role, MANAGEMENT_ROLES);
 }
 
 export function canReopenTasks(role) {
-  return canManageTasks(role);
+  return hasRole(role, MANAGEMENT_ROLES);
 }
 
 /** Workers can mark tasks complete */

@@ -1,5 +1,5 @@
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -49,8 +49,10 @@ const getTaskDisplayStatus = (task) => {
 
 export default function TasksScreen() {
   const navigation = useNavigation();
+  const route = useRoute();
   const { theme } = useTheme();
   const { user, userId, isLoading: authLoading } = useContext(AuthContext);
+  const { refreshKey } = route.params || {};
   const [projects, setProjects] = useState([]);
   const [personalTasks, setPersonalTasks] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -125,6 +127,14 @@ export default function TasksScreen() {
       }
     }, [authLoading, fetchProjectsWithTasks, user?.role, userId]),
   );
+
+  useEffect(() => {
+    if (!refreshKey || authLoading || !user?.role) {
+      return;
+    }
+
+    fetchProjectsWithTasks();
+  }, [authLoading, fetchProjectsWithTasks, refreshKey, user?.role]);
 
   const groupedTasks = useMemo(() => {
     const normalizedQuery = searchQuery.trim().toLowerCase();
@@ -210,7 +220,13 @@ export default function TasksScreen() {
     return (
       <ListCard
         key={key}
-        onPress={() => navigation.navigate("Task", { task, project })}
+        onPress={() =>
+          navigation.navigate("Task", {
+            task,
+            project,
+            tasksRouteKey: route.key,
+          })
+        }
         title={task.taskTitle || "Untitled task"}
         badgeLabel={status.label}
         badgeStyle={badgeStyles[status.tone]}

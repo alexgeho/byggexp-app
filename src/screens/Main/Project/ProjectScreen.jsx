@@ -526,7 +526,13 @@ export const ProjectScreen = () => {
               return (
                 <ListCard
                   key={task._id || task.id || task.taskTitle}
-                  onPress={() => navigation.navigate("Task", { task, project })}
+                  onPress={() =>
+                    navigation.navigate("Task", {
+                      task,
+                      project,
+                      projectRouteKey: route.key,
+                    })
+                  }
                   title={task.taskTitle || "Untitled task"}
                   badgeLabel={status.label}
                   badgeStyle={taskBadgeStyles[status.tone]}
