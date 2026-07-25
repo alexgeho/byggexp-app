@@ -35,6 +35,10 @@ import {
 import { sortByNewest } from "../../../utils/sortByNewest";
 import { cardStyles } from "../../../styles/cards";
 import { canCreateProjects } from "../../../utils/userRoles";
+import {
+  formatProjectStatus,
+  getProjectStatusBadgeStyle,
+} from "../../../utils/projectStatus";
 
 export default function ProjectsScreen() {
   const navigation = useNavigation();
@@ -60,13 +64,6 @@ export default function ProjectsScreen() {
     : selectedProject?._id || selectedProject?.id;
 
   const getProjectId = (project) => project?._id || project?.id;
-
-  const formatStatus = (status) => {
-    if (!status) return "";
-
-    const normalizedStatus = status.replace(/_/g, " ").toLowerCase();
-    return normalizedStatus.charAt(0).toUpperCase() + normalizedStatus.slice(1);
-  };
 
   const projectsRef = useRef(projects);
   projectsRef.current = projects;
@@ -160,10 +157,6 @@ export default function ProjectsScreen() {
     );
   }
 
-  const themedStatusBadgeStyle = {
-    color: theme.colors.primary,
-    backgroundColor: `${theme.colors.primary}1A`,
-  };
   const themedAccentTextStyle = { color: theme.colors.primary };
 
   return (
@@ -226,8 +219,8 @@ export default function ProjectsScreen() {
               onPress={() => handleProjectPress(project)}
               selected={selectedProjectId === getProjectId(project)}
               title={project.name}
-              badgeLabel={formatStatus(project.status)}
-              badgeStyle={themedStatusBadgeStyle}
+              badgeLabel={formatProjectStatus(project.status)}
+              badgeStyle={getProjectStatusBadgeStyle(project.status)}
             >
               <Text style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}>
                 Start: {new Date(project.beginningDate).toLocaleDateString()}

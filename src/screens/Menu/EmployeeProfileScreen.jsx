@@ -27,6 +27,10 @@ import {
 import { useTheme } from "../../theme/ThemeContext";
 import { getToolStatusMeta } from "../../constants/toolStatus";
 import { getRoleLabel } from "../../utils/userRoles";
+import {
+  formatProjectStatus,
+  getProjectStatusBadgeStyle,
+} from "../../utils/projectStatus";
 import { resolveUploadUrl } from "../../utils/shifts";
 
 const formatPhone = (areaCode, phoneNumber) => {
@@ -438,8 +442,8 @@ export default function EmployeeProfileScreen() {
               <ListCard
                 key={project.id}
                 title={project.name || "Unnamed project"}
-                badgeLabel={project.status || "Unknown"}
-                badgeStyle={cardStyles.cardBadgeOpen}
+                badgeLabel={formatProjectStatus(project.status) || "Unknown"}
+                badgeStyle={getProjectStatusBadgeStyle(project.status)}
                 onPress={() =>
                   navigation.navigate("Project", {
                     id: project.id,
