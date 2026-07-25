@@ -43,6 +43,7 @@ import NotificationsSettingsScreen from "../screens/Menu/NotificationsSettingsSc
 import DocumentsScreen from "../screens/Menu/DocumentsScreen";
 import EmployeesScreen from "../screens/Menu/EmployeesScreen";
 import CreateEmployeeScreen from "../screens/Menu/CreateEmployeeScreen";
+import EmployeeProfileScreen from "../screens/Menu/EmployeeProfileScreen";
 import ToolsScreen from "../screens/Menu/ToolsScreen";
 import CreateToolScreen from "../screens/Menu/CreateToolScreen";
 import {
@@ -172,6 +173,7 @@ export default function AppNavigator() {
               component={CreateEmployeeScreen}
               options={{ gestureEnabled: canManageEmployees }}
             />
+            <Stack.Screen name="Employee" component={EmployeeProfileScreen} />
             <Stack.Screen name="Tools" component={ToolsScreen} />
             <Stack.Screen
               name="CreateTool"

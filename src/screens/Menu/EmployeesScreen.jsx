@@ -307,6 +307,11 @@ export default function EmployeesScreen() {
                   title={employee.name || "Unnamed"}
                   badgeLabel={badgeLabel}
                   badgeStyle={badgeStyle}
+                  onPress={() =>
+                    navigation.navigate("Employee", {
+                      employeeId,
+                    })
+                  }
                 >
                   <Text
                     style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}

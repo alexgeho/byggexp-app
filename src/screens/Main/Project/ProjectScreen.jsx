@@ -8,7 +8,6 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import {
@@ -22,10 +21,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import BottomSheet, {
-  BottomSheetBackdrop,
-  BottomSheetView,
-} from "@gorhom/bottom-sheet";
 import Icon from "react-native-vector-icons/Feather";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
@@ -37,7 +32,7 @@ import {
   standardScreenHeader,
 } from "../../../styles/screenLayout";
 import { useTheme } from "../../../theme/ThemeContext";
-import { chatService, projectService } from "../../../services";
+import { projectService } from "../../../services";
 import { isPdfDocument } from "../../../utils/documentPreview";
 import { resolveUploadUrl } from "../../../utils/shifts";
 import { sortByNewest } from "../../../utils/sortByNewest";
@@ -185,13 +180,10 @@ export const ProjectScreen = () => {
   const [modal, setModal] = useState(
     initialTab || "Tasks",
   );
-  const [selectedWorker, setSelectedWorker] = useState(null);
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [chatActionLoading, setChatActionLoading] = useState("");
   const [uploadingDocuments, setUploadingDocuments] = useState(false);
-  const bottomSheetRef = useRef(null);
 
   const fetchProject = useCallback(async () => {
     if (!id) {
@@ -230,24 +222,6 @@ export const ProjectScreen = () => {
 
     fetchProject();
   }, [fetchProject, refreshKey]);
-
-  const openWorkerModal = (worker) => {
-    setSelectedWorker(worker);
-    bottomSheetRef.current?.expand();
-  };
-
-  const renderBottomSheetBackdrop = useCallback(
-    (props) => (
-      <BottomSheetBackdrop
-        {...props}
-        appearsOnIndex={0}
-        disappearsOnIndex={-1}
-        opacity={0.59}
-        pressBehavior="close"
-      />
-    ),
-    [],
-  );
 
   const tasks = useMemo(
     () =>
@@ -311,53 +285,6 @@ export const ProjectScreen = () => {
   );
   const canCreateProjectTasks = canCreateTasks(user?.role);
   const canUploadDocuments = canManageDocuments(user?.role);
-
-  const handleOpenPersonalChat = async () => {
-    const participantId = selectedWorker?._id || selectedWorker?.id;
-
-    if (!participantId) {
-      return;
-    }
-
-    try {
-      setChatActionLoading("direct");
-      const chat = await chatService.getOrCreateDirect(participantId);
-      bottomSheetRef.current?.close();
-      setSelectedWorker(null);
-      navigation.navigate("SingleChat", {
-        chatId: chat._id,
-        initialChat: chat,
-      });
-    } catch (chatError) {
-      console.error("Failed to open personal chat:", chatError);
-      const message =
-        chatError?.response?.data?.message || "Please try again later.";
-      Alert.alert("Unable to open chat", message);
-    } finally {
-      setChatActionLoading("");
-    }
-  };
-
-  const handleOpenProjectGroupChat = async () => {
-    if (!id) {
-      return;
-    }
-
-    try {
-      setChatActionLoading("group");
-      const chat = await chatService.getOrCreateProjectGroup(id, project?.name);
-      bottomSheetRef.current?.close();
-      setSelectedWorker(null);
-      navigation.navigate("GroupChat", { chatId: chat._id, initialChat: chat });
-    } catch (chatError) {
-      console.error("Failed to open project chat:", chatError);
-      const message =
-        chatError?.response?.data?.message || "Please try again later.";
-      Alert.alert("Unable to open group chat", message);
-    } finally {
-      setChatActionLoading("");
-    }
-  };
 
   const handleOpenDocument = async (document) => {
     if (!document?.url) {
@@ -616,7 +543,11 @@ export const ProjectScreen = () => {
               <TouchableOpacity
                 key={worker._id || worker.id}
                 style={styles.workerItem}
-                onPress={() => openWorkerModal(worker)}
+                onPress={() =>
+                  navigation.navigate("Employee", {
+                    employeeId: worker._id || worker.id,
+                  })
+                }
               >
                 <Image
                   style={styles.workerAvatar}
@@ -677,84 +608,6 @@ export const ProjectScreen = () => {
           )
         }
       />
-
-      <BottomSheet
-        ref={bottomSheetRef}
-        index={-1}
-        snapPoints={["30%", "60%"]}
-        enablePanDownToClose={true}
-        onClose={() => setSelectedWorker(null)}
-        backgroundStyle={styles.bottomSheetBackground}
-        handleIndicatorStyle={styles.handleIndicator}
-        backdropComponent={renderBottomSheetBackdrop}
-      >
-        <BottomSheetView style={styles.bottomSheetContent}>
-          {selectedWorker && (
-            <>
-              <View style={styles.workerHeaderCard}>
-                <Text style={styles.workerModalTitle}>
-                  {selectedWorker.name}
-                </Text>
-                <Text style={styles.workerModalSubtitle}>
-                  {selectedWorker.profession ||
-                    selectedWorker.email ||
-                    "Worker"}
-                </Text>
-              </View>
-
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("ShiftHistory", {
-                    projectId: id,
-                    workerId: selectedWorker._id || selectedWorker.id,
-                    workerName: selectedWorker.name,
-                    type: "history",
-                  })
-                }
-                style={styles.modalOption}
-              >
-                <Text style={styles.optionText}>Shift history</Text>
-                <Image
-                  style={styles.optionArrow}
-                  source={require("../../../assets/Arrow-right.png")}
-                />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={handleOpenPersonalChat}
-                style={styles.modalOption}
-                disabled={chatActionLoading === "direct"}
-              >
-                <Text style={styles.optionText}>
-                  {chatActionLoading === "direct"
-                    ? "Opening personal chat..."
-                    : "Personal chat"}
-                </Text>
-                <Image
-                  style={styles.optionArrow}
-                  source={require("../../../assets/Arrow-right.png")}
-                />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={handleOpenProjectGroupChat}
-                style={[styles.modalOption, styles.addGroupChat]}
-                disabled={chatActionLoading === "group"}
-              >
-                <Text style={[styles.optionText, styles.addGroupChatText]}>
-                  {chatActionLoading === "group"
-                    ? "Opening group chat..."
-                    : "Project group chat"}
-                </Text>
-                <Image
-                  style={styles.optionArrow}
-                  source={require("../../../assets/Arrow-right.png")}
-                />
-              </TouchableOpacity>
-            </>
-          )}
-        </BottomSheetView>
-      </BottomSheet>
     </View>
   );
 };
@@ -934,80 +787,5 @@ const styles = StyleSheet.create({
     width: 16,
     height: 26,
     marginRight: 12,
-  },
-  bottomSheetBackground: {
-    backgroundColor: "#EEEEEE",
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-  },
-  handleIndicator: {
-    backgroundColor: "#CCCCCC",
-    width: 40,
-    height: 4,
-    borderRadius: 2,
-    zIndex: 4,
-    position: "relative",
-  },
-  bottomSheetContent: {
-    padding: 20,
-    paddingTop: 12,
-    gap: 12,
-  },
-  workerHeaderCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 20,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  workerModalTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#052D50",
-  },
-  workerModalSubtitle: {
-    color: "#698196",
-    marginTop: 4,
-  },
-  modalOption: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  optionText: {
-    fontSize: 16,
-    color: "#052D50",
-  },
-  optionArrow: {
-    width: 10,
-    height: 20,
-    tintColor: "#052D50",
-  },
-  addGroupChat: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderColor: "#0091FF",
-    borderWidth: 1,
-  },
-  addGroupChatText: {
-    color: "#0091FF",
-    fontWeight: "600",
-  },
-  floatingAddButton: {
-    position: "absolute",
-    right: 16,
-    bottom: 32,
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: "#0091FF",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 20,
   },
 });

@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Feather";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AuthContext from "../../contexts/AuthContext";
@@ -144,14 +144,17 @@ const SelectRow = ({
 
 export default function CreateEmployeeScreen() {
   const navigation = useNavigation();
+  const route = useRoute();
   const { theme } = useTheme();
   const { user } = useContext(AuthContext);
   const { showSuccess } = useFeedback();
+  const employeeId = route.params?.employeeId || "";
+  const isEditing = Boolean(employeeId);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [profession, setProfession] = useState("");
   const [phone, setPhone] = useState("");
-  const [notes, setNotes] = useState("");
   const [projects, setProjects] = useState([]);
   const [selectedProjectIds, setSelectedProjectIds] = useState([]);
   const [selectedRole, setSelectedRole] = useState("");
@@ -162,6 +165,7 @@ export default function CreateEmployeeScreen() {
   const [showToolModal, setShowToolModal] = useState(false);
   const [loadingProjects, setLoadingProjects] = useState(true);
   const [loadingTools, setLoadingTools] = useState(true);
+  const [loadingEmployee, setLoadingEmployee] = useState(false);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState("");
 
@@ -216,6 +220,12 @@ export default function CreateEmployeeScreen() {
   }, [roleOptions, selectedRole]);
 
   useEffect(() => {
+    if (!isWorkerRole) {
+      setSelectedToolIds([]);
+    }
+  }, [isWorkerRole]);
+
+  useEffect(() => {
     const loadProjects = async () => {
       try {
         setLoadingProjects(true);
@@ -252,6 +262,47 @@ export default function CreateEmployeeScreen() {
     loadTools();
   }, []);
 
+  useEffect(() => {
+    if (!isEditing || !employeeId) {
+      return;
+    }
+
+    const loadEmployee = async () => {
+      try {
+        setLoadingEmployee(true);
+        setFormError("");
+        const data = await userService.getDetail(employeeId);
+
+        setName(data?.name || "");
+        setEmail(data?.email || "");
+        setProfession(data?.profession || "");
+        setPhone(
+          data?.phoneAreaCode && data?.phoneNumber
+            ? `+${data.phoneAreaCode}${data.phoneNumber}`
+            : "",
+        );
+        setSelectedRole(data?.role || USER_ROLES.WORKER);
+        setSelectedProjectIds(
+          Array.isArray(data?.projects)
+            ? data.projects.map((project) => getEntityId(project)).filter(Boolean)
+            : [],
+        );
+        setSelectedToolIds(
+          Array.isArray(data?.tools)
+            ? data.tools.map((tool) => getEntityId(tool)).filter(Boolean)
+            : [],
+        );
+      } catch (error) {
+        console.error("Failed to load employee:", error);
+        setFormError(getApiErrorMessage(error, "Unable to load employee."));
+      } finally {
+        setLoadingEmployee(false);
+      }
+    };
+
+    loadEmployee();
+  }, [employeeId, isEditing]);
+
   const toggleProjectSelection = (projectId) => {
     setSelectedProjectIds((previous) => {
       if (previous.includes(projectId)) {
@@ -272,9 +323,10 @@ export default function CreateEmployeeScreen() {
     });
   };
 
-  const handleCreateEmployee = async () => {
+  const handleSaveEmployee = async () => {
     const trimmedName = name.trim();
     const trimmedEmail = email.trim();
+    const trimmedProfession = profession.trim();
     const { areaCode, phone: phoneNumber } = parsePhoneFields(phone);
 
     if (!trimmedEmail) {
@@ -288,12 +340,13 @@ export default function CreateEmployeeScreen() {
     try {
       const payload = {
         email: trimmedEmail,
-        inviteViaEmail: true,
       };
 
       if (trimmedName) {
         payload.name = trimmedName;
       }
+
+      payload.profession = trimmedProfession;
 
       if (areaCode && phoneNumber) {
         payload.phoneAreaCode = areaCode;
@@ -304,7 +357,7 @@ export default function CreateEmployeeScreen() {
         payload.role = selectedRole;
       }
 
-      if (selectedProjectIds.length > 0) {
+      if (selectedProjectIds.length > 0 || isEditing) {
         payload.projectIds = selectedProjectIds;
       }
 
@@ -312,21 +365,38 @@ export default function CreateEmployeeScreen() {
         payload.companyId = user.companyId;
       }
 
-      const createdUser = await userService.create(payload);
-      const workerId = getEntityId(createdUser);
+      let workerId = employeeId;
 
-      if (isWorkerRole && selectedToolIds.length > 0 && workerId) {
-        await toolService.attachToWorker(workerId, selectedToolIds);
+      if (isEditing) {
+        await userService.update(employeeId, payload);
+      } else {
+        payload.inviteViaEmail = true;
+        const createdUser = await userService.create(payload);
+        workerId = getEntityId(createdUser);
+      }
+
+      if (workerId) {
+        await toolService.replaceWorkerAssignments(
+          workerId,
+          selectedRole === USER_ROLES.WORKER ? selectedToolIds : [],
+        );
       }
 
       showSuccess({
-        title: "Invitation sent",
-        message: `${trimmedName || trimmedEmail} will receive an email with a password and confirmation link.`,
+        title: isEditing ? "Employee updated" : "Invitation sent",
+        message: isEditing
+          ? `${trimmedName || trimmedEmail} updated successfully.`
+          : `${trimmedName || trimmedEmail} will receive an email with a password and confirmation link.`,
       });
       navigation.goBack();
     } catch (error) {
-      console.error("Failed to create employee:", error);
-      setFormError(getApiErrorMessage(error, "Unable to create employee."));
+      console.error("Failed to save employee:", error);
+      setFormError(
+        getApiErrorMessage(
+          error,
+          isEditing ? "Unable to update employee." : "Unable to create employee.",
+        ),
+      );
     } finally {
       setSaving(false);
     }
@@ -347,7 +417,7 @@ export default function CreateEmployeeScreen() {
                 { fontFamily: theme.text.fontFamily.semiBold },
               ]}
             >
-              Add employee
+              {isEditing ? "Edit employee" : "Add employee"}
             </Text>
             <View style={standardScreenHeaderPlaceholder} />
           </View>
@@ -373,11 +443,11 @@ export default function CreateEmployeeScreen() {
               { fontFamily: theme.text.fontFamily.semiBold },
             ]}
           >
-            Add employee
+            {isEditing ? "Edit employee" : "Add employee"}
           </Text>
           <FloatingActionButton
-            onPress={handleCreateEmployee}
-            disabled={saving}
+            onPress={handleSaveEmployee}
+            disabled={saving || loadingEmployee}
             renderContent={() =>
               saving ? (
                 <ActivityIndicator size="small" color="#FFFFFF" />
@@ -394,6 +464,11 @@ export default function CreateEmployeeScreen() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
+          {loadingEmployee ? (
+            <View style={styles.inlineLoadingState}>
+              <ActivityIndicator size="large" color={theme.colors.primary} />
+            </View>
+          ) : null}
           {formError ? <Text style={styles.formError}>{formError}</Text> : null}
 
           <View style={styles.groupCard}>
@@ -410,6 +485,13 @@ export default function CreateEmployeeScreen() {
               value={name}
               onChangeText={setName}
               placeholder="Employee name"
+              autoCapitalize="words"
+            />
+            <PlainFormRow
+              label="Profession"
+              value={profession}
+              onChangeText={setProfession}
+              placeholder="Worker profession"
               autoCapitalize="words"
             />
             <PlainFormRow
@@ -453,23 +535,13 @@ export default function CreateEmployeeScreen() {
             ) : null}
           </View>
 
-          <View style={styles.groupCard}>
-            <PlainFormRow
-              label="Notes"
-              value={notes}
-              onChangeText={setNotes}
-              placeholder="Add notes"
-              multiline
-              isLast
-            />
-          </View>
         </ScrollView>
 
         <BottomBar
           onLeftPress={() => navigation.navigate("Main")}
           onRightPress={() => navigation.navigate("Menu")}
-          onAddPress={handleCreateEmployee}
-          addDisabled={saving}
+          onAddPress={handleSaveEmployee}
+          addDisabled={saving || loadingEmployee}
           renderAddContent={() =>
             saving ? (
               <ActivityIndicator size="small" color="#FFFFFF" />
@@ -745,6 +817,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 8,
     paddingHorizontal: 8,
+  },
+  inlineLoadingState: {
+    paddingVertical: 24,
+    alignItems: "center",
+    justifyContent: "center",
   },
   accessDeniedContainer: {
     flex: 1,

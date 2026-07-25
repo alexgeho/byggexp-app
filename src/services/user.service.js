@@ -51,6 +51,26 @@ export const userService = {
     return data;
   },
 
+  getDetail: async (id) => {
+    const { data } = await api.get(`/users/${id}/detail`);
+    return data;
+  },
+
+  getNotes: async (id) => {
+    const { data } = await api.get(`/users/${id}/notes`);
+    return data;
+  },
+
+  createNote: async (id, text) => {
+    const { data } = await api.post(`/users/${id}/notes`, { text });
+    return data;
+  },
+
+  deleteNote: async (id, noteId) => {
+    const { data } = await api.delete(`/users/${id}/notes/${noteId}`);
+    return data;
+  },
+
   create: async (userData) => {
     const { data } = await api.post('/users', userData);
     return data;

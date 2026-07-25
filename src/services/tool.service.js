@@ -48,6 +48,14 @@ export const toolService = {
     return data;
   },
 
+  replaceWorkerAssignments: async (workerId, toolIds) => {
+    const { data } = await api.put(`/tools/worker/${workerId}/assignments`, {
+      workerId,
+      toolIds,
+    });
+    return data;
+  },
+
   attachToProject: async (projectId, toolIds) => {
     const { data } = await api.post('/tools/attach-to-project', {
       projectId,
