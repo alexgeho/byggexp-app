@@ -17,6 +17,7 @@ import { userService, projectService } from "../../../services";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { resolveUploadUrl } from "../../../utils/shifts";
+import Icon from "react-native-vector-icons/Feather";
 import {
   standardScreenContainer,
   standardScreenHeader,
@@ -199,29 +200,17 @@ export const SelectWorkers = () => {
         )}
       </ScrollView>
 
-      <View
-        style={{
-          width: "100%",
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          zIndex: 1,
-        }}
-      >
-        <Image
-          style={{ width: "100%", height: 172, transform: "rotate(180deg)" }}
-          source={require("../../../assets/ChatBlur.png")}
-        />
-      </View>
-
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
         onAddPress={handleSaveWorkers}
+        addDisabled={saving}
         renderAddContent={() => (
-          <Text style={styles.addButtonText}>
-            {saving ? "Сохранение..." : "Сохранить"}
-          </Text>
+          saving ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : (
+            <Icon name="check" size={24} color="#FFFFFF" />
+          )
         )}
       />
     </View>

@@ -86,7 +86,11 @@ export function canManageTools(role) {
 }
 
 export function canManageWorkers(role) {
-  return hasRole(role, [USER_ROLES.COMPANY_ADMIN, USER_ROLES.PROJECT_ADMIN]);
+  return hasRole(role, [
+    USER_ROLES.SUPERADMIN,
+    USER_ROLES.COMPANY_ADMIN,
+    USER_ROLES.PROJECT_ADMIN,
+  ]);
 }
 
 export function canManageDocuments(role) {

@@ -41,6 +41,7 @@ import { pickUploadAssets } from "../../../utils/uploadPicker";
 import {
   canCreateTasks,
   canManageDocuments,
+  canManageWorkers,
 } from "../../../utils/userRoles";
 
 const API_BASE_URL =
@@ -285,6 +286,7 @@ export const ProjectScreen = () => {
   );
   const canCreateProjectTasks = canCreateTasks(user?.role);
   const canUploadDocuments = canManageDocuments(user?.role);
+  const canEditWorkers = canManageWorkers(user?.role);
 
   const handleOpenDocument = async (document) => {
     if (!document?.url) {
@@ -586,11 +588,19 @@ export const ProjectScreen = () => {
         onRightPress={() => navigation.navigate("Menu")}
         showAddButton={
           (modal === "Tasks" && canCreateProjectTasks) ||
-          (modal === "Documents" && canUploadDocuments)
+          (modal === "Documents" && canUploadDocuments) ||
+          (modal === "Workers" && canEditWorkers)
         }
         onAddPress={() => {
           if (modal === "Documents") {
             handleAddDocuments();
+            return;
+          }
+
+          if (modal === "Workers") {
+            navigation.navigate("SelectWorkers", {
+              projectId: id,
+            });
             return;
           }
 
