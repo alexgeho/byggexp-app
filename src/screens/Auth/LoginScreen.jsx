@@ -7,6 +7,9 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Icon from "react-native-vector-icons/Feather";
@@ -33,7 +36,16 @@ export default function LoginScreen({ navigation }) {
       end={{ x: 1, y: 1 }}
       style={styles.page}
     >
-      <View style={styles.card}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.flex}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.card}>
         <View style={styles.header}>
           <Text style={[styles.welcome, { fontFamily: theme.text.fontFamily.regular }]}>
             Welcome!
@@ -93,7 +105,9 @@ export default function LoginScreen({ navigation }) {
             Don&apos;t have an account? <Text style={styles.footerLinkText}>Create here →</Text>
           </Text>
         </TouchableOpacity>
-      </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </LinearGradient>
   );
 }
@@ -101,6 +115,12 @@ export default function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   page: {
     flex: 1,
+  },
+  flex: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
