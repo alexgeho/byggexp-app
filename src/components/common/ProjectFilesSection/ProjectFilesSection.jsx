@@ -60,7 +60,12 @@ export default function ProjectFilesSection({
       const populatedProject = await projectService.getPopulatedById(projectId);
       setProjectData(populatedProject || project || null);
     } catch (error) {
-      console.error("Failed to refresh project files preview:", error);
+      // A 401/403 here is expected (e.g. the project belongs to another tenant
+      // and is no longer accessible) — degrade quietly instead of logging.
+      const status = error?.response?.status;
+      if (status !== 401 && status !== 403) {
+        console.error("Failed to refresh project files preview:", error);
+      }
       setProjectData(project || null);
     }
   }, [project, projectId]);
