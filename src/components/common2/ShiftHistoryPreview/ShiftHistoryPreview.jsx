@@ -7,6 +7,7 @@ import {
   View,
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
 
 import { useTheme } from "../../../theme/ThemeContext";
@@ -54,6 +55,7 @@ export function ShiftHistoryPreview({
   refreshKey = 0,
 }) {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = createStyles(theme, colorMode);
   const secondaryIconColor =
@@ -100,7 +102,7 @@ export function ShiftHistoryPreview({
   return (
     <View style={styles.section}>
       <View style={styles.header}>
-        <Text style={styles.title}>Shift history</Text>
+        <Text style={styles.title}>{t("shiftHistory.title")}</Text>
 
         <View style={styles.headerActions}>
           <TouchableOpacity
@@ -108,7 +110,7 @@ export function ShiftHistoryPreview({
             onPress={() => navigation.navigate("Shifts")}
             activeOpacity={0.8}
           >
-            <Text style={styles.linkText}>View all</Text>
+            <Text style={styles.linkText}>{t("common.viewAll")}</Text>
             <Icon
               name="arrow-right"
               size={18}
@@ -159,7 +161,7 @@ export function ShiftHistoryPreview({
 
                   <View style={styles.summaryRow}>
                     <Text style={styles.projectText} numberOfLines={2}>
-                      {shift.projectName || "Untitled project"}
+                      {shift.projectName || t("createTask.untitledProject")}
                     </Text>
 
                     <View style={styles.summaryRightColumn}>
@@ -181,9 +183,7 @@ export function ShiftHistoryPreview({
           </ScrollView>
         ) : (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>
-              No shifts yet.
-            </Text>
+            <Text style={styles.emptyText}>{t("shiftHistory.noShiftsYet")}</Text>
           </View>
         )}
       </View>

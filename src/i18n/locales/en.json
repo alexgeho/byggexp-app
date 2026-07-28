@@ -250,6 +250,32 @@
     "selectTitle": "Select an Admin",
     "sampleWorker": "Sample worker"
   },
+  "shifts": {
+    "shiftPhoto": "Shift photo",
+    "selectPeriod": "Select period for export",
+    "chooseBothMonths": "Choose both months for export.",
+    "fromMonthBeforeTo": "The \"From\" month must be earlier than the \"To\" month.",
+    "chooseBothDates": "Choose both dates for export.",
+    "chooseValidPeriod": "Choose a valid export period.",
+    "noDatesTitle": "No dates selected",
+    "noDatesMessage": "Select dates in the calendar to export.",
+    "emptyMonth": "No shifts for this period yet.",
+    "selected": "Selected",
+    "dayCount_one": "{{count}} day",
+    "dayCount_other": "{{count}} days",
+    "selectDatesHint": "Select dates to see shifts.",
+    "noShiftsSelected": "No shifts on selected dates.",
+    "photos": "Photos",
+    "noPhotos": "No photos attached",
+    "currentMonth": "Current month:",
+    "previousMonth": "Previous month:",
+    "exportTitle": "Export shifts",
+    "weekdays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    "periodTabs": {
+      "month": "Month",
+      "custom": "Custom"
+    }
+  },
   "shiftHistory": {
     "title": "Shift history",
     "empty": "No shifts found yet.",
@@ -271,7 +297,8 @@
     "selectDate": "Select date",
     "export": "Export",
     "fromDate": "From date",
-    "toDate": "To date"
+    "toDate": "To date",
+    "noShiftsYet": "No shifts yet."
   },
   "projects": {
     "loading": "Loading projects...",

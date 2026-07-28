@@ -18,6 +18,7 @@ import BottomSheet, {
 } from "@gorhom/bottom-sheet";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../theme/ThemeContext";
 import {
   standardScreenContainer,
@@ -59,7 +60,9 @@ const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "spinner" : "default";
 
 export default function ShiftsScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const { theme } = useTheme();
+  const weekdayLabels = t("shifts.weekdays", { returnObjects: true });
   const exportBottomSheetRef = useRef(null);
   const periodBottomSheetRef = useRef(null);
   const [availableMonths, setAvailableMonths] = useState([]);
@@ -356,12 +359,13 @@ export default function ShiftsScreen() {
     async (photo) => {
       const resolvedUrl = resolveUploadUrl(photo?.url);
       const documentName =
-        photo?.name || getDocumentNameFromUrl(resolvedUrl, "Shift photo");
+        photo?.name ||
+        getDocumentNameFromUrl(resolvedUrl, t("shifts.shiftPhoto"));
 
       if (!resolvedUrl) {
         Alert.alert(
-          "Document unavailable",
-          "This file does not have a valid link.",
+          t("project.documentUnavailableTitle"),
+          t("project.documentUnavailableMessage"),
         );
         return;
       }
@@ -386,10 +390,10 @@ export default function ShiftsScreen() {
         await Linking.openURL(resolvedUrl);
       } catch (error) {
         console.error("Failed to open shift photo:", error);
-        Alert.alert("Unable to open document", "Please try again later.");
+        Alert.alert(t("project.openErrorTitle"), t("project.openErrorMessage"));
       }
     },
-    [navigation],
+    [navigation, t],
   );
 
   const currentMonthKey = useMemo(() => getCurrentMonthKey(), []);
@@ -422,7 +426,7 @@ export default function ShiftsScreen() {
 
   const exportPeriodLabel = useMemo(() => {
     if (!exportPeriodApplied) {
-      return "Select period for export";
+      return t("shifts.selectPeriod");
     }
 
     if (exportPeriodTab === "Month") {
@@ -445,6 +449,7 @@ export default function ShiftsScreen() {
     exportPeriodTab,
     exportToDate,
     exportToMonth,
+    t,
   ]);
 
   const closeExportSheet = useCallback(() => {
@@ -514,31 +519,40 @@ export default function ShiftsScreen() {
 
     if (exportPeriodTab === "Month") {
       if (!exportFromMonth || !exportToMonth) {
-        Alert.alert("Invalid period", "Choose both months for export.");
+        Alert.alert(
+          t("shiftHistory.invalidPeriodTitle"),
+          t("shifts.chooseBothMonths"),
+        );
         return;
       }
 
       if (exportFromMonth > exportToMonth) {
         Alert.alert(
-          "Invalid period",
-          'The "From" month must be earlier than the "To" month.',
+          t("shiftHistory.invalidPeriodTitle"),
+          t("shifts.fromMonthBeforeTo"),
         );
         return;
       }
     } else if (!exportFromDate || !exportToDate) {
-      Alert.alert("Invalid period", "Choose both dates for export.");
+      Alert.alert(
+        t("shiftHistory.invalidPeriodTitle"),
+        t("shifts.chooseBothDates"),
+      );
       return;
     } else if (exportFromDate > exportToDate) {
       Alert.alert(
-        "Invalid period",
-        'The "From" date must be earlier than the "To" date.',
+        t("shiftHistory.invalidPeriodTitle"),
+        t("shiftHistory.invalidPeriodMessage"),
       );
       return;
     }
 
     const range = getPeriodExportRange();
     if (!range) {
-      Alert.alert("Invalid period", "Choose a valid export period.");
+      Alert.alert(
+        t("shiftHistory.invalidPeriodTitle"),
+        t("shifts.chooseValidPeriod"),
+      );
       return;
     }
 
@@ -555,8 +569,8 @@ export default function ShiftsScreen() {
       const message =
         error?.response?.data?.message ||
         error?.message ||
-        "Failed to export shifts. Please try again.";
-      Alert.alert("Export failed", message);
+        t("shiftHistory.exportError");
+      Alert.alert(t("shiftHistory.exportFailedTitle"), message);
     } finally {
       setExporting(false);
     }
@@ -584,7 +598,7 @@ export default function ShiftsScreen() {
 
   const openExportSheet = useCallback(() => {
     if (!selectedDates.length) {
-      Alert.alert("No dates selected", "Select dates in the calendar to export.");
+      Alert.alert(t("shifts.noDatesTitle"), t("shifts.noDatesMessage"));
       return;
     }
 
@@ -627,7 +641,7 @@ export default function ShiftsScreen() {
     }
 
     if (!selectedDates.length) {
-      Alert.alert("No dates selected", "Select dates in the calendar to export.");
+      Alert.alert(t("shifts.noDatesTitle"), t("shifts.noDatesMessage"));
       return;
     }
 
@@ -644,8 +658,8 @@ export default function ShiftsScreen() {
       const message =
         error?.response?.data?.message ||
         error?.message ||
-        "Failed to export shifts. Please try again.";
-      Alert.alert("Export failed", message);
+        t("shiftHistory.exportError");
+      Alert.alert(t("shiftHistory.exportFailedTitle"), message);
     } finally {
       setExporting(false);
     }
@@ -667,7 +681,7 @@ export default function ShiftsScreen() {
             { fontFamily: theme.text.fontFamily["semiBold"] },
           ]}
         >
-          Work shifts
+          {t("menu.workShifts")}
         </Text>
         <View style={styles.placeholder} />
       </View>
@@ -752,7 +766,11 @@ export default function ShiftsScreen() {
                     onPress={() => toggleWeekdayColumn(columnIndex)}
                     activeOpacity={0.85}
                   >
-                    <Text style={styles.calendarHeaderDay}>{label}</Text>
+                    <Text style={styles.calendarHeaderDay}>
+                      {(Array.isArray(weekdayLabels)
+                        ? weekdayLabels[columnIndex]
+                        : null) || label}
+                    </Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -760,9 +778,7 @@ export default function ShiftsScreen() {
             {calendarRows.length ? (
               calendarRows
             ) : (
-              <Text style={styles.emptyMonthText}>
-                No shifts for this period yet.
-              </Text>
+              <Text style={styles.emptyMonthText}>{t("shifts.emptyMonth")}</Text>
             )}
           </View>
 
@@ -778,7 +794,9 @@ export default function ShiftsScreen() {
                   >
                     {formatDurationCompact(selectionSummary.totalDurationMs)}
                   </Text>
-                  <Text style={styles.selectionSummaryLabel}>Selected</Text>
+                  <Text style={styles.selectionSummaryLabel}>
+                    {t("shifts.selected")}
+                  </Text>
                 </View>
 
                 <View style={styles.selectionSummaryDivider} />
@@ -790,10 +808,11 @@ export default function ShiftsScreen() {
                       { fontFamily: theme.text.fontFamily["semiBold"] },
                     ]}
                   >
-                    {selectionSummary.dayCount}{" "}
-                    {selectionSummary.dayCount === 1 ? "day" : "days"}
+                    {t("shifts.dayCount", { count: selectionSummary.dayCount })}
                   </Text>
-                  <Text style={styles.selectionSummaryLabel}>Selected</Text>
+                  <Text style={styles.selectionSummaryLabel}>
+                    {t("shifts.selected")}
+                  </Text>
                 </View>
 
                 <TouchableOpacity
@@ -809,11 +828,11 @@ export default function ShiftsScreen() {
             <View style={styles.shiftDetailsContent}>
               {selectedDates.length === 0 ? (
                 <Text style={styles.emptyDetailsText}>
-                  Select dates to see shifts.
+                  {t("shifts.selectDatesHint")}
                 </Text>
               ) : selectedShifts.length === 0 ? (
                 <Text style={styles.emptyDetailsText}>
-                  No shifts on selected dates.
+                  {t("shifts.noShiftsSelected")}
                 </Text>
               ) : (
                 selectedShifts.map((shift) => {
@@ -868,7 +887,7 @@ export default function ShiftsScreen() {
                                 },
                               ]}
                             >
-                              Project
+                              {t("createTask.projectLabel")}
                             </Text>
                             <Text
                               numberOfLines={1}
@@ -889,7 +908,7 @@ export default function ShiftsScreen() {
                                 },
                               ]}
                             >
-                              Location
+                              {t("createProject.location")}
                             </Text>
                             <Text
                               style={[
@@ -909,7 +928,7 @@ export default function ShiftsScreen() {
                                 },
                               ]}
                             >
-                              Photos
+                              {t("shifts.photos")}
                             </Text>
                             {shift.photos?.length ? (
                               <View style={styles.shiftPhotosValue}>
@@ -946,7 +965,7 @@ export default function ShiftsScreen() {
                                   },
                                 ]}
                               >
-                                No photos attached
+                                {t("shifts.noPhotos")}
                               </Text>
                             )}
                           </View>
@@ -961,13 +980,13 @@ export default function ShiftsScreen() {
 
           <View style={styles.statsContainer}>
             <View style={styles.statItem}>
-              <Text style={styles.statLabel}>Current month:</Text>
+              <Text style={styles.statLabel}>{t("shifts.currentMonth")}</Text>
               <Text style={styles.statValue}>
                 {formatDuration(currentMonthDuration)}
               </Text>
             </View>
             <View style={styles.statItem}>
-              <Text style={styles.statLabel}>Previous month:</Text>
+              <Text style={styles.statLabel}>{t("shifts.previousMonth")}</Text>
               <Text style={styles.statValue}>
                 {formatDuration(previousMonthDuration)}
               </Text>
@@ -982,7 +1001,7 @@ export default function ShiftsScreen() {
         onAddPress={openExportSheet}
         showAddButton
         renderAddContent={() => (
-          <Text style={styles.exportFabText}>Export</Text>
+          <Text style={styles.exportFabText}>{t("shiftHistory.export")}</Text>
         )}
         addButtonStyle={styles.exportFabButton}
       />
@@ -1004,7 +1023,7 @@ export default function ShiftsScreen() {
                 { fontFamily: theme.text.fontFamily["semiBold"] },
               ]}
             >
-              Export shifts
+              {t("shifts.exportTitle")}
             </Text>
 
             <View style={styles.exportSheetCard}>
@@ -1060,7 +1079,9 @@ export default function ShiftsScreen() {
             {exporting ? (
               <ActivityIndicator color="#FFFFFF" />
             ) : (
-              <Text style={styles.exportMainButtonText}>Export</Text>
+              <Text style={styles.exportMainButtonText}>
+              {t("shiftHistory.export")}
+            </Text>
             )}
           </TouchableOpacity>
         </BottomSheetView>
@@ -1083,7 +1104,7 @@ export default function ShiftsScreen() {
                 { fontFamily: theme.text.fontFamily["semiBold"] },
               ]}
             >
-              Period
+              {t("shiftHistory.periodLabel")}
             </Text>
 
             <View style={styles.exportSheetCard}>
@@ -1144,7 +1165,7 @@ export default function ShiftsScreen() {
                       exportPeriodTab === tab && styles.periodTabTextActive,
                     ]}
                   >
-                    {tab}
+                    {t(`shifts.periodTabs.${tab.toLowerCase()}`, tab)}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -1154,7 +1175,9 @@ export default function ShiftsScreen() {
               {exportPeriodTab === "Month" ? (
                 <View style={styles.dateContainer}>
                   <View style={styles.monthDateField}>
-                    <Text style={styles.monthDateLabel}>From</Text>
+                    <Text style={styles.monthDateLabel}>
+                      {t("shiftHistory.from")}
+                    </Text>
                     <View style={styles.monthWheelContainer}>
                       <Picker
                         selectedValue={exportFromMonth}
@@ -1174,7 +1197,9 @@ export default function ShiftsScreen() {
                     </View>
                   </View>
                   <View style={styles.monthDateField}>
-                    <Text style={styles.monthDateLabel}>To</Text>
+                    <Text style={styles.monthDateLabel}>
+                      {t("shiftHistory.to")}
+                    </Text>
                     <View style={styles.monthWheelContainer}>
                       <Picker
                         selectedValue={exportToMonth}
@@ -1197,7 +1222,9 @@ export default function ShiftsScreen() {
               ) : (
                 <View style={styles.dateContainer}>
                   <View style={styles.monthDateField}>
-                    <Text style={styles.monthDateLabel}>From</Text>
+                    <Text style={styles.monthDateLabel}>
+                      {t("shiftHistory.from")}
+                    </Text>
                     <TouchableOpacity
                       style={styles.dateValueCard}
                       onPress={() => setDatePickerTarget("from")}
@@ -1214,7 +1241,9 @@ export default function ShiftsScreen() {
                     </TouchableOpacity>
                   </View>
                   <View style={styles.monthDateField}>
-                    <Text style={styles.monthDateLabel}>To</Text>
+                    <Text style={styles.monthDateLabel}>
+                      {t("shiftHistory.to")}
+                    </Text>
                     <TouchableOpacity
                       style={styles.dateValueCard}
                       onPress={() => setDatePickerTarget("to")}
@@ -1247,7 +1276,9 @@ export default function ShiftsScreen() {
             {exporting ? (
               <ActivityIndicator color="#FFFFFF" />
             ) : (
-              <Text style={styles.exportMainButtonText}>Export</Text>
+              <Text style={styles.exportMainButtonText}>
+              {t("shiftHistory.export")}
+            </Text>
             )}
           </TouchableOpacity>
         </BottomSheetView>
@@ -1262,7 +1293,9 @@ export default function ShiftsScreen() {
         <View style={styles.datePickerOverlay}>
           <View style={styles.datePickerCard}>
             <Text style={styles.datePickerTitle}>
-              {datePickerTarget === "from" ? "From date" : "To date"}
+              {datePickerTarget === "from"
+                ? t("shiftHistory.fromDate")
+                : t("shiftHistory.toDate")}
             </Text>
             <DateTimePicker
               value={parseDateKey(
@@ -1276,7 +1309,7 @@ export default function ShiftsScreen() {
               style={styles.datePickerButton}
               onPress={() => setDatePickerTarget(null)}
             >
-              <Text style={styles.datePickerButtonText}>Done</Text>
+              <Text style={styles.datePickerButtonText}>{t("common.done")}</Text>
             </TouchableOpacity>
           </View>
         </View>

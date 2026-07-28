@@ -250,6 +250,32 @@
     "selectTitle": "Välj en administratör",
     "sampleWorker": "Exempelarbetare"
   },
+  "shifts": {
+    "shiftPhoto": "Arbetspassfoto",
+    "selectPeriod": "Välj period för export",
+    "chooseBothMonths": "Välj båda månaderna för export.",
+    "fromMonthBeforeTo": "\"Från\"-månaden måste vara tidigare än \"Till\"-månaden.",
+    "chooseBothDates": "Välj båda datumen för export.",
+    "chooseValidPeriod": "Välj en giltig exportperiod.",
+    "noDatesTitle": "Inga datum valda",
+    "noDatesMessage": "Välj datum i kalendern för att exportera.",
+    "emptyMonth": "Inga arbetspass för denna period än.",
+    "selected": "Valt",
+    "dayCount_one": "{{count}} dag",
+    "dayCount_other": "{{count}} dagar",
+    "selectDatesHint": "Välj datum för att se arbetspass.",
+    "noShiftsSelected": "Inga arbetspass på valda datum.",
+    "photos": "Foton",
+    "noPhotos": "Inga foton bifogade",
+    "currentMonth": "Denna månad:",
+    "previousMonth": "Föregående månad:",
+    "exportTitle": "Exportera arbetspass",
+    "weekdays": ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"],
+    "periodTabs": {
+      "month": "Månad",
+      "custom": "Anpassad"
+    }
+  },
   "shiftHistory": {
     "title": "Arbetspasshistorik",
     "empty": "Inga arbetspass hittades ännu.",
@@ -271,7 +297,8 @@
     "selectDate": "Välj datum",
     "export": "Exportera",
     "fromDate": "Från-datum",
-    "toDate": "Till-datum"
+    "toDate": "Till-datum",
+    "noShiftsYet": "Inga arbetspass än."
   },
   "projects": {
     "loading": "Laddar projekt...",
