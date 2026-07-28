@@ -1486,7 +1486,7 @@ const styles = StyleSheet.create({
   calendarDay: {
     fontFamily: "DMSans-Regular",
     color: "#052D50",
-    fontSize: 17,
+    fontSize: 14,
     opacity: 0.5,
   },
   calendarDayToday: {
@@ -1530,11 +1530,11 @@ const styles = StyleSheet.create({
   },
   selectionSummaryValue: {
     color: "#052D50",
-    fontSize: 20,
+    fontSize: 18,
   },
   selectionSummaryLabel: {
     color: "#698196",
-    fontSize: 13,
+    fontSize: 18,
   },
   selectionSummaryDivider: {
     width: 1,
@@ -1652,7 +1652,7 @@ const styles = StyleSheet.create({
   },
   exportFabText: {
     color: "#ffffff",
-    fontSize: 13,
+    fontSize: 16,
     fontWeight: "bold",
     textAlign: "center",
     lineHeight: 16,
