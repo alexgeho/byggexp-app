@@ -58,6 +58,23 @@
     "english": "English",
     "swedish": "Svenska"
   },
+  "home": {
+    "buttons": {
+      "employees": "Employees",
+      "tools": "Instruments",
+      "camera": "Camera",
+      "chats": "Chats",
+      "shifts": "Shifts",
+      "projects": "Projects",
+      "tasks": "Tasks"
+    },
+    "sections": {
+      "shift-history": "Shift history",
+      "project-files": "Project Files"
+    },
+    "customizeTitle": "Customize Home Screen",
+    "themes": "Themes"
+  },
   "menu": {
     "title": "Menu",
     "customizeHome": "Customize Home Screen",

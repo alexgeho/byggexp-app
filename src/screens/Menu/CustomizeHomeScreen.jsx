@@ -15,6 +15,8 @@ import {
   useFocusEffect,
 } from "@react-navigation/native";
 
+import { useTranslation } from "react-i18next";
+
 import { useTheme } from "../../theme/ThemeContext";
 
 import { themeOptions } from "../../theme/themes";
@@ -45,6 +47,7 @@ import { isHomeButtonCustomizable } from "../../utils/userRoles";
 
 export default function CustomizeHomeScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   const { selectedProject, user } =
     useContext(AuthContext);
@@ -182,7 +185,7 @@ export default function CustomizeHomeScreen() {
         />
 
         <Text style={styles.title}>
-          Customize Home Screen
+          {t("home.customizeTitle")}
         </Text>
 
         <View style={styles.placeholder} />
@@ -196,7 +199,7 @@ export default function CustomizeHomeScreen() {
         {/* THEME SWITCHER */}
         <View style={styles.themeContainer}>
           <Text style={styles.sectionTitle}>
-            Themes
+            {t("home.themes")}
           </Text>
 
           <View style={styles.themeRow}>
@@ -277,7 +280,7 @@ export default function CustomizeHomeScreen() {
                 }}
               >
                 <Text style={styles.itemText}>
-                  {button.title}
+                  {t(`home.buttons.${button.id}`, button.title)}
                 </Text>
 
                 <View
@@ -334,7 +337,7 @@ export default function CustomizeHomeScreen() {
                 }}
               >
                 <Text style={styles.itemText}>
-                  {section.title}
+                  {t(`home.sections.${section.id}`, section.title)}
                 </Text>
 
                 <View

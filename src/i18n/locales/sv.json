@@ -58,6 +58,23 @@
     "english": "English",
     "swedish": "Svenska"
   },
+  "home": {
+    "buttons": {
+      "employees": "Anställda",
+      "tools": "Verktyg",
+      "camera": "Kamera",
+      "chats": "Chattar",
+      "shifts": "Arbetspass",
+      "projects": "Projekt",
+      "tasks": "Uppgifter"
+    },
+    "sections": {
+      "shift-history": "Arbetspasshistorik",
+      "project-files": "Projektfiler"
+    },
+    "customizeTitle": "Anpassa startskärmen",
+    "themes": "Teman"
+  },
   "menu": {
     "title": "Meny",
     "customizeHome": "Anpassa startskärmen",

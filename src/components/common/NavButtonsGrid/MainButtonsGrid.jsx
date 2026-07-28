@@ -10,6 +10,7 @@ import {
   useFocusEffect,
 } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Feather";
+import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../theme/ThemeContext";
 import {
   mainButtons,
@@ -29,6 +30,7 @@ import { createStyles } from "./MainButtonsGrid.styles";
 
 export default function MainButtonsGrid() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const { user, userId, selectedProject } = useContext(AuthContext);
   const { theme } = useTheme();
   const selectedProjectId =
@@ -138,7 +140,7 @@ export default function MainButtonsGrid() {
                     buttonColor && { color: "#FFFFFF" },
                   ]}
                 >
-                  {button.title}
+                  {t(`home.buttons.${button.id}`, button.title)}
                 </Text>
 
                 <HomeButtonExtraInfo
