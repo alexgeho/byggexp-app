@@ -23,3 +23,5 @@ google-services.json
 GoogleService-Info.plist
 *.jks
 *.keystore
+# Use yarn (yarn.lock) as the single lockfile; block npm's lockfile
+package-lock.json

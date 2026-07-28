@@ -2,6 +2,7 @@
   "name": "tot-bygghub-mobile-app",
   "version": "1.0.0",
   "main": "index.js",
+  "packageManager": "yarn@1.22.22",
   "scripts": {
     "start": "expo start --localhost",
     "start:lan": "expo start",
