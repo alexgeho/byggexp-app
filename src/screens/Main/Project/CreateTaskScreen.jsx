@@ -14,6 +14,7 @@ import {
   View,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Icon from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -191,6 +192,7 @@ const buildAllDayRange = (project, baseDate = new Date()) => {
 };
 
 const DateTimeFieldModal = ({ visible, title, value, onChange, onClose }) => {
+  const { t } = useTranslation();
   const [draftDate, setDraftDate] = useState(value || new Date());
 
   useEffect(() => {
@@ -276,7 +278,7 @@ const DateTimeFieldModal = ({ visible, title, value, onChange, onClose }) => {
             />
           )}
           <TouchableOpacity style={styles.datePickerButton} onPress={handleDone}>
-            <Text style={styles.datePickerButtonText}>Done</Text>
+            <Text style={styles.datePickerButtonText}>{t("common.done")}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -284,7 +286,9 @@ const DateTimeFieldModal = ({ visible, title, value, onChange, onClose }) => {
   );
 };
 
-const ScheduleDateRow = ({ label, value, onPress, isLast = false }) => (
+const ScheduleDateRow = ({ label, value, onPress, isLast = false }) => {
+  const { t } = useTranslation();
+  return (
   <View style={[styles.scheduleRow, isLast && styles.groupRowLast]}>
     <Text style={styles.scheduleLabel}>{label}</Text>
     <View style={styles.dateChips}>
@@ -299,7 +303,7 @@ const ScheduleDateRow = ({ label, value, onPress, isLast = false }) => (
             !value && styles.dateChipPlaceholder,
           ]}
         >
-          {value ? formatScheduleDate(value) : "Select date"}
+          {value ? formatScheduleDate(value) : t("createTask.selectDate")}
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
@@ -313,12 +317,13 @@ const ScheduleDateRow = ({ label, value, onPress, isLast = false }) => (
             !value && styles.dateChipPlaceholder,
           ]}
         >
-          {value ? formatScheduleTime(value) : "Select time"}
+          {value ? formatScheduleTime(value) : t("createTask.selectTime")}
         </Text>
       </TouchableOpacity>
     </View>
   </View>
-);
+  );
+};
 
 const getProjectId = (project) => project?._id || project?.id;
 
@@ -339,7 +344,9 @@ const ProjectPickerModal = ({
   selectedProjectId,
   onSelect,
   onClose,
-}) => (
+}) => {
+  const { t } = useTranslation();
+  return (
   <Modal
     visible={visible}
     transparent={true}
@@ -349,7 +356,9 @@ const ProjectPickerModal = ({
     <View style={styles.projectPickerOverlay}>
       <View style={styles.projectPickerCard}>
         <View style={styles.projectPickerHeader}>
-          <Text style={styles.projectPickerTitle}>Select project</Text>
+          <Text style={styles.projectPickerTitle}>
+            {t("createTask.selectProjectTitle")}
+          </Text>
           <TouchableOpacity onPress={onClose} style={styles.projectPickerClose}>
             <Icon name="x" size={20} color="#052D50" />
           </TouchableOpacity>
@@ -360,7 +369,9 @@ const ProjectPickerModal = ({
           contentContainerStyle={styles.projectPickerListContent}
         >
           {projects.length === 0 ? (
-            <Text style={styles.projectPickerEmpty}>No projects found.</Text>
+            <Text style={styles.projectPickerEmpty}>
+              {t("projects.notFound")}
+            </Text>
           ) : (
             projects.map((project) => {
               const id = getProjectId(project);
@@ -378,7 +389,7 @@ const ProjectPickerModal = ({
                 >
                   <View style={styles.projectPickerItemText}>
                     <Text style={styles.projectPickerItemTitle}>
-                      {project.name || "Untitled project"}
+                      {project.name || t("createTask.untitledProject")}
                     </Text>
                     {!!project.location && (
                       <Text style={styles.projectPickerItemSubtitle}>
@@ -398,7 +409,8 @@ const ProjectPickerModal = ({
       </View>
     </View>
   </Modal>
-);
+  );
+};
 
 const UserPickerModal = ({
   visible,
@@ -406,7 +418,9 @@ const UserPickerModal = ({
   selectedUserId,
   onSelect,
   onClose,
-}) => (
+}) => {
+  const { t } = useTranslation();
+  return (
   <Modal
     visible={visible}
     transparent={true}
@@ -416,7 +430,9 @@ const UserPickerModal = ({
     <View style={styles.projectPickerOverlay}>
       <View style={styles.projectPickerCard}>
         <View style={styles.projectPickerHeader}>
-          <Text style={styles.projectPickerTitle}>Select user</Text>
+          <Text style={styles.projectPickerTitle}>
+            {t("createTask.selectUserTitle")}
+          </Text>
           <TouchableOpacity onPress={onClose} style={styles.projectPickerClose}>
             <Icon name="x" size={20} color="#052D50" />
           </TouchableOpacity>
@@ -427,7 +443,9 @@ const UserPickerModal = ({
           contentContainerStyle={styles.projectPickerListContent}
         >
           {users.length === 0 ? (
-            <Text style={styles.projectPickerEmpty}>No users found.</Text>
+            <Text style={styles.projectPickerEmpty}>
+              {t("createTask.noUsers")}
+            </Text>
           ) : (
             users.map((item) => {
               const id = getUserId(item);
@@ -445,10 +463,10 @@ const UserPickerModal = ({
                 >
                   <View style={styles.projectPickerItemText}>
                     <Text style={styles.projectPickerItemTitle}>
-                      {item.name || item.email || "Unnamed user"}
+                      {item.name || item.email || t("createTask.unnamedUser")}
                     </Text>
                     <Text style={styles.projectPickerItemSubtitle}>
-                      {item.profession || item.role || "User"}
+                      {item.profession || item.role || t("roles.user")}
                     </Text>
                   </View>
 
@@ -463,11 +481,13 @@ const UserPickerModal = ({
       </View>
     </View>
   </Modal>
-);
+  );
+};
 
 export default function CreateTaskScreen() {
   const navigation = useNavigation();
   const route = useRoute();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const { showSuccess } = useFeedback();
   const { user } = useContext(AuthContext);
@@ -788,7 +808,10 @@ export default function CreateTaskScreen() {
       setSelectedDocuments((prev) => [...prev, ...pickedAssets]);
     } catch (error) {
       console.error("Error picking task documents:", error);
-      Alert.alert("Documents error", "Unable to select documents right now.");
+      Alert.alert(
+        t("createTask.documentsErrorTitle"),
+        t("createTask.documentsErrorMessage"),
+      );
     }
   };
 
@@ -843,14 +866,17 @@ export default function CreateTaskScreen() {
   const createTask = async () => {
     if (!selectedProjectId && !selectedAssigneeUserId) {
       Alert.alert(
-        "Validation error",
-        "Select a project or one user to create a task.",
+        t("createTask.validationTitle"),
+        t("createTask.validationSelectTarget"),
       );
       return;
     }
 
     if (!taskTitle.trim()) {
-      Alert.alert("Validation error", "Task title is required.");
+      Alert.alert(
+        t("createTask.validationTitle"),
+        t("createTask.titleRequired"),
+      );
       return;
     }
 
@@ -920,8 +946,8 @@ export default function CreateTaskScreen() {
 
       const createdTask = await taskService.create(taskData);
       showSuccess({
-        title: "Task created",
-        message: "Task created successfully.",
+        title: t("createTask.created"),
+        message: t("createTask.createdMessage"),
       });
 
       if (returnTarget === "project" && selectedProjectId) {
@@ -936,7 +962,10 @@ export default function CreateTaskScreen() {
       navigation.navigate("Tasks");
     } catch (error) {
       console.error("Error creating task:", error);
-      Alert.alert("Error", error?.message || "Failed to create task.");
+      Alert.alert(
+        t("common.error"),
+        error?.message || t("createTask.createError"),
+      );
     } finally {
       setSaving(false);
     }
@@ -946,7 +975,7 @@ export default function CreateTaskScreen() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#0091FF" />
-        <Text style={styles.loadingText}>Loading project...</Text>
+        <Text style={styles.loadingText}>{t("project.loading")}</Text>
       </View>
     );
   }
@@ -954,15 +983,15 @@ export default function CreateTaskScreen() {
   if (!allowedToCreate) {
     return (
       <View style={styles.accessDeniedContainer}>
-        <Text style={styles.accessDeniedText}>Access denied</Text>
+        <Text style={styles.accessDeniedText}>{t("access.denied")}</Text>
         <Text style={styles.accessDeniedSubtext}>
-          Only assigned workers and admins can create tasks
+          {t("createTask.accessDenied")}
         </Text>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.backButtonText}>Go back</Text>
+          <Text style={styles.backButtonText}>{t("common.goBack")}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -981,7 +1010,7 @@ export default function CreateTaskScreen() {
             onPress={() => navigation.goBack()}
             iconSource={require("../../../assets/Arrow-left.png")}
           />
-          <Text style={styles.headerTitle}>Create task</Text>
+          <Text style={styles.headerTitle}>{t("createTask.title")}</Text>
           <FloatingActionButton
             onPress={createTask}
             disabled={saving}
@@ -1020,7 +1049,9 @@ export default function CreateTaskScreen() {
                 <FieldIcon name="folder" size={14} color="#FFFFFF" />
               </View>
               <View style={styles.rowTextContainer}>
-                <Text style={styles.rowLabel}>Project</Text>
+                <Text style={styles.rowLabel}>
+                  {t("createTask.projectLabel")}
+                </Text>
                 <Text
                   style={[
                     styles.rowValue,
@@ -1028,12 +1059,14 @@ export default function CreateTaskScreen() {
                   ]}
                 >
                   {isWorkerProjectTaskFlow
-                    ? projectName || initialProjectName || "Current project"
+                    ? projectName ||
+                      initialProjectName ||
+                      t("createTask.currentProject")
                     : isWorkerCreator
-                    ? "Workers can only create personal tasks here"
+                    ? t("createTask.workersPersonalOnly")
                     : loadingProjects
-                    ? "Loading projects..."
-                    : projectName || "Select project"}
+                    ? t("projects.loading")
+                    : projectName || t("createTask.selectProject")}
                 </Text>
               </View>
             </View>
@@ -1051,7 +1084,9 @@ export default function CreateTaskScreen() {
               </View>
               <View style={styles.rowTextContainer}>
                 <Text style={styles.rowLabel}>
-                  {isWorkerCreator ? "Assigned to" : "Personal task user"}
+                  {isWorkerCreator
+                    ? t("createTask.assignedTo")
+                    : t("createTask.personalTaskUser")}
                 </Text>
                 <Text
                   style={[
@@ -1060,11 +1095,11 @@ export default function CreateTaskScreen() {
                   ]}
                 >
                   {loadingUsers
-                    ? "Loading users..."
+                    ? t("createTask.loadingUsers")
                     : selectedAssigneeName ||
                       (isWorkerCreator
-                        ? "Current user"
-                        : "Select worker or foreman")}
+                        ? t("createTask.currentUser")
+                        : t("createTask.selectWorkerOrForeman"))}
                 </Text>
               </View>
             </View>
@@ -1081,12 +1116,14 @@ export default function CreateTaskScreen() {
           </TouchableOpacity>
           <GroupRow isLast={true}>
             <View style={styles.inputWrapper}>
-              <Text style={styles.inputLabel}>Task title *</Text>
+              <Text style={styles.inputLabel}>
+                {t("createTask.taskTitleLabel")}
+              </Text>
               <TextInput
                 style={styles.input}
                 value={taskTitle}
                 onChangeText={setTaskTitle}
-                placeholder="Enter task title"
+                placeholder={t("createTask.taskTitlePlaceholder")}
                 placeholderTextColor="rgba(5, 45, 80, 0.45)"
               />
             </View>
@@ -1097,9 +1134,9 @@ export default function CreateTaskScreen() {
         <GroupCard>
           <GroupRow>
             <View style={styles.allDayTextContainer}>
-              <Text style={styles.scheduleLabel}>All day</Text>
+              <Text style={styles.scheduleLabel}>{t("createTask.allDay")}</Text>
               <Text style={styles.allDayHint}>
-                Use project workday or default 8 hours
+                {t("createTask.allDayHint")}
               </Text>
             </View>
             <Switch
@@ -1110,12 +1147,12 @@ export default function CreateTaskScreen() {
             />
           </GroupRow>
           <ScheduleDateRow
-            label="Starts"
+            label={t("createTask.starts")}
             value={startDate}
             onPress={() => setShowStartDatePicker(true)}
           />
           <ScheduleDateRow
-            label="Ends"
+            label={t("createTask.ends")}
             value={dueDate}
             onPress={() => setShowDueDatePicker(true)}
             isLast={true}
@@ -1126,13 +1163,15 @@ export default function CreateTaskScreen() {
         <GroupCard>
           <GroupRow>
             <View style={styles.textAreaWrapper}>
-              <Text style={styles.inputLabel}>Description</Text>
+              <Text style={styles.inputLabel}>
+                {t("createTask.descriptionLabel")}
+              </Text>
               <TextInput
                 multiline={true}
                 style={[styles.input, styles.textArea]}
                 value={taskDescription}
                 onChangeText={setTaskDescription}
-                placeholder="Add task description"
+                placeholder={t("createTask.descriptionPlaceholder")}
                 placeholderTextColor="rgba(5, 45, 80, 0.45)"
               />
             </View>
@@ -1151,7 +1190,9 @@ export default function CreateTaskScreen() {
                 <FieldIcon name="bell" size={14} color="#FFFFFF" />
               </View>
               <View style={styles.rowTextContainer}>
-                <Text style={styles.rowLabel}>Notifications</Text>
+                <Text style={styles.rowLabel}>
+                  {t("createTask.notificationsLabel")}
+                </Text>
                 <Text
                   style={[
                     styles.rowValue,
@@ -1179,7 +1220,9 @@ export default function CreateTaskScreen() {
                 <FieldIcon name="paperclip" size={14} color="#FFFFFF" />
               </View>
               <View style={styles.rowTextContainer}>
-                <Text style={styles.rowLabel}>Documents</Text>
+                <Text style={styles.rowLabel}>
+                  {t("createTask.documentsLabel")}
+                </Text>
                 <Text
                   style={[
                     styles.rowValue,
@@ -1187,8 +1230,10 @@ export default function CreateTaskScreen() {
                   ]}
                 >
                   {selectedDocuments.length > 0
-                    ? `${selectedDocuments.length} file${selectedDocuments.length > 1 ? "s" : ""}`
-                    : "Add files"}
+                    ? t("createTask.fileCount", {
+                        count: selectedDocuments.length,
+                      })
+                    : t("createTask.addFiles")}
                 </Text>
               </View>
             </View>
@@ -1233,13 +1278,15 @@ export default function CreateTaskScreen() {
         <GroupCard>
           <GroupRow isLast={true}>
             <View style={styles.textAreaWrapper}>
-              <Text style={styles.inputLabel}>Internal notes</Text>
+              <Text style={styles.inputLabel}>
+                {t("createTask.notesLabel")}
+              </Text>
               <TextInput
                 multiline={true}
                 style={[styles.input, styles.textAreaLarge]}
                 value={notes}
                 onChangeText={setNotes}
-                placeholder="Add notes"
+                placeholder={t("tools.notesPlaceholder")}
                 placeholderTextColor="rgba(5, 45, 80, 0.45)"
               />
             </View>
@@ -1248,7 +1295,7 @@ export default function CreateTaskScreen() {
 
         <DateTimeFieldModal
           visible={showStartDatePicker}
-          title="Starts"
+          title={t("createTask.starts")}
           value={startDate}
           onChange={(date) => {
             setAllDay(false);
@@ -1258,7 +1305,7 @@ export default function CreateTaskScreen() {
         />
         <DateTimeFieldModal
           visible={showDueDatePicker}
-          title="Ends"
+          title={t("createTask.ends")}
           value={dueDate}
           onChange={(date) => {
             setAllDay(false);
@@ -1298,7 +1345,9 @@ export default function CreateTaskScreen() {
           <View style={styles.sheetCard}>
             <View style={styles.sheetHandle} />
             <View style={styles.sheetHeader}>
-              <Text style={styles.sheetTitle}>Notifications</Text>
+              <Text style={styles.sheetTitle}>
+                {t("createTask.notificationsLabel")}
+              </Text>
               <TouchableOpacity
                 style={styles.sheetCloseButton}
                 onPress={closeNotificationsSheet}
@@ -1313,7 +1362,9 @@ export default function CreateTaskScreen() {
               keyboardShouldPersistTaps="handled"
             >
               <View style={styles.sheetSection}>
-                <Text style={styles.sheetSectionTitle}>When to notify</Text>
+                <Text style={styles.sheetSectionTitle}>
+                  {t("createTask.whenToNotify")}
+                </Text>
                 <View style={styles.repeatCard}>
                   {REPEAT_OPTIONS.map((option, index) => {
                     const optionState = getRepeatOptionState({
@@ -1366,7 +1417,9 @@ export default function CreateTaskScreen() {
 
                 {notificationSettings.repeat === "minutes" ? (
                   <View style={styles.intervalBox}>
-                    <Text style={styles.inputLabel}>Interval (minutes)</Text>
+                    <Text style={styles.inputLabel}>
+                      {t("createTask.intervalLabel")}
+                    </Text>
                     <TextInput
                       style={styles.intervalInput}
                       value={notificationRepeatInput}
@@ -1387,7 +1440,9 @@ export default function CreateTaskScreen() {
                 ) : null}
 
                 <View style={styles.messageBox}>
-                  <Text style={styles.inputLabel}>Custom reminder</Text>
+                  <Text style={styles.inputLabel}>
+                    {t("createTask.customReminderLabel")}
+                  </Text>
                   <TextInput
                     style={[styles.input, styles.notificationMessageInput]}
                     value={notificationSettings.customMessage}
@@ -1398,7 +1453,7 @@ export default function CreateTaskScreen() {
                         customReminder: Boolean(value.trim()),
                       })
                     }
-                    placeholder="Leave empty for auto reminder"
+                    placeholder={t("createTask.customReminderPlaceholder")}
                     placeholderTextColor="rgba(5, 45, 80, 0.45)"
                   />
                 </View>
@@ -1411,7 +1466,7 @@ export default function CreateTaskScreen() {
               onPress={closeNotificationsSheet}
             >
               <Icon name="check" size={18} color="#FFFFFF" />
-              <Text style={styles.sheetDoneButtonText}>Done</Text>
+              <Text style={styles.sheetDoneButtonText}>{t("common.done")}</Text>
             </TouchableOpacity>
           </View>
         </View>
