@@ -9,12 +9,14 @@ import {
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { BackButton } from '../../components/common/BackButton/BackButton';
 import { toolService } from '../../services';
 import ToolActionSheet from './ToolActionSheet';
 
 export default function ToolScanScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const [permission, requestPermission] = useCameraPermissions();
   const [tool, setTool] = useState(null);
   const [looking, setLooking] = useState(false);
@@ -32,15 +34,15 @@ export default function ToolScanScreen() {
     } catch (e) {
       setError(
         e?.response?.status === 404
-          ? `Inget verktyg för koden "${String(data).trim()}"`
-          : 'Kunde inte läsa koden. Försök igen.',
+          ? t('toolScan.notFound', { code: String(data).trim() })
+          : t('toolScan.readError'),
       );
       // allow re-scan after a short cooldown
       setTimeout(() => { lockRef.current = false; }, 1500);
     } finally {
       setLooking(false);
     }
-  }, []);
+  }, [t]);
 
   const closeSheet = (updated) => {
     setTool(null);
@@ -59,7 +61,7 @@ export default function ToolScanScreen() {
         onPress={() => navigation.goBack()}
         iconSource={require('../../assets/Arrow-left.png')}
       />
-      <Text style={[styles.title, dark && { color: '#fff' }]}>Skanna verktyg</Text>
+      <Text style={[styles.title, dark && { color: '#fff' }]}>{t('toolScan.title')}</Text>
       <View style={{ width: 44 }} />
     </View>
   );
@@ -73,15 +75,15 @@ export default function ToolScanScreen() {
       <View style={styles.centerScreen}>
         {renderHeader(false)}
         <View style={styles.center}>
-          <Text style={styles.permTitle}>Kameraåtkomst behövs</Text>
-          <Text style={styles.permText}>Tillåt kameran för att skanna verktygets QR-kod.</Text>
+          <Text style={styles.permTitle}>{t('camera.cameraAccessTitle')}</Text>
+          <Text style={styles.permText}>{t('toolScan.permText')}</Text>
           {permission.canAskAgain ? (
             <TouchableOpacity style={styles.permBtn} onPress={requestPermission}>
-              <Text style={styles.permBtnText}>Tillåt kamera</Text>
+              <Text style={styles.permBtnText}>{t('toolScan.allowCamera')}</Text>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity style={styles.permBtn} onPress={() => Linking.openSettings()}>
-              <Text style={styles.permBtnText}>Öppna inställningar</Text>
+              <Text style={styles.permBtnText}>{t('camera.openSettings')}</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -103,7 +105,7 @@ export default function ToolScanScreen() {
         <View style={styles.frameWrap} pointerEvents="none">
           <View style={styles.frame} />
           <Text style={styles.hint}>
-            {looking ? 'Läser…' : 'Rikta kameran mot verktygets QR-kod'}
+            {looking ? t('toolScan.reading') : t('toolScan.aimHint')}
           </Text>
           {error ? <Text style={styles.error}>{error}</Text> : null}
         </View>

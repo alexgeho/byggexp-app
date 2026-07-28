@@ -8,25 +8,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import AuthContext from '../../contexts/AuthContext';
 import { toolService } from '../../services';
-
-const STATUS_LABELS = {
-  available: 'Tillgänglig',
-  occupied: 'Upptaget',
-  broken: 'Trasig',
-  in_repair: 'På service',
-};
-
-const EVENT_LABELS = {
-  created: 'Registrerad',
-  handoff: 'Överlämnad',
-  returned: 'Återlämnad',
-  inspection: 'Kontroll',
-  repair: 'Reparation',
-  status_change: 'Statusändring',
-  note: 'Notering',
-};
 
 const idOf = (v) => (v && typeof v === 'object' ? v._id || v.id : v);
 
@@ -34,6 +18,7 @@ const idOf = (v) => (v && typeof v === 'object' ? v._id || v.id : v);
 // plus Take-over / Return / History. Writes go through the same hand-off
 // endpoint the admin uses.
 export default function ToolActionSheet({ visible, tool, onClose, onUpdated }) {
+  const { t } = useTranslation();
   const { userId, user } = useContext(AuthContext);
   const myId = userId || user?._id || user?.id || null;
   const [busy, setBusy] = useState(false);
@@ -44,10 +29,10 @@ export default function ToolActionSheet({ visible, tool, onClose, onUpdated }) {
   const heldByMe = holderId && String(holderId) === String(myId);
 
   const holderText = useMemo(() => {
-    if (heldByMe) return 'Du har den';
-    if (holderId) return 'Utlånad';
-    return 'På lager';
-  }, [heldByMe, holderId]);
+    if (heldByMe) return t('toolScan.heldByMe');
+    if (holderId) return t('toolScan.heldByOther');
+    return t('toolScan.inStock');
+  }, [heldByMe, holderId, t]);
 
   if (!tool) return null;
 
@@ -84,7 +69,7 @@ export default function ToolActionSheet({ visible, tool, onClose, onUpdated }) {
 
           <View style={styles.metaRow}>
             <View style={[styles.badge, styles[`badge_${tool.status}`] || styles.badge_available]}>
-              <Text style={styles.badgeText}>{STATUS_LABELS[tool.status] || tool.status}</Text>
+              <Text style={styles.badgeText}>{t(`tools.status.${tool.status}`, tool.status)}</Text>
             </View>
             <Text style={styles.holder}>{holderText}</Text>
           </View>
@@ -95,15 +80,15 @@ export default function ToolActionSheet({ visible, tool, onClose, onUpdated }) {
           <View style={styles.actions}>
             {!heldByMe ? (
               <TouchableOpacity style={styles.primaryBtn} disabled={busy} onPress={() => run({ toUserId: myId })}>
-                {busy ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryText}>Ta över</Text>}
+                {busy ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryText}>{t('toolScan.takeOver')}</Text>}
               </TouchableOpacity>
             ) : (
               <TouchableOpacity style={styles.primaryBtn} disabled={busy} onPress={() => run({ toUserId: '' })}>
-                {busy ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryText}>Lämna tillbaka</Text>}
+                {busy ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryText}>{t('toolScan.return')}</Text>}
               </TouchableOpacity>
             )}
             <TouchableOpacity style={styles.secondaryBtn} onPress={loadHistory}>
-              <Text style={styles.secondaryText}>{history ? 'Dölj historik' : 'Historik'}</Text>
+              <Text style={styles.secondaryText}>{history ? t('toolScan.hideHistory') : t('toolScan.history')}</Text>
             </TouchableOpacity>
           </View>
 
@@ -111,11 +96,11 @@ export default function ToolActionSheet({ visible, tool, onClose, onUpdated }) {
           {history ? (
             <ScrollView style={styles.historyBox}>
               {history.length === 0 ? (
-                <Text style={styles.historyEmpty}>Ingen historik ännu.</Text>
+                <Text style={styles.historyEmpty}>{t('toolScan.noHistory')}</Text>
               ) : (
                 history.map((e, i) => (
                   <View key={e._id || i} style={styles.historyItem}>
-                    <Text style={styles.historyType}>{EVENT_LABELS[e.type] || e.type}</Text>
+                    <Text style={styles.historyType}>{t(`toolScan.events.${e.type}`, e.type)}</Text>
                     <Text style={styles.historyDate}>
                       {e.createdAt ? new Date(e.createdAt).toLocaleString('sv-SE') : ''}
                       {e.note ? ` · ${e.note}` : ''}
@@ -127,7 +112,7 @@ export default function ToolActionSheet({ visible, tool, onClose, onUpdated }) {
           ) : null}
 
           <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
-            <Text style={styles.closeText}>Stäng</Text>
+            <Text style={styles.closeText}>{t('createProject.close')}</Text>
           </TouchableOpacity>
         </View>
       </View>

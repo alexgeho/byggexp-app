@@ -315,6 +315,32 @@
       "on_hold": "Pausat"
     }
   },
+  "toolScan": {
+    "title": "Skanna verktyg",
+    "notFound": "Inget verktyg för koden \"{{code}}\"",
+    "readError": "Kunde inte läsa koden. Försök igen.",
+    "permText": "Tillåt kameran för att skanna verktygets QR-kod.",
+    "allowCamera": "Tillåt kamera",
+    "reading": "Läser…",
+    "aimHint": "Rikta kameran mot verktygets QR-kod",
+    "heldByMe": "Du har den",
+    "heldByOther": "Utlånad",
+    "inStock": "På lager",
+    "takeOver": "Ta över",
+    "return": "Lämna tillbaka",
+    "history": "Historik",
+    "hideHistory": "Dölj historik",
+    "noHistory": "Ingen historik ännu.",
+    "events": {
+      "created": "Registrerad",
+      "handoff": "Överlämnad",
+      "returned": "Återlämnad",
+      "inspection": "Kontroll",
+      "repair": "Reparation",
+      "status_change": "Statusändring",
+      "note": "Notering"
+    }
+  },
   "tools": {
     "addTitle": "Lägg till verktyg",
     "nameLabel": "Namn *",

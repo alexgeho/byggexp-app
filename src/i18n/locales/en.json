@@ -315,6 +315,32 @@
       "on_hold": "On hold"
     }
   },
+  "toolScan": {
+    "title": "Scan tool",
+    "notFound": "No tool for code \"{{code}}\"",
+    "readError": "Could not read the code. Try again.",
+    "permText": "Allow the camera to scan the tool's QR code.",
+    "allowCamera": "Allow camera",
+    "reading": "Reading…",
+    "aimHint": "Point the camera at the tool's QR code",
+    "heldByMe": "You have it",
+    "heldByOther": "On loan",
+    "inStock": "In stock",
+    "takeOver": "Take over",
+    "return": "Return",
+    "history": "History",
+    "hideHistory": "Hide history",
+    "noHistory": "No history yet.",
+    "events": {
+      "created": "Registered",
+      "handoff": "Handed over",
+      "returned": "Returned",
+      "inspection": "Inspection",
+      "repair": "Repair",
+      "status_change": "Status change",
+      "note": "Note"
+    }
+  },
   "tools": {
     "addTitle": "Add instrument",
     "nameLabel": "Name *",
