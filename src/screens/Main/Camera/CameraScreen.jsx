@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Image, InteractionManager, Linking, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { BackButton } from '../../../components/common/BackButton/BackButton';
 import { BottomBar } from '../../../components/common/BottomBar/BottomBar';
 import { useFeedback } from '../../../contexts/FeedbackContext';
@@ -19,6 +20,7 @@ import { IMAGE_DOCUMENT_TYPES, pickUploadAssets } from '../../../utils/uploadPic
 export default function CameraScreen() {
   const navigation = useNavigation();
   const route = useRoute();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const { showSuccess } = useFeedback();
   const [shift, setShift] = useState(null);
@@ -36,12 +38,12 @@ export default function CameraScreen() {
     }
 
     const urlSegment = photo?.url?.split('/').pop();
-    return urlSegment || 'Photo';
-  }, []);
+    return urlSegment || t('camera.photoFallback');
+  }, [t]);
 
   const formatPhotoCountLabel = useCallback((count) => {
-    return `${count} ${count === 1 ? 'photo' : 'photos'}`;
-  }, []);
+    return t('camera.photoCount', { count });
+  }, [t]);
 
   const loadShift = useCallback(async () => {
     try {
@@ -108,7 +110,10 @@ export default function CameraScreen() {
 
   const handleAttachFile = useCallback(async () => {
     if (mode === 'shift' && !shift?.id) {
-      Alert.alert('Shift required', 'Start a shift before attaching files.');
+      Alert.alert(
+        t('camera.shiftRequiredTitle'),
+        t('camera.shiftRequiredFiles'),
+      );
       return;
     }
 
@@ -130,30 +135,30 @@ export default function CameraScreen() {
 
       await uploadAssets(pickedAssets);
       showSuccess({
-        title: 'File attached',
-        message: 'File attached to the current shift.',
+        title: t('camera.fileAttached'),
+        message: t('camera.fileAttachedMessage'),
       });
     } catch (error) {
       console.error('Failed to attach shift file:', error);
       Alert.alert(
-        'Attach error',
-        error?.response?.data?.message || error?.message || 'Unable to attach a file right now.',
+        t('camera.attachErrorTitle'),
+        error?.response?.data?.message || error?.message || t('camera.attachFileError'),
       );
     } finally {
       setUploading(false);
     }
-  }, [mode, shift?.id, uploadAssets, handleExpensePhoto]);
+  }, [mode, shift?.id, uploadAssets, handleExpensePhoto, showSuccess, t]);
 
   const promptOpenSettings = useCallback(() => {
     Alert.alert(
-      'Camera access needed',
-      'Enable camera access for ByggExp in iPhone Settings to take photos in TestFlight builds.',
+      t('camera.cameraAccessTitle'),
+      t('camera.cameraAccessSettings'),
       [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Open Settings', onPress: () => Linking.openSettings() },
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('camera.openSettings'), onPress: () => Linking.openSettings() },
       ],
     );
-  }, []);
+  }, [t]);
 
   const handleTakePhoto = useCallback(async () => {
     if (cameraLaunchInFlightRef.current || uploading) {
@@ -161,7 +166,10 @@ export default function CameraScreen() {
     }
 
     if (mode === 'shift' && !shift?.id) {
-      Alert.alert('Shift required', 'Start a shift before attaching photos.');
+      Alert.alert(
+        t('camera.shiftRequiredTitle'),
+        t('camera.shiftRequiredPhotos'),
+      );
       return;
     }
 
@@ -181,11 +189,11 @@ export default function CameraScreen() {
         }
 
         Alert.alert(
-          'Camera access needed',
-          'Allow camera access to take a shift photo. You can still attach an image from your files.',
+          t('camera.cameraAccessTitle'),
+          t('camera.cameraAccessAllow'),
           [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Attach file', onPress: () => handleAttachFile() },
+            { text: t('common.cancel'), style: 'cancel' },
+            { text: t('camera.attachFile'), onPress: () => handleAttachFile() },
           ],
         );
         return;
@@ -202,11 +210,11 @@ export default function CameraScreen() {
       } catch (cameraError) {
         console.warn('Camera unavailable, falling back to file picker:', cameraError);
         Alert.alert(
-          'Camera unavailable',
-          'Camera is unavailable on this device right now. You can attach an image from your files instead.',
+          t('camera.cameraUnavailableTitle'),
+          t('camera.cameraUnavailableMessage'),
           [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Attach file', onPress: () => handleAttachFile() },
+            { text: t('common.cancel'), style: 'cancel' },
+            { text: t('camera.attachFile'), onPress: () => handleAttachFile() },
           ],
         );
         return;
@@ -223,14 +231,14 @@ export default function CameraScreen() {
 
       await uploadAssets(result.assets);
       showSuccess({
-        title: 'Photo attached',
-        message: 'Photo attached to the current shift.',
+        title: t('camera.photoAttached'),
+        message: t('camera.photoAttachedMessage'),
       });
     } catch (error) {
       console.error('Failed to capture shift photo:', error);
       Alert.alert(
-        'Camera error',
-        error?.response?.data?.message || error?.message || 'Unable to attach a photo right now.',
+        t('camera.cameraErrorTitle'),
+        error?.response?.data?.message || error?.message || t('camera.attachPhotoError'),
       );
     } finally {
       cameraLaunchInFlightRef.current = false;
@@ -275,7 +283,7 @@ export default function CameraScreen() {
           { fontFamily: theme.text.fontFamily.semiBold },
         ]}
       >
-        Camera
+        {t('home.buttons.camera')}
       </Text>
       <View style={styles.headerPlaceholder} />
     </View>
@@ -287,13 +295,13 @@ export default function CameraScreen() {
         style={[styles.modeBtn, mode === 'shift' && styles.modeBtnActive]}
         onPress={() => setMode('shift')}
       >
-        <Text style={[styles.modeBtnText, mode === 'shift' && styles.modeBtnTextActive]}>Skiftfoto</Text>
+        <Text style={[styles.modeBtnText, mode === 'shift' && styles.modeBtnTextActive]}>{t('camera.modeShift')}</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.modeBtn, mode === 'expense' && styles.modeBtnActive]}
         onPress={() => setMode('expense')}
       >
-        <Text style={[styles.modeBtnText, mode === 'expense' && styles.modeBtnTextActive]}>Kvitto (utlägg)</Text>
+        <Text style={[styles.modeBtnText, mode === 'expense' && styles.modeBtnTextActive]}>{t('camera.modeExpense')}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -315,10 +323,8 @@ export default function CameraScreen() {
         {renderHeader()}
         {renderModeToggle()}
         <View style={styles.emptyStateContent}>
-          <Text style={styles.emptyTitle}>No active shift</Text>
-          <Text style={styles.emptyText}>
-            Start a shift to attach photos — or switch to “Kvitto (utlägg)” to log a receipt.
-          </Text>
+          <Text style={styles.emptyTitle}>{t('camera.noActiveShift')}</Text>
+          <Text style={styles.emptyText}>{t('camera.noShiftHint')}</Text>
         </View>
         <BottomBar
           onLeftPress={() => navigation.navigate('Main')}
@@ -354,7 +360,7 @@ export default function CameraScreen() {
                   { fontFamily: theme.text.fontFamily.semiBold },
                 ]}
               >
-                Take photo
+                {t('camera.takePhoto')}
               </Text>
             </View>
           )}
@@ -372,7 +378,7 @@ export default function CameraScreen() {
                 { fontFamily: theme.text.fontFamily.semiBold },
               ]}
             >
-              Attach file
+              {t('camera.attachFile')}
             </Text>
           </View>
         </TouchableOpacity>
@@ -387,7 +393,7 @@ export default function CameraScreen() {
                   { fontFamily: theme.text.fontFamily.semiBold },
                 ]}
               >
-                Photos for this shift
+                {t('camera.photosForShift')}
               </Text>
 
               <View style={styles.photosEmptyBlock}>
@@ -401,7 +407,7 @@ export default function CameraScreen() {
                     { fontFamily: theme.text.fontFamily.semiBold },
                   ]}
                 >
-                  No photos attached yet.
+                  {t('camera.noPhotosYet')}
                 </Text>
                 <Text
                   style={[
@@ -409,7 +415,7 @@ export default function CameraScreen() {
                     { fontFamily: theme.text.fontFamily.regular },
                   ]}
                 >
-                  Take a photo or attach a file to link it to the current shift.
+                  {t('camera.noPhotosHint')}
                 </Text>
               </View>
             </>
@@ -422,7 +428,7 @@ export default function CameraScreen() {
                     { fontFamily: theme.text.fontFamily.semiBold },
                   ]}
                 >
-                  Attached photo
+                  {t('camera.attachedPhoto')}
                 </Text>
                 <View style={styles.activeShiftBadge}>
                   <Text
@@ -464,7 +470,9 @@ export default function CameraScreen() {
                           { fontFamily: theme.text.fontFamily.regular },
                         ]}
                       >
-                        {formatShiftDayLabel(shift.shiftDate)} shift
+                        {t('camera.dateShift', {
+                          date: formatShiftDayLabel(shift.shiftDate),
+                        })}
                       </Text>
                     </View>
                     <View style={styles.visibleInShiftsBadge}>
@@ -474,7 +482,7 @@ export default function CameraScreen() {
                           { fontFamily: theme.text.fontFamily.medium },
                         ]}
                       >
-                        Visible in Work shifts
+                        {t('camera.visibleInShifts')}
                       </Text>
                     </View>
                   </View>
@@ -493,7 +501,7 @@ export default function CameraScreen() {
                   { fontFamily: theme.text.fontFamily.regular },
                 ]}
               >
-                Photos added here appear in Work shifts details.
+                {t('camera.photosFooter')}
               </Text>
             </>
           ) : null}
@@ -510,7 +518,7 @@ export default function CameraScreen() {
       {scanning ? (
         <View style={styles.scanOverlay}>
           <ActivityIndicator size="large" color="#ffffff" />
-          <Text style={styles.scanOverlayText}>Skannar kvitto…</Text>
+          <Text style={styles.scanOverlayText}>{t('camera.scanningReceipt')}</Text>
         </View>
       ) : null}
 
@@ -522,7 +530,7 @@ export default function CameraScreen() {
         onClose={() => setReviewData(null)}
         onSaved={() => {
           setReviewData(null);
-          showSuccess({ title: 'Utlägg sparat', message: 'Utlägget skickades för granskning.' });
+          showSuccess({ title: t('camera.expenseSaved'), message: t('camera.expenseSavedMessage') });
         }}
       />
     </View>
