@@ -6,6 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -172,7 +173,12 @@ export default function ToolsScreen() {
           >
             Instruments
           </Text>
-          <View style={standardScreenHeaderPlaceholder} />
+          <TouchableOpacity
+            style={styles.scanButton}
+            onPress={() => navigation.navigate("ToolScan")}
+          >
+            <Text style={styles.scanButtonText}>Skanna</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.searchContainer}>
@@ -282,6 +288,20 @@ const styles = StyleSheet.create({
     fontSize: 17,
     textAlign: "center",
     flex: 1,
+  },
+  scanButton: {
+    height: 40,
+    minWidth: 72,
+    paddingHorizontal: 14,
+    borderRadius: 999,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#0785F4",
+  },
+  scanButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "700",
   },
   searchContainer: {
     width: "100%",
