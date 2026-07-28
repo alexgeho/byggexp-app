@@ -132,6 +132,28 @@
     "noDocsText": "Uppgiftsfiler visas här.",
     "noWorkersText": "Projektets arbetare visas här."
   },
+  "createEmployee": {
+    "addTitle": "Lägg till anställd",
+    "editTitle": "Redigera anställd",
+    "loadError": "Det gick inte att ladda den anställda.",
+    "emailRequired": "Fyll i e-post.",
+    "updated": "Anställd uppdaterad",
+    "invitationSent": "Inbjudan skickad",
+    "updatedMessage": "{{name}} uppdaterades.",
+    "invitedMessage": "{{name}} får ett e-postmeddelande med lösenord och bekräftelselänk.",
+    "updateError": "Det gick inte att uppdatera den anställda.",
+    "createError": "Det gick inte att skapa den anställda.",
+    "emailLabel": "E-post *",
+    "emailPlaceholder": "epost@företag.se",
+    "nameLabel": "För- och efternamn",
+    "namePlaceholder": "Den anställdas namn",
+    "professionPlaceholder": "Arbetarens yrkesroll",
+    "phoneLabel": "Telefonnummer",
+    "addProject": "Lägg till projekt",
+    "selectRole": "Välj roll",
+    "loadingInstruments": "Laddar verktyg...",
+    "selectInstruments": "Välj verktyg"
+  },
   "createProject": {
     "title": "Skapa projekt",
     "validationTitle": "Valideringsfel",

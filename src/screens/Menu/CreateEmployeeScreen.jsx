@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AuthContext from "../../contexts/AuthContext";
@@ -145,6 +146,7 @@ const SelectRow = ({
 export default function CreateEmployeeScreen() {
   const navigation = useNavigation();
   const route = useRoute();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const { user } = useContext(AuthContext);
   const { showSuccess } = useFeedback();
@@ -176,8 +178,8 @@ export default function CreateEmployeeScreen() {
 
   const selectedRoleLabel = useMemo(() => {
     const option = roleOptions.find((item) => item.value === selectedRole);
-    return option?.label || "";
-  }, [roleOptions, selectedRole]);
+    return option ? t(`roles.${option.value}`, option.label) : "";
+  }, [roleOptions, selectedRole, t]);
 
   const isWorkerRole = selectedRole === USER_ROLES.WORKER;
 
@@ -294,7 +296,7 @@ export default function CreateEmployeeScreen() {
         );
       } catch (error) {
         console.error("Failed to load employee:", error);
-        setFormError(getApiErrorMessage(error, "Unable to load employee."));
+        setFormError(getApiErrorMessage(error, t("createEmployee.loadError")));
       } finally {
         setLoadingEmployee(false);
       }
@@ -330,7 +332,7 @@ export default function CreateEmployeeScreen() {
     const { areaCode, phone: phoneNumber } = parsePhoneFields(phone);
 
     if (!trimmedEmail) {
-      setFormError("Please fill in email.");
+      setFormError(t("createEmployee.emailRequired"));
       return;
     }
 
@@ -383,10 +385,16 @@ export default function CreateEmployeeScreen() {
       }
 
       showSuccess({
-        title: isEditing ? "Employee updated" : "Invitation sent",
+        title: isEditing
+          ? t("createEmployee.updated")
+          : t("createEmployee.invitationSent"),
         message: isEditing
-          ? `${trimmedName || trimmedEmail} updated successfully.`
-          : `${trimmedName || trimmedEmail} will receive an email with a password and confirmation link.`,
+          ? t("createEmployee.updatedMessage", {
+              name: trimmedName || trimmedEmail,
+            })
+          : t("createEmployee.invitedMessage", {
+              name: trimmedName || trimmedEmail,
+            }),
       });
       navigation.goBack();
     } catch (error) {
@@ -394,7 +402,9 @@ export default function CreateEmployeeScreen() {
       setFormError(
         getApiErrorMessage(
           error,
-          isEditing ? "Unable to update employee." : "Unable to create employee.",
+          isEditing
+            ? t("createEmployee.updateError")
+            : t("createEmployee.createError"),
         ),
       );
     } finally {
@@ -417,12 +427,12 @@ export default function CreateEmployeeScreen() {
                 { fontFamily: theme.text.fontFamily.semiBold },
               ]}
             >
-              {isEditing ? "Edit employee" : "Add employee"}
+              {isEditing ? t("createEmployee.editTitle") : t("createEmployee.addTitle")}
             </Text>
             <View style={standardScreenHeaderPlaceholder} />
           </View>
           <View style={styles.accessDeniedContainer}>
-            <Text style={styles.accessDeniedText}>Access denied</Text>
+            <Text style={styles.accessDeniedText}>{t("access.denied")}</Text>
           </View>
         </View>
       </View>
@@ -443,7 +453,7 @@ export default function CreateEmployeeScreen() {
               { fontFamily: theme.text.fontFamily.semiBold },
             ]}
           >
-            {isEditing ? "Edit employee" : "Add employee"}
+            {isEditing ? t("createEmployee.editTitle") : t("createEmployee.addTitle")}
           </Text>
           <FloatingActionButton
             onPress={handleSaveEmployee}
@@ -473,29 +483,29 @@ export default function CreateEmployeeScreen() {
 
           <View style={styles.groupCard}>
             <PlainFormRow
-              label="Email *"
+              label={t("createEmployee.emailLabel")}
               value={email}
               onChangeText={setEmail}
-              placeholder="email@company.com"
+              placeholder={t("createEmployee.emailPlaceholder")}
               keyboardType="email-address"
               autoCapitalize="none"
             />
             <PlainFormRow
-              label="First and Last name"
+              label={t("createEmployee.nameLabel")}
               value={name}
               onChangeText={setName}
-              placeholder="Employee name"
+              placeholder={t("createEmployee.namePlaceholder")}
               autoCapitalize="words"
             />
             <PlainFormRow
-              label="Profession"
+              label={t("myAccount.professionLabel")}
               value={profession}
               onChangeText={setProfession}
-              placeholder="Worker profession"
+              placeholder={t("createEmployee.professionPlaceholder")}
               autoCapitalize="words"
             />
             <PlainFormRow
-              label="Phone number"
+              label={t("createEmployee.phoneLabel")}
               value={phone}
               onChangeText={setPhone}
               placeholder="+46 701234567"
@@ -507,17 +517,17 @@ export default function CreateEmployeeScreen() {
           <View style={styles.groupCard}>
             <SelectRow
               icon="briefcase"
-              label="Add project"
+              label={t("createEmployee.addProject")}
               value={selectedProjectsLabel}
-              placeholder={loadingProjects ? "Loading projects..." : "Select project"}
+              placeholder={loadingProjects ? t("projects.loading") : t("createTask.selectProject")}
               onPress={() => setShowProjectModal(true)}
               theme={theme}
             />
             <SelectRow
               icon="flag"
-              label="Role"
+              label={t("myAccount.roleLabel")}
               value={selectedRoleLabel}
-              placeholder="Select role"
+              placeholder={t("createEmployee.selectRole")}
               onPress={() => setShowRoleModal(true)}
               theme={theme}
               isLast={!isWorkerRole}
@@ -525,9 +535,9 @@ export default function CreateEmployeeScreen() {
             {isWorkerRole ? (
               <SelectRow
                 icon="tool"
-                label="Attach instruments"
+                label={t("createProject.attachInstruments")}
                 value={selectedToolsLabel}
-                placeholder={loadingTools ? "Loading instruments..." : "Select instruments"}
+                placeholder={loadingTools ? t("createEmployee.loadingInstruments") : t("createEmployee.selectInstruments")}
                 onPress={() => setShowToolModal(true)}
                 theme={theme}
                 isLast
@@ -572,7 +582,7 @@ export default function CreateEmployeeScreen() {
                 { fontFamily: theme.text.fontFamily.semiBold },
               ]}
             >
-              Select role
+              {t("createEmployee.selectRole")}
             </Text>
             <View style={standardScreenHeaderPlaceholder} />
           </View>
@@ -593,7 +603,9 @@ export default function CreateEmployeeScreen() {
                     setShowRoleModal(false);
                   }}
                 >
-                  <Text style={styles.pickerOptionLabel}>{option.label}</Text>
+                  <Text style={styles.pickerOptionLabel}>
+                    {t(`roles.${option.value}`, option.label)}
+                  </Text>
                   {isSelected ? (
                     <Icon name="check" size={18} color={theme.colors.primary} />
                   ) : null}
@@ -624,7 +636,7 @@ export default function CreateEmployeeScreen() {
                 { fontFamily: theme.text.fontFamily.semiBold },
               ]}
             >
-              Add project
+              {t("createEmployee.addProject")}
             </Text>
             <View style={standardScreenHeaderPlaceholder} />
           </View>
@@ -633,7 +645,7 @@ export default function CreateEmployeeScreen() {
             {projects.length === 0 ? (
               <View style={styles.pickerEmptyState}>
                 <Text style={styles.pickerEmptyStateText}>
-                  {loadingProjects ? "Loading projects..." : "No projects found"}
+                  {loadingProjects ? t("projects.loading") : t("projects.notFound")}
                 </Text>
               </View>
             ) : (
@@ -682,7 +694,7 @@ export default function CreateEmployeeScreen() {
                 { fontFamily: theme.text.fontFamily.semiBold },
               ]}
             >
-              Attach instruments
+              {t("createProject.attachInstruments")}
             </Text>
             <View style={standardScreenHeaderPlaceholder} />
           </View>
@@ -691,7 +703,7 @@ export default function CreateEmployeeScreen() {
             {tools.length === 0 ? (
               <View style={styles.pickerEmptyState}>
                 <Text style={styles.pickerEmptyStateText}>
-                  {loadingTools ? "Loading instruments..." : "No instruments found"}
+                  {loadingTools ? t("createEmployee.loadingInstruments") : t("tools.emptyTitle")}
                 </Text>
               </View>
             ) : (

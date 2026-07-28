@@ -132,6 +132,28 @@
     "noDocsText": "Task files will appear here.",
     "noWorkersText": "Project workers will appear here."
   },
+  "createEmployee": {
+    "addTitle": "Add employee",
+    "editTitle": "Edit employee",
+    "loadError": "Unable to load employee.",
+    "emailRequired": "Please fill in email.",
+    "updated": "Employee updated",
+    "invitationSent": "Invitation sent",
+    "updatedMessage": "{{name}} updated successfully.",
+    "invitedMessage": "{{name}} will receive an email with a password and confirmation link.",
+    "updateError": "Unable to update employee.",
+    "createError": "Unable to create employee.",
+    "emailLabel": "Email *",
+    "emailPlaceholder": "email@company.com",
+    "nameLabel": "First and Last name",
+    "namePlaceholder": "Employee name",
+    "professionPlaceholder": "Worker profession",
+    "phoneLabel": "Phone number",
+    "addProject": "Add project",
+    "selectRole": "Select role",
+    "loadingInstruments": "Loading instruments...",
+    "selectInstruments": "Select instruments"
+  },
   "createProject": {
     "title": "Create project",
     "validationTitle": "Validation Error",
