@@ -84,5 +84,33 @@
     "projectAdmin": "Project Admin",
     "worker": "Worker",
     "user": "User"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "introTitle": "Choose what you want to receive",
+    "introText": "These settings are saved for your user and affect which push notifications are sent to your devices.",
+    "loading": "Loading notification settings...",
+    "savedTitle": "Notifications saved",
+    "savedMessage": "Your notification preferences have been updated.",
+    "saveErrorTitle": "Unable to save",
+    "saveErrorMessage": "Please try again.",
+    "items": {
+      "flowMode": {
+        "label": "Flow Mode",
+        "description": "System and workflow alerts that help you stay on track."
+      },
+      "messages": {
+        "label": "Messages",
+        "description": "Push notifications when a new chat message arrives."
+      },
+      "tasks": {
+        "label": "Tasks",
+        "description": "Task assignments, updates, and reminder notifications."
+      },
+      "productAndMarketingAlerts": {
+        "label": "Product and Marketing Alerts",
+        "description": "News about app updates, releases, and product announcements."
+      }
+    }
   }
 }

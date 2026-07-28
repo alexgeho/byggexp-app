@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import AuthContext from "../../contexts/AuthContext";
@@ -27,6 +28,7 @@ import {
 
 export default function NotificationsSettingsScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const { user, updateStoredUser } = useContext(AuthContext);
   const { showSuccess } = useFeedback();
@@ -42,7 +44,8 @@ export default function NotificationsSettingsScreen() {
     const loadPreferences = async () => {
       try {
         setLoading(true);
-        const nextPreferences = await notificationsService.getNotificationPreferences();
+        const nextPreferences =
+        await notificationsService.getNotificationPreferences();
         if (!isMounted) {
           return;
         }
@@ -100,13 +103,16 @@ export default function NotificationsSettingsScreen() {
       });
 
       showSuccess({
-        title: "Notifications saved",
-        message: "Your notification preferences have been updated.",
+        title: t("notifications.savedTitle"),
+        message: t("notifications.savedMessage"),
       });
       navigation.navigate("Menu");
     } catch (error) {
       console.error("Failed to save notification preferences:", error);
-      Alert.alert("Unable to save", "Please try again.");
+      Alert.alert(
+        t("notifications.saveErrorTitle"),
+        t("notifications.saveErrorMessage"),
+      );
     } finally {
       setSaving(false);
     }
@@ -128,7 +134,7 @@ export default function NotificationsSettingsScreen() {
             { fontFamily: theme.text.fontFamily.semiBold },
           ]}
         >
-          Notifications
+          {t("notifications.title")}
         </Text>
         <View style={styles.placeholder} />
       </View>
@@ -144,7 +150,7 @@ export default function NotificationsSettingsScreen() {
               { fontFamily: theme.text.fontFamily.semiBold },
             ]}
           >
-            Choose what you want to receive
+            {t("notifications.introTitle")}
           </Text>
           <Text
             style={[
@@ -152,8 +158,7 @@ export default function NotificationsSettingsScreen() {
               { fontFamily: theme.text.fontFamily.medium },
             ]}
           >
-            These settings are saved for your user and affect which push
-            notifications are sent to your devices.
+            {t("notifications.introText")}
           </Text>
         </View>
 
@@ -167,7 +172,7 @@ export default function NotificationsSettingsScreen() {
                   { fontFamily: theme.text.fontFamily.medium },
                 ]}
               >
-                Loading notification settings...
+                {t("notifications.loading")}
               </Text>
             </View>
           ) : (
@@ -186,7 +191,7 @@ export default function NotificationsSettingsScreen() {
                       { fontFamily: theme.text.fontFamily.semiBold },
                     ]}
                   >
-                    {item.label}
+                    {t(`notifications.items.${item.key}.label`, item.label)}
                   </Text>
                   <Text
                     style={[
@@ -194,7 +199,10 @@ export default function NotificationsSettingsScreen() {
                       { fontFamily: theme.text.fontFamily.medium },
                     ]}
                   >
-                    {item.description}
+                    {t(
+                      `notifications.items.${item.key}.description`,
+                      item.description,
+                    )}
                   </Text>
                 </View>
 
@@ -223,7 +231,7 @@ export default function NotificationsSettingsScreen() {
           saving ? (
             <ActivityIndicator size="small" color="#FFFFFF" />
           ) : (
-            <Text style={styles.saveButtonText}>Save</Text>
+            <Text style={styles.saveButtonText}>{t("common.save")}</Text>
           )
         }
       />

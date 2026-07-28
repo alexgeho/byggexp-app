@@ -84,5 +84,33 @@
     "projectAdmin": "Projektadministratör",
     "worker": "Arbetare",
     "user": "Användare"
+  },
+  "notifications": {
+    "title": "Aviseringar",
+    "introTitle": "Välj vad du vill få",
+    "introText": "Dessa inställningar sparas för din användare och påverkar vilka push-aviseringar som skickas till dina enheter.",
+    "loading": "Laddar aviseringsinställningar...",
+    "savedTitle": "Aviseringar sparade",
+    "savedMessage": "Dina aviseringsinställningar har uppdaterats.",
+    "saveErrorTitle": "Det gick inte att spara",
+    "saveErrorMessage": "Försök igen.",
+    "items": {
+      "flowMode": {
+        "label": "Flödesläge",
+        "description": "System- och arbetsflödesaviseringar som hjälper dig att hålla koll."
+      },
+      "messages": {
+        "label": "Meddelanden",
+        "description": "Push-aviseringar när ett nytt chattmeddelande kommer."
+      },
+      "tasks": {
+        "label": "Uppgifter",
+        "description": "Aviseringar om uppgiftstilldelningar, uppdateringar och påminnelser."
+      },
+      "productAndMarketingAlerts": {
+        "label": "Produkt- och marknadsföringsaviseringar",
+        "description": "Nyheter om appuppdateringar, lanseringar och produktmeddelanden."
+      }
+    }
   }
 }
