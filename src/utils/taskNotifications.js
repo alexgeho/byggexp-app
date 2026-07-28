@@ -59,7 +59,7 @@ export const normalizeTaskNotificationSettings = (value) => {
         .filter((item) => item?.id)
         .map((item) => ({
           id: item.id,
-          name: item.name || 'Unnamed worker',
+          name: item.name || i18n.t('project.unnamedWorker'),
           profession: item.profession || '',
         }))
     : [];
