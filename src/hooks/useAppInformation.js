@@ -145,9 +145,9 @@ export function useAppInformation() {
 
   const appInformationRows = useMemo(
     () => [
-      { label: "Version", value: "1.0" },
-      { label: "Developer", value: appInfo.developer },
-      { label: "Contact", value: appInfo.contact },
+      { key: "version", label: "Version", value: "1.0" },
+      { key: "developer", label: "Developer", value: appInfo.developer },
+      { key: "contact", label: "Contact", value: appInfo.contact },
     ],
     [appInfo.contact, appInfo.developer],
   );

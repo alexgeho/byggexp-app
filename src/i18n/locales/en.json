@@ -142,6 +142,25 @@
     "worker": "Worker",
     "user": "User"
   },
+  "about": {
+    "title": "About the App",
+    "intro": "Bygg App is a modern solution for construction project management and work hour tracking on construction sites.",
+    "featuresTitle": "The app allows you to",
+    "features": [
+      "Track working hours both manually and automatically using GPS",
+      "Receive and send drawings, tasks, and important documents between the office, foremen, and workers",
+      "Manage projects efficiently, receive timely notifications about new tasks, changes, and possible violations on site",
+      "Ensure transparency and control over all construction site activities"
+    ],
+    "security": "Bygg App is available for Android and iOS, protected by modern authentication methods, and fully complies with privacy and data security standards.",
+    "contact": "If you have any questions or suggestions, please contact our support team through the settings menu.",
+    "infoTitle": "App Information",
+    "info": {
+      "version": "Version",
+      "developer": "Developer",
+      "contact": "Contact"
+    }
+  },
   "employees": {
     "title": "Employees",
     "accessDenied": "Only administrators can manage employees.",

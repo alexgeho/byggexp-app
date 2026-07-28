@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { useAppInformation } from "../../hooks/useAppInformation";
@@ -18,17 +19,12 @@ import {
 } from "../../styles/screenLayout";
 import { useTheme } from "../../theme/ThemeContext";
 
-const APP_FEATURES = [
-  "Track working hours both manually and automatically using GPS",
-  "Receive and send drawings, tasks, and important documents between the office, foremen, and workers",
-  "Manage projects efficiently, receive timely notifications about new tasks, changes, and possible violations on site",
-  "Ensure transparency and control over all construction site activities",
-];
-
 export default function AboutAppScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const { appInformationRows, loadingInfo } = useAppInformation();
+  const appFeatures = t("about.features", { returnObjects: true });
   const accentTint = { tintColor: theme.colors.primary };
 
   return (
@@ -47,7 +43,7 @@ export default function AboutAppScreen() {
             { fontFamily: theme.text.fontFamily.semiBold },
           ]}
         >
-          About the App
+          {t("about.title")}
         </Text>
         <View style={styles.placeholder} />
       </View>
@@ -84,8 +80,7 @@ export default function AboutAppScreen() {
               { fontFamily: theme.text.fontFamily.medium },
             ]}
           >
-            Bygg App is a modern solution for construction project management
-            and work hour tracking on construction sites.
+            {t("about.intro")}
           </Text>
         </View>
 
@@ -96,11 +91,11 @@ export default function AboutAppScreen() {
               { fontFamily: theme.text.fontFamily.semiBold },
             ]}
           >
-            The app allows you to
+            {t("about.featuresTitle")}
           </Text>
 
-          {APP_FEATURES.map((item) => (
-            <View key={item} style={styles.bulletRow}>
+          {(Array.isArray(appFeatures) ? appFeatures : []).map((item, index) => (
+            <View key={index} style={styles.bulletRow}>
               <View
                 style={[
                   styles.bullet,
@@ -126,9 +121,7 @@ export default function AboutAppScreen() {
               { fontFamily: theme.text.fontFamily.medium },
             ]}
           >
-            Bygg App is available for Android and iOS, protected by modern
-            authentication methods, and fully complies with privacy and data
-            security standards.
+            {t("about.security")}
           </Text>
 
           <Text
@@ -138,8 +131,7 @@ export default function AboutAppScreen() {
               { fontFamily: theme.text.fontFamily.medium },
             ]}
           >
-            If you have any questions or suggestions, please contact our
-            support team through the settings menu.
+            {t("about.contact")}
           </Text>
         </View>
 
@@ -150,12 +142,12 @@ export default function AboutAppScreen() {
               { fontFamily: theme.text.fontFamily.semiBold },
             ]}
           >
-            App Information
+            {t("about.infoTitle")}
           </Text>
 
           {appInformationRows.map((item, index) => (
             <View
-              key={item.label}
+              key={item.key}
               style={[
                 styles.infoRow,
                 index !== appInformationRows.length - 1 && styles.infoRowDivider,
@@ -167,7 +159,7 @@ export default function AboutAppScreen() {
                   { fontFamily: theme.text.fontFamily.medium },
                 ]}
               >
-                {item.label}
+                {t(`about.info.${item.key}`, item.label)}
               </Text>
               <Text
                 style={[

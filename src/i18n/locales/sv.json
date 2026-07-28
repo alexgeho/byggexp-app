@@ -142,6 +142,25 @@
     "worker": "Arbetare",
     "user": "Användare"
   },
+  "about": {
+    "title": "Om appen",
+    "intro": "Bygg App är en modern lösning för att hantera byggprojekt och tidrapportering på byggarbetsplatser.",
+    "featuresTitle": "Med appen kan du",
+    "features": [
+      "Registrera arbetstid både manuellt och automatiskt med GPS",
+      "Ta emot och skicka ritningar, uppgifter och viktiga dokument mellan kontoret, arbetsledarna och arbetarna",
+      "Hantera projekt effektivt och få aviseringar i tid om nya uppgifter, ändringar och möjliga avvikelser på plats",
+      "Säkerställa transparens och kontroll över all verksamhet på byggarbetsplatsen"
+    ],
+    "security": "Bygg App finns för Android och iOS, skyddas av moderna autentiseringsmetoder och uppfyller helt kraven för integritet och datasäkerhet.",
+    "contact": "Om du har frågor eller förslag, kontakta vårt supportteam via inställningsmenyn.",
+    "infoTitle": "Appinformation",
+    "info": {
+      "version": "Version",
+      "developer": "Utvecklare",
+      "contact": "Kontakt"
+    }
+  },
   "employees": {
     "title": "Anställda",
     "accessDenied": "Endast administratörer kan hantera anställda.",
