@@ -559,7 +559,6 @@ const styles = StyleSheet.create({
   modeToggle: {
     flexDirection: 'row',
     gap: 8,
-    paddingHorizontal: 12,
     marginBottom: 12,
   },
   modeBtn: {
