@@ -1,4 +1,5 @@
 import React, { useCallback, useContext, useMemo, useState } from "react";
+import { getDateLocale } from "../../utils/dateLocale";
 import {
   ActivityIndicator,
   Alert,
@@ -52,7 +53,7 @@ const formatDate = (value) => {
     return "";
   }
 
-  return date.toLocaleString("en-US", {
+  return date.toLocaleString(getDateLocale(), {
     month: "short",
     day: "numeric",
     year: "numeric",

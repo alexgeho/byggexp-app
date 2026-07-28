@@ -1,4 +1,5 @@
 import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
+import { getDateLocale } from "../../utils/dateLocale";
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
   View,
@@ -170,7 +171,7 @@ export default function TasksScreen() {
 
   const formatTaskDate = (date) => {
     if (!date) return t("task.noDueDate");
-    return new Date(date).toLocaleDateString();
+    return new Date(date).toLocaleDateString(getDateLocale());
   };
 
   if (authLoading || loading) {

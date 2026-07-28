@@ -1,5 +1,6 @@
 /* PROJECTS LIST */
 
+import { getDateLocale } from "../../../utils/dateLocale";
 import {
   useFocusEffect,
   useNavigation,
@@ -229,7 +230,7 @@ export default function ProjectsScreen() {
             >
               <Text style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}>
                 {t("projects.startLabel", {
-                  date: new Date(project.beginningDate).toLocaleDateString(),
+                  date: new Date(project.beginningDate).toLocaleDateString(getDateLocale()),
                 })}
               </Text>
 

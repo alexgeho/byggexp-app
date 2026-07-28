@@ -1,4 +1,5 @@
 import React, { useContext, useMemo, useState } from 'react';
+import { getDateLocale } from '../../utils/dateLocale';
 import {
   ActivityIndicator,
   Modal,
@@ -102,7 +103,7 @@ export default function ToolActionSheet({ visible, tool, onClose, onUpdated }) {
                   <View key={e._id || i} style={styles.historyItem}>
                     <Text style={styles.historyType}>{t(`toolScan.events.${e.type}`, e.type)}</Text>
                     <Text style={styles.historyDate}>
-                      {e.createdAt ? new Date(e.createdAt).toLocaleString('sv-SE') : ''}
+                      {e.createdAt ? new Date(e.createdAt).toLocaleString(getDateLocale()) : ''}
                       {e.note ? ` · ${e.note}` : ''}
                     </Text>
                   </View>

@@ -1,4 +1,5 @@
 import React, { useContext, useMemo, useState } from "react";
+import { getDateLocale } from "../../../utils/dateLocale";
 import {
   ActivityIndicator,
   Alert,
@@ -25,7 +26,7 @@ const formatMessageTime = (value) => {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
 
-  return date.toLocaleTimeString([], {
+  return date.toLocaleTimeString(getDateLocale(), {
     hour: "2-digit",
     minute: "2-digit",
   });

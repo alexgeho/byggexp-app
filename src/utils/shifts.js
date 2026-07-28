@@ -1,34 +1,30 @@
 import { API_BASE_URL } from '../services/api';
+import i18n from '../i18n';
 
-const shortMonthFormatter = new Intl.DateTimeFormat('en-US', {
-  month: 'long',
-  year: 'numeric',
-});
-
-const longDateFormatter = new Intl.DateTimeFormat('en-US', {
+const MONTH_YEAR_OPTIONS = { month: 'long', year: 'numeric' };
+const LONG_DATE_OPTIONS = {
   weekday: 'long',
   month: 'long',
   day: 'numeric',
   year: 'numeric',
-});
+};
+const DAY_DATE_OPTIONS = { month: 'long', day: 'numeric', year: 'numeric' };
+const TIME_OPTIONS = { hour: '2-digit', minute: '2-digit', hour12: false };
+const EXPORT_PICKER_OPTIONS = { day: 'numeric', month: 'short', year: 'numeric' };
 
-const dayDateFormatter = new Intl.DateTimeFormat('en-US', {
-  month: 'long',
-  day: 'numeric',
-  year: 'numeric',
-});
-
-const timeFormatter = new Intl.DateTimeFormat('en-US', {
-  hour: '2-digit',
-  minute: '2-digit',
-  hour12: false,
-});
-
-const exportPickerDateFormatter = new Intl.DateTimeFormat('en-GB', {
-  day: 'numeric',
-  month: 'short',
-  year: 'numeric',
-});
+// Build date formatters for the active language ('sv'/'en' are valid Intl
+// locales), cached per locale+options so a language switch reformats dates.
+const dateFormatterCache = new Map();
+const getDateFormatter = (options) => {
+  const locale = i18n.language || 'en';
+  const cacheKey = `${locale}:${JSON.stringify(options)}`;
+  let formatter = dateFormatterCache.get(cacheKey);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(locale, options);
+    dateFormatterCache.set(cacheKey, formatter);
+  }
+  return formatter;
+};
 
 export const formatDuration = (durationMs = 0) => {
   const totalMinutes = Math.floor(durationMs / 60000);
@@ -96,7 +92,7 @@ export const formatShiftDate = (dateString) => {
     return dateString;
   }
 
-  return longDateFormatter.format(date);
+  return getDateFormatter(LONG_DATE_OPTIONS).format(date);
 };
 
 export const formatShiftDayLabel = (dateString) => {
@@ -107,18 +103,18 @@ export const formatShiftDayLabel = (dateString) => {
     return dateString;
   }
 
-  return dayDateFormatter.format(date);
+  return getDateFormatter(DAY_DATE_OPTIONS).format(date);
 };
 
 export const formatMonthLabel = (monthKey) => {
-  if (!monthKey) return 'No periods';
+  if (!monthKey) return i18n.t('shifts.noPeriods');
 
   const date = new Date(`${monthKey}-01T12:00:00`);
   if (Number.isNaN(date.getTime())) {
     return monthKey;
   }
 
-  return shortMonthFormatter.format(date);
+  return getDateFormatter(MONTH_YEAR_OPTIONS).format(date);
 };
 
 export const getCurrentMonthKey = () => {
@@ -147,7 +143,7 @@ export const getMonthDateRange = (monthKey) => {
 
 export const formatExportPickerDate = (dateString) => {
   if (!dateString) {
-    return 'Select date';
+    return i18n.t('shifts.selectDate');
   }
 
   const date = new Date(`${dateString}T12:00:00`);
@@ -155,7 +151,7 @@ export const formatExportPickerDate = (dateString) => {
     return dateString;
   }
 
-  return exportPickerDateFormatter.format(date);
+  return getDateFormatter(EXPORT_PICKER_OPTIONS).format(date);
 };
 
 export const formatDateKey = (date) => {
@@ -249,7 +245,7 @@ export const formatTimeRange = (startedAt, endedAt) => {
     return '—';
   }
 
-  const startLabel = timeFormatter.format(start);
+  const startLabel = getDateFormatter(TIME_OPTIONS).format(start);
 
   if (!endedAt) {
     return `${startLabel} - ...`;
@@ -260,7 +256,7 @@ export const formatTimeRange = (startedAt, endedAt) => {
     return `${startLabel} - ...`;
   }
 
-  return `${startLabel} - ${timeFormatter.format(end)}`;
+  return `${startLabel} - ${getDateFormatter(TIME_OPTIONS).format(end)}`;
 };
 
 export const resolveUploadUrl = (url) => {

@@ -1,3 +1,4 @@
+import { getDateLocale } from "../../../utils/dateLocale";
 import {
   useFocusEffect,
   useNavigation,
@@ -57,13 +58,13 @@ const formatDate = (value, withTime = false, t = null) => {
   if (Number.isNaN(date.getTime())) return noDate;
 
   return withTime
-    ? date.toLocaleString("en-US", {
+    ? date.toLocaleString(getDateLocale(), {
         month: "short",
         day: "numeric",
         hour: "2-digit",
         minute: "2-digit",
       })
-    : date.toLocaleDateString("en-US", {
+    : date.toLocaleDateString(getDateLocale(), {
         month: "short",
         day: "numeric",
         year: "numeric",

@@ -1,3 +1,4 @@
+import { getDateLocale } from "../../../utils/dateLocale";
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetView,
@@ -109,7 +110,7 @@ export const ShiftHistory = ({ route }) => {
       return value;
     }
 
-    return date.toLocaleDateString("en-US", {
+    return date.toLocaleDateString(getDateLocale(), {
       year: "numeric",
       month: "short",
       day: "numeric",

@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
+import { getDateLocale } from "../../../utils/dateLocale";
 import {
   ActivityIndicator,
   Alert,
@@ -124,14 +125,14 @@ const getUserInitials = (name = "") => {
 };
 
 const formatScheduleDate = (date) =>
-  date.toLocaleDateString("en-GB", {
+  date.toLocaleDateString(getDateLocale(), {
     day: "numeric",
     month: "short",
     year: "numeric",
   });
 
 const formatScheduleTime = (date) =>
-  date.toLocaleTimeString("en-GB", {
+  date.toLocaleTimeString(getDateLocale(), {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,

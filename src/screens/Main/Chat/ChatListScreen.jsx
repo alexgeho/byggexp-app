@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
+import { getDateLocale } from "../../../utils/dateLocale";
 import {
   ActivityIndicator,
   Alert,
@@ -30,7 +31,7 @@ const formatChatTime = (value) => {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
 
-  return date.toLocaleDateString([], {
+  return date.toLocaleDateString(getDateLocale(), {
     month: "2-digit",
     day: "2-digit",
   });

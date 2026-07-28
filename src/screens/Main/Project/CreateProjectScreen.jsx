@@ -1,3 +1,4 @@
+import { getDateLocale } from "../../../utils/dateLocale";
 import {
   View,
   Text,
@@ -1768,7 +1769,7 @@ export default function CreateProjectScreen() {
                   </Text>
                   <Text style={styles.dateValue}>
                     {beginningDate
-                      ? beginningDate.toLocaleDateString()
+                      ? beginningDate.toLocaleDateString(getDateLocale())
                       : t("createTask.selectDate")}
                   </Text>
                 </View>
@@ -1795,7 +1796,7 @@ export default function CreateProjectScreen() {
                   </Text>
                   <Text style={styles.dateValue}>
                     {endDate
-                      ? endDate.toLocaleDateString()
+                      ? endDate.toLocaleDateString(getDateLocale())
                       : t("createTask.selectDate")}
                   </Text>
                 </View>

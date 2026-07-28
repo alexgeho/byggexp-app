@@ -1,4 +1,5 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { getDateLocale } from "../../../utils/dateLocale";
 import React, { useContext, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -53,12 +54,12 @@ const formatDateParts = (value) => {
   }
 
   return {
-    date: date.toLocaleDateString("en-GB", {
+    date: date.toLocaleDateString(getDateLocale(), {
       day: "numeric",
       month: "short",
       year: "numeric",
     }),
-    time: date.toLocaleTimeString("en-GB", {
+    time: date.toLocaleTimeString(getDateLocale(), {
       hour: "2-digit",
       minute: "2-digit",
       hour12: false,
