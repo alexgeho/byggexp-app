@@ -51,9 +51,37 @@
     "loading": "Loading workers...",
     "notFound": "No workers found",
     "select": "Select workers",
+    "selectTitle": "Select your workers",
     "added": "Workers added",
     "addedMessage": "Workers added to the project",
     "addFailed": "Failed to add workers"
+  },
+  "admin": {
+    "selectTitle": "Select an Admin",
+    "sampleWorker": "Sample worker"
+  },
+  "shiftHistory": {
+    "title": "Shift history",
+    "empty": "No shifts found yet.",
+    "total": "Total: {{duration}}",
+    "noLocation": "No location",
+    "invalidPeriodTitle": "Invalid period",
+    "invalidPeriodMessage": "The \"From\" date must be earlier than the \"To\" date.",
+    "exportFailedTitle": "Export failed",
+    "exportError": "Failed to export shifts. Please try again.",
+    "periodLabel": "Period",
+    "periods": {
+      "allTime": "All time",
+      "month": "Month",
+      "year": "Year",
+      "custom": "Custom"
+    },
+    "from": "From",
+    "to": "To",
+    "selectDate": "Select date",
+    "export": "Export",
+    "fromDate": "From date",
+    "toDate": "To date"
   },
   "projects": {
     "loading": "Loading projects...",

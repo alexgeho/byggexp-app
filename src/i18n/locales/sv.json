@@ -51,9 +51,37 @@
     "loading": "Laddar arbetare...",
     "notFound": "Inga arbetare hittades",
     "select": "Välj arbetare",
+    "selectTitle": "Välj dina arbetare",
     "added": "Arbetare tillagda",
     "addedMessage": "Arbetare tillagda i projektet",
     "addFailed": "Det gick inte att lägga till arbetare"
+  },
+  "admin": {
+    "selectTitle": "Välj en administratör",
+    "sampleWorker": "Exempelarbetare"
+  },
+  "shiftHistory": {
+    "title": "Arbetspasshistorik",
+    "empty": "Inga arbetspass hittades ännu.",
+    "total": "Totalt: {{duration}}",
+    "noLocation": "Ingen plats",
+    "invalidPeriodTitle": "Ogiltig period",
+    "invalidPeriodMessage": "\"Från\"-datumet måste vara tidigare än \"Till\"-datumet.",
+    "exportFailedTitle": "Exporten misslyckades",
+    "exportError": "Det gick inte att exportera arbetspass. Försök igen.",
+    "periodLabel": "Period",
+    "periods": {
+      "allTime": "Hela tiden",
+      "month": "Månad",
+      "year": "År",
+      "custom": "Anpassad"
+    },
+    "from": "Från",
+    "to": "Till",
+    "selectDate": "Välj datum",
+    "export": "Exportera",
+    "fromDate": "Från-datum",
+    "toDate": "Till-datum"
   },
   "projects": {
     "loading": "Laddar projekt...",

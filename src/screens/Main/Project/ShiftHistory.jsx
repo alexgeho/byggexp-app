@@ -3,6 +3,7 @@ import BottomSheet, {
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import React, { useRef, useState, useContext, useCallback } from "react";
 import {
   ActivityIndicator,
@@ -18,6 +19,7 @@ import {
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import AuthContext from "../../../contexts/AuthContext";
+import { useTheme } from "../../../theme/ThemeContext";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import {
@@ -34,11 +36,21 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 
 const PERIOD_OPTIONS = ["All time", "Month", "Year", "Custom"];
+const PERIOD_KEYS = {
+  "All time": "allTime",
+  Month: "month",
+  Year: "year",
+  Custom: "custom",
+};
 const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "inline" : "calendar";
 
 export const ShiftHistory = ({ route }) => {
   const navigation = useNavigation();
+  const { t } = useTranslation();
+  const { theme } = useTheme();
   const { user } = useContext(AuthContext);
+  const periodLabel = (value) =>
+    t(`shiftHistory.periods.${PERIOD_KEYS[value] || "month"}`, value);
   const bottomSheetRef = useRef(null);
   const [availableMonths, setAvailableMonths] = useState([]);
   const [selectedPeriod, setSelectedPeriod] = useState("Month");
@@ -61,7 +73,8 @@ export const ShiftHistory = ({ route }) => {
   const effectiveWorkerId =
     workerId || (user?.role === "worker" ? currentUserId : null);
   const titleName =
-    workerName || (user?.role === "worker" ? user?.name : "Shift history");
+    workerName ||
+    (user?.role === "worker" ? user?.name : t("shiftHistory.title"));
 
   const getPeriodRange = useCallback((monthKey) => {
     if (!monthKey || !/^\d{4}-\d{2}$/.test(monthKey)) {
@@ -85,9 +98,10 @@ export const ShiftHistory = ({ route }) => {
     [],
   );
 
-  const formatDateValue = useCallback((value) => {
+  const formatDateValue = useCallback(
+    (value) => {
     if (!value) {
-      return "Select date";
+      return t("shiftHistory.selectDate");
     }
 
     const date = new Date(`${value}T12:00:00`);
@@ -100,7 +114,9 @@ export const ShiftHistory = ({ route }) => {
       month: "short",
       day: "numeric",
     });
-  }, []);
+    },
+    [t],
+  );
 
   const formatDateForApi = useCallback((date) => {
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
@@ -295,8 +311,8 @@ export const ShiftHistory = ({ route }) => {
 
     if (fromDate && toDate && fromDate > toDate) {
       Alert.alert(
-        "Invalid period",
-        'The "From" date must be earlier than the "To" date.',
+        t("shiftHistory.invalidPeriodTitle"),
+        t("shiftHistory.invalidPeriodMessage"),
       );
       return;
     }
@@ -318,8 +334,8 @@ export const ShiftHistory = ({ route }) => {
       const message =
         error?.response?.data?.message ||
         error?.message ||
-        "Failed to export shifts. Please try again.";
-      Alert.alert("Export failed", message);
+        t("shiftHistory.exportError");
+      Alert.alert(t("shiftHistory.exportFailedTitle"), message);
     } finally {
       setExporting(false);
     }
@@ -351,13 +367,15 @@ export const ShiftHistory = ({ route }) => {
             { fontFamily: theme.text.fontFamily["medium"] },
           ]}
         >
-          Shift history
+          {t("shiftHistory.title")}
         </Text>
         <View style={styles.backZeroButton} />
       </View>
 
       <View style={styles.titleRow}>
-        <Text style={styles.screenTitle}>{titleName || "Shift history"}</Text>
+        <Text style={styles.screenTitle}>
+          {titleName || t("shiftHistory.title")}
+        </Text>
       </View>
 
       <ScrollView style={{ flex: 1, width: "100%" }}>
@@ -366,7 +384,7 @@ export const ShiftHistory = ({ route }) => {
             <ActivityIndicator size="large" color="#0091FF" />
           </View>
         ) : days.length === 0 ? (
-          <Text style={styles.emptyStateText}>No shifts found yet.</Text>
+          <Text style={styles.emptyStateText}>{t("shiftHistory.empty")}</Text>
         ) : (
           days.map((day) => (
             <TouchableOpacity
@@ -379,7 +397,9 @@ export const ShiftHistory = ({ route }) => {
                   {formatShiftDayLabel(day.date)}
                 </Text>
                 <Text style={styles.totalText}>
-                  Total: {formatDuration(day.totalDurationMs)}
+                  {t("shiftHistory.total", {
+                    duration: formatDuration(day.totalDurationMs),
+                  })}
                 </Text>
               </View>
 
@@ -398,7 +418,7 @@ export const ShiftHistory = ({ route }) => {
                       {shift.projectName}
                     </Text>
                     <Text style={styles.locationText}>
-                      {shift.location || "No location"}
+                      {shift.location || t("shiftHistory.noLocation")}
                     </Text>
                   </View>
                   <View style={styles.timeContainer}>
@@ -428,12 +448,16 @@ export const ShiftHistory = ({ route }) => {
         <BottomSheetView style={styles.bottomSheetContent}>
           <View style={styles.sheetCard}>
             <View style={styles.periodContainer}>
-              <Text style={styles.periodLabel}>Period</Text>
+              <Text style={styles.periodLabel}>
+                {t("shiftHistory.periodLabel")}
+              </Text>
               <TouchableOpacity
                 style={styles.periodDropdown}
                 onPress={() => setPeriodPickerOpen((previous) => !previous)}
               >
-                <Text style={styles.periodValue}>{selectedPeriod}</Text>
+                <Text style={styles.periodValue}>
+                  {periodLabel(selectedPeriod)}
+                </Text>
                 <Image
                   style={styles.dropdownArrow}
                   source={require("../../../assets/Arrow-down.png")}
@@ -462,7 +486,7 @@ export const ShiftHistory = ({ route }) => {
                           styles.periodOptionTextActive,
                       ]}
                     >
-                      {option}
+                      {periodLabel(option)}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -473,7 +497,7 @@ export const ShiftHistory = ({ route }) => {
           <View style={styles.sheetCard}>
             <View style={styles.dateContainer}>
               <View style={styles.dateField}>
-                <Text style={styles.dateLabel}>From</Text>
+                <Text style={styles.dateLabel}>{t("shiftHistory.from")}</Text>
                 <TouchableOpacity
                   style={[
                     styles.dateValueCard,
@@ -495,7 +519,7 @@ export const ShiftHistory = ({ route }) => {
                 </TouchableOpacity>
               </View>
               <View style={styles.dateField}>
-                <Text style={styles.dateLabel}>To</Text>
+                <Text style={styles.dateLabel}>{t("shiftHistory.to")}</Text>
                 <TouchableOpacity
                   style={[
                     styles.dateValueCard,
@@ -571,7 +595,9 @@ export const ShiftHistory = ({ route }) => {
             {exporting ? (
               <ActivityIndicator color="#FFFFFF" />
             ) : (
-              <Text style={styles.exportMainButtonText}>Export</Text>
+              <Text style={styles.exportMainButtonText}>
+                {t("shiftHistory.export")}
+              </Text>
             )}
           </TouchableOpacity>
         </BottomSheetView>
@@ -583,7 +609,7 @@ export const ShiftHistory = ({ route }) => {
         onAddPress={openWorkerModal}
         showAddButton
         renderAddContent={() => (
-          <Text style={styles.exportFabText}>Export</Text>
+          <Text style={styles.exportFabText}>{t("shiftHistory.export")}</Text>
         )}
         addButtonStyle={styles.exportFabButton}
       />
@@ -597,7 +623,9 @@ export const ShiftHistory = ({ route }) => {
         <View style={styles.datePickerOverlay}>
           <View style={styles.datePickerCard}>
             <Text style={styles.datePickerTitle}>
-              {datePickerTarget === "from" ? "From date" : "To date"}
+              {datePickerTarget === "from"
+                ? t("shiftHistory.fromDate")
+                : t("shiftHistory.toDate")}
             </Text>
             <DateTimePicker
               value={parseDateValue(
@@ -611,7 +639,7 @@ export const ShiftHistory = ({ route }) => {
               style={styles.datePickerButton}
               onPress={() => setDatePickerTarget(null)}
             >
-              <Text style={styles.datePickerButtonText}>Done</Text>
+              <Text style={styles.datePickerButtonText}>{t("common.done")}</Text>
             </TouchableOpacity>
           </View>
         </View>

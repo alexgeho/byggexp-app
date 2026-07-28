@@ -1,4 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import React, { useContext, useState } from "react";
 import {
   Image,
@@ -19,6 +20,7 @@ import {
 
 export const SelectAdmin = () => {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const { user } = useContext(AuthContext);
   const { theme } = useTheme();
   const [isSelected, setSelection] = useState(false);
@@ -50,7 +52,7 @@ export const SelectAdmin = () => {
               { fontFamily: theme.text.fontFamily["medium"] },
             ]}
           >
-            Select an Admin
+            {t("admin.selectTitle")}
           </Text>
           <BackButton
             backgroundColor={"rgba(255, 255, 255, 0.6)"}
@@ -61,9 +63,9 @@ export const SelectAdmin = () => {
           />
         </View>
         <View style={styles.accessDeniedContainer}>
-          <Text style={styles.accessDeniedText}>Access denied</Text>
+          <Text style={styles.accessDeniedText}>{t("access.denied")}</Text>
           <Text style={styles.accessDeniedSubtext}>
-            Only the company owner can assign admins
+            {t("access.onlyOwnerAssignAdmins")}
           </Text>
         </View>
       </View>
@@ -88,7 +90,7 @@ export const SelectAdmin = () => {
             { fontFamily: theme.text.fontFamily["medium"] },
           ]}
         >
-          Select an Admin
+          {t("admin.selectTitle")}
         </Text>
         <BackButton
           backgroundColor={"rgba(255, 255, 255, 0.6)"}
@@ -105,7 +107,7 @@ export const SelectAdmin = () => {
             style={styles.workerAvatar}
             source={require("../../../assets/TasksAva.png")}
           />
-          <Text style={styles.workerName}>Sample worker</Text>
+          <Text style={styles.workerName}>{t("admin.sampleWorker")}</Text>
           <TouchableOpacity
             onPress={() => setSelection(!isSelected)}
             style={[

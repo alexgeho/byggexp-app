@@ -1,4 +1,5 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import React, { useContext, useEffect, useState } from "react";
 import {
   Image,
@@ -27,6 +28,7 @@ import { canManageWorkers } from "../../../utils/userRoles";
 export const SelectWorkers = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  const { t } = useTranslation();
   const { user } = useContext(AuthContext);
   const { showSuccess } = useFeedback();
   const { theme } = useTheme();
@@ -79,13 +81,13 @@ export const SelectWorkers = () => {
       setSaving(true);
       await projectService.addWorkers(projectId, selectedWorkers);
       showSuccess({
-        title: "Workers added",
-        message: "Workers added to the project",
+        title: t("workers.added"),
+        message: t("workers.addedMessage"),
       });
       navigation.goBack();
     } catch (error) {
       console.error("Error adding workers:", error);
-      Alert.alert("Error", "Failed to add workers");
+      Alert.alert(t("common.error"), t("workers.addFailed"));
     } finally {
       setSaving(false);
     }
@@ -110,14 +112,14 @@ export const SelectWorkers = () => {
               { fontFamily: theme.text.fontFamily["medium"] },
             ]}
           >
-            Select your workers
+            {t("workers.selectTitle")}
           </Text>
           <View style={{ width: 40 }} />
         </View>
         <View style={styles.accessDeniedContainer}>
-          <Text style={styles.accessDeniedText}>Access denied</Text>
+          <Text style={styles.accessDeniedText}>{t("access.denied")}</Text>
           <Text style={styles.accessDeniedSubtext}>
-            Only admins can manage workers
+            {t("access.onlyAdminsManageWorkers")}
           </Text>
         </View>
       </View>
@@ -128,7 +130,7 @@ export const SelectWorkers = () => {
     return (
       <View style={styles.centeredContainer}>
         <ActivityIndicator size="large" color="#0091FF" />
-        <Text>Loading workers...</Text>
+        <Text>{t("workers.loading")}</Text>
       </View>
     );
   }
@@ -151,7 +153,7 @@ export const SelectWorkers = () => {
             { fontFamily: theme.text.fontFamily["medium"] },
           ]}
         >
-          Select your workers
+          {t("workers.selectTitle")}
         </Text>
         <BackButton
           backgroundColor={"rgba(255, 255, 255, 0.6)"}
@@ -164,7 +166,7 @@ export const SelectWorkers = () => {
 
       <ScrollView style={{ width: "100%", flex: 1 }}>
         {workers.length === 0 ? (
-          <Text style={styles.noWorkersText}>No workers found</Text>
+          <Text style={styles.noWorkersText}>{t("workers.notFound")}</Text>
         ) : (
           workers.map((worker) => (
             <View key={worker._id} style={styles.workerItem}>
@@ -178,7 +180,7 @@ export const SelectWorkers = () => {
               />
               <View style={styles.workerInfo}>
                 <Text style={styles.workerName}>
-                  {worker.name || "No name"}
+                  {worker.name || t("common.noName")}
                 </Text>
                 <Text style={styles.workerEmail}>{worker.email || ""}</Text>
               </View>
