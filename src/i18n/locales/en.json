@@ -550,6 +550,7 @@
     "shifts": "Shifts",
     "projects": "Projects",
     "workShifts": "Work shifts",
+    "planning": "Planning",
     "language": "Language",
     "legal": "Legal & Policies",
     "help": "Help & Support",
@@ -557,6 +558,16 @@
     "about": "About the App",
     "logOut": "Log out",
     "userFallback": "User"
+  },
+  "schedule": {
+    "employees": "Employees",
+    "projects": "Projects",
+    "week": "Week {{number}}",
+    "selectEmployee": "Select employee",
+    "selectProject": "Select project",
+    "selectMonth": "Select month",
+    "noResources": "No data to plan yet.",
+    "noItems": "No items for this period."
   },
   "roles": {
     "superadmin": "Super Admin",

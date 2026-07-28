@@ -82,6 +82,14 @@ export default function MenuScreen() {
       color: theme.colors.primary,
     };
 
+    const planningItem = {
+      id: "planning",
+      screen: "Schedule",
+      title: t("menu.planning"),
+      icon: require("../../assets/WorkShifts.png"),
+      color: theme.colors.primary,
+    };
+
     // SuperAdmin
     if (user?.role === "superadmin") {
       return [
@@ -109,6 +117,7 @@ export default function MenuScreen() {
           icon: require("../../assets/Projekts.png"),
           color: theme.colors.primary,
         },
+        planningItem,
       ];
     }
 
@@ -139,6 +148,7 @@ export default function MenuScreen() {
           icon: require("../../assets/Projekts.png"),
           color: theme.colors.primary,
         },
+        planningItem,
       ];
     }
 
@@ -169,6 +179,7 @@ export default function MenuScreen() {
         },
         employeesItem,
         toolsItem,
+        planningItem,
       ];
     }
 

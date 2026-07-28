@@ -550,6 +550,7 @@
     "shifts": "Arbetspass",
     "projects": "Projekt",
     "workShifts": "Arbetspass",
+    "planning": "Planering",
     "language": "Språk",
     "legal": "Juridik och villkor",
     "help": "Hjälp och support",
@@ -557,6 +558,16 @@
     "about": "Om appen",
     "logOut": "Logga ut",
     "userFallback": "Användare"
+  },
+  "schedule": {
+    "employees": "Anställda",
+    "projects": "Projekt",
+    "week": "Vecka {{number}}",
+    "selectEmployee": "Välj anställd",
+    "selectProject": "Välj projekt",
+    "selectMonth": "Välj månad",
+    "noResources": "Inga data att planera än.",
+    "noItems": "Inga poster för denna period."
   },
   "roles": {
     "superadmin": "Superadministratör",

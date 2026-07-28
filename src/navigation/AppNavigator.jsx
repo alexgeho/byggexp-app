@@ -8,6 +8,7 @@ import ChatListScreen from "../screens/Main/Chat/ChatListScreen";
 import TasksScreen from "../screens/Main/TasksScreen";
 import ProjectsScreen from "../screens/Main/Project/ProjectsScreen";
 import ShiftsScreen from "../screens/Main/Shifts/ShiftsScreen";
+import ScheduleScreen from "../screens/Main/Schedule/ScheduleScreen";
 import MenuScreen from "../screens/Menu/MenuScreen";
 import CreateProjectScreen from "../screens/Main/Project/CreateProjectScreen";
 import CreateTaskScreen from "../screens/Main/Project/CreateTaskScreen";
@@ -133,6 +134,7 @@ export default function AppNavigator() {
               options={{ gestureEnabled: isCompanyAdmin }}
             />
             <Stack.Screen name="Shifts" component={ShiftsScreen} />
+            <Stack.Screen name="Schedule" component={ScheduleScreen} />
             <Stack.Screen name="Menu" component={MenuScreen} />
             <Stack.Screen name="MyAccount" component={MyAccount} />
             <Stack.Screen
