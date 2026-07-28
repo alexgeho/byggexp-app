@@ -1,6 +1,7 @@
 import React from "react";
 import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { useAppInformation } from "../../hooks/useAppInformation";
@@ -11,35 +12,8 @@ import {
 } from "../../styles/screenLayout";
 import { useTheme } from "../../theme/ThemeContext";
 
-const COLLECTED_DATA = [
-  "Personal information provided during registration (name, phone number, email)",
-  "Work-related data such as time logs, project details, and GPS locations (only during working hours, as configured by your employer)",
-  "Communication and documents exchanged within the app",
-];
-
-const DATA_USAGE = [
-  "To provide and improve our services",
-  "To facilitate communication and project management between office, foremen, and workers",
-  "To comply with legal obligations and improve security",
-];
-
-const DATA_PROTECTION = [
-  "Your data is securely stored both locally and in the cloud",
-  "Access is protected by login/password and other secure authentication methods",
-  "We do not share your personal information with third parties except as required by law or with your consent",
-];
-
-const USER_RIGHTS = [
-  "You may request access, correction, or deletion of your personal data at any time",
-  "You can contact our support team regarding privacy questions or data removal requests",
-];
-
-const LEGAL_NOTICE = [
-  "By using Bygg App, you agree to our Terms of Service and this Privacy Policy",
-  "For more information, please review the full documents available in the app or on our website",
-];
-
 function BulletSection({ title, items, theme }) {
+  const bulletItems = Array.isArray(items) ? items : [];
   return (
     <View style={styles.groupCard}>
       <Text
@@ -51,8 +25,8 @@ function BulletSection({ title, items, theme }) {
         {title}
       </Text>
 
-      {items.map((item) => (
-        <View key={item} style={styles.bulletRow}>
+      {bulletItems.map((item, index) => (
+        <View key={index} style={styles.bulletRow}>
           <View
             style={[
               styles.bullet,
@@ -75,6 +49,7 @@ function BulletSection({ title, items, theme }) {
 
 export default function LegalPoliciesScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const { appInformationRows, loadingInfo } = useAppInformation();
 
@@ -94,7 +69,7 @@ export default function LegalPoliciesScreen() {
             { fontFamily: theme.text.fontFamily.semiBold },
           ]}
         >
-          Legal & Policies
+          {t("legal.title")}
         </Text>
         <View style={styles.placeholder} />
       </View>
@@ -122,7 +97,7 @@ export default function LegalPoliciesScreen() {
               { fontFamily: theme.text.fontFamily.semiBold },
             ]}
           >
-            Privacy Policy & Legal Information
+            {t("legal.heroTitle")}
           </Text>
 
           <Text
@@ -131,39 +106,37 @@ export default function LegalPoliciesScreen() {
               { fontFamily: theme.text.fontFamily.medium },
             ]}
           >
-            Your privacy is important to us. Bygg App is committed to
-            protecting your personal data and ensuring transparency in how your
-            information is collected, used, and stored.
+            {t("legal.heroText")}
           </Text>
         </View>
 
         <BulletSection
-          title="What data do we collect?"
-          items={COLLECTED_DATA}
+          title={t("legal.collectedTitle")}
+          items={t("legal.collected", { returnObjects: true })}
           theme={theme}
         />
 
         <BulletSection
-          title="How do we use your data?"
-          items={DATA_USAGE}
+          title={t("legal.usageTitle")}
+          items={t("legal.usage", { returnObjects: true })}
           theme={theme}
         />
 
         <BulletSection
-          title="Data Protection"
-          items={DATA_PROTECTION}
+          title={t("legal.protectionTitle")}
+          items={t("legal.protection", { returnObjects: true })}
           theme={theme}
         />
 
         <BulletSection
-          title="Your Rights"
-          items={USER_RIGHTS}
+          title={t("legal.rightsTitle")}
+          items={t("legal.rights", { returnObjects: true })}
           theme={theme}
         />
 
         <BulletSection
-          title="Legal Notice"
-          items={LEGAL_NOTICE}
+          title={t("legal.noticeTitle")}
+          items={t("legal.notice", { returnObjects: true })}
           theme={theme}
         />
 
@@ -174,7 +147,7 @@ export default function LegalPoliciesScreen() {
               { fontFamily: theme.text.fontFamily.semiBold },
             ]}
           >
-            Contact
+            {t("legal.contactTitle")}
           </Text>
 
           <Text
@@ -184,8 +157,7 @@ export default function LegalPoliciesScreen() {
               { fontFamily: theme.text.fontFamily.medium },
             ]}
           >
-            For any privacy-related questions, please contact us using the
-            details below.
+            {t("legal.contactText")}
           </Text>
         </View>
 
@@ -196,12 +168,12 @@ export default function LegalPoliciesScreen() {
               { fontFamily: theme.text.fontFamily.semiBold },
             ]}
           >
-            App Information
+            {t("about.infoTitle")}
           </Text>
 
           {appInformationRows.map((item, index) => (
             <View
-              key={item.label}
+              key={item.key}
               style={[
                 styles.infoRow,
                 index !== appInformationRows.length - 1 && styles.infoRowDivider,
@@ -213,7 +185,7 @@ export default function LegalPoliciesScreen() {
                   { fontFamily: theme.text.fontFamily.medium },
                 ]}
               >
-                {item.label}
+                {t(`about.info.${item.key}`, item.label)}
               </Text>
               <Text
                 style={[

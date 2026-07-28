@@ -142,6 +142,73 @@
     "worker": "Arbetare",
     "user": "Användare"
   },
+  "legal": {
+    "title": "Juridik och villkor",
+    "heroTitle": "Integritetspolicy och juridisk information",
+    "heroText": "Din integritet är viktig för oss. Bygg App arbetar för att skydda dina personuppgifter och säkerställa transparens i hur din information samlas in, används och lagras.",
+    "collectedTitle": "Vilka data samlar vi in?",
+    "collected": [
+      "Personuppgifter som lämnas vid registrering (namn, telefonnummer, e-post)",
+      "Arbetsrelaterade data som tidsloggar, projektuppgifter och GPS-platser (endast under arbetstid, enligt din arbetsgivares inställningar)",
+      "Kommunikation och dokument som utbyts i appen"
+    ],
+    "usageTitle": "Hur använder vi dina data?",
+    "usage": [
+      "För att tillhandahålla och förbättra våra tjänster",
+      "För att underlätta kommunikation och projekthantering mellan kontor, arbetsledare och arbetare",
+      "För att uppfylla rättsliga skyldigheter och förbättra säkerheten"
+    ],
+    "protectionTitle": "Dataskydd",
+    "protection": [
+      "Dina data lagras säkert både lokalt och i molnet",
+      "Åtkomst skyddas av inloggning/lösenord och andra säkra autentiseringsmetoder",
+      "Vi delar inte dina personuppgifter med tredje part förutom när lagen kräver det eller med ditt samtycke"
+    ],
+    "rightsTitle": "Dina rättigheter",
+    "rights": [
+      "Du kan när som helst begära åtkomst, rättelse eller radering av dina personuppgifter",
+      "Du kan kontakta vårt supportteam angående integritetsfrågor eller begäran om radering av data"
+    ],
+    "noticeTitle": "Juridiskt meddelande",
+    "notice": [
+      "Genom att använda Bygg App godkänner du våra användarvillkor och denna integritetspolicy",
+      "För mer information, läs de fullständiga dokumenten i appen eller på vår webbplats"
+    ],
+    "contactTitle": "Kontakt",
+    "contactText": "Vid frågor om integritet, kontakta oss med uppgifterna nedan."
+  },
+  "reportBug": {
+    "title": "Rapportera ett fel",
+    "attachmentErrorTitle": "Bilagefel",
+    "attachmentErrorMessage": "Det går inte att välja en bild eller video just nu.",
+    "validationTitle": "Valideringsfel",
+    "validationMessage": "Lägg till en beskrivning eller bifoga en bild eller video.",
+    "sentTitle": "Rapport skickad",
+    "sentMessage": "Tack. Vi kommer att granska problemet.",
+    "sendError": "Det gick inte att skicka rapporten.",
+    "heroTitle": "Berätta vad som gick fel",
+    "heroText": "Skicka en kort beskrivning, en skärmdump, en skärminspelning eller båda. Det hjälper oss att åtgärda problem snabbare.",
+    "descriptionLabel": "Beskrivning",
+    "descriptionPlaceholder": "Beskriv problemet",
+    "changeVideo": "Byt video",
+    "changeImage": "Byt bild",
+    "attach": "Bifoga bild eller video",
+    "selectedVideo": "Vald video",
+    "selectedImage": "Vald bild",
+    "remove": "Ta bort",
+    "send": "Skicka rapport"
+  },
+  "help": {
+    "title": "Hjälp och support",
+    "contactOptions": "Kontaktalternativ",
+    "subtitle": "Kontakta vårt supportteam via kontaktvägarna nedan.",
+    "callTitle": "Ring support",
+    "callDescription": "Tillgänglig:\nMån-Fre • 08:00-17:00",
+    "emailTitle": "E-postsupport",
+    "emailDescription": "Svarar vanligtvis inom 24 timmar",
+    "chatTitle": "Supportchatt",
+    "chatDescription": "Chatta direkt med vårt supportteam"
+  },
   "about": {
     "title": "Om appen",
     "intro": "Bygg App är en modern lösning för att hantera byggprojekt och tidrapportering på byggarbetsplatser.",

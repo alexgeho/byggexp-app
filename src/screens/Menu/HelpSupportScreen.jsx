@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
@@ -90,6 +91,7 @@ function SupportCard({
 
 export default function HelpSupportScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const { theme } = useTheme();
 
   return (
@@ -108,7 +110,7 @@ export default function HelpSupportScreen() {
             { fontFamily: theme.text.fontFamily.semiBold },
           ]}
         >
-          Help & Support
+          {t("help.title")}
         </Text>
         <View style={styles.placeholder} />
       </View>
@@ -133,7 +135,7 @@ export default function HelpSupportScreen() {
               { fontFamily: theme.text.fontFamily.semiBold },
             ]}
           >
-            Contact options
+            {t("help.contactOptions")}
           </Text>
 
           <Text
@@ -142,16 +144,16 @@ export default function HelpSupportScreen() {
               { fontFamily: theme.text.fontFamily.medium },
             ]}
           >
-            Reach our support team using the contact methods below.
+            {t("help.subtitle")}
           </Text>
         </View>
 
         <SupportCard
           iconName="phone"
           iconColor={theme.colors.primary}
-          title="Call support"
+          title={t("help.callTitle")}
           value={SUPPORT_PHONE}
-          description={"Available:\nMon-Fri • 08:00-17:00"}
+          description={t("help.callDescription")}
           onPress={() => openExternalUrl(`tel:${SUPPORT_PHONE.replace(/\s+/g, "")}`)}
           theme={theme}
         />
@@ -159,9 +161,9 @@ export default function HelpSupportScreen() {
         <SupportCard
           iconName="mail"
           iconColor={theme.colors.primary}
-          title="Email support"
+          title={t("help.emailTitle")}
           value={SUPPORT_EMAIL}
-          description="Usually responds within 24 hours"
+          description={t("help.emailDescription")}
           onPress={() => openExternalUrl(`mailto:${SUPPORT_EMAIL}`)}
           theme={theme}
         />
@@ -169,8 +171,8 @@ export default function HelpSupportScreen() {
         <SupportCard
           iconName="message-circle"
           iconColor={theme.colors.primary}
-          title="Support chat"
-          description="Chat directly with our support team"
+          title={t("help.chatTitle")}
+          description={t("help.chatDescription")}
           theme={theme}
         />
       </ScrollView>

@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import { Video, ResizeMode } from "expo-av";
 import Icon from "react-native-vector-icons/Feather";
 import { BackButton } from "../../components/common/BackButton/BackButton";
@@ -31,6 +32,7 @@ import {
 
 export default function ReportBugScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const { showSuccess } = useFeedback();
   const [message, setMessage] = useState("");
@@ -53,8 +55,8 @@ export default function ReportBugScreen() {
     } catch (error) {
       console.error("Error picking bug report attachment:", error);
       Alert.alert(
-        "Attachment error",
-        "Unable to select an image or video right now.",
+        t("reportBug.attachmentErrorTitle"),
+        t("reportBug.attachmentErrorMessage"),
       );
     }
   };
@@ -64,8 +66,8 @@ export default function ReportBugScreen() {
 
     if (!trimmedMessage && !attachment) {
       Alert.alert(
-        "Validation error",
-        "Add a description or attach an image or video.",
+        t("reportBug.validationTitle"),
+        t("reportBug.validationMessage"),
       );
       return;
     }
@@ -94,15 +96,17 @@ export default function ReportBugScreen() {
 
       await bugReportService.create(formData);
       showSuccess({
-        title: "Report sent",
-        message: "Thank you. We will review the issue.",
+        title: t("reportBug.sentTitle"),
+        message: t("reportBug.sentMessage"),
       });
       navigation.navigate("Menu");
     } catch (error) {
       console.error("Error submitting bug report:", error);
       Alert.alert(
-        "Error",
-        error?.response?.data?.message || error?.message || "Failed to send report.",
+        t("common.error"),
+        error?.response?.data?.message ||
+          error?.message ||
+          t("reportBug.sendError"),
       );
     } finally {
       setSaving(false);
@@ -125,7 +129,7 @@ export default function ReportBugScreen() {
             { fontFamily: theme.text.fontFamily.semiBold },
           ]}
         >
-          Report a bug
+          {t("reportBug.title")}
         </Text>
         <View style={styles.placeholder} />
       </View>
@@ -149,7 +153,7 @@ export default function ReportBugScreen() {
               { fontFamily: theme.text.fontFamily.semiBold },
             ]}
           >
-            Tell us what went wrong
+            {t("reportBug.heroTitle")}
           </Text>
           <Text
             style={[
@@ -157,18 +161,19 @@ export default function ReportBugScreen() {
               { fontFamily: theme.text.fontFamily.medium },
             ]}
           >
-            Send a short description, a screenshot, a screen recording, or
-            both. It helps us fix issues faster.
+            {t("reportBug.heroText")}
           </Text>
         </View>
 
         <View style={styles.formCard}>
-          <Text style={styles.inputLabel}>Description</Text>
+          <Text style={styles.inputLabel}>
+            {t("reportBug.descriptionLabel")}
+          </Text>
           <TextInput
             multiline={true}
             value={message}
             onChangeText={setMessage}
-            placeholder="Describe the problem"
+            placeholder={t("reportBug.descriptionPlaceholder")}
             placeholderTextColor="rgba(5, 45, 80, 0.45)"
             style={styles.textArea}
             textAlignVertical="top"
@@ -187,9 +192,9 @@ export default function ReportBugScreen() {
             <Text style={styles.attachmentButtonText}>
               {attachment
                 ? attachmentIsVideo
-                  ? "Change video"
-                  : "Change image"
-                : "Attach image or video"}
+                  ? t("reportBug.changeVideo")
+                  : t("reportBug.changeImage")
+                : t("reportBug.attach")}
             </Text>
           </TouchableOpacity>
 
@@ -212,10 +217,14 @@ export default function ReportBugScreen() {
               <View style={styles.attachmentInfo}>
                 <Text numberOfLines={1} style={styles.attachmentName}>
                   {attachment.name ||
-                    (attachmentIsVideo ? "Selected video" : "Selected image")}
+                    (attachmentIsVideo
+                      ? t("reportBug.selectedVideo")
+                      : t("reportBug.selectedImage"))}
                 </Text>
                 <TouchableOpacity onPress={() => setAttachment(null)}>
-                  <Text style={styles.removeAttachmentText}>Remove</Text>
+                  <Text style={styles.removeAttachmentText}>
+                    {t("reportBug.remove")}
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -231,7 +240,7 @@ export default function ReportBugScreen() {
           {saving ? (
             <ActivityIndicator size="small" color="#FFFFFF" />
           ) : (
-            <Text style={styles.submitButtonText}>Send report</Text>
+            <Text style={styles.submitButtonText}>{t("reportBug.send")}</Text>
           )}
         </TouchableOpacity>
       </ScrollView>

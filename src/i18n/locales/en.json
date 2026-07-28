@@ -142,6 +142,73 @@
     "worker": "Worker",
     "user": "User"
   },
+  "legal": {
+    "title": "Legal & Policies",
+    "heroTitle": "Privacy Policy & Legal Information",
+    "heroText": "Your privacy is important to us. Bygg App is committed to protecting your personal data and ensuring transparency in how your information is collected, used, and stored.",
+    "collectedTitle": "What data do we collect?",
+    "collected": [
+      "Personal information provided during registration (name, phone number, email)",
+      "Work-related data such as time logs, project details, and GPS locations (only during working hours, as configured by your employer)",
+      "Communication and documents exchanged within the app"
+    ],
+    "usageTitle": "How do we use your data?",
+    "usage": [
+      "To provide and improve our services",
+      "To facilitate communication and project management between office, foremen, and workers",
+      "To comply with legal obligations and improve security"
+    ],
+    "protectionTitle": "Data Protection",
+    "protection": [
+      "Your data is securely stored both locally and in the cloud",
+      "Access is protected by login/password and other secure authentication methods",
+      "We do not share your personal information with third parties except as required by law or with your consent"
+    ],
+    "rightsTitle": "Your Rights",
+    "rights": [
+      "You may request access, correction, or deletion of your personal data at any time",
+      "You can contact our support team regarding privacy questions or data removal requests"
+    ],
+    "noticeTitle": "Legal Notice",
+    "notice": [
+      "By using Bygg App, you agree to our Terms of Service and this Privacy Policy",
+      "For more information, please review the full documents available in the app or on our website"
+    ],
+    "contactTitle": "Contact",
+    "contactText": "For any privacy-related questions, please contact us using the details below."
+  },
+  "reportBug": {
+    "title": "Report a bug",
+    "attachmentErrorTitle": "Attachment error",
+    "attachmentErrorMessage": "Unable to select an image or video right now.",
+    "validationTitle": "Validation error",
+    "validationMessage": "Add a description or attach an image or video.",
+    "sentTitle": "Report sent",
+    "sentMessage": "Thank you. We will review the issue.",
+    "sendError": "Failed to send report.",
+    "heroTitle": "Tell us what went wrong",
+    "heroText": "Send a short description, a screenshot, a screen recording, or both. It helps us fix issues faster.",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Describe the problem",
+    "changeVideo": "Change video",
+    "changeImage": "Change image",
+    "attach": "Attach image or video",
+    "selectedVideo": "Selected video",
+    "selectedImage": "Selected image",
+    "remove": "Remove",
+    "send": "Send report"
+  },
+  "help": {
+    "title": "Help & Support",
+    "contactOptions": "Contact options",
+    "subtitle": "Reach our support team using the contact methods below.",
+    "callTitle": "Call support",
+    "callDescription": "Available:\nMon-Fri • 08:00-17:00",
+    "emailTitle": "Email support",
+    "emailDescription": "Usually responds within 24 hours",
+    "chatTitle": "Support chat",
+    "chatDescription": "Chat directly with our support team"
+  },
   "about": {
     "title": "About the App",
     "intro": "Bygg App is a modern solution for construction project management and work hour tracking on construction sites.",
