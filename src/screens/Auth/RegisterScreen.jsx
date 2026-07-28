@@ -12,11 +12,13 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/Feather';
+import { useTranslation } from 'react-i18next';
 import AuthContext from '../../contexts/AuthContext';
 import { useTheme } from '../../theme/ThemeContext';
 
 export default function RegisterScreen({ navigation }) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const { registerCompany, isLoading } = useContext(AuthContext);
   const [companyName, setCompanyName] = useState('');
   const [userName, setUserName] = useState('');
@@ -33,7 +35,7 @@ export default function RegisterScreen({ navigation }) {
     const trimmedEmail = email.trim();
 
     if (!trimmedCompany || !trimmedName || !trimmedEmail) {
-      setError('Please fill in all fields.');
+      setError(t('auth.fillAllFields'));
       return;
     }
 
@@ -68,20 +70,20 @@ export default function RegisterScreen({ navigation }) {
           <View style={styles.card}>
             <View style={styles.header}>
               <Text style={[styles.welcome, { fontFamily: theme.text.fontFamily.regular }]}>
-                Welcome!
+                {t('auth.welcome')}
               </Text>
               <Text style={[styles.heading, { fontFamily: theme.text.fontFamily.regular }]}>
-                Create an account
+                {t('auth.registerSubtitle')}
               </Text>
             </View>
 
             {error ? <Text style={styles.error}>{error}</Text> : null}
 
-            <Text style={styles.label}>Company name</Text>
+            <Text style={styles.label}>{t('auth.companyName')}</Text>
             <View style={styles.inputWrapper}>
               <Icon name="briefcase" size={16} color="#687898" style={styles.inputIcon} />
               <TextInput
-                placeholder="Your company name"
+                placeholder={t('auth.companyNamePlaceholder')}
                 placeholderTextColor="#a7b3c2"
                 style={styles.input}
                 value={companyName}
@@ -90,11 +92,11 @@ export default function RegisterScreen({ navigation }) {
               />
             </View>
 
-            <Text style={styles.label}>Your name</Text>
+            <Text style={styles.label}>{t('auth.yourName')}</Text>
             <View style={styles.inputWrapper}>
               <Icon name="user" size={16} color="#687898" style={styles.inputIcon} />
               <TextInput
-                placeholder="Your name"
+                placeholder={t('auth.yourNamePlaceholder')}
                 placeholderTextColor="#a7b3c2"
                 style={styles.input}
                 value={userName}
@@ -104,11 +106,11 @@ export default function RegisterScreen({ navigation }) {
               />
             </View>
 
-            <Text style={styles.label}>E-Mail</Text>
+            <Text style={styles.label}>{t('auth.email')}</Text>
             <View style={styles.inputWrapper}>
               <Icon name="mail" size={16} color="#687898" style={styles.inputIcon} />
               <TextInput
-                placeholder="example@gmail.com"
+                placeholder={t('auth.emailPlaceholder')}
                 placeholderTextColor="#a7b3c2"
                 style={styles.input}
                 value={email}
@@ -128,7 +130,7 @@ export default function RegisterScreen({ navigation }) {
               {isLoading ? (
                 <ActivityIndicator color="#ffffff" />
               ) : (
-                <Text style={styles.buttonText}>Sign Up</Text>
+                <Text style={styles.buttonText}>{t('auth.signUp')}</Text>
               )}
             </TouchableOpacity>
 
@@ -137,7 +139,7 @@ export default function RegisterScreen({ navigation }) {
               style={styles.footerLink}
             >
               <Text style={styles.footerText}>
-                Already a member? <Text style={styles.footerLinkText}>Login here →</Text>
+                {t('auth.alreadyMember')}<Text style={styles.footerLinkText}>{t('auth.loginHere')}</Text>
               </Text>
             </TouchableOpacity>
           </View>
