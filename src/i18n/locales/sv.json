@@ -597,6 +597,17 @@
       "contact": "Kontakt"
     }
   },
+  "documents": {
+    "personalTitle": "Personliga dokument",
+    "personalDoc": "Personligt dokument",
+    "emptyCategory": "Inga dokument tillgängliga i den här kategorin än.",
+    "uploaded": "Uppladdat {{date}}",
+    "loading": "Laddar dokument...",
+    "loadErrorTitle": "Det gick inte att ladda dokument",
+    "loadErrorMessage": "Försök igen om en stund.",
+    "heroTitle": "Alla tillgängliga dokument",
+    "heroText": "Bläddra bland filer från dina projekt, uppgifter och personliga konto på ett ställe."
+  },
   "employees": {
     "title": "Anställda",
     "accessDenied": "Endast administratörer kan hantera anställda.",

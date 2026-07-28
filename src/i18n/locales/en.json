@@ -597,6 +597,17 @@
       "contact": "Contact"
     }
   },
+  "documents": {
+    "personalTitle": "Personal Documents",
+    "personalDoc": "Personal document",
+    "emptyCategory": "No documents available in this category yet.",
+    "uploaded": "Uploaded {{date}}",
+    "loading": "Loading documents...",
+    "loadErrorTitle": "Unable to load documents",
+    "loadErrorMessage": "Please try again in a moment.",
+    "heroTitle": "All accessible documents",
+    "heroText": "Browse files from your projects, tasks, and personal account in one place."
+  },
   "employees": {
     "title": "Employees",
     "accessDenied": "Only administrators can manage employees.",

@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import AuthContext from "../../contexts/AuthContext";
@@ -29,12 +30,6 @@ import {
   isPdfDocument,
 } from "../../utils/documentPreview";
 import { sortByNewest } from "../../utils/sortByNewest";
-
-const SECTION_TITLES = {
-  projects: "Projects",
-  tasks: "Tasks",
-  personal: "Personal Documents",
-};
 
 const resolveDocumentUrl = (url) => {
   if (!url) {
@@ -143,6 +138,7 @@ const getDocumentIcon = (document) => {
 };
 
 function DocumentsSection({ title, documents, onOpenDocument, theme }) {
+  const { t } = useTranslation();
   return (
     <View style={styles.sectionWrap}>
       <View style={styles.sectionHeader}>
@@ -220,7 +216,7 @@ function DocumentsSection({ title, documents, onOpenDocument, theme }) {
                         { fontFamily: theme.text.fontFamily.medium },
                       ]}
                     >
-                      Uploaded {uploadedLabel}
+                      {t("documents.uploaded", { date: uploadedLabel })}
                     </Text>
                   ) : null}
                 </View>
@@ -249,7 +245,7 @@ function DocumentsSection({ title, documents, onOpenDocument, theme }) {
                 { fontFamily: theme.text.fontFamily.medium },
               ]}
             >
-              No documents available in this category yet.
+              {t("documents.emptyCategory")}
             </Text>
           </View>
         )}
@@ -260,6 +256,7 @@ function DocumentsSection({ title, documents, onOpenDocument, theme }) {
 
 export default function DocumentsScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const { user, userId, logout, isLoading: authLoading } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
@@ -293,15 +290,15 @@ export default function DocumentsScreen() {
     } catch (error) {
       console.error("Failed to load documents:", error);
       Alert.alert(
-        "Unable to load documents",
-        "Please try again in a moment.",
+        t("documents.loadErrorTitle"),
+        t("documents.loadErrorMessage"),
       );
       setProfile(null);
       setProjects([]);
     } finally {
       setLoading(false);
     }
-  }, [user?.role, userId]);
+  }, [user?.role, userId, t]);
 
   useEffect(() => {
     if (!authLoading && userId) {
@@ -315,7 +312,7 @@ export default function DocumentsScreen() {
         normalizeDocuments({
           documents: project?.documents,
           sectionKey: "projects",
-          parentName: project?.name || "Project",
+          parentName: project?.name || t("project.fallbackName"),
           secondaryLabel: project?.location || null,
           fallbackTimestamp: project?.createdAt || null,
           parentId: getEntityId(project),
@@ -332,7 +329,7 @@ export default function DocumentsScreen() {
             normalizeDocuments({
               documents: task?.documents,
               sectionKey: "tasks",
-              parentName: task?.taskTitle || "Task",
+              parentName: task?.taskTitle || t("task.fallbackTitle"),
               secondaryLabel: project?.name || null,
               fallbackTimestamp:
                 task?.updatedAt || task?.createdAt || project?.createdAt || null,
@@ -347,8 +344,8 @@ export default function DocumentsScreen() {
       normalizeDocuments({
         documents: profile?.additionalDocuments,
         sectionKey: "personal",
-        parentName: user?.name || "My account",
-        secondaryLabel: "Personal document",
+        parentName: user?.name || t("menu.myAccount"),
+        secondaryLabel: t("documents.personalDoc"),
         fallbackTimestamp: profile?.updatedAt || profile?.createdAt || null,
         parentId: userId,
       }),
@@ -358,21 +355,21 @@ export default function DocumentsScreen() {
     return [
       {
         key: "projects",
-        title: SECTION_TITLES.projects,
+        title: t("menu.projects"),
         documents: projectDocuments,
       },
       {
         key: "tasks",
-        title: SECTION_TITLES.tasks,
+        title: t("menu.tasks"),
         documents: taskDocuments,
       },
       {
         key: "personal",
-        title: SECTION_TITLES.personal,
+        title: t("documents.personalTitle"),
         documents: personalDocuments,
       },
     ];
-  }, [profile?.additionalDocuments, profile?.createdAt, profile?.updatedAt, projects, user?.name, userId]);
+  }, [profile?.additionalDocuments, profile?.createdAt, profile?.updatedAt, projects, user?.name, userId, t]);
 
   const totalDocuments = sections.reduce(
     (count, section) => count + section.documents.length,
@@ -383,8 +380,8 @@ export default function DocumentsScreen() {
     async (document) => {
       if (!document?.url) {
         Alert.alert(
-          "Document unavailable",
-          "This file does not have a valid link.",
+          t("project.documentUnavailableTitle"),
+          t("project.documentUnavailableMessage"),
         );
         return;
       }
@@ -398,10 +395,10 @@ export default function DocumentsScreen() {
         await Linking.openURL(document.url);
       } catch (error) {
         console.error("Failed to open document:", error);
-        Alert.alert("Unable to open document", "Please try again later.");
+        Alert.alert(t("project.openErrorTitle"), t("project.openErrorMessage"));
       }
     },
-    [navigation],
+    [navigation, t],
   );
 
   if (loading && !totalDocuments) {
@@ -414,7 +411,7 @@ export default function DocumentsScreen() {
             { fontFamily: theme.text.fontFamily.medium },
           ]}
         >
-          Loading documents...
+          {t("documents.loading")}
         </Text>
       </View>
     );
@@ -436,7 +433,7 @@ export default function DocumentsScreen() {
             { fontFamily: theme.text.fontFamily.semiBold },
           ]}
         >
-          Documents
+          {t("project.tabs.documents")}
         </Text>
         <View style={styles.placeholder} />
       </View>
@@ -467,7 +464,7 @@ export default function DocumentsScreen() {
               { fontFamily: theme.text.fontFamily.semiBold },
             ]}
           >
-            All accessible documents
+            {t("documents.heroTitle")}
           </Text>
           <Text
             style={[
@@ -475,7 +472,7 @@ export default function DocumentsScreen() {
               { fontFamily: theme.text.fontFamily.medium },
             ]}
           >
-            Browse files from your projects, tasks, and personal account in one place.
+            {t("documents.heroText")}
           </Text>
 
           <View style={styles.summaryRow}>
@@ -524,7 +521,7 @@ export default function DocumentsScreen() {
               { fontFamily: theme.text.fontFamily.semiBold },
             ]}
           >
-            Log out
+            {t("menu.logOut")}
           </Text>
         )}
       />
