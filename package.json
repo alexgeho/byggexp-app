@@ -8,12 +8,15 @@
     "start:lan": "expo start",
     "android": "expo run:android",
     "ios": "node scripts/run-ios-simulator.js",
-    "ios:18.2": "npm run ios",
+    "ios:18.2": "yarn ios",
     "ios:se": "node scripts/run-ios-simulator.js se",
     "ios:15": "node scripts/run-ios-simulator.js 15",
     "ios:16": "node scripts/run-ios-simulator.js 16",
     "web": "expo start --web",
-    "test:i18n": "node scripts/check-i18n-parity.js"
+    "lint": "eslint .",
+    "compile": "node scripts/check-compile.js",
+    "test:i18n": "node scripts/check-i18n-parity.js",
+    "verify": "yarn lint && yarn compile && yarn test:i18n"
   },
   "dependencies": {
     "@expo-google-fonts/oswald": "^0.4.2",
@@ -71,6 +74,9 @@
     "@babel/plugin-transform-private-methods": "^7.27.1",
     "@babel/plugin-transform-private-property-in-object": "^7.27.1",
     "babel-preset-expo": "~54.0.10",
-    "metro-react-native-babel-preset": "^0.77.0"
+    "eslint": "^9",
+    "eslint-config-expo": "~10.0.0",
+    "metro-react-native-babel-preset": "^0.77.0",
+    "typescript": "~5.9.2"
   }
 }

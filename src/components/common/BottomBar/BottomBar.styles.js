@@ -21,7 +21,6 @@ export function createStyles(theme) {
       paddingBottom: 28,
       paddingLeft: 34,
 
-      justifyContent: "center",
       alignItems: "center",
 
       gap: 10,

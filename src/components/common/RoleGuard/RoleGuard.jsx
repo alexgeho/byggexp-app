@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import AuthContext from '../../contexts/AuthContext';
+import AuthContext from '../../../contexts/AuthContext';
 
 export const RoleGuard = ({ allowedRoles = [], children, fallback = null }) => {
   const { user } = useContext(AuthContext);
@@ -26,7 +26,7 @@ export const AccessDenied = () => {
   return (
     <View style={styles.container}>
       <Image
-        source={require('../../assets/Close.png')}
+        source={require('../../../assets/Close.png')}
         style={styles.icon}
       />
       <Text style={styles.title}>{t('access.denied')}</Text>
