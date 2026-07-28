@@ -8,7 +8,16 @@
     "done": "Klar",
     "viewAll": "Visa alla",
     "noName": "Inget namn",
-    "search": "Sök..."
+    "search": "Sök...",
+    "success": "Klart",
+    "ok": "OK"
+  },
+  "documentPreview": {
+    "fallbackName": "Dokument",
+    "downloadFailedTitle": "Nedladdning misslyckades",
+    "downloadFailedMessage": "Det går inte att ladda ner det här dokumentet just nu.",
+    "previewUnavailable": "Förhandsvisning ej tillgänglig",
+    "unsupportedText": "Den här filtypen kan inte förhandsvisas än. Använd nedladdningsknappen för att öppna eller dela den."
   },
   "tabs": {
     "home": "Hem",

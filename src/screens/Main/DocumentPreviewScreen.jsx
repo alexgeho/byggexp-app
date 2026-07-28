@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import { WebView } from "react-native-webview";
 import Icon from "react-native-vector-icons/Feather";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -25,6 +26,7 @@ import {
 export default function DocumentPreviewScreen() {
   const navigation = useNavigation();
   const route = useRoute();
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
   const [loading, setLoading] = useState(false);
@@ -33,7 +35,9 @@ export default function DocumentPreviewScreen() {
 
   const document = route.params?.document || {};
   const sourceUrl = document?.url || "";
-  const documentName = document?.name || getDocumentNameFromUrl(sourceUrl, "Document");
+  const documentName =
+    document?.name ||
+    getDocumentNameFromUrl(sourceUrl, t("documentPreview.fallbackName"));
   const mimeType = document?.mimeType || "";
 
   const showImagePreview = isImageDocument({
@@ -57,7 +61,10 @@ export default function DocumentPreviewScreen() {
       });
     } catch (error) {
       console.error("Failed to download document:", error);
-      Alert.alert("Download failed", "Unable to download this document right now.");
+      Alert.alert(
+        t("documentPreview.downloadFailedTitle"),
+        t("documentPreview.downloadFailedMessage"),
+      );
     } finally {
       setLoading(false);
     }
@@ -157,7 +164,7 @@ export default function DocumentPreviewScreen() {
                   { fontFamily: theme.text.fontFamily.semiBold },
                 ]}
               >
-                Preview unavailable
+                {t("documentPreview.previewUnavailable")}
               </Text>
               <Text
                 style={[
@@ -165,8 +172,7 @@ export default function DocumentPreviewScreen() {
                   { fontFamily: theme.text.fontFamily.medium },
                 ]}
               >
-                This file type cannot be previewed yet. Use the download button to
-                open or share it.
+                {t("documentPreview.unsupportedText")}
               </Text>
             </View>
           ) : null}

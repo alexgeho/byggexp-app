@@ -14,6 +14,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { SuccessPopupIcon } from "../components/common/SuccessPopupIcon/SuccessPopupIcon";
 import { useTheme } from "../theme/ThemeContext";
 
@@ -31,6 +32,7 @@ export function useFeedback() {
 
 export function FeedbackProvider({ children }) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [successPopup, setSuccessPopup] = useState(null);
 
@@ -44,11 +46,11 @@ export function FeedbackProvider({ children }) {
     }
 
     setSuccessPopup({
-      title: options.title || "Success",
+      title: options.title || t("common.success"),
       message: options.message,
-      buttonLabel: options.buttonLabel || "OK",
+      buttonLabel: options.buttonLabel || t("common.ok"),
     });
-  }, []);
+  }, [t]);
 
   const value = useMemo(
     () => ({

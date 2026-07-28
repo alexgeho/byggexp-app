@@ -8,7 +8,16 @@
     "done": "Done",
     "viewAll": "View all",
     "noName": "No name",
-    "search": "Search..."
+    "search": "Search...",
+    "success": "Success",
+    "ok": "OK"
+  },
+  "documentPreview": {
+    "fallbackName": "Document",
+    "downloadFailedTitle": "Download failed",
+    "downloadFailedMessage": "Unable to download this document right now.",
+    "previewUnavailable": "Preview unavailable",
+    "unsupportedText": "This file type cannot be previewed yet. Use the download button to open or share it."
   },
   "tabs": {
     "home": "Home",
