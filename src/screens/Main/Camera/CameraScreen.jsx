@@ -339,39 +339,6 @@ export default function CameraScreen() {
         contentContainerStyle={styles.contentScrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.projectCard}>
-          <View style={styles.projectCardHeader}>
-            <Text
-              style={[
-                styles.projectCardLabel,
-                { fontFamily: theme.text.fontFamily.medium },
-              ]}
-            >
-              {mode === 'expense' ? 'Nytt utlägg' : 'Current project'}
-            </Text>
-            {shift ? (
-              <View style={styles.activeShiftBadge}>
-                <Text
-                  style={[
-                    styles.activeShiftBadgeText,
-                    { fontFamily: theme.text.fontFamily.medium },
-                  ]}
-                >
-                  Active shift
-                </Text>
-              </View>
-            ) : null}
-          </View>
-          <Text
-            style={[
-              styles.projectName,
-              { fontFamily: theme.text.fontFamily.semiBold },
-            ]}
-          >
-            {shift?.projectName || (mode === 'expense' ? 'Välj projekt i nästa steg' : '—')}
-          </Text>
-        </View>
-
         <TouchableOpacity style={styles.actionButton} onPress={handleTakePhoto} disabled={uploading}>
           {uploading ? (
             <ActivityIndicator color="#ffffff" />
@@ -409,12 +376,6 @@ export default function CameraScreen() {
             </Text>
           </View>
         </TouchableOpacity>
-
-        <Text style={styles.cameraHint}>
-          {mode === 'expense'
-            ? 'Take a photo of the receipt — it will be scanned automatically.'
-            : 'If camera is unavailable, attach a file instead.'}
-        </Text>
 
         {mode === 'shift' && shift ? (
         <View style={styles.photosCard}>
