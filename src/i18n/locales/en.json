@@ -142,6 +142,20 @@
     "worker": "Worker",
     "user": "User"
   },
+  "employees": {
+    "title": "Employees",
+    "accessDenied": "Only administrators can manage employees.",
+    "loadError": "Unable to load employees.",
+    "emptyTitle": "No employees found",
+    "emptyProjectFiltered": "No employees assigned to this project.",
+    "emptyCanCreate": "Tap the add button below to create the first employee.",
+    "atWork": "At work",
+    "notAtWork": "Not at work",
+    "waitingApproval": "Waiting for approval",
+    "unnamed": "Unnamed",
+    "noProfession": "No profession",
+    "noProjectAssigned": "No project assigned"
+  },
   "notifications": {
     "title": "Notifications",
     "introTitle": "Choose what you want to receive",

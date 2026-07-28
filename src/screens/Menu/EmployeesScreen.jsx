@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import AuthContext from "../../contexts/AuthContext";
 import { useTheme } from "../../theme/ThemeContext";
 import { projectService, userService } from "../../services";
@@ -24,7 +25,6 @@ import {
 import { cardStyles } from "../../styles/cards";
 import {
   canManageEmployees,
-  getAccountStatusLabel,
   shouldShowAccountStatus,
   USER_ROLES,
 } from "../../utils/userRoles";
@@ -131,6 +131,7 @@ const getEmployeeProjectLabel = (employee, projectNameById, projects) => {
 
 export default function EmployeesScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const { user, selectedProject } = useContext(AuthContext);
 
@@ -164,8 +165,8 @@ export default function EmployeesScreen() {
     } catch (error) {
       console.error("Failed to load employees:", error);
       Alert.alert(
-        "Error",
-        getApiErrorMessage(error, "Unable to load employees."),
+        t("common.error"),
+        getApiErrorMessage(error, t("employees.loadError")),
       );
     } finally {
       setLoading(false);
@@ -215,14 +216,14 @@ export default function EmployeesScreen() {
               { fontFamily: theme.text.fontFamily.medium },
             ]}
           >
-            Employees
+            {t("employees.title")}
           </Text>
           <View style={standardScreenHeaderPlaceholder} />
         </View>
         <View style={styles.accessDeniedContainer}>
-          <Text style={styles.accessDeniedText}>Access denied</Text>
+          <Text style={styles.accessDeniedText}>{t("access.denied")}</Text>
           <Text style={styles.accessDeniedSubtext}>
-            Only administrators can manage employees.
+            {t("employees.accessDenied")}
           </Text>
         </View>
       </View>
@@ -272,11 +273,13 @@ export default function EmployeesScreen() {
         >
           {filteredEmployees.length === 0 ? (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyTitle}>No employees found</Text>
+              <Text style={styles.emptyTitle}>
+                {t("employees.emptyTitle")}
+              </Text>
               <Text style={styles.emptySubtitle}>
                 {selectedProjectId
-                  ? "No employees assigned to this project."
-                  : "Tap the add button below to create the first employee."}
+                  ? t("employees.emptyProjectFiltered")
+                  : t("employees.emptyCanCreate")}
               </Text>
             </View>
           ) : (
@@ -287,19 +290,16 @@ export default function EmployeesScreen() {
                 projectNameById,
                 projects,
               );
-              const accountStatusLabel = getAccountStatusLabel(
-                employee.accountStatus,
-              );
               const showAccountStatus = shouldShowAccountStatus(
                 employee.accountStatus,
               );
               const atWork = isEmployeeAtWork(employee, selectedProjectId);
 
               const badgeLabel = showAccountStatus
-                ? accountStatusLabel
+                ? t("employees.waitingApproval")
                 : atWork
-                  ? "At work"
-                  : "Not at work";
+                  ? t("employees.atWork")
+                  : t("employees.notAtWork");
               const badgeStyle = showAccountStatus
                 ? cardStyles.cardBadgeWarning
                 : atWork
@@ -309,7 +309,7 @@ export default function EmployeesScreen() {
               return (
                 <ListCard
                   key={employeeId}
-                  title={employee.name || "Unnamed"}
+                  title={employee.name || t("employees.unnamed")}
                   badgeLabel={badgeLabel}
                   badgeStyle={badgeStyle}
                   onPress={() =>
@@ -323,7 +323,7 @@ export default function EmployeesScreen() {
                     numberOfLines={1}
                     ellipsizeMode="tail"
                   >
-                    {employee.profession || "No profession"}
+                    {employee.profession || t("employees.noProfession")}
                   </Text>
 
                   <Text
@@ -331,7 +331,7 @@ export default function EmployeesScreen() {
                     numberOfLines={1}
                     ellipsizeMode="tail"
                   >
-                    {projectLabel || "No project assigned"}
+                    {projectLabel || t("employees.noProjectAssigned")}
                   </Text>
                 </ListCard>
               );

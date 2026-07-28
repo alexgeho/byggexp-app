@@ -142,6 +142,20 @@
     "worker": "Arbetare",
     "user": "Användare"
   },
+  "employees": {
+    "title": "Anställda",
+    "accessDenied": "Endast administratörer kan hantera anställda.",
+    "loadError": "Det gick inte att ladda anställda.",
+    "emptyTitle": "Inga anställda hittades",
+    "emptyProjectFiltered": "Inga anställda är kopplade till detta projekt.",
+    "emptyCanCreate": "Tryck på plusknappen nedan för att skapa den första anställda.",
+    "atWork": "På jobbet",
+    "notAtWork": "Inte på jobbet",
+    "waitingApproval": "Väntar på godkännande",
+    "unnamed": "Namnlös",
+    "noProfession": "Ingen yrkesroll",
+    "noProjectAssigned": "Inget projekt kopplat"
+  },
   "notifications": {
     "title": "Aviseringar",
     "introTitle": "Välj vad du vill få",
