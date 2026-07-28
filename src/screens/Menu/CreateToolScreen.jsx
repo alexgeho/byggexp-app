@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AuthContext from "../../contexts/AuthContext";
@@ -112,6 +113,7 @@ const SelectRow = ({
 
 export default function CreateToolScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const { user } = useContext(AuthContext);
   const { showSuccess } = useFeedback();
@@ -197,7 +199,7 @@ export default function CreateToolScreen() {
       }
     } catch (error) {
       console.error("Failed to pick tool photo:", error);
-      Alert.alert("Photo error", "Unable to select photo right now.");
+      Alert.alert(t("tools.photoErrorTitle"), t("tools.photoErrorMessage"));
     }
   };
 
@@ -225,7 +227,7 @@ export default function CreateToolScreen() {
     const trimmedName = name.trim();
 
     if (!trimmedName) {
-      setFormError("Please enter an instrument name.");
+      setFormError(t("tools.nameRequired"));
       return;
     }
 
@@ -259,8 +261,8 @@ export default function CreateToolScreen() {
 
       await toolService.create(formData);
       showSuccess({
-        title: "Instrument created",
-        message: "Instrument created successfully.",
+        title: t("tools.created"),
+        message: t("tools.createdMessage"),
       });
       navigation.goBack();
     } catch (error) {
@@ -269,7 +271,7 @@ export default function CreateToolScreen() {
       setFormError(
         Array.isArray(message)
           ? message.join(", ")
-          : message || error?.message || "Unable to create instrument.",
+          : message || error?.message || t("tools.createError"),
       );
     } finally {
       setSaving(false);
@@ -291,12 +293,12 @@ export default function CreateToolScreen() {
                 { fontFamily: theme.text.fontFamily.semiBold },
               ]}
             >
-              Add instrument
+              {t("tools.addTitle")}
             </Text>
             <View style={standardScreenHeaderPlaceholder} />
           </View>
           <View style={styles.accessDeniedContainer}>
-            <Text style={styles.accessDeniedText}>Access denied</Text>
+            <Text style={styles.accessDeniedText}>{t("access.denied")}</Text>
           </View>
         </View>
       </View>
@@ -317,7 +319,7 @@ export default function CreateToolScreen() {
               { fontFamily: theme.text.fontFamily.semiBold },
             ]}
           >
-            Add instrument
+            {t("tools.addTitle")}
           </Text>
           <FloatingActionButton
             onPress={handleCreateTool}
@@ -342,10 +344,10 @@ export default function CreateToolScreen() {
 
           <View style={styles.groupCard}>
             <PlainFormRow
-              label="Name *"
+              label={t("tools.nameLabel")}
               value={name}
               onChangeText={setName}
-              placeholder="Instrument name"
+              placeholder={t("tools.namePlaceholder")}
             />
             <TouchableOpacity
               style={[styles.selectRow, styles.groupRowLast]}
@@ -355,14 +357,16 @@ export default function CreateToolScreen() {
               <View style={styles.fieldRowContent}>
                 <FieldIcon name="camera" theme={theme} />
                 <View style={styles.fieldInputWrap}>
-                  <Text style={styles.fieldLabel}>Add photo</Text>
+                  <Text style={styles.fieldLabel}>{t("tools.addPhoto")}</Text>
                   <Text
                     style={[
                       styles.selectValue,
                       !photo && styles.selectPlaceholder,
                     ]}
                   >
-                    {photo ? photo.name || "Photo selected" : "Select photo"}
+                    {photo
+                      ? photo.name || t("tools.photoSelected")
+                      : t("tools.selectPhoto")}
                   </Text>
                 </View>
               </View>
@@ -377,20 +381,20 @@ export default function CreateToolScreen() {
           <View style={styles.groupCard}>
             <SelectRow
               icon="users"
-              label="Attach to workers"
+              label={t("tools.attachWorkers")}
               value={selectedWorkersLabel}
               placeholder={
-                loadingData ? "Loading workers..." : "Select workers"
+                loadingData ? t("workers.loading") : t("workers.select")
               }
               onPress={() => setShowWorkerModal(true)}
               theme={theme}
             />
             <SelectRow
               icon="briefcase"
-              label="Attach to projects"
+              label={t("tools.attachProjects")}
               value={selectedProjectsLabel}
               placeholder={
-                loadingData ? "Loading projects..." : "Select projects"
+                loadingData ? t("projects.loading") : t("projects.select")
               }
               onPress={() => setShowProjectModal(true)}
               theme={theme}
@@ -400,10 +404,10 @@ export default function CreateToolScreen() {
 
           <View style={styles.groupCard}>
             <PlainFormRow
-              label="Notes"
+              label={t("tools.notesLabel")}
               value={notes}
               onChangeText={setNotes}
-              placeholder="Add notes"
+              placeholder={t("tools.notesPlaceholder")}
               multiline
               isLast
             />
@@ -445,7 +449,7 @@ export default function CreateToolScreen() {
                 { fontFamily: theme.text.fontFamily.semiBold },
               ]}
             >
-              Attach to workers
+              {t("tools.attachWorkers")}
             </Text>
             <View style={standardScreenHeaderPlaceholder} />
           </View>
@@ -454,7 +458,7 @@ export default function CreateToolScreen() {
             {workers.length === 0 ? (
               <View style={styles.pickerEmptyState}>
                 <Text style={styles.pickerEmptyStateText}>
-                  {loadingData ? "Loading workers..." : "No workers found"}
+                  {loadingData ? t("workers.loading") : t("workers.notFound")}
                 </Text>
               </View>
             ) : (
@@ -505,7 +509,7 @@ export default function CreateToolScreen() {
                 { fontFamily: theme.text.fontFamily.semiBold },
               ]}
             >
-              Attach to projects
+              {t("tools.attachProjects")}
             </Text>
             <View style={standardScreenHeaderPlaceholder} />
           </View>
@@ -514,7 +518,7 @@ export default function CreateToolScreen() {
             {projects.length === 0 ? (
               <View style={styles.pickerEmptyState}>
                 <Text style={styles.pickerEmptyStateText}>
-                  {loadingData ? "Loading projects..." : "No projects found"}
+                  {loadingData ? t("projects.loading") : t("projects.notFound")}
                 </Text>
               </View>
             ) : (

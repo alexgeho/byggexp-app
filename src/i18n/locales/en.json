@@ -49,9 +49,33 @@
   "workers": {
     "loading": "Loading workers...",
     "notFound": "No workers found",
+    "select": "Select workers",
     "added": "Workers added",
     "addedMessage": "Workers added to the project",
     "addFailed": "Failed to add workers"
+  },
+  "projects": {
+    "loading": "Loading projects...",
+    "select": "Select projects",
+    "notFound": "No projects found"
+  },
+  "tools": {
+    "addTitle": "Add instrument",
+    "nameLabel": "Name *",
+    "namePlaceholder": "Instrument name",
+    "addPhoto": "Add photo",
+    "selectPhoto": "Select photo",
+    "photoSelected": "Photo selected",
+    "attachWorkers": "Attach to workers",
+    "attachProjects": "Attach to projects",
+    "notesLabel": "Notes",
+    "notesPlaceholder": "Add notes",
+    "nameRequired": "Please enter an instrument name.",
+    "created": "Instrument created",
+    "createdMessage": "Instrument created successfully.",
+    "createError": "Unable to create instrument.",
+    "photoErrorTitle": "Photo error",
+    "photoErrorMessage": "Unable to select photo right now."
   },
   "language": {
     "title": "Language",

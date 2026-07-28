@@ -49,9 +49,33 @@
   "workers": {
     "loading": "Laddar arbetare...",
     "notFound": "Inga arbetare hittades",
+    "select": "Välj arbetare",
     "added": "Arbetare tillagda",
     "addedMessage": "Arbetare tillagda i projektet",
     "addFailed": "Det gick inte att lägga till arbetare"
+  },
+  "projects": {
+    "loading": "Laddar projekt...",
+    "select": "Välj projekt",
+    "notFound": "Inga projekt hittades"
+  },
+  "tools": {
+    "addTitle": "Lägg till verktyg",
+    "nameLabel": "Namn *",
+    "namePlaceholder": "Verktygets namn",
+    "addPhoto": "Lägg till foto",
+    "selectPhoto": "Välj foto",
+    "photoSelected": "Foto valt",
+    "attachWorkers": "Koppla till arbetare",
+    "attachProjects": "Koppla till projekt",
+    "notesLabel": "Anteckningar",
+    "notesPlaceholder": "Lägg till anteckningar",
+    "nameRequired": "Ange ett verktygsnamn.",
+    "created": "Verktyg skapat",
+    "createdMessage": "Verktyget skapades.",
+    "createError": "Det gick inte att skapa verktyget.",
+    "photoErrorTitle": "Fotofel",
+    "photoErrorMessage": "Det går inte att välja foto just nu."
   },
   "language": {
     "title": "Språk",
