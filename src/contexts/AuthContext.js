@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }) => {
       await updateStoredUser(userData);
       setIsAuthenticated(true);
     } catch (error) {
-      console.error('AuthContext: Ошибка при получении данных пользователя:', error);
+      console.error('AuthContext: Failed to fetch user info:', error);
       await removeToken();
       await removeUser();
       setIsAuthenticated(false);
@@ -110,7 +110,7 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(false);
       return true;
     } catch (error) {
-      console.error('AuthContext: Ошибка входа:', error);
+      console.error('AuthContext: Login failed:', error);
       setIsLoading(false);
       return false;
     }
@@ -138,7 +138,7 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(false);
       return { success: true };
     } catch (error) {
-      console.error('AuthContext: Ошибка регистрации:', error);
+      console.error('AuthContext: Registration failed:', error);
       setIsLoading(false);
       return {
         success: false,
@@ -172,7 +172,7 @@ export const AuthProvider = ({ children }) => {
     setSelectedProject(null);
   };
 
-  // Хелперы для проверки ролей (синхронизированы с бэкенд @Roles)
+  // Role-check helpers (kept in sync with backend @Roles)
   const isWorker = () => user?.role === 'worker';
   const isSuperAdmin = () => user?.role === 'superadmin';
   const isProjectAdmin = () => user?.role === 'projectAdmin';

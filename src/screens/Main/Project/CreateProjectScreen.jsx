@@ -515,7 +515,7 @@ export default function CreateProjectScreen() {
         const initialCompanyId = allCompanies[0]?._id || null;
         setSelectedClientCompany(initialCompanyId);
       } else {
-        // Для companyAdmin / projectAdmin используем их компанию
+        // For companyAdmin / projectAdmin use their own company
         const myCompany = await companyService.getMyCompany();
         setCompanies([myCompany]);
         setSelectedClientCompany(myCompany._id);
@@ -1176,15 +1176,15 @@ export default function CreateProjectScreen() {
   if (!allowedToCreate) {
     return (
       <View style={styles.accessDeniedContainer}>
-        <Text style={styles.accessDeniedText}>Доступ запрещён</Text>
+        <Text style={styles.accessDeniedText}>Access denied</Text>
         <Text style={styles.accessDeniedSubtext}>
-          Только администраторы компании могут создавать проекты
+          Only company admins can create projects
         </Text>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.backButtonText}>Вернуться назад</Text>
+          <Text style={styles.backButtonText}>Go back</Text>
         </TouchableOpacity>
       </View>
     );

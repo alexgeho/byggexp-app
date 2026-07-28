@@ -4,7 +4,7 @@ export const saveToken = async (token) => {
   try {
     await AsyncStorage.setItem('jwtToken', token);
   } catch (error) {
-    console.error('Ошибка при сохранении токена:', error);
+    console.error('Failed to save token:', error);
   }
 };
 
@@ -13,7 +13,7 @@ export const getToken = async () => {
     const token = await AsyncStorage.getItem('jwtToken');
     return token;
   } catch (error) {
-    console.error('Ошибка при получении токена:', error);
+    console.error('Failed to get token:', error);
     return null;
   }
 };
@@ -22,7 +22,7 @@ export const removeToken = async () => {
   try {
     await AsyncStorage.removeItem('jwtToken');
   } catch (error) {
-    console.error('Ошибка при удалении токена:', error);
+    console.error('Failed to remove token:', error);
   }
 };
 
@@ -30,7 +30,7 @@ export const saveRefreshToken = async (token) => {
   try {
     await AsyncStorage.setItem('refreshToken', token);
   } catch (error) {
-    console.error('Ошибка при сохранении refresh токена:', error);
+    console.error('Failed to save refresh token:', error);
   }
 };
 
@@ -39,7 +39,7 @@ export const getRefreshToken = async () => {
     const token = await AsyncStorage.getItem('refreshToken');
     return token;
   } catch (error) {
-    console.error('Ошибка при получении refresh токена:', error);
+    console.error('Failed to get refresh token:', error);
     return null;
   }
 };
@@ -48,7 +48,7 @@ export const removeRefreshToken = async () => {
   try {
     await AsyncStorage.removeItem('refreshToken');
   } catch (error) {
-    console.error('Ошибка при удалении refresh токена:', error);
+    console.error('Failed to remove refresh token:', error);
   }
 };
 
@@ -56,7 +56,7 @@ export const saveUser = async (user) => {
   try {
     await AsyncStorage.setItem('user', JSON.stringify(user));
   } catch (error) {
-    console.error('Ошибка при сохранении пользователя:', error);
+    console.error('Failed to save user:', error);
   }
 };
 
@@ -65,7 +65,7 @@ export const getUser = async () => {
     const userStr = await AsyncStorage.getItem('user');
     return userStr ? JSON.parse(userStr) : null;
   } catch (error) {
-    console.error('Ошибка при получении пользователя:', error);
+    console.error('Failed to get user:', error);
     return null;
   }
 };
@@ -74,6 +74,6 @@ export const removeUser = async () => {
   try {
     await AsyncStorage.removeItem('user');
   } catch (error) {
-    console.error('Ошибка при удалении пользователя:', error);
+    console.error('Failed to remove user:', error);
   }
 };

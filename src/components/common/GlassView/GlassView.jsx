@@ -3,11 +3,11 @@ import { View, StyleSheet, Platform } from 'react-native';
 import { BlurView } from 'expo-blur';
 
 /**
- * Универсальный компонент с эффектом размытия
+ * Universal blur-effect component
  * - Web: CSS backdrop-filter
  * - iOS/Android: expo-blur
  *
- * Для iOS/Android оборачивайте GlassView в TouchableOpacity если нужен onPress
+ * On iOS/Android wrap GlassView in a TouchableOpacity if you need onPress
  */
 export const GlassView = ({
   children,
@@ -20,7 +20,7 @@ export const GlassView = ({
   ...props
 }) => {
   if (Platform.OS === 'web') {
-    // Для web используем View с onClick для поддержки onPress
+    // On web use a View with onClick to support onPress
     const handleClick = onPress ? () => onPress() : undefined;
 
     return (
@@ -36,8 +36,8 @@ export const GlassView = ({
     );
   }
 
-  // Для iOS/Android - BlurView
-  // Android не поддерживает tint, используем 'default'
+  // iOS/Android - BlurView
+  // Android does not support tint, use 'default'
   const blurTint = Platform.OS === 'android' ? 'default' : tint;
 
   return (
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderTopColor: '#FFFFFF',
     cursor: 'pointer',
-    // CSS backdrop-filter для web
+    // CSS backdrop-filter for web
     backdropFilter: 'brightness(1.1) blur(7px)',
     WebkitBackdropFilter: 'brightness(1.1) blur(5px)',
   },
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
 });
 
 /**
- * Хук для проверки платформы
+ * Hook for platform checks
  */
 export const useLiquidGlass = () => {
   return {

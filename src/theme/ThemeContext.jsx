@@ -9,28 +9,18 @@ import React, {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {
-  greenTheme,
-  lightTheme,
   blueTheme,
-  blueDarkTextTheme,
   blackTheme,
   lightBlueTheme,
-  orangeTheme,
-  darkGrayTheme,
   colorfulTheme,
 } from "./themes";
 
 const ThemeContext = createContext();
 
 const themes = {
-  green: greenTheme,
-  light: lightTheme,
   blue: blueTheme,
-  blueDarkText: blueDarkTextTheme,
   black: blackTheme,
   lightBlue: lightBlueTheme,
-  orange: orangeTheme,
-  darkGray: darkGrayTheme,
   colorful: colorfulTheme,
 };
 

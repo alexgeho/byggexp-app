@@ -30,7 +30,7 @@ export const SelectAdmin = () => {
     borderColor: theme.colors.primary,
   };
 
-  // Проверка прав доступа - только для companyAdmin
+  // Access check - companyAdmin only
   if (user?.role !== "companyAdmin") {
     return (
       <View style={styles.container}>
@@ -61,9 +61,9 @@ export const SelectAdmin = () => {
           />
         </View>
         <View style={styles.accessDeniedContainer}>
-          <Text style={styles.accessDeniedText}>Доступ запрещён</Text>
+          <Text style={styles.accessDeniedText}>Access denied</Text>
           <Text style={styles.accessDeniedSubtext}>
-            Только владелец компании может назначать прорабов
+            Only the company owner can assign admins
           </Text>
         </View>
       </View>
@@ -105,7 +105,7 @@ export const SelectAdmin = () => {
             style={styles.workerAvatar}
             source={require("../../../assets/TasksAva.png")}
           />
-          <Text style={styles.workerName}>Хуеглотус</Text>
+          <Text style={styles.workerName}>Sample worker</Text>
           <TouchableOpacity
             onPress={() => setSelection(!isSelected)}
             style={[

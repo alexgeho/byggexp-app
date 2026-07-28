@@ -80,12 +80,12 @@ export const SelectWorkers = () => {
       await projectService.addWorkers(projectId, selectedWorkers);
       showSuccess({
         title: "Workers added",
-        message: "Работники добавлены в проект",
+        message: "Workers added to the project",
       });
       navigation.goBack();
     } catch (error) {
       console.error("Error adding workers:", error);
-      Alert.alert("Ошибка", "Не удалось добавить работников");
+      Alert.alert("Error", "Failed to add workers");
     } finally {
       setSaving(false);
     }
@@ -115,9 +115,9 @@ export const SelectWorkers = () => {
           <View style={{ width: 40 }} />
         </View>
         <View style={styles.accessDeniedContainer}>
-          <Text style={styles.accessDeniedText}>Доступ запрещён</Text>
+          <Text style={styles.accessDeniedText}>Access denied</Text>
           <Text style={styles.accessDeniedSubtext}>
-            Только администраторы могут управлять работниками
+            Only admins can manage workers
           </Text>
         </View>
       </View>
@@ -128,7 +128,7 @@ export const SelectWorkers = () => {
     return (
       <View style={styles.centeredContainer}>
         <ActivityIndicator size="large" color="#0091FF" />
-        <Text>Загрузка работников...</Text>
+        <Text>Loading workers...</Text>
       </View>
     );
   }
@@ -164,7 +164,7 @@ export const SelectWorkers = () => {
 
       <ScrollView style={{ width: "100%", flex: 1 }}>
         {workers.length === 0 ? (
-          <Text style={styles.noWorkersText}>Работники не найдены</Text>
+          <Text style={styles.noWorkersText}>No workers found</Text>
         ) : (
           workers.map((worker) => (
             <View key={worker._id} style={styles.workerItem}>
@@ -178,7 +178,7 @@ export const SelectWorkers = () => {
               />
               <View style={styles.workerInfo}>
                 <Text style={styles.workerName}>
-                  {worker.name || "Без имени"}
+                  {worker.name || "No name"}
                 </Text>
                 <Text style={styles.workerEmail}>{worker.email || ""}</Text>
               </View>

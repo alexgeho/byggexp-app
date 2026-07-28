@@ -27,15 +27,15 @@ export const AccessDenied = () => {
         source={require('../../assets/Close.png')} 
         style={styles.icon}
       />
-      <Text style={styles.title}>Доступ запрещён</Text>
+      <Text style={styles.title}>Access denied</Text>
       <Text style={styles.message}>
-        У вас нет прав для просмотра этой страницы
+        You don't have permission to view this page
       </Text>
       <TouchableOpacity 
         style={styles.backButton}
         onPress={() => navigation.goBack()}
       >
-        <Text style={styles.backButtonText}>Вернуться назад</Text>
+        <Text style={styles.backButtonText}>Go back</Text>
       </TouchableOpacity>
     </View>
   );

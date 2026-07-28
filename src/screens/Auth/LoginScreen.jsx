@@ -25,7 +25,7 @@ export default function LoginScreen({ navigation }) {
   const handleLogin = async () => {
     const success = await login(email, password);
     if (!success) {
-      Alert.alert("Ошибка входа", "Неверный email или пароль.");
+      Alert.alert("Login failed", "Invalid email or password.");
     }
   };
 

@@ -113,11 +113,6 @@ export const blueColors = {
   homeButtonText: "#FFFFFF",
 };
 
-export const blueDarkTextColors = {
-  ...blueColors,
-  homeButtonText: "#1C1C1C",
-};
-
 export const blackColors = {
   ...blueColors,
   background: "#1C1C1C",
@@ -167,34 +162,6 @@ export const lightBlueColors = {
   homeButtonText: "#010D18",
 };
 
-export const orangeColors = {
-  background: "#EEEEEE",
-
-  primary: "#F97316",
-
-  glow: "#F97316",
-
-  text: "#282828",
-
-  hourBlockFilled: "#F97316",
-
-  hourBlockEmpty: "#F973164D",
-
-  border: "#2828284D",
-
-  card: "#FFFFFF",
-
-  selectorBackground: "#FFFFFF",
-
-  selectorBorder: "#28282866",
-
-  selectorArrow: "#282828",
-
-  icon: "#1C1C1C80",
-
-  bottomNav: "#282828",
-};
-
 export const colorfulColors = {
   ...lightColors,
   // Per-button background colors for the colorful home grid.
@@ -208,32 +175,4 @@ export const colorfulColors = {
     tasks: "#0785F4",
   },
   homeButtonText: "#FFFFFF",
-};
-
-export const darkGrayColors = {
-  background: "#121212",
-
-  primary: "#2A2A2A",
-
-  glow: "#000000",
-
-  text: "#FFFFFF",
-
-  hourBlockFilled: "#3A3A3A",
-
-  hourBlockEmpty: "#FFFFFF20",
-
-  border: "#FFFFFF10",
-
-  card: "#1C1C1C",
-
-  selectorBackground: "#1F1F1F",
-
-  selectorBorder: "#FFFFFF15",
-
-  selectorArrow: "#FFFFFF",
-
-  icon: "#FFFFFF80",
-
-  bottomNav: "#FFFFFF",
 };

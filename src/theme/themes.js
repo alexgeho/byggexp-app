@@ -1,12 +1,7 @@
 import {
-  greenColors,
-  lightColors,
   blueColors,
-  blueDarkTextColors,
   blackColors,
   lightBlueColors,
-  orangeColors,
-  darkGrayColors,
   colorfulColors,
 } from "./colors";
 import { iconBadgeBackground } from "./colorUtils";
@@ -62,24 +57,9 @@ const common = {
   },
 };
 
-export const greenTheme = {
-  ...common,
-  colors: withIconBadgeBackground(greenColors),
-};
-
-export const lightTheme = {
-  ...common,
-  colors: withIconBadgeBackground(lightColors),
-};
-
 export const blueTheme = {
   ...common,
   colors: withIconBadgeBackground(blueColors),
-};
-
-export const blueDarkTextTheme = {
-  ...common,
-  colors: withIconBadgeBackground(blueDarkTextColors),
 };
 
 export const blackTheme = {
@@ -90,16 +70,6 @@ export const blackTheme = {
 export const lightBlueTheme = {
   ...common,
   colors: withIconBadgeBackground(lightBlueColors),
-};
-
-export const orangeTheme = {
-  ...common,
-  colors: withIconBadgeBackground(orangeColors),
-};
-
-export const darkGrayTheme = {
-  ...common,
-  colors: withIconBadgeBackground(darkGrayColors),
 };
 
 export const colorfulTheme = {
@@ -117,22 +87,8 @@ export const colorfulTheme = {
 
 export const themeOptions = [
   {
-    id: "green",
-    color: greenColors.primary,
-  },
-  {
-    id: "light",
-    color: lightColors.background,
-    secondaryColor: lightColors.primary,
-  },
-  {
     id: "blue",
     color: blueColors.primary,
-  },
-  {
-    id: "blueDarkText",
-    color: blueColors.primary,
-    secondaryColor: blueDarkTextColors.homeButtonText,
   },
   {
     id: "black",
@@ -142,14 +98,6 @@ export const themeOptions = [
   {
     id: "lightBlue",
     color: lightBlueColors.background,
-  },
-  {
-    id: "orange",
-    color: orangeColors.primary,
-  },
-  {
-    id: "darkGray",
-    color: darkGrayColors.primary,
   },
   {
     id: "colorful",

@@ -69,7 +69,7 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response?.status === 403) {
-      console.warn('403 Forbidden:', error.response?.data?.message || 'Нет прав доступа');
+      console.warn('403 Forbidden:', error.response?.data?.message || 'Access denied');
     }
 
     if (error.response?.status === 401 && !originalRequest._retry) {
@@ -111,7 +111,7 @@ export const fetchData = async (endpoint) => {
     const response = await api.get(endpoint);
     return response.data;
   } catch (error) {
-    console.error('Ошибка при получении данных:', error);
+    console.error('Failed to fetch data:', error);
     throw error;
   }
 };
