@@ -52,8 +52,26 @@ export default function ChatConversationScreen({ variant }) {
   const [messageText, setMessageText] = useState("");
   const chatId = route.params?.chatId || route.params?.id || null;
   const initialChat = route.params?.initialChat || null;
-  const { chat, messages, loading, sending, error, sendMessage } =
-    useChatConversation(chatId, initialChat);
+  const {
+    chat,
+    messages,
+    loading,
+    sending,
+    error,
+    sendMessage,
+    translationEnabled,
+    autoTranslate,
+    setAutoTranslate,
+  } = useChatConversation(chatId, initialChat);
+  const [showOriginalIds, setShowOriginalIds] = useState(() => new Set());
+
+  const toggleOriginal = (id) =>
+    setShowOriginalIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
 
   const currentUserId = userId || user?._id || user?.id || null;
 
@@ -140,6 +158,20 @@ export default function ChatConversationScreen({ variant }) {
           contentContainerStyle={styles.messagesContent}
           keyboardShouldPersistTaps="handled"
         >
+          {translationEnabled ? (
+            <TouchableOpacity
+              style={styles.translateToggle}
+              activeOpacity={0.8}
+              onPress={() => setAutoTranslate((value) => !value)}
+            >
+              <Text style={styles.translateToggleText}>
+                {autoTranslate
+                  ? "🌐 Auto-translate on"
+                  : "🌐 Auto-translate off"}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
+
           {error ? (
             <View style={styles.emptyState}>
               <Text style={styles.emptyStateTitle}>Unable to load chat</Text>
@@ -158,6 +190,13 @@ export default function ChatConversationScreen({ variant }) {
 
           {messages.map((message) => {
             const isMyMessage = message.userId === currentUserId;
+            const hasTranslation =
+              autoTranslate && Boolean(message.translatedText);
+            const showingOriginal = showOriginalIds.has(message._id);
+            const bodyText =
+              hasTranslation && !showingOriginal
+                ? message.translatedText
+                : message.text;
 
             return (
               <View
@@ -185,8 +224,31 @@ export default function ChatConversationScreen({ variant }) {
                         : styles.otherMessageText
                     }
                   >
-                    {message.text}
+                    {bodyText}
                   </Text>
+                  {hasTranslation ? (
+                    <TouchableOpacity
+                      onPress={() => toggleOriginal(message._id)}
+                      activeOpacity={0.7}
+                    >
+                      <Text
+                        style={[
+                          styles.translatedHint,
+                          isMyMessage
+                            ? styles.myTranslatedHint
+                            : styles.otherTranslatedHint,
+                        ]}
+                      >
+                        {showingOriginal
+                          ? "Show translation"
+                          : `Translated${
+                              message.sourceLang
+                                ? ` from ${message.sourceLang}`
+                                : ""
+                            } · Show original`}
+                      </Text>
+                    </TouchableOpacity>
+                  ) : null}
                   <Text
                     style={
                       isMyMessage
@@ -345,6 +407,31 @@ const styles = StyleSheet.create({
   },
   emptyStateText: {
     color: "#698196",
+  },
+  translateToggle: {
+    alignSelf: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.75)",
+    borderRadius: 999,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+  },
+  translateToggleText: {
+    color: "#052D50",
+    fontSize: 12,
+    fontFamily: "DMSans-SemiBold",
+  },
+  translatedHint: {
+    fontSize: 10,
+    marginTop: 4,
+  },
+  myTranslatedHint: {
+    color: "#ffffffcc",
+  },
+  otherTranslatedHint: {
+    color: "#0785F4",
   },
   messageRow: {
     marginBottom: 12,

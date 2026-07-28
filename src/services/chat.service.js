@@ -22,9 +22,20 @@ export const chatService = {
     return data;
   },
 
-  getMessages: async (chatId) => {
-    const { data } = await api.get(`/messages/chat/${chatId}`);
+  getMessages: async (chatId, lang) => {
+    const { data } = await api.get(`/messages/chat/${chatId}`, {
+      params: lang ? { lang } : {},
+    });
     return data;
+  },
+
+  getTranslationStatus: async () => {
+    try {
+      const { data } = await api.get('/messages/translation/status');
+      return Boolean(data?.enabled);
+    } catch {
+      return false;
+    }
   },
 
   markAsRead: async (chatId) => {

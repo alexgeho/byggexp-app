@@ -1,6 +1,11 @@
 import { useFocusEffect } from '@react-navigation/native';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { getLocales } from 'expo-localization';
 import { chatService } from '../../../services';
+
+// The reader's language for chat auto-translation — the phone's real locale
+// (so a Polish worker gets Polish), falling back to Swedish.
+const readerLang = () => getLocales()?.[0]?.languageCode || 'sv';
 
 export const useChatConversation = (chatId, initialChat = null) => {
   const [chat, setChat] = useState(initialChat);
@@ -8,6 +13,18 @@ export const useChatConversation = (chatId, initialChat = null) => {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
+  const [translationEnabled, setTranslationEnabled] = useState(false);
+  const [autoTranslate, setAutoTranslate] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    chatService.getTranslationStatus().then((enabled) => {
+      if (active) setTranslationEnabled(enabled);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const loadConversation = useCallback(async () => {
     if (!chatId) {
@@ -19,9 +36,10 @@ export const useChatConversation = (chatId, initialChat = null) => {
     try {
       setLoading(true);
       setError('');
+      const lang = autoTranslate ? readerLang() : undefined;
       const [chatData, messagesData] = await Promise.all([
         chatService.getById(chatId),
-        chatService.getMessages(chatId),
+        chatService.getMessages(chatId, lang),
       ]);
       const readChatData = await chatService.markAsRead(chatId);
 
@@ -36,7 +54,7 @@ export const useChatConversation = (chatId, initialChat = null) => {
     } finally {
       setLoading(false);
     }
-  }, [chatId]);
+  }, [chatId, autoTranslate]);
 
   useFocusEffect(
     useCallback(() => {
@@ -76,6 +94,9 @@ export const useChatConversation = (chatId, initialChat = null) => {
     loading,
     sending,
     error,
+    translationEnabled,
+    autoTranslate,
+    setAutoTranslate,
     reload: loadConversation,
     sendMessage,
   };
