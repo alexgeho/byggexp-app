@@ -417,15 +417,7 @@ export default function CreateToolScreen() {
         <BottomBar
           onLeftPress={() => navigation.navigate("Main")}
           onRightPress={() => navigation.navigate("Menu")}
-          onAddPress={handleCreateTool}
-          addDisabled={saving}
-          renderAddContent={() =>
-            saving ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
-            ) : (
-              <Icon name="check" size={28} color="#FFFFFF" />
-            )
-          }
+          showAddButton={false}
         />
       </View>
 

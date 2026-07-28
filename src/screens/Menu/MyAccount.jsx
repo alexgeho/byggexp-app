@@ -684,15 +684,7 @@ export const MyAccount = () => {
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
-        onAddPress={handleSave}
-        addDisabled={saving}
-        renderAddContent={() =>
-          saving ? (
-            <ActivityIndicator color="#ffffff" />
-          ) : (
-            <Text style={styles.saveButtonText}>{t("common.save")}</Text>
-          )
-        }
+        showAddButton={false}
       />
     </View>
   );

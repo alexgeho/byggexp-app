@@ -1476,15 +1476,7 @@ export default function CreateTaskScreen() {
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
-        onAddPress={createTask}
-        addDisabled={saving}
-        renderAddContent={() =>
-          saving ? (
-            <ActivityIndicator size="small" color="#FFFFFF" />
-          ) : (
-            <Icon name="check" size={28} color="#FFFFFF" />
-          )
-        }
+        showAddButton={false}
       />
     </View>
   );

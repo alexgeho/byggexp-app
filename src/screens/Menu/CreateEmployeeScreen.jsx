@@ -550,15 +550,7 @@ export default function CreateEmployeeScreen() {
         <BottomBar
           onLeftPress={() => navigation.navigate("Main")}
           onRightPress={() => navigation.navigate("Menu")}
-          onAddPress={handleSaveEmployee}
-          addDisabled={saving || loadingEmployee}
-          renderAddContent={() =>
-            saving ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
-            ) : (
-              <Icon name="check" size={28} color="#FFFFFF" />
-            )
-          }
+          showAddButton={false}
         />
       </View>
 
