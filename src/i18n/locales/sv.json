@@ -325,6 +325,7 @@
   "projects": {
     "loading": "Laddar projekt...",
     "select": "Välj projekt",
+    "selectOrCreate": "Välj eller skapa projekt",
     "notFound": "Inga projekt hittades",
     "myProjects": "Mina projekt",
     "all": "Alla projekt",

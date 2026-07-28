@@ -325,6 +325,7 @@
   "projects": {
     "loading": "Loading projects...",
     "select": "Select projects",
+    "selectOrCreate": "Select or create project",
     "notFound": "No projects found",
     "myProjects": "My projects",
     "all": "All projects",

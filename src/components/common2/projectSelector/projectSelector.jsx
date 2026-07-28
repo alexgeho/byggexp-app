@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
+import { useTranslation } from "react-i18next";
 import { styles } from "./projectSelector.styles";
 
 export default function ProjectSelector2({
@@ -9,6 +10,8 @@ export default function ProjectSelector2({
   textStyle,
   iconStyle,
 }) {
+  const { t } = useTranslation();
+
   return (
     <TouchableOpacity
       style={[styles.projectSelector, style]}
@@ -19,7 +22,7 @@ export default function ProjectSelector2({
         ellipsizeMode="tail"
         style={[styles.projectSelectorText, textStyle]}
       >
-        {value?.name || "Select or create project"}
+        {value?.name || t("projects.selectOrCreate")}
       </Text>
       <Image
         source={require("../../../assets/HomeScreen2/arrow-down.png")}
