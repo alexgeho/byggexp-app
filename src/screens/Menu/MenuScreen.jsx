@@ -200,6 +200,13 @@ export default function MenuScreen() {
 
   const settingsItems = [
     {
+      id: "language",
+      screen: "Language",
+      title: "Language",
+      icon: require("../../assets/About.png"),
+      color: theme.colors.primary,
+    },
+    {
       id: "legal",
       screen: "LegalPolicies",
       title: "Legal & Policies",

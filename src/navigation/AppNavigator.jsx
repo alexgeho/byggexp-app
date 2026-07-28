@@ -28,6 +28,7 @@ import { flushPendingNotificationNavigation } from "../services/notifications.se
 import ThemeHomeScreen from "../screens/Main/HomeVariants/ThemeHomeScreen";
 
 import CustomizeHomeScreen from "../screens/Menu/CustomizeHomeScreen";
+import LanguageScreen from "../screens/Menu/LanguageScreen";
 import AboutAppScreen from "../screens/Menu/AboutAppScreen";
 import HelpSupportScreen from "../screens/Menu/HelpSupportScreen";
 import ReportBugScreen from "../screens/Menu/ReportBugScreen";
@@ -155,6 +156,7 @@ export default function AppNavigator() {
               component={CreateToolScreen}
               options={{ gestureEnabled: canManageTools }}
             />
+            <Stack.Screen name="Language" component={LanguageScreen} />
             <Stack.Screen name="AboutApp" component={AboutAppScreen} />
             <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
             <Stack.Screen name="ReportBug" component={ReportBugScreen} />
