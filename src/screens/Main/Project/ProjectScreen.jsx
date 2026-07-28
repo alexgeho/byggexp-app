@@ -22,6 +22,7 @@ import {
   View,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
+import { useTranslation } from "react-i18next";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { ListCard } from "../../../components/common/ListCard/ListCard";
@@ -48,11 +49,12 @@ const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, "") ||
   "https://api.byggexp.se";
 
-const formatDate = (value, withTime = false) => {
-  if (!value) return "No date";
+const formatDate = (value, withTime = false, t = null) => {
+  const noDate = t ? t("project.noDate") : "No date";
+  if (!value) return noDate;
 
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "No date";
+  if (Number.isNaN(date.getTime())) return noDate;
 
   return withTime
     ? date.toLocaleString("en-US", {
@@ -97,11 +99,11 @@ const taskBadgeStyles = {
   completed: cardStyles.cardBadgeCompleted,
 };
 
-const formatFileSize = (value) => {
+const formatFileSize = (value, t = null) => {
   const size = Number(value);
 
   if (!Number.isFinite(size) || size <= 0) {
-    return "Unknown size";
+    return t ? t("project.unknownSize") : "Unknown size";
   }
 
   if (size < 1024) {
@@ -174,6 +176,7 @@ const getDocumentTypeMeta = (document) => {
 export const ProjectScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const { user } = useContext(AuthContext);
   const { showSuccess } = useFeedback();
   const { theme } = useTheme();
@@ -188,7 +191,7 @@ export const ProjectScreen = () => {
 
   const fetchProject = useCallback(async () => {
     if (!id) {
-      setError("Project id is missing");
+      setError(t("project.idMissing"));
       setLoading(false);
       return;
     }
@@ -200,11 +203,11 @@ export const ProjectScreen = () => {
       setProject(data);
     } catch (fetchError) {
       console.error("Failed to fetch project:", fetchError);
-      setError("Failed to load project data");
+      setError(t("project.loadFailed"));
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, t]);
 
   useFocusEffect(
     useCallback(() => {
@@ -291,8 +294,8 @@ export const ProjectScreen = () => {
   const handleOpenDocument = async (document) => {
     if (!document?.url) {
       Alert.alert(
-        "Document unavailable",
-        "This file does not have a valid link.",
+        t("project.documentUnavailableTitle"),
+        t("project.documentUnavailableMessage"),
       );
       return;
     }
@@ -306,13 +309,16 @@ export const ProjectScreen = () => {
       await Linking.openURL(document.url);
     } catch (linkError) {
       console.error("Failed to open document:", linkError);
-      Alert.alert("Unable to open document", "Please try again later.");
+      Alert.alert(t("project.openErrorTitle"), t("project.openErrorMessage"));
     }
   };
 
   const handleAddDocuments = async () => {
     if (!id) {
-      Alert.alert("Project unavailable", "Project id is missing.");
+      Alert.alert(
+        t("project.projectUnavailableTitle"),
+        t("project.projectUnavailableMessage"),
+      );
       return;
     }
 
@@ -345,16 +351,18 @@ export const ProjectScreen = () => {
 
       setModal("Documents");
       showSuccess({
-        title: "Documents added",
-        message: `${pickedAssets.length} document${pickedAssets.length > 1 ? "s" : ""} added to the project.`,
+        title: t("project.documentsAddedTitle"),
+        message: t("project.documentsAddedMessage", {
+          count: pickedAssets.length,
+        }),
       });
     } catch (uploadError) {
       console.error("Failed to upload project documents:", uploadError);
       Alert.alert(
-        "Upload error",
+        t("project.uploadErrorTitle"),
         uploadError?.response?.data?.message ||
           uploadError?.message ||
-          "Unable to upload documents right now.",
+          t("project.uploadErrorMessage"),
       );
     } finally {
       setUploadingDocuments(false);
@@ -365,7 +373,7 @@ export const ProjectScreen = () => {
     return (
       <View style={styles.centeredContainer}>
         <ActivityIndicator size="large" color="#0785F4" />
-        <Text style={styles.statusText}>Loading project...</Text>
+        <Text style={styles.statusText}>{t("project.loading")}</Text>
       </View>
     );
   }
@@ -384,7 +392,9 @@ export const ProjectScreen = () => {
           onPress={() => navigation.goBack()}
           iconSource={require("../../../assets/Arrow-left.png")}
         />
-        <Text style={styles.projectName}>{project?.name || "Project"}</Text>
+        <Text style={styles.projectName}>
+          {project?.name || t("project.fallbackName")}
+        </Text>
         <View style={styles.headerPlaceholder} />
       </View>
 
@@ -400,7 +410,7 @@ export const ProjectScreen = () => {
           <Text
             style={[styles.tabText, modal === "Tasks" && activeTabTextStyle]}
           >
-            Tasks
+            {t("project.tabs.tasks")}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -417,7 +427,7 @@ export const ProjectScreen = () => {
               modal === "Documents" && activeTabTextStyle,
             ]}
           >
-            Documents
+            {t("project.tabs.documents")}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -431,7 +441,7 @@ export const ProjectScreen = () => {
           <Text
             style={[styles.tabText, modal === "Workers" && activeTabTextStyle]}
           >
-            Workers
+            {t("project.tabs.workers")}
           </Text>
         </TouchableOpacity>
       </View>
@@ -442,7 +452,9 @@ export const ProjectScreen = () => {
       >
         {error ? (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyStateTitle}>Unable to load project</Text>
+            <Text style={styles.emptyStateTitle}>
+              {t("project.loadErrorTitle")}
+            </Text>
             <Text style={styles.emptyStateText}>{error}</Text>
           </View>
         ) : null}
@@ -462,28 +474,32 @@ export const ProjectScreen = () => {
                       projectRouteKey: route.key,
                     })
                   }
-                  title={task.taskTitle || "Untitled task"}
-                  badgeLabel={status.label}
+                  title={task.taskTitle || t("task.untitled")}
+                  badgeLabel={t(`task.status.${status.tone}`, status.label)}
                   badgeStyle={taskBadgeStyles[status.tone]}
                 >
                   <Text style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}>
-                    {formatDate(task.dueDate, true)}
+                    {formatDate(task.dueDate, true, t)}
                   </Text>
                   <Text
                     style={cardStyles.cardSecondaryText}
                     numberOfLines={1}
                     ellipsizeMode="tail"
                   >
-                    {task.taskDescription || task.assigneeUserName || "No description"}
+                    {task.taskDescription ||
+                      task.assigneeUserName ||
+                      t("task.noDescription")}
                   </Text>
                 </ListCard>
               );
             })
           ) : (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyStateTitle}>No tasks yet</Text>
+              <Text style={styles.emptyStateTitle}>
+                {t("project.noTasksTitle")}
+              </Text>
               <Text style={styles.emptyStateText}>
-                There are no tasks assigned to this project.
+                {t("project.noTasksText")}
               </Text>
             </View>
           ))}
@@ -520,7 +536,7 @@ export const ProjectScreen = () => {
                       {document.name}
                     </Text>
                     <Text style={styles.documentMeta}>
-                      {`${formatFileSize(document.size)}   ${formatDate(document.uploadedAt)}`}
+                      {`${formatFileSize(document.size, t)}   ${formatDate(document.uploadedAt, false, t)}`}
                     </Text>
                   </View>
                   <Image
@@ -532,9 +548,11 @@ export const ProjectScreen = () => {
             })
           ) : (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyStateTitle}>No files uploaded</Text>
+              <Text style={styles.emptyStateTitle}>
+                {t("project.noFilesTitle")}
+              </Text>
               <Text style={styles.emptyStateText}>
-                Project files will appear here after upload.
+                {t("project.noFilesText")}
               </Text>
             </View>
           ))}
@@ -561,10 +579,10 @@ export const ProjectScreen = () => {
                 />
                 <View style={styles.workerInfo}>
                   <Text style={styles.workerName}>
-                    {worker.name || "Unnamed worker"}
+                    {worker.name || t("project.unnamedWorker")}
                   </Text>
                   <Text style={styles.workerSubtitle}>
-                    {worker.profession || worker.email || "Worker"}
+                    {worker.profession || worker.email || t("project.workerRole")}
                   </Text>
                 </View>
                 <Image
@@ -575,9 +593,11 @@ export const ProjectScreen = () => {
             ))
           ) : (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyStateTitle}>No workers in project</Text>
+              <Text style={styles.emptyStateTitle}>
+                {t("project.noWorkersTitle")}
+              </Text>
               <Text style={styles.emptyStateText}>
-                Assigned workers will appear in this list.
+                {t("project.noWorkersText")}
               </Text>
             </View>
           ))}

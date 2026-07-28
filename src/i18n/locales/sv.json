@@ -47,6 +47,48 @@
     "onlyOwnerAssignAdmins": "Endast företagets ägare kan tilldela administratörer",
     "onlyAdminsManageWorkers": "Endast administratörer kan hantera arbetare"
   },
+  "project": {
+    "fallbackName": "Projekt",
+    "loading": "Laddar projekt...",
+    "loadErrorTitle": "Det gick inte att ladda projektet",
+    "idMissing": "Projekt-id saknas",
+    "loadFailed": "Det gick inte att ladda projektdata",
+    "tabs": {
+      "tasks": "Uppgifter",
+      "documents": "Dokument",
+      "workers": "Arbetare"
+    },
+    "noTasksTitle": "Inga uppgifter än",
+    "noTasksText": "Det finns inga uppgifter kopplade till detta projekt.",
+    "noFilesTitle": "Inga filer uppladdade",
+    "noFilesText": "Projektfiler visas här efter uppladdning.",
+    "noWorkersTitle": "Inga arbetare i projektet",
+    "noWorkersText": "Kopplade arbetare visas i den här listan.",
+    "unnamedWorker": "Namnlös arbetare",
+    "workerRole": "Arbetare",
+    "documentsAddedTitle": "Dokument tillagda",
+    "documentsAddedMessage_one": "{{count}} dokument tillagt i projektet.",
+    "documentsAddedMessage_other": "{{count}} dokument tillagda i projektet.",
+    "documentUnavailableTitle": "Dokument otillgängligt",
+    "documentUnavailableMessage": "Den här filen har ingen giltig länk.",
+    "openErrorTitle": "Det gick inte att öppna dokumentet",
+    "openErrorMessage": "Försök igen senare.",
+    "projectUnavailableTitle": "Projekt otillgängligt",
+    "projectUnavailableMessage": "Projekt-id saknas.",
+    "uploadErrorTitle": "Uppladdningsfel",
+    "uploadErrorMessage": "Det går inte att ladda upp dokument just nu.",
+    "unknownSize": "Okänd storlek",
+    "noDate": "Inget datum"
+  },
+  "task": {
+    "status": {
+      "open": "Öppen",
+      "overdue": "Försenad",
+      "completed": "Slutförd"
+    },
+    "untitled": "Namnlös uppgift",
+    "noDescription": "Ingen beskrivning"
+  },
   "workers": {
     "loading": "Laddar arbetare...",
     "notFound": "Inga arbetare hittades",

@@ -47,6 +47,48 @@
     "onlyOwnerAssignAdmins": "Only the company owner can assign admins",
     "onlyAdminsManageWorkers": "Only admins can manage workers"
   },
+  "project": {
+    "fallbackName": "Project",
+    "loading": "Loading project...",
+    "loadErrorTitle": "Unable to load project",
+    "idMissing": "Project id is missing",
+    "loadFailed": "Failed to load project data",
+    "tabs": {
+      "tasks": "Tasks",
+      "documents": "Documents",
+      "workers": "Workers"
+    },
+    "noTasksTitle": "No tasks yet",
+    "noTasksText": "There are no tasks assigned to this project.",
+    "noFilesTitle": "No files uploaded",
+    "noFilesText": "Project files will appear here after upload.",
+    "noWorkersTitle": "No workers in project",
+    "noWorkersText": "Assigned workers will appear in this list.",
+    "unnamedWorker": "Unnamed worker",
+    "workerRole": "Worker",
+    "documentsAddedTitle": "Documents added",
+    "documentsAddedMessage_one": "{{count}} document added to the project.",
+    "documentsAddedMessage_other": "{{count}} documents added to the project.",
+    "documentUnavailableTitle": "Document unavailable",
+    "documentUnavailableMessage": "This file does not have a valid link.",
+    "openErrorTitle": "Unable to open document",
+    "openErrorMessage": "Please try again later.",
+    "projectUnavailableTitle": "Project unavailable",
+    "projectUnavailableMessage": "Project id is missing.",
+    "uploadErrorTitle": "Upload error",
+    "uploadErrorMessage": "Unable to upload documents right now.",
+    "unknownSize": "Unknown size",
+    "noDate": "No date"
+  },
+  "task": {
+    "status": {
+      "open": "Open",
+      "overdue": "Overdue",
+      "completed": "Completed"
+    },
+    "untitled": "Untitled task",
+    "noDescription": "No description"
+  },
   "workers": {
     "loading": "Loading workers...",
     "notFound": "No workers found",
