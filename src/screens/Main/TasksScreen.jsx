@@ -3,18 +3,17 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from "re
 import {
   View,
   Text,
-  TextInput,
   ScrollView,
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
-import Icon from "react-native-vector-icons/Feather";
 import AuthContext from "../../contexts/AuthContext";
 import { useTheme } from "../../theme/ThemeContext";
 import { projectService, taskService } from "../../services";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { ListCard } from "../../components/common/ListCard/ListCard";
+import { ProjectFilterSelector } from "../../components/common/ProjectFilterSelector/ProjectFilterSelector";
 import {
   standardScreenContainer,
   standardScreenHeader,
@@ -56,7 +55,7 @@ export default function TasksScreen() {
   const [projects, setProjects] = useState([]);
   const [personalTasks, setPersonalTasks] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
   const showCreateTask = canCreateTasks(user?.role);
 
   const fetchProjectsWithTasks = useCallback(async () => {
@@ -95,30 +94,18 @@ export default function TasksScreen() {
   }, [user?.role]);
 
   const visiblePersonalTasks = useMemo(() => {
-    const normalizedQuery = searchQuery.trim().toLowerCase();
-    const visibleTasks = normalizedQuery
-      ? personalTasks.filter((task) => {
-          const haystack = [
-            task?.taskTitle,
-            task?.taskDescription,
-            task?.assigneeUserName,
-            "personal",
-          ]
-            .filter(Boolean)
-            .join(" ")
-            .toLowerCase();
+    // Personal tasks have no project, so only show them under "All projects".
+    if (selectedProjectId) {
+      return [];
+    }
 
-          return haystack.includes(normalizedQuery);
-        })
-      : personalTasks;
-
-    return sortByNewest(visibleTasks, (task) => [
+    return sortByNewest(personalTasks, (task) => [
       task?.createdAt,
       task?.updatedAt,
       task?.startDate,
       task?.dueDate,
     ]);
-  }, [personalTasks, searchQuery]);
+  }, [personalTasks, selectedProjectId]);
 
   useFocusEffect(
     useCallback(() => {
@@ -137,8 +124,6 @@ export default function TasksScreen() {
   }, [authLoading, fetchProjectsWithTasks, refreshKey, user?.role]);
 
   const groupedTasks = useMemo(() => {
-    const normalizedQuery = searchQuery.trim().toLowerCase();
-
     return projects
       .map((project) => {
         const tasks = sortByNewest(
@@ -150,38 +135,28 @@ export default function TasksScreen() {
             task?.dueDate,
           ],
         );
-        const projectMatches = project.name
-          ?.toLowerCase()
-          .includes(normalizedQuery);
-        const visibleTasks = normalizedQuery
-          ? tasks.filter((task) => {
-              const haystack = [
-                task?.taskTitle,
-                task?.taskDescription,
-                project.name,
-              ]
-                .filter(Boolean)
-                .join(" ")
-                .toLowerCase();
-
-              return haystack.includes(normalizedQuery);
-            })
-          : tasks;
 
         return {
           ...project,
-          visibleTasks: projectMatches ? tasks : visibleTasks,
+          visibleTasks: tasks,
           newestVisibleTaskTimestamp: resolveNewestTimestamp(
-            projectMatches ? tasks[0]?.createdAt : visibleTasks[0]?.createdAt,
-            projectMatches ? tasks[0]?.updatedAt : visibleTasks[0]?.updatedAt,
-            projectMatches ? tasks[0]?.startDate : visibleTasks[0]?.startDate,
-            projectMatches ? tasks[0]?.dueDate : visibleTasks[0]?.dueDate,
+            tasks[0]?.createdAt,
+            tasks[0]?.updatedAt,
+            tasks[0]?.startDate,
+            tasks[0]?.dueDate,
             project?.createdAt,
             project?.updatedAt,
           ),
         };
       })
       .filter((project) => {
+        if (
+          selectedProjectId &&
+          String(project._id) !== String(selectedProjectId)
+        ) {
+          return false;
+        }
+
         return project.visibleTasks.length > 0;
       })
       .sort(
@@ -189,7 +164,7 @@ export default function TasksScreen() {
           rightProject.newestVisibleTaskTimestamp -
           leftProject.newestVisibleTaskTimestamp,
       );
-  }, [projects, searchQuery]);
+  }, [projects, selectedProjectId]);
 
   const formatTaskDate = (date) => {
     if (!date) return "No due date";
@@ -268,18 +243,11 @@ export default function TasksScreen() {
       </View>
 
       <View style={styles.searchContainer}>
-        <View style={styles.searchInputWrapper}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search tasks..."
-            placeholderTextColor="rgba(5, 45, 80, 0.45)"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-          <View style={styles.searchIconWrapper} pointerEvents="none">
-            <Icon name="search" size={18} color="rgba(5, 45, 80, 0.5)" />
-          </View>
-        </View>
+        <ProjectFilterSelector
+          projects={projects}
+          selectedProjectId={selectedProjectId}
+          onSelect={setSelectedProjectId}
+        />
       </View>
 
       <ScrollView
@@ -287,11 +255,7 @@ export default function TasksScreen() {
         contentContainerStyle={styles.scrollContent}
       >
         {visiblePersonalTasks.length === 0 && groupedTasks.length === 0 ? (
-          <Text style={styles.emptyText}>
-            {searchQuery.trim()
-              ? "No tasks found."
-              : "No projects or tasks found."}
-          </Text>
+          <Text style={styles.emptyText}>No projects or tasks found.</Text>
         ) : (
           <>
             {visiblePersonalTasks.length > 0 ? (
@@ -384,30 +348,6 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     width: "100%",
-  },
-  searchInputWrapper: {
-    width: "100%",
-    height: 48,
-    backgroundColor: "#052D500D",
-    borderRadius: 20,
-    paddingLeft: 16,
-    paddingRight: 14,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  searchInput: {
-    flex: 1,
-    height: "100%",
-    color: "#052D50",
-    fontSize: 16,
-    paddingVertical: 0,
-    paddingRight: 12,
-  },
-  searchIconWrapper: {
-    width: 20,
-    height: 20,
-    alignItems: "center",
-    justifyContent: "center",
   },
   scrollContainer: {
     flex: 1,
