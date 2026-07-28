@@ -94,7 +94,33 @@
       "completed": "Completed"
     },
     "untitled": "Untitled task",
-    "noDescription": "No description"
+    "noDescription": "No description",
+    "tabs": {
+      "edit": "Edit",
+      "documents": "Documents",
+      "workers": "Workers"
+    },
+    "fallbackTitle": "Task",
+    "statusLabel": "Status",
+    "titleLabel": "Title",
+    "noTitle": "No title",
+    "noDescriptionProvided": "No description provided",
+    "assignee": "Assignee",
+    "noAssignee": "No assignee",
+    "taskUnavailableTitle": "Task unavailable",
+    "idMissing": "Task id is missing.",
+    "documentsAddedTitle": "Documents added",
+    "documentsAddedMessage_one": "{{count}} document added to the task.",
+    "documentsAddedMessage_other": "{{count}} documents added to the task.",
+    "completed": "Task completed",
+    "reopened": "Task reopened",
+    "completedMessage": "Task marked as completed.",
+    "reopenedMessage": "Task moved back to open.",
+    "statusErrorTitle": "Task error",
+    "statusUpdateError": "Unable to update task status right now.",
+    "noDocsTitle": "No documents yet",
+    "noDocsText": "Task files will appear here.",
+    "noWorkersText": "Project workers will appear here."
   },
   "createProject": {
     "title": "Create project",

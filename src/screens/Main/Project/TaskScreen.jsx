@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
+import { useTranslation } from "react-i18next";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import AuthContext from "../../../contexts/AuthContext";
@@ -149,6 +150,7 @@ const getTaskDisplayStatus = (task) => {
 export default function TaskScreen() {
   const navigation = useNavigation();
   const route = useRoute();
+  const { t } = useTranslation();
   const { task, project, projectRouteKey, tasksRouteKey } = route.params || {};
   const { user } = useContext(AuthContext);
   const { showSuccess } = useFeedback();
@@ -238,8 +240,8 @@ export default function TaskScreen() {
   const handleOpenDocument = async (document) => {
     if (!document?.url) {
       Alert.alert(
-        "Document unavailable",
-        "This file does not have a valid link.",
+        t("project.documentUnavailableTitle"),
+        t("project.documentUnavailableMessage"),
       );
       return;
     }
@@ -253,7 +255,7 @@ export default function TaskScreen() {
       await Linking.openURL(document.url);
     } catch (error) {
       console.error("Failed to open document:", error);
-      Alert.alert("Unable to open document", "Please try again later.");
+      Alert.alert(t("project.openErrorTitle"), t("project.openErrorMessage"));
     }
   };
 
@@ -261,7 +263,7 @@ export default function TaskScreen() {
     const taskId = currentTask?._id || currentTask?.id;
 
     if (!taskId) {
-      Alert.alert("Task unavailable", "Task id is missing.");
+      Alert.alert(t("task.taskUnavailableTitle"), t("task.idMissing"));
       return;
     }
 
@@ -291,16 +293,18 @@ export default function TaskScreen() {
       }
 
       showSuccess({
-        title: "Documents added",
-        message: `${pickedAssets.length} document${pickedAssets.length > 1 ? "s" : ""} added to the task.`,
+        title: t("task.documentsAddedTitle"),
+        message: t("task.documentsAddedMessage", {
+          count: pickedAssets.length,
+        }),
       });
     } catch (error) {
       console.error("Failed to upload task documents:", error);
       Alert.alert(
-        "Upload error",
+        t("project.uploadErrorTitle"),
         error?.response?.data?.message ||
           error?.message ||
-          "Unable to upload documents right now.",
+          t("project.uploadErrorMessage"),
       );
     } finally {
       setUploadingDocuments(false);
@@ -311,7 +315,7 @@ export default function TaskScreen() {
     const taskId = currentTask?._id || currentTask?.id;
 
     if (!taskId) {
-      Alert.alert("Task unavailable", "Task id is missing.");
+      Alert.alert(t("task.taskUnavailableTitle"), t("task.idMissing"));
       return;
     }
 
@@ -328,12 +332,12 @@ export default function TaskScreen() {
       showSuccess({
         title:
           updatedTask?.status === "completed"
-            ? "Task completed"
-            : "Task reopened",
+            ? t("task.completed")
+            : t("task.reopened"),
         message:
           updatedTask?.status === "completed"
-            ? "Task marked as completed."
-            : "Task moved back to open.",
+            ? t("task.completedMessage")
+            : t("task.reopenedMessage"),
       });
 
       if (projectRouteKey || tasksRouteKey) {
@@ -342,10 +346,10 @@ export default function TaskScreen() {
     } catch (error) {
       console.error("Failed to update task status:", error);
       Alert.alert(
-        "Task error",
+        t("task.statusErrorTitle"),
         error?.response?.data?.message ||
           error?.message ||
-          "Unable to update task status right now.",
+          t("task.statusUpdateError"),
       );
     } finally {
       setUpdatingStatus(false);
@@ -363,7 +367,7 @@ export default function TaskScreen() {
           iconSource={require("../../../assets/Arrow-left.png")}
         />
         <Text numberOfLines={1} style={styles.headerTitle}>
-          {currentTask?.taskTitle || "Task"}
+          {currentTask?.taskTitle || t("task.fallbackTitle")}
         </Text>
         <View style={styles.placeholder} />
       </View>
@@ -375,7 +379,9 @@ export default function TaskScreen() {
             onPress={() => setTab(tabName)}
             style={[styles.tabButton, tab === tabName && styles.activeTab]}
           >
-            <Text style={styles.tabText}>{tabName}</Text>
+            <Text style={styles.tabText}>
+              {t(`task.tabs.${tabName.toLowerCase()}`, tabName)}
+            </Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -389,43 +395,48 @@ export default function TaskScreen() {
             <GroupCard>
               <GroupRow>
                 <View style={styles.rowTextContainer}>
-                  <Text style={styles.rowLabel}>Status</Text>
+                  <Text style={styles.rowLabel}>{t("task.statusLabel")}</Text>
                   <View style={[styles.statusBadge, styles[`statusBadge_${taskStatus.tone}`]]}>
                     <Text style={[styles.statusBadgeText, styles[`statusBadgeText_${taskStatus.tone}`]]}>
-                      {taskStatus.label}
+                      {t(`task.status.${taskStatus.tone}`, taskStatus.label)}
                     </Text>
                   </View>
                 </View>
               </GroupRow>
               <GroupRow>
                 <View style={styles.rowTextContainer}>
-                  <Text style={styles.rowLabel}>Title</Text>
+                  <Text style={styles.rowLabel}>{t("task.titleLabel")}</Text>
                   <Text style={styles.rowValue}>
-                    {currentTask?.taskTitle || "No title"}
-                  </Text>
-                </View>
-              </GroupRow>
-              <GroupRow>
-                <View style={styles.rowTextContainer}>
-                  <Text style={styles.rowLabel}>Description</Text>
-                  <Text style={[styles.rowValue, styles.multilineValue]}>
-                    {currentTask?.taskDescription || "No description provided"}
+                    {currentTask?.taskTitle || t("task.noTitle")}
                   </Text>
                 </View>
               </GroupRow>
               <GroupRow>
                 <View style={styles.rowTextContainer}>
                   <Text style={styles.rowLabel}>
-                    {project ? "Project" : "Assignee"}
+                    {t("createTask.descriptionLabel")}
+                  </Text>
+                  <Text style={[styles.rowValue, styles.multilineValue]}>
+                    {currentTask?.taskDescription ||
+                      t("task.noDescriptionProvided")}
+                  </Text>
+                </View>
+              </GroupRow>
+              <GroupRow>
+                <View style={styles.rowTextContainer}>
+                  <Text style={styles.rowLabel}>
+                    {project ? t("createTask.projectLabel") : t("task.assignee")}
                   </Text>
                   <Text style={styles.rowValue}>
-                    {project?.name || currentTask?.assigneeUserName || "No assignee"}
+                    {project?.name ||
+                      currentTask?.assigneeUserName ||
+                      t("task.noAssignee")}
                   </Text>
                 </View>
               </GroupRow>
               <GroupRow>
                 <View style={styles.scheduleRowContent}>
-                  <Text style={styles.scheduleLabel}>Starts</Text>
+                  <Text style={styles.scheduleLabel}>{t("createTask.starts")}</Text>
                   {startDate ? (
                     <View style={styles.dateChips}>
                       <View style={styles.dateChip}>
@@ -440,13 +451,13 @@ export default function TaskScreen() {
                       </View>
                     </View>
                   ) : (
-                    <Text style={styles.rowValue}>No date</Text>
+                    <Text style={styles.rowValue}>{t("project.noDate")}</Text>
                   )}
                 </View>
               </GroupRow>
               <GroupRow isLast={true}>
                 <View style={styles.scheduleRowContent}>
-                  <Text style={styles.scheduleLabel}>Ends</Text>
+                  <Text style={styles.scheduleLabel}>{t("createTask.ends")}</Text>
                   {endDate ? (
                     <View style={styles.dateChips}>
                       <View style={styles.dateChip}>
@@ -457,7 +468,7 @@ export default function TaskScreen() {
                       </View>
                     </View>
                   ) : (
-                    <Text style={styles.rowValue}>No date</Text>
+                    <Text style={styles.rowValue}>{t("project.noDate")}</Text>
                   )}
                 </View>
               </GroupRow>
@@ -506,10 +517,8 @@ export default function TaskScreen() {
             })
           ) : (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyStateTitle}>No documents yet</Text>
-              <Text style={styles.emptyStateText}>
-                Task files will appear here.
-              </Text>
+              <Text style={styles.emptyStateTitle}>{t("task.noDocsTitle")}</Text>
+              <Text style={styles.emptyStateText}>{t("task.noDocsText")}</Text>
             </View>
           )
         ) : null}
@@ -528,19 +537,21 @@ export default function TaskScreen() {
                 />
                 <View style={styles.workerInfo}>
                   <Text style={styles.workerName}>
-                    {worker.name || "Unnamed worker"}
+                    {worker.name || t("project.unnamedWorker")}
                   </Text>
                   <Text style={styles.workerSubtitle}>
-                    {worker.profession || worker.email || "Worker"}
+                    {worker.profession || worker.email || t("project.workerRole")}
                   </Text>
                 </View>
               </View>
             ))
           ) : (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyStateTitle}>No workers in project</Text>
+              <Text style={styles.emptyStateTitle}>
+                {t("project.noWorkersTitle")}
+              </Text>
               <Text style={styles.emptyStateText}>
-                Project workers will appear here.
+                {t("task.noWorkersText")}
               </Text>
             </View>
           )

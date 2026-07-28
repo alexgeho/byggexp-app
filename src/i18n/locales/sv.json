@@ -94,7 +94,33 @@
       "completed": "Slutförd"
     },
     "untitled": "Namnlös uppgift",
-    "noDescription": "Ingen beskrivning"
+    "noDescription": "Ingen beskrivning",
+    "tabs": {
+      "edit": "Redigera",
+      "documents": "Dokument",
+      "workers": "Arbetare"
+    },
+    "fallbackTitle": "Uppgift",
+    "statusLabel": "Status",
+    "titleLabel": "Titel",
+    "noTitle": "Ingen titel",
+    "noDescriptionProvided": "Ingen beskrivning angiven",
+    "assignee": "Tilldelad",
+    "noAssignee": "Ingen tilldelad",
+    "taskUnavailableTitle": "Uppgift otillgänglig",
+    "idMissing": "Uppgifts-id saknas.",
+    "documentsAddedTitle": "Dokument tillagda",
+    "documentsAddedMessage_one": "{{count}} dokument tillagt i uppgiften.",
+    "documentsAddedMessage_other": "{{count}} dokument tillagda i uppgiften.",
+    "completed": "Uppgift slutförd",
+    "reopened": "Uppgift återöppnad",
+    "completedMessage": "Uppgiften markerades som slutförd.",
+    "reopenedMessage": "Uppgiften flyttades tillbaka till öppen.",
+    "statusErrorTitle": "Uppgiftsfel",
+    "statusUpdateError": "Det gick inte att uppdatera uppgiftsstatus just nu.",
+    "noDocsTitle": "Inga dokument än",
+    "noDocsText": "Uppgiftsfiler visas här.",
+    "noWorkersText": "Projektets arbetare visas här."
   },
   "createProject": {
     "title": "Skapa projekt",
