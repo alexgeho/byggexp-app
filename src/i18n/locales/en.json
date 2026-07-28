@@ -337,6 +337,31 @@
       "on_hold": "On hold"
     }
   },
+  "taskReminders": {
+    "off": "Off",
+    "custom": "Custom",
+    "everyMinutes": "Every {{minutes}} min",
+    "repeat": {
+      "none": "Once",
+      "minutes": "Every N minutes",
+      "hourly": "Hourly",
+      "daily": "Daily",
+      "weekly": "Weekly"
+    },
+    "helper": {
+      "needDueDate": "Add a due date to schedule repeating notifications.",
+      "dueInFuture": "Due date must be in the future for repeating notifications.",
+      "minutesNeed": "Needs at least {{minutes}} minutes until the due date.",
+      "minutesSends": "Sends up to {{maxRuns}} reminders every {{minutes}} minutes from save time until the due date.",
+      "hourlyNeed": "Hourly repeat needs at least 1 hour until the due date.",
+      "hourlySends": "Sends up to {{maxRuns}} reminders every hour from save time until the due date.",
+      "dailyNeed": "Daily repeat needs at least 1 day until the due date.",
+      "dailyLimit": "Daily repeat is limited to tasks due within 30 days.",
+      "dailySends": "Sends at most 14 reminders, once per day from save time, and stops at the due date.",
+      "weeklyNeed": "Weekly repeat needs at least 7 days until the due date.",
+      "weeklySends": "Sends at most 8 reminders, once per week from save time, and stops at the due date."
+    }
+  },
   "toolScan": {
     "title": "Scan tool",
     "notFound": "No tool for code \"{{code}}\"",

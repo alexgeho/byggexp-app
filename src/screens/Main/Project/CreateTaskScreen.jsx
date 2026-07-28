@@ -1394,7 +1394,7 @@ export default function CreateTaskScreen() {
                                     notificationRepeatInput,
                                   ),
                                 )
-                              : option.label}
+                              : getRepeatLabel(option.key)}
                           </Text>
                           {optionState.helperText ? (
                             <Text style={styles.repeatOptionHint}>

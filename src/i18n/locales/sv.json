@@ -337,6 +337,31 @@
       "on_hold": "Pausat"
     }
   },
+  "taskReminders": {
+    "off": "Av",
+    "custom": "Anpassad",
+    "everyMinutes": "Var {{minutes}}:e min",
+    "repeat": {
+      "none": "En gång",
+      "minutes": "Var N:e minut",
+      "hourly": "Varje timme",
+      "daily": "Dagligen",
+      "weekly": "Veckovis"
+    },
+    "helper": {
+      "needDueDate": "Lägg till ett förfallodatum för att schemalägga återkommande aviseringar.",
+      "dueInFuture": "Förfallodatumet måste vara i framtiden för återkommande aviseringar.",
+      "minutesNeed": "Kräver minst {{minutes}} minuter till förfallodatumet.",
+      "minutesSends": "Skickar upp till {{maxRuns}} påminnelser var {{minutes}}:e minut från spartillfället till förfallodatumet.",
+      "hourlyNeed": "Timvis upprepning kräver minst 1 timme till förfallodatumet.",
+      "hourlySends": "Skickar upp till {{maxRuns}} påminnelser varje timme från spartillfället till förfallodatumet.",
+      "dailyNeed": "Daglig upprepning kräver minst 1 dag till förfallodatumet.",
+      "dailyLimit": "Daglig upprepning är begränsad till uppgifter som förfaller inom 30 dagar.",
+      "dailySends": "Skickar högst 14 påminnelser, en gång per dag från spartillfället, och slutar vid förfallodatumet.",
+      "weeklyNeed": "Veckovis upprepning kräver minst 7 dagar till förfallodatumet.",
+      "weeklySends": "Skickar högst 8 påminnelser, en gång per vecka från spartillfället, och slutar vid förfallodatumet."
+    }
+  },
   "toolScan": {
     "title": "Skanna verktyg",
     "notFound": "Inget verktyg för koden \"{{code}}\"",

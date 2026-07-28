@@ -5,6 +5,7 @@ import {
   maxRepeatIntervalMinutes,
   minRepeatIntervalMinutes,
 } from '../theme/settings';
+import i18n from '../i18n';
 
 const MINUTE_IN_MS = 60 * 1000;
 const HOUR_IN_MS = 60 * MINUTE_IN_MS;
@@ -121,14 +122,14 @@ export const getRepeatOptionState = ({ repeatKey, dueDate, settings }) => {
   if (windowMs === null) {
     return {
       disabled: false,
-      helperText: 'Add a due date to schedule repeating notifications.',
+      helperText: i18n.t('taskReminders.helper.needDueDate'),
     };
   }
 
   if (windowMs <= 0) {
     return {
       disabled: false,
-      helperText: 'Due date must be in the future for repeating notifications.',
+      helperText: i18n.t('taskReminders.helper.dueInFuture'),
     };
   }
 
@@ -141,7 +142,9 @@ export const getRepeatOptionState = ({ repeatKey, dueDate, settings }) => {
     if (windowMs < intervalMs) {
       return {
         disabled: false,
-        helperText: `Needs at least ${intervalMinutes} minutes until the due date.`,
+        helperText: i18n.t('taskReminders.helper.minutesNeed', {
+          minutes: intervalMinutes,
+        }),
       };
     }
 
@@ -152,7 +155,10 @@ export const getRepeatOptionState = ({ repeatKey, dueDate, settings }) => {
 
     return {
       disabled: false,
-      helperText: `Sends up to ${maxRuns} reminders every ${intervalMinutes} minutes from save time until the due date.`,
+      helperText: i18n.t('taskReminders.helper.minutesSends', {
+        maxRuns,
+        minutes: intervalMinutes,
+      }),
     };
   }
 
@@ -160,7 +166,7 @@ export const getRepeatOptionState = ({ repeatKey, dueDate, settings }) => {
     if (windowMs < HOUR_IN_MS) {
       return {
         disabled: false,
-        helperText: 'Hourly repeat needs at least 1 hour until the due date.',
+        helperText: i18n.t('taskReminders.helper.hourlyNeed'),
       };
     }
 
@@ -171,7 +177,7 @@ export const getRepeatOptionState = ({ repeatKey, dueDate, settings }) => {
 
     return {
       disabled: false,
-      helperText: `Sends up to ${maxRuns} reminders every hour from save time until the due date.`,
+      helperText: i18n.t('taskReminders.helper.hourlySends', { maxRuns }),
     };
   }
 
@@ -179,20 +185,20 @@ export const getRepeatOptionState = ({ repeatKey, dueDate, settings }) => {
     if (windowMs < DAY_IN_MS) {
       return {
         disabled: false,
-        helperText: 'Daily repeat needs at least 1 day until the due date.',
+        helperText: i18n.t('taskReminders.helper.dailyNeed'),
       };
     }
 
     if (windowMs > 30 * DAY_IN_MS) {
       return {
         disabled: false,
-        helperText: 'Daily repeat is limited to tasks due within 30 days.',
+        helperText: i18n.t('taskReminders.helper.dailyLimit'),
       };
     }
 
     return {
       disabled: false,
-      helperText: 'Sends at most 14 reminders, once per day from save time, and stops at the due date.',
+      helperText: i18n.t('taskReminders.helper.dailySends'),
     };
   }
 
@@ -200,13 +206,13 @@ export const getRepeatOptionState = ({ repeatKey, dueDate, settings }) => {
     if (windowMs < WEEK_IN_MS) {
       return {
         disabled: false,
-        helperText: 'Weekly repeat needs at least 7 days until the due date.',
+        helperText: i18n.t('taskReminders.helper.weeklyNeed'),
       };
     }
 
     return {
       disabled: false,
-      helperText: 'Sends at most 8 reminders, once per week from save time, and stops at the due date.',
+      helperText: i18n.t('taskReminders.helper.weeklySends'),
     };
   }
 
@@ -214,36 +220,32 @@ export const getRepeatOptionState = ({ repeatKey, dueDate, settings }) => {
 };
 
 export const getRepeatLabel = (repeatKey, repeatIntervalMinutes) => {
-  if (repeatKey === 'none') {
-    return 'Once';
-  }
-
   if (repeatKey === 'minutes') {
     const minutes = normalizeRepeatIntervalMinutes(repeatIntervalMinutes);
-    return `Every ${minutes} min`;
+    return i18n.t('taskReminders.everyMinutes', { minutes });
   }
 
-  return REPEAT_OPTIONS.find((option) => option.key === repeatKey)?.label || 'Once';
+  const fallback =
+    REPEAT_OPTIONS.find((option) => option.key === repeatKey)?.label || 'Once';
+  return i18n.t(`taskReminders.repeat.${repeatKey}`, fallback);
 };
 
 export const getTaskNotificationSummary = (settings) => {
   const normalizedSettings = deriveNotificationReminderFlags(settings);
 
   if (!hasReminderEnabled(normalizedSettings)) {
-    return 'Off';
+    return i18n.t('taskReminders.off');
   }
 
   const summaryParts = [
-    normalizedSettings.repeat === 'none'
-      ? 'Once'
-      : getRepeatLabel(
-          normalizedSettings.repeat,
-          normalizedSettings.repeatIntervalMinutes,
-        ),
+    getRepeatLabel(
+      normalizedSettings.repeat,
+      normalizedSettings.repeatIntervalMinutes,
+    ),
   ];
 
   if (normalizedSettings.customMessage.trim()) {
-    summaryParts.push('Custom');
+    summaryParts.push(i18n.t('taskReminders.custom'));
   }
 
   return summaryParts.join(' • ');
