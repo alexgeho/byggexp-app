@@ -1,4 +1,5 @@
 import React, { useCallback, useContext, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useTheme } from "../../theme/ThemeContext";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import AuthContext from "../../contexts/AuthContext";
@@ -138,6 +139,7 @@ const getDocumentTypeMeta = (documentUrl) => {
 };
 
 export const MyAccount = () => {
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const { showSuccess } = useFeedback();
   const navigation = useNavigation();
@@ -162,38 +164,38 @@ export const MyAccount = () => {
     switch (activeRole) {
       case "superadmin":
         return {
-          title: "Super Admin",
+          title: t("roles.superadmin"),
           icon: require("../../assets/Account.png"),
           color: "#9C27B0",
         };
       case "companyAdmin":
         return {
-          title: "Company Admin",
+          title: t("roles.companyAdmin"),
           icon: require("../../assets/About.png"),
           color: "#009688",
         };
       case "projectAdmin":
         return {
-          title: "Project Admin",
+          title: t("roles.projectAdmin"),
           icon: require("../../assets/Tracker.png"),
           color: "#7E57C2",
         };
       case "worker":
         return {
-          title: "Worker",
+          title: t("roles.worker"),
           icon: require("../../assets/Tasks.png"),
           color: "#00C853",
         };
       default:
         return {
-          title: activeRole || "Unknown role",
+          title: activeRole || t("myAccount.unknownRole"),
           icon: require("../../assets/Account.png"),
           color: "#9C27B0",
         };
     }
   };
 
-  const roleInfo = useMemo(() => getRoleInfo(), [activeRole]);
+  const roleInfo = useMemo(() => getRoleInfo(), [activeRole, t]);
 
   const applyProfileToForm = useCallback((userData) => {
     setForm({
@@ -221,11 +223,11 @@ export const MyAccount = () => {
       applyProfileToForm(userData);
     } catch (error) {
       console.error("Failed to load account:", error);
-      Alert.alert("Unable to load account", "Please try again later.");
+      Alert.alert(t("myAccount.loadErrorTitle"), t("project.openErrorMessage"));
     } finally {
       setLoading(false);
     }
-  }, [applyProfileToForm, profileId]);
+  }, [applyProfileToForm, profileId, t]);
 
   useFocusEffect(
     useCallback(() => {
@@ -242,7 +244,7 @@ export const MyAccount = () => {
 
   const handleChangeAvatar = async () => {
     if (!profileId) {
-      Alert.alert("Unable to update avatar", "User id is missing.");
+      Alert.alert(t("myAccount.avatarErrorTitle"), t("myAccount.userIdMissing"));
       return;
     }
 
@@ -253,8 +255,8 @@ export const MyAccount = () => {
 
       if (!permission.granted) {
         Alert.alert(
-          "Permission required",
-          "Allow photo library access to change your avatar.",
+          t("myAccount.permissionTitle"),
+          t("myAccount.permissionAvatar"),
         );
         return;
       }
@@ -286,14 +288,14 @@ export const MyAccount = () => {
         id: updatedUser?._id || updatedUser?.id || profileId,
       });
       showSuccess({
-        title: "Avatar updated",
-        message: "Avatar updated.",
+        title: t("myAccount.avatarUpdated"),
+        message: t("myAccount.avatarUpdatedMessage"),
       });
     } catch (error) {
       console.error("Failed to update avatar:", error);
       Alert.alert(
-        "Unable to update avatar",
-        error?.response?.data?.message || "Please try again later.",
+        t("myAccount.avatarErrorTitle"),
+        error?.response?.data?.message || t("project.openErrorMessage"),
       );
     } finally {
       setUploadingAvatar(false);
@@ -302,14 +304,17 @@ export const MyAccount = () => {
 
   const handleSave = async () => {
     if (!profileId) {
-      Alert.alert("Unable to save", "User id is missing.");
+      Alert.alert(t("myAccount.saveErrorTitle"), t("myAccount.userIdMissing"));
       return;
     }
 
     const trimmedName = form.name.trim();
 
     if (!trimmedName) {
-      Alert.alert("Name required", "Please enter your name.");
+      Alert.alert(
+        t("myAccount.nameRequiredTitle"),
+        t("myAccount.nameRequiredMessage"),
+      );
       return;
     }
 
@@ -341,14 +346,14 @@ export const MyAccount = () => {
         id: updatedUser?._id || updatedUser?.id || profileId,
       });
       showSuccess({
-        title: "Profile updated",
-        message: "Your account has been updated.",
+        title: t("myAccount.profileUpdated"),
+        message: t("myAccount.profileUpdatedMessage"),
       });
     } catch (error) {
       console.error("Failed to update account:", error);
       Alert.alert(
-        "Unable to save",
-        error?.response?.data?.message || "Please try again later.",
+        t("myAccount.saveErrorTitle"),
+        error?.response?.data?.message || t("project.openErrorMessage"),
       );
     } finally {
       setSaving(false);
@@ -357,17 +362,14 @@ export const MyAccount = () => {
 
   const handleUploadDocuments = async () => {
     if (!profileId) {
-      Alert.alert("Unable to upload", "User id is missing.");
+      Alert.alert(t("myAccount.uploadErrorTitle"), t("myAccount.userIdMissing"));
       return;
     }
 
     const remainingSlots = 4 - documents.length;
 
     if (remainingSlots <= 0) {
-      Alert.alert(
-        "Limit reached",
-        "You can upload up to 4 additional documents.",
-      );
+      Alert.alert(t("myAccount.limitTitle"), t("myAccount.limitMessage"));
       return;
     }
 
@@ -382,8 +384,8 @@ export const MyAccount = () => {
 
       if (pickedAssets.length > remainingSlots) {
         Alert.alert(
-          "Too many files",
-          `You can upload ${remainingSlots} more ${remainingSlots === 1 ? "document" : "documents"}.`,
+          t("myAccount.tooManyTitle"),
+          t("myAccount.tooManyMessage", { count: remainingSlots }),
         );
         return;
       }
@@ -406,26 +408,29 @@ export const MyAccount = () => {
         id: updatedUser?._id || updatedUser?.id || profileId,
       });
       showSuccess({
-        title: "Documents uploaded",
-        message: "Documents uploaded.",
+        title: t("myAccount.docsUploaded"),
+        message: t("myAccount.docsUploadedMessage"),
       });
     } catch (error) {
       console.error("Failed to upload documents:", error);
       Alert.alert(
-        "Unable to upload documents",
-        error?.response?.data?.message || "Please try again later.",
+        t("myAccount.uploadDocsErrorTitle"),
+        error?.response?.data?.message || t("project.openErrorMessage"),
       );
     }
   };
 
   const handleOpenDocument = async (documentUrl) => {
     const resolvedUrl = resolveImageUrl(documentUrl);
-    const documentName = getDocumentNameFromUrl(resolvedUrl, "Document");
+    const documentName = getDocumentNameFromUrl(
+      resolvedUrl,
+      t("documentPreview.fallbackName"),
+    );
 
     if (!resolvedUrl) {
       Alert.alert(
-        "Document unavailable",
-        "This file does not have a valid link.",
+        t("project.documentUnavailableTitle"),
+        t("project.documentUnavailableMessage"),
       );
       return;
     }
@@ -447,7 +452,7 @@ export const MyAccount = () => {
       await Linking.openURL(resolvedUrl);
     } catch (error) {
       console.error("Failed to open document:", error);
-      Alert.alert("Unable to open document", "Please try again later.");
+      Alert.alert(t("project.openErrorTitle"), t("project.openErrorMessage"));
     }
   };
 
@@ -461,7 +466,7 @@ export const MyAccount = () => {
     return (
       <View style={styles.centeredContainer}>
         <ActivityIndicator size="large" color="#0785F4" />
-        <Text style={styles.statusText}>Loading account...</Text>
+        <Text style={styles.statusText}>{t("myAccount.loading")}</Text>
       </View>
     );
   }
@@ -479,7 +484,7 @@ export const MyAccount = () => {
             { fontFamily: theme.text.fontFamily["semiBold"] },
           ]}
         >
-          My account
+          {t("menu.myAccount")}
         </Text>
         <FloatingActionButton
           onPress={handleSave}
@@ -538,12 +543,12 @@ export const MyAccount = () => {
 
         <View style={styles.inputContainer}>
           <View style={styles.inputLabelRow}>
-            <Text style={styles.inputLabel}>Your name</Text>
+            <Text style={styles.inputLabel}>{t("auth.yourName")}</Text>
             <Text style={styles.requiredAsterisk}>*</Text>
           </View>
           <TextInput
             style={styles.textInput}
-            placeholder="Type..."
+            placeholder={t("myAccount.typePlaceholder")}
             value={form.name}
             onChangeText={(value) => handleChange("name", value)}
           />
@@ -551,7 +556,7 @@ export const MyAccount = () => {
 
         <View style={styles.inputContainer}>
           <View style={styles.inputLabelRow}>
-            <Text style={styles.inputLabel}>Role</Text>
+            <Text style={styles.inputLabel}>{t("myAccount.roleLabel")}</Text>
           </View>
           <TextInput
             style={[styles.textInput, styles.readOnlyInput]}
@@ -562,7 +567,7 @@ export const MyAccount = () => {
 
         <View style={styles.inputContainer}>
           <View style={styles.inputLabelRow}>
-            <Text style={styles.inputLabel}>Email</Text>
+            <Text style={styles.inputLabel}>{t("myAccount.emailLabel")}</Text>
           </View>
           <TextInput
             style={[styles.textInput, styles.readOnlyInput]}
@@ -573,11 +578,11 @@ export const MyAccount = () => {
 
         <View style={styles.inputContainer}>
           <View style={styles.inputLabelRow}>
-            <Text style={styles.inputLabel}>Profession</Text>
+            <Text style={styles.inputLabel}>{t("myAccount.professionLabel")}</Text>
           </View>
           <TextInput
             style={styles.textInput}
-            placeholder="Type..."
+            placeholder={t("myAccount.typePlaceholder")}
             value={form.profession}
             onChangeText={(value) => handleChange("profession", value)}
           />
@@ -586,11 +591,11 @@ export const MyAccount = () => {
         <View style={styles.rowContainer}>
           <View style={styles.areaCodeContainer}>
             <View style={styles.inputLabelRow}>
-              <Text style={styles.inputLabel}>Area code</Text>
+              <Text style={styles.inputLabel}>{t("myAccount.areaCode")}</Text>
             </View>
             <TextInput
               style={styles.textInput}
-              placeholder="Type..."
+              placeholder={t("myAccount.typePlaceholder")}
               value={form.phoneAreaCode}
               onChangeText={(value) => handleChange("phoneAreaCode", value)}
               keyboardType="phone-pad"
@@ -598,11 +603,11 @@ export const MyAccount = () => {
           </View>
           <View style={styles.phoneContainer}>
             <View style={styles.inputLabelRow}>
-              <Text style={styles.inputLabel}>Phone</Text>
+              <Text style={styles.inputLabel}>{t("myAccount.phone")}</Text>
             </View>
             <TextInput
               style={styles.textInput}
-              placeholder="Type..."
+              placeholder={t("myAccount.typePlaceholder")}
               value={form.phoneNumber}
               onChangeText={(value) => handleChange("phoneNumber", value)}
               keyboardType="phone-pad"
@@ -612,18 +617,18 @@ export const MyAccount = () => {
 
         <View style={styles.inputContainer}>
           <View style={styles.inputLabelRow}>
-            <Text style={styles.inputLabel}>Language</Text>
+            <Text style={styles.inputLabel}>{t("language.title")}</Text>
           </View>
           <TextInput
             style={styles.textInput}
-            placeholder="Type..."
+            placeholder={t("myAccount.typePlaceholder")}
             value={form.language}
             onChangeText={(value) => handleChange("language", value)}
           />
         </View>
 
         <View style={styles.documentsContainer}>
-          <Text style={styles.documentsLabel}>Additional documents</Text>
+          <Text style={styles.documentsLabel}>{t("myAccount.additionalDocs")}</Text>
           <TouchableOpacity
             style={styles.addButton}
             onPress={handleUploadDocuments}
@@ -668,13 +673,11 @@ export const MyAccount = () => {
               })}
             </View>
           ) : (
-            <Text style={styles.emptyDocumentsText}>
-              No additional documents yet.
-            </Text>
+            <Text style={styles.emptyDocumentsText}>{t("myAccount.noDocs")}</Text>
           )}
-          <Text
-            style={styles.documentsHint}
-          >{`${documents.length}/4 documents`}</Text>
+          <Text style={styles.documentsHint}>
+            {t("myAccount.docsCount", { count: documents.length })}
+          </Text>
         </View>
       </ScrollView>
 
@@ -687,7 +690,7 @@ export const MyAccount = () => {
           saving ? (
             <ActivityIndicator color="#ffffff" />
           ) : (
-            <Text style={styles.saveButtonText}>Save</Text>
+            <Text style={styles.saveButtonText}>{t("common.save")}</Text>
           )
         }
       />
