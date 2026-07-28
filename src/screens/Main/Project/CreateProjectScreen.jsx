@@ -18,6 +18,7 @@ import {
 import Slider from "@react-native-community/slider";
 import { useTheme } from "../../../theme/ThemeContext";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import {
   memo,
   useCallback,
@@ -143,6 +144,7 @@ const ToolsListModal = memo(function ToolsListModal({
   checkboxStyle,
   checkboxSelectedStyle,
 }) {
+  const { t } = useTranslation();
   return (
     <Modal
       animationType="slide"
@@ -159,7 +161,9 @@ const ToolsListModal = memo(function ToolsListModal({
             onPress={onClose}
             iconSource={require("../../../assets/Arrow-left.png")}
           />
-          <Text style={styles.workersModalTitle}>Attach tools</Text>
+          <Text style={styles.workersModalTitle}>
+            {t("createProject.attachToolsTitle")}
+          </Text>
           <View style={styles.placeholder} />
         </View>
 
@@ -168,7 +172,7 @@ const ToolsListModal = memo(function ToolsListModal({
           <TextInput
             value={toolSearch}
             onChangeText={onToolSearchChange}
-            placeholder="Search instruments"
+            placeholder={t("createProject.searchInstruments")}
             placeholderTextColor="rgba(5, 45, 80, 0.5)"
             style={styles.workersSearchInput}
           />
@@ -192,7 +196,7 @@ const ToolsListModal = memo(function ToolsListModal({
               >
                 <View style={styles.workerCardInfo}>
                   <Text numberOfLines={1} style={styles.workerCardName}>
-                    {item.name || "Unnamed instrument"}
+                    {item.name || t("createProject.unnamedInstrument")}
                   </Text>
                   {item.notes ? (
                     <Text numberOfLines={1} style={styles.workerCardProfession}>
@@ -217,7 +221,7 @@ const ToolsListModal = memo(function ToolsListModal({
           }}
           ListEmptyComponent={
             <View style={styles.workersEmptyState}>
-              <Text style={styles.workersEmptyText}>No instruments found</Text>
+              <Text style={styles.workersEmptyText}>{t("tools.emptyTitle")}</Text>
             </View>
           }
         />
@@ -226,8 +230,8 @@ const ToolsListModal = memo(function ToolsListModal({
           <TouchableOpacity style={styles.closeButton} onPress={onSave}>
             <Text style={styles.closeButtonText}>
               {selectedTools.length > 0
-                ? `Save (${selectedTools.length})`
-                : "Save"}
+                ? t("createProject.saveCount", { count: selectedTools.length })
+                : t("common.save")}
             </Text>
           </TouchableOpacity>
         </View>
@@ -248,6 +252,7 @@ const WorkersListModal = memo(function WorkersListModal({
   checkboxStyle,
   checkboxSelectedStyle,
 }) {
+  const { t } = useTranslation();
   return (
     <Modal
       animationType="slide"
@@ -264,7 +269,9 @@ const WorkersListModal = memo(function WorkersListModal({
             onPress={onClose}
             iconSource={require("../../../assets/Arrow-left.png")}
           />
-          <Text style={styles.workersModalTitle}>Project team</Text>
+          <Text style={styles.workersModalTitle}>
+            {t("createProject.projectTeamTitle")}
+          </Text>
           <View style={styles.placeholder} />
         </View>
 
@@ -273,7 +280,7 @@ const WorkersListModal = memo(function WorkersListModal({
           <TextInput
             value={workerSearch}
             onChangeText={onWorkerSearchChange}
-            placeholder="Search workers"
+            placeholder={t("createProject.searchWorkers")}
             placeholderTextColor="rgba(5, 45, 80, 0.5)"
             style={styles.workersSearchInput}
           />
@@ -301,10 +308,10 @@ const WorkersListModal = memo(function WorkersListModal({
                 </View>
                 <View style={styles.workerCardInfo}>
                   <Text numberOfLines={1} style={styles.workerCardName}>
-                    {item.name || "Unnamed worker"}
+                    {item.name || t("project.unnamedWorker")}
                   </Text>
                   <Text numberOfLines={1} style={styles.workerCardProfession}>
-                    {item.profession || "Profession not set"}
+                    {item.profession || t("createProject.professionNotSet")}
                   </Text>
                 </View>
                 <View
@@ -324,7 +331,9 @@ const WorkersListModal = memo(function WorkersListModal({
           }}
           ListEmptyComponent={
             <View style={styles.workersEmptyState}>
-              <Text style={styles.workersEmptyText}>No workers found</Text>
+              <Text style={styles.workersEmptyText}>
+                {t("workers.notFound")}
+              </Text>
             </View>
           }
         />
@@ -333,8 +342,10 @@ const WorkersListModal = memo(function WorkersListModal({
           <TouchableOpacity style={styles.closeButton} onPress={onSave}>
             <Text style={styles.closeButtonText}>
               {selectedWorkers.length > 0
-                ? `Save (${selectedWorkers.length})`
-                : "Save"}
+                ? t("createProject.saveCount", {
+                    count: selectedWorkers.length,
+                  })
+                : t("common.save")}
             </Text>
           </TouchableOpacity>
         </View>
@@ -345,6 +356,7 @@ const WorkersListModal = memo(function WorkersListModal({
 
 export default function CreateProjectScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const { showSuccess } = useFeedback();
   const { user } = useContext(AuthContext);
@@ -531,7 +543,10 @@ export default function CreateProjectScreen() {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
-      Alert.alert("Error", `Failed to load data: ${error.message}`);
+      Alert.alert(
+        t("common.error"),
+        t("createProject.loadDataError", { message: error.message }),
+      );
       setLoading(false);
     }
   };
@@ -640,7 +655,10 @@ export default function CreateProjectScreen() {
       });
     } catch (error) {
       console.error("Error picking documents:", error);
-      Alert.alert("Documents error", "Unable to select documents right now.");
+      Alert.alert(
+        t("createTask.documentsErrorTitle"),
+        t("createTask.documentsErrorMessage"),
+      );
     }
   };
 
@@ -653,7 +671,10 @@ export default function CreateProjectScreen() {
 
   const confirmLocationPickerSelection = () => {
     if (!selectedCoordinate) {
-      Alert.alert("Location required", "Search for an address first.");
+      Alert.alert(
+        t("createProject.locationRequiredTitle"),
+        t("createProject.locationRequiredMessage"),
+      );
       return;
     }
 
@@ -673,10 +694,10 @@ export default function CreateProjectScreen() {
   const pickGraceMinutes = (title, onSelect) => {
     Alert.alert(title, undefined, [
       ...SHIFT_GRACE_MINUTE_OPTIONS.map((minutes) => ({
-        text: `${minutes} min`,
+        text: t("createProject.minutesShort", { minutes }),
         onPress: () => onSelect(minutes),
       })),
-      { text: "Cancel", style: "cancel" },
+      { text: t("common.cancel"), style: "cancel" },
     ]);
   };
 
@@ -793,7 +814,10 @@ export default function CreateProjectScreen() {
 
   const createProject = async () => {
     if (!projectName) {
-      Alert.alert("Validation Error", "Please enter project name");
+      Alert.alert(
+        t("createProject.validationTitle"),
+        t("createProject.nameRequired"),
+      );
       return;
     }
 
@@ -880,14 +904,17 @@ export default function CreateProjectScreen() {
 
       console.log("Project created:", result);
       showSuccess({
-        title: "Project created",
-        message: "Project created successfully!",
+        title: t("createProject.created"),
+        message: t("createProject.createdMessage"),
       });
 
       navigation.goBack();
     } catch (error) {
       console.error("Error creating project:", error);
-      Alert.alert("Error", error.message || "Failed to create project");
+      Alert.alert(
+        t("common.error"),
+        error.message || t("createProject.createError"),
+      );
     } finally {
       setSaving(false);
     }
@@ -920,7 +947,9 @@ export default function CreateProjectScreen() {
           {value ? (
             <Text style={styles.selectedValue}>{value}</Text>
           ) : (
-            <Text style={styles.placeholderText}>Select...</Text>
+            <Text style={styles.placeholderText}>
+              {t("createProject.selectPlaceholder")}
+            </Text>
           )}
         </View>
       </View>
@@ -947,7 +976,9 @@ export default function CreateProjectScreen() {
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Select Client Company</Text>
+          <Text style={styles.modalTitle}>
+            {t("createProject.selectClientCompany")}
+          </Text>
           <FlatList
             data={companies}
             keyExtractor={(item) => item._id}
@@ -962,10 +993,10 @@ export default function CreateProjectScreen() {
                 <Text style={styles.userName}>{item.name}</Text>
               </TouchableOpacity>
             )}
-            ListEmptyComponent={<Text>No companies found</Text>}
+            ListEmptyComponent={<Text>{t("createProject.noCompanies")}</Text>}
           />
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeButtonText}>Close</Text>
+            <Text style={styles.closeButtonText}>{t("createProject.close")}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -1006,7 +1037,7 @@ export default function CreateProjectScreen() {
 
   const selectedWorkersLabel =
     selectedWorkers.length > 0
-      ? `${selectedWorkers.length} worker${selectedWorkers.length > 1 ? "s" : ""}`
+      ? t("createProject.workerCount", { count: selectedWorkers.length })
       : "";
 
   const normalizedToolSearch = toolSearch.trim().toLowerCase();
@@ -1025,7 +1056,7 @@ export default function CreateProjectScreen() {
 
   const selectedToolsLabel =
     selectedTools.length > 0
-      ? `${selectedTools.length} instrument${selectedTools.length > 1 ? "s" : ""}`
+      ? t("createProject.instrumentCount", { count: selectedTools.length })
       : "";
 
   const filteredOwners = getFilteredUsers(ownerSearch);
@@ -1065,7 +1096,7 @@ export default function CreateProjectScreen() {
           <TextInput
             value={searchValue}
             onChangeText={onSearchChange}
-            placeholder="Search workers"
+            placeholder={t("createProject.searchWorkers")}
             placeholderTextColor="rgba(5, 45, 80, 0.5)"
             style={styles.workersSearchInput}
           />
@@ -1091,10 +1122,10 @@ export default function CreateProjectScreen() {
                 </View>
                 <View style={styles.workerCardInfo}>
                   <Text numberOfLines={1} style={styles.workerCardName}>
-                    {item.name || "Unnamed worker"}
+                    {item.name || t("project.unnamedWorker")}
                   </Text>
                   <Text numberOfLines={1} style={styles.workerCardProfession}>
-                    {item.profession || "Profession not set"}
+                    {item.profession || t("createProject.professionNotSet")}
                   </Text>
                 </View>
                 <View
@@ -1114,7 +1145,9 @@ export default function CreateProjectScreen() {
           }}
           ListEmptyComponent={
             <View style={styles.workersEmptyState}>
-              <Text style={styles.workersEmptyText}>No workers found</Text>
+              <Text style={styles.workersEmptyText}>
+                {t("workers.notFound")}
+              </Text>
             </View>
           }
         />
@@ -1138,7 +1171,7 @@ export default function CreateProjectScreen() {
                 { fontFamily: theme.text.fontFamily["semiBold"] },
               ]}
             >
-              Create project
+              {t("createProject.title")}
             </Text>
 
             <View style={styles.placeholder} />
@@ -1146,7 +1179,7 @@ export default function CreateProjectScreen() {
 
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#0091FF" />
-            <Text>Loading...</Text>
+            <Text>{t("common.loading")}</Text>
           </View>
         </View>
       </View>
@@ -1165,8 +1198,8 @@ export default function CreateProjectScreen() {
   };
   const locationSearchEmptyText =
     locationSearch.trim().length < 2
-      ? "Start typing to search for a project address."
-      : "No addresses found. Try a more specific search.";
+      ? t("createProject.searchHint")
+      : t("createProject.noAddresses");
   const showLocationSearchHint =
     locationSearch.trim().length < 2 &&
     !isLocationLoading &&
@@ -1176,15 +1209,15 @@ export default function CreateProjectScreen() {
   if (!allowedToCreate) {
     return (
       <View style={styles.accessDeniedContainer}>
-        <Text style={styles.accessDeniedText}>Access denied</Text>
+        <Text style={styles.accessDeniedText}>{t("access.denied")}</Text>
         <Text style={styles.accessDeniedSubtext}>
-          Only company admins can create projects
+          {t("access.onlyCompanyAdminsCreateProjects")}
         </Text>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.backButtonText}>Go back</Text>
+          <Text style={styles.backButtonText}>{t("common.goBack")}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -1249,7 +1282,7 @@ export default function CreateProjectScreen() {
                       : styles.locationFieldPlaceholder,
                   ]}
                 >
-                  {location || "Location"}
+                  {location || t("createProject.location")}
                 </Text>
               </View>
               <Icon name="chevron-right" size={18} color="#052D50" />
@@ -1262,7 +1295,9 @@ export default function CreateProjectScreen() {
                 styles.groupRowDivider,
               ]}
             >
-              <Text style={styles.switchLabel}>Use location as a name</Text>
+              <Text style={styles.switchLabel}>
+                {t("createProject.useLocationAsName")}
+              </Text>
               <Switch
                 value={useLocationAsName}
                 onValueChange={setUseLocationAsName}
@@ -1296,7 +1331,7 @@ export default function CreateProjectScreen() {
                   },
                 ]}
               >
-                Project name *
+                {t("createProject.projectNameLabel")}
               </Animated.Text>
               <TextInput
                 style={styles.floatingInput}
@@ -1336,7 +1371,7 @@ export default function CreateProjectScreen() {
                       : styles.locationFieldPlaceholder,
                   ]}
                 >
-                  {selectedWorkersLabel || "Project team"}
+                  {selectedWorkersLabel || t("createProject.projectTeam")}
                 </Text>
               </View>
               <Icon name="chevron-right" size={18} color="#052D50" />
@@ -1369,7 +1404,7 @@ export default function CreateProjectScreen() {
                       : styles.locationFieldPlaceholder,
                   ]}
                 >
-                  {selectedToolsLabel || "Attach instruments"}
+                  {selectedToolsLabel || t("createProject.attachInstruments")}
                 </Text>
               </View>
               <Icon name="chevron-right" size={18} color="#052D50" />
@@ -1407,7 +1442,8 @@ export default function CreateProjectScreen() {
                       : styles.locationFieldPlaceholder,
                   ]}
                 >
-                  {users.find((u) => u._id === selectedOwner)?.name || "Owner"}
+                  {users.find((u) => u._id === selectedOwner)?.name ||
+                    t("createProject.owner")}
                 </Text>
               </View>
               <Icon name="chevron-right" size={18} color="#052D50" />
@@ -1441,14 +1477,14 @@ export default function CreateProjectScreen() {
                   ]}
                 >
                   {users.find((u) => u._id === selectedManager)?.name ||
-                    "Project Manager"}
+                    t("createProject.projectManager")}
                 </Text>
               </View>
               <Icon name="chevron-right" size={18} color="#052D50" />
             </TouchableOpacity>
 
             <SelectedItem
-              title="Client Company"
+              title={t("createProject.clientCompany")}
               value={
                 companies.find((c) => c._id === selectedClientCompany)?.name ||
                 ""
@@ -1489,8 +1525,10 @@ export default function CreateProjectScreen() {
                   ]}
                 >
                   {selectedDocuments.length
-                    ? `${selectedDocuments.length} document${selectedDocuments.length > 1 ? "s" : ""}`
-                    : "Documents"}
+                    ? t("createProject.documentCount", {
+                        count: selectedDocuments.length,
+                      })
+                    : t("project.tabs.documents")}
                 </Text>
               </View>
               <Icon name="chevron-right" size={18} color="#052D50" />
@@ -1554,7 +1592,7 @@ export default function CreateProjectScreen() {
                   <FieldIcon name="clock" size={14} color="#FFFFFF" />
                 </View>
                 <Text style={styles.switchLabel}>
-                  Limit shift by work hours
+                  {t("createProject.limitShiftByHours")}
                 </Text>
               </View>
               <Switch
@@ -1589,7 +1627,9 @@ export default function CreateProjectScreen() {
                   <FieldIcon name="clock" size={14} color="#FFFFFF" />
                 </View>
                 <View>
-                  <Text style={styles.dateLabel}>Work day starts</Text>
+                  <Text style={styles.dateLabel}>
+                    {t("createProject.workDayStarts")}
+                  </Text>
                   <Text style={styles.dateValue}>
                     {parseTimeFromDate(workDayStartTime)}
                   </Text>
@@ -1618,7 +1658,9 @@ export default function CreateProjectScreen() {
                   <FieldIcon name="clock" size={14} color="#FFFFFF" />
                 </View>
                 <View>
-                  <Text style={styles.dateLabel}>Work day ends</Text>
+                  <Text style={styles.dateLabel}>
+                    {t("createProject.workDayEnds")}
+                  </Text>
                   <Text style={styles.dateValue}>
                     {parseTimeFromDate(workDayEndTime)}
                   </Text>
@@ -1636,7 +1678,7 @@ export default function CreateProjectScreen() {
               onPress={() =>
                 shiftScheduleEnabled &&
                 pickGraceMinutes(
-                  "Start grace (minutes before work day)",
+                  t("createProject.startGracePrompt"),
                   setStartGraceMinutes,
                 )
               }
@@ -1653,8 +1695,14 @@ export default function CreateProjectScreen() {
                   <FieldIcon name="clock" size={14} color="#FFFFFF" />
                 </View>
                 <View>
-                  <Text style={styles.dateLabel}>Start grace</Text>
-                  <Text style={styles.dateValue}>{startGraceMinutes} min</Text>
+                  <Text style={styles.dateLabel}>
+                    {t("createProject.startGrace")}
+                  </Text>
+                  <Text style={styles.dateValue}>
+                    {t("createProject.minutesShort", {
+                      minutes: startGraceMinutes,
+                    })}
+                  </Text>
                 </View>
               </View>
               <Icon name="chevron-right" size={18} color="#052D50" />
@@ -1669,7 +1717,7 @@ export default function CreateProjectScreen() {
               onPress={() =>
                 shiftScheduleEnabled &&
                 pickGraceMinutes(
-                  "End grace (minutes after work day)",
+                  t("createProject.endGracePrompt"),
                   setEndGraceMinutes,
                 )
               }
@@ -1686,8 +1734,14 @@ export default function CreateProjectScreen() {
                   <FieldIcon name="clock" size={14} color="#FFFFFF" />
                 </View>
                 <View>
-                  <Text style={styles.dateLabel}>End grace</Text>
-                  <Text style={styles.dateValue}>{endGraceMinutes} min</Text>
+                  <Text style={styles.dateLabel}>
+                    {t("createProject.endGrace")}
+                  </Text>
+                  <Text style={styles.dateValue}>
+                    {t("createProject.minutesShort", {
+                      minutes: endGraceMinutes,
+                    })}
+                  </Text>
                 </View>
               </View>
               <Icon name="chevron-right" size={18} color="#052D50" />
@@ -1709,11 +1763,13 @@ export default function CreateProjectScreen() {
                   <FieldIcon name="calendar" size={14} color="#FFFFFF" />
                 </View>
                 <View>
-                  <Text style={styles.dateLabel}>Start Date</Text>
+                  <Text style={styles.dateLabel}>
+                    {t("createProject.startDate")}
+                  </Text>
                   <Text style={styles.dateValue}>
                     {beginningDate
                       ? beginningDate.toLocaleDateString()
-                      : "Select date"}
+                      : t("createTask.selectDate")}
                   </Text>
                 </View>
               </View>
@@ -1734,9 +1790,13 @@ export default function CreateProjectScreen() {
                   <FieldIcon name="clock" size={14} color="#FFFFFF" />
                 </View>
                 <View>
-                  <Text style={styles.dateLabel}>End Date</Text>
+                  <Text style={styles.dateLabel}>
+                    {t("createProject.endDate")}
+                  </Text>
                   <Text style={styles.dateValue}>
-                    {endDate ? endDate.toLocaleDateString() : "Select date"}
+                    {endDate
+                      ? endDate.toLocaleDateString()
+                      : t("createTask.selectDate")}
                   </Text>
                 </View>
               </View>
@@ -1747,7 +1807,7 @@ export default function CreateProjectScreen() {
           <View style={styles.noteGroup}>
             <TextInput
               multiline={true}
-              placeholder="Note"
+              placeholder={t("createProject.note")}
               style={styles.noteInput}
               value={note}
               onChangeText={setNote}
@@ -1765,7 +1825,9 @@ export default function CreateProjectScreen() {
         <View style={styles.datePickerOverlay}>
           <View style={styles.datePickerCard}>
             <Text style={styles.datePickerTitle}>
-              {showStartDatePicker ? "Start Date" : "End Date"}
+              {showStartDatePicker
+                ? t("createProject.startDate")
+                : t("createProject.endDate")}
             </Text>
             <DateTimePicker
               value={
@@ -1792,7 +1854,9 @@ export default function CreateProjectScreen() {
                 style={styles.datePickerSecondaryButton}
                 onPress={closeDatePickers}
               >
-                <Text style={styles.datePickerSecondaryButtonText}>Done</Text>
+                <Text style={styles.datePickerSecondaryButtonText}>
+                  {t("common.done")}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -1809,7 +1873,7 @@ export default function CreateProjectScreen() {
           handleSelectUser(id, "owner");
           setOwnerSearch("");
         }}
-        title="Owner"
+        title={t("createProject.owner")}
         searchValue={ownerSearch}
         onSearchChange={setOwnerSearch}
         selectedUserId={selectedOwner}
@@ -1826,7 +1890,7 @@ export default function CreateProjectScreen() {
           handleSelectUser(id, "manager");
           setManagerSearch("");
         }}
-        title="Project Manager"
+        title={t("createProject.projectManager")}
         searchValue={managerSearch}
         onSearchChange={setManagerSearch}
         selectedUserId={selectedManager}
@@ -1877,7 +1941,9 @@ export default function CreateProjectScreen() {
               onPress={closeLocationPicker}
               iconSource={require("../../../assets/Arrow-left.png")}
             />
-            <Text style={styles.mapModalTitle}>Project address</Text>
+            <Text style={styles.mapModalTitle}>
+              {t("createProject.projectAddress")}
+            </Text>
             <View style={styles.placeholder} />
           </View>
 
@@ -1894,7 +1960,7 @@ export default function CreateProjectScreen() {
                 autoFocus={true}
                 value={locationSearch}
                 onChangeText={setLocationSearch}
-                placeholder="Search address"
+                placeholder={t("createProject.searchAddress")}
                 placeholderTextColor="rgba(5, 45, 80, 0.45)"
                 style={styles.mapSearchInput}
                 returnKeyType="search"
@@ -1917,8 +1983,8 @@ export default function CreateProjectScreen() {
                     />
                     <Text style={styles.mapSuggestionsLoadingText}>
                       {isLocationLoading
-                        ? "Loading location..."
-                        : "Searching addresses..."}
+                        ? t("createProject.loadingLocation")
+                        : t("createProject.searchingAddresses")}
                     </Text>
                   </View>
                 ) : locationSuggestions.length ? (
@@ -1948,7 +2014,9 @@ export default function CreateProjectScreen() {
             )}
 
             <View style={styles.mapBottomPanel}>
-              <Text style={styles.mapBottomPanelTitle}>Selected location</Text>
+              <Text style={styles.mapBottomPanelTitle}>
+                {t("createProject.selectedLocation")}
+              </Text>
               <Text
                 numberOfLines={2}
                 style={[
@@ -1956,22 +2024,24 @@ export default function CreateProjectScreen() {
                   !location && styles.mapBottomLocationPlaceholder,
                 ]}
               >
-                {location || "Search and choose a project location."}
+                {location || t("createProject.chooseLocationHint")}
               </Text>
 
               <View style={styles.activationAreaRow}>
                 <View style={styles.activationAreaTextWrap}>
                   <Text style={styles.activationAreaTitle}>
-                    Activation area
+                    {t("createProject.activationArea")}
                   </Text>
                   <Text style={styles.activationAreaSubtitle}>
-                    Upon entry, the timer will start
+                    {t("createProject.activationAreaHint")}
                   </Text>
                 </View>
 
                 <View style={styles.activationAreaBadge}>
                   <Text style={styles.activationAreaBadgeText}>
-                    {locationRadiusMeters} m
+                    {t("createProject.metersShort", {
+                      meters: locationRadiusMeters,
+                    })}
                   </Text>
                 </View>
               </View>
@@ -1998,7 +2068,7 @@ export default function CreateProjectScreen() {
                 disabled={!selectedCoordinate}
               >
                 <Text style={styles.mapChooseLocationButtonText}>
-                  Choose project location
+                  {t("createProject.chooseLocation")}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -2015,7 +2085,9 @@ export default function CreateProjectScreen() {
         <View style={styles.datePickerOverlay}>
           <View style={styles.datePickerCard}>
             <Text style={styles.datePickerTitle}>
-              {showWorkStartPicker ? "Work day starts" : "Work day ends"}
+              {showWorkStartPicker
+                ? t("createProject.workDayStarts")
+                : t("createProject.workDayEnds")}
             </Text>
             <DateTimePicker
               value={showWorkStartPicker ? workDayStartTime : workDayEndTime}
@@ -2037,7 +2109,9 @@ export default function CreateProjectScreen() {
               style={styles.datePickerSecondaryButton}
               onPress={closeWorkTimePickers}
             >
-              <Text style={styles.datePickerSecondaryButtonText}>Done</Text>
+              <Text style={styles.datePickerSecondaryButtonText}>
+                {t("common.done")}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
