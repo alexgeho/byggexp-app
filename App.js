@@ -11,6 +11,7 @@ import { ThemeProvider } from './src/theme/ThemeContext';
 import NotificationBootstrap from './src/components/NotificationBootstrap';
 import ShiftLocationMonitor from './src/components/ShiftLocationMonitor';
 import MagicLinkHandler from './src/components/MagicLinkHandler';
+import ErrorBoundary from './src/components/common/ErrorBoundary/ErrorBoundary';
 import { loadStoredLanguage } from './src/i18n';
 
 const defaultTextStyle = { fontFamily: 'DMSans-Regular' };
@@ -66,18 +67,20 @@ export default function App() {
 
   return (
     <GestureHandlerRootView style={styles.root}>
-      <ThemeProvider>
-        <AuthProvider>
-          <SafeAreaProvider>
-            <FeedbackProvider>
-              <NotificationBootstrap />
-              <ShiftLocationMonitor />
-              <MagicLinkHandler />
-              <AppNavigator />
-            </FeedbackProvider>
-          </SafeAreaProvider>
-        </AuthProvider>
-      </ThemeProvider>
+      <ErrorBoundary>
+        <ThemeProvider>
+          <AuthProvider>
+            <SafeAreaProvider>
+              <FeedbackProvider>
+                <NotificationBootstrap />
+                <ShiftLocationMonitor />
+                <MagicLinkHandler />
+                <AppNavigator />
+              </FeedbackProvider>
+            </SafeAreaProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      </ErrorBoundary>
     </GestureHandlerRootView>
   );
 }

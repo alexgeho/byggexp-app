@@ -1,4 +1,9 @@
 {
+  "errorBoundary": {
+    "title": "Något gick fel",
+    "message": "Skärmen stötte på ett oväntat fel. Försök igen.",
+    "retry": "Försök igen"
+  },
   "common": {
     "goBack": "Tillbaka",
     "save": "Spara",

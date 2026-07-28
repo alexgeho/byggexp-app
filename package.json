@@ -12,7 +12,8 @@
     "ios:se": "node scripts/run-ios-simulator.js se",
     "ios:15": "node scripts/run-ios-simulator.js 15",
     "ios:16": "node scripts/run-ios-simulator.js 16",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "test:i18n": "node scripts/check-i18n-parity.js"
   },
   "dependencies": {
     "@expo-google-fonts/oswald": "^0.4.2",

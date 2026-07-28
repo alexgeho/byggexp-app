@@ -1,4 +1,9 @@
 {
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "message": "The screen ran into an unexpected error. Try again.",
+    "retry": "Try again"
+  },
   "common": {
     "goBack": "Go back",
     "save": "Save",
