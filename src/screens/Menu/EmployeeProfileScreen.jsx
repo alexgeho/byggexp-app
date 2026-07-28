@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
@@ -33,9 +34,9 @@ import {
 } from "../../utils/projectStatus";
 import { resolveUploadUrl } from "../../utils/shifts";
 
-const formatPhone = (areaCode, phoneNumber) => {
+const formatPhone = (areaCode, phoneNumber, t) => {
   if (!areaCode || !phoneNumber) {
-    return "No phone";
+    return t("employeeProfile.noPhone");
   }
 
   return `+${areaCode} ${phoneNumber}`;
@@ -60,22 +61,22 @@ const formatDate = (value) => {
   });
 };
 
-const getWorkStatusLabel = (workPresence) => {
+const getWorkStatusLabel = (workPresence, t) => {
   if (!workPresence?.status) {
-    return "Off duty";
+    return t("employeeProfile.offDuty");
   }
 
   if (workPresence.status === "working") {
     return workPresence.projectName
-      ? `At work on ${workPresence.projectName}`
-      : "At work";
+      ? t("employeeProfile.atWorkOn", { project: workPresence.projectName })
+      : t("employeeProfile.atWork");
   }
 
   if (workPresence.status === "outside_project_area") {
-    return "Outside project area";
+    return t("employeeProfile.outsideArea");
   }
 
-  return "Off duty";
+  return t("employeeProfile.offDuty");
 };
 
 const TOOL_STATUS_BADGE_STYLES = {
@@ -122,6 +123,7 @@ function InfoRow({ label, value, isLast = false }) {
 export default function EmployeeProfileScreen() {
   const navigation = useNavigation();
   const route = useRoute();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const { userId } = useContext(AuthContext);
   const { showSuccess } = useFeedback();
@@ -140,7 +142,7 @@ export default function EmployeeProfileScreen() {
   const canDelete = Boolean(employee?.permissions?.canDelete);
   const canComment = Boolean(employee?.permissions?.canComment);
   const canMessage = Boolean(employeeId && userId && String(employeeId) !== String(userId));
-  const employeeName = employee?.name || employee?.email || "Employee";
+  const employeeName = employee?.name || employee?.email || t("roles.user");
 
   const avatarSource = useMemo(() => {
     if (employee?.avatarUrl) {
@@ -152,7 +154,7 @@ export default function EmployeeProfileScreen() {
 
   const loadProfile = useCallback(async () => {
     if (!employeeId) {
-      setError("Employee id is missing.");
+      setError(t("employeeProfile.idMissing"));
       setLoading(false);
       return;
     }
@@ -171,14 +173,14 @@ export default function EmployeeProfileScreen() {
       const message =
         loadError?.response?.data?.message ||
         loadError?.message ||
-        "Unable to load employee profile.";
+        t("employeeProfile.loadError");
       setError(Array.isArray(message) ? message.join(", ") : message);
       setEmployee(null);
       setNotes([]);
     } finally {
       setLoading(false);
     }
-  }, [employeeId]);
+  }, [employeeId, t]);
 
   useFocusEffect(
     useCallback(() => {
@@ -201,10 +203,10 @@ export default function EmployeeProfileScreen() {
     } catch (chatError) {
       console.error("Failed to open direct chat:", chatError);
       Alert.alert(
-        "Unable to open chat",
+        t("employeeProfile.chatErrorTitle"),
         chatError?.response?.data?.message ||
           chatError?.message ||
-          "Please try again later.",
+          t("project.openErrorMessage"),
       );
     } finally {
       setChatLoading(false);
@@ -217,29 +219,31 @@ export default function EmployeeProfileScreen() {
     }
 
     Alert.alert(
-      "Delete employee",
-      `Delete ${employeeName}?`,
+      t("employeeProfile.deleteTitle"),
+      t("employeeProfile.deleteConfirm", { name: employeeName }),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("common.cancel"), style: "cancel" },
         {
-          text: "Delete",
+          text: t("employeeProfile.delete"),
           style: "destructive",
           onPress: async () => {
             try {
               setDeleteLoading(true);
               await userService.delete(employeeId);
               showSuccess({
-                title: "Employee deleted",
-                message: `${employeeName} deleted successfully.`,
+                title: t("employeeProfile.deleted"),
+                message: t("employeeProfile.deletedMessage", {
+                  name: employeeName,
+                }),
               });
               navigation.goBack();
             } catch (deleteError) {
               console.error("Failed to delete employee:", deleteError);
               Alert.alert(
-                "Unable to delete employee",
+                t("employeeProfile.deleteErrorTitle"),
                 deleteError?.response?.data?.message ||
                   deleteError?.message ||
-                  "Please try again later.",
+                  t("project.openErrorMessage"),
               );
             } finally {
               setDeleteLoading(false);
@@ -264,10 +268,10 @@ export default function EmployeeProfileScreen() {
     } catch (noteError) {
       console.error("Failed to save worker note:", noteError);
       Alert.alert(
-        "Unable to save comment",
+        t("employeeProfile.saveCommentError"),
         noteError?.response?.data?.message ||
           noteError?.message ||
-          "Please try again later.",
+          t("project.openErrorMessage"),
       );
     } finally {
       setSavingNote(false);
@@ -279,10 +283,13 @@ export default function EmployeeProfileScreen() {
       return;
     }
 
-    Alert.alert("Delete comment", "Remove this comment?", [
-      { text: "Cancel", style: "cancel" },
+    Alert.alert(
+      t("employeeProfile.deleteCommentTitle"),
+      t("employeeProfile.deleteCommentConfirm"),
+      [
+      { text: t("common.cancel"), style: "cancel" },
       {
-        text: "Delete",
+        text: t("employeeProfile.delete"),
         style: "destructive",
         onPress: async () => {
           try {
@@ -291,10 +298,10 @@ export default function EmployeeProfileScreen() {
           } catch (noteError) {
             console.error("Failed to delete worker note:", noteError);
             Alert.alert(
-              "Unable to delete comment",
+              t("employeeProfile.deleteCommentError"),
               noteError?.response?.data?.message ||
                 noteError?.message ||
-                "Please try again later.",
+                t("project.openErrorMessage"),
             );
           }
         },
@@ -317,7 +324,7 @@ export default function EmployeeProfileScreen() {
                 { fontFamily: theme.text.fontFamily.semiBold },
               ]}
             >
-              Worker
+              {t("roles.worker")}
             </Text>
             <View style={standardScreenHeaderPlaceholder} />
           </View>
@@ -344,14 +351,22 @@ export default function EmployeeProfileScreen() {
                 { fontFamily: theme.text.fontFamily.semiBold },
               ]}
             >
-              Worker
+              {t("roles.worker")}
             </Text>
             <View style={standardScreenHeaderPlaceholder} />
           </View>
           <View style={styles.emptyState}>
-            <Text style={styles.emptyTitle}>Unable to load worker</Text>
-            <Text style={styles.emptySubtitle}>{error || "Please try again later."}</Text>
-            <ActionButton icon="refresh-cw" label="Retry" onPress={loadProfile} />
+            <Text style={styles.emptyTitle}>
+              {t("employeeProfile.loadWorkerErrorTitle")}
+            </Text>
+            <Text style={styles.emptySubtitle}>
+              {error || t("project.openErrorMessage")}
+            </Text>
+            <ActionButton
+              icon="refresh-cw"
+              label={t("employeeProfile.retry")}
+              onPress={loadProfile}
+            />
           </View>
         </View>
       </View>
@@ -386,16 +401,19 @@ export default function EmployeeProfileScreen() {
             <Image source={avatarSource} style={styles.avatar} />
             <Text style={styles.heroTitle}>{employeeName}</Text>
             <Text style={styles.heroSubtitle}>
-              {employee.profession || getRoleLabel(employee.role)}
+              {employee.profession ||
+                t(`roles.${employee.role}`, getRoleLabel(employee.role))}
             </Text>
-            <Text style={styles.heroMeta}>{getWorkStatusLabel(employee.workPresence)}</Text>
+            <Text style={styles.heroMeta}>
+              {getWorkStatusLabel(employee.workPresence, t)}
+            </Text>
           </View>
 
           <View style={styles.actionRow}>
             {canMessage ? (
               <ActionButton
                 icon="message-circle"
-                label={chatLoading ? "Opening..." : "Message"}
+                label={chatLoading ? t("employeeProfile.opening") : t("employeeProfile.message")}
                 onPress={handleMessage}
                 disabled={chatLoading}
               />
@@ -403,7 +421,7 @@ export default function EmployeeProfileScreen() {
             {canEdit ? (
               <ActionButton
                 icon="edit-2"
-                label="Edit"
+                label={t("employeeProfile.edit")}
                 onPress={() =>
                   navigation.navigate("CreateEmployee", {
                     employeeId,
@@ -414,7 +432,7 @@ export default function EmployeeProfileScreen() {
             {canDelete ? (
               <ActionButton
                 icon="trash-2"
-                label={deleteLoading ? "Deleting..." : "Delete"}
+                label={deleteLoading ? t("employeeProfile.deleting") : t("employeeProfile.delete")}
                 onPress={handleDelete}
                 disabled={deleteLoading}
                 tone="danger"
@@ -423,26 +441,40 @@ export default function EmployeeProfileScreen() {
           </View>
 
           <View style={styles.groupCard}>
-            <InfoRow label="Email" value={employee.email} />
-            <InfoRow label="Role" value={getRoleLabel(employee.role)} />
-            <InfoRow label="Profession" value={employee.profession || "No profession"} />
+            <InfoRow label={t("myAccount.emailLabel")} value={employee.email} />
             <InfoRow
-              label="Phone"
-              value={formatPhone(employee.phoneAreaCode, employee.phoneNumber)}
+              label={t("myAccount.roleLabel")}
+              value={t(`roles.${employee.role}`, getRoleLabel(employee.role))}
             />
-            <InfoRow label="Company" value={employee.company?.name || "No company"} isLast />
+            <InfoRow
+              label={t("myAccount.professionLabel")}
+              value={employee.profession || t("employees.noProfession")}
+            />
+            <InfoRow
+              label={t("myAccount.phone")}
+              value={formatPhone(employee.phoneAreaCode, employee.phoneNumber, t)}
+            />
+            <InfoRow
+              label={t("employeeProfile.company")}
+              value={employee.company?.name || t("employeeProfile.noCompany")}
+              isLast
+            />
           </View>
 
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Projects</Text>
+            <Text style={styles.sectionTitle}>{t("menu.projects")}</Text>
             <Text style={styles.sectionCount}>{employee.projects?.length || 0}</Text>
           </View>
           {Array.isArray(employee.projects) && employee.projects.length > 0 ? (
             employee.projects.map((project) => (
               <ListCard
                 key={project.id}
-                title={project.name || "Unnamed project"}
-                badgeLabel={formatProjectStatus(project.status) || "Unknown"}
+                title={project.name || t("createTask.untitledProject")}
+                badgeLabel={t(
+                  `projects.status.${project.status}`,
+                  formatProjectStatus(project.status) ||
+                    t("employeeProfile.unknownStatus"),
+                )}
                 badgeStyle={getProjectStatusBadgeStyle(project.status)}
                 onPress={() =>
                   navigation.navigate("Project", {
@@ -451,21 +483,25 @@ export default function EmployeeProfileScreen() {
                 }
               >
                 <Text style={cardStyles.cardPrimaryText}>
-                  {project.location || "No location"}
+                  {project.location || t("shiftHistory.noLocation")}
                 </Text>
                 <Text style={cardStyles.cardSecondaryText}>
-                  {project.roles?.length ? project.roles.join(", ") : "No role"}
+                  {project.roles?.length
+                    ? project.roles.join(", ")
+                    : t("employeeProfile.noRole")}
                 </Text>
               </ListCard>
             ))
           ) : (
             <View style={styles.emptySection}>
-              <Text style={styles.emptySectionText}>No projects assigned.</Text>
+              <Text style={styles.emptySectionText}>
+                {t("employeeProfile.noProjects")}
+              </Text>
             </View>
           )}
 
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Instruments</Text>
+            <Text style={styles.sectionTitle}>{t("menu.instruments")}</Text>
             <Text style={styles.sectionCount}>{employee.tools?.length || 0}</Text>
           </View>
           {Array.isArray(employee.tools) && employee.tools.length > 0 ? (
@@ -476,8 +512,8 @@ export default function EmployeeProfileScreen() {
               return (
                 <ListCard
                   key={tool.id}
-                  title={tool.name || "Unnamed instrument"}
-                  badgeLabel={statusMeta.label}
+                  title={tool.name || t("createProject.unnamedInstrument")}
+                  badgeLabel={t(`tools.status.${statusMeta.value}`, statusMeta.label)}
                   badgeStyle={
                     TOOL_STATUS_BADGE_STYLES[statusMeta.tone] ||
                     cardStyles.cardBadgeNeutral
@@ -497,19 +533,21 @@ export default function EmployeeProfileScreen() {
                   }
                 >
                   <Text style={cardStyles.cardPrimaryText}>
-                    {tool.notes || "No notes"}
+                    {tool.notes || t("tools.noNotes")}
                   </Text>
                 </ListCard>
               );
             })
           ) : (
             <View style={styles.emptySection}>
-              <Text style={styles.emptySectionText}>No instruments assigned.</Text>
+              <Text style={styles.emptySectionText}>
+                {t("employeeProfile.noInstruments")}
+              </Text>
             </View>
           )}
 
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Comments</Text>
+            <Text style={styles.sectionTitle}>{t("employeeProfile.comments")}</Text>
             <Text style={styles.sectionCount}>{notes.length}</Text>
           </View>
           {canComment ? (
@@ -517,7 +555,7 @@ export default function EmployeeProfileScreen() {
               <TextInput
                 value={newNote}
                 onChangeText={setNewNote}
-                placeholder="Write a comment about this worker"
+                placeholder={t("employeeProfile.commentPlaceholder")}
                 placeholderTextColor="rgba(5, 45, 80, 0.35)"
                 multiline
                 style={styles.noteInput}
@@ -545,9 +583,11 @@ export default function EmployeeProfileScreen() {
               <View key={note.id} style={styles.noteCard}>
                 <View style={styles.noteHeader}>
                   <View style={styles.noteMeta}>
-                    <Text style={styles.noteAuthor}>{note.authorName || "User"}</Text>
+                    <Text style={styles.noteAuthor}>
+                      {note.authorName || t("roles.user")}
+                    </Text>
                     <Text style={styles.noteSubtitle}>
-                      {getRoleLabel(note.authorRole)}
+                      {t(`roles.${note.authorRole}`, getRoleLabel(note.authorRole))}
                       {formatDate(note.createdAt) ? `  ${formatDate(note.createdAt)}` : ""}
                     </Text>
                   </View>
@@ -562,7 +602,9 @@ export default function EmployeeProfileScreen() {
             ))
           ) : (
             <View style={styles.emptySection}>
-              <Text style={styles.emptySectionText}>No comments yet.</Text>
+              <Text style={styles.emptySectionText}>
+                {t("employeeProfile.noComments")}
+              </Text>
             </View>
           )}
         </ScrollView>
