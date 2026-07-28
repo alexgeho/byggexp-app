@@ -81,6 +81,13 @@
     "noDate": "No date"
   },
   "task": {
+    "title": "Tasks",
+    "personal": "Personal tasks",
+    "loading": "Loading tasks...",
+    "noDueDate": "No due date",
+    "emptyAll": "No projects or tasks found.",
+    "count_one": "{{count}} task",
+    "count_other": "{{count}} tasks",
     "status": {
       "open": "Open",
       "overdue": "Overdue",

@@ -81,6 +81,13 @@
     "noDate": "Inget datum"
   },
   "task": {
+    "title": "Uppgifter",
+    "personal": "Personliga uppgifter",
+    "loading": "Laddar uppgifter...",
+    "noDueDate": "Inget förfallodatum",
+    "emptyAll": "Inga projekt eller uppgifter hittades.",
+    "count_one": "{{count}} uppgift",
+    "count_other": "{{count}} uppgifter",
     "status": {
       "open": "Öppen",
       "overdue": "Försenad",

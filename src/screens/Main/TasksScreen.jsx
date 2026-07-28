@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import AuthContext from "../../contexts/AuthContext";
 import { useTheme } from "../../theme/ThemeContext";
 import { projectService, taskService } from "../../services";
@@ -49,6 +50,7 @@ const getTaskDisplayStatus = (task) => {
 export default function TasksScreen() {
   const navigation = useNavigation();
   const route = useRoute();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const { user, userId, isLoading: authLoading } = useContext(AuthContext);
   const { refreshKey } = route.params || {};
@@ -167,7 +169,7 @@ export default function TasksScreen() {
   }, [projects, selectedProjectId]);
 
   const formatTaskDate = (date) => {
-    if (!date) return "No due date";
+    if (!date) return t("task.noDueDate");
     return new Date(date).toLocaleDateString();
   };
 
@@ -175,7 +177,7 @@ export default function TasksScreen() {
     return (
       <View style={styles.centeredContainer}>
         <ActivityIndicator size="large" color="#0091FF" />
-        <Text>Loading tasks...</Text>
+        <Text>{t("task.loading")}</Text>
       </View>
     );
   }
@@ -202,8 +204,8 @@ export default function TasksScreen() {
             tasksRouteKey: route.key,
           })
         }
-        title={task.taskTitle || "Untitled task"}
-        badgeLabel={status.label}
+        title={task.taskTitle || t("task.untitled")}
+        badgeLabel={t(`task.status.${status.tone}`, status.label)}
         badgeStyle={badgeStyles[status.tone]}
       >
         <Text style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}>
@@ -215,7 +217,9 @@ export default function TasksScreen() {
           numberOfLines={1}
           ellipsizeMode="tail"
         >
-          {task.taskDescription || task.assigneeUserName || "No description"}
+          {task.taskDescription ||
+            task.assigneeUserName ||
+            t("task.noDescription")}
         </Text>
       </ListCard>
     );
@@ -237,7 +241,7 @@ export default function TasksScreen() {
             { fontFamily: theme.text.fontFamily["semiBold"] },
           ]}
         >
-          Tasks
+          {t("task.title")}
         </Text>
         <View style={styles.placeholder} />
       </View>
@@ -255,7 +259,7 @@ export default function TasksScreen() {
         contentContainerStyle={styles.scrollContent}
       >
         {visiblePersonalTasks.length === 0 && groupedTasks.length === 0 ? (
-          <Text style={styles.emptyText}>No projects or tasks found.</Text>
+          <Text style={styles.emptyText}>{t("task.emptyAll")}</Text>
         ) : (
           <>
             {visiblePersonalTasks.length > 0 ? (
@@ -267,11 +271,10 @@ export default function TasksScreen() {
                       { fontFamily: theme.text.fontFamily["bold"] },
                     ]}
                   >
-                    Personal tasks
+                    {t("task.personal")}
                   </Text>
                   <Text style={styles.projectCount}>
-                    {visiblePersonalTasks.length}{" "}
-                    {visiblePersonalTasks.length === 1 ? "task" : "tasks"}
+                    {t("task.count", { count: visiblePersonalTasks.length })}
                   </Text>
                 </View>
 
@@ -296,8 +299,7 @@ export default function TasksScreen() {
                     {project.name}
                   </Text>
                   <Text style={styles.projectCount}>
-                    {project.visibleTasks.length}{" "}
-                    {project.visibleTasks.length === 1 ? "task" : "tasks"}
+                    {t("task.count", { count: project.visibleTasks.length })}
                   </Text>
                 </View>
 
