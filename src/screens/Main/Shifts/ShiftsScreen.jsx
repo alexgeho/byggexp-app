@@ -84,6 +84,9 @@ export default function ShiftsScreen() {
   const [exporting, setExporting] = useState(false);
   const [expandedShiftId, setExpandedShiftId] = useState(null);
 
+  const currentMonthKey = useMemo(() => getCurrentMonthKey(), []);
+  const todayDateKey = useMemo(() => getTodayDateKey(), []);
+
   const loadMonths = useCallback(async () => {
     const months = await shiftService.getMonths();
     setAvailableMonths(months);
@@ -395,9 +398,6 @@ export default function ShiftsScreen() {
     },
     [navigation, t],
   );
-
-  const currentMonthKey = useMemo(() => getCurrentMonthKey(), []);
-  const todayDateKey = useMemo(() => getTodayDateKey(), []);
 
   const canGoBackMonth = Boolean(selectedMonth);
   const canGoForwardMonth = Boolean(
