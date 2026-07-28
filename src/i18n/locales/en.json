@@ -7,7 +7,8 @@
     "error": "Error",
     "done": "Done",
     "viewAll": "View all",
-    "noName": "No name"
+    "noName": "No name",
+    "search": "Search..."
   },
   "tabs": {
     "home": "Home",
@@ -57,7 +58,17 @@
   "projects": {
     "loading": "Loading projects...",
     "select": "Select projects",
-    "notFound": "No projects found"
+    "notFound": "No projects found",
+    "myProjects": "My projects",
+    "all": "All projects",
+    "startLabel": "Start: {{date}}",
+    "locationLabel": "Location: {{location}}",
+    "status": {
+      "planning": "Planning",
+      "in_progress": "In progress",
+      "completed": "Completed",
+      "on_hold": "On hold"
+    }
   },
   "tools": {
     "addTitle": "Add instrument",

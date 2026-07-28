@@ -7,7 +7,8 @@
     "error": "Fel",
     "done": "Klar",
     "viewAll": "Visa alla",
-    "noName": "Inget namn"
+    "noName": "Inget namn",
+    "search": "Sök..."
   },
   "tabs": {
     "home": "Hem",
@@ -57,7 +58,17 @@
   "projects": {
     "loading": "Laddar projekt...",
     "select": "Välj projekt",
-    "notFound": "Inga projekt hittades"
+    "notFound": "Inga projekt hittades",
+    "myProjects": "Mina projekt",
+    "all": "Alla projekt",
+    "startLabel": "Start: {{date}}",
+    "locationLabel": "Plats: {{location}}",
+    "status": {
+      "planning": "Planering",
+      "in_progress": "Pågår",
+      "completed": "Slutfört",
+      "on_hold": "Pausat"
+    }
   },
   "tools": {
     "addTitle": "Lägg till verktyg",

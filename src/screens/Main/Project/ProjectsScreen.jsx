@@ -21,6 +21,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
+import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../theme/ThemeContext";
 import AuthContext from "../../../contexts/AuthContext";
 import { projectService } from "../../../services";
@@ -43,6 +44,7 @@ import {
 export default function ProjectsScreen() {
   const navigation = useNavigation();
   const route = useRoute();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const {
     userId,
@@ -152,7 +154,7 @@ export default function ProjectsScreen() {
     return (
       <View style={styles.centeredContainer}>
         <ActivityIndicator size="large" color="#0000ff" />
-        <Text>Loading...</Text>
+        <Text>{t("common.loading")}</Text>
       </View>
     );
   }
@@ -175,7 +177,7 @@ export default function ProjectsScreen() {
             { fontFamily: theme.text.fontFamily["semiBold"] },
           ]}
         >
-          My projects
+          {t("projects.myProjects")}
         </Text>
         <View style={styles.placeholder} />
       </View>
@@ -184,7 +186,7 @@ export default function ProjectsScreen() {
         <View style={styles.searchInputWrapper}>
           <TextInput
             style={styles.searchInput}
-            placeholder="Search..."
+            placeholder={t("common.search")}
             placeholderTextColor="rgba(5, 45, 80, 0.45)"
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -206,12 +208,12 @@ export default function ProjectsScreen() {
               navigation.goBack();
             }}
             selected={!selectedProjectId}
-            title="All projects"
+            title={t("projects.all")}
           />
         ) : null}
 
         {filteredProjects.length === 0 ? (
-          <Text style={styles.noProjectsText}>No projects found.</Text>
+          <Text style={styles.noProjectsText}>{t("projects.notFound")}</Text>
         ) : (
           filteredProjects.map((project) => (
             <ListCard
@@ -219,15 +221,20 @@ export default function ProjectsScreen() {
               onPress={() => handleProjectPress(project)}
               selected={selectedProjectId === getProjectId(project)}
               title={project.name}
-              badgeLabel={formatProjectStatus(project.status)}
+              badgeLabel={t(
+                `projects.status.${project.status}`,
+                formatProjectStatus(project.status),
+              )}
               badgeStyle={getProjectStatusBadgeStyle(project.status)}
             >
               <Text style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}>
-                Start: {new Date(project.beginningDate).toLocaleDateString()}
+                {t("projects.startLabel", {
+                  date: new Date(project.beginningDate).toLocaleDateString(),
+                })}
               </Text>
 
               <Text style={cardStyles.cardSecondaryText}>
-                Location: {project.location}
+                {t("projects.locationLabel", { location: project.location })}
               </Text>
             </ListCard>
           ))
