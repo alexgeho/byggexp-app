@@ -10,7 +10,8 @@
     "noName": "No name",
     "search": "Search...",
     "success": "Success",
-    "ok": "OK"
+    "ok": "OK",
+    "tryAgain": "Please try again."
   },
   "documentPreview": {
     "fallbackName": "Document",
@@ -325,6 +326,43 @@
     "title": "Language",
     "english": "English",
     "swedish": "Svenska"
+  },
+  "chat": {
+    "title": "Chat",
+    "loadError": "Failed to load chats",
+    "loadErrorTitle": "Unable to load chats",
+    "loading": "Loading chats...",
+    "emptyTitle": "No chats yet",
+    "emptyText": "Your conversations will appear here.",
+    "newChatTitle": "New chat",
+    "newChatMessage": "Open projects to start a personal or project group chat.",
+    "openProjects": "Open projects",
+    "directChat": "Direct chat",
+    "noMessages": "No messages yet",
+    "projectGroup": "Project group",
+    "directConversation": "Direct conversation",
+    "groupChat": "Group chat",
+    "sendFailedTitle": "Unable to send message",
+    "notAvailableTitle": "Not available yet",
+    "notAvailableMessage": "Attachments and camera will be added later.",
+    "idMissing": "Chat id is missing.",
+    "loadingMessages": "Loading messages...",
+    "autoTranslateOn": "🌐 Auto-translate on",
+    "autoTranslateOff": "🌐 Auto-translate off",
+    "loadChatErrorTitle": "Unable to load chat",
+    "startConversation": "Start the conversation by sending the first message.",
+    "showTranslation": "Show translation",
+    "translatedShowOriginal": "Translated · Show original",
+    "translatedFromShowOriginal": "Translated from {{lang}} · Show original",
+    "messagePlaceholder": "Message",
+    "memberCount_one": "{{count}} member",
+    "memberCount_other": "{{count}} members",
+    "filters": {
+      "all": "All",
+      "groups": "Groups",
+      "people": "People",
+      "projects": "Projects"
+    }
   },
   "home": {
     "buttons": {

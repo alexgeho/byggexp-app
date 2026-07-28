@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../theme/ThemeContext";
 import { useNavigation } from "@react-navigation/native";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
@@ -37,6 +38,7 @@ const formatChatTime = (value) => {
 
 export default function ChatListScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const [activeFilter, setActiveFilter] = useState("All");
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,11 +53,11 @@ export default function ChatListScreen() {
       setChats(Array.isArray(data) ? data : []);
     } catch (loadError) {
       console.error("Failed to load chats:", loadError);
-      setError("Failed to load chats");
+      setError(t("chat.loadError"));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useFocusEffect(
     useCallback(() => {
@@ -87,17 +89,13 @@ export default function ChatListScreen() {
   };
 
   const handleAddChat = () => {
-    Alert.alert(
-      "New chat",
-      "Open projects to start a personal or project group chat.",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Open projects",
-          onPress: () => navigation.navigate("Projects"),
-        },
-      ],
-    );
+    Alert.alert(t("chat.newChatTitle"), t("chat.newChatMessage"), [
+      { text: t("common.cancel"), style: "cancel" },
+      {
+        text: t("chat.openProjects"),
+        onPress: () => navigation.navigate("Projects"),
+      },
+    ]);
   };
 
   return (
@@ -116,7 +114,7 @@ export default function ChatListScreen() {
             { fontFamily: theme.text.fontFamily["semiBold"] },
           ]}
         >
-          Chat
+          {t("chat.title")}
         </Text>
         <BackButton
           backgroundColor={"rgba(255, 255, 255, 0.6)"}
@@ -144,7 +142,7 @@ export default function ChatListScreen() {
                     : styles.filterText
                 }
               >
-                {filter}
+                {t(`chat.filters.${filter.toLowerCase()}`, filter)}
               </Text>
             </TouchableOpacity>
           ))}
@@ -152,10 +150,8 @@ export default function ChatListScreen() {
       </View>
       {!loading && !error && filteredChats.length === 0 ? (
         <View style={styles.emptyStateCard}>
-          <Text style={styles.stateTitle}>No chats yet</Text>
-          <Text style={styles.stateText}>
-            Your conversations will appear here.
-          </Text>
+          <Text style={styles.stateTitle}>{t("chat.emptyTitle")}</Text>
+          <Text style={styles.stateText}>{t("chat.emptyText")}</Text>
         </View>
       ) : null}
       <ScrollView
@@ -166,13 +162,13 @@ export default function ChatListScreen() {
         {loading ? (
           <View style={styles.stateCard}>
             <ActivityIndicator size="large" color="#0785F4" />
-            <Text style={styles.stateText}>Loading chats...</Text>
+            <Text style={styles.stateText}>{t("chat.loading")}</Text>
           </View>
         ) : null}
 
         {!loading && error ? (
           <View style={styles.stateCard}>
-            <Text style={styles.stateTitle}>Unable to load chats</Text>
+            <Text style={styles.stateTitle}>{t("chat.loadErrorTitle")}</Text>
             <Text style={styles.stateText}>{error}</Text>
           </View>
         ) : null}
@@ -216,10 +212,11 @@ export default function ChatListScreen() {
                 </View>
                 <Text numberOfLines={1} style={styles.dateText}>
                   {chat.type === "group"
-                    ? chat.project?.name || `${chat.memberCount || 0} members`
+                    ? chat.project?.name ||
+                      t("chat.memberCount", { count: chat.memberCount || 0 })
                     : chat.participant?.profession ||
                       chat.participant?.email ||
-                      "Direct chat"}
+                      t("chat.directChat")}
                 </Text>
                 <Text
                   numberOfLines={2}
@@ -228,7 +225,7 @@ export default function ChatListScreen() {
                     chat.unreadCount > 0 && styles.unreadText,
                   ]}
                 >
-                  {chat.lastMessageText || "No messages yet"}
+                  {chat.lastMessageText || t("chat.noMessages")}
                 </Text>
               </View>
             </TouchableOpacity>

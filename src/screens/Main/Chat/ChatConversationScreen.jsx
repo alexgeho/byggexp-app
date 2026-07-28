@@ -13,6 +13,7 @@ import {
   View,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import AuthContext from "../../../contexts/AuthContext";
 import { useChatConversation } from "./useChatConversation";
@@ -30,24 +31,27 @@ const formatMessageTime = (value) => {
   });
 };
 
-const getChatSubtitle = (chat, variant) => {
+const getChatSubtitle = (chat, variant, t) => {
   if (!chat) return "";
 
   if (variant === "group") {
     const memberCount = Number(chat.memberCount) || 0;
-    return memberCount ? `${memberCount} members` : "Project group";
+    return memberCount
+      ? t("chat.memberCount", { count: memberCount })
+      : t("chat.projectGroup");
   }
 
   return (
     chat?.participant?.profession ||
     chat?.participant?.email ||
-    "Direct conversation"
+    t("chat.directConversation")
   );
 };
 
 export default function ChatConversationScreen({ variant }) {
   const route = useRoute();
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const { userId, user } = useContext(AuthContext);
   const [messageText, setMessageText] = useState("");
   const chatId = route.params?.chatId || route.params?.id || null;
@@ -78,11 +82,11 @@ export default function ChatConversationScreen({ variant }) {
   const headerTitle =
     chat?.title ||
     initialChat?.title ||
-    (variant === "group" ? "Group chat" : "Direct chat");
+    (variant === "group" ? t("chat.groupChat") : t("chat.directChat"));
 
   const headerSubtitle = useMemo(
-    () => getChatSubtitle(chat || initialChat, variant),
-    [chat, initialChat, variant],
+    () => getChatSubtitle(chat || initialChat, variant, t),
+    [chat, initialChat, variant, t],
   );
   const headerAvatarSource = (chat || initialChat)?.participant?.avatarUrl
     ? { uri: resolveUploadUrl((chat || initialChat).participant.avatarUrl) }
@@ -99,21 +103,18 @@ export default function ChatConversationScreen({ variant }) {
       await sendMessage(text);
       setMessageText("");
     } catch (_error) {
-      Alert.alert("Unable to send message", "Please try again.");
+      Alert.alert(t("chat.sendFailedTitle"), t("common.tryAgain"));
     }
   };
 
   const onPlaceholderActionPress = () => {
-    Alert.alert(
-      "Not available yet",
-      "Attachments and camera will be added later.",
-    );
+    Alert.alert(t("chat.notAvailableTitle"), t("chat.notAvailableMessage"));
   };
 
   if (!chatId) {
     return (
       <View style={styles.centeredContainer}>
-        <Text style={styles.statusText}>Chat id is missing.</Text>
+        <Text style={styles.statusText}>{t("chat.idMissing")}</Text>
       </View>
     );
   }
@@ -150,7 +151,7 @@ export default function ChatConversationScreen({ variant }) {
       {loading ? (
         <View style={styles.centeredContainer}>
           <ActivityIndicator size="large" color="#0785F4" />
-          <Text style={styles.statusText}>Loading messages...</Text>
+          <Text style={styles.statusText}>{t("chat.loadingMessages")}</Text>
         </View>
       ) : (
         <ScrollView
@@ -166,24 +167,26 @@ export default function ChatConversationScreen({ variant }) {
             >
               <Text style={styles.translateToggleText}>
                 {autoTranslate
-                  ? "🌐 Auto-translate on"
-                  : "🌐 Auto-translate off"}
+                  ? t("chat.autoTranslateOn")
+                  : t("chat.autoTranslateOff")}
               </Text>
             </TouchableOpacity>
           ) : null}
 
           {error ? (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyStateTitle}>Unable to load chat</Text>
+              <Text style={styles.emptyStateTitle}>
+                {t("chat.loadChatErrorTitle")}
+              </Text>
               <Text style={styles.emptyStateText}>{error}</Text>
             </View>
           ) : null}
 
           {!error && messages.length === 0 ? (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyStateTitle}>No messages yet</Text>
+              <Text style={styles.emptyStateTitle}>{t("chat.noMessages")}</Text>
               <Text style={styles.emptyStateText}>
-                Start the conversation by sending the first message.
+                {t("chat.startConversation")}
               </Text>
             </View>
           ) : null}
@@ -240,12 +243,12 @@ export default function ChatConversationScreen({ variant }) {
                         ]}
                       >
                         {showingOriginal
-                          ? "Show translation"
-                          : `Translated${
-                              message.sourceLang
-                                ? ` from ${message.sourceLang}`
-                                : ""
-                            } · Show original`}
+                          ? t("chat.showTranslation")
+                          : message.sourceLang
+                          ? t("chat.translatedFromShowOriginal", {
+                              lang: message.sourceLang,
+                            })
+                          : t("chat.translatedShowOriginal")}
                       </Text>
                     </TouchableOpacity>
                   ) : null}
@@ -289,7 +292,7 @@ export default function ChatConversationScreen({ variant }) {
             onChangeText={setMessageText}
             value={messageText}
             style={styles.textInput}
-            placeholder="Message"
+            placeholder={t("chat.messagePlaceholder")}
             multiline
           />
           {messageText ? (

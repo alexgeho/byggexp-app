@@ -10,7 +10,8 @@
     "noName": "Inget namn",
     "search": "Sök...",
     "success": "Klart",
-    "ok": "OK"
+    "ok": "OK",
+    "tryAgain": "Försök igen."
   },
   "documentPreview": {
     "fallbackName": "Dokument",
@@ -325,6 +326,43 @@
     "title": "Språk",
     "english": "English",
     "swedish": "Svenska"
+  },
+  "chat": {
+    "title": "Chatt",
+    "loadError": "Det gick inte att ladda chattar",
+    "loadErrorTitle": "Det gick inte att ladda chattar",
+    "loading": "Laddar chattar...",
+    "emptyTitle": "Inga chattar än",
+    "emptyText": "Dina konversationer visas här.",
+    "newChatTitle": "Ny chatt",
+    "newChatMessage": "Öppna projekt för att starta en personlig chatt eller projektgruppchatt.",
+    "openProjects": "Öppna projekt",
+    "directChat": "Direktchatt",
+    "noMessages": "Inga meddelanden än",
+    "projectGroup": "Projektgrupp",
+    "directConversation": "Direktkonversation",
+    "groupChat": "Gruppchatt",
+    "sendFailedTitle": "Det gick inte att skicka meddelandet",
+    "notAvailableTitle": "Inte tillgängligt än",
+    "notAvailableMessage": "Bilagor och kamera läggs till senare.",
+    "idMissing": "Chatt-id saknas.",
+    "loadingMessages": "Laddar meddelanden...",
+    "autoTranslateOn": "🌐 Autoöversättning på",
+    "autoTranslateOff": "🌐 Autoöversättning av",
+    "loadChatErrorTitle": "Det gick inte att ladda chatten",
+    "startConversation": "Starta konversationen genom att skicka det första meddelandet.",
+    "showTranslation": "Visa översättning",
+    "translatedShowOriginal": "Översatt · Visa original",
+    "translatedFromShowOriginal": "Översatt från {{lang}} · Visa original",
+    "messagePlaceholder": "Meddelande",
+    "memberCount_one": "{{count}} medlem",
+    "memberCount_other": "{{count}} medlemmar",
+    "filters": {
+      "all": "Alla",
+      "groups": "Grupper",
+      "people": "Personer",
+      "projects": "Projekt"
+    }
   },
   "home": {
     "buttons": {
