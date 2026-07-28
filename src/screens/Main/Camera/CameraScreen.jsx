@@ -5,7 +5,8 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { BackButton } from '../../../components/common/BackButton/BackButton';
 import { BottomBar } from '../../../components/common/BottomBar/BottomBar';
 import { useFeedback } from '../../../contexts/FeedbackContext';
-import { shiftService } from '../../../services';
+import { expenseService, shiftService } from '../../../services';
+import ExpenseReviewSheet from './ExpenseReviewSheet';
 import {
   standardScreenHeader,
   standardScreenHeaderPlaceholder,
@@ -23,6 +24,9 @@ export default function CameraScreen() {
   const [shift, setShift] = useState(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [mode, setMode] = useState('shift'); // 'shift' | 'expense'
+  const [scanning, setScanning] = useState(false);
+  const [reviewData, setReviewData] = useState(null);
   const autoLaunchTriggeredRef = useRef(false);
   const cameraLaunchInFlightRef = useRef(false);
 
@@ -80,8 +84,30 @@ export default function CameraScreen() {
     setShift(updatedShift);
   }, [shift?.id]);
 
+  // Kvitto mode: scan the captured photo, then open the review sheet.
+  const handleExpensePhoto = useCallback(async (rawAsset) => {
+    if (!rawAsset?.uri) {
+      return;
+    }
+    const asset = {
+      uri: rawAsset.uri,
+      name: rawAsset.fileName || rawAsset.name || `kvitto-${Date.now()}.jpg`,
+      mimeType: rawAsset.mimeType || rawAsset.type || 'image/jpeg',
+    };
+    setScanning(true);
+    let scanned = {};
+    try {
+      scanned = await expenseService.scan(asset);
+    } catch (error) {
+      scanned = {}; // fall back to manual entry
+    } finally {
+      setScanning(false);
+    }
+    setReviewData({ asset, scanned });
+  }, []);
+
   const handleAttachFile = useCallback(async () => {
-    if (!shift?.id) {
+    if (mode === 'shift' && !shift?.id) {
       Alert.alert('Shift required', 'Start a shift before attaching files.');
       return;
     }
@@ -90,10 +116,15 @@ export default function CameraScreen() {
       setUploading(true);
       const pickedAssets = await pickUploadAssets({
         documentTypes: IMAGE_DOCUMENT_TYPES,
-        fileNamePrefix: 'shift-photo',
+        fileNamePrefix: mode === 'expense' ? 'kvitto' : 'shift-photo',
       });
 
       if (!pickedAssets.length) {
+        return;
+      }
+
+      if (mode === 'expense') {
+        await handleExpensePhoto(pickedAssets[0]);
         return;
       }
 
@@ -111,7 +142,7 @@ export default function CameraScreen() {
     } finally {
       setUploading(false);
     }
-  }, [shift?.id, uploadAssets]);
+  }, [mode, shift?.id, uploadAssets, handleExpensePhoto]);
 
   const promptOpenSettings = useCallback(() => {
     Alert.alert(
@@ -129,7 +160,7 @@ export default function CameraScreen() {
       return;
     }
 
-    if (!shift?.id) {
+    if (mode === 'shift' && !shift?.id) {
       Alert.alert('Shift required', 'Start a shift before attaching photos.');
       return;
     }
@@ -185,6 +216,11 @@ export default function CameraScreen() {
         return;
       }
 
+      if (mode === 'expense') {
+        await handleExpensePhoto(result.assets[0]);
+        return;
+      }
+
       await uploadAssets(result.assets);
       showSuccess({
         title: 'Photo attached',
@@ -200,7 +236,7 @@ export default function CameraScreen() {
       cameraLaunchInFlightRef.current = false;
       setUploading(false);
     }
-  }, [handleAttachFile, promptOpenSettings, shift?.id, uploadAssets, uploading]);
+  }, [mode, handleAttachFile, handleExpensePhoto, promptOpenSettings, shift?.id, uploadAssets, uploading]);
 
   useEffect(() => {
     if (!route.params?.autoOpen || loading || !shift?.id || autoLaunchTriggeredRef.current) {
@@ -245,6 +281,23 @@ export default function CameraScreen() {
     </View>
   );
 
+  const renderModeToggle = () => (
+    <View style={styles.modeToggle}>
+      <TouchableOpacity
+        style={[styles.modeBtn, mode === 'shift' && styles.modeBtnActive]}
+        onPress={() => setMode('shift')}
+      >
+        <Text style={[styles.modeBtnText, mode === 'shift' && styles.modeBtnTextActive]}>Skiftfoto</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.modeBtn, mode === 'expense' && styles.modeBtnActive]}
+        onPress={() => setMode('expense')}
+      >
+        <Text style={[styles.modeBtnText, mode === 'expense' && styles.modeBtnTextActive]}>Kvitto (utlägg)</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   if (loading) {
     return (
       <View style={styles.centered}>
@@ -256,14 +309,15 @@ export default function CameraScreen() {
     );
   }
 
-  if (!shift) {
+  if (!shift && mode === 'shift') {
     return (
       <View style={styles.centered}>
         {renderHeader()}
+        {renderModeToggle()}
         <View style={styles.emptyStateContent}>
           <Text style={styles.emptyTitle}>No active shift</Text>
           <Text style={styles.emptyText}>
-            Start or resume a shift on the main screen before using the camera.
+            Start a shift to attach photos — or switch to “Kvitto (utlägg)” to log a receipt.
           </Text>
         </View>
         <BottomBar
@@ -278,6 +332,7 @@ export default function CameraScreen() {
   return (
     <View style={styles.container}>
       {renderHeader()}
+      {renderModeToggle()}
 
       <ScrollView
         style={styles.contentScroll}
@@ -292,18 +347,20 @@ export default function CameraScreen() {
                 { fontFamily: theme.text.fontFamily.medium },
               ]}
             >
-              Current project
+              {mode === 'expense' ? 'Nytt utlägg' : 'Current project'}
             </Text>
-            <View style={styles.activeShiftBadge}>
-              <Text
-                style={[
-                  styles.activeShiftBadgeText,
-                  { fontFamily: theme.text.fontFamily.medium },
-                ]}
-              >
-                Active shift
-              </Text>
-            </View>
+            {shift ? (
+              <View style={styles.activeShiftBadge}>
+                <Text
+                  style={[
+                    styles.activeShiftBadgeText,
+                    { fontFamily: theme.text.fontFamily.medium },
+                  ]}
+                >
+                  Active shift
+                </Text>
+              </View>
+            ) : null}
           </View>
           <Text
             style={[
@@ -311,7 +368,7 @@ export default function CameraScreen() {
               { fontFamily: theme.text.fontFamily.semiBold },
             ]}
           >
-            {shift.projectName || '—'}
+            {shift?.projectName || (mode === 'expense' ? 'Välj projekt i nästa steg' : '—')}
           </Text>
         </View>
 
@@ -354,9 +411,12 @@ export default function CameraScreen() {
         </TouchableOpacity>
 
         <Text style={styles.cameraHint}>
-          If camera is unavailable, attach a file instead.
+          {mode === 'expense'
+            ? 'Take a photo of the receipt — it will be scanned automatically.'
+            : 'If camera is unavailable, attach a file instead.'}
         </Text>
 
+        {mode === 'shift' && shift ? (
         <View style={styles.photosCard}>
           {!shift.photos?.length ? (
             <>
@@ -477,12 +537,32 @@ export default function CameraScreen() {
             </>
           ) : null}
         </View>
+        ) : null}
       </ScrollView>
 
       <BottomBar
         onLeftPress={() => navigation.navigate('Main')}
         onRightPress={() => navigation.navigate('Menu')}
         showAddButton={false}
+      />
+
+      {scanning ? (
+        <View style={styles.scanOverlay}>
+          <ActivityIndicator size="large" color="#ffffff" />
+          <Text style={styles.scanOverlayText}>Skannar kvitto…</Text>
+        </View>
+      ) : null}
+
+      <ExpenseReviewSheet
+        visible={!!reviewData}
+        asset={reviewData?.asset}
+        scanned={reviewData?.scanned}
+        shift={shift}
+        onClose={() => setReviewData(null)}
+        onSaved={() => {
+          setReviewData(null);
+          showSuccess({ title: 'Utlägg sparat', message: 'Utlägget skickades för granskning.' });
+        }}
       />
     </View>
   );
@@ -514,6 +594,46 @@ const styles = StyleSheet.create({
     color: '#052D50',
     fontSize: 17,
     textAlign: 'center',
+  },
+  modeToggle: {
+    flexDirection: 'row',
+    gap: 8,
+    paddingHorizontal: 12,
+    marginBottom: 12,
+  },
+  modeBtn: {
+    flex: 1,
+    height: 40,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.6)',
+    borderWidth: 1,
+    borderColor: 'rgba(7, 133, 244, 0.35)',
+  },
+  modeBtnActive: {
+    backgroundColor: '#0785F4',
+    borderColor: '#0785F4',
+  },
+  modeBtnText: {
+    color: '#0785F4',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  modeBtnTextActive: {
+    color: '#ffffff',
+  },
+  scanOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(5, 45, 80, 0.55)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  scanOverlayText: {
+    color: '#ffffff',
+    fontSize: 15,
+    fontWeight: '600',
   },
   emptyStateContent: {
     flex: 1,

@@ -7,6 +7,7 @@ export { toolService } from './tool.service';
 export { bugReportService } from './bug-report.service';
 export { timeReportService } from './time-report.service';
 export { shiftService } from './shift.service';
+export { expenseService } from './expense.service';
 export { notificationsService } from './notifications.service';
 export { chatService } from './chat.service';
 export { logUserActivity } from './user-activity.service';
