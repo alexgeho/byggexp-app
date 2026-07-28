@@ -1504,7 +1504,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     paddingHorizontal: 6,
     paddingVertical: 1,
-    borderRadius: 20,
+    borderRadius: 6,
+    marginBottom: 2
   },
   shiftDetailsContainer: {
     width: "100%",
