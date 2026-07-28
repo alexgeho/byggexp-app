@@ -1,0 +1,42 @@
+{
+  "common": {
+    "goBack": "Go back",
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "error": "Error",
+    "done": "Done",
+    "viewAll": "View all",
+    "noName": "No name"
+  },
+  "tabs": {
+    "home": "Home",
+    "chats": "Chats",
+    "projects": "Projects",
+    "history": "History",
+    "menu": "Menu"
+  },
+  "auth": {
+    "loginFailedTitle": "Login failed",
+    "loginFailedMessage": "Invalid email or password."
+  },
+  "access": {
+    "denied": "Access denied",
+    "noPermission": "You don't have permission to view this page",
+    "onlyCompanyAdminsCreateProjects": "Only company admins can create projects",
+    "onlyOwnerAssignAdmins": "Only the company owner can assign admins",
+    "onlyAdminsManageWorkers": "Only admins can manage workers"
+  },
+  "workers": {
+    "loading": "Loading workers...",
+    "notFound": "No workers found",
+    "added": "Workers added",
+    "addedMessage": "Workers added to the project",
+    "addFailed": "Failed to add workers"
+  },
+  "language": {
+    "title": "Language",
+    "english": "English",
+    "swedish": "Svenska"
+  }
+}

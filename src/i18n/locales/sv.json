@@ -1,0 +1,42 @@
+{
+  "common": {
+    "goBack": "Tillbaka",
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "loading": "Laddar...",
+    "error": "Fel",
+    "done": "Klar",
+    "viewAll": "Visa alla",
+    "noName": "Inget namn"
+  },
+  "tabs": {
+    "home": "Hem",
+    "chats": "Chattar",
+    "projects": "Projekt",
+    "history": "Historik",
+    "menu": "Meny"
+  },
+  "auth": {
+    "loginFailedTitle": "Inloggning misslyckades",
+    "loginFailedMessage": "Fel e-post eller lösenord."
+  },
+  "access": {
+    "denied": "Åtkomst nekad",
+    "noPermission": "Du har inte behörighet att visa den här sidan",
+    "onlyCompanyAdminsCreateProjects": "Endast företagsadministratörer kan skapa projekt",
+    "onlyOwnerAssignAdmins": "Endast företagets ägare kan tilldela administratörer",
+    "onlyAdminsManageWorkers": "Endast administratörer kan hantera arbetare"
+  },
+  "workers": {
+    "loading": "Laddar arbetare...",
+    "notFound": "Inga arbetare hittades",
+    "added": "Arbetare tillagda",
+    "addedMessage": "Arbetare tillagda i projektet",
+    "addFailed": "Det gick inte att lägga till arbetare"
+  },
+  "language": {
+    "title": "Språk",
+    "english": "English",
+    "swedish": "Svenska"
+  }
+}

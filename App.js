@@ -11,6 +11,7 @@ import { ThemeProvider } from './src/theme/ThemeContext';
 import NotificationBootstrap from './src/components/NotificationBootstrap';
 import ShiftLocationMonitor from './src/components/ShiftLocationMonitor';
 import MagicLinkHandler from './src/components/MagicLinkHandler';
+import { loadStoredLanguage } from './src/i18n';
 
 const defaultTextStyle = { fontFamily: 'DMSans-Regular' };
 
@@ -37,7 +38,9 @@ export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
   useEffect(() => {
-    async function loadFonts() {
+    async function bootstrap() {
+      // Apply the persisted language before the first render to avoid a flash.
+      await loadStoredLanguage();
       try {
         await Font.loadAsync({
           'DMSans-Regular': require('./src/assets/fonts/DMSans-Regular.ttf'),
@@ -50,11 +53,11 @@ export default function App() {
         setFontsLoaded(true);
       } catch (error) {
         console.error('Error loading fonts:', error);
-        setFontsLoaded(true); 
+        setFontsLoaded(true);
       }
     }
 
-    loadFonts();
+    bootstrap();
   }, []);
 
   if (!fontsLoaded) {

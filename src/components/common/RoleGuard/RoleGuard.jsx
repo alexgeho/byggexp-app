@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import AuthContext from '../../contexts/AuthContext';
 
 export const RoleGuard = ({ allowedRoles = [], children, fallback = null }) => {
@@ -20,22 +21,23 @@ export const RoleGuard = ({ allowedRoles = [], children, fallback = null }) => {
 
 export const AccessDenied = () => {
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   return (
     <View style={styles.container}>
-      <Image 
-        source={require('../../assets/Close.png')} 
+      <Image
+        source={require('../../assets/Close.png')}
         style={styles.icon}
       />
-      <Text style={styles.title}>Access denied</Text>
+      <Text style={styles.title}>{t('access.denied')}</Text>
       <Text style={styles.message}>
-        You don't have permission to view this page
+        {t('access.noPermission')}
       </Text>
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.backButton}
         onPress={() => navigation.goBack()}
       >
-        <Text style={styles.backButtonText}>Go back</Text>
+        <Text style={styles.backButtonText}>{t('common.goBack')}</Text>
       </TouchableOpacity>
     </View>
   );

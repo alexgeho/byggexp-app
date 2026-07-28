@@ -48,7 +48,8 @@
         {
           "locationWhenInUsePermission": "Allow ByggExp to access your location while creating a project."
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "extra": {
       "eas": {
