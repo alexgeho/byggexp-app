@@ -1,6 +1,7 @@
 import React, { useContext, useMemo } from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import { useTheme } from "../../theme/ThemeContext";
 import { ScrollView } from "react-native";
 import { MenuButton } from "../../components/common/MenuButton/MenuButton";
@@ -27,6 +28,7 @@ const resolveImageUrl = (value) => {
 
 export default function MenuScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const { user, logout } = useContext(AuthContext);
@@ -37,28 +39,28 @@ export default function MenuScreen() {
       {
         id: "customizeHome",
         screen: "CustomizeHomeScreen",
-        title: "Customize Home Screen",
+        title: t("menu.customizeHome"),
         icon: require("../../assets/Home.png"),
         color: theme.colors.primary,
       },
       {
         id: "account",
         screen: "MyAccount",
-        title: "My account",
+        title: t("menu.myAccount"),
         icon: require("../../assets/Account.png"),
         color: theme.colors.primary,
       },
       {
         id: "notifications",
         screen: "NotificationsSettings",
-        title: "Notifications",
+        title: t("menu.notifications"),
         icon: require("../../assets/Notifications.png"),
         color: theme.colors.primary,
       },
       {
         id: "documents",
         screen: "Documents",
-        title: "Documents",
+        title: t("menu.documents"),
         icon: require("../../assets/Documents.png"),
         color: theme.colors.primary,
       },
@@ -67,7 +69,7 @@ export default function MenuScreen() {
     const employeesItem = {
       id: "employees",
       screen: "Employees",
-      title: "Employees",
+      title: t("menu.employees"),
       icon: require("../../assets/mainButtons/employees.png"),
       color: theme.colors.primary,
     };
@@ -75,7 +77,7 @@ export default function MenuScreen() {
     const toolsItem = {
       id: "tools",
       screen: "Tools",
-      title: "Instruments",
+      title: t("menu.instruments"),
       icon: require("../../assets/Tracker.png"),
       color: theme.colors.primary,
     };
@@ -87,14 +89,14 @@ export default function MenuScreen() {
         {
           id: "tasks",
           screen: "Tasks",
-          title: "Tasks",
+          title: t("menu.tasks"),
           icon: require("../../assets/Tasks.png"),
           color: theme.colors.primary,
         },
         {
           id: "shifts",
           screen: "Shifts",
-          title: "Shifts",
+          title: t("menu.shifts"),
           icon: require("../../assets/WorkShifts.png"),
           color: theme.colors.primary,
         },
@@ -103,7 +105,7 @@ export default function MenuScreen() {
         {
           id: "projects",
           screen: "Projects",
-          title: "Projects",
+          title: t("menu.projects"),
           icon: require("../../assets/Projekts.png"),
           color: theme.colors.primary,
         },
@@ -117,14 +119,14 @@ export default function MenuScreen() {
         {
           id: "tasks",
           screen: "Tasks",
-          title: "Tasks",
+          title: t("menu.tasks"),
           icon: require("../../assets/Tasks.png"),
           color: theme.colors.primary,
         },
         {
           id: "shifts",
           screen: "Shifts",
-          title: "Shifts",
+          title: t("menu.shifts"),
           icon: require("../../assets/WorkShifts.png"),
           color: theme.colors.primary,
         },
@@ -133,7 +135,7 @@ export default function MenuScreen() {
         {
           id: "projects",
           screen: "Projects",
-          title: "Projects",
+          title: t("menu.projects"),
           icon: require("../../assets/Projekts.png"),
           color: theme.colors.primary,
         },
@@ -147,21 +149,21 @@ export default function MenuScreen() {
         {
           id: "tasks",
           screen: "Tasks",
-          title: "Tasks",
+          title: t("menu.tasks"),
           icon: require("../../assets/Tasks.png"),
           color: theme.colors.primary,
         },
         {
           id: "shifts",
           screen: "Shifts",
-          title: "Shifts",
+          title: t("menu.shifts"),
           icon: require("../../assets/WorkShifts.png"),
           color: theme.colors.primary,
         },
         {
           id: "projects",
           screen: "Projects",
-          title: "Projects",
+          title: t("menu.projects"),
           icon: require("../../assets/Projekts.png"),
           color: theme.colors.primary,
         },
@@ -176,7 +178,7 @@ export default function MenuScreen() {
       {
         id: "projects",
         screen: "Projects",
-        title: "Projects",
+        title: t("menu.projects"),
         icon: require("../../assets/Projekts.png"),
         color: theme.colors.primary,
       },
@@ -184,53 +186,53 @@ export default function MenuScreen() {
       {
         id: "tasks",
         screen: "Tasks",
-        title: "Tasks",
+        title: t("menu.tasks"),
         icon: require("../../assets/Tasks.png"),
         color: theme.colors.primary,
       },
       {
         id: "workShifts",
         screen: "Shifts",
-        title: "Work shifts",
+        title: t("menu.workShifts"),
         icon: require("../../assets/WorkShifts.png"),
         color: theme.colors.primary,
       },
     ];
-  }, [theme.colors.primary, user?.role]);
+  }, [theme.colors.primary, user?.role, t]);
 
   const settingsItems = [
     {
       id: "language",
       screen: "Language",
-      title: "Language",
+      title: t("menu.language"),
       icon: require("../../assets/About.png"),
       color: theme.colors.primary,
     },
     {
       id: "legal",
       screen: "LegalPolicies",
-      title: "Legal & Policies",
+      title: t("menu.legal"),
       icon: require("../../assets/Legal.png"),
       color: theme.colors.primary,
     },
     {
       id: "help",
       screen: "HelpSupport",
-      title: "Help & Support",
+      title: t("menu.help"),
       icon: require("../../assets/Help.png"),
       color: theme.colors.primary,
     },
     {
       id: "reportBug",
       screen: "ReportBug",
-      title: "Report a bug",
+      title: t("menu.reportBug"),
       icon: require("../../assets/Help.png"),
       color: theme.colors.primary,
     },
     {
       id: "about",
       screen: "AboutApp",
-      title: "About the App",
+      title: t("menu.about"),
       icon: require("../../assets/About.png"),
       color: theme.colors.primary,
     },
@@ -255,7 +257,7 @@ export default function MenuScreen() {
             { fontFamily: theme.text.fontFamily["semiBold"] },
           ]}
         >
-          Menu
+          {t("menu.title")}
         </Text>
         <View style={styles.placeholder} />
       </View>
@@ -281,7 +283,7 @@ export default function MenuScreen() {
                 { fontFamily: theme.text.fontFamily["bold"] },
               ]}
             >
-              {user.name || "User"}
+              {user.name || t("menu.userFallback")}
             </Text>
           </View>
           
@@ -289,14 +291,14 @@ export default function MenuScreen() {
           <View style={styles.roleBadge}>
             <Text style={styles.roleText}>
               {user.role === "superadmin"
-                ? "Super Admin"
+                ? t("roles.superadmin")
                 : user.role === "companyAdmin"
-                  ? "Company Admin"
+                  ? t("roles.companyAdmin")
                   : user.role === "projectAdmin"
-                    ? "Project Admin"
+                    ? t("roles.projectAdmin")
                     : user.role === "worker"
-                      ? "Worker"
-                      : "User"}
+                      ? t("roles.worker")
+                      : t("roles.user")}
             </Text>
           </View>
         </View>
@@ -339,7 +341,7 @@ export default function MenuScreen() {
         onRightPress={() => navigation.navigate("Menu")}
         onActionPress={logout}
         renderActionContent={() => (
-          <Text style={styles.logoutButtonText}>Log out</Text>
+          <Text style={styles.logoutButtonText}>{t("menu.logOut")}</Text>
         )}
       />
     </View>

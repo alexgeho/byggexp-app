@@ -57,5 +57,32 @@
     "title": "Språk",
     "english": "English",
     "swedish": "Svenska"
+  },
+  "menu": {
+    "title": "Meny",
+    "customizeHome": "Anpassa startskärmen",
+    "myAccount": "Mitt konto",
+    "notifications": "Aviseringar",
+    "documents": "Dokument",
+    "employees": "Anställda",
+    "instruments": "Verktyg",
+    "tasks": "Uppgifter",
+    "shifts": "Arbetspass",
+    "projects": "Projekt",
+    "workShifts": "Arbetspass",
+    "language": "Språk",
+    "legal": "Juridik och villkor",
+    "help": "Hjälp och support",
+    "reportBug": "Rapportera ett fel",
+    "about": "Om appen",
+    "logOut": "Logga ut",
+    "userFallback": "Användare"
+  },
+  "roles": {
+    "superadmin": "Superadministratör",
+    "companyAdmin": "Företagsadministratör",
+    "projectAdmin": "Projektadministratör",
+    "worker": "Arbetare",
+    "user": "Användare"
   }
 }

@@ -57,5 +57,32 @@
     "title": "Language",
     "english": "English",
     "swedish": "Svenska"
+  },
+  "menu": {
+    "title": "Menu",
+    "customizeHome": "Customize Home Screen",
+    "myAccount": "My account",
+    "notifications": "Notifications",
+    "documents": "Documents",
+    "employees": "Employees",
+    "instruments": "Instruments",
+    "tasks": "Tasks",
+    "shifts": "Shifts",
+    "projects": "Projects",
+    "workShifts": "Work shifts",
+    "language": "Language",
+    "legal": "Legal & Policies",
+    "help": "Help & Support",
+    "reportBug": "Report a bug",
+    "about": "About the App",
+    "logOut": "Log out",
+    "userFallback": "User"
+  },
+  "roles": {
+    "superadmin": "Super Admin",
+    "companyAdmin": "Company Admin",
+    "projectAdmin": "Project Admin",
+    "worker": "Worker",
+    "user": "User"
   }
 }
