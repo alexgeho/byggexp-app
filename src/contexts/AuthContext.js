@@ -1,5 +1,5 @@
-import React, { createContext, useState, useEffect } from 'react';
-import { saveToken, saveUser, getUser, removeToken, removeUser, saveRefreshToken, removeRefreshToken } from '../utils/storage';
+import React, { createContext, useState, useEffect, useRef } from 'react';
+import { saveToken, saveUser, getUser, removeToken, removeUser, saveRefreshToken, removeRefreshToken, saveSelectedProject, getSelectedProject, removeSelectedProject } from '../utils/storage';
 import {
   canManageEmployees as checkCanManageEmployees,
   canCreateProjects as checkCanCreateProjects,
@@ -25,6 +25,8 @@ export const AuthProvider = ({ children }) => {
   const [userId, setUserId] = useState(null);
   const [user, setUser] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
+  // Guards the persist effect so it doesn't wipe storage before hydration.
+  const projectHydratedRef = useRef(false);
 
   useEffect(() => {
     const loadTokenAndUser = async () => {
@@ -36,11 +38,32 @@ export const AuthProvider = ({ children }) => {
         if (storedUser._id || storedUser.id) {
           setUserId(storedUser._id || storedUser.id);
         }
+
+        // Restore the last selected project (an active shift may still override it).
+        const storedProject = await getSelectedProject();
+        if (storedProject) {
+          setSelectedProject(storedProject);
+        }
       }
+
+      projectHydratedRef.current = true;
       setIsLoading(false);
     };
     loadTokenAndUser();
   }, []);
+
+  // Persist the selected project so it survives app restarts.
+  useEffect(() => {
+    if (!projectHydratedRef.current) {
+      return;
+    }
+
+    if (selectedProject) {
+      saveSelectedProject(selectedProject);
+    } else {
+      removeSelectedProject();
+    }
+  }, [selectedProject]);
 
   useEffect(() => {
     setUnauthorizedHandler(async () => {

@@ -77,3 +77,29 @@ export const removeUser = async () => {
     console.error('Failed to remove user:', error);
   }
 };
+
+export const saveSelectedProject = async (project) => {
+  try {
+    await AsyncStorage.setItem('selectedProject', JSON.stringify(project));
+  } catch (error) {
+    console.error('Failed to save selected project:', error);
+  }
+};
+
+export const getSelectedProject = async () => {
+  try {
+    const projectStr = await AsyncStorage.getItem('selectedProject');
+    return projectStr ? JSON.parse(projectStr) : null;
+  } catch (error) {
+    console.error('Failed to get selected project:', error);
+    return null;
+  }
+};
+
+export const removeSelectedProject = async () => {
+  try {
+    await AsyncStorage.removeItem('selectedProject');
+  } catch (error) {
+    console.error('Failed to remove selected project:', error);
+  }
+};
