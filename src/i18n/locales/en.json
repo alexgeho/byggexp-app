@@ -75,7 +75,23 @@
     "createdMessage": "Instrument created successfully.",
     "createError": "Unable to create instrument.",
     "photoErrorTitle": "Photo error",
-    "photoErrorMessage": "Unable to select photo right now."
+    "photoErrorMessage": "Unable to select photo right now.",
+    "listTitle": "Instruments",
+    "scan": "Scan",
+    "changeStatusTitle": "Change tool status",
+    "statusUpdateError": "Unable to update tool status right now.",
+    "emptyTitle": "No instruments found",
+    "emptyProjectFiltered": "No instruments assigned to this project.",
+    "emptyCanCreate": "Tap the add button below to create the first instrument.",
+    "emptyNoneAssigned": "No instruments are assigned yet.",
+    "noNotes": "No notes",
+    "countSummary": "{{workers}} workers · {{projects}} projects",
+    "status": {
+      "available": "Available",
+      "broken": "Broken",
+      "in_repair": "In repair",
+      "occupied": "Occupied"
+    }
   },
   "language": {
     "title": "Language",

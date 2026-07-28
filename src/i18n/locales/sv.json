@@ -75,7 +75,23 @@
     "createdMessage": "Verktyget skapades.",
     "createError": "Det gick inte att skapa verktyget.",
     "photoErrorTitle": "Fotofel",
-    "photoErrorMessage": "Det går inte att välja foto just nu."
+    "photoErrorMessage": "Det går inte att välja foto just nu.",
+    "listTitle": "Verktyg",
+    "scan": "Skanna",
+    "changeStatusTitle": "Ändra verktygsstatus",
+    "statusUpdateError": "Det gick inte att uppdatera verktygsstatus just nu.",
+    "emptyTitle": "Inga verktyg hittades",
+    "emptyProjectFiltered": "Inga verktyg är kopplade till detta projekt.",
+    "emptyCanCreate": "Tryck på plusknappen nedan för att skapa det första verktyget.",
+    "emptyNoneAssigned": "Inga verktyg är kopplade ännu.",
+    "noNotes": "Inga anteckningar",
+    "countSummary": "{{workers}} arbetare · {{projects}} projekt",
+    "status": {
+      "available": "Tillgänglig",
+      "broken": "Trasig",
+      "in_repair": "På reparation",
+      "occupied": "Upptagen"
+    }
   },
   "language": {
     "title": "Språk",

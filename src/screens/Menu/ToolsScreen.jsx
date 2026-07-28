@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
 import AuthContext from "../../contexts/AuthContext";
 import { useTheme } from "../../theme/ThemeContext";
@@ -62,6 +63,7 @@ const resolvePhotoUrl = (value) => {
 
 export default function ToolsScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const { user, selectedProject } = useContext(AuthContext);
 
@@ -125,11 +127,11 @@ export default function ToolsScreen() {
     const toolId = getEntityId(tool);
 
     Alert.alert(
-      "Change tool status",
+      t("tools.changeStatusTitle"),
       tool.name,
       [
         ...TOOL_STATUS_OPTIONS.map((option) => ({
-          text: option.label,
+          text: t(`tools.status.${option.value}`, option.label),
           onPress: async () => {
             if (option.value === tool.status) {
               return;
@@ -146,11 +148,11 @@ export default function ToolsScreen() {
               );
             } catch (error) {
               console.error("Failed to update tool status:", error);
-              Alert.alert("Error", "Unable to update tool status right now.");
+              Alert.alert(t("common.error"), t("tools.statusUpdateError"));
             }
           },
         })),
-        { text: "Cancel", style: "cancel" },
+        { text: t("common.cancel"), style: "cancel" },
       ],
     );
   };
@@ -171,13 +173,13 @@ export default function ToolsScreen() {
               { fontFamily: theme.text.fontFamily.semiBold },
             ]}
           >
-            Instruments
+            {t("tools.listTitle")}
           </Text>
           <TouchableOpacity
             style={styles.scanButton}
             onPress={() => navigation.navigate("ToolScan")}
           >
-            <Text style={styles.scanButtonText}>Skanna</Text>
+            <Text style={styles.scanButtonText}>{t("tools.scan")}</Text>
           </TouchableOpacity>
         </View>
 
@@ -201,13 +203,13 @@ export default function ToolsScreen() {
           >
             {filteredTools.length === 0 ? (
               <View style={styles.emptyState}>
-                <Text style={styles.emptyTitle}>No instruments found</Text>
+                <Text style={styles.emptyTitle}>{t("tools.emptyTitle")}</Text>
                 <Text style={styles.emptySubtitle}>
                   {selectedProjectId
-                    ? "No instruments assigned to this project."
+                    ? t("tools.emptyProjectFiltered")
                     : canManageTools(user?.role)
-                      ? "Tap the add button below to create the first instrument."
-                      : "No instruments are assigned yet."}
+                      ? t("tools.emptyCanCreate")
+                      : t("tools.emptyNoneAssigned")}
                 </Text>
               </View>
             ) : (
@@ -247,11 +249,13 @@ export default function ToolsScreen() {
                       numberOfLines={1}
                       ellipsizeMode="tail"
                     >
-                      {tool.notes || "No notes"}
+                      {tool.notes || t("tools.noNotes")}
                     </Text>
                     <Text style={cardStyles.cardSecondaryText}>
-                      {tool.workerIds?.length || 0} workers ·{" "}
-                      {tool.projectIds?.length || 0} projects
+                      {t("tools.countSummary", {
+                        workers: tool.workerIds?.length || 0,
+                        projects: tool.projectIds?.length || 0,
+                      })}
                     </Text>
                   </ListCard>
                 );
