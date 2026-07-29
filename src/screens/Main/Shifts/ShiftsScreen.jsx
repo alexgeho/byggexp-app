@@ -41,13 +41,13 @@ import {
   formatTimeRange,
   formatShiftListProjectName,
   getAdjacentMonthKey,
-  getCalendarWeekNumber,
   getCurrentMonthKey,
   getMonthDateRange,
   getTodayDateKey,
   parseDateKey,
   resolveUploadUrl,
 } from "../../../utils/shifts";
+import { buildCalendarLayout } from "../../../utils/shiftsCalendar";
 import {
   getDocumentNameFromUrl,
   isImageDocument,
@@ -207,73 +207,10 @@ export default function ShiftsScreen() {
     setSelectedDates([]);
   }, []);
 
-  const calendarLayout = useMemo(() => {
-    if (!selectedMonth) {
-      return {
-        columnDates: [],
-        rowDates: [],
-        rows: [],
-      };
-    }
-
-    const [year, month] = selectedMonth.split("-").map(Number);
-    const daysInMonth = new Date(year, month, 0).getDate();
-    const firstDayIndex = (new Date(year, month - 1, 1).getDay() + 6) % 7;
-    const cells = [];
-
-    for (let index = 0; index < firstDayIndex; index += 1) {
-      cells.push(null);
-    }
-
-    for (let day = 1; day <= daysInMonth; day += 1) {
-      cells.push(`${selectedMonth}-${day.toString().padStart(2, "0")}`);
-    }
-
-    while (cells.length % 7 !== 0) {
-      cells.push(null);
-    }
-
-    const columnDates = Array.from({ length: 7 }, () => []);
-    const rowDates = [];
-
-    for (let rowIndex = 0; rowIndex < cells.length / 7; rowIndex += 1) {
-      const rowStartIndex = rowIndex * 7;
-      const datesInRow = [];
-
-      for (let columnIndex = 0; columnIndex < 7; columnIndex += 1) {
-        const dateStr = cells[rowStartIndex + columnIndex];
-        if (dateStr) {
-          columnDates[columnIndex].push(dateStr);
-          datesInRow.push(dateStr);
-        }
-      }
-
-      rowDates.push(datesInRow);
-    }
-
-    const rows = [];
-    for (let rowIndex = 0; rowIndex < cells.length / 7; rowIndex += 1) {
-      const rowStartIndex = rowIndex * 7;
-      const weekNumber = getCalendarWeekNumber(
-        year,
-        month,
-        firstDayIndex,
-        rowStartIndex,
-      );
-
-      rows.push({
-        rowIndex,
-        weekNumber,
-        cells: cells.slice(rowStartIndex, rowStartIndex + 7),
-      });
-    }
-
-    return {
-      columnDates,
-      rowDates,
-      rows,
-    };
-  }, [selectedMonth]);
+  const calendarLayout = useMemo(
+    () => buildCalendarLayout(selectedMonth),
+    [selectedMonth],
+  );
 
   const toggleWeekdayColumn = useCallback(
     (columnIndex) => {
