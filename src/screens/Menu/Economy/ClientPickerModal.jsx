@@ -15,9 +15,15 @@ import { clientService } from "../../../services";
 import { styles, PRIMARY, MUTED } from "./billingForm.styles";
 
 const NEW_CLIENT = {
+  clientType: "company",
   companyName: "",
-  email: "",
   orgNumber: "",
+  vatNumber: "",
+  contactPerson: "",
+  firstName: "",
+  lastName: "",
+  personalNumber: "",
+  email: "",
   phone: "",
   address: "",
   postalCode: "",
@@ -32,6 +38,8 @@ export default function ClientPickerModal({ visible, onClose, onSelect }) {
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState(NEW_CLIENT);
+
+  const isCompany = form.clientType === "company";
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -70,25 +78,52 @@ export default function ClientPickerModal({ visible, onClose, onSelect }) {
   const setField = (key, value) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
+  const buildPayload = () => {
+    const base = {
+      clientType: form.clientType,
+      email: form.email.trim(),
+      phone: form.phone.trim(),
+      address: form.address.trim(),
+      postalCode: form.postalCode.trim(),
+      city: form.city.trim(),
+    };
+    if (isCompany) {
+      return {
+        ...base,
+        companyName: form.companyName.trim(),
+        orgNumber: form.orgNumber.trim(),
+        vatNumber: form.vatNumber.trim(),
+        contactPerson: form.contactPerson.trim(),
+      };
+    }
+    const fullName = `${form.firstName} ${form.lastName}`.trim();
+    return {
+      ...base,
+      firstName: form.firstName.trim(),
+      lastName: form.lastName.trim(),
+      personalNumber: form.personalNumber.trim(),
+      companyName: fullName, // downstream offer/invoice display the customer name
+    };
+  };
+
   const saveNewClient = async () => {
-    if (!form.companyName.trim()) {
+    if (isCompany && !form.companyName.trim()) {
       Alert.alert(
         t("billing.clientNameRequiredTitle"),
         t("billing.clientNameRequired"),
       );
       return;
     }
+    if (!isCompany && (!form.firstName.trim() || !form.lastName.trim())) {
+      Alert.alert(
+        t("billing.clientNameRequiredTitle"),
+        t("billing.privateNameRequired"),
+      );
+      return;
+    }
     try {
       setSaving(true);
-      const created = await clientService.create({
-        companyName: form.companyName.trim(),
-        email: form.email.trim(),
-        orgNumber: form.orgNumber.trim(),
-        phone: form.phone.trim(),
-        address: form.address.trim(),
-        postalCode: form.postalCode.trim(),
-        city: form.city.trim(),
-      });
+      const created = await clientService.create(buildPayload());
       onSelect(created);
     } catch (error) {
       console.error("Failed to create client:", error);
@@ -98,7 +133,7 @@ export default function ClientPickerModal({ visible, onClose, onSelect }) {
     }
   };
 
-  const newClientField = (key, label, keyboardType) => (
+  const field = (key, label, keyboardType) => (
     <View style={[styles.field, { marginBottom: 10 }]}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
@@ -127,19 +162,64 @@ export default function ClientPickerModal({ visible, onClose, onSelect }) {
 
           {creating ? (
             <ScrollView keyboardShouldPersistTaps="handled">
-              {newClientField("companyName", `${t("billing.clientName")} *`)}
-              {newClientField("email", t("billing.email"), "email-address")}
-              {newClientField("orgNumber", t("billing.orgNumber"))}
-              {newClientField("phone", t("billing.phone"), "phone-pad")}
-              {newClientField("address", t("billing.address"))}
+              <Text style={[styles.label, { marginBottom: 6 }]}>
+                {t("billing.clientType")}
+              </Text>
+              <View style={styles.typeToggle}>
+                <TouchableOpacity
+                  style={[styles.typeBtn, isCompany && styles.typeBtnOn]}
+                  onPress={() => setField("clientType", "company")}
+                >
+                  <Text
+                    style={[styles.typeText, isCompany && styles.typeTextOn]}
+                  >
+                    {t("billing.typeCompany")}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.typeBtn, !isCompany && styles.typeBtnOn]}
+                  onPress={() => setField("clientType", "private")}
+                >
+                  <Text
+                    style={[styles.typeText, !isCompany && styles.typeTextOn]}
+                  >
+                    {t("billing.typePrivate")}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {isCompany ? (
+                <>
+                  {field("companyName", `${t("billing.companyNameField")} *`)}
+                  {field("orgNumber", t("billing.orgNumber"))}
+                  {field("vatNumber", t("billing.vatNumber"))}
+                  {field("contactPerson", t("billing.contactPerson"))}
+                </>
+              ) : (
+                <View style={styles.two}>
+                  <View style={styles.half}>
+                    {field("firstName", `${t("billing.firstName")} *`)}
+                  </View>
+                  <View style={styles.half}>
+                    {field("lastName", `${t("billing.lastName")} *`)}
+                  </View>
+                </View>
+              )}
+              {!isCompany &&
+                field("personalNumber", t("billing.personalNumber"))}
+
+              {field("email", t("billing.email"), "email-address")}
+              {field("phone", t("billing.phone"), "phone-pad")}
+              {field("address", t("billing.address"))}
               <View style={styles.two}>
                 <View style={styles.half}>
-                  {newClientField("postalCode", t("billing.postalCode"))}
+                  {field("postalCode", t("billing.postalCode"))}
                 </View>
                 <View style={styles.half}>
-                  {newClientField("city", t("billing.city"))}
+                  {field("city", t("billing.city"))}
                 </View>
               </View>
+
               <View
                 style={[
                   styles.actions,

@@ -224,6 +224,30 @@ export const styles = StyleSheet.create({
   btnTextGhost: { color: "#0785f4" },
   btnDisabled: { opacity: 0.5 },
 
+  typeToggle: {
+    flexDirection: "row",
+    backgroundColor: "#dfe6ee",
+    borderRadius: 11,
+    padding: 4,
+    marginBottom: 12,
+  },
+  typeBtn: {
+    flex: 1,
+    paddingVertical: 9,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  typeBtnOn: {
+    backgroundColor: "#fff",
+    shadowColor: INK,
+    shadowOpacity: 0.12,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  typeText: { fontSize: 14, fontWeight: "700", color: MUTED },
+  typeTextOn: { color: INK },
+
   /* client picker modal */
   modalOverlay: {
     flex: 1,

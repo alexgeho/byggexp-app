@@ -929,6 +929,16 @@
     "notSentMessage": "The invoice was created as a draft but e-mail is not configured on the server.",
     "missingEmailTitle": "Email missing",
     "missingEmail": "Add the customer email to send the invoice.",
-    "itemDescriptionPlaceholder": "e.g. Demolition of kitchen, 25 m²"
+    "itemDescriptionPlaceholder": "e.g. Demolition of kitchen, 25 m²",
+    "clientType": "Customer type",
+    "typeCompany": "Company",
+    "typePrivate": "Private person",
+    "companyNameField": "Company name",
+    "vatNumber": "VAT no.",
+    "contactPerson": "Contact person",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "personalNumber": "Personal number",
+    "privateNameRequired": "Enter first and last name."
   }
 }
