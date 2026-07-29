@@ -107,16 +107,6 @@ const GroupRow = ({ children, isLast = false }) => (
   </View>
 );
 
-const getUserInitials = (name = "") => {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  return (
-    parts
-      .slice(0, 2)
-      .map((part) => part[0]?.toUpperCase() || "")
-      .join("") || "?"
-  );
-};
-
 const formatScheduleDate = (date) =>
   date.toLocaleDateString(getDateLocale(), {
     day: "numeric",

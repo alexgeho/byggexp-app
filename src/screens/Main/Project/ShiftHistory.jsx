@@ -58,12 +58,7 @@ export const ShiftHistory = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
 
-  const {
-    projectId,
-    workerId,
-    workerName,
-    type = "history",
-  } = route.params || {};
+  const { projectId, workerId, workerName } = route.params || {};
   const currentUserId = user?._id || user?.id;
   const effectiveWorkerId =
     workerId || (user?.role === "worker" ? currentUserId : null);
@@ -262,12 +257,6 @@ export const ShiftHistory = ({ route }) => {
   const openWorkerModal = () => {
     setPeriodPickerOpen(false);
     bottomSheetRef.current?.expand();
-  };
-
-  const closeWorkerModal = () => {
-    setPeriodPickerOpen(false);
-    setDatePickerTarget(null);
-    bottomSheetRef.current?.close();
   };
 
   const renderBottomSheetBackdrop = useCallback(

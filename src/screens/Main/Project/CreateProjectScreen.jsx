@@ -500,16 +500,6 @@ export default function CreateProjectScreen() {
     return () => clearTimeout(debounceId);
   }, [isLocationPickerVisible, locationSearch]);
 
-  const fetchUsersByCompany = async (companyId) => {
-    try {
-      const usersData = await userService.getByCompany(companyId);
-      setUsers(usersData);
-    } catch (error) {
-      console.error("Error fetching company users:", error);
-      setUsers([]);
-    }
-  };
-
   const fetchUsersAndCompanies = async () => {
     try {
       if (user?.role === "superadmin") {
@@ -568,16 +558,6 @@ export default function CreateProjectScreen() {
     setSelectedManager(null);
     setSelectedWorkers([]);
     setShowCompaniesModal(false);
-  };
-
-  const toggleWorkerSelection = (workerId) => {
-    setSelectedWorkers((prev) => {
-      if (prev.includes(workerId)) {
-        return prev.filter((id) => id !== workerId);
-      } else {
-        return [...prev, workerId];
-      }
-    });
   };
 
   const togglePendingWorkerSelection = (workerId) => {
