@@ -366,7 +366,13 @@ export default function MenuScreen() {
         onRightPress={() => navigation.navigate("Menu")}
         onActionPress={logout}
         renderActionContent={() => (
-          <Text style={styles.logoutButtonText}>{t("menu.logOut")}</Text>
+          <Text
+            style={styles.logoutButtonText}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
+            {t("menu.logOut")}
+          </Text>
         )}
       />
     </View>
