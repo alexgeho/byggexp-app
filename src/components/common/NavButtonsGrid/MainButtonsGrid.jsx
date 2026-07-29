@@ -1,14 +1,6 @@
 import React, { useContext, useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-} from "react-native";
-import {
-  useNavigation,
-  useFocusEffect,
-} from "@react-navigation/native";
+import { View, Text, TouchableOpacity, Image } from "react-native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../theme/ThemeContext";
@@ -23,6 +15,7 @@ import {
 } from "../../../utils/userRoles";
 import AuthContext from "../../../contexts/AuthContext";
 import { useUnreadChats } from "../../../hooks/useUnreadChats";
+import { useTaskProjectBadges } from "../../../hooks/useTaskProjectBadges";
 import { useHomeButtonStats } from "../../../hooks/useHomeButtonStats";
 import UnreadBadge from "../UnreadBadge/UnreadBadge";
 import { HomeButtonExtraInfo } from "./HomeButtonExtraInfo";
@@ -33,11 +26,15 @@ export default function MainButtonsGrid() {
   const { t } = useTranslation();
   const { user, userId, selectedProject } = useContext(AuthContext);
   const { theme } = useTheme();
-  const selectedProjectId =
-    selectedProject?._id || selectedProject?.id;
+  const selectedProjectId = selectedProject?._id || selectedProject?.id;
 
   const styles = createStyles(theme);
   const { unreadCount } = useUnreadChats();
+  const { openTaskCount, taskDeadline, projectDeadline } = useTaskProjectBadges(
+    {
+      projectId: selectedProjectId,
+    },
+  );
   const showEmployeeStats = canViewEmployeeStatsForProject(
     user?.role,
     userId || user?._id || user?.id,
@@ -48,14 +45,12 @@ export default function MainButtonsGrid() {
     loadEmployeeStats: showEmployeeStats,
   });
 
-  const [enabledButtons, setEnabledButtons] =
-    useState(defaultEnabledButtons);
+  const [enabledButtons, setEnabledButtons] = useState(defaultEnabledButtons);
 
   useFocusEffect(
     React.useCallback(function loadButtons() {
       async function fetchButtons() {
-        const savedButtons =
-          await getEnabledButtons();
+        const savedButtons = await getEnabledButtons();
 
         if (savedButtons) {
           setEnabledButtons(savedButtons);
@@ -132,6 +127,10 @@ export default function MainButtonsGrid() {
                   {button.id === "chats" ? (
                     <UnreadBadge count={unreadCount} />
                   ) : null}
+
+                  {button.id === "tasks" ? (
+                    <UnreadBadge count={openTaskCount} />
+                  ) : null}
                 </View>
 
                 <Text
@@ -148,6 +147,8 @@ export default function MainButtonsGrid() {
                   showEmployeeStats={showEmployeeStats}
                   employeeStats={employeeStats}
                   shiftStats={shiftStats}
+                  taskDeadline={taskDeadline}
+                  projectDeadline={projectDeadline}
                   style={styles.infoBadgesRow}
                 />
               </TouchableOpacity>

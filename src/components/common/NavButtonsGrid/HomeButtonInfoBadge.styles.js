@@ -13,6 +13,10 @@ const BADGE_VARIANTS = {
     backgroundColor: "rgba(7, 133, 244, 0.2)",
     borderLeftColor: "#FFFFFF",
   },
+  deadline: {
+    backgroundColor: "rgba(255, 149, 0, 0.2)",
+    borderLeftColor: "#FF9500",
+  },
 };
 
 export function createStyles(variant) {

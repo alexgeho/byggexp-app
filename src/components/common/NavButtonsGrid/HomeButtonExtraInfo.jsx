@@ -7,9 +7,30 @@ export function HomeButtonExtraInfo({
   buttonId,
   showEmployeeStats,
   employeeStats,
+  taskDeadline,
+  projectDeadline,
   style,
 }) {
   const { t } = useTranslation();
+
+  if (buttonId === "tasks" && taskDeadline) {
+    return (
+      <View style={style}>
+        <HomeButtonInfoBadge label={`📅 ${taskDeadline}`} variant="deadline" />
+      </View>
+    );
+  }
+
+  if (buttonId === "projects" && projectDeadline) {
+    return (
+      <View style={style}>
+        <HomeButtonInfoBadge
+          label={`📅 ${projectDeadline}`}
+          variant="deadline"
+        />
+      </View>
+    );
+  }
 
   if (buttonId === "employees" && showEmployeeStats) {
     return (
