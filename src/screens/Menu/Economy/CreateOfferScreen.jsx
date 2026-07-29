@@ -29,6 +29,7 @@ import {
 import { styles, PRIMARY } from "./billingForm.styles";
 import LineItemsEditor from "./LineItemsEditor";
 import ClientPickerModal from "./ClientPickerModal";
+import SectionTitle from "./SectionTitle";
 
 const formatDisplayDate = (iso) => {
   if (!iso) return "";
@@ -225,7 +226,7 @@ export default function CreateOfferScreen() {
           </View>
         </View>
 
-        <Text style={styles.divider}>{t("billing.offerRows")}</Text>
+        <SectionTitle title={t("billing.offerRows")} />
         <LineItemsEditor items={items} onChange={setItems} />
 
         <View style={styles.field}>

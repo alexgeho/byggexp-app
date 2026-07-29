@@ -28,6 +28,7 @@ import {
 import { styles, PRIMARY } from "./billingForm.styles";
 import LineItemsEditor from "./LineItemsEditor";
 import ClientPickerModal from "./ClientPickerModal";
+import SectionTitle from "./SectionTitle";
 
 const DEFAULT_TERMS_DAYS = 20;
 
@@ -229,10 +230,10 @@ export default function CreateInvoiceScreen() {
           </View>
         </View>
 
-        <Text style={styles.divider}>{t("billing.invoiceRows")}</Text>
+        <SectionTitle title={t("billing.invoiceRows")} />
         <LineItemsEditor items={items} onChange={setItems} />
 
-        <Text style={styles.divider}>{t("billing.rot")}</Text>
+        <SectionTitle title={t("billing.rot")} />
         <TouchableOpacity
           style={styles.toggleRow}
           activeOpacity={0.85}

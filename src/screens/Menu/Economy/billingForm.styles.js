@@ -83,15 +83,20 @@ export const styles = StyleSheet.create({
   two: { flexDirection: "row", gap: 11 },
   half: { flex: 1 },
 
-  divider: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0.6,
-    color: MUTED,
-    textTransform: "uppercase",
-    marginTop: 4,
+  // Centered section title with side rules — mirrors the admin form
+  // ("Offer rows", "ROT-avdrag").
+  sectionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginTop: 8,
     marginBottom: 2,
-    marginLeft: 2,
+  },
+  sectionLine: { flex: 1, height: 1, backgroundColor: "#dbe2ea" },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: MUTED,
   },
 
   row: {
@@ -146,11 +151,11 @@ export const styles = StyleSheet.create({
   rowAmountLabel: { fontSize: 12, color: MUTED, fontWeight: "700" },
   rowAmountValue: { fontSize: 15, fontWeight: "800", color: INK },
   addRow: {
+    backgroundColor: "#fff",
     borderWidth: 1,
-    borderColor: "#b9c8d8",
-    borderStyle: "dashed",
+    borderColor: LINE,
     borderRadius: 12,
-    paddingVertical: 12,
+    paddingVertical: 13,
     alignItems: "center",
   },
   addRowText: { color: PRIMARY, fontWeight: "700", fontSize: 14 },
