@@ -553,6 +553,7 @@
     "planning": "Planning",
     "language": "Language",
     "legal": "Legal & Policies",
+    "guide": "Guide",
     "help": "Help & Support",
     "reportBug": "Report a bug",
     "about": "About the App",
@@ -572,6 +573,42 @@
     "clear": "Clear",
     "noResources": "No data to plan yet.",
     "noItems": "No items for this period."
+  },
+  "guide": {
+    "title": "Guide",
+    "intro": "A quick guide to the main features of the app.",
+    "gettingStartedTitle": "Getting started",
+    "gettingStarted": [
+      "Pick a project at the top of the home screen.",
+      "Press play to start a work shift; the timer runs while you work.",
+      "Use pause for a break and stop to end the shift."
+    ],
+    "shiftsTitle": "Work shifts",
+    "shifts": [
+      "Shifts can start automatically when you enter a project's area (if the project has a location).",
+      "Open Work shifts to see your history by day and month.",
+      "Select days and export a report as PDF or Excel."
+    ],
+    "tasksTitle": "Tasks",
+    "tasks": [
+      "Open Tasks to see what's assigned to you and your projects.",
+      "Create a task with a title, dates and an assignee.",
+      "Set reminders so you don't miss a deadline.",
+      "Mark a task complete when it's done."
+    ],
+    "projectsTitle": "Projects",
+    "projects": [
+      "Browse your projects and open one to see its tasks, workers and documents.",
+      "Admins can create projects and assign workers.",
+      "The home tiles show the next task and project deadlines."
+    ],
+    "communicationTitle": "Communication & more",
+    "communication": [
+      "Use Chats to message your team.",
+      "Add photos from Camera and files under Documents.",
+      "Change the app language under Language.",
+      "Contact us from Help & support."
+    ]
   },
   "roles": {
     "superadmin": "Super Admin",

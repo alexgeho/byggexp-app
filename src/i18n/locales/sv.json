@@ -553,6 +553,7 @@
     "planning": "Planering",
     "language": "Språk",
     "legal": "Juridik och villkor",
+    "guide": "Guide",
     "help": "Hjälp och support",
     "reportBug": "Rapportera ett fel",
     "about": "Om appen",
@@ -572,6 +573,42 @@
     "clear": "Rensa",
     "noResources": "Inga data att planera än.",
     "noItems": "Inga poster för denna period."
+  },
+  "guide": {
+    "title": "Guide",
+    "intro": "En snabb guide till appens viktigaste funktioner.",
+    "gettingStartedTitle": "Kom igång",
+    "gettingStarted": [
+      "Välj ett projekt högst upp på startskärmen.",
+      "Tryck på play för att starta ett arbetspass; tiden räknas medan du jobbar.",
+      "Använd paus för rast och stopp för att avsluta passet."
+    ],
+    "shiftsTitle": "Arbetspass",
+    "shifts": [
+      "Pass kan starta automatiskt när du kommer in i projektets område (om projektet har en plats).",
+      "Öppna Arbetspass för att se din historik per dag och månad.",
+      "Välj dagar och exportera en rapport som PDF eller Excel."
+    ],
+    "tasksTitle": "Uppgifter",
+    "tasks": [
+      "Öppna Uppgifter för att se vad som tilldelats dig och dina projekt.",
+      "Skapa en uppgift med titel, datum och ansvarig.",
+      "Ställ in påminnelser så att du inte missar en deadline.",
+      "Markera en uppgift som klar när den är färdig."
+    ],
+    "projectsTitle": "Projekt",
+    "projects": [
+      "Bläddra bland dina projekt och öppna ett för att se dess uppgifter, arbetare och dokument.",
+      "Administratörer kan skapa projekt och tilldela arbetare.",
+      "Rutorna på startskärmen visar nästa deadline för uppgifter och projekt."
+    ],
+    "communicationTitle": "Kommunikation & mer",
+    "communication": [
+      "Använd Chattar för att skriva till ditt team.",
+      "Lägg till foton från Kamera och filer under Dokument.",
+      "Byt appspråk under Språk.",
+      "Kontakta oss från Hjälp och support."
+    ]
   },
   "roles": {
     "superadmin": "Superadministratör",

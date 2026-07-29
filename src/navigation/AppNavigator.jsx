@@ -32,6 +32,7 @@ import CustomizeHomeScreen from "../screens/Menu/CustomizeHomeScreen";
 import LanguageScreen from "../screens/Menu/LanguageScreen";
 import AboutAppScreen from "../screens/Menu/AboutAppScreen";
 import HelpSupportScreen from "../screens/Menu/HelpSupportScreen";
+import HelpGuideScreen from "../screens/Menu/HelpGuideScreen";
 import ReportBugScreen from "../screens/Menu/ReportBugScreen";
 import LegalPoliciesScreen from "../screens/Menu/LegalPoliciesScreen";
 import NotificationsSettingsScreen from "../screens/Menu/NotificationsSettingsScreen";
@@ -97,15 +98,15 @@ export default function AppNavigator() {
               component={ThemeHomeScreen}
               options={{ headerShown: false }}
             />
-            <Stack.Screen
-              name="Camera"
-              component={CameraScreen}
-            />
+            <Stack.Screen name="Camera" component={CameraScreen} />
             <Stack.Screen name="Chats" component={ChatListScreen} />
             <Stack.Screen name="Tasks" component={TasksScreen} />
             <Stack.Screen name="GroupChat" component={GroupChatScreen} />
             <Stack.Screen name="SingleChat" component={SingleChatScreen} />
-            <Stack.Screen name="DocumentPreview" component={DocumentPreviewScreen} />
+            <Stack.Screen
+              name="DocumentPreview"
+              component={DocumentPreviewScreen}
+            />
             <Stack.Screen name="Projects" component={ProjectsScreen} />
             <Stack.Screen name="Project" component={ProjectScreen} />
             <Stack.Screen name="Task" component={TaskScreen} />
@@ -163,8 +164,12 @@ export default function AppNavigator() {
             <Stack.Screen name="Language" component={LanguageScreen} />
             <Stack.Screen name="AboutApp" component={AboutAppScreen} />
             <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
+            <Stack.Screen name="HelpGuide" component={HelpGuideScreen} />
             <Stack.Screen name="ReportBug" component={ReportBugScreen} />
-            <Stack.Screen name="LegalPolicies" component={LegalPoliciesScreen} />
+            <Stack.Screen
+              name="LegalPolicies"
+              component={LegalPoliciesScreen}
+            />
           </>
         ) : (
           <Stack.Screen

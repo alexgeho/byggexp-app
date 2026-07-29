@@ -20,6 +20,7 @@ import {
 import { useTheme } from "../../theme/ThemeContext";
 
 const SUPPORT_PHONE = "+46 812 410 276";
+const SUPPORT_WHATSAPP_URL = `https://wa.me/${SUPPORT_PHONE.replace(/[^0-9]/g, "")}`;
 const SUPPORT_EMAIL = "support@byggexp.se";
 
 async function openExternalUrl(url) {
@@ -126,7 +127,7 @@ export default function HelpSupportScreen() {
               { backgroundColor: `${theme.colors.primary}1A` },
             ]}
           >
-          <Icon name="help-circle" size={32} color={theme.colors.primary} />
+            <Icon name="help-circle" size={32} color={theme.colors.primary} />
           </View>
 
           <Text
@@ -154,7 +155,9 @@ export default function HelpSupportScreen() {
           title={t("help.callTitle")}
           value={SUPPORT_PHONE}
           description={t("help.callDescription")}
-          onPress={() => openExternalUrl(`tel:${SUPPORT_PHONE.replace(/\s+/g, "")}`)}
+          onPress={() =>
+            openExternalUrl(`tel:${SUPPORT_PHONE.replace(/\s+/g, "")}`)
+          }
           theme={theme}
         />
 
@@ -173,6 +176,7 @@ export default function HelpSupportScreen() {
           iconColor={theme.colors.primary}
           title={t("help.chatTitle")}
           description={t("help.chatDescription")}
+          onPress={() => openExternalUrl(SUPPORT_WHATSAPP_URL)}
           theme={theme}
         />
       </ScrollView>

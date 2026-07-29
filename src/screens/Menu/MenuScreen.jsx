@@ -1,9 +1,8 @@
 import React, { useContext, useMemo } from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity, Image, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../theme/ThemeContext";
-import { ScrollView } from "react-native";
 import { MenuButton } from "../../components/common/MenuButton/MenuButton";
 import AuthContext from "../../contexts/AuthContext";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
@@ -227,6 +226,13 @@ export default function MenuScreen() {
       color: theme.colors.primary,
     },
     {
+      id: "guide",
+      screen: "HelpGuide",
+      title: t("menu.guide"),
+      icon: require("../../assets/Help.png"),
+      color: theme.colors.primary,
+    },
+    {
       id: "help",
       screen: "HelpSupport",
       title: t("menu.help"),
@@ -297,7 +303,7 @@ export default function MenuScreen() {
               {user.name || t("menu.userFallback")}
             </Text>
           </View>
-          
+
           {/* BADGE */}
           <View style={styles.roleBadge}>
             <Text style={styles.roleText}>
