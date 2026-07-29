@@ -8,10 +8,7 @@ import AuthContext from "../../contexts/AuthContext";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { createStyles } from "./MenuScreen.styles";
-
-const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, "") ||
-  "https://api.byggexp.se";
+import { API_BASE_URL } from "../../config/env";
 
 const resolveImageUrl = (value) => {
   if (!value) {

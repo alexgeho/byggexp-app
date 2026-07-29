@@ -32,10 +32,7 @@ import {
 } from "../../utils/documentPreview";
 import { pickUploadAssets } from "../../utils/uploadPicker";
 import { userService } from "../../services";
-
-const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, "") ||
-  "https://api.byggexp.se";
+import { API_BASE_URL } from "../../config/env";
 
 const getLanguageInputValue = (language) => {
   if (!language) {
@@ -244,7 +241,10 @@ export const MyAccount = () => {
 
   const handleChangeAvatar = async () => {
     if (!profileId) {
-      Alert.alert(t("myAccount.avatarErrorTitle"), t("myAccount.userIdMissing"));
+      Alert.alert(
+        t("myAccount.avatarErrorTitle"),
+        t("myAccount.userIdMissing"),
+      );
       return;
     }
 
@@ -362,7 +362,10 @@ export const MyAccount = () => {
 
   const handleUploadDocuments = async () => {
     if (!profileId) {
-      Alert.alert(t("myAccount.uploadErrorTitle"), t("myAccount.userIdMissing"));
+      Alert.alert(
+        t("myAccount.uploadErrorTitle"),
+        t("myAccount.userIdMissing"),
+      );
       return;
     }
 
@@ -578,7 +581,9 @@ export const MyAccount = () => {
 
         <View style={styles.inputContainer}>
           <View style={styles.inputLabelRow}>
-            <Text style={styles.inputLabel}>{t("myAccount.professionLabel")}</Text>
+            <Text style={styles.inputLabel}>
+              {t("myAccount.professionLabel")}
+            </Text>
           </View>
           <TextInput
             style={styles.textInput}
@@ -628,7 +633,9 @@ export const MyAccount = () => {
         </View>
 
         <View style={styles.documentsContainer}>
-          <Text style={styles.documentsLabel}>{t("myAccount.additionalDocs")}</Text>
+          <Text style={styles.documentsLabel}>
+            {t("myAccount.additionalDocs")}
+          </Text>
           <TouchableOpacity
             style={styles.addButton}
             onPress={handleUploadDocuments}
@@ -673,7 +680,9 @@ export const MyAccount = () => {
               })}
             </View>
           ) : (
-            <Text style={styles.emptyDocumentsText}>{t("myAccount.noDocs")}</Text>
+            <Text style={styles.emptyDocumentsText}>
+              {t("myAccount.noDocs")}
+            </Text>
           )}
           <Text style={styles.documentsHint}>
             {t("myAccount.docsCount", { count: documents.length })}

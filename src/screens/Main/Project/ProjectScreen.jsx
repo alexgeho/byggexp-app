@@ -45,10 +45,7 @@ import {
   canManageDocuments,
   canManageWorkers,
 } from "../../../utils/userRoles";
-
-const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, "") ||
-  "https://api.byggexp.se";
+import { API_BASE_URL } from "../../../config/env";
 
 const formatDate = (value, withTime = false, t = null) => {
   const noDate = t ? t("project.noDate") : "No date";
@@ -182,9 +179,7 @@ export const ProjectScreen = () => {
   const { showSuccess } = useFeedback();
   const { theme } = useTheme();
   const { id, initialTab, refreshKey } = route.params || {};
-  const [modal, setModal] = useState(
-    initialTab || "Tasks",
-  );
+  const [modal, setModal] = useState(initialTab || "Tasks");
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -266,7 +261,9 @@ export const ProjectScreen = () => {
                     project?.createdAt ||
                     null,
               createdAt:
-                typeof document === "string" ? null : document?.createdAt || null,
+                typeof document === "string"
+                  ? null
+                  : document?.createdAt || null,
               isImage: isImageDocument({
                 name: getDocumentName(document, index),
                 mimeType:
@@ -343,8 +340,7 @@ export const ProjectScreen = () => {
         });
       });
 
-      const updatedProject =
-        await projectService.uploadDocuments(id, formData);
+      const updatedProject = await projectService.uploadDocuments(id, formData);
 
       if (updatedProject) {
         setProject(updatedProject);
@@ -479,7 +475,9 @@ export const ProjectScreen = () => {
                   badgeLabel={t(`task.status.${status.tone}`, status.label)}
                   badgeStyle={taskBadgeStyles[status.tone]}
                 >
-                  <Text style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}>
+                  <Text
+                    style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
+                  >
                     {formatDate(task.dueDate, true, t)}
                   </Text>
                   <Text
@@ -583,7 +581,9 @@ export const ProjectScreen = () => {
                     {worker.name || t("project.unnamedWorker")}
                   </Text>
                   <Text style={styles.workerSubtitle}>
-                    {worker.profession || worker.email || t("project.workerRole")}
+                    {worker.profession ||
+                      worker.email ||
+                      t("project.workerRole")}
                   </Text>
                 </View>
                 <Image

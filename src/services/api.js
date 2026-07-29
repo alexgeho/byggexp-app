@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 import {
   getToken,
   saveToken,
@@ -7,16 +7,16 @@ import {
   saveRefreshToken,
   removeRefreshToken,
   removeUser,
-} from '../utils/storage';
+} from "../utils/storage";
 
-export const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '') ||
-  'https://api.byggexp.se';
+import { API_BASE_URL } from "../config/env";
+
+export { API_BASE_URL };
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
@@ -37,7 +37,7 @@ const handleUnauthorized = async () => {
 
   unauthorizedHandlingPromise = (async () => {
     try {
-      if (typeof unauthorizedHandler === 'function') {
+      if (typeof unauthorizedHandler === "function") {
         await unauthorizedHandler();
       } else {
         await clearStoredAuth();
@@ -60,7 +60,7 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 api.interceptors.response.use(
@@ -69,7 +69,10 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response?.status === 403) {
-      console.warn('403 Forbidden:', error.response?.data?.message || 'Access denied');
+      console.warn(
+        "403 Forbidden:",
+        error.response?.data?.message || "Access denied",
+      );
     }
 
     if (error.response?.status === 401 && !originalRequest._retry) {
@@ -88,7 +91,7 @@ api.interceptors.response.use(
 
         const newAccessToken = data.access_token;
         const newRefreshToken = data.refresh_token;
-        
+
         await saveToken(newAccessToken);
         if (newRefreshToken) {
           await saveRefreshToken(newRefreshToken);
@@ -103,7 +106,7 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export const fetchData = async (endpoint) => {
@@ -111,7 +114,7 @@ export const fetchData = async (endpoint) => {
     const response = await api.get(endpoint);
     return response.data;
   } catch (error) {
-    console.error('Failed to fetch data:', error);
+    console.error("Failed to fetch data:", error);
     throw error;
   }
 };
@@ -124,11 +127,10 @@ export const setUnauthorizedHandler = (handler) => {
 
 export const setAuthToken = async (token) => {
   if (token) {
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     await saveToken(token);
   } else {
-    delete api.defaults.headers.common['Authorization'];
+    delete api.defaults.headers.common["Authorization"];
     await clearStoredAuth();
   }
 };
-
