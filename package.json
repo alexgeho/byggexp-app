@@ -15,8 +15,24 @@
     "web": "expo start --web",
     "lint": "eslint .",
     "compile": "node scripts/check-compile.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "test:i18n": "node scripts/check-i18n-parity.js",
-    "verify": "yarn lint && yarn compile && yarn test:i18n"
+    "verify": "yarn lint && yarn compile && yarn test:i18n && yarn test",
+    "format": "prettier --write .",
+    "prepare": "husky"
+  },
+  "jest": {
+    "preset": "jest-expo"
+  },
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "@expo-google-fonts/oswald": "^0.4.2",
@@ -76,7 +92,12 @@
     "babel-preset-expo": "~54.0.10",
     "eslint": "^9",
     "eslint-config-expo": "~10.0.0",
+    "husky": "^9.1.7",
+    "jest": "~29.7.0",
+    "jest-expo": "~54.0.17",
+    "lint-staged": "^15",
     "metro-react-native-babel-preset": "^0.77.0",
+    "prettier": "^3.9.6",
     "typescript": "~5.9.2"
   }
 }

@@ -1,0 +1,14 @@
+node_modules
+.expo
+dist
+web-build
+android
+ios
+coverage
+yarn.lock
+package-lock.json
+*.png
+*.jpg
+*.jpeg
+*.ttf
+*.otf

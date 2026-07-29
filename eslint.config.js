@@ -28,4 +28,21 @@ module.exports = [
       },
     },
   },
+  {
+    // Jest test files.
+    files: ["**/*.test.{js,jsx}", "**/__tests__/**/*.{js,jsx}"],
+    languageOptions: {
+      globals: {
+        jest: "readonly",
+        describe: "readonly",
+        it: "readonly",
+        test: "readonly",
+        expect: "readonly",
+        beforeEach: "readonly",
+        afterEach: "readonly",
+        beforeAll: "readonly",
+        afterAll: "readonly",
+      },
+    },
+  },
 ];
