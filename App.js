@@ -1,20 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TextInput } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import * as Font from 'expo-font';
-import { Oswald_500Medium } from '@expo-google-fonts/oswald';
-import AppNavigator from './src/navigation/AppNavigator';
-import { AuthProvider } from './src/contexts/AuthContext';
-import { FeedbackProvider } from './src/contexts/FeedbackContext';
-import { ThemeProvider } from './src/theme/ThemeContext';
-import NotificationBootstrap from './src/components/NotificationBootstrap';
-import ShiftLocationMonitor from './src/components/ShiftLocationMonitor';
-import MagicLinkHandler from './src/components/MagicLinkHandler';
-import ErrorBoundary from './src/components/common/ErrorBoundary/ErrorBoundary';
-import { loadStoredLanguage } from './src/i18n';
+import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, TextInput } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import * as Font from "expo-font";
+import { Oswald_500Medium } from "@expo-google-fonts/oswald";
+import AppNavigator from "./src/navigation/AppNavigator";
+import { AuthProvider } from "./src/contexts/AuthContext";
+import { FeedbackProvider } from "./src/contexts/FeedbackContext";
+import { ThemeProvider } from "./src/theme/ThemeContext";
+import NotificationBootstrap from "./src/components/NotificationBootstrap";
+import ShiftLocationMonitor from "./src/components/ShiftLocationMonitor";
+import MagicLinkHandler from "./src/components/MagicLinkHandler";
+import ErrorBoundary from "./src/components/common/ErrorBoundary/ErrorBoundary";
+import { initSentry } from "./src/utils/sentry";
+import { loadStoredLanguage } from "./src/i18n";
 
-const defaultTextStyle = { fontFamily: 'DMSans-Regular' };
+// Start crash reporting as early as possible (no-op without a DSN).
+initSentry();
+
+const defaultTextStyle = { fontFamily: "DMSans-Regular" };
 
 const mergeDefaultStyle = (currentStyle) => {
   if (Array.isArray(currentStyle)) {
@@ -44,16 +48,16 @@ export default function App() {
       await loadStoredLanguage();
       try {
         await Font.loadAsync({
-          'DMSans-Regular': require('./src/assets/fonts/DMSans-Regular.ttf'),
-          'DMSans-Bold': require('./src/assets/fonts/DMSans-Bold.ttf'),
-          'DMSans-Medium': require('./src/assets/fonts/DMSans-Medium.ttf'),
-          'DMSans-SemiBold': require('./src/assets/fonts/DMSans-Medium.ttf'),
-          'Landasans-Medium': require('./src/assets/fonts/Landasans-Medium.otf'),
+          "DMSans-Regular": require("./src/assets/fonts/DMSans-Regular.ttf"),
+          "DMSans-Bold": require("./src/assets/fonts/DMSans-Bold.ttf"),
+          "DMSans-Medium": require("./src/assets/fonts/DMSans-Medium.ttf"),
+          "DMSans-SemiBold": require("./src/assets/fonts/DMSans-Medium.ttf"),
+          "Landasans-Medium": require("./src/assets/fonts/Landasans-Medium.otf"),
           Oswald_500Medium,
         });
         setFontsLoaded(true);
       } catch (error) {
-        console.error('Error loading fonts:', error);
+        console.error("Error loading fonts:", error);
         setFontsLoaded(true);
       }
     }

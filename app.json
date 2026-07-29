@@ -55,7 +55,8 @@
         {
           "cameraPermission": "Allow ByggExp to use your camera to scan tool QR codes."
         }
-      ]
+      ],
+      "@sentry/react-native"
     ],
     "extra": {
       "eas": {

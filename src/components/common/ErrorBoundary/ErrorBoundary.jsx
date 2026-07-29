@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import i18n from "../../../i18n";
+import { captureException } from "../../../utils/sentry";
 
 // Top-level error boundary: catches render/runtime errors in the tree and
 // shows a recoverable fallback instead of a blank white screen. Must be a
@@ -16,9 +17,9 @@ export default class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, info) {
-    // Surface the crash for debugging. Swap for a reporting service (Sentry
-    // etc.) here when one is added.
+    // Surface the crash for debugging and report it to Sentry (no-op if no DSN).
     console.error("Unhandled UI error:", error, info?.componentStack);
+    captureException(error, { componentStack: info?.componentStack });
   }
 
   handleRetry = () => {
