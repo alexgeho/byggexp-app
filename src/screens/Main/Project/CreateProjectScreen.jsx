@@ -880,7 +880,6 @@ export default function CreateProjectScreen() {
         await toolService.attachToProject(String(projectId), selectedTools);
       }
 
-      console.log("Project created:", result);
       showSuccess({
         title: t("createProject.created"),
         message: t("createProject.createdMessage"),

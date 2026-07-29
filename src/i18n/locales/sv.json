@@ -25,13 +25,6 @@
     "previewUnavailable": "Förhandsvisning ej tillgänglig",
     "unsupportedText": "Den här filtypen kan inte förhandsvisas än. Använd nedladdningsknappen för att öppna eller dela den."
   },
-  "tabs": {
-    "home": "Hem",
-    "chats": "Chattar",
-    "projects": "Projekt",
-    "history": "Historik",
-    "menu": "Meny"
-  },
   "auth": {
     "welcome": "Välkommen!",
     "loginSubtitle": "Logga in på ditt konto",
@@ -57,7 +50,6 @@
   },
   "access": {
     "denied": "Åtkomst nekad",
-    "noPermission": "Du har inte behörighet att visa den här sidan",
     "onlyCompanyAdminsCreateProjects": "Endast företagsadministratörer kan skapa projekt",
     "onlyOwnerAssignAdmins": "Endast företagets ägare kan tilldela administratörer",
     "onlyAdminsManageWorkers": "Endast administratörer kan hantera arbetare"
@@ -430,9 +422,7 @@
     }
   },
   "language": {
-    "title": "Språk",
-    "english": "English",
-    "swedish": "Svenska"
+    "title": "Språk"
   },
   "camera": {
     "photoFallback": "Foto",

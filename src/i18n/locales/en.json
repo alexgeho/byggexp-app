@@ -25,13 +25,6 @@
     "previewUnavailable": "Preview unavailable",
     "unsupportedText": "This file type cannot be previewed yet. Use the download button to open or share it."
   },
-  "tabs": {
-    "home": "Home",
-    "chats": "Chats",
-    "projects": "Projects",
-    "history": "History",
-    "menu": "Menu"
-  },
   "auth": {
     "welcome": "Welcome!",
     "loginSubtitle": "Log In to your account",
@@ -57,7 +50,6 @@
   },
   "access": {
     "denied": "Access denied",
-    "noPermission": "You don't have permission to view this page",
     "onlyCompanyAdminsCreateProjects": "Only company admins can create projects",
     "onlyOwnerAssignAdmins": "Only the company owner can assign admins",
     "onlyAdminsManageWorkers": "Only admins can manage workers"
@@ -430,9 +422,7 @@
     }
   },
   "language": {
-    "title": "Language",
-    "english": "English",
-    "swedish": "Svenska"
+    "title": "Language"
   },
   "camera": {
     "photoFallback": "Photo",
