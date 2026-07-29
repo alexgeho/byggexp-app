@@ -59,6 +59,7 @@ const MIN_DAY_WIDTH = 18; // zoom out far enough to see the whole range
 const MAX_DAY_WIDTH = 200; // zoom in to a single day comfortably
 const ZOOM_STEP = 1.3;
 const BAR_RADIUS = 16;
+const DONE_STATUSES = new Set(["done", "completed", "closed"]);
 // Dev-only preview with fake, varied data. Never true in production
 // (guarded by __DEV__ at the call site); flip to preview colors locally.
 const SCHEDULE_DEMO = false;
@@ -307,6 +308,20 @@ export default function ScheduleScreen() {
     });
   };
 
+  const openItem = (item) => {
+    if (item.type === "task") {
+      const task = tasks.find((entry) => normalizeId(entry) === item.taskId);
+      if (task) {
+        navigation.navigate("Task", {
+          task,
+          project: projectMap[item.projectId] || null,
+        });
+      }
+    } else if (item.type === "project" && item.projectId) {
+      navigation.navigate("Project", { id: item.projectId });
+    }
+  };
+
   const renderBar = (item) => {
     const clampedStart = Math.max(item.start, rangeStartMs);
     const clampedEnd = Math.min(item.end, rangeEndMs);
@@ -319,25 +334,35 @@ export default function ScheduleScreen() {
     const clippedLeft = item.start < rangeStartMs;
     const clippedRight = item.end > rangeEndMs;
 
+    const done = DONE_STATUSES.has(String(item.status || "").toLowerCase());
+    const overdue = !done && item.type === "task" && item.end <= todayStart;
+
     return (
-      <View
+      <TouchableOpacity
         key={item.id}
+        activeOpacity={0.85}
+        onPress={() => openItem(item)}
         style={[
           styles.bar,
           {
             left,
             width: Math.max(width, 8),
             backgroundColor: item.color,
+            opacity: done ? 0.55 : 1,
             borderTopLeftRadius: clippedLeft ? 0 : BAR_RADIUS,
             borderBottomLeftRadius: clippedLeft ? 0 : BAR_RADIUS,
             borderTopRightRadius: clippedRight ? 0 : BAR_RADIUS,
             borderBottomRightRadius: clippedRight ? 0 : BAR_RADIUS,
           },
+          overdue && styles.barOverdue,
         ]}
       >
-        <Text numberOfLines={1} style={styles.barTitle}>
-          {item.title}
-        </Text>
+        <View style={styles.barTitleRow}>
+          <Text numberOfLines={1} style={styles.barTitle}>
+            {item.title}
+          </Text>
+          {done ? <Icon name="check" size={13} color="#FFFFFF" /> : null}
+        </View>
         {item.location || item.assigneeCount ? (
           <View style={styles.barMetaRow}>
             {item.location ? (
@@ -360,7 +385,7 @@ export default function ScheduleScreen() {
             ) : null}
           </View>
         ) : null}
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -931,10 +956,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     overflow: "hidden",
   },
+  barTitleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 6,
+  },
   barTitle: {
+    flex: 1,
     color: "#FFFFFF",
     fontSize: 13,
     fontFamily: "DMSans-SemiBold",
+  },
+  barOverdue: {
+    borderWidth: 2,
+    borderColor: "#FC1D2C",
   },
   barMetaRow: {
     flexDirection: "row",

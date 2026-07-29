@@ -97,10 +97,14 @@ const toDateRange = (startValue, endValue) => {
     return null;
   }
   // End is exclusive (+1 day) so a single-day item still spans one column.
-  return { start: startOfDay(start).getTime(), end: addDays(startOfDay(end), 1).getTime() };
+  return {
+    start: startOfDay(start).getTime(),
+    end: addDays(startOfDay(end), 1).getTime(),
+  };
 };
 
-export const getTaskDates = (task) => toDateRange(task?.startDate, task?.dueDate);
+export const getTaskDates = (task) =>
+  toDateRange(task?.startDate, task?.dueDate);
 
 export const getProjectDates = (project) =>
   toDateRange(project?.beginningDate, project?.endDate);
@@ -130,8 +134,7 @@ export const buildEmployeeOptions = (projects = [], users = []) => {
     byId.set(id, {
       id,
       name: source?.name || existing?.name || "",
-      subtitle:
-        source?.profession || source?.role || existing?.subtitle || "",
+      subtitle: source?.profession || source?.role || existing?.subtitle || "",
       avatarUrl: source?.avatarUrl || existing?.avatarUrl || null,
     });
   };
@@ -205,6 +208,10 @@ export const buildEmployeeItems = (tasks = [], projectMap = {}, employeeId) => {
     return [
       {
         id: `${normalizeId(task) || index}`,
+        type: "task",
+        taskId: normalizeId(task),
+        projectId,
+        status: task.status || null,
         title: task.taskTitle || "—",
         location: project.location || "",
         assigneeCount: workerIds.length,
@@ -257,6 +264,8 @@ export const buildProjectSpanItem = (project, index = 0) => {
 
   return {
     id: `project-${normalizeId(project) || index}`,
+    type: "project",
+    projectId: normalizeId(project),
     title: project.name || "—",
     location: project.location || "",
     assigneeCount: getWorkerIdsForProject(project).length,

@@ -116,6 +116,8 @@ describe("buildEmployeeItems", () => {
     expect(items[0].location).toBe("Storgatan 12");
     expect(items[0].assigneeCount).toBe(2);
     expect(items[0].color).toBe(colorForKey("Målning"));
+    expect(items[0].type).toBe("task");
+    expect(items[0].taskId).toBe("t1");
   });
 
   it("excludes tasks for a worker not on the project", () => {
@@ -139,6 +141,8 @@ describe("buildProjectSpanItem", () => {
     expect(item.title).toBe("Villa");
     expect(item.assigneeCount).toBe(1);
     expect(item.color).toBe(colorForKey("Villa"));
+    expect(item.type).toBe("project");
+    expect(item.projectId).toBe("p1");
   });
 
   it("returns null when the project has no valid dates", () => {
