@@ -48,13 +48,14 @@ import {
 } from "../../../utils/schedule";
 
 const RANGE_DAYS = 42; // 6 weeks — covers any month with week alignment
-const ROW_HEIGHT = 56;
-const WEEK_HEADER_HEIGHT = 30;
-const DAY_HEADER_HEIGHT = 46;
-const BASE_DAY_WIDTH = 52;
-const MIN_DAY_WIDTH = 26;
-const MAX_DAY_WIDTH = 104;
+const ROW_HEIGHT = 64;
+const WEEK_HEADER_HEIGHT = 32;
+const DAY_HEADER_HEIGHT = 48;
+const BASE_DAY_WIDTH = 88;
+const MIN_DAY_WIDTH = 44;
+const MAX_DAY_WIDTH = 176;
 const ZOOM_STEP = 1.25;
+const BAR_RADIUS = 12;
 
 export default function ScheduleScreen() {
   const navigation = useNavigation();
@@ -183,8 +184,6 @@ export default function ScheduleScreen() {
   );
 
   const goToday = () => setCurrentMonth(startOfMonth(new Date()));
-  const changeMonth = (offset) =>
-    setCurrentMonth((prev) => addMonths(prev, offset));
 
   const zoom = (factor) =>
     setDayWidth((prev) =>
@@ -210,6 +209,10 @@ export default function ScheduleScreen() {
     const visible = clampedEnd > clampedStart;
     const left = ((clampedStart - rangeStartMs) / DAY_MS) * dayWidth;
     const width = visible ? ((clampedEnd - clampedStart) / DAY_MS) * dayWidth : 0;
+    // Square off the edge that runs past the visible range (flush like the
+    // design), round the edges that fall inside it.
+    const clippedLeft = item.start < rangeStartMs;
+    const clippedRight = item.end > rangeEndMs;
 
     return (
       <View key={item.id} style={styles.row}>
@@ -217,7 +220,15 @@ export default function ScheduleScreen() {
           <View
             style={[
               styles.bar,
-              { left, width: Math.max(width, 8), backgroundColor: item.color },
+              {
+                left,
+                width: Math.max(width, 8),
+                backgroundColor: item.color,
+                borderTopLeftRadius: clippedLeft ? 0 : BAR_RADIUS,
+                borderBottomLeftRadius: clippedLeft ? 0 : BAR_RADIUS,
+                borderTopRightRadius: clippedRight ? 0 : BAR_RADIUS,
+                borderBottomRightRadius: clippedRight ? 0 : BAR_RADIUS,
+              },
             ]}
           >
             <Text numberOfLines={1} style={styles.barTitle}>
@@ -358,22 +369,15 @@ export default function ScheduleScreen() {
                       key={day.getTime()}
                       style={[styles.dayHeaderCell, { width: dayWidth }]}
                     >
-                      <Text
-                        style={[
-                          styles.dayWeekday,
-                          isToday && styles.dayTodayText,
-                        ]}
-                      >
-                        {formatWeekdayLabel(day)}
-                      </Text>
                       <View style={isToday ? styles.dayTodayPill : null}>
                         <Text
+                          numberOfLines={1}
                           style={[
-                            styles.dayNumber,
-                            isToday && styles.dayTodayNumber,
+                            styles.dayLabel,
+                            isToday && styles.dayTodayLabel,
                           ]}
                         >
-                          {day.getDate()}
+                          {formatWeekdayLabel(day)} {day.getDate()}
                         </Text>
                       </View>
                     </View>
@@ -428,42 +432,27 @@ export default function ScheduleScreen() {
         )}
       </View>
 
-      {/* Month nav + zoom */}
-      <View style={styles.footerControls}>
-        <View style={styles.monthNav}>
+      {/* Zoom — floats above the bottom bar, matching the design */}
+      <View style={styles.zoomFloating} pointerEvents="box-none">
+        <View style={styles.zoomGroup}>
           <TouchableOpacity
-            style={styles.iconButton}
-            onPress={() => changeMonth(-1)}
-            activeOpacity={0.85}
-          >
-            <Icon name="chevron-left" size={20} color="#052D50" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.iconButton}
-            onPress={() => changeMonth(1)}
-            activeOpacity={0.85}
-          >
-            <Icon name="chevron-right" size={20} color="#052D50" />
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.zoomControls}>
-          <TouchableOpacity
-            style={styles.iconButton}
+            style={styles.zoomButton}
             onPress={() => zoom(1 / ZOOM_STEP)}
             disabled={dayWidth <= MIN_DAY_WIDTH}
             activeOpacity={0.85}
           >
-            <Icon name="minus" size={18} color="#052D50" />
+            <Icon name="minus" size={20} color="#052D50" />
           </TouchableOpacity>
-          <Text style={styles.zoomLabel}>{zoomPercent}%</Text>
+          <View style={styles.zoomValueBox}>
+            <Text style={styles.zoomValueText}>{zoomPercent}%</Text>
+          </View>
           <TouchableOpacity
-            style={styles.iconButton}
+            style={styles.zoomButton}
             onPress={() => zoom(ZOOM_STEP)}
             disabled={dayWidth >= MAX_DAY_WIDTH}
             activeOpacity={0.85}
           >
-            <Icon name="plus" size={18} color="#052D50" />
+            <Icon name="plus" size={20} color="#052D50" />
           </TouchableOpacity>
         </View>
       </View>
@@ -636,8 +625,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    borderRadius: 71,
-    backgroundColor: "rgba(5, 45, 80, 0.05)",
+    borderRadius: 28,
+    backgroundColor: "#ECECEC",
+    borderWidth: 1,
+    borderColor: "rgba(5, 45, 80, 0.12)",
   },
   dropdownText: {
     flex: 1,
@@ -690,27 +681,20 @@ const styles = StyleSheet.create({
   dayHeaderCell: {
     alignItems: "center",
     justifyContent: "center",
-    gap: 2,
+    paddingHorizontal: 4,
   },
-  dayWeekday: {
+  dayLabel: {
     color: "#698196",
-    fontSize: 11,
-  },
-  dayNumber: {
-    color: "#052D50",
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: "DMSans-Medium",
-  },
-  dayTodayText: {
-    color: "#0091FF",
   },
   dayTodayPill: {
     backgroundColor: "#0091FF",
-    borderRadius: 12,
-    paddingHorizontal: 7,
-    paddingVertical: 1,
+    borderRadius: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
   },
-  dayTodayNumber: {
+  dayTodayLabel: {
     color: "#FFFFFF",
   },
   row: {
@@ -719,10 +703,11 @@ const styles = StyleSheet.create({
   },
   bar: {
     position: "absolute",
-    height: 38,
-    borderRadius: 10,
-    paddingHorizontal: 10,
+    top: 8,
+    height: ROW_HEIGHT - 16,
+    paddingHorizontal: 12,
     justifyContent: "center",
+    overflow: "hidden",
   },
   barTitle: {
     color: "#FFFFFF",
@@ -745,38 +730,39 @@ const styles = StyleSheet.create({
     width: 2,
     backgroundColor: "#0091FF",
   },
-  footerControls: {
+  zoomFloating: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 128,
+    alignItems: "center",
+  },
+  zoomGroup: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 12,
-    marginBottom: 8,
+    backgroundColor: "rgba(237, 237, 237, 0.96)",
+    borderRadius: 16,
+    padding: 4,
+    gap: 4,
   },
-  monthNav: {
-    flexDirection: "row",
-    gap: 8,
-  },
-  zoomControls: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  iconButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
+  zoomButton: {
+    width: 40,
+    height: 40,
     alignItems: "center",
     justifyContent: "center",
   },
-  zoomLabel: {
+  zoomValueBox: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "rgba(5, 45, 80, 0.1)",
+    paddingHorizontal: 18,
+    paddingVertical: 9,
+  },
+  zoomValueText: {
     color: "#052D50",
     fontSize: 15,
     fontFamily: "DMSans-Medium",
-    minWidth: 48,
-    textAlign: "center",
   },
   modalOverlay: {
     flex: 1,
