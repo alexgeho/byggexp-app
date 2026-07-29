@@ -41,15 +41,8 @@ export default function LineItemsEditor({ items, onChange }) {
     <View style={{ gap: 10 }}>
       {items.map((item, index) => (
         <View key={index} style={styles.row}>
-          <View style={styles.rowHeader}>
-            <TextInput
-              style={styles.rowDescInput}
-              value={item.description}
-              onChangeText={(text) => update(index, { description: text })}
-              placeholder={t("billing.itemDescription")}
-              placeholderTextColor="#9fb0c4"
-              multiline
-            />
+          <View style={styles.rowLabelLine}>
+            <Text style={styles.cellLabel}>{t("billing.itemDescription")}</Text>
             <TouchableOpacity
               style={styles.rowDelete}
               onPress={() => remove(index)}
@@ -58,6 +51,14 @@ export default function LineItemsEditor({ items, onChange }) {
               <Icon name="trash-2" size={18} color="#e5484d" />
             </TouchableOpacity>
           </View>
+          <TextInput
+            style={styles.rowDescField}
+            value={item.description}
+            onChangeText={(text) => update(index, { description: text })}
+            placeholder={t("billing.itemDescriptionPlaceholder")}
+            placeholderTextColor="#9fb0c4"
+            multiline
+          />
 
           <View style={styles.rowGrid}>
             <View style={styles.cell}>

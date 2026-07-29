@@ -928,6 +928,7 @@
     "notSentTitle": "Saved, not emailed",
     "notSentMessage": "The invoice was created as a draft but e-mail is not configured on the server.",
     "missingEmailTitle": "Email missing",
-    "missingEmail": "Add the customer email to send the invoice."
+    "missingEmail": "Add the customer email to send the invoice.",
+    "itemDescriptionPlaceholder": "e.g. Demolition of kitchen, 25 m²"
   }
 }

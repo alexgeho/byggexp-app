@@ -928,6 +928,7 @@
     "notSentTitle": "Sparad, ej mejlad",
     "notSentMessage": "Fakturan skapades som utkast men e-post är inte konfigurerad på servern.",
     "missingEmailTitle": "E-post saknas",
-    "missingEmail": "Lägg till kundens e-post för att skicka fakturan."
+    "missingEmail": "Lägg till kundens e-post för att skicka fakturan.",
+    "itemDescriptionPlaceholder": "t.ex. Rivning kök, 25 m²"
   }
 }
