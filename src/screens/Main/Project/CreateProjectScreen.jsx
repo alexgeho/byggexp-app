@@ -8,7 +8,6 @@ import {
   ScrollView,
   Alert,
   Modal,
-  FlatList,
   ActivityIndicator,
   Animated,
   Switch,
@@ -23,7 +22,6 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Location from "expo-location";
 import Icon from "react-native-vector-icons/Feather";
-import { SafeAreaView } from "react-native-safe-area-context";
 import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import {
@@ -56,12 +54,14 @@ import { canCreateProjects } from "../../../utils/userRoles";
 import FloatingActionButton from "../../../components/common/FloatingActionButton/FloatingActionButton";
 import { styles } from "./CreateProjectScreen.styles";
 import {
-  getUserInitials,
   FieldIcon,
   isImageDocument,
   getDocumentTypeMeta,
   ToolsListModal,
   WorkersListModal,
+  SelectedItem,
+  CompaniesListModal,
+  SingleUserPickerModal,
 } from "./CreateProjectScreen.parts";
 
 const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "inline" : "calendar";
@@ -613,91 +613,6 @@ export default function CreateProjectScreen() {
     }
   };
 
-  const SelectedItem = ({
-    title,
-    value,
-    onPress,
-    showArrow = true,
-    iconName = "briefcase",
-    iconLibrary = "feather",
-    containerStyle,
-  }) => (
-    <TouchableOpacity
-      style={[styles.selectableRow, { borderBottomWidth: 0 }, containerStyle]}
-      onPress={onPress}
-    >
-      <View style={styles.rowCenter}>
-        <View style={[styles.iconContainer, fieldIconBadgeStyle]}>
-          <FieldIcon
-            library={iconLibrary}
-            name={iconName}
-            size={14}
-            color="#FFFFFF"
-          />
-        </View>
-        <View>
-          <Text style={styles.label}>{title}</Text>
-          {value ? (
-            <Text style={styles.selectedValue}>{value}</Text>
-          ) : (
-            <Text style={styles.placeholderText}>
-              {t("createProject.selectPlaceholder")}
-            </Text>
-          )}
-        </View>
-      </View>
-      {showArrow && (
-        <Image
-          style={styles.arrowIcon}
-          source={require("../../../assets/Arrow-right.png")}
-        />
-      )}
-    </TouchableOpacity>
-  );
-
-  const CompaniesListModal = ({
-    visible,
-    onClose,
-    onSelect,
-    selectedCompanyId,
-  }) => (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose}
-    >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>
-            {t("createProject.selectClientCompany")}
-          </Text>
-          <FlatList
-            data={companies}
-            keyExtractor={(item) => item._id}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={[
-                  styles.userItem,
-                  selectedCompanyId === item._id && styles.selectedUserItem,
-                ]}
-                onPress={() => onSelect(item._id)}
-              >
-                <Text style={styles.userName}>{item.name}</Text>
-              </TouchableOpacity>
-            )}
-            ListEmptyComponent={<Text>{t("createProject.noCompanies")}</Text>}
-          />
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeButtonText}>
-              {t("createProject.close")}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Modal>
-  );
-
   const getFilteredUsers = (searchValue) => {
     const normalizedSearch = searchValue.trim().toLowerCase();
 
@@ -756,99 +671,6 @@ export default function CreateProjectScreen() {
 
   const filteredOwners = getFilteredUsers(ownerSearch);
   const filteredManagers = getFilteredUsers(managerSearch);
-
-  const SingleUserPickerModal = ({
-    visible,
-    onClose,
-    title,
-    searchValue,
-    onSearchChange,
-    selectedUserId,
-    onSelect,
-    data,
-  }) => (
-    <Modal
-      animationType="slide"
-      transparent={false}
-      visible={visible}
-      onRequestClose={onClose}
-    >
-      <SafeAreaView style={styles.workersModalContainer}>
-        <View style={styles.workersModalHeader}>
-          <BackButton
-            backgroundColor={"rgba(255, 255, 255, 0.6)"}
-            tint={"light"}
-            borderColor="#FFFFFF50"
-            onPress={onClose}
-            iconSource={require("../../../assets/Arrow-left.png")}
-          />
-          <Text style={styles.workersModalTitle}>{title}</Text>
-          <View style={styles.placeholder} />
-        </View>
-
-        <View style={styles.workersSearchBar}>
-          <Icon name="search" size={18} color="rgba(5, 45, 80, 0.5)" />
-          <TextInput
-            value={searchValue}
-            onChangeText={onSearchChange}
-            placeholder={t("createProject.searchWorkers")}
-            placeholderTextColor="rgba(5, 45, 80, 0.5)"
-            style={styles.workersSearchInput}
-          />
-        </View>
-
-        <FlatList
-          data={data}
-          keyExtractor={(item) => item._id}
-          contentContainerStyle={styles.workersListContent}
-          renderItem={({ item }) => {
-            const isSelected = selectedUserId === item._id;
-
-            return (
-              <TouchableOpacity
-                style={styles.workerCard}
-                onPress={() => onSelect(item._id)}
-                activeOpacity={0.85}
-              >
-                <View style={styles.workerAvatarPlaceholder}>
-                  <Text style={styles.workerAvatarInitials}>
-                    {getUserInitials(item.name)}
-                  </Text>
-                </View>
-                <View style={styles.workerCardInfo}>
-                  <Text numberOfLines={1} style={styles.workerCardName}>
-                    {item.name || t("project.unnamedWorker")}
-                  </Text>
-                  <Text numberOfLines={1} style={styles.workerCardProfession}>
-                    {item.profession || t("createProject.professionNotSet")}
-                  </Text>
-                </View>
-                <View
-                  style={[
-                    styles.workerCheckbox,
-                    themedCheckboxStyle,
-                    isSelected && styles.workerCheckboxSelected,
-                    isSelected && themedCheckboxSelectedStyle,
-                  ]}
-                >
-                  {isSelected ? (
-                    <Icon name="check" size={12} color="#FFFFFF" />
-                  ) : null}
-                </View>
-              </TouchableOpacity>
-            );
-          }}
-          ListEmptyComponent={
-            <View style={styles.workersEmptyState}>
-              <Text style={styles.workersEmptyText}>
-                {t("workers.notFound")}
-              </Text>
-            </View>
-          }
-        />
-      </SafeAreaView>
-    </Modal>
-  );
 
   if (loading) {
     return (
@@ -1179,6 +1001,7 @@ export default function CreateProjectScreen() {
             </TouchableOpacity>
 
             <SelectedItem
+              badgeStyle={fieldIconBadgeStyle}
               title={t("createProject.clientCompany")}
               value={
                 companies.find((c) => c._id === selectedClientCompany)?.name ||
@@ -1559,6 +1382,8 @@ export default function CreateProjectScreen() {
       </Modal>
 
       <SingleUserPickerModal
+        checkboxStyle={themedCheckboxStyle}
+        checkboxSelectedStyle={themedCheckboxSelectedStyle}
         visible={showOwnersModal}
         onClose={() => {
           setShowOwnersModal(false);
@@ -1576,6 +1401,8 @@ export default function CreateProjectScreen() {
       />
 
       <SingleUserPickerModal
+        checkboxStyle={themedCheckboxStyle}
+        checkboxSelectedStyle={themedCheckboxSelectedStyle}
         visible={showManagersModal}
         onClose={() => {
           setShowManagersModal(false);
@@ -1593,6 +1420,7 @@ export default function CreateProjectScreen() {
       />
 
       <CompaniesListModal
+        companies={companies}
         visible={showCompaniesModal}
         onClose={() => setShowCompaniesModal(false)}
         onSelect={handleSelectCompany}

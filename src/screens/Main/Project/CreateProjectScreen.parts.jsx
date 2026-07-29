@@ -2,6 +2,7 @@ import { memo } from "react";
 import {
   View,
   Text,
+  Image,
   TextInput,
   TouchableOpacity,
   Modal,
@@ -297,3 +298,194 @@ export const WorkersListModal = memo(function WorkersListModal({
     </Modal>
   );
 });
+
+export const SelectedItem = ({
+  title,
+  value,
+  onPress,
+  showArrow = true,
+  iconName = "briefcase",
+  iconLibrary = "feather",
+  containerStyle,
+  badgeStyle,
+}) => {
+  const { t } = useTranslation();
+  return (
+    <TouchableOpacity
+      style={[styles.selectableRow, { borderBottomWidth: 0 }, containerStyle]}
+      onPress={onPress}
+    >
+      <View style={styles.rowCenter}>
+        <View style={[styles.iconContainer, badgeStyle]}>
+          <FieldIcon
+            library={iconLibrary}
+            name={iconName}
+            size={14}
+            color="#FFFFFF"
+          />
+        </View>
+        <View>
+          <Text style={styles.label}>{title}</Text>
+          {value ? (
+            <Text style={styles.selectedValue}>{value}</Text>
+          ) : (
+            <Text style={styles.placeholderText}>
+              {t("createProject.selectPlaceholder")}
+            </Text>
+          )}
+        </View>
+      </View>
+      {showArrow && (
+        <Image
+          style={styles.arrowIcon}
+          source={require("../../../assets/Arrow-right.png")}
+        />
+      )}
+    </TouchableOpacity>
+  );
+};
+
+export const CompaniesListModal = ({
+  visible,
+  onClose,
+  onSelect,
+  selectedCompanyId,
+  companies,
+}) => {
+  const { t } = useTranslation();
+  return (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={visible}
+      onRequestClose={onClose}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>
+            {t("createProject.selectClientCompany")}
+          </Text>
+          <FlatList
+            data={companies}
+            keyExtractor={(item) => item._id}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={[
+                  styles.userItem,
+                  selectedCompanyId === item._id && styles.selectedUserItem,
+                ]}
+                onPress={() => onSelect(item._id)}
+              >
+                <Text style={styles.userName}>{item.name}</Text>
+              </TouchableOpacity>
+            )}
+            ListEmptyComponent={<Text>{t("createProject.noCompanies")}</Text>}
+          />
+          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+            <Text style={styles.closeButtonText}>
+              {t("createProject.close")}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
+export const SingleUserPickerModal = ({
+  visible,
+  onClose,
+  title,
+  searchValue,
+  onSearchChange,
+  selectedUserId,
+  onSelect,
+  data,
+  checkboxStyle,
+  checkboxSelectedStyle,
+}) => {
+  const { t } = useTranslation();
+  return (
+    <Modal
+      animationType="slide"
+      transparent={false}
+      visible={visible}
+      onRequestClose={onClose}
+    >
+      <SafeAreaView style={styles.workersModalContainer}>
+        <View style={styles.workersModalHeader}>
+          <BackButton
+            backgroundColor={"rgba(255, 255, 255, 0.6)"}
+            tint={"light"}
+            borderColor="#FFFFFF50"
+            onPress={onClose}
+            iconSource={require("../../../assets/Arrow-left.png")}
+          />
+          <Text style={styles.workersModalTitle}>{title}</Text>
+          <View style={styles.placeholder} />
+        </View>
+
+        <View style={styles.workersSearchBar}>
+          <Icon name="search" size={18} color="rgba(5, 45, 80, 0.5)" />
+          <TextInput
+            value={searchValue}
+            onChangeText={onSearchChange}
+            placeholder={t("createProject.searchWorkers")}
+            placeholderTextColor="rgba(5, 45, 80, 0.5)"
+            style={styles.workersSearchInput}
+          />
+        </View>
+
+        <FlatList
+          data={data}
+          keyExtractor={(item) => item._id}
+          contentContainerStyle={styles.workersListContent}
+          renderItem={({ item }) => {
+            const isSelected = selectedUserId === item._id;
+
+            return (
+              <TouchableOpacity
+                style={styles.workerCard}
+                onPress={() => onSelect(item._id)}
+                activeOpacity={0.85}
+              >
+                <View style={styles.workerAvatarPlaceholder}>
+                  <Text style={styles.workerAvatarInitials}>
+                    {getUserInitials(item.name)}
+                  </Text>
+                </View>
+                <View style={styles.workerCardInfo}>
+                  <Text numberOfLines={1} style={styles.workerCardName}>
+                    {item.name || t("project.unnamedWorker")}
+                  </Text>
+                  <Text numberOfLines={1} style={styles.workerCardProfession}>
+                    {item.profession || t("createProject.professionNotSet")}
+                  </Text>
+                </View>
+                <View
+                  style={[
+                    styles.workerCheckbox,
+                    checkboxStyle,
+                    isSelected && styles.workerCheckboxSelected,
+                    isSelected && checkboxSelectedStyle,
+                  ]}
+                >
+                  {isSelected ? (
+                    <Icon name="check" size={12} color="#FFFFFF" />
+                  ) : null}
+                </View>
+              </TouchableOpacity>
+            );
+          }}
+          ListEmptyComponent={
+            <View style={styles.workersEmptyState}>
+              <Text style={styles.workersEmptyText}>
+                {t("workers.notFound")}
+              </Text>
+            </View>
+          }
+        />
+      </SafeAreaView>
+    </Modal>
+  );
+};
