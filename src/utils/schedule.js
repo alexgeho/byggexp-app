@@ -197,7 +197,8 @@ export const buildEmployeeItems = (tasks = [], projectMap = {}, employeeId) => {
       return [];
     }
 
-    if (!getWorkerIdsForProject(project).includes(String(employeeId))) {
+    const workerIds = getWorkerIdsForProject(project);
+    if (!workerIds.includes(String(employeeId))) {
       return [];
     }
 
@@ -205,10 +206,12 @@ export const buildEmployeeItems = (tasks = [], projectMap = {}, employeeId) => {
       {
         id: `${normalizeId(task) || index}`,
         title: task.taskTitle || "—",
-        subtitle: project.name || "",
+        location: project.location || "",
+        assigneeCount: workerIds.length,
         start: dates.start,
         end: dates.end,
-        color: colorForKey(normalizeId(task) || index),
+        // Same task name keeps the same color (like remato's typed bars).
+        color: colorForKey(task.taskTitle || normalizeId(task) || index),
       },
     ];
   });
@@ -255,9 +258,10 @@ export const buildProjectSpanItem = (project, index = 0) => {
   return {
     id: `project-${normalizeId(project) || index}`,
     title: project.name || "—",
-    subtitle: project.location || project.status || "",
+    location: project.location || "",
+    assigneeCount: getWorkerIdsForProject(project).length,
     start: dates.start,
     end: dates.end,
-    color: colorForKey(normalizeId(project) || index),
+    color: colorForKey(project.name || normalizeId(project) || index),
   };
 };

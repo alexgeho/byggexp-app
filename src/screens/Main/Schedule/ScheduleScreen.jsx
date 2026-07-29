@@ -251,10 +251,31 @@ export default function ScheduleScreen() {
         <Text numberOfLines={1} style={styles.barTitle}>
           {item.title}
         </Text>
-        {item.subtitle ? (
-          <Text numberOfLines={1} style={styles.barSubtitle}>
-            {item.subtitle}
-          </Text>
+        {item.location || item.assigneeCount ? (
+          <View style={styles.barMetaRow}>
+            {item.location ? (
+              <View style={styles.barMetaItem}>
+                <Icon
+                  name="map-pin"
+                  size={11}
+                  color="rgba(255, 255, 255, 0.9)"
+                />
+                <Text numberOfLines={1} style={styles.barMeta}>
+                  {item.location}
+                </Text>
+              </View>
+            ) : null}
+            {item.assigneeCount ? (
+              <View style={styles.barMetaItemFixed}>
+                <Icon
+                  name="users"
+                  size={11}
+                  color="rgba(255, 255, 255, 0.9)"
+                />
+                <Text style={styles.barMeta}>{item.assigneeCount}</Text>
+              </View>
+            ) : null}
+          </View>
         ) : null}
       </View>
     );
@@ -706,9 +727,27 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontFamily: "DMSans-SemiBold",
   },
-  barSubtitle: {
-    color: "rgba(255, 255, 255, 0.85)",
+  barMetaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginTop: 3,
+  },
+  barMetaItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    flexShrink: 1,
+  },
+  barMetaItemFixed: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+  },
+  barMeta: {
+    color: "rgba(255, 255, 255, 0.9)",
     fontSize: 11,
+    flexShrink: 1,
   },
   gridLine: {
     position: "absolute",
