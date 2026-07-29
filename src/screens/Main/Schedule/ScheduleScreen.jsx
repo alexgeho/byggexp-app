@@ -58,7 +58,7 @@ const BASE_DAY_WIDTH = 72;
 const MIN_DAY_WIDTH = 18; // zoom out far enough to see the whole range
 const MAX_DAY_WIDTH = 200; // zoom in to a single day comfortably
 const ZOOM_STEP = 1.3;
-const BAR_RADIUS = 12;
+const BAR_RADIUS = 16;
 // Dev-only preview with fake, varied data. Never true in production
 // (guarded by __DEV__ at the call site); flip to preview colors locally.
 const SCHEDULE_DEMO = false;
@@ -193,7 +193,14 @@ export default function ScheduleScreen() {
       );
     }
     return options;
-  }, [mode, projects, workers, selectedProjectIds, selectedStatuses, projectMap]);
+  }, [
+    mode,
+    projects,
+    workers,
+    selectedProjectIds,
+    selectedStatuses,
+    projectMap,
+  ]);
 
   // rowId -> array of bars for that row.
   const itemsByRow = useMemo(() => {
@@ -222,7 +229,9 @@ export default function ScheduleScreen() {
 
   const days = useMemo(
     () =>
-      Array.from({ length: RANGE_DAYS }, (_, index) => addDays(rangeStart, index)),
+      Array.from({ length: RANGE_DAYS }, (_, index) =>
+        addDays(rangeStart, index),
+      ),
     [rangeStart],
   );
 
@@ -345,11 +354,7 @@ export default function ScheduleScreen() {
             ) : null}
             {item.assigneeCount ? (
               <View style={styles.barMetaItemFixed}>
-                <Icon
-                  name="users"
-                  size={11}
-                  color="rgba(255, 255, 255, 0.9)"
-                />
+                <Icon name="users" size={11} color="rgba(255, 255, 255, 0.9)" />
                 <Text style={styles.barMeta}>{item.assigneeCount}</Text>
               </View>
             ) : null}
@@ -374,7 +379,9 @@ export default function ScheduleScreen() {
           onPress={() => setMonthPickerOpen(true)}
           activeOpacity={0.85}
         >
-          <Text style={styles.monthLabel}>{formatMonthLabel(currentMonth)}</Text>
+          <Text style={styles.monthLabel}>
+            {formatMonthLabel(currentMonth)}
+          </Text>
           <Icon name="chevron-down" size={18} color="#052D50" />
         </TouchableOpacity>
         <TouchableOpacity
@@ -452,7 +459,11 @@ export default function ScheduleScreen() {
             <View style={styles.headerRow}>
               <View style={styles.corner}>
                 <Text style={styles.cornerText}>
-                  {t(mode === "employees" ? "schedule.employees" : "schedule.projects")}
+                  {t(
+                    mode === "employees"
+                      ? "schedule.employees"
+                      : "schedule.projects",
+                  )}
                 </Text>
               </View>
               <ScrollView
@@ -512,7 +523,10 @@ export default function ScheduleScreen() {
                 ref={sidebarScrollRef}
                 scrollEnabled={false}
                 showsVerticalScrollIndicator={false}
-                style={[styles.sidebar, bodyHeight ? { height: bodyHeight } : null]}
+                style={[
+                  styles.sidebar,
+                  bodyHeight ? { height: bodyHeight } : null,
+                ]}
               >
                 {rows.map((row) => (
                   <View key={row.id} style={styles.sidebarCell}>
@@ -569,7 +583,10 @@ export default function ScheduleScreen() {
                         pointerEvents="none"
                         style={[
                           styles.todayLine,
-                          { left: todayX + dayWidth / 2, height: contentHeight },
+                          {
+                            left: todayX + dayWidth / 2,
+                            height: contentHeight,
+                          },
                         ]}
                       />
                     ) : null}
@@ -730,7 +747,7 @@ const styles = StyleSheet.create({
   },
   monthLabel: {
     color: "#052D50",
-    fontSize: 17,
+    fontSize: 19,
     fontFamily: "DMSans-SemiBold",
   },
   todayButton: {
@@ -752,19 +769,19 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   segment: {
-    paddingHorizontal: 22,
-    paddingVertical: 10,
+    paddingHorizontal: 26,
+    paddingVertical: 12,
     borderRadius: 999,
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: "#FFFFFF",
+    borderColor: "rgba(5, 45, 80, 0.12)",
   },
   segmentActive: {
-    backgroundColor: "#0091FF",
-    borderColor: "#0091FF",
+    backgroundColor: "#1877F2",
+    borderColor: "#1877F2",
   },
   segmentText: {
-    fontSize: 15,
+    fontSize: 16,
     color: "#052D50",
   },
   segmentTextActive: {
@@ -867,7 +884,7 @@ const styles = StyleSheet.create({
     fontFamily: "DMSans-Medium",
   },
   dayTodayPill: {
-    backgroundColor: "#0091FF",
+    backgroundColor: "#1877F2",
     borderRadius: 14,
     paddingHorizontal: 12,
     paddingVertical: 4,
@@ -951,7 +968,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     width: 2,
-    backgroundColor: "#0091FF",
+    backgroundColor: "#1877F2",
   },
   zoomFloating: {
     position: "absolute",
