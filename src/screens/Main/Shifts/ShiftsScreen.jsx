@@ -1,8 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Image,
   ScrollView,
@@ -20,11 +25,6 @@ import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../theme/ThemeContext";
-import {
-  standardScreenContainer,
-  standardScreenHeader,
-  standardScreenHeaderPlaceholder,
-} from "../../../styles/screenLayout";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
@@ -53,6 +53,7 @@ import {
   isImageDocument,
   isPdfDocument,
 } from "../../../utils/documentPreview";
+import { styles } from "./ShiftsScreen.styles";
 
 const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const EXPORT_PERIOD_TABS = ["Month", "Custom"];
@@ -706,9 +707,10 @@ export default function ShiftsScreen() {
                   styles.dropdownText,
                   !exportPeriodApplied && styles.dropdownPlaceholderText,
                   {
-                    fontFamily: theme.text.fontFamily[
-                      exportPeriodApplied ? "semiBold" : "regular"
-                    ],
+                    fontFamily:
+                      theme.text.fontFamily[
+                        exportPeriodApplied ? "semiBold" : "regular"
+                      ],
                   },
                 ]}
               >
@@ -723,38 +725,38 @@ export default function ShiftsScreen() {
 
           <View style={styles.calendarContainer}>
             <View style={styles.calendarMonthBar}>
-            <View style={styles.calendarNav}>
-              <TouchableOpacity
-                style={[
-                  styles.calendarNavButton,
-                  !canGoBackMonth && styles.calendarNavButtonDisabled,
-                ]}
-                onPress={() => handleChangeMonth(-1)}
-                disabled={!canGoBackMonth}
-                activeOpacity={0.85}
-              >
-                <Icon name="chevron-left" size={16} color="#0177DE" />
-              </TouchableOpacity>
-              <Text
-                style={[
-                  styles.calendarNavLabel,
-                  { fontFamily: theme.text.fontFamily["semiBold"] },
-                ]}
-              >
-                {selectedMonth ? formatMonthLabel(selectedMonth) : ""}
-              </Text>
-              <TouchableOpacity
-                style={[
-                  styles.calendarNavButton,
-                  !canGoForwardMonth && styles.calendarNavButtonDisabled,
-                ]}
-                onPress={() => handleChangeMonth(1)}
-                disabled={!canGoForwardMonth}
-                activeOpacity={0.85}
-              >
-                <Icon name="chevron-right" size={16} color="#0177DE" />
-              </TouchableOpacity>
-            </View>
+              <View style={styles.calendarNav}>
+                <TouchableOpacity
+                  style={[
+                    styles.calendarNavButton,
+                    !canGoBackMonth && styles.calendarNavButtonDisabled,
+                  ]}
+                  onPress={() => handleChangeMonth(-1)}
+                  disabled={!canGoBackMonth}
+                  activeOpacity={0.85}
+                >
+                  <Icon name="chevron-left" size={16} color="#0177DE" />
+                </TouchableOpacity>
+                <Text
+                  style={[
+                    styles.calendarNavLabel,
+                    { fontFamily: theme.text.fontFamily["semiBold"] },
+                  ]}
+                >
+                  {selectedMonth ? formatMonthLabel(selectedMonth) : ""}
+                </Text>
+                <TouchableOpacity
+                  style={[
+                    styles.calendarNavButton,
+                    !canGoForwardMonth && styles.calendarNavButtonDisabled,
+                  ]}
+                  onPress={() => handleChangeMonth(1)}
+                  disabled={!canGoForwardMonth}
+                  activeOpacity={0.85}
+                >
+                  <Icon name="chevron-right" size={16} color="#0177DE" />
+                </TouchableOpacity>
+              </View>
             </View>
             <View style={styles.calendarHeader}>
               <View style={styles.calendarWeekHeaderCell} />
@@ -778,7 +780,9 @@ export default function ShiftsScreen() {
             {calendarRows.length ? (
               calendarRows
             ) : (
-              <Text style={styles.emptyMonthText}>{t("shifts.emptyMonth")}</Text>
+              <Text style={styles.emptyMonthText}>
+                {t("shifts.emptyMonth")}
+              </Text>
             )}
           </View>
 
@@ -893,7 +897,9 @@ export default function ShiftsScreen() {
                               numberOfLines={1}
                               style={[
                                 styles.shiftDetailValue,
-                                { fontFamily: theme.text.fontFamily["regular"] },
+                                {
+                                  fontFamily: theme.text.fontFamily["regular"],
+                                },
                               ]}
                             >
                               {formatShiftListProjectName(shift.projectName)}
@@ -913,7 +919,9 @@ export default function ShiftsScreen() {
                             <Text
                               style={[
                                 styles.shiftDetailValue,
-                                { fontFamily: theme.text.fontFamily["regular"] },
+                                {
+                                  fontFamily: theme.text.fontFamily["regular"],
+                                },
                               ]}
                             >
                               {shift.location || "—"}
@@ -944,7 +952,9 @@ export default function ShiftsScreen() {
                                     <TouchableOpacity
                                       key={`${shift.id}-photo-${index}`}
                                       activeOpacity={0.85}
-                                      onPress={() => handleOpenShiftPhoto(photo)}
+                                      onPress={() =>
+                                        handleOpenShiftPhoto(photo)
+                                      }
                                     >
                                       <Image
                                         style={styles.shiftImage}
@@ -961,7 +971,8 @@ export default function ShiftsScreen() {
                                 style={[
                                   styles.shiftDetailValue,
                                   {
-                                    fontFamily: theme.text.fontFamily["regular"],
+                                    fontFamily:
+                                      theme.text.fontFamily["regular"],
                                   },
                                 ]}
                               >
@@ -1080,8 +1091,8 @@ export default function ShiftsScreen() {
               <ActivityIndicator color="#FFFFFF" />
             ) : (
               <Text style={styles.exportMainButtonText}>
-              {t("shiftHistory.export")}
-            </Text>
+                {t("shiftHistory.export")}
+              </Text>
             )}
           </TouchableOpacity>
         </BottomSheetView>
@@ -1277,8 +1288,8 @@ export default function ShiftsScreen() {
               <ActivityIndicator color="#FFFFFF" />
             ) : (
               <Text style={styles.exportMainButtonText}>
-              {t("shiftHistory.export")}
-            </Text>
+                {t("shiftHistory.export")}
+              </Text>
             )}
           </TouchableOpacity>
         </BottomSheetView>
@@ -1309,7 +1320,9 @@ export default function ShiftsScreen() {
               style={styles.datePickerButton}
               onPress={() => setDatePickerTarget(null)}
             >
-              <Text style={styles.datePickerButtonText}>{t("common.done")}</Text>
+              <Text style={styles.datePickerButtonText}>
+                {t("common.done")}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -1317,576 +1330,3 @@ export default function ShiftsScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    ...standardScreenContainer,
-  },
-  header: {
-    ...standardScreenHeader,
-  },
-  placeholder: {
-    ...standardScreenHeaderPlaceholder,
-  },
-  backButton: {
-    padding: 16,
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 9999,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  backIcon: {
-    width: 20,
-    height: 20,
-  },
-  headerTitle: {
-    color: "#052D50",
-    fontSize: 17,
-    textAlign: "center",
-  },
-  contentScroll: {
-    flex: 1,
-    width: "100%",
-  },
-  contentScrollContent: {
-    paddingBottom: 140,
-  },
-  exportSelector: {
-    width: "100%",
-  },
-  dropdownButton: {
-    width: "100%",
-    height: 56,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 8,
-    paddingLeft: 24,
-    paddingRight: 16,
-    backgroundColor: "rgba(5, 45, 80, 0.05)",
-    borderRadius: 71,
-  },
-  dropdownText: {
-    flex: 1,
-    color: "#052D50",
-    fontSize: 19,
-    fontWeight: "600",
-  },
-  dropdownPlaceholderText: {
-    color: "#052D50",
-    fontWeight: "400",
-  },
-  dropdownIcon: {
-    width: 16,
-    height: 16,
-    tintColor: "#052D50",
-  },
-  calendarContainer: {
-    width: "100%",
-    marginBottom: 12,
-  },
-  calendarMonthBar: {
-    paddingTop: 28,
-    paddingBottom: 20,
-  },
-  calendarNav: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-  },
-  calendarNavButton: {
-    width: 16,
-    height: 16,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  calendarNavButtonDisabled: {
-    opacity: 0.45,
-  },
-  calendarNavLabel: {
-    flex: 1,
-    color: "#052D50",
-    fontSize: 17,
-    lineHeight: 22,
-    textAlign: "center",
-  },
-  calendarHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 8,
-    gap: 8,
-  },
-  calendarWeekHeaderCell: {
-    width: 28,
-  },
-  calendarDaysHeader: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  calendarHeaderDayButton: {
-    width: 40,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  calendarHeaderDay: {
-    color: "#698196",
-    fontSize: 12,
-    fontWeight: "500",
-    textAlign: "center",
-  },
-  calendarRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 8,
-    gap: 8,
-  },
-  calendarWeekNumberCell: {
-    width: 28,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  calendarWeekNumberText: {
-    color: "#698196",
-    fontSize: 12,
-    fontWeight: "500",
-    textAlign: "center",
-  },
-  calendarDaysRow: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  calendarCell: {
-    width: 42,
-    height: 42,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 1,
-    paddingVertical: 5,
-    borderRadius: 6,
-    backgroundColor: "rgba(255, 255, 255, 0.4)",
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  calendarCellToday: {
-    backgroundColor: "#FFFFFF",
-  },
-  calendarCellSelected: {
-    backgroundColor: "rgba(7, 133, 244, 0.6)",
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  calendarCellEmpty: {
-    width: 42,
-    height: 42,
-  },
-  calendarDay: {
-    fontFamily: "DMSans-Regular",
-    color: "#052D50",
-    fontSize: 14,
-    opacity: 0.5,
-  },
-  calendarDayToday: {
-    opacity: 1,
-  },
-  calendarDaySelected: {
-    color: "#FFFFFF",
-    opacity: 1,
-  },
-  calendarHours: {
-    fontFamily: "DMSans-Medium",
-    color: "#052D50",
-    fontSize: 10,
-    opacity: 0.5,
-    backgroundColor: "#FFFFFF",
-    paddingHorizontal: 6,
-    paddingVertical: 1,
-    borderRadius: 6,
-    marginBottom: 2
-  },
-  shiftDetailsContainer: {
-    width: "100%",
-    marginBottom: 12,
-  },
-  shiftDetailsContent: {
-    gap: 12,
-  },
-  selectionSummaryCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "rgba(5, 45, 80, 0.08)",
-    paddingVertical: 16,
-    marginBottom: 12,
-  },
-  selectionSummaryStat: {
-    flex: 1,
-    alignItems: "center",
-    gap: 2,
-  },
-  selectionSummaryValue: {
-    color: "#052D50",
-    fontSize: 18,
-  },
-  selectionSummaryLabel: {
-    color: "#698196",
-    fontSize: 18,
-  },
-  selectionSummaryDivider: {
-    width: 1,
-    height: 32,
-    backgroundColor: "rgba(5, 45, 80, 0.08)",
-  },
-  clearSelectionButton: {
-    position: "absolute",
-    top: 8,
-    right: 8,
-    width: 28,
-    height: 28,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  shiftCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 12,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  shiftTimeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-  },
-  shiftTimeText: {
-    color: "rgba(122, 148, 168, 1)",
-    fontSize: 15,
-    lineHeight: 22,
-    fontWeight: "400",
-    flex: 1,
-  },
-  shiftDurationText: {
-    color: "rgba(95, 117, 136, 1)",
-    fontSize: 14,
-    lineHeight: 24,
-    fontWeight: "500",
-    textAlign: "right",
-  },
-  shiftProjectName: {
-    color: "rgba(122, 148, 168, 1)",
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: "400",
-    marginTop: 4,
-  },
-  shiftExpandedContent: {
-    marginTop: 8,
-    gap: 8,
-  },
-  shiftDetailRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-  },
-  shiftDetailLabel: {
-    color: "rgba(122, 148, 168, 1)",
-    fontSize: 15,
-    lineHeight: 22,
-    fontWeight: "400",
-  },
-  shiftDetailValue: {
-    color: "rgba(122, 148, 168, 1)",
-    fontSize: 13,
-    lineHeight: 22,
-    fontWeight: "400",
-    textAlign: "right",
-    flex: 1,
-  },
-  shiftPhotosValue: {
-    flex: 1,
-    alignItems: "flex-end",
-  },
-  shiftPhotosScroll: {
-    maxWidth: "100%",
-  },
-  shiftPhotosScrollContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-end",
-  },
-  shiftImage: {
-    width: 48,
-    height: 48,
-    borderRadius: 8,
-    marginLeft: 8,
-  },
-  statsContainer: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 24,
-  },
-  statItem: {
-    flex: 1,
-    alignItems: "center",
-  },
-  statLabel: {
-    color: "#698196",
-    fontSize: 14,
-  },
-  statValue: {
-    color: "#052D5099",
-    fontSize: 16,
-    fontWeight: "500",
-  },
-  exportFabButton: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-  },
-  exportFabText: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "bold",
-    textAlign: "center",
-    lineHeight: 16,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  emptyMonthText: {
-    color: "#698196",
-    textAlign: "center",
-    marginTop: 12,
-  },
-  emptyDetailsText: {
-    color: "#698196",
-    fontSize: 14,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "#00000040",
-    justifyContent: "center",
-    padding: 24,
-  },
-  modalContent: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  bottomSheetBackground: {
-    backgroundColor: "#EEEEEE",
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-  },
-  handleIndicator: {
-    backgroundColor: "#CCCCCC",
-    width: 40,
-    height: 4,
-    borderRadius: 2,
-  },
-  bottomSheetContent: {
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 20,
-  },
-  exportSheetBody: {
-    gap: 12,
-    marginBottom: 12,
-  },
-  exportSheetTitle: {
-    color: "#052D50",
-    fontSize: 22,
-  },
-  exportPeriodLabel: {
-    color: "#052D50",
-    fontSize: 16,
-  },
-  periodTabs: {
-    flexDirection: "row",
-    gap: 8,
-    alignSelf: "flex-start",
-  },
-  periodTab: {
-    height: 44,
-    paddingHorizontal: 18,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 20,
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  periodTabActive: {
-    backgroundColor: "#0785F4",
-    borderColor: "#0785F4",
-  },
-  periodTabText: {
-    fontSize: 15,
-    color: "#052D50",
-  },
-  periodTabTextActive: {
-    color: "#FFFFFF",
-    fontWeight: "600",
-  },
-  periodCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 20,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  dateContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 12,
-  },
-  monthDateField: {
-    flex: 1,
-    alignItems: "center",
-  },
-  monthDateLabel: {
-    fontSize: 14,
-    color: "#052D50",
-    marginBottom: 4,
-    textAlign: "center",
-    width: "100%",
-  },
-  monthWheelContainer: {
-    width: "100%",
-    backgroundColor: "transparent",
-    overflow: "hidden",
-  },
-  monthWheel: {
-    height: Platform.OS === "ios" ? 150 : 48,
-    width: "100%",
-    backgroundColor: "transparent",
-  },
-  monthWheelItem: {
-    color: "#052D50",
-    fontSize: 16,
-  },
-  dateValueCard: {
-    width: "100%",
-    backgroundColor: "rgba(245, 245, 245, 1)",
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    height: 44,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  dateValueText: {
-    fontSize: 15,
-    color: "#052D50",
-    textAlign: "center",
-  },
-  dateValuePlaceholder: {
-    color: "#698196",
-  },
-  exportSheetCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 20,
-    padding: 0,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  exportButtonsContainer: {
-    flexDirection: "row",
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 20,
-    padding: 0,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  exportButton: {
-    flex: 1,
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 20,
-    paddingVertical: 12,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  exportButtonActive: {
-    borderWidth: 2,
-    borderColor: "rgba(7, 133, 244, 1)",
-  },
-  exportButtonText: {
-    fontSize: 16,
-    color: "#052D50",
-  },
-  exportButtonTextActive: {
-    fontWeight: "600",
-  },
-  exportMainButton: {
-    width: "100%",
-    height: 60,
-    backgroundColor: "#0091FF",
-    borderRadius: 999,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  datePickerOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.35)",
-    justifyContent: "center",
-    padding: 24,
-  },
-  datePickerCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 20,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  datePickerTitle: {
-    color: "#052D50",
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 12,
-  },
-  datePickerButton: {
-    alignSelf: "flex-end",
-    marginTop: 12,
-    backgroundColor: "#0091FF",
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-  },
-  datePickerButtonText: {
-    color: "#FFFFFF",
-    fontSize: 15,
-    fontWeight: "700",
-  },
-  exportMainButtonDisabled: {
-    opacity: 0.7,
-  },
-  exportMainButtonText: {
-    fontSize: 18,
-    color: "#FFFFFF",
-    fontWeight: "600",
-  },
-  monthOption: {
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-  },
-  monthOptionText: {
-    color: "#052D50",
-    fontSize: 16,
-  },
-  monthOptionTextSelected: {
-    color: "#0088FF",
-    fontWeight: "700",
-  },
-});
