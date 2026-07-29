@@ -77,9 +77,7 @@ const getEmployeeProjectIds = (employee, projects) => {
 
     const isAssigned = project.workers.some((worker) => {
       const workerId =
-        typeof worker === "string"
-          ? worker
-          : worker?._id || worker?.id;
+        typeof worker === "string" ? worker : worker?._id || worker?.id;
 
       return getEntityId({ id: workerId }) === employeeId;
     });
@@ -114,7 +112,9 @@ const isEmployeeAtWork = (employee, selectedProjectId) => {
     return true;
   }
 
-  return getEntityId({ id: employee?.workStatusProjectId }) === selectedProjectId;
+  return (
+    getEntityId({ id: employee?.workStatusProjectId }) === selectedProjectId
+  );
 };
 
 const getEmployeeProjectLabel = (employee, projectNameById, projects) => {
@@ -248,7 +248,7 @@ export default function EmployeesScreen() {
             { fontFamily: theme.text.fontFamily.medium },
           ]}
         >
-          Employees
+          {t("employees.title")}
         </Text>
         <View style={standardScreenHeaderPlaceholder} />
       </View>
@@ -273,9 +273,7 @@ export default function EmployeesScreen() {
         >
           {filteredEmployees.length === 0 ? (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyTitle}>
-                {t("employees.emptyTitle")}
-              </Text>
+              <Text style={styles.emptyTitle}>{t("employees.emptyTitle")}</Text>
               <Text style={styles.emptySubtitle}>
                 {selectedProjectId
                   ? t("employees.emptyProjectFiltered")

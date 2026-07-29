@@ -1,5 +1,6 @@
 import React from "react";
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
 import HomeButtonInfoBadge from "./HomeButtonInfoBadge";
 
 export function HomeButtonExtraInfo({
@@ -8,15 +9,17 @@ export function HomeButtonExtraInfo({
   employeeStats,
   style,
 }) {
+  const { t } = useTranslation();
+
   if (buttonId === "employees" && showEmployeeStats) {
     return (
       <View style={style}>
         <HomeButtonInfoBadge
-          label={`• At work - ${employeeStats.live}`}
+          label={`• ${t("employees.atWork")} - ${employeeStats.live}`}
           variant="live"
         />
         <HomeButtonInfoBadge
-          label={`• Not at work - ${employeeStats.notAtWork}`}
+          label={`• ${t("employees.notAtWork")} - ${employeeStats.notAtWork}`}
           variant="notAtWork"
         />
       </View>
