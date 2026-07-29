@@ -11,6 +11,9 @@ export { expenseService } from "./expense.service";
 export { notificationsService } from "./notifications.service";
 export { chatService } from "./chat.service";
 export { leaveService } from "./leave.service";
+export { offerService } from "./offer.service";
+export { invoiceService } from "./invoice.service";
+export { clientService } from "./client.service";
 export { logUserActivity } from "./user-activity.service";
 
 export { default as authApi } from "./auth.service";

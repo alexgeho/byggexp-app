@@ -86,6 +86,15 @@ export default function MenuScreen() {
       color: theme.colors.primary,
     };
 
+    // TODO: swap for a dedicated economy/invoice icon when available.
+    const economyItem = {
+      id: "economy",
+      screen: "Economy",
+      title: t("menu.economy"),
+      icon: require("../../assets/Documents.png"),
+      color: theme.colors.primary,
+    };
+
     // SuperAdmin
     if (user?.role === "superadmin") {
       return [
@@ -114,6 +123,7 @@ export default function MenuScreen() {
           color: theme.colors.primary,
         },
         planningItem,
+        economyItem,
       ];
     }
 
@@ -145,6 +155,7 @@ export default function MenuScreen() {
           color: theme.colors.primary,
         },
         planningItem,
+        economyItem,
       ];
     }
 

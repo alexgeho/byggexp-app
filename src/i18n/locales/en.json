@@ -548,7 +548,8 @@
     "reportBug": "Report a bug",
     "about": "About the App",
     "logOut": "Log out",
-    "userFallback": "User"
+    "userFallback": "User",
+    "economy": "Finance"
   },
   "schedule": {
     "employees": "Employees",
@@ -828,5 +829,37 @@
         "description": "News about app updates, releases, and product announcements."
       }
     }
+  },
+  "economy": {
+    "title": "Finance",
+    "offers": "Offers",
+    "invoices": "Invoices",
+    "filters": {
+      "all": "All"
+    },
+    "offerStatus": {
+      "draft": "Draft",
+      "sent": "Sent",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    },
+    "invoiceStatus": {
+      "draft": "Draft",
+      "sent": "Sent",
+      "paid": "Paid",
+      "overdue": "Overdue",
+      "cancelled": "Cancelled"
+    },
+    "offerNo": "Offer",
+    "invoiceNo": "Invoice",
+    "validUntil": "Valid until",
+    "due": "Due",
+    "noCustomer": "No customer",
+    "emptyOffers": "No offers yet",
+    "emptyInvoices": "No invoices yet",
+    "loadError": "Could not load. Try again.",
+    "newOffer": "New offer",
+    "newInvoice": "New invoice",
+    "createSoon": "Creating is coming in the next step."
   }
 }

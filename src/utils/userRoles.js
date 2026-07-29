@@ -19,10 +19,7 @@ const CREATABLE_ROLES_BY_ROLE = {
     USER_ROLES.COMPANY_ADMIN,
     USER_ROLES.SUPERADMIN,
   ],
-  [USER_ROLES.COMPANY_ADMIN]: [
-    USER_ROLES.WORKER,
-    USER_ROLES.PROJECT_ADMIN,
-  ],
+  [USER_ROLES.COMPANY_ADMIN]: [USER_ROLES.WORKER, USER_ROLES.PROJECT_ADMIN],
   [USER_ROLES.PROJECT_ADMIN]: [USER_ROLES.WORKER],
   [USER_ROLES.WORKER]: [],
 };
@@ -55,6 +52,11 @@ export function canManageEmployees(role) {
 
 /** Create projects — backend: SuperAdmin, CompanyAdmin only */
 export function canCreateProjects(role) {
+  return hasRole(role, [USER_ROLES.SUPERADMIN, USER_ROLES.COMPANY_ADMIN]);
+}
+
+/** Manage billing (offers & invoices) — backend: SuperAdmin, CompanyAdmin only */
+export function canManageBilling(role) {
   return hasRole(role, [USER_ROLES.SUPERADMIN, USER_ROLES.COMPANY_ADMIN]);
 }
 
@@ -149,7 +151,10 @@ export function isUserAssignedToProject(project, userId) {
     return true;
   }
 
-  if (Array.isArray(project.projectAdmins) && project.projectAdmins.some(matches)) {
+  if (
+    Array.isArray(project.projectAdmins) &&
+    project.projectAdmins.some(matches)
+  ) {
     return true;
   }
 

@@ -548,7 +548,8 @@
     "reportBug": "Rapportera ett fel",
     "about": "Om appen",
     "logOut": "Logga ut",
-    "userFallback": "Användare"
+    "userFallback": "Användare",
+    "economy": "Ekonomi"
   },
   "schedule": {
     "employees": "Anställda",
@@ -828,5 +829,37 @@
         "description": "Nyheter om appuppdateringar, lanseringar och produktmeddelanden."
       }
     }
+  },
+  "economy": {
+    "title": "Ekonomi",
+    "offers": "Offerter",
+    "invoices": "Fakturor",
+    "filters": {
+      "all": "Alla"
+    },
+    "offerStatus": {
+      "draft": "Utkast",
+      "sent": "Skickad",
+      "accepted": "Accepterad",
+      "rejected": "Avvisad"
+    },
+    "invoiceStatus": {
+      "draft": "Utkast",
+      "sent": "Skickad",
+      "paid": "Betald",
+      "overdue": "Förfallen",
+      "cancelled": "Makulerad"
+    },
+    "offerNo": "Offert",
+    "invoiceNo": "Faktura",
+    "validUntil": "Giltig till",
+    "due": "Förfaller",
+    "noCustomer": "Ingen kund",
+    "emptyOffers": "Inga offerter än",
+    "emptyInvoices": "Inga fakturor än",
+    "loadError": "Kunde inte ladda. Försök igen.",
+    "newOffer": "Ny offert",
+    "newInvoice": "Ny faktura",
+    "createSoon": "Skapa kommer i nästa steg."
   }
 }
