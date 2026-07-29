@@ -5,6 +5,7 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  Modal,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
@@ -79,6 +80,8 @@ export default function EconomyScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [statusFilter, setStatusFilter] = useState(null);
+  const [customerFilter, setCustomerFilter] = useState(null);
+  const [customerModalVisible, setCustomerModalVisible] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -114,22 +117,44 @@ export default function EconomyScreen() {
     [rawItems],
   );
 
+  // Unique customers (companyName) across the current mode, with counts.
+  const customerOptions = useMemo(() => {
+    const counts = new Map();
+    items.forEach((item) => {
+      const name = (item.companyName || "").trim();
+      if (name) counts.set(name, (counts.get(name) || 0) + 1);
+    });
+    return [...counts.entries()]
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [items]);
+
+  const byCustomer = useMemo(
+    () =>
+      customerFilter
+        ? items.filter(
+            (item) => (item.companyName || "").trim() === customerFilter,
+          )
+        : items,
+    [items, customerFilter],
+  );
+
   const filtered = useMemo(
     () =>
       statusFilter
-        ? items.filter((item) => String(item.status) === statusFilter)
-        : items,
-    [items, statusFilter],
+        ? byCustomer.filter((item) => String(item.status) === statusFilter)
+        : byCustomer,
+    [byCustomer, statusFilter],
   );
 
   const statusCounts = useMemo(() => {
     const counts = {};
-    items.forEach((item) => {
+    byCustomer.forEach((item) => {
       const status = String(item.status || "draft");
       counts[status] = (counts[status] || 0) + 1;
     });
     return counts;
-  }, [items]);
+  }, [byCustomer]);
 
   const filterOptions = useMemo(() => {
     const order = isOffers ? OFFER_FILTER_ORDER : INVOICE_FILTER_ORDER;
@@ -139,6 +164,7 @@ export default function EconomyScreen() {
   const switchMode = (next) => {
     setMode(next);
     setStatusFilter(null);
+    setCustomerFilter(null);
   };
 
   const openCreate = () => {
@@ -219,6 +245,29 @@ export default function EconomyScreen() {
         </TouchableOpacity>
       </View>
 
+      {customerOptions.length > 0 && (
+        <TouchableOpacity
+          style={styles.customerChip}
+          onPress={() => setCustomerModalVisible(true)}
+          activeOpacity={0.85}
+        >
+          <Icon name="briefcase" size={15} color="#2683f9" />
+          <Text style={styles.customerChipText} numberOfLines={1}>
+            {customerFilter || t("economy.allCustomers")}
+          </Text>
+          {customerFilter ? (
+            <TouchableOpacity
+              onPress={() => setCustomerFilter(null)}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Icon name="x" size={16} color="#687898" />
+            </TouchableOpacity>
+          ) : (
+            <Icon name="chevron-down" size={16} color="#687898" />
+          )}
+        </TouchableOpacity>
+      )}
+
       {filterOptions.length > 0 && (
         <ScrollView
           horizontal
@@ -227,7 +276,7 @@ export default function EconomyScreen() {
           contentContainerStyle={styles.pillsContent}
         >
           <Pill
-            label={`${t("economy.filters.all")} · ${items.length}`}
+            label={`${t("economy.filters.all")} · ${byCustomer.length}`}
             active={!statusFilter}
             onPress={() => setStatusFilter(null)}
           />
@@ -271,6 +320,60 @@ export default function EconomyScreen() {
         onRightPress={() => navigation.navigate("Menu")}
         onAddPress={openCreate}
       />
+
+      <Modal
+        visible={customerModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setCustomerModalVisible(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setCustomerModalVisible(false)}
+        >
+          <View style={styles.modalSheet}>
+            <View style={styles.grab} />
+            <Text style={styles.modalTitle}>
+              {t("economy.filterByCustomer")}
+            </Text>
+            <ScrollView>
+              <TouchableOpacity
+                style={styles.customerRow}
+                onPress={() => {
+                  setCustomerFilter(null);
+                  setCustomerModalVisible(false);
+                }}
+              >
+                <Text style={styles.customerRowText}>
+                  {t("economy.allCustomers")}
+                </Text>
+                {!customerFilter && (
+                  <Icon name="check" size={18} color="#2683f9" />
+                )}
+              </TouchableOpacity>
+              {customerOptions.map((option) => (
+                <TouchableOpacity
+                  key={option.name}
+                  style={styles.customerRow}
+                  onPress={() => {
+                    setCustomerFilter(option.name);
+                    setStatusFilter(null);
+                    setCustomerModalVisible(false);
+                  }}
+                >
+                  <Text style={styles.customerRowText} numberOfLines={1}>
+                    {option.name} · {option.count}
+                  </Text>
+                  {customerFilter === option.name && (
+                    <Icon name="check" size={18} color="#2683f9" />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 }

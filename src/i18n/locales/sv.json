@@ -860,7 +860,9 @@
     "loadError": "Kunde inte ladda. Försök igen.",
     "newOffer": "Ny offert",
     "newInvoice": "Ny faktura",
-    "createSoon": "Skapa kommer i nästa steg."
+    "createSoon": "Skapa kommer i nästa steg.",
+    "allCustomers": "Alla kunder",
+    "filterByCustomer": "Filtrera på kund"
   },
   "billing": {
     "itemDescription": "Beskrivning",

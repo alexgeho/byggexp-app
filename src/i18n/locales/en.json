@@ -860,7 +860,9 @@
     "loadError": "Could not load. Try again.",
     "newOffer": "New offer",
     "newInvoice": "New invoice",
-    "createSoon": "Creating is coming in the next step."
+    "createSoon": "Creating is coming in the next step.",
+    "allCustomers": "All customers",
+    "filterByCustomer": "Filter by customer"
   },
   "billing": {
     "itemDescription": "Description",
