@@ -1,10 +1,12 @@
 import React, { useCallback, useContext, useEffect, useRef } from "react";
 import { AppState } from "react-native";
+import * as Device from "expo-device";
 
 import AuthContext from "../contexts/AuthContext";
 import { projectService, shiftService } from "../services";
 import { shiftLocationPolicy } from "../config/shiftLocationPolicy";
 import {
+  getShiftLocationCheck,
   isWithinProjectLocation,
   startShiftWithLocationGuard,
 } from "../utils/shiftLocationGuard";
@@ -132,6 +134,13 @@ export default function ShiftLocationMonitor() {
       return;
     }
 
+    // Simulators/emulators have no real GPS (location is faked to a fixed
+    // coordinate), so auto check-in would fire spuriously. Only run on
+    // physical devices.
+    if (!Device.isDevice) {
+      return;
+    }
+
     const project = await getSelectedProject().catch(() => null);
     const projectId = getProjectId(project);
 
@@ -140,10 +149,26 @@ export default function ShiftLocationMonitor() {
       return;
     }
 
-    const isWithinBounds = await isWithinProjectLocation({
-      project,
-      fallbackProjectLocation: project?.location,
-    });
+    let locationCheck;
+    try {
+      locationCheck = await getShiftLocationCheck({
+        project,
+        fallbackProjectLocation: project?.location,
+      });
+    } catch {
+      // Can't verify the location (e.g. the address won't geocode) — never
+      // auto-start a shift when we're unsure.
+      selectedGeofenceInsideRef.current = false;
+      startedProjectIdRef.current = null;
+      return;
+    }
+
+    // Only auto check-in when the project has a real geofence AND we're inside
+    // it. A project without saved coordinates/address must NOT auto-start a
+    // shift (previously "no geofence" was treated as "always inside").
+    const isWithinBounds =
+      locationCheck.enforced &&
+      locationCheck.distanceMeters <= locationCheck.maxDistanceMeters;
 
     if (!isWithinBounds) {
       selectedGeofenceInsideRef.current = false;
