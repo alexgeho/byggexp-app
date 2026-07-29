@@ -46,6 +46,7 @@ import {
   startOfMonth,
   startOfWeek,
 } from "../../../utils/schedule";
+import { getScheduleDemoData } from "../../../utils/scheduleDemo";
 
 const RANGE_DAYS = 42; // 6 weeks — covers any month with week alignment
 const ROW_HEIGHT = 64;
@@ -58,6 +59,9 @@ const MIN_DAY_WIDTH = 18; // zoom out far enough to see the whole range
 const MAX_DAY_WIDTH = 200; // zoom in to a single day comfortably
 const ZOOM_STEP = 1.3;
 const BAR_RADIUS = 12;
+// Dev-only preview with fake, varied data. Never true in production
+// (guarded by __DEV__ at the call site); flip to preview colors locally.
+const SCHEDULE_DEMO = false;
 
 export default function ScheduleScreen() {
   const navigation = useNavigation();
@@ -87,6 +91,15 @@ export default function ScheduleScreen() {
   const bodyVScrollRef = useRef(null);
 
   const loadData = useCallback(async () => {
+    if (__DEV__ && SCHEDULE_DEMO) {
+      const demo = getScheduleDemoData();
+      setTasks(demo.tasks);
+      setProjects(demo.projects);
+      setWorkers(demo.workers);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     try {
       const role = user?.role;
