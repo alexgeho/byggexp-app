@@ -230,3 +230,20 @@ export const buildProjectItems = (tasks = [], projectMap = {}, projectId) => {
     ];
   });
 };
+
+// One span bar per project (its beginning→end), for the Projects row view.
+export const buildProjectSpanItem = (project, index = 0) => {
+  const dates = getProjectDates(project);
+  if (!dates) {
+    return null;
+  }
+
+  return {
+    id: `project-${normalizeId(project) || index}`,
+    title: project.name || "—",
+    subtitle: project.location || project.status || "",
+    start: dates.start,
+    end: dates.end,
+    color: EVENT_COLORS[index % EVENT_COLORS.length],
+  };
+};
