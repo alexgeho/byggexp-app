@@ -8,7 +8,6 @@ import React, {
 import {
   View,
   Text,
-  Image,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
@@ -27,7 +26,6 @@ import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import AuthContext from "../../../contexts/AuthContext";
 import { taskService, projectService, userService } from "../../../services";
-import { API_BASE_URL } from "../../../services/api";
 import {
   addDays,
   addMonths,
@@ -53,22 +51,12 @@ const ROW_HEIGHT = 64;
 const WEEK_HEADER_HEIGHT = 32;
 const DAY_HEADER_HEIGHT = 48;
 const HEADER_HEIGHT = WEEK_HEADER_HEIGHT + DAY_HEADER_HEIGHT;
-const SIDEBAR_WIDTH = 120;
+const SIDEBAR_WIDTH = 150;
 const BASE_DAY_WIDTH = 72;
 const MIN_DAY_WIDTH = 40;
 const MAX_DAY_WIDTH = 160;
 const ZOOM_STEP = 1.25;
 const BAR_RADIUS = 12;
-
-const resolveAvatarUrl = (value) => {
-  if (!value) {
-    return null;
-  }
-  if (value.startsWith("http://") || value.startsWith("https://")) {
-    return value;
-  }
-  return `${API_BASE_URL}${value.startsWith("/") ? value : `/${value}`}`;
-};
 
 export default function ScheduleScreen() {
   const navigation = useNavigation();
@@ -398,30 +386,14 @@ export default function ScheduleScreen() {
               >
                 {rows.map((row) => (
                   <View key={row.id} style={styles.sidebarCell}>
-                    {mode === "employees" ? (
-                      <View style={styles.avatar}>
-                        {row.avatarUrl ? (
-                          <Image
-                            source={{ uri: resolveAvatarUrl(row.avatarUrl) }}
-                            style={styles.avatarImage}
-                          />
-                        ) : (
-                          <Text style={styles.avatarInitial}>
-                            {(row.name || "?").charAt(0).toUpperCase()}
-                          </Text>
-                        )}
-                      </View>
-                    ) : null}
-                    <View style={styles.sidebarTextWrap}>
-                      <Text numberOfLines={1} style={styles.sidebarName}>
-                        {row.name}
+                    <Text numberOfLines={1} style={styles.sidebarName}>
+                      {row.name}
+                    </Text>
+                    {row.subtitle ? (
+                      <Text numberOfLines={1} style={styles.sidebarSubtitle}>
+                        {row.subtitle}
                       </Text>
-                      {row.subtitle ? (
-                        <Text numberOfLines={1} style={styles.sidebarSubtitle}>
-                          {row.subtitle}
-                        </Text>
-                      ) : null}
-                    </View>
+                    ) : null}
                   </View>
                 ))}
               </ScrollView>
@@ -699,33 +671,10 @@ const styles = StyleSheet.create({
   },
   sidebarCell: {
     height: ROW_HEIGHT,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    paddingHorizontal: 10,
+    justifyContent: "center",
+    paddingHorizontal: 12,
     borderBottomWidth: 1,
     borderBottomColor: "rgba(5, 45, 80, 0.05)",
-  },
-  avatar: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: "#0091FF",
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
-  },
-  avatarImage: {
-    width: 34,
-    height: 34,
-  },
-  avatarInitial: {
-    color: "#FFFFFF",
-    fontSize: 15,
-    fontFamily: "DMSans-SemiBold",
-  },
-  sidebarTextWrap: {
-    flex: 1,
   },
   sidebarName: {
     color: "#052D50",
