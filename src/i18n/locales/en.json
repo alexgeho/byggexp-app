@@ -577,6 +577,14 @@
     "invalidDatesTitle": "Invalid dates",
     "invalidDates": "The due date can't be before the start date.",
     "saveFailedTitle": "Couldn't save",
+    "leaveTypes": {
+      "vacation": "Vacation",
+      "sick": "Sick",
+      "vab": "VAB",
+      "parental": "Parental",
+      "leave": "Unpaid leave",
+      "other": "Absence"
+    },
     "noResources": "No data to plan yet.",
     "noItems": "No items for this period."
   },

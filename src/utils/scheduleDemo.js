@@ -10,10 +10,25 @@ export const getScheduleDemoData = () => {
   const iso = (day) => `${year}-${pad(month + 1)}-${pad(day)}`;
 
   const workers = [
-    { _id: "demo-w1", name: "Anna Karlsson", role: "worker", profession: "Snickare" },
-    { _id: "demo-w2", name: "Erik Nilsson", role: "worker", profession: "Elektriker" },
+    {
+      _id: "demo-w1",
+      name: "Anna Karlsson",
+      role: "worker",
+      profession: "Snickare",
+    },
+    {
+      _id: "demo-w2",
+      name: "Erik Nilsson",
+      role: "worker",
+      profession: "Elektriker",
+    },
     { _id: "demo-w3", name: "Sara Berg", role: "worker", profession: "Målare" },
-    { _id: "demo-w4", name: "Johan Ek", role: "worker", profession: "Betongarbetare" },
+    {
+      _id: "demo-w4",
+      name: "Johan Ek",
+      role: "worker",
+      profession: "Betongarbetare",
+    },
   ];
 
   const projects = [
@@ -47,14 +62,82 @@ export const getScheduleDemoData = () => {
   ];
 
   const tasks = [
-    { _id: "demo-t1", taskTitle: "Målning", projectId: "demo-p1", status: "open", startDate: iso(2), dueDate: iso(6) },
-    { _id: "demo-t2", taskTitle: "Rivning", projectId: "demo-p1", status: "open", startDate: iso(8), dueDate: iso(12) },
-    { _id: "demo-t3", taskTitle: "Elinstallation", projectId: "demo-p2", status: "open", startDate: iso(3), dueDate: iso(9) },
-    { _id: "demo-t4", taskTitle: "Gjutning", projectId: "demo-p3", status: "overdue", startDate: iso(5), dueDate: iso(12) },
-    { _id: "demo-t5", taskTitle: "Stängsel", projectId: "demo-p1", status: "open", startDate: iso(14), dueDate: iso(17) },
-    { _id: "demo-t6", taskTitle: "Svetsning", projectId: "demo-p2", status: "completed", startDate: iso(12), dueDate: iso(18) },
-    { _id: "demo-t7", taskTitle: "Golvläggning", projectId: "demo-p3", status: "open", startDate: iso(16), dueDate: iso(22) },
+    {
+      _id: "demo-t1",
+      taskTitle: "Målning",
+      projectId: "demo-p1",
+      status: "open",
+      startDate: iso(2),
+      dueDate: iso(6),
+    },
+    {
+      _id: "demo-t2",
+      taskTitle: "Rivning",
+      projectId: "demo-p1",
+      status: "open",
+      startDate: iso(8),
+      dueDate: iso(12),
+    },
+    {
+      _id: "demo-t3",
+      taskTitle: "Elinstallation",
+      projectId: "demo-p2",
+      status: "open",
+      startDate: iso(3),
+      dueDate: iso(9),
+    },
+    {
+      _id: "demo-t4",
+      taskTitle: "Gjutning",
+      projectId: "demo-p3",
+      status: "overdue",
+      startDate: iso(5),
+      dueDate: iso(12),
+    },
+    {
+      _id: "demo-t5",
+      taskTitle: "Stängsel",
+      projectId: "demo-p1",
+      status: "open",
+      startDate: iso(14),
+      dueDate: iso(17),
+    },
+    {
+      _id: "demo-t6",
+      taskTitle: "Svetsning",
+      projectId: "demo-p2",
+      status: "completed",
+      startDate: iso(12),
+      dueDate: iso(18),
+    },
+    {
+      _id: "demo-t7",
+      taskTitle: "Golvläggning",
+      projectId: "demo-p3",
+      status: "open",
+      startDate: iso(16),
+      dueDate: iso(22),
+    },
   ];
 
-  return { workers, projects, tasks };
+  const leaves = [
+    {
+      _id: "demo-l1",
+      userId: "demo-w3",
+      type: "vacation",
+      status: "approved",
+      startDate: iso(13),
+      endDate: iso(17),
+    },
+    {
+      _id: "demo-l2",
+      userId: "demo-w2",
+      type: "sick",
+      status: "approved",
+      startDate: iso(20),
+      endDate: iso(22),
+    },
+  ];
+
+  return { workers, projects, tasks, leaves };
 };

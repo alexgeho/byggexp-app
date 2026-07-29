@@ -255,6 +255,36 @@ export const buildProjectItems = (tasks = [], projectMap = {}, projectId) => {
   });
 };
 
+// Approved absence bars (Frånvaro) for one employee.
+export const buildLeaveItems = (leaves = [], employeeId) => {
+  if (!employeeId) {
+    return [];
+  }
+
+  return leaves.flatMap((leave, index) => {
+    if (normalizeId(leave.userId) !== String(employeeId)) {
+      return [];
+    }
+    if (String(leave.status || "").toLowerCase() !== "approved") {
+      return [];
+    }
+    const dates = toDateRange(leave.startDate, leave.endDate);
+    if (!dates) {
+      return [];
+    }
+    return [
+      {
+        id: `leave-${normalizeId(leave) || index}`,
+        type: "leave",
+        leaveType: leave.type || "other",
+        muted: true,
+        start: dates.start,
+        end: dates.end,
+      },
+    ];
+  });
+};
+
 // One span bar per project (its beginning→end), for the Projects row view.
 export const buildProjectSpanItem = (project, index = 0) => {
   const dates = getProjectDates(project);

@@ -28,12 +28,18 @@ import {
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import AuthContext from "../../../contexts/AuthContext";
-import { taskService, projectService, userService } from "../../../services";
+import {
+  taskService,
+  projectService,
+  userService,
+  leaveService,
+} from "../../../services";
 import {
   addDays,
   addMonths,
   buildEmployeeItems,
   buildEmployeeOptions,
+  buildLeaveItems,
   buildProjectMap,
   buildProjectOptions,
   buildProjectSpanItem,
@@ -101,6 +107,7 @@ export default function ScheduleScreen() {
   const [tasks, setTasks] = useState([]);
   const [projects, setProjects] = useState([]);
   const [workers, setWorkers] = useState([]);
+  const [leaves, setLeaves] = useState([]);
   const [monthPickerOpen, setMonthPickerOpen] = useState(false);
   const [selectedProjectIds, setSelectedProjectIds] = useState([]);
   const [selectedStatuses, setSelectedStatuses] = useState([]);
@@ -122,6 +129,7 @@ export default function ScheduleScreen() {
       setTasks(demo.tasks);
       setProjects(demo.projects);
       setWorkers(demo.workers);
+      setLeaves(demo.leaves || []);
       setLoading(false);
       return;
     }
@@ -144,20 +152,23 @@ export default function ScheduleScreen() {
           ? userService.getAll()
           : userService.getMyCompanyUsers();
 
-      const [taskData, projectData, workerData] = await Promise.all([
+      const [taskData, projectData, workerData, leaveData] = await Promise.all([
         taskService.getAll().catch(() => []),
         projectRequest.catch(() => []),
         userRequest.catch(() => []),
+        leaveService.getAll().catch(() => []),
       ]);
 
       setTasks(Array.isArray(taskData) ? taskData : []);
       setProjects(Array.isArray(projectData) ? projectData : []);
       setWorkers(Array.isArray(workerData) ? workerData : []);
+      setLeaves(Array.isArray(leaveData) ? leaveData : []);
     } catch (error) {
       console.error("Failed to load schedule data:", error);
       setTasks([]);
       setProjects([]);
       setWorkers([]);
+      setLeaves([]);
     } finally {
       setLoading(false);
     }
@@ -233,14 +244,17 @@ export default function ScheduleScreen() {
     const map = {};
     rows.forEach((row, index) => {
       if (mode === "employees") {
-        map[row.id] = buildEmployeeItems(filteredTasks, projectMap, row.id);
+        map[row.id] = [
+          ...buildEmployeeItems(filteredTasks, projectMap, row.id),
+          ...buildLeaveItems(leaves, row.id),
+        ];
       } else {
         const spanItem = buildProjectSpanItem(projectMap[row.id], index);
         map[row.id] = spanItem ? [spanItem] : [];
       }
     });
     return map;
-  }, [mode, rows, filteredTasks, projectMap]);
+  }, [mode, rows, filteredTasks, projectMap, leaves]);
 
   const rangeStart = useMemo(
     () => startOfWeek(startOfMonth(currentMonth)),
@@ -421,6 +435,10 @@ export default function ScheduleScreen() {
 
     const done = DONE_STATUSES.has(String(item.status || "").toLowerCase());
     const overdue = !done && item.type === "task" && item.end <= todayStart;
+    const isLeave = item.type === "leave";
+    const label = isLeave
+      ? t(`schedule.leaveTypes.${item.leaveType}`, item.leaveType)
+      : item.title;
 
     return (
       <TouchableOpacity
@@ -433,7 +451,7 @@ export default function ScheduleScreen() {
           {
             left,
             width: Math.max(width, 8),
-            backgroundColor: item.color,
+            backgroundColor: isLeave ? "#E7E3D5" : item.color,
             opacity: done ? 0.55 : 1,
             borderTopLeftRadius: clippedLeft ? 0 : BAR_RADIUS,
             borderBottomLeftRadius: clippedLeft ? 0 : BAR_RADIUS,
@@ -444,8 +462,11 @@ export default function ScheduleScreen() {
         ]}
       >
         <View style={styles.barTitleRow}>
-          <Text numberOfLines={1} style={styles.barTitle}>
-            {item.title}
+          <Text
+            numberOfLines={1}
+            style={isLeave ? styles.barTitleMuted : styles.barTitle}
+          >
+            {label}
           </Text>
           {done ? <Icon name="check" size={13} color="#FFFFFF" /> : null}
         </View>
@@ -1156,6 +1177,12 @@ const styles = StyleSheet.create({
   barTitle: {
     flex: 1,
     color: "#FFFFFF",
+    fontSize: 13,
+    fontFamily: "DMSans-SemiBold",
+  },
+  barTitleMuted: {
+    flex: 1,
+    color: "#5B5333",
     fontSize: 13,
     fontFamily: "DMSans-SemiBold",
   },

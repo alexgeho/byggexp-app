@@ -577,6 +577,14 @@
     "invalidDatesTitle": "Ogiltiga datum",
     "invalidDates": "Slutdatum kan inte vara före startdatum.",
     "saveFailedTitle": "Kunde inte spara",
+    "leaveTypes": {
+      "vacation": "Semester",
+      "sick": "Sjukfrånvaro",
+      "vab": "VAB",
+      "parental": "Föräldraledig",
+      "leave": "Tjänstledig",
+      "other": "Frånvaro"
+    },
     "noResources": "Inga data att planera än.",
     "noItems": "Inga poster för denna period."
   },

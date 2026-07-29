@@ -3,6 +3,7 @@ import {
   EVENT_COLORS,
   buildEmployeeItems,
   buildEmployeeOptions,
+  buildLeaveItems,
   buildProjectSpanItem,
   colorForKey,
   daysBetween,
@@ -122,6 +123,47 @@ describe("buildEmployeeItems", () => {
 
   it("excludes tasks for a worker not on the project", () => {
     expect(buildEmployeeItems(tasks, projectMap, "u9")).toHaveLength(0);
+  });
+});
+
+describe("buildLeaveItems", () => {
+  const leaves = [
+    {
+      _id: "l1",
+      userId: "u1",
+      type: "vacation",
+      status: "approved",
+      startDate: "2026-07-10",
+      endDate: "2026-07-12",
+    },
+    {
+      _id: "l2",
+      userId: "u1",
+      type: "sick",
+      status: "pending",
+      startDate: "2026-07-15",
+      endDate: "2026-07-16",
+    },
+    {
+      _id: "l3",
+      userId: "u2",
+      type: "vacation",
+      status: "approved",
+      startDate: "2026-07-10",
+      endDate: "2026-07-12",
+    },
+  ];
+
+  it("returns only approved leaves for the employee", () => {
+    const items = buildLeaveItems(leaves, "u1");
+    expect(items).toHaveLength(1);
+    expect(items[0].type).toBe("leave");
+    expect(items[0].leaveType).toBe("vacation");
+    expect(items[0].muted).toBe(true);
+  });
+
+  it("returns nothing for an employee without approved leaves", () => {
+    expect(buildLeaveItems(leaves, "u9")).toHaveLength(0);
   });
 });
 
