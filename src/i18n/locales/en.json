@@ -571,6 +571,12 @@
     "filterProjects": "Filter by project",
     "filterStatuses": "Filter by status",
     "clear": "Clear",
+    "rescheduleTitle": "Reschedule",
+    "startDate": "Start",
+    "dueDate": "Due",
+    "invalidDatesTitle": "Invalid dates",
+    "invalidDates": "The due date can't be before the start date.",
+    "saveFailedTitle": "Couldn't save",
     "noResources": "No data to plan yet.",
     "noItems": "No items for this period."
   },

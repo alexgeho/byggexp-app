@@ -12,10 +12,13 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  Alert,
   Modal,
   FlatList,
+  Platform,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTranslation } from "react-i18next";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import {
@@ -47,6 +50,7 @@ import {
   startOfWeek,
 } from "../../../utils/schedule";
 import { getScheduleDemoData } from "../../../utils/scheduleDemo";
+import { getDateLocale } from "../../../utils/dateLocale";
 
 const RANGE_DAYS = 42; // 6 weeks — covers any month with week alignment
 const ROW_HEIGHT = 64;
@@ -60,6 +64,24 @@ const MAX_DAY_WIDTH = 200; // zoom in to a single day comfortably
 const ZOOM_STEP = 1.3;
 const BAR_RADIUS = 16;
 const DONE_STATUSES = new Set(["done", "completed", "closed"]);
+const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "spinner" : "default";
+
+const formatFullDate = (date) =>
+  new Intl.DateTimeFormat(getDateLocale(), {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(date);
+
+const toNoonIso = (date) =>
+  new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    12,
+    0,
+    0,
+  ).toISOString();
 // Dev-only preview with fake, varied data. Never true in production
 // (guarded by __DEV__ at the call site); flip to preview colors locally.
 const SCHEDULE_DEMO = false;
@@ -83,6 +105,9 @@ export default function ScheduleScreen() {
   const [selectedProjectIds, setSelectedProjectIds] = useState([]);
   const [selectedStatuses, setSelectedStatuses] = useState([]);
   const [activeFilter, setActiveFilter] = useState(null); // 'project' | 'status'
+  const [reschedule, setReschedule] = useState(null); // { taskId, title, start, due }
+  const [datePickerTarget, setDatePickerTarget] = useState(null); // 'start' | 'due'
+  const [savingReschedule, setSavingReschedule] = useState(false);
 
   // Frozen header (horizontal) and sidebar (vertical) are driven by the
   // timeline body's scroll so the three panes stay aligned.
@@ -322,6 +347,66 @@ export default function ScheduleScreen() {
     }
   };
 
+  // Long-press a task bar to reschedule it (change start/due dates).
+  const openReschedule = (item) => {
+    if (item.type !== "task" || !item.taskId) {
+      return;
+    }
+    const task = tasks.find((entry) => normalizeId(entry) === item.taskId);
+    if (!task) {
+      return;
+    }
+    const start = task.startDate ? new Date(task.startDate) : new Date();
+    const validStart = Number.isNaN(start.getTime()) ? new Date() : start;
+    const due = task.dueDate ? new Date(task.dueDate) : validStart;
+    const validDue = Number.isNaN(due.getTime()) ? validStart : due;
+    setReschedule({
+      taskId: item.taskId,
+      title: item.title,
+      start: validStart,
+      due: validDue,
+    });
+  };
+
+  const handleRescheduleDateChange = (_event, date) => {
+    if (!date || !datePickerTarget) {
+      return;
+    }
+    setReschedule((prev) =>
+      prev ? { ...prev, [datePickerTarget]: date } : prev,
+    );
+    if (Platform.OS !== "ios") {
+      setDatePickerTarget(null);
+    }
+  };
+
+  const handleSaveReschedule = async () => {
+    if (!reschedule || savingReschedule) {
+      return;
+    }
+    if (
+      startOfDay(reschedule.due).getTime() <
+      startOfDay(reschedule.start).getTime()
+    ) {
+      Alert.alert(t("schedule.invalidDatesTitle"), t("schedule.invalidDates"));
+      return;
+    }
+    try {
+      setSavingReschedule(true);
+      await taskService.update(reschedule.taskId, {
+        startDate: toNoonIso(reschedule.start),
+        dueDate: toNoonIso(reschedule.due),
+      });
+      setReschedule(null);
+      setDatePickerTarget(null);
+      await loadData();
+    } catch {
+      Alert.alert(t("schedule.saveFailedTitle"), t("common.tryAgain"));
+    } finally {
+      setSavingReschedule(false);
+    }
+  };
+
   const renderBar = (item) => {
     const clampedStart = Math.max(item.start, rangeStartMs);
     const clampedEnd = Math.min(item.end, rangeEndMs);
@@ -342,6 +427,7 @@ export default function ScheduleScreen() {
         key={item.id}
         activeOpacity={0.85}
         onPress={() => openItem(item)}
+        onLongPress={() => openReschedule(item)}
         style={[
           styles.bar,
           {
@@ -709,6 +795,111 @@ export default function ScheduleScreen() {
             />
           </View>
         </TouchableOpacity>
+      </Modal>
+
+      {/* Reschedule task */}
+      <Modal
+        visible={reschedule !== null}
+        transparent
+        animationType="slide"
+        onRequestClose={() => {
+          setReschedule(null);
+          setDatePickerTarget(null);
+        }}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalSheet}>
+            <Text style={styles.modalTitle}>
+              {t("schedule.rescheduleTitle")}
+            </Text>
+            {reschedule ? (
+              <>
+                <Text numberOfLines={1} style={styles.rescheduleTaskName}>
+                  {reschedule.title}
+                </Text>
+
+                <TouchableOpacity
+                  style={styles.dateRow}
+                  onPress={() => setDatePickerTarget("start")}
+                  activeOpacity={0.85}
+                >
+                  <Text style={styles.dateRowLabel}>
+                    {t("schedule.startDate")}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.dateRowValue,
+                      datePickerTarget === "start" && styles.dateRowValueActive,
+                    ]}
+                  >
+                    {formatFullDate(reschedule.start)}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.dateRow}
+                  onPress={() => setDatePickerTarget("due")}
+                  activeOpacity={0.85}
+                >
+                  <Text style={styles.dateRowLabel}>
+                    {t("schedule.dueDate")}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.dateRowValue,
+                      datePickerTarget === "due" && styles.dateRowValueActive,
+                    ]}
+                  >
+                    {formatFullDate(reschedule.due)}
+                  </Text>
+                </TouchableOpacity>
+
+                {datePickerTarget ? (
+                  <>
+                    <DateTimePicker
+                      value={
+                        datePickerTarget === "start"
+                          ? reschedule.start
+                          : reschedule.due
+                      }
+                      mode="date"
+                      display={DATE_PICKER_DISPLAY}
+                      onChange={handleRescheduleDateChange}
+                    />
+                    {Platform.OS === "ios" ? (
+                      <TouchableOpacity
+                        style={styles.pickerDone}
+                        onPress={() => setDatePickerTarget(null)}
+                      >
+                        <Text style={styles.pickerDoneText}>
+                          {t("common.done")}
+                        </Text>
+                      </TouchableOpacity>
+                    ) : null}
+                  </>
+                ) : null}
+
+                <TouchableOpacity
+                  style={[
+                    styles.saveButton,
+                    savingReschedule && styles.saveButtonDisabled,
+                  ]}
+                  onPress={handleSaveReschedule}
+                  disabled={savingReschedule}
+                  activeOpacity={0.85}
+                >
+                  {savingReschedule ? (
+                    <ActivityIndicator color="#FFFFFF" />
+                  ) : (
+                    <Text style={styles.saveButtonText}>
+                      {t("common.save")}
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              </>
+            ) : null}
+          </View>
+        </View>
       </Modal>
 
       {/* Month picker */}
@@ -1094,5 +1285,56 @@ const styles = StyleSheet.create({
   optionName: {
     color: "#052D50",
     fontSize: 16,
+  },
+  rescheduleTaskName: {
+    color: "#698196",
+    fontSize: 14,
+    marginBottom: 16,
+  },
+  dateRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(5, 45, 80, 0.06)",
+  },
+  dateRowLabel: {
+    color: "#052D50",
+    fontSize: 15,
+  },
+  dateRowValue: {
+    color: "#052D50",
+    fontSize: 15,
+    fontFamily: "DMSans-Medium",
+  },
+  dateRowValueActive: {
+    color: "#1877F2",
+  },
+  pickerDone: {
+    alignSelf: "flex-end",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  pickerDoneText: {
+    color: "#1877F2",
+    fontSize: 15,
+    fontFamily: "DMSans-Medium",
+  },
+  saveButton: {
+    marginTop: 20,
+    height: 56,
+    borderRadius: 999,
+    backgroundColor: "#1877F2",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  saveButtonDisabled: {
+    opacity: 0.7,
+  },
+  saveButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontFamily: "DMSans-SemiBold",
   },
 });

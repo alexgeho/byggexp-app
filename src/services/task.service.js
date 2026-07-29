@@ -1,25 +1,35 @@
-import api from './api';
+import api from "./api";
 
 export const taskService = {
   getAll: async () => {
-    const { data } = await api.get('/tasks');
+    const { data } = await api.get("/tasks");
     return data;
   },
 
   create: async (taskData) => {
-    const isFormData = typeof FormData !== 'undefined' && taskData instanceof FormData;
-    const { data } = await api.post('/tasks', taskData, isFormData
-      ? {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      : undefined);
+    const isFormData =
+      typeof FormData !== "undefined" && taskData instanceof FormData;
+    const { data } = await api.post(
+      "/tasks",
+      taskData,
+      isFormData
+        ? {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        : undefined,
+    );
     return data;
   },
 
   getByProject: async (projectId) => {
     const { data } = await api.get(`/tasks/project/${projectId}`);
+    return data;
+  },
+
+  update: async (id, taskData) => {
+    const { data } = await api.put(`/tasks/${id}`, taskData);
     return data;
   },
 
@@ -36,7 +46,7 @@ export const taskService = {
   uploadDocuments: async (id, taskData) => {
     const { data } = await api.post(`/tasks/${id}/documents`, taskData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     });
     return data;
