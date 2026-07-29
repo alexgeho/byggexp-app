@@ -107,10 +107,16 @@ export default function ScheduleScreen() {
             ? projectService.getByCompany(companyId)
             : projectService.getMyProjects();
 
+      // Company users (with names) so worker rows resolve to real names.
+      const userRequest =
+        role === "superadmin"
+          ? userService.getAll()
+          : userService.getMyCompanyUsers();
+
       const [taskData, projectData, workerData] = await Promise.all([
         taskService.getAll().catch(() => []),
         projectRequest.catch(() => []),
-        userService.getWorkers().catch(() => []),
+        userRequest.catch(() => []),
       ]);
 
       setTasks(Array.isArray(taskData) ? taskData : []);

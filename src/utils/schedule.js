@@ -69,6 +69,17 @@ export const formatMonthLabel = (date) =>
 export const formatWeekdayLabel = (date) =>
   new Intl.DateTimeFormat(getDateLocale(), { weekday: "short" }).format(date);
 
+// Deterministic color for a key (task/project id) so each interval keeps a
+// stable, distinct color across renders and rows.
+export const colorForKey = (key) => {
+  const str = String(key || "");
+  let hash = 0;
+  for (let index = 0; index < str.length; index += 1) {
+    hash = (hash * 31 + str.charCodeAt(index)) >>> 0;
+  }
+  return EVENT_COLORS[hash % EVENT_COLORS.length];
+};
+
 export const normalizeId = (value) => {
   if (!value) {
     return null;
@@ -106,23 +117,24 @@ export const buildProjectMap = (projects = []) =>
     return acc;
   }, {});
 
-// Employees = union of project workers and company users with the worker role.
+// Employees = union of project workers and company users with the worker
+// role. Handles workers that arrive either as ids or as populated objects.
 export const buildEmployeeOptions = (projects = [], users = []) => {
   const byId = new Map();
 
-  users
-    .filter((employee) => employee?.role === "worker")
-    .forEach((employee) => {
-      const id = normalizeId(employee);
-      if (id) {
-        byId.set(id, {
-          id,
-          name: employee.name || "—",
-          subtitle: employee.profession || employee.role || "",
-          avatarUrl: employee.avatarUrl || null,
-        });
-      }
+  const upsert = (id, source) => {
+    if (!id) {
+      return;
+    }
+    const existing = byId.get(id);
+    byId.set(id, {
+      id,
+      name: source?.name || existing?.name || "",
+      subtitle:
+        source?.profession || source?.role || existing?.subtitle || "",
+      avatarUrl: source?.avatarUrl || existing?.avatarUrl || null,
     });
+  };
 
   const userMap = users.reduce((acc, employee) => {
     const id = normalizeId(employee);
@@ -132,23 +144,25 @@ export const buildEmployeeOptions = (projects = [], users = []) => {
     return acc;
   }, {});
 
+  users
+    .filter((employee) => employee?.role === "worker")
+    .forEach((employee) => upsert(normalizeId(employee), employee));
+
   projects.forEach((project) => {
-    getWorkerIdsForProject(project).forEach((workerId) => {
-      if (!byId.has(workerId)) {
-        const employee = userMap[workerId];
-        byId.set(workerId, {
-          id: workerId,
-          name: employee?.name || "—",
-          subtitle: employee?.profession || employee?.role || "",
-          avatarUrl: employee?.avatarUrl || null,
-        });
-      }
+    (project?.workers || []).forEach((worker) => {
+      const id = normalizeId(worker);
+      // Prefer a populated worker object, fall back to the fetched user map.
+      const source =
+        (worker && typeof worker === "object" && worker.name ? worker : null) ||
+        userMap[id] ||
+        null;
+      upsert(id, source);
     });
   });
 
-  return Array.from(byId.values()).sort((a, b) =>
-    a.name.localeCompare(b.name),
-  );
+  return Array.from(byId.values())
+    .map((option) => ({ ...option, name: option.name || "—" }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 };
 
 export const buildProjectOptions = (projects = []) =>
@@ -194,7 +208,7 @@ export const buildEmployeeItems = (tasks = [], projectMap = {}, employeeId) => {
         subtitle: project.name || "",
         start: dates.start,
         end: dates.end,
-        color: EVENT_COLORS[index % EVENT_COLORS.length],
+        color: colorForKey(normalizeId(task) || index),
       },
     ];
   });
@@ -225,7 +239,7 @@ export const buildProjectItems = (tasks = [], projectMap = {}, projectId) => {
         subtitle: project?.name || "",
         start: dates.start,
         end: dates.end,
-        color: EVENT_COLORS[index % EVENT_COLORS.length],
+        color: colorForKey(normalizeId(task) || index),
       },
     ];
   });
@@ -244,6 +258,6 @@ export const buildProjectSpanItem = (project, index = 0) => {
     subtitle: project.location || project.status || "",
     start: dates.start,
     end: dates.end,
-    color: EVENT_COLORS[index % EVENT_COLORS.length],
+    color: colorForKey(normalizeId(project) || index),
   };
 };
