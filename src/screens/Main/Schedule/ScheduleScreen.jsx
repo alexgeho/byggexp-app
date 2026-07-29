@@ -53,9 +53,9 @@ const DAY_HEADER_HEIGHT = 48;
 const HEADER_HEIGHT = WEEK_HEADER_HEIGHT + DAY_HEADER_HEIGHT;
 const SIDEBAR_WIDTH = 150;
 const BASE_DAY_WIDTH = 72;
-const MIN_DAY_WIDTH = 40;
-const MAX_DAY_WIDTH = 160;
-const ZOOM_STEP = 1.25;
+const MIN_DAY_WIDTH = 18; // zoom out far enough to see the whole range
+const MAX_DAY_WIDTH = 200; // zoom in to a single day comfortably
+const ZOOM_STEP = 1.3;
 const BAR_RADIUS = 12;
 
 export default function ScheduleScreen() {
@@ -360,7 +360,9 @@ export default function ScheduleScreen() {
                                 isToday && styles.dayTodayLabel,
                               ]}
                             >
-                              {formatWeekdayLabel(day)} {day.getDate()}
+                              {dayWidth >= 48
+                                ? `${formatWeekdayLabel(day)} ${day.getDate()}`
+                                : day.getDate()}
                             </Text>
                           </View>
                         </View>
