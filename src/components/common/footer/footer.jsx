@@ -4,19 +4,17 @@ import { useNavigation } from "@react-navigation/native";
 import { styles } from "./footer.styles";
 import { footerButtons } from "../../../constants/footerButtonsVariant2";
 
-export function FooterButtonsVariant2({
-  iconStyle,
-}) {
+export function FooterButtonsVariant2({ iconStyle }) {
   const navigation = useNavigation();
 
-function handlePress(button) {
-  if (button.goBack) {
-    navigation.goBack();
-    return;
-  }
+  function handlePress(button) {
+    if (button.goBack) {
+      navigation.goBack();
+      return;
+    }
 
-  navigation.navigate(button.screen);
-}
+    navigation.navigate(button.screen);
+  }
 
   return (
     <View style={styles.footer}>
@@ -28,10 +26,7 @@ function handlePress(button) {
               handlePress(button);
             }}
           >
-            <Image
-              source={button.icon}
-              style={iconStyle}
-            />
+            <Image source={button.icon} style={iconStyle} />
           </TouchableOpacity>
         );
       })}

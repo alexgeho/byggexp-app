@@ -67,7 +67,7 @@ import {
 } from "../../../utils/shiftSchedule";
 import { canCreateProjects } from "../../../utils/userRoles";
 
-import FloatingActionButton from "../../../components/common2/FloatingActionButton/FloatingActionButton";
+import FloatingActionButton from "../../../components/common/FloatingActionButton/FloatingActionButton";
 
 const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "inline" : "calendar";
 const TIME_PICKER_DISPLAY = Platform.OS === "ios" ? "spinner" : "clock";
@@ -222,7 +222,9 @@ const ToolsListModal = memo(function ToolsListModal({
           }}
           ListEmptyComponent={
             <View style={styles.workersEmptyState}>
-              <Text style={styles.workersEmptyText}>{t("tools.emptyTitle")}</Text>
+              <Text style={styles.workersEmptyText}>
+                {t("tools.emptyTitle")}
+              </Text>
             </View>
           }
         />
@@ -997,7 +999,9 @@ export default function CreateProjectScreen() {
             ListEmptyComponent={<Text>{t("createProject.noCompanies")}</Text>}
           />
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeButtonText}>{t("createProject.close")}</Text>
+            <Text style={styles.closeButtonText}>
+              {t("createProject.close")}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -1224,7 +1228,7 @@ export default function CreateProjectScreen() {
     );
   }
 
-    /* RENDER SCREEN */
+  /* RENDER SCREEN */
   return (
     <View style={styles.screen}>
       <View style={styles.pageContainer}>

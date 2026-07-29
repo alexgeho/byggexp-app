@@ -1,9 +1,6 @@
 import React from "react";
 
-import {
-  View,
-  Text,
-} from "react-native";
+import { View, Text } from "react-native";
 
 import { styles } from "./Timer.styles";
 
@@ -24,15 +21,7 @@ export function Timer({
         minimumFontScale={0.72}
       >
         {hours} {minutes}{" "}
-
-        <Text
-          style={[
-            styles.timerTextSeconds,
-            secondsStyle,
-          ]}
-        >
-          {seconds}
-        </Text>
+        <Text style={[styles.timerTextSeconds, secondsStyle]}>{seconds}</Text>
       </Text>
     </View>
   );

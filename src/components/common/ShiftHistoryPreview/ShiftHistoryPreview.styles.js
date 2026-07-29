@@ -1,25 +1,16 @@
 import { StyleSheet } from "react-native";
 
-export function createStyles(
-  theme,
-  colorMode = "dark",
-) {
-  const isLightMode =
-    colorMode === "light";
-  const themedTextColor =
-    theme.colors.homeButtonText;
+export function createStyles(theme, colorMode = "dark") {
+  const isLightMode = colorMode === "light";
+  const themedTextColor = theme.colors.homeButtonText;
   const primaryTextColor = isLightMode
     ? theme.colors.text
     : themedTextColor || "#FFFFFF";
-  const headerTextColor = isLightMode
-    ? theme.colors.text
-    : "#FFFFFF";
+  const headerTextColor = isLightMode ? theme.colors.text : "#FFFFFF";
   const secondaryTextColor = isLightMode
     ? `${theme.colors.text}B3`
     : themedTextColor || "rgba(255,255,255,0.72)";
-  const cardBackgroundColor = isLightMode
-    ? "#FFFFFF"
-    : "rgba(255,255,255,0.3)";
+  const cardBackgroundColor = isLightMode ? "#FFFFFF" : "rgba(255,255,255,0.3)";
   const cardBorderColor = isLightMode
     ? `${theme.colors.primary}33`
     : "rgba(255,255,255,0.2)";

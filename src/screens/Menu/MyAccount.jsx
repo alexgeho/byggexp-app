@@ -20,7 +20,7 @@ import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/Feather";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../components/common/BackButton/BackButton";
-import FloatingActionButton from "../../components/common2/FloatingActionButton/FloatingActionButton";
+import FloatingActionButton from "../../components/common/FloatingActionButton/FloatingActionButton";
 import {
   standardScreenContainer,
   standardScreenHeader,

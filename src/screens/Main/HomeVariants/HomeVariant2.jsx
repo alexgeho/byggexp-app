@@ -6,19 +6,11 @@ import React, {
   useState,
 } from "react";
 
-import {
-  View,
-  ScrollView,
-  Alert,
-  useWindowDimensions,
-} from "react-native";
+import { View, ScrollView, Alert, useWindowDimensions } from "react-native";
 
 import { LinearGradient } from "expo-linear-gradient";
 
-import {
-  useFocusEffect,
-  useNavigation,
-} from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 import AuthContext from "../../../contexts/AuthContext";
 import { useTheme } from "../../../theme/ThemeContext";
@@ -26,20 +18,23 @@ import { useTheme } from "../../../theme/ThemeContext";
 import { useTimer } from "../../../hooks/useTimer";
 import { useShiftExitAutoComplete } from "../../../hooks/useShiftExitAutoComplete";
 
-import { Timer } from "../../../components/common2/Timer/Timer";
+import { Timer } from "../../../components/common/Timer/Timer";
 
 import shiftService from "../../../services/shift.service";
 import { projectService } from "../../../services";
-import { resumeShiftWithGuards, startShiftWithLocationGuard } from "../../../utils/shiftLocationGuard";
+import {
+  resumeShiftWithGuards,
+  startShiftWithLocationGuard,
+} from "../../../utils/shiftLocationGuard";
 import { createShiftGeofenceHandlers } from "../../../utils/shiftGeofenceHandlers";
 
 import { createStyles } from "./HomeVariant2.styles";
 
-import ProjectSelector2 from "../../../components/common2/projectSelector/projectSelector";
-import { MainActionButtons } from "../../../components/common2/mainActionButtons/mainActionButtons";
+import ProjectSelector2 from "../../../components/common/projectSelector/projectSelector";
+import { MainActionButtons } from "../../../components/common/mainActionButtons/mainActionButtons";
 
-import { FooterButtonsVariant2 } from "../../../components/common2/footer/footer";
-import { FooterColorful } from "../../../components/common2/footer/FooterColorful";
+import { FooterButtonsVariant2 } from "../../../components/common/footer/footer";
+import { FooterColorful } from "../../../components/common/footer/FooterColorful";
 
 import ProjectFilesSection from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
 import MainButtonsGrid from "../../../components/common/NavButtonsGrid/MainButtonsGrid";
@@ -53,14 +48,11 @@ import {
   getEnabledSections,
   saveEnabledSections,
 } from "../../../utils/homeButtonsStorage";
-import ShiftHistoryPreview from "../../../components/common2/ShiftHistoryPreview/ShiftHistoryPreview";
+import ShiftHistoryPreview from "../../../components/common/ShiftHistoryPreview/ShiftHistoryPreview";
 import { isHomeButtonVisible } from "../../../utils/userRoles";
 
 export default function HomeVariant2() {
-  const {
-    theme,
-    themeName,
-  } = useTheme();
+  const { theme, themeName } = useTheme();
   // Light-background home themes share the same "light" treatment
   // (dark timer text, blue play button, white camera, dark footer icons).
   const isLightBlueTheme =
@@ -79,55 +71,32 @@ export default function HomeVariant2() {
       })[themeName] || ["#5BC8FF", "#0D5DB8"],
     [themeName],
   );
-  const { height: screenHeight } =
-    useWindowDimensions();
+  const { height: screenHeight } = useWindowDimensions();
   const isVeryCompact = screenHeight <= 700;
-  const isCompact =
-    screenHeight <= 780;
+  const isCompact = screenHeight <= 780;
   /* SELECTED PROJECT */
-  const {
-    selectedProject,
-    setSelectedProject,
-    user,
-  } =
-    useContext(AuthContext);
-  const selectedProjectId =
-    selectedProject?._id || selectedProject?.id;
+  const { selectedProject, setSelectedProject, user } = useContext(AuthContext);
+  const selectedProjectId = selectedProject?._id || selectedProject?.id;
 
   /* NAVIGATION */
-  const navigation =
-    useNavigation();
+  const navigation = useNavigation();
 
   /* LOADING STATE */
-  const [
-    loadingShift,
-    setLoadingShift,
-  ] = useState(false);
+  const [loadingShift, setLoadingShift] = useState(false);
 
   /* CURRENT ACTIVE SHIFT */
-  const [
-    currentShift,
-    setCurrentShift,
-  ] = useState(null);
-  const [
-    enabledButtons,
-    setEnabledButtons,
-  ] = useState(defaultEnabledButtons);
-  const [
-    enabledSections,
-    setEnabledSections,
-  ] = useState(defaultEnabledSections);
+  const [currentShift, setCurrentShift] = useState(null);
+  const [enabledButtons, setEnabledButtons] = useState(defaultEnabledButtons);
+  const [enabledSections, setEnabledSections] = useState(
+    defaultEnabledSections,
+  );
   const [previewRefreshKey, setPreviewRefreshKey] = useState(0);
   const [scrollViewHeight, setScrollViewHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
   const visibleQuickButtons = useMemo(
     () =>
       mainButtons.filter(function filterButton(button) {
-        return isHomeButtonVisible(
-          button,
-          enabledButtons,
-          user?.role,
-        );
+        return isHomeButtonVisible(button, enabledButtons, user?.role);
       }),
     [enabledButtons, user?.role],
   );
@@ -137,18 +106,14 @@ export default function HomeVariant2() {
   const quickButtonCount = visibleQuickButtons.length;
   const useFixedCoreSpacing =
     quickButtonCount === 4 ||
-    ((quickButtonCount === 1 || quickButtonCount === 2) &&
-      hasSections);
+    ((quickButtonCount === 1 || quickButtonCount === 2) && hasSections);
   const contentFitsVisibleArea =
     scrollViewHeight > 0 &&
     contentHeight > 0 &&
     contentHeight <= scrollViewHeight;
   const distributeCoreControlsInternally =
-    !hasSections &&
-    !useFixedCoreSpacing &&
-    contentFitsVisibleArea;
-  const shouldDistributeBlocksEvenly =
-    distributeCoreControlsInternally;
+    !hasSections && !useFixedCoreSpacing && contentFitsVisibleArea;
+  const shouldDistributeBlocksEvenly = distributeCoreControlsInternally;
   const showCoreSpacers = !distributeCoreControlsInternally;
   const styles = useMemo(
     () =>
@@ -159,92 +124,79 @@ export default function HomeVariant2() {
         theme,
         isLightBlue: isLightBlueTheme,
       }),
-    [
-      hasSections,
-      isCompact,
-      isLightBlueTheme,
-      theme,
-      isVeryCompact,
-    ],
+    [hasSections, isCompact, isLightBlueTheme, theme, isVeryCompact],
   );
 
   /* TIMER LOGIC */
-  const {
-    formattedTime,
-    isRunning,
-    isPaused,
-    start,
-    pause,
-    sync,
-    reset,
-  } = useTimer();
+  const { formattedTime, isRunning, isPaused, start, pause, sync, reset } =
+    useTimer();
 
   const getErrorMessage = useCallback(function getErrorMessage(
     error,
     fallbackMessage,
   ) {
-    return (
-      error?.response?.data?.message ||
-      error?.message ||
-      fallbackMessage
-    );
+    return error?.response?.data?.message || error?.message || fallbackMessage;
   }, []);
 
-  const applyShiftState = useCallback(function applyShiftState(
-    shift,
-  ) {
-    setCurrentShift(shift);
-
-    if (shift) {
-      sync(shift);
-
-      setSelectedProject(function updateProject(previousProject) {
-        if (
-          previousProject?._id === shift.projectId ||
-          previousProject?.id === shift.projectId
-        ) {
-          return previousProject;
-        }
-
-        return {
-          _id: shift.projectId,
-          id: shift.projectId,
-          name: shift.projectName,
-          location: shift.location,
-        };
-      });
-
-      return;
-    }
-
-    reset();
-  }, [reset, setSelectedProject, sync]);
-
-  const loadCurrentShift = useCallback(async function loadCurrentShift(
-    projectId,
-  ) {
-    try {
-      const shift =
-        await shiftService.getCurrent(projectId);
+  const applyShiftState = useCallback(
+    function applyShiftState(shift) {
+      setCurrentShift(shift);
 
       if (shift) {
-        applyShiftState(shift);
+        sync(shift);
+
+        setSelectedProject(function updateProject(previousProject) {
+          if (
+            previousProject?._id === shift.projectId ||
+            previousProject?.id === shift.projectId
+          ) {
+            return previousProject;
+          }
+
+          return {
+            _id: shift.projectId,
+            id: shift.projectId,
+            name: shift.projectName,
+            location: shift.location,
+          };
+        });
+
         return;
       }
 
-      setCurrentShift(null);
       reset();
-    } catch (error) {
-      console.error("Failed to load current shift:", error);
-      setCurrentShift(null);
-      reset();
-    }
-  }, [applyShiftState, reset]);
+    },
+    [reset, setSelectedProject, sync],
+  );
+
+  const loadCurrentShift = useCallback(
+    async function loadCurrentShift(projectId) {
+      try {
+        const shift = await shiftService.getCurrent(projectId);
+
+        if (shift) {
+          applyShiftState(shift);
+          return;
+        }
+
+        setCurrentShift(null);
+        reset();
+      } catch (error) {
+        console.error("Failed to load current shift:", error);
+        setCurrentShift(null);
+        reset();
+      }
+    },
+    [applyShiftState, reset],
+  );
 
   /* LOAD ACTIVE SHIFT */
-  useEffect(function loadShift() {
-    loadCurrentShift(selectedProjectId);
-  }, [loadCurrentShift, selectedProjectId]);
+  useEffect(
+    function loadShift() {
+      loadCurrentShift(selectedProjectId);
+    },
+    [loadCurrentShift, selectedProjectId],
+  );
 
   const refreshSelectedProject = useCallback(async () => {
     if (!selectedProjectId) {
@@ -252,9 +204,8 @@ export default function HomeVariant2() {
     }
 
     try {
-      const populatedProject = await projectService.getPopulatedById(
-        selectedProjectId,
-      );
+      const populatedProject =
+        await projectService.getPopulatedById(selectedProjectId);
 
       if (populatedProject) {
         setSelectedProject(populatedProject);
@@ -282,34 +233,34 @@ export default function HomeVariant2() {
   });
 
   useFocusEffect(
-    React.useCallback(function loadHomeSettings() {
-      async function fetchSettings() {
-        const [
-          savedButtons,
-          savedSections,
-        ] = await Promise.all([
-          getEnabledButtons(),
-          getEnabledSections(),
-        ]);
+    React.useCallback(
+      function loadHomeSettings() {
+        async function fetchSettings() {
+          const [savedButtons, savedSections] = await Promise.all([
+            getEnabledButtons(),
+            getEnabledSections(),
+          ]);
 
-        if (savedButtons) {
-          setEnabledButtons(savedButtons);
+          if (savedButtons) {
+            setEnabledButtons(savedButtons);
+          }
+
+          if (savedSections) {
+            setEnabledSections(savedSections);
+          }
+
+          await Promise.all([
+            loadCurrentShift(selectedProjectId),
+            refreshSelectedProject(),
+          ]);
+
+          setPreviewRefreshKey((previousKey) => previousKey + 1);
         }
 
-        if (savedSections) {
-          setEnabledSections(savedSections);
-        }
-
-        await Promise.all([
-          loadCurrentShift(selectedProjectId),
-          refreshSelectedProject(),
-        ]);
-
-        setPreviewRefreshKey((previousKey) => previousKey + 1);
-      }
-
-      fetchSettings();
-    }, [loadCurrentShift, refreshSelectedProject, selectedProjectId]),
+        fetchSettings();
+      },
+      [loadCurrentShift, refreshSelectedProject, selectedProjectId],
+    ),
   );
 
   /* OPEN PROJECTS SCREEN */
@@ -319,11 +270,14 @@ export default function HomeVariant2() {
     });
   }
 
-  const handleHideSection = useCallback(async (sectionId) => {
-    const updatedSections = enabledSections.filter((id) => id !== sectionId);
-    setEnabledSections(updatedSections);
-    await saveEnabledSections(updatedSections);
-  }, [enabledSections]);
+  const handleHideSection = useCallback(
+    async (sectionId) => {
+      const updatedSections = enabledSections.filter((id) => id !== sectionId);
+      setEnabledSections(updatedSections);
+      await saveEnabledSections(updatedSections);
+    },
+    [enabledSections],
+  );
 
   function handleCameraPress() {
     navigation.navigate("Camera");
@@ -343,8 +297,7 @@ export default function HomeVariant2() {
           throw new Error("Active shift is missing.");
         }
 
-        const pausedShift =
-          await shiftService.pause(currentShift.id);
+        const pausedShift = await shiftService.pause(currentShift.id);
 
         setCurrentShift(pausedShift);
         pause(pausedShift);
@@ -364,22 +317,20 @@ export default function HomeVariant2() {
         currentShift.projectId === selectedProjectId &&
         currentShift.status === "paused"
       ) {
-        const resumedShift =
-          await resumeShiftWithGuards({
-            shiftId: currentShift.id,
-            project: selectedProject,
-          });
+        const resumedShift = await resumeShiftWithGuards({
+          shiftId: currentShift.id,
+          project: selectedProject,
+        });
 
         setCurrentShift(resumedShift);
         start(resumedShift);
         return;
       }
 
-      const startedShift =
-        await startShiftWithLocationGuard({
-          projectId: selectedProjectId,
-          project: selectedProject,
-        });
+      const startedShift = await startShiftWithLocationGuard({
+        projectId: selectedProjectId,
+        project: selectedProject,
+      });
 
       setCurrentShift(startedShift);
       start(startedShift);
@@ -387,10 +338,7 @@ export default function HomeVariant2() {
       console.error("Shift action failed:", error);
       Alert.alert(
         "Shift error",
-        getErrorMessage(
-          error,
-          "Unable to update the shift right now.",
-        ),
+        getErrorMessage(error, "Unable to update the shift right now."),
       );
     } finally {
       setLoadingShift(false);
@@ -414,8 +362,7 @@ export default function HomeVariant2() {
         style={styles.scrollView}
         contentContainerStyle={[
           styles.main,
-          shouldDistributeBlocksEvenly &&
-            styles.mainEvenlyDistributed,
+          shouldDistributeBlocksEvenly && styles.mainEvenlyDistributed,
           shouldDistributeBlocksEvenly &&
             scrollViewHeight > 0 && {
               minHeight: scrollViewHeight,
@@ -425,10 +372,7 @@ export default function HomeVariant2() {
         onLayout={function handleScrollViewLayout(event) {
           setScrollViewHeight(event.nativeEvent.layout.height);
         }}
-        onContentSizeChange={function handleContentSizeChange(
-          _width,
-          height,
-        ) {
+        onContentSizeChange={function handleContentSizeChange(_width, height) {
           setContentHeight(height);
         }}
         showsVerticalScrollIndicator={false}
@@ -439,50 +383,32 @@ export default function HomeVariant2() {
           onPress={openProjects}
           style={[
             styles.selectorTop,
-            isLightBlueTheme &&
-              styles.selectorLightBlue,
-            themeName === "colorful" &&
-              styles.selectorColorful,
-            isCompact
-              ? styles.selectorCompact
-              : null,
+            isLightBlueTheme && styles.selectorLightBlue,
+            themeName === "colorful" && styles.selectorColorful,
+            isCompact ? styles.selectorCompact : null,
           ]}
-          textStyle={
-            [
-              isLightBlueTheme &&
-                styles.selectorTextLightBlue,
-              themeName === "colorful" &&
-                styles.selectorTextColorful,
-              isCompact
-                ? styles.selectorTextCompact
-                : null,
-            ]
-          }
-          iconStyle={
-            [
-              isLightBlueTheme &&
-                styles.selectorIconLightBlue,
-              themeName === "colorful" &&
-                styles.selectorIconColorful,
-              isCompact
-                ? styles.selectorIconCompact
-                : null,
-            ]
-          }
+          textStyle={[
+            isLightBlueTheme && styles.selectorTextLightBlue,
+            themeName === "colorful" && styles.selectorTextColorful,
+            isCompact ? styles.selectorTextCompact : null,
+          ]}
+          iconStyle={[
+            isLightBlueTheme && styles.selectorIconLightBlue,
+            themeName === "colorful" && styles.selectorIconColorful,
+            isCompact ? styles.selectorIconCompact : null,
+          ]}
         />
 
         <View
           style={[
             styles.mainContent,
-            shouldDistributeBlocksEvenly &&
-              styles.mainContentEvenlySpaced,
+            shouldDistributeBlocksEvenly && styles.mainContentEvenlySpaced,
           ]}
         >
           <View
             style={[
               styles.mainContentGroup,
-              shouldDistributeBlocksEvenly &&
-                styles.mainContentGroupExpanded,
+              shouldDistributeBlocksEvenly && styles.mainContentGroupExpanded,
             ]}
           >
             <View
@@ -494,34 +420,18 @@ export default function HomeVariant2() {
             >
               {/* TIMER */}
               <Timer
-                hours={
-                  formattedTime.hours
-                }
-                minutes={
-                  formattedTime.minutes
-                }
-                seconds={
-                  formattedTime.seconds
-                }
+                hours={formattedTime.hours}
+                minutes={formattedTime.minutes}
+                seconds={formattedTime.seconds}
                 containerStyle={styles.timerContainer}
-                textStyle={
-                  [
-                    isCompact
-                      ? styles.timerTextCompact
-                      : styles.timerTextRegular,
-                    isLightBlueTheme &&
-                      styles.timerTextLightBlue,
-                  ]
-                }
-                secondsStyle={
-                  [
-                    isCompact
-                      ? styles.timerSecondsCompact
-                      : null,
-                    isLightBlueTheme &&
-                      styles.timerSecondsLightBlue,
-                  ]
-                }
+                textStyle={[
+                  isCompact ? styles.timerTextCompact : styles.timerTextRegular,
+                  isLightBlueTheme && styles.timerTextLightBlue,
+                ]}
+                secondsStyle={[
+                  isCompact ? styles.timerSecondsCompact : null,
+                  isLightBlueTheme && styles.timerSecondsLightBlue,
+                ]}
               />
 
               {showCoreSpacers ? (
@@ -538,24 +448,12 @@ export default function HomeVariant2() {
                 compact={isCompact}
                 veryCompact={isVeryCompact}
                 actionButtonColor={
-                  isLightBlueTheme
-                    ? theme.colors.primary
-                    : undefined
+                  isLightBlueTheme ? theme.colors.primary : undefined
                 }
-                actionIconColor={
-                  isLightBlueTheme
-                    ? "#FFFFFF"
-                    : undefined
-                }
-                cameraButtonColor={
-                  isLightBlueTheme
-                    ? "#FFFFFF"
-                    : undefined
-                }
+                actionIconColor={isLightBlueTheme ? "#FFFFFF" : undefined}
+                cameraButtonColor={isLightBlueTheme ? "#FFFFFF" : undefined}
                 cameraIconColor={
-                  isLightBlueTheme
-                    ? theme.colors.text
-                    : undefined
+                  isLightBlueTheme ? theme.colors.text : undefined
                 }
               />
 
@@ -591,11 +489,7 @@ export default function HomeVariant2() {
         <FooterColorful />
       ) : (
         <FooterButtonsVariant2
-          iconStyle={
-            isLightBlueTheme
-              ? styles.footerIconLightBlue
-              : null
-          }
+          iconStyle={isLightBlueTheme ? styles.footerIconLightBlue : null}
         />
       )}
     </LinearGradient>

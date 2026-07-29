@@ -12,7 +12,13 @@ export function FooterColorful() {
 
   // Icons match the Figma design: filled home (active) + Feather folder / grid.
   const items = [
-    { id: "home", Icon: Ionicons, icon: "home", active: true, onPress: () => {} },
+    {
+      id: "home",
+      Icon: Ionicons,
+      icon: "home",
+      active: true,
+      onPress: () => {},
+    },
     {
       id: "projects",
       Icon: Feather,

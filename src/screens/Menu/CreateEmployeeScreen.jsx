@@ -19,7 +19,7 @@ import { useTheme } from "../../theme/ThemeContext";
 import { projectService, toolService, userService } from "../../services";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
-import FloatingActionButton from "../../components/common2/FloatingActionButton/FloatingActionButton";
+import FloatingActionButton from "../../components/common/FloatingActionButton/FloatingActionButton";
 import {
   standardScreenContainer,
   standardScreenHeader,
@@ -286,7 +286,9 @@ export default function CreateEmployeeScreen() {
         setSelectedRole(data?.role || USER_ROLES.WORKER);
         setSelectedProjectIds(
           Array.isArray(data?.projects)
-            ? data.projects.map((project) => getEntityId(project)).filter(Boolean)
+            ? data.projects
+                .map((project) => getEntityId(project))
+                .filter(Boolean)
             : [],
         );
         setSelectedToolIds(
@@ -427,7 +429,9 @@ export default function CreateEmployeeScreen() {
                 { fontFamily: theme.text.fontFamily.semiBold },
               ]}
             >
-              {isEditing ? t("createEmployee.editTitle") : t("createEmployee.addTitle")}
+              {isEditing
+                ? t("createEmployee.editTitle")
+                : t("createEmployee.addTitle")}
             </Text>
             <View style={standardScreenHeaderPlaceholder} />
           </View>
@@ -453,7 +457,9 @@ export default function CreateEmployeeScreen() {
               { fontFamily: theme.text.fontFamily.semiBold },
             ]}
           >
-            {isEditing ? t("createEmployee.editTitle") : t("createEmployee.addTitle")}
+            {isEditing
+              ? t("createEmployee.editTitle")
+              : t("createEmployee.addTitle")}
           </Text>
           <FloatingActionButton
             onPress={handleSaveEmployee}
@@ -519,7 +525,11 @@ export default function CreateEmployeeScreen() {
               icon="briefcase"
               label={t("createEmployee.addProject")}
               value={selectedProjectsLabel}
-              placeholder={loadingProjects ? t("projects.loading") : t("createTask.selectProject")}
+              placeholder={
+                loadingProjects
+                  ? t("projects.loading")
+                  : t("createTask.selectProject")
+              }
               onPress={() => setShowProjectModal(true)}
               theme={theme}
             />
@@ -537,14 +547,17 @@ export default function CreateEmployeeScreen() {
                 icon="tool"
                 label={t("createProject.attachInstruments")}
                 value={selectedToolsLabel}
-                placeholder={loadingTools ? t("createEmployee.loadingInstruments") : t("createEmployee.selectInstruments")}
+                placeholder={
+                  loadingTools
+                    ? t("createEmployee.loadingInstruments")
+                    : t("createEmployee.selectInstruments")
+                }
                 onPress={() => setShowToolModal(true)}
                 theme={theme}
                 isLast
               />
             ) : null}
           </View>
-
         </ScrollView>
 
         <BottomBar
@@ -637,7 +650,9 @@ export default function CreateEmployeeScreen() {
             {projects.length === 0 ? (
               <View style={styles.pickerEmptyState}>
                 <Text style={styles.pickerEmptyStateText}>
-                  {loadingProjects ? t("projects.loading") : t("projects.notFound")}
+                  {loadingProjects
+                    ? t("projects.loading")
+                    : t("projects.notFound")}
                 </Text>
               </View>
             ) : (
@@ -656,7 +671,11 @@ export default function CreateEmployeeScreen() {
                   >
                     <Text style={styles.pickerOptionLabel}>{project.name}</Text>
                     {isSelected ? (
-                      <Icon name="check" size={18} color={theme.colors.primary} />
+                      <Icon
+                        name="check"
+                        size={18}
+                        color={theme.colors.primary}
+                      />
                     ) : null}
                   </TouchableOpacity>
                 );
@@ -695,7 +714,9 @@ export default function CreateEmployeeScreen() {
             {tools.length === 0 ? (
               <View style={styles.pickerEmptyState}>
                 <Text style={styles.pickerEmptyStateText}>
-                  {loadingTools ? t("createEmployee.loadingInstruments") : t("tools.emptyTitle")}
+                  {loadingTools
+                    ? t("createEmployee.loadingInstruments")
+                    : t("tools.emptyTitle")}
                 </Text>
               </View>
             ) : (
@@ -714,7 +735,11 @@ export default function CreateEmployeeScreen() {
                   >
                     <Text style={styles.pickerOptionLabel}>{tool.name}</Text>
                     {isSelected ? (
-                      <Icon name="check" size={18} color={theme.colors.primary} />
+                      <Icon
+                        name="check"
+                        size={18}
+                        color={theme.colors.primary}
+                      />
                     ) : null}
                   </TouchableOpacity>
                 );

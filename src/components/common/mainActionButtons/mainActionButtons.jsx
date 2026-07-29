@@ -1,11 +1,6 @@
 import React from "react";
 
-import {
-  View,
-  TouchableOpacity,
-  Image,
-  ActivityIndicator,
-} from "react-native";
+import { View, TouchableOpacity, Image, ActivityIndicator } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 
 import { styles } from "./mainActionButtons.styles";
@@ -23,34 +18,13 @@ export function MainActionButtons({
   cameraButtonColor,
   cameraIconColor,
 }) {
-  const actionButtonSize = veryCompact
-    ? 96
-    : compact
-      ? 108
-      : 124;
-  const iconActionSize = veryCompact
-    ? 32
-    : compact
-      ? 36
-      : 40;
-  const secondaryButtonSize = veryCompact
-    ? 96
-    : compact
-      ? 108
-      : 124;
-  const buttonsGap = veryCompact
-    ? 20
-    : compact
-      ? 26
-      : 35;
+  const actionButtonSize = veryCompact ? 96 : compact ? 108 : 124;
+  const iconActionSize = veryCompact ? 32 : compact ? 36 : 40;
+  const secondaryButtonSize = veryCompact ? 96 : compact ? 108 : 124;
+  const buttonsGap = veryCompact ? 20 : compact ? 26 : 35;
 
   return (
-    <View
-      style={[
-        styles.mainActionButtons,
-        { gap: buttonsGap },
-      ]}
-    >
+    <View style={[styles.mainActionButtons, { gap: buttonsGap }]}>
       <TouchableOpacity
         style={[
           styles.actionButton,
@@ -61,16 +35,13 @@ export function MainActionButtons({
           actionButtonColor && {
             backgroundColor: actionButtonColor,
           },
-          isPaused &&
-            styles.actionButtonPaused,
+          isPaused && styles.actionButtonPaused,
         ]}
         onPress={onPlayPress}
         disabled={loading}
       >
         {loading ? (
-          <ActivityIndicator
-            color={actionIconColor || "#2F80ED"}
-          />
+          <ActivityIndicator color={actionIconColor || "#2F80ED"} />
         ) : (
           <Image
             style={[
@@ -102,17 +73,12 @@ export function MainActionButtons({
           cameraButtonColor && {
             backgroundColor: cameraButtonColor,
           },
-          cameraButtonColor &&
-            styles.actionButtonCameraThemed,
+          cameraButtonColor && styles.actionButtonCameraThemed,
         ]}
         onPress={onCameraPress}
       >
         {cameraIconColor ? (
-          <Icon
-            name="camera"
-            size={iconActionSize}
-            color={cameraIconColor}
-          />
+          <Icon name="camera" size={iconActionSize} color={cameraIconColor} />
         ) : (
           <Image
             source={require("../../../assets/HomeScreen2/CircleCamera.png")}

@@ -12,10 +12,7 @@ import Icon from "react-native-vector-icons/Feather";
 
 import { useTheme } from "../../../theme/ThemeContext";
 import shiftService from "../../../services/shift.service";
-import {
-  formatDuration,
-  formatShiftDayLabel,
-} from "../../../utils/shifts";
+import { formatDuration, formatShiftDayLabel } from "../../../utils/shifts";
 
 import { createStyles } from "./ShiftHistoryPreview.styles";
 
@@ -59,9 +56,7 @@ export function ShiftHistoryPreview({
   const { theme } = useTheme();
   const styles = createStyles(theme, colorMode);
   const secondaryIconColor =
-    colorMode === "light"
-      ? `${theme.colors.text}80`
-      : "rgba(255,255,255,0.72)";
+    colorMode === "light" ? `${theme.colors.text}80` : "rgba(255,255,255,0.72)";
   const [loading, setLoading] = useState(true);
   const [shifts, setShifts] = useState([]);
 
@@ -70,15 +65,14 @@ export function ShiftHistoryPreview({
       setLoading(true);
 
       const data = await shiftService.list();
-      const nextShifts = [...(data?.items || [])].sort(function sortShifts(
-        leftShift,
-        rightShift,
-      ) {
-        return (
-          new Date(rightShift.startedAt).getTime() -
-          new Date(leftShift.startedAt).getTime()
-        );
-      });
+      const nextShifts = [...(data?.items || [])].sort(
+        function sortShifts(leftShift, rightShift) {
+          return (
+            new Date(rightShift.startedAt).getTime() -
+            new Date(leftShift.startedAt).getTime()
+          );
+        },
+      );
 
       setShifts(nextShifts);
     } catch (error) {
@@ -149,14 +143,11 @@ export function ShiftHistoryPreview({
                   key={shift.id || `${shift.startedAt}-${index}`}
                   style={[
                     styles.item,
-                    index !== shifts.length - 1 &&
-                      styles.itemDivider,
+                    index !== shifts.length - 1 && styles.itemDivider,
                   ]}
                 >
                   <Text style={styles.dateText}>
-                    {formatShiftDayLabel(
-                      shift.shiftDate || shift.startedAt,
-                    )}
+                    {formatShiftDayLabel(shift.shiftDate || shift.startedAt)}
                   </Text>
 
                   <View style={styles.summaryRow}>
@@ -170,10 +161,7 @@ export function ShiftHistoryPreview({
                       </Text>
 
                       <Text style={styles.timeText}>
-                        {formatTimeRangeCompact(
-                          shift.startedAt,
-                          shift.endedAt,
-                        )}
+                        {formatTimeRangeCompact(shift.startedAt, shift.endedAt)}
                       </Text>
                     </View>
                   </View>
@@ -183,7 +171,9 @@ export function ShiftHistoryPreview({
           </ScrollView>
         ) : (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>{t("shiftHistory.noShiftsYet")}</Text>
+            <Text style={styles.emptyText}>
+              {t("shiftHistory.noShiftsYet")}
+            </Text>
           </View>
         )}
       </View>

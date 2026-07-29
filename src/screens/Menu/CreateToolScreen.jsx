@@ -21,7 +21,7 @@ import { useTheme } from "../../theme/ThemeContext";
 import { projectService, toolService, userService } from "../../services";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
-import FloatingActionButton from "../../components/common2/FloatingActionButton/FloatingActionButton";
+import FloatingActionButton from "../../components/common/FloatingActionButton/FloatingActionButton";
 import {
   standardScreenContainer,
   standardScreenHeader,
@@ -153,7 +153,9 @@ export default function CreateToolScreen() {
 
     const names = selectedProjectIds
       .map((projectId) => {
-        const project = projects.find((item) => getEntityId(item) === projectId);
+        const project = projects.find(
+          (item) => getEntityId(item) === projectId,
+        );
         return project?.name || "";
       })
       .filter(Boolean);
@@ -371,7 +373,10 @@ export default function CreateToolScreen() {
                 </View>
               </View>
               {photo ? (
-                <Image source={{ uri: photo.uri }} style={styles.photoPreview} />
+                <Image
+                  source={{ uri: photo.uri }}
+                  style={styles.photoPreview}
+                />
               ) : (
                 <Icon name="chevron-right" size={18} color="#052D50" />
               )}
@@ -471,7 +476,11 @@ export default function CreateToolScreen() {
                       {worker.name || worker.email}
                     </Text>
                     {isSelected ? (
-                      <Icon name="check" size={18} color={theme.colors.primary} />
+                      <Icon
+                        name="check"
+                        size={18}
+                        color={theme.colors.primary}
+                      />
                     ) : null}
                   </TouchableOpacity>
                 );
@@ -529,7 +538,11 @@ export default function CreateToolScreen() {
                   >
                     <Text style={styles.pickerOptionLabel}>{project.name}</Text>
                     {isSelected ? (
-                      <Icon name="check" size={18} color={theme.colors.primary} />
+                      <Icon
+                        name="check"
+                        size={18}
+                        color={theme.colors.primary}
+                      />
                     ) : null}
                   </TouchableOpacity>
                 );

@@ -21,7 +21,7 @@ import Icon from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
-import FloatingActionButton from "../../../components/common2/FloatingActionButton/FloatingActionButton";
+import FloatingActionButton from "../../../components/common/FloatingActionButton/FloatingActionButton";
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import {
   standardScreenContainer,
