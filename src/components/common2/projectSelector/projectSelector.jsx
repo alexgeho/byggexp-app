@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { Text, Image, TouchableOpacity } from "react-native";
 import { useTranslation } from "react-i18next";
 import { styles } from "./projectSelector.styles";
 
@@ -13,10 +13,7 @@ export default function ProjectSelector2({
   const { t } = useTranslation();
 
   return (
-    <TouchableOpacity
-      style={[styles.projectSelector, style]}
-      onPress={onPress}
-    >
+    <TouchableOpacity style={[styles.projectSelector, style]} onPress={onPress}>
       <Text
         numberOfLines={1}
         ellipsizeMode="tail"

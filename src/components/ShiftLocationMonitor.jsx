@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useRef } from "react";
+import { useCallback, useContext, useEffect, useRef } from "react";
 import { AppState } from "react-native";
 import * as Device from "expo-device";
 
@@ -228,11 +228,7 @@ export default function ShiftLocationMonitor() {
     } finally {
       isCheckingRef.current = false;
     }
-  }, [
-    isAuthenticated,
-    verifyOpenShiftGeofence,
-    verifySelectedProjectCheckIn,
-  ]);
+  }, [isAuthenticated, verifyOpenShiftGeofence, verifySelectedProjectCheckIn]);
 
   useEffect(() => {
     if (!isAuthenticated || !shiftLocationPolicy.enabled) {

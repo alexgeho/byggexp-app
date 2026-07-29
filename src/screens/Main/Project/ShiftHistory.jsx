@@ -3,7 +3,7 @@ import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import React, { useRef, useState, useContext, useCallback } from "react";
 import {
@@ -30,11 +30,9 @@ import {
 import { shiftService } from "../../../services";
 import {
   formatDuration,
-  formatMonthLabel,
   formatShiftDayLabel,
   formatTimeRange,
 } from "../../../utils/shifts";
-import { useFocusEffect } from "@react-navigation/native";
 
 const PERIOD_OPTIONS = ["All time", "Month", "Year", "Custom"];
 const PERIOD_KEYS = {
@@ -101,20 +99,20 @@ export const ShiftHistory = ({ route }) => {
 
   const formatDateValue = useCallback(
     (value) => {
-    if (!value) {
-      return t("shiftHistory.selectDate");
-    }
+      if (!value) {
+        return t("shiftHistory.selectDate");
+      }
 
-    const date = new Date(`${value}T12:00:00`);
-    if (Number.isNaN(date.getTime())) {
-      return value;
-    }
+      const date = new Date(`${value}T12:00:00`);
+      if (Number.isNaN(date.getTime())) {
+        return value;
+      }
 
-    return date.toLocaleDateString(getDateLocale(), {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
+      return date.toLocaleDateString(getDateLocale(), {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
     },
     [t],
   );
@@ -640,7 +638,9 @@ export const ShiftHistory = ({ route }) => {
               style={styles.datePickerButton}
               onPress={() => setDatePickerTarget(null)}
             >
-              <Text style={styles.datePickerButtonText}>{t("common.done")}</Text>
+              <Text style={styles.datePickerButtonText}>
+                {t("common.done")}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

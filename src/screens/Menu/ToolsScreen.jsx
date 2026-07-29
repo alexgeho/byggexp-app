@@ -23,7 +23,6 @@ import { ProjectFilterSelector } from "../../components/common/ProjectFilterSele
 import {
   standardScreenContainer,
   standardScreenHeader,
-  standardScreenHeaderPlaceholder,
 } from "../../styles/screenLayout";
 import { cardStyles } from "../../styles/cards";
 import { canManageTools } from "../../utils/userRoles";
@@ -126,35 +125,31 @@ export default function ToolsScreen() {
 
     const toolId = getEntityId(tool);
 
-    Alert.alert(
-      t("tools.changeStatusTitle"),
-      tool.name,
-      [
-        ...TOOL_STATUS_OPTIONS.map((option) => ({
-          text: t(`tools.status.${option.value}`, option.label),
-          onPress: async () => {
-            if (option.value === tool.status) {
-              return;
-            }
+    Alert.alert(t("tools.changeStatusTitle"), tool.name, [
+      ...TOOL_STATUS_OPTIONS.map((option) => ({
+        text: t(`tools.status.${option.value}`, option.label),
+        onPress: async () => {
+          if (option.value === tool.status) {
+            return;
+          }
 
-            try {
-              await toolService.update(toolId, { status: option.value });
-              setTools((previousTools) =>
-                previousTools.map((item) =>
-                  getEntityId(item) === toolId
-                    ? { ...item, status: option.value }
-                    : item,
-                ),
-              );
-            } catch (error) {
-              console.error("Failed to update tool status:", error);
-              Alert.alert(t("common.error"), t("tools.statusUpdateError"));
-            }
-          },
-        })),
-        { text: t("common.cancel"), style: "cancel" },
-      ],
-    );
+          try {
+            await toolService.update(toolId, { status: option.value });
+            setTools((previousTools) =>
+              previousTools.map((item) =>
+                getEntityId(item) === toolId
+                  ? { ...item, status: option.value }
+                  : item,
+              ),
+            );
+          } catch (error) {
+            console.error("Failed to update tool status:", error);
+            Alert.alert(t("common.error"), t("tools.statusUpdateError"));
+          }
+        },
+      })),
+      { text: t("common.cancel"), style: "cancel" },
+    ]);
   };
 
   const themedAccentTextStyle = { color: theme.colors.primary };
@@ -245,7 +240,10 @@ export default function ToolsScreen() {
                     }
                   >
                     <Text
-                      style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
+                      style={[
+                        cardStyles.cardPrimaryText,
+                        themedAccentTextStyle,
+                      ]}
                       numberOfLines={1}
                       ellipsizeMode="tail"
                     >

@@ -26,7 +26,6 @@ import { useFeedback } from "../../../contexts/FeedbackContext";
 import {
   standardScreenContainer,
   standardScreenHeader,
-  standardScreenHeaderPlaceholder,
 } from "../../../styles/screenLayout";
 import { useTheme } from "../../../theme/ThemeContext";
 import { projectService, taskService, userService } from "../../../services";
@@ -43,9 +42,7 @@ import {
   normalizeRepeatIntervalMinutes,
   REPEAT_OPTIONS,
 } from "../../../utils/taskNotifications";
-import {
-  defaultRepeatIntervalMinutes,
-} from "../../../theme/settings";
+import { defaultRepeatIntervalMinutes } from "../../../theme/settings";
 import { canCreateTasks } from "../../../utils/userRoles";
 
 const DATETIME_PICKER_DISPLAY = Platform.OS === "ios" ? "inline" : "default";
@@ -139,7 +136,9 @@ const formatScheduleTime = (date) =>
   });
 
 const parseScheduleTimeToMinutes = (time) => {
-  const [hours, minutes] = String(time || "").split(":").map(Number);
+  const [hours, minutes] = String(time || "")
+    .split(":")
+    .map(Number);
 
   if (
     !Number.isInteger(hours) ||
@@ -181,7 +180,11 @@ const buildAllDayRange = (project, baseDate = new Date()) => {
     ? parseScheduleTimeToMinutes(shiftSchedule.workDayEndTime)
     : fallbackStartMinutes + DEFAULT_ALL_DAY_DURATION_MINUTES;
 
-  if (startMinutes === null || endMinutes === null || endMinutes <= startMinutes) {
+  if (
+    startMinutes === null ||
+    endMinutes === null ||
+    endMinutes <= startMinutes
+  ) {
     startMinutes = startMinutes ?? fallbackStartMinutes;
     endMinutes = startMinutes + DEFAULT_ALL_DAY_DURATION_MINUTES;
   }
@@ -278,7 +281,10 @@ const DateTimeFieldModal = ({ visible, title, value, onChange, onClose }) => {
               }}
             />
           )}
-          <TouchableOpacity style={styles.datePickerButton} onPress={handleDone}>
+          <TouchableOpacity
+            style={styles.datePickerButton}
+            onPress={handleDone}
+          >
             <Text style={styles.datePickerButtonText}>{t("common.done")}</Text>
           </TouchableOpacity>
         </View>
@@ -290,39 +296,33 @@ const DateTimeFieldModal = ({ visible, title, value, onChange, onClose }) => {
 const ScheduleDateRow = ({ label, value, onPress, isLast = false }) => {
   const { t } = useTranslation();
   return (
-  <View style={[styles.scheduleRow, isLast && styles.groupRowLast]}>
-    <Text style={styles.scheduleLabel}>{label}</Text>
-    <View style={styles.dateChips}>
-      <TouchableOpacity
-        style={styles.dateChip}
-        onPress={onPress}
-        activeOpacity={0.85}
-      >
-        <Text
-          style={[
-            styles.dateChipText,
-            !value && styles.dateChipPlaceholder,
-          ]}
+    <View style={[styles.scheduleRow, isLast && styles.groupRowLast]}>
+      <Text style={styles.scheduleLabel}>{label}</Text>
+      <View style={styles.dateChips}>
+        <TouchableOpacity
+          style={styles.dateChip}
+          onPress={onPress}
+          activeOpacity={0.85}
         >
-          {value ? formatScheduleDate(value) : t("createTask.selectDate")}
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.dateChip}
-        onPress={onPress}
-        activeOpacity={0.85}
-      >
-        <Text
-          style={[
-            styles.dateChipText,
-            !value && styles.dateChipPlaceholder,
-          ]}
+          <Text
+            style={[styles.dateChipText, !value && styles.dateChipPlaceholder]}
+          >
+            {value ? formatScheduleDate(value) : t("createTask.selectDate")}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.dateChip}
+          onPress={onPress}
+          activeOpacity={0.85}
         >
-          {value ? formatScheduleTime(value) : t("createTask.selectTime")}
-        </Text>
-      </TouchableOpacity>
+          <Text
+            style={[styles.dateChipText, !value && styles.dateChipPlaceholder]}
+          >
+            {value ? formatScheduleTime(value) : t("createTask.selectTime")}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
-  </View>
   );
 };
 
@@ -348,68 +348,71 @@ const ProjectPickerModal = ({
 }) => {
   const { t } = useTranslation();
   return (
-  <Modal
-    visible={visible}
-    transparent={true}
-    animationType="fade"
-    onRequestClose={onClose}
-  >
-    <View style={styles.projectPickerOverlay}>
-      <View style={styles.projectPickerCard}>
-        <View style={styles.projectPickerHeader}>
-          <Text style={styles.projectPickerTitle}>
-            {t("createTask.selectProjectTitle")}
-          </Text>
-          <TouchableOpacity onPress={onClose} style={styles.projectPickerClose}>
-            <Icon name="x" size={20} color="#052D50" />
-          </TouchableOpacity>
-        </View>
-
-        <ScrollView
-          style={styles.projectPickerList}
-          contentContainerStyle={styles.projectPickerListContent}
-        >
-          {projects.length === 0 ? (
-            <Text style={styles.projectPickerEmpty}>
-              {t("projects.notFound")}
+    <Modal
+      visible={visible}
+      transparent={true}
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <View style={styles.projectPickerOverlay}>
+        <View style={styles.projectPickerCard}>
+          <View style={styles.projectPickerHeader}>
+            <Text style={styles.projectPickerTitle}>
+              {t("createTask.selectProjectTitle")}
             </Text>
-          ) : (
-            projects.map((project) => {
-              const id = getProjectId(project);
-              const isSelected = id === selectedProjectId;
+            <TouchableOpacity
+              onPress={onClose}
+              style={styles.projectPickerClose}
+            >
+              <Icon name="x" size={20} color="#052D50" />
+            </TouchableOpacity>
+          </View>
 
-              return (
-                <TouchableOpacity
-                  key={id}
-                  style={[
-                    styles.projectPickerItem,
-                    isSelected && styles.projectPickerItemSelected,
-                  ]}
-                  onPress={() => onSelect(project)}
-                  activeOpacity={0.85}
-                >
-                  <View style={styles.projectPickerItemText}>
-                    <Text style={styles.projectPickerItemTitle}>
-                      {project.name || t("createTask.untitledProject")}
-                    </Text>
-                    {!!project.location && (
-                      <Text style={styles.projectPickerItemSubtitle}>
-                        {project.location}
+          <ScrollView
+            style={styles.projectPickerList}
+            contentContainerStyle={styles.projectPickerListContent}
+          >
+            {projects.length === 0 ? (
+              <Text style={styles.projectPickerEmpty}>
+                {t("projects.notFound")}
+              </Text>
+            ) : (
+              projects.map((project) => {
+                const id = getProjectId(project);
+                const isSelected = id === selectedProjectId;
+
+                return (
+                  <TouchableOpacity
+                    key={id}
+                    style={[
+                      styles.projectPickerItem,
+                      isSelected && styles.projectPickerItemSelected,
+                    ]}
+                    onPress={() => onSelect(project)}
+                    activeOpacity={0.85}
+                  >
+                    <View style={styles.projectPickerItemText}>
+                      <Text style={styles.projectPickerItemTitle}>
+                        {project.name || t("createTask.untitledProject")}
                       </Text>
-                    )}
-                  </View>
+                      {!!project.location && (
+                        <Text style={styles.projectPickerItemSubtitle}>
+                          {project.location}
+                        </Text>
+                      )}
+                    </View>
 
-                  {isSelected ? (
-                    <Icon name="check" size={18} color="#0091FF" />
-                  ) : null}
-                </TouchableOpacity>
-              );
-            })
-          )}
-        </ScrollView>
+                    {isSelected ? (
+                      <Icon name="check" size={18} color="#0091FF" />
+                    ) : null}
+                  </TouchableOpacity>
+                );
+              })
+            )}
+          </ScrollView>
+        </View>
       </View>
-    </View>
-  </Modal>
+    </Modal>
   );
 };
 
@@ -422,66 +425,69 @@ const UserPickerModal = ({
 }) => {
   const { t } = useTranslation();
   return (
-  <Modal
-    visible={visible}
-    transparent={true}
-    animationType="fade"
-    onRequestClose={onClose}
-  >
-    <View style={styles.projectPickerOverlay}>
-      <View style={styles.projectPickerCard}>
-        <View style={styles.projectPickerHeader}>
-          <Text style={styles.projectPickerTitle}>
-            {t("createTask.selectUserTitle")}
-          </Text>
-          <TouchableOpacity onPress={onClose} style={styles.projectPickerClose}>
-            <Icon name="x" size={20} color="#052D50" />
-          </TouchableOpacity>
-        </View>
-
-        <ScrollView
-          style={styles.projectPickerList}
-          contentContainerStyle={styles.projectPickerListContent}
-        >
-          {users.length === 0 ? (
-            <Text style={styles.projectPickerEmpty}>
-              {t("createTask.noUsers")}
+    <Modal
+      visible={visible}
+      transparent={true}
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <View style={styles.projectPickerOverlay}>
+        <View style={styles.projectPickerCard}>
+          <View style={styles.projectPickerHeader}>
+            <Text style={styles.projectPickerTitle}>
+              {t("createTask.selectUserTitle")}
             </Text>
-          ) : (
-            users.map((item) => {
-              const id = getUserId(item);
-              const isSelected = id === selectedUserId;
+            <TouchableOpacity
+              onPress={onClose}
+              style={styles.projectPickerClose}
+            >
+              <Icon name="x" size={20} color="#052D50" />
+            </TouchableOpacity>
+          </View>
 
-              return (
-                <TouchableOpacity
-                  key={id}
-                  style={[
-                    styles.projectPickerItem,
-                    isSelected && styles.projectPickerItemSelected,
-                  ]}
-                  onPress={() => onSelect(item)}
-                  activeOpacity={0.85}
-                >
-                  <View style={styles.projectPickerItemText}>
-                    <Text style={styles.projectPickerItemTitle}>
-                      {item.name || item.email || t("createTask.unnamedUser")}
-                    </Text>
-                    <Text style={styles.projectPickerItemSubtitle}>
-                      {item.profession || item.role || t("roles.user")}
-                    </Text>
-                  </View>
+          <ScrollView
+            style={styles.projectPickerList}
+            contentContainerStyle={styles.projectPickerListContent}
+          >
+            {users.length === 0 ? (
+              <Text style={styles.projectPickerEmpty}>
+                {t("createTask.noUsers")}
+              </Text>
+            ) : (
+              users.map((item) => {
+                const id = getUserId(item);
+                const isSelected = id === selectedUserId;
 
-                  {isSelected ? (
-                    <Icon name="check" size={18} color="#0091FF" />
-                  ) : null}
-                </TouchableOpacity>
-              );
-            })
-          )}
-        </ScrollView>
+                return (
+                  <TouchableOpacity
+                    key={id}
+                    style={[
+                      styles.projectPickerItem,
+                      isSelected && styles.projectPickerItemSelected,
+                    ]}
+                    onPress={() => onSelect(item)}
+                    activeOpacity={0.85}
+                  >
+                    <View style={styles.projectPickerItemText}>
+                      <Text style={styles.projectPickerItemTitle}>
+                        {item.name || item.email || t("createTask.unnamedUser")}
+                      </Text>
+                      <Text style={styles.projectPickerItemSubtitle}>
+                        {item.profession || item.role || t("roles.user")}
+                      </Text>
+                    </View>
+
+                    {isSelected ? (
+                      <Icon name="check" size={18} color="#0091FF" />
+                    ) : null}
+                  </TouchableOpacity>
+                );
+              })
+            )}
+          </ScrollView>
+        </View>
       </View>
-    </View>
-  </Modal>
+    </Modal>
   );
 };
 
@@ -497,7 +503,8 @@ export default function CreateTaskScreen() {
     route.params || {};
   const initialTaskDraft = route.params?.taskDraft || {};
   const isWorkerProjectTaskFlow =
-    isWorkerCreator && Boolean(initialTaskDraft.selectedProjectId || initialProjectId);
+    isWorkerCreator &&
+    Boolean(initialTaskDraft.selectedProjectId || initialProjectId);
   const returnTarget =
     initialTaskDraft.returnTarget || (initialProjectId ? "project" : "tasks");
   const allowedToCreate = canCreateTasks(user?.role);
@@ -606,7 +613,9 @@ export default function CreateTaskScreen() {
       return;
     }
 
-    const project = projects.find((item) => getProjectId(item) === selectedProjectId);
+    const project = projects.find(
+      (item) => getProjectId(item) === selectedProjectId,
+    );
 
     if (project) {
       setSelectedProject(project);
@@ -698,7 +707,9 @@ export default function CreateTaskScreen() {
     setSelectedAssigneeRole(user?.profession || user?.role || "");
 
     if (isWorkerProjectTaskFlow) {
-      setSelectedProjectId(initialTaskDraft.selectedProjectId || initialProjectId || "");
+      setSelectedProjectId(
+        initialTaskDraft.selectedProjectId || initialProjectId || "",
+      );
       setProjectName(initialTaskDraft.projectName || initialProjectName || "");
     } else {
       setSelectedProjectId("");
@@ -713,7 +724,10 @@ export default function CreateTaskScreen() {
   );
 
   const effectiveSelectedProject = useMemo(() => {
-    if (selectedProject && getProjectId(selectedProject) === selectedProjectId) {
+    if (
+      selectedProject &&
+      getProjectId(selectedProject) === selectedProjectId
+    ) {
       return selectedProject;
     }
 
@@ -759,8 +773,9 @@ export default function CreateTaskScreen() {
   };
 
   const closeNotificationsSheet = () => {
-    const normalizedInterval =
-      normalizeRepeatIntervalMinutes(notificationRepeatInput);
+    const normalizedInterval = normalizeRepeatIntervalMinutes(
+      notificationRepeatInput,
+    );
 
     setNotificationSettings(
       deriveNotificationReminderFlags({
@@ -998,7 +1013,9 @@ export default function CreateTaskScreen() {
     );
   }
 
-  const fieldIconBadgeStyle = { backgroundColor: theme.colors.primaryIconBadge };
+  const fieldIconBadgeStyle = {
+    backgroundColor: theme.colors.primaryIconBadge,
+  };
 
   return (
     <View style={styles.container}>
@@ -1031,303 +1048,306 @@ export default function CreateTaskScreen() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-
-        <SectionLabel>General</SectionLabel>
-        <GroupCard>
-          <TouchableOpacity
-            style={[
-              styles.groupRow,
-              (selectedAssigneeUserId || isWorkerCreator) && styles.groupRowDisabled,
-            ]}
-            onPress={() => !isWorkerCreator && setShowProjectPicker(true)}
-            activeOpacity={0.85}
-            disabled={
-              loadingProjects || Boolean(selectedAssigneeUserId) || isWorkerCreator
-            }
-          >
-            <View style={styles.rowContent}>
-              <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
-                <FieldIcon name="folder" size={14} color="#FFFFFF" />
-              </View>
-              <View style={styles.rowTextContainer}>
-                <Text style={styles.rowLabel}>
-                  {t("createTask.projectLabel")}
-                </Text>
-                <Text
-                  style={[
-                    styles.rowValue,
-                    !projectName && styles.rowPlaceholder,
-                  ]}
-                >
-                  {isWorkerProjectTaskFlow
-                    ? projectName ||
-                      initialProjectName ||
-                      t("createTask.currentProject")
-                    : isWorkerCreator
-                    ? t("createTask.workersPersonalOnly")
-                    : loadingProjects
-                    ? t("projects.loading")
-                    : projectName || t("createTask.selectProject")}
-                </Text>
-              </View>
-            </View>
-            <Icon name="chevron-right" size={18} color="#052D50" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.groupRow}
-            onPress={() => !isWorkerCreator && setShowUserPicker(true)}
-            activeOpacity={0.85}
-            disabled={loadingUsers || isWorkerCreator}
-          >
-            <View style={styles.rowContent}>
-              <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
-                <FieldIcon name="user" size={14} color="#FFFFFF" />
-              </View>
-              <View style={styles.rowTextContainer}>
-                <Text style={styles.rowLabel}>
-                  {isWorkerCreator
-                    ? t("createTask.assignedTo")
-                    : t("createTask.personalTaskUser")}
-                </Text>
-                <Text
-                  style={[
-                    styles.rowValue,
-                    !selectedAssigneeName && styles.rowPlaceholder,
-                  ]}
-                >
-                  {loadingUsers
-                    ? t("createTask.loadingUsers")
-                    : selectedAssigneeName ||
-                      (isWorkerCreator
-                        ? t("createTask.currentUser")
-                        : t("createTask.selectWorkerOrForeman"))}
-                </Text>
-              </View>
-            </View>
-            {selectedAssigneeUserId && !isWorkerCreator ? (
-              <TouchableOpacity
-                style={styles.clearInlineButton}
-                onPress={clearSelectedUser}
-              >
-                <Icon name="x" size={16} color="#052D50" />
-              </TouchableOpacity>
-            ) : (
-              <Icon name="chevron-right" size={18} color="#052D50" />
-            )}
-          </TouchableOpacity>
-          <GroupRow isLast={true}>
-            <View style={styles.inputWrapper}>
-              <Text style={styles.inputLabel}>
-                {t("createTask.taskTitleLabel")}
-              </Text>
-              <TextInput
-                style={styles.input}
-                value={taskTitle}
-                onChangeText={setTaskTitle}
-                placeholder={t("createTask.taskTitlePlaceholder")}
-                placeholderTextColor="rgba(5, 45, 80, 0.45)"
-              />
-            </View>
-          </GroupRow>
-        </GroupCard>
-
-        <SectionLabel>Schedule</SectionLabel>
-        <GroupCard>
-          <GroupRow>
-            <View style={styles.allDayTextContainer}>
-              <Text style={styles.scheduleLabel}>{t("createTask.allDay")}</Text>
-              <Text style={styles.allDayHint}>
-                {t("createTask.allDayHint")}
-              </Text>
-            </View>
-            <Switch
-              value={allDay}
-              onValueChange={handleAllDayChange}
-              trackColor={{ false: "#D9E3EC", true: theme.colors.primary }}
-              thumbColor="#FFFFFF"
-            />
-          </GroupRow>
-          <ScheduleDateRow
-            label={t("createTask.starts")}
-            value={startDate}
-            onPress={() => setShowStartDatePicker(true)}
-          />
-          <ScheduleDateRow
-            label={t("createTask.ends")}
-            value={dueDate}
-            onPress={() => setShowDueDatePicker(true)}
-            isLast={true}
-          />
-        </GroupCard>
-
-        <SectionLabel>Details</SectionLabel>
-        <GroupCard>
-          <GroupRow>
-            <View style={styles.textAreaWrapper}>
-              <Text style={styles.inputLabel}>
-                {t("createTask.descriptionLabel")}
-              </Text>
-              <TextInput
-                multiline={true}
-                style={[styles.input, styles.textArea]}
-                value={taskDescription}
-                onChangeText={setTaskDescription}
-                placeholder={t("createTask.descriptionPlaceholder")}
-                placeholderTextColor="rgba(5, 45, 80, 0.45)"
-              />
-            </View>
-          </GroupRow>
-        </GroupCard>
-
-        <SectionLabel>Notifications</SectionLabel>
-        <GroupCard>
-          <TouchableOpacity
-            style={[styles.groupRow, styles.groupRowLast]}
-            activeOpacity={0.85}
-            onPress={openNotificationsSheet}
-          >
-            <View style={styles.rowContent}>
-              <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
-                <FieldIcon name="bell" size={14} color="#FFFFFF" />
-              </View>
-              <View style={styles.rowTextContainer}>
-                <Text style={styles.rowLabel}>
-                  {t("createTask.notificationsLabel")}
-                </Text>
-                <Text
-                  style={[
-                    styles.rowValue,
-                    notificationsSummary === "Off" &&
-                      styles.rowPlaceholder,
-                  ]}
-                >
-                  {notificationsSummary}
-                </Text>
-              </View>
-            </View>
-            <Icon name="chevron-right" size={18} color="#052D50" />
-          </TouchableOpacity>
-        </GroupCard>
-
-        <SectionLabel>Files</SectionLabel>
-        <GroupCard>
-          <TouchableOpacity
-            style={[styles.groupRow, styles.groupRowLast]}
-            onPress={pickDocuments}
-            activeOpacity={0.85}
-          >
-            <View style={styles.rowContent}>
-              <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
-                <FieldIcon name="paperclip" size={14} color="#FFFFFF" />
-              </View>
-              <View style={styles.rowTextContainer}>
-                <Text style={styles.rowLabel}>
-                  {t("createTask.documentsLabel")}
-                </Text>
-                <Text
-                  style={[
-                    styles.rowValue,
-                    selectedDocuments.length === 0 && styles.rowPlaceholder,
-                  ]}
-                >
-                  {selectedDocuments.length > 0
-                    ? t("createTask.fileCount", {
-                        count: selectedDocuments.length,
-                      })
-                    : t("createTask.addFiles")}
-                </Text>
-              </View>
-            </View>
-            <Icon name="chevron-right" size={18} color="#052D50" />
-          </TouchableOpacity>
-        </GroupCard>
-
-        {selectedDocuments.length > 0 ? (
-          <View style={styles.documentsGrid}>
-            {selectedDocuments.map((document, index) => {
-              const typeMeta = getDocumentTypeMeta(document);
-              const imageDocument = isImageDocument(document);
-
-              return (
-                <View
-                  key={`${document.uri}-${index}`}
-                  style={styles.documentCard}
-                >
-                  {imageDocument ? (
-                    <Image
-                      source={{ uri: document.uri }}
-                      style={styles.documentImage}
-                    />
-                  ) : (
-                    <View style={styles.documentFileContent}>
-                      <FieldIcon name={typeMeta.icon} size={18} />
-                      <Text numberOfLines={2} style={styles.documentName}>
-                        {document.name}
-                      </Text>
-                      <Text style={styles.documentTypeBadge}>
-                        {typeMeta.label}
-                      </Text>
-                    </View>
-                  )}
+          <SectionLabel>General</SectionLabel>
+          <GroupCard>
+            <TouchableOpacity
+              style={[
+                styles.groupRow,
+                (selectedAssigneeUserId || isWorkerCreator) &&
+                  styles.groupRowDisabled,
+              ]}
+              onPress={() => !isWorkerCreator && setShowProjectPicker(true)}
+              activeOpacity={0.85}
+              disabled={
+                loadingProjects ||
+                Boolean(selectedAssigneeUserId) ||
+                isWorkerCreator
+              }
+            >
+              <View style={styles.rowContent}>
+                <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
+                  <FieldIcon name="folder" size={14} color="#FFFFFF" />
                 </View>
-              );
-            })}
-          </View>
-        ) : null}
+                <View style={styles.rowTextContainer}>
+                  <Text style={styles.rowLabel}>
+                    {t("createTask.projectLabel")}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.rowValue,
+                      !projectName && styles.rowPlaceholder,
+                    ]}
+                  >
+                    {isWorkerProjectTaskFlow
+                      ? projectName ||
+                        initialProjectName ||
+                        t("createTask.currentProject")
+                      : isWorkerCreator
+                        ? t("createTask.workersPersonalOnly")
+                        : loadingProjects
+                          ? t("projects.loading")
+                          : projectName || t("createTask.selectProject")}
+                  </Text>
+                </View>
+              </View>
+              <Icon name="chevron-right" size={18} color="#052D50" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.groupRow}
+              onPress={() => !isWorkerCreator && setShowUserPicker(true)}
+              activeOpacity={0.85}
+              disabled={loadingUsers || isWorkerCreator}
+            >
+              <View style={styles.rowContent}>
+                <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
+                  <FieldIcon name="user" size={14} color="#FFFFFF" />
+                </View>
+                <View style={styles.rowTextContainer}>
+                  <Text style={styles.rowLabel}>
+                    {isWorkerCreator
+                      ? t("createTask.assignedTo")
+                      : t("createTask.personalTaskUser")}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.rowValue,
+                      !selectedAssigneeName && styles.rowPlaceholder,
+                    ]}
+                  >
+                    {loadingUsers
+                      ? t("createTask.loadingUsers")
+                      : selectedAssigneeName ||
+                        (isWorkerCreator
+                          ? t("createTask.currentUser")
+                          : t("createTask.selectWorkerOrForeman"))}
+                  </Text>
+                </View>
+              </View>
+              {selectedAssigneeUserId && !isWorkerCreator ? (
+                <TouchableOpacity
+                  style={styles.clearInlineButton}
+                  onPress={clearSelectedUser}
+                >
+                  <Icon name="x" size={16} color="#052D50" />
+                </TouchableOpacity>
+              ) : (
+                <Icon name="chevron-right" size={18} color="#052D50" />
+              )}
+            </TouchableOpacity>
+            <GroupRow isLast={true}>
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputLabel}>
+                  {t("createTask.taskTitleLabel")}
+                </Text>
+                <TextInput
+                  style={styles.input}
+                  value={taskTitle}
+                  onChangeText={setTaskTitle}
+                  placeholder={t("createTask.taskTitlePlaceholder")}
+                  placeholderTextColor="rgba(5, 45, 80, 0.45)"
+                />
+              </View>
+            </GroupRow>
+          </GroupCard>
 
-        <SectionLabel>Notes</SectionLabel>
-        <GroupCard>
-          <GroupRow isLast={true}>
-            <View style={styles.textAreaWrapper}>
-              <Text style={styles.inputLabel}>
-                {t("createTask.notesLabel")}
-              </Text>
-              <TextInput
-                multiline={true}
-                style={[styles.input, styles.textAreaLarge]}
-                value={notes}
-                onChangeText={setNotes}
-                placeholder={t("tools.notesPlaceholder")}
-                placeholderTextColor="rgba(5, 45, 80, 0.45)"
+          <SectionLabel>Schedule</SectionLabel>
+          <GroupCard>
+            <GroupRow>
+              <View style={styles.allDayTextContainer}>
+                <Text style={styles.scheduleLabel}>
+                  {t("createTask.allDay")}
+                </Text>
+                <Text style={styles.allDayHint}>
+                  {t("createTask.allDayHint")}
+                </Text>
+              </View>
+              <Switch
+                value={allDay}
+                onValueChange={handleAllDayChange}
+                trackColor={{ false: "#D9E3EC", true: theme.colors.primary }}
+                thumbColor="#FFFFFF"
               />
-            </View>
-          </GroupRow>
-        </GroupCard>
+            </GroupRow>
+            <ScheduleDateRow
+              label={t("createTask.starts")}
+              value={startDate}
+              onPress={() => setShowStartDatePicker(true)}
+            />
+            <ScheduleDateRow
+              label={t("createTask.ends")}
+              value={dueDate}
+              onPress={() => setShowDueDatePicker(true)}
+              isLast={true}
+            />
+          </GroupCard>
 
-        <DateTimeFieldModal
-          visible={showStartDatePicker}
-          title={t("createTask.starts")}
-          value={startDate}
-          onChange={(date) => {
-            setAllDay(false);
-            setStartDate(date);
-          }}
-          onClose={() => setShowStartDatePicker(false)}
-        />
-        <DateTimeFieldModal
-          visible={showDueDatePicker}
-          title={t("createTask.ends")}
-          value={dueDate}
-          onChange={(date) => {
-            setAllDay(false);
-            setDueDate(date);
-          }}
-          onClose={() => setShowDueDatePicker(false)}
-        />
-        <ProjectPickerModal
-          visible={showProjectPicker}
-          projects={projects}
-          selectedProjectId={selectedProjectId}
-          onSelect={selectProject}
-          onClose={() => setShowProjectPicker(false)}
-        />
-        <UserPickerModal
-          visible={showUserPicker}
-          users={users}
-          selectedUserId={selectedAssigneeUserId}
-          onSelect={selectUser}
-          onClose={() => setShowUserPicker(false)}
-        />
+          <SectionLabel>Details</SectionLabel>
+          <GroupCard>
+            <GroupRow>
+              <View style={styles.textAreaWrapper}>
+                <Text style={styles.inputLabel}>
+                  {t("createTask.descriptionLabel")}
+                </Text>
+                <TextInput
+                  multiline={true}
+                  style={[styles.input, styles.textArea]}
+                  value={taskDescription}
+                  onChangeText={setTaskDescription}
+                  placeholder={t("createTask.descriptionPlaceholder")}
+                  placeholderTextColor="rgba(5, 45, 80, 0.45)"
+                />
+              </View>
+            </GroupRow>
+          </GroupCard>
+
+          <SectionLabel>Notifications</SectionLabel>
+          <GroupCard>
+            <TouchableOpacity
+              style={[styles.groupRow, styles.groupRowLast]}
+              activeOpacity={0.85}
+              onPress={openNotificationsSheet}
+            >
+              <View style={styles.rowContent}>
+                <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
+                  <FieldIcon name="bell" size={14} color="#FFFFFF" />
+                </View>
+                <View style={styles.rowTextContainer}>
+                  <Text style={styles.rowLabel}>
+                    {t("createTask.notificationsLabel")}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.rowValue,
+                      notificationsSummary === "Off" && styles.rowPlaceholder,
+                    ]}
+                  >
+                    {notificationsSummary}
+                  </Text>
+                </View>
+              </View>
+              <Icon name="chevron-right" size={18} color="#052D50" />
+            </TouchableOpacity>
+          </GroupCard>
+
+          <SectionLabel>Files</SectionLabel>
+          <GroupCard>
+            <TouchableOpacity
+              style={[styles.groupRow, styles.groupRowLast]}
+              onPress={pickDocuments}
+              activeOpacity={0.85}
+            >
+              <View style={styles.rowContent}>
+                <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
+                  <FieldIcon name="paperclip" size={14} color="#FFFFFF" />
+                </View>
+                <View style={styles.rowTextContainer}>
+                  <Text style={styles.rowLabel}>
+                    {t("createTask.documentsLabel")}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.rowValue,
+                      selectedDocuments.length === 0 && styles.rowPlaceholder,
+                    ]}
+                  >
+                    {selectedDocuments.length > 0
+                      ? t("createTask.fileCount", {
+                          count: selectedDocuments.length,
+                        })
+                      : t("createTask.addFiles")}
+                  </Text>
+                </View>
+              </View>
+              <Icon name="chevron-right" size={18} color="#052D50" />
+            </TouchableOpacity>
+          </GroupCard>
+
+          {selectedDocuments.length > 0 ? (
+            <View style={styles.documentsGrid}>
+              {selectedDocuments.map((document, index) => {
+                const typeMeta = getDocumentTypeMeta(document);
+                const imageDocument = isImageDocument(document);
+
+                return (
+                  <View
+                    key={`${document.uri}-${index}`}
+                    style={styles.documentCard}
+                  >
+                    {imageDocument ? (
+                      <Image
+                        source={{ uri: document.uri }}
+                        style={styles.documentImage}
+                      />
+                    ) : (
+                      <View style={styles.documentFileContent}>
+                        <FieldIcon name={typeMeta.icon} size={18} />
+                        <Text numberOfLines={2} style={styles.documentName}>
+                          {document.name}
+                        </Text>
+                        <Text style={styles.documentTypeBadge}>
+                          {typeMeta.label}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                );
+              })}
+            </View>
+          ) : null}
+
+          <SectionLabel>Notes</SectionLabel>
+          <GroupCard>
+            <GroupRow isLast={true}>
+              <View style={styles.textAreaWrapper}>
+                <Text style={styles.inputLabel}>
+                  {t("createTask.notesLabel")}
+                </Text>
+                <TextInput
+                  multiline={true}
+                  style={[styles.input, styles.textAreaLarge]}
+                  value={notes}
+                  onChangeText={setNotes}
+                  placeholder={t("tools.notesPlaceholder")}
+                  placeholderTextColor="rgba(5, 45, 80, 0.45)"
+                />
+              </View>
+            </GroupRow>
+          </GroupCard>
+
+          <DateTimeFieldModal
+            visible={showStartDatePicker}
+            title={t("createTask.starts")}
+            value={startDate}
+            onChange={(date) => {
+              setAllDay(false);
+              setStartDate(date);
+            }}
+            onClose={() => setShowStartDatePicker(false)}
+          />
+          <DateTimeFieldModal
+            visible={showDueDatePicker}
+            title={t("createTask.ends")}
+            value={dueDate}
+            onChange={(date) => {
+              setAllDay(false);
+              setDueDate(date);
+            }}
+            onClose={() => setShowDueDatePicker(false)}
+          />
+          <ProjectPickerModal
+            visible={showProjectPicker}
+            projects={projects}
+            selectedProjectId={selectedProjectId}
+            onSelect={selectProject}
+            onClose={() => setShowProjectPicker(false)}
+          />
+          <UserPickerModal
+            visible={showUserPicker}
+            users={users}
+            selectedUserId={selectedAssigneeUserId}
+            onSelect={selectUser}
+            onClose={() => setShowUserPicker(false)}
+          />
         </ScrollView>
       </View>
 
@@ -1373,7 +1393,8 @@ export default function CreateTaskScreen() {
                       dueDate,
                       settings: notificationSettings,
                     });
-                    const isSelected = notificationSettings.repeat === option.key;
+                    const isSelected =
+                      notificationSettings.repeat === option.key;
 
                     return (
                       <TouchableOpacity
@@ -1409,7 +1430,9 @@ export default function CreateTaskScreen() {
                             isSelected && styles.radioOuterSelected,
                           ]}
                         >
-                          {isSelected ? <View style={styles.radioInner} /> : null}
+                          {isSelected ? (
+                            <View style={styles.radioInner} />
+                          ) : null}
                         </View>
                       </TouchableOpacity>
                     );
@@ -1426,8 +1449,9 @@ export default function CreateTaskScreen() {
                       value={notificationRepeatInput}
                       onChangeText={setNotificationRepeatInput}
                       onBlur={() => {
-                        const normalized =
-                          normalizeRepeatIntervalMinutes(notificationRepeatInput);
+                        const normalized = normalizeRepeatIntervalMinutes(
+                          notificationRepeatInput,
+                        );
                         setNotificationRepeatInput(String(normalized));
                         updateNotificationSettings({
                           repeatIntervalMinutes: normalized,

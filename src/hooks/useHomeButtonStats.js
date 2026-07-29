@@ -3,7 +3,6 @@ import { projectService, shiftService, userService } from "../services";
 import {
   formatDurationShort,
   getCurrentMonthKey,
-  getTodayDateKey,
   parseDateKey,
 } from "../utils/shifts";
 
@@ -127,67 +126,75 @@ export function useHomeButtonStats({
   const [employeeStats, setEmployeeStats] = useState(EMPTY_EMPLOYEE_STATS);
   const [shiftStats, setShiftStats] = useState(EMPTY_SHIFT_STATS);
 
-  const loadStats = useCallback(async function loadStats() {
-    if (!normalizedProjectId) {
-      setEmployeeStats(EMPTY_EMPLOYEE_STATS);
-      setShiftStats(EMPTY_SHIFT_STATS);
-      return;
-    }
-
-    const today = new Date();
-
-    try {
-      if (loadEmployeeStats) {
-        const [employees, project] = await Promise.all([
-          userService
-            .getByProject(normalizedProjectId)
-            .catch(function onEmployeesError() {
-              return [];
-            }),
-          projectService
-            .getPopulatedById(normalizedProjectId)
-            .catch(function onProjectError() {
-              return null;
-            }),
-        ]);
-
-        const projectWorkers = mergeProjectWorkers(
-          Array.isArray(employees) ? employees : [],
-          project?.workers || [],
-        );
-
-        setEmployeeStats(
-          countEmployeeStats(projectWorkers, normalizedProjectId),
-        );
+  const loadStats = useCallback(
+    async function loadStats() {
+      if (!normalizedProjectId) {
+        setEmployeeStats(EMPTY_EMPLOYEE_STATS);
+        setShiftStats(EMPTY_SHIFT_STATS);
+        return;
       }
 
-      if (loadShiftStats) {
-        const shiftHistory = await shiftService
-          .getHistory({
-            month: getCurrentMonthKey(),
-            projectId: normalizedProjectId,
-          })
-          .catch(function onShiftHistoryError() {
-            return { days: [], monthTotalDurationMs: 0 };
+      const today = new Date();
+
+      try {
+        if (loadEmployeeStats) {
+          const [employees, project] = await Promise.all([
+            userService
+              .getByProject(normalizedProjectId)
+              .catch(function onEmployeesError() {
+                return [];
+              }),
+            projectService
+              .getPopulatedById(normalizedProjectId)
+              .catch(function onProjectError() {
+                return null;
+              }),
+          ]);
+
+          const projectWorkers = mergeProjectWorkers(
+            Array.isArray(employees) ? employees : [],
+            project?.workers || [],
+          );
+
+          setEmployeeStats(
+            countEmployeeStats(projectWorkers, normalizedProjectId),
+          );
+        }
+
+        if (loadShiftStats) {
+          const shiftHistory = await shiftService
+            .getHistory({
+              month: getCurrentMonthKey(),
+              projectId: normalizedProjectId,
+            })
+            .catch(function onShiftHistoryError() {
+              return { days: [], monthTotalDurationMs: 0 };
+            });
+
+          const days = Array.isArray(shiftHistory?.days)
+            ? shiftHistory.days
+            : [];
+          const weekDurationMs = sumWeekDuration(days, today);
+          const monthDurationMs = shiftHistory?.monthTotalDurationMs || 0;
+
+          setShiftStats({
+            weekLabel: `${formatDurationShort(weekDurationMs)} this week`,
+            monthLabel: `${formatDurationShort(monthDurationMs)} this month`,
           });
-
-        const days = Array.isArray(shiftHistory?.days) ? shiftHistory.days : [];
-        const weekDurationMs = sumWeekDuration(days, today);
-        const monthDurationMs = shiftHistory?.monthTotalDurationMs || 0;
-
-        setShiftStats({
-          weekLabel: `${formatDurationShort(weekDurationMs)} this week`,
-          monthLabel: `${formatDurationShort(monthDurationMs)} this month`,
-        });
+        }
+      } catch (error) {
+        console.error("Failed to load home button stats:", error);
       }
-    } catch (error) {
-      console.error("Failed to load home button stats:", error);
-    }
-  }, [loadEmployeeStats, loadShiftStats, normalizedProjectId]);
+    },
+    [loadEmployeeStats, loadShiftStats, normalizedProjectId],
+  );
 
-  useEffect(function loadOnProjectChange() {
-    void loadStats();
-  }, [loadStats]);
+  useEffect(
+    function loadOnProjectChange() {
+      void loadStats();
+    },
+    [loadStats],
+  );
 
   return {
     employeeStats,

@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useRef } from 'react';
-import AuthContext from '../contexts/AuthContext';
+import { useContext, useEffect, useRef } from "react";
+import AuthContext from "../contexts/AuthContext";
 import {
   initializeNotificationListeners,
   syncPushTokenForUser,
-} from '../services/notifications.service';
+} from "../services/notifications.service";
 
 export function NotificationBootstrap() {
   const { isAuthenticated, isLoading, user } = useContext(AuthContext);
@@ -32,7 +32,7 @@ export function NotificationBootstrap() {
     syncedUserRef.current = userId;
 
     syncPushTokenForUser(user).catch((error) => {
-      console.error('Failed to sync push token:', error);
+      console.error("Failed to sync push token:", error);
       syncedUserRef.current = null;
     });
   }, [isAuthenticated, isLoading, user]);

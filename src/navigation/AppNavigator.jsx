@@ -19,7 +19,6 @@ import DocumentPreviewScreen from "../screens/Main/DocumentPreviewScreen";
 import { ProjectScreen } from "../screens/Main/Project/ProjectScreen";
 import { SelectWorkers } from "../screens/Main/Project/SelectWorkers";
 import { SelectAdmin } from "../screens/Main/Project/SelectAdmin";
-import { ShiftHistory } from "../screens/Main/Project/ShiftHistory";
 import SingleChatScreen from "../screens/Main/Chat/SingleChatScreen";
 import AuthContext from "../contexts/AuthContext";
 import { useTheme } from "../theme/ThemeContext";

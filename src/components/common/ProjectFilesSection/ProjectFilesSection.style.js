@@ -1,19 +1,8 @@
 import { StyleSheet } from "react-native";
 
-export function createStyles(
-  theme,
-  colorMode = "dark",
-) {
-  const isLightMode =
-    colorMode === "light";
-  const themedTextColor =
-    theme.colors.homeButtonText;
-  const primaryTextColor = isLightMode
-    ? theme.colors.text
-    : themedTextColor || "#FFFFFF";
-  const headerTextColor = isLightMode
-    ? theme.colors.text
-    : "#FFFFFF";
+export function createStyles(theme, colorMode = "dark") {
+  const isLightMode = colorMode === "light";
+  const headerTextColor = isLightMode ? theme.colors.text : "#FFFFFF";
 
   return StyleSheet.create({
     section: {
@@ -73,9 +62,7 @@ export function createStyles(
       position: "relative",
       justifyContent: "center",
       borderWidth: isLightMode ? 1 : 0,
-      borderColor: isLightMode
-        ? `${theme.colors.primary}33`
-        : "transparent",
+      borderColor: isLightMode ? `${theme.colors.primary}33` : "transparent",
       backgroundColor: isLightMode
         ? `${theme.colors.primary}18`
         : "transparent",
