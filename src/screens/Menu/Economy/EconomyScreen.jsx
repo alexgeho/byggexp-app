@@ -4,6 +4,7 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
+  Pressable,
   ActivityIndicator,
   Modal,
 } from "react-native";
@@ -327,12 +328,11 @@ export default function EconomyScreen() {
         animationType="slide"
         onRequestClose={() => setCustomerModalVisible(false)}
       >
-        <TouchableOpacity
+        <Pressable
           style={styles.modalOverlay}
-          activeOpacity={1}
           onPress={() => setCustomerModalVisible(false)}
         >
-          <View style={styles.modalSheet}>
+          <Pressable style={styles.modalSheet} onPress={() => {}}>
             <View style={styles.grab} />
             <Text style={styles.modalTitle}>
               {t("economy.filterByCustomer")}
@@ -371,8 +371,8 @@ export default function EconomyScreen() {
                 </TouchableOpacity>
               ))}
             </ScrollView>
-          </View>
-        </TouchableOpacity>
+          </Pressable>
+        </Pressable>
       </Modal>
     </View>
   );

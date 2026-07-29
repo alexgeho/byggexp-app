@@ -5,6 +5,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  Pressable,
   ScrollView,
   ActivityIndicator,
   Alert,
@@ -153,8 +154,8 @@ export default function ClientPickerModal({ visible, onClose, onSelect }) {
       animationType="slide"
       onRequestClose={onClose}
     >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalSheet}>
+      <Pressable style={styles.modalOverlay} onPress={onClose}>
+        <Pressable style={styles.modalSheet} onPress={() => {}}>
           <View style={styles.grab} />
           <Text style={styles.modalTitle}>
             {creating ? t("billing.newClient") : t("billing.selectClient")}
@@ -332,8 +333,8 @@ export default function ClientPickerModal({ visible, onClose, onSelect }) {
               </TouchableOpacity>
             </>
           )}
-        </View>
-      </View>
+        </Pressable>
+      </Pressable>
     </Modal>
   );
 }
