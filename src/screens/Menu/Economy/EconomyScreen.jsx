@@ -5,7 +5,6 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-  Alert,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
@@ -143,11 +142,7 @@ export default function EconomyScreen() {
   };
 
   const openCreate = () => {
-    // Phase 2 wires the create screens; keep discoverable meanwhile.
-    Alert.alert(
-      isOffers ? t("economy.newOffer") : t("economy.newInvoice"),
-      t("economy.createSoon"),
-    );
+    navigation.navigate(isOffers ? "CreateOffer" : "CreateInvoice");
   };
 
   const renderCard = (item) => {
@@ -271,18 +266,10 @@ export default function EconomyScreen() {
         )}
       </ScrollView>
 
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={openCreate}
-        activeOpacity={0.85}
-      >
-        <Icon name="plus" size={28} color="#fff" />
-      </TouchableOpacity>
-
       <BottomBar
-        showAddButton={false}
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
+        onAddPress={openCreate}
       />
     </View>
   );

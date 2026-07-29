@@ -43,6 +43,8 @@ import ToolsScreen from "../screens/Menu/ToolsScreen";
 import CreateToolScreen from "../screens/Menu/CreateToolScreen";
 import ToolScanScreen from "../screens/Menu/ToolScanScreen";
 import EconomyScreen from "../screens/Menu/Economy/EconomyScreen";
+import CreateOfferScreen from "../screens/Menu/Economy/CreateOfferScreen";
+import CreateInvoiceScreen from "../screens/Menu/Economy/CreateInvoiceScreen";
 import {
   canCreateProjects as checkCanCreateProjects,
   canCreateTasks as checkCanCreateTasks,
@@ -157,6 +159,11 @@ export default function AppNavigator() {
             <Stack.Screen name="Tools" component={ToolsScreen} />
             <Stack.Screen name="ToolScan" component={ToolScanScreen} />
             <Stack.Screen name="Economy" component={EconomyScreen} />
+            <Stack.Screen name="CreateOffer" component={CreateOfferScreen} />
+            <Stack.Screen
+              name="CreateInvoice"
+              component={CreateInvoiceScreen}
+            />
             <Stack.Screen
               name="CreateTool"
               component={CreateToolScreen}

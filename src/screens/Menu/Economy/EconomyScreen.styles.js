@@ -113,21 +113,4 @@ export const styles = StyleSheet.create({
   badgeText_ok: { color: "#2fa84f" },
   badge_bad: { backgroundColor: "#fdecec" },
   badgeText_bad: { color: "#e5484d" },
-
-  fab: {
-    position: "absolute",
-    right: 20,
-    bottom: 96,
-    width: 58,
-    height: 58,
-    borderRadius: 29,
-    backgroundColor: "#2683f9",
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#2683f9",
-    shadowOpacity: 0.42,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 6,
-  },
 });
