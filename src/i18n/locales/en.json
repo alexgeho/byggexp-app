@@ -566,6 +566,10 @@
     "selectEmployee": "Select employee",
     "selectProject": "Select project",
     "selectMonth": "Select month",
+    "allStatuses": "All statuses",
+    "filterProjects": "Filter by project",
+    "filterStatuses": "Filter by status",
+    "clear": "Clear",
     "noResources": "No data to plan yet.",
     "noItems": "No items for this period."
   },

@@ -40,6 +40,7 @@ import {
   formatWeekdayLabel,
   getMonthKey,
   getWeekNumber,
+  normalizeId,
   parseMonthKey,
   startOfDay,
   startOfMonth,
@@ -74,6 +75,9 @@ export default function ScheduleScreen() {
   const [projects, setProjects] = useState([]);
   const [workers, setWorkers] = useState([]);
   const [monthPickerOpen, setMonthPickerOpen] = useState(false);
+  const [selectedProjectIds, setSelectedProjectIds] = useState([]);
+  const [selectedStatuses, setSelectedStatuses] = useState([]);
+  const [activeFilter, setActiveFilter] = useState(null); // 'project' | 'status'
 
   // Frozen header (horizontal) and sidebar (vertical) are driven by the
   // timeline body's scroll so the three panes stay aligned.
@@ -128,27 +132,69 @@ export default function ScheduleScreen() {
 
   const projectMap = useMemo(() => buildProjectMap(projects), [projects]);
 
-  const rows = useMemo(
-    () =>
-      mode === "employees"
-        ? buildEmployeeOptions(projects, workers)
-        : buildProjectOptions(projects),
-    [mode, projects, workers],
+  // Filter options.
+  const projectFilterOptions = useMemo(
+    () => buildProjectOptions(projects),
+    [projects],
   );
+  const statusOptions = useMemo(() => {
+    const set = new Set();
+    tasks.forEach((task) => {
+      if (task?.status) {
+        set.add(String(task.status));
+      }
+    });
+    return Array.from(set).map((key) => ({
+      id: key,
+      name: t(`task.status.${key}`, key),
+    }));
+  }, [tasks, t]);
+
+  const filteredTasks = useMemo(
+    () =>
+      tasks.filter((task) => {
+        const projectOk =
+          !selectedProjectIds.length ||
+          selectedProjectIds.includes(normalizeId(task.projectId));
+        const statusOk =
+          !selectedStatuses.length ||
+          selectedStatuses.includes(String(task.status));
+        return projectOk && statusOk;
+      }),
+    [tasks, selectedProjectIds, selectedStatuses],
+  );
+
+  const rows = useMemo(() => {
+    if (mode === "employees") {
+      return buildEmployeeOptions(projects, workers);
+    }
+    let options = buildProjectOptions(projects);
+    if (selectedProjectIds.length) {
+      options = options.filter((option) =>
+        selectedProjectIds.includes(option.id),
+      );
+    }
+    if (selectedStatuses.length) {
+      options = options.filter((option) =>
+        selectedStatuses.includes(String(projectMap[option.id]?.status)),
+      );
+    }
+    return options;
+  }, [mode, projects, workers, selectedProjectIds, selectedStatuses, projectMap]);
 
   // rowId -> array of bars for that row.
   const itemsByRow = useMemo(() => {
     const map = {};
     rows.forEach((row, index) => {
       if (mode === "employees") {
-        map[row.id] = buildEmployeeItems(tasks, projectMap, row.id);
+        map[row.id] = buildEmployeeItems(filteredTasks, projectMap, row.id);
       } else {
         const spanItem = buildProjectSpanItem(projectMap[row.id], index);
         map[row.id] = spanItem ? [spanItem] : [];
       }
     });
     return map;
-  }, [mode, rows, tasks, projectMap]);
+  }, [mode, rows, filteredTasks, projectMap]);
 
   const rangeStart = useMemo(
     () => startOfWeek(startOfMonth(currentMonth)),
@@ -205,6 +251,25 @@ export default function ScheduleScreen() {
   }, []);
 
   const contentHeight = Math.max(rows.length, 1) * ROW_HEIGHT;
+
+  const filterOptions =
+    activeFilter === "project" ? projectFilterOptions : statusOptions;
+  const filterSelected =
+    activeFilter === "project" ? selectedProjectIds : selectedStatuses;
+  const setFilterSelected =
+    activeFilter === "project" ? setSelectedProjectIds : setSelectedStatuses;
+
+  const toggleFilterValue = (id) =>
+    setFilterSelected((prev) =>
+      prev.includes(id) ? prev.filter((value) => value !== id) : [...prev, id],
+    );
+
+  const projectChipLabel = selectedProjectIds.length
+    ? `${t("menu.projects")} · ${selectedProjectIds.length}`
+    : t("projects.all");
+  const statusChipLabel = selectedStatuses.length
+    ? `${t("task.statusLabel")} · ${selectedStatuses.length}`
+    : t("schedule.allStatuses");
 
   const onBodyHorizontalScroll = (event) => {
     headerScrollRef.current?.scrollTo({
@@ -328,6 +393,35 @@ export default function ScheduleScreen() {
             </TouchableOpacity>
           ))}
         </View>
+      </View>
+
+      <View style={styles.filterRow}>
+        <TouchableOpacity
+          style={[
+            styles.filterChip,
+            selectedProjectIds.length > 0 && styles.filterChipActive,
+          ]}
+          onPress={() => setActiveFilter("project")}
+          activeOpacity={0.85}
+        >
+          <Text numberOfLines={1} style={styles.filterChipText}>
+            {projectChipLabel}
+          </Text>
+          <Icon name="chevron-down" size={16} color="#052D50" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.filterChip,
+            selectedStatuses.length > 0 && styles.filterChipActive,
+          ]}
+          onPress={() => setActiveFilter("status")}
+          activeOpacity={0.85}
+        >
+          <Text numberOfLines={1} style={styles.filterChipText}>
+            {statusChipLabel}
+          </Text>
+          <Icon name="chevron-down" size={16} color="#052D50" />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.timelineCard}>
@@ -505,6 +599,63 @@ export default function ScheduleScreen() {
         showAddButton={false}
       />
 
+      {/* Filter (projects / statuses) */}
+      <Modal
+        visible={activeFilter !== null}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setActiveFilter(null)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setActiveFilter(null)}
+        >
+          <View style={styles.modalSheet}>
+            <View style={styles.modalHeaderRow}>
+              <Text style={styles.modalTitle}>
+                {t(
+                  activeFilter === "project"
+                    ? "schedule.filterProjects"
+                    : "schedule.filterStatuses",
+                )}
+              </Text>
+              {filterSelected.length ? (
+                <TouchableOpacity onPress={() => setFilterSelected([])}>
+                  <Text style={styles.clearText}>{t("schedule.clear")}</Text>
+                </TouchableOpacity>
+              ) : null}
+            </View>
+            <FlatList
+              data={filterOptions}
+              keyExtractor={(option) => option.id}
+              renderItem={({ item: option }) => {
+                const checked = filterSelected.includes(option.id);
+                return (
+                  <TouchableOpacity
+                    style={styles.optionRow}
+                    onPress={() => toggleFilterValue(option.id)}
+                    activeOpacity={0.85}
+                  >
+                    <Text style={styles.optionName}>{option.name}</Text>
+                    <View
+                      style={[
+                        styles.checkbox,
+                        checked && styles.checkboxChecked,
+                      ]}
+                    >
+                      {checked ? (
+                        <Icon name="check" size={14} color="#FFFFFF" />
+                      ) : null}
+                    </View>
+                  </TouchableOpacity>
+                );
+              }}
+            />
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
       {/* Month picker */}
       <Modal
         visible={monthPickerOpen}
@@ -606,6 +757,34 @@ const styles = StyleSheet.create({
   segmentTextActive: {
     color: "#FFFFFF",
     fontFamily: "DMSans-SemiBold",
+  },
+  filterRow: {
+    flexDirection: "row",
+    gap: 8,
+    marginTop: 12,
+  },
+  filterChip: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 6,
+    height: 44,
+    paddingHorizontal: 16,
+    borderRadius: 22,
+    backgroundColor: "#ECECEC",
+    borderWidth: 1,
+    borderColor: "rgba(5, 45, 80, 0.12)",
+  },
+  filterChipActive: {
+    borderColor: "#0091FF",
+    backgroundColor: "rgba(0, 145, 255, 0.08)",
+  },
+  filterChipText: {
+    flex: 1,
+    color: "#052D50",
+    fontSize: 14,
+    fontFamily: "DMSans-Medium",
   },
   timelineCard: {
     flex: 1,
@@ -814,6 +993,29 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: "DMSans-SemiBold",
     marginBottom: 12,
+  },
+  modalHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  clearText: {
+    color: "#0091FF",
+    fontSize: 15,
+    fontFamily: "DMSans-Medium",
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    borderColor: "rgba(5, 45, 80, 0.3)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  checkboxChecked: {
+    backgroundColor: "#0091FF",
+    borderColor: "#0091FF",
   },
   optionRow: {
     flexDirection: "row",

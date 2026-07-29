@@ -566,6 +566,10 @@
     "selectEmployee": "Välj anställd",
     "selectProject": "Välj projekt",
     "selectMonth": "Välj månad",
+    "allStatuses": "Alla statusar",
+    "filterProjects": "Filtrera på projekt",
+    "filterStatuses": "Filtrera på status",
+    "clear": "Rensa",
     "noResources": "Inga data att planera än.",
     "noItems": "Inga poster för denna period."
   },
