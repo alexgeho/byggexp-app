@@ -33,25 +33,42 @@ const nextDeadline = (dateStrings) => {
   return upcoming.length ? formatDeadline(upcoming[0]) : null;
 };
 
+const truncate = (text, max = 16) => {
+  const value = String(text || "").trim();
+  return value.length > max ? `${value.slice(0, max - 1)}…` : value;
+};
+
 // Up to two task deadlines for the home tile, prioritising overdue:
 // two overdue if available, otherwise 1 overdue + 1 upcoming, otherwise
-// the two soonest upcoming. Each item is { label, overdue }.
-const buildTaskDeadlines = (dateStrings) => {
+// the two soonest upcoming. Each item is { label, overdue } where the
+// label is "<short task title> · <date>".
+const buildTaskDeadlines = (tasks) => {
   const today = startOfToday();
-  const times = dateStrings
-    .map((value) => new Date(value).getTime())
-    .filter((time) => Number.isFinite(time));
+  const dated = tasks
+    .map((task) => ({
+      title: task?.title || task?.name || "",
+      time: new Date(task?.dueDate).getTime(),
+    }))
+    .filter((item) => Number.isFinite(item.time));
 
-  const overdue = times.filter((time) => time < today).sort((a, b) => a - b);
-  const upcoming = times.filter((time) => time >= today).sort((a, b) => a - b);
+  const overdue = dated
+    .filter((item) => item.time < today)
+    .sort((a, b) => a.time - b.time);
+  const upcoming = dated
+    .filter((item) => item.time >= today)
+    .sort((a, b) => a.time - b.time);
 
-  const picks = overdue
-    .slice(0, 2)
-    .map((time) => ({ label: formatDeadline(time), overdue: true }));
+  const toItem = (item, overdueFlag) => ({
+    label: [truncate(item.title), formatDeadline(item.time)]
+      .filter(Boolean)
+      .join(" · "),
+    overdue: overdueFlag,
+  });
 
-  for (const time of upcoming) {
+  const picks = overdue.slice(0, 2).map((item) => toItem(item, true));
+  for (const item of upcoming) {
     if (picks.length >= 2) break;
-    picks.push({ label: formatDeadline(time), overdue: false });
+    picks.push(toItem(item, false));
   }
 
   return picks;
@@ -81,9 +98,7 @@ export function useTaskProjectBadges({ projectId } = {}) {
 
       setOpenTaskCount(openTasks.length);
       setTaskDeadlines(
-        buildTaskDeadlines(
-          openTasks.map((task) => task.dueDate).filter(Boolean),
-        ),
+        buildTaskDeadlines(openTasks.filter((task) => task.dueDate)),
       );
 
       const scopedProjects = (Array.isArray(projects) ? projects : []).filter(

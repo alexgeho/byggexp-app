@@ -15,7 +15,9 @@ export function HomeButtonExtraInfo({
 
   if (buttonId === "tasks" && taskDeadlines?.length) {
     return (
-      <View style={style}>
+      <View
+        style={[style, { flexDirection: "column", alignItems: "flex-start" }]}
+      >
         {taskDeadlines.map((deadline, index) => (
           <HomeButtonInfoBadge
             key={`${deadline.label}-${index}`}
