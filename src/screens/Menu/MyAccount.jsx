@@ -102,7 +102,8 @@ export const MyAccount = () => {
   const { theme } = useTheme();
   const { showSuccess } = useFeedback();
   const navigation = useNavigation();
-  const { user, userId, updateStoredUser } = useContext(AuthContext);
+  const { user, userId, updateStoredUser, logout } = useContext(AuthContext);
+  const [deletingAccount, setDeletingAccount] = useState(false);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -317,6 +318,39 @@ export const MyAccount = () => {
     } finally {
       setSaving(false);
     }
+  };
+
+  const performDeleteAccount = async () => {
+    try {
+      setDeletingAccount(true);
+      await userService.deleteAccount();
+      // Clears stored token/user and returns to the login screen.
+      await logout();
+    } catch (error) {
+      console.error("Failed to delete account:", error);
+      Alert.alert(
+        t("myAccount.deleteAccountErrorTitle"),
+        error?.response?.data?.message ||
+          t("myAccount.deleteAccountErrorMessage"),
+      );
+    } finally {
+      setDeletingAccount(false);
+    }
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      t("myAccount.deleteAccountTitle"),
+      t("myAccount.deleteAccountConfirm"),
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("myAccount.deleteAccountAction"),
+          style: "destructive",
+          onPress: performDeleteAccount,
+        },
+      ],
+    );
   };
 
   const handleUploadDocuments = async () => {
@@ -635,6 +669,29 @@ export const MyAccount = () => {
             {t("myAccount.docsCount", { count: documents.length })}
           </Text>
         </View>
+
+        <View style={styles.dangerZone}>
+          <TouchableOpacity
+            style={styles.deleteAccountButton}
+            onPress={handleDeleteAccount}
+            disabled={deletingAccount}
+            activeOpacity={0.85}
+          >
+            {deletingAccount ? (
+              <ActivityIndicator color="#D64545" />
+            ) : (
+              <>
+                <Icon name="trash-2" size={18} color="#D64545" />
+                <Text style={styles.deleteAccountText}>
+                  {t("myAccount.deleteAccountAction")}
+                </Text>
+              </>
+            )}
+          </TouchableOpacity>
+          <Text style={styles.deleteAccountHint}>
+            {t("myAccount.deleteAccountHint")}
+          </Text>
+        </View>
       </ScrollView>
 
       <BottomBar
@@ -855,5 +912,31 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 15,
     fontFamily: "DMSans-SemiBold",
+  },
+  dangerZone: {
+    marginTop: 28,
+    marginBottom: 8,
+  },
+  deleteAccountButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    height: 48,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#F0C4C4",
+    backgroundColor: "#FDECEC",
+  },
+  deleteAccountText: {
+    color: "#D64545",
+    fontSize: 15,
+    fontFamily: "DMSans-SemiBold",
+  },
+  deleteAccountHint: {
+    color: "#698196",
+    fontSize: 12,
+    textAlign: "center",
+    marginTop: 8,
   },
 });

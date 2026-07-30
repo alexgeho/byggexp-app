@@ -753,7 +753,13 @@
     "phone": "Telefon",
     "additionalDocs": "Ytterligare dokument",
     "noDocs": "Inga ytterligare dokument än.",
-    "docsCount": "{{count}}/4 dokument"
+    "docsCount": "{{count}}/4 dokument",
+    "deleteAccountAction": "Ta bort konto",
+    "deleteAccountTitle": "Ta bort konto",
+    "deleteAccountConfirm": "Detta raderar ditt konto permanent och tar bort dig från alla projekt. Det går inte att ångra.",
+    "deleteAccountHint": "Radera ditt konto och personuppgifter permanent.",
+    "deleteAccountErrorTitle": "Det gick inte att ta bort kontot",
+    "deleteAccountErrorMessage": "Något gick fel. Försök igen."
   },
   "employeeProfile": {
     "noPhone": "Inget telefonnummer",

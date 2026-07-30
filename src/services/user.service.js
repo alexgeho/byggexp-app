@@ -1,18 +1,17 @@
-import api from './api';
+import api from "./api";
 
-const getMultipartConfig = (payload) => (
-  typeof FormData !== 'undefined' && payload instanceof FormData
+const getMultipartConfig = (payload) =>
+  typeof FormData !== "undefined" && payload instanceof FormData
     ? {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       }
-    : undefined
-);
+    : undefined;
 
 export const userService = {
   getAll: async () => {
-    const { data } = await api.get('/users');
+    const { data } = await api.get("/users");
     return data;
   },
 
@@ -22,7 +21,7 @@ export const userService = {
   },
 
   getMyCompanyUsers: async () => {
-    const { data } = await api.get('/users/my-company');
+    const { data } = await api.get("/users/my-company");
     return data;
   },
 
@@ -42,7 +41,7 @@ export const userService = {
   },
 
   getByEmail: async (email) => {
-    const { data } = await api.get('/users/by-email', { params: { email } });
+    const { data } = await api.get("/users/by-email", { params: { email } });
     return data;
   },
 
@@ -72,12 +71,12 @@ export const userService = {
   },
 
   create: async (userData) => {
-    const { data } = await api.post('/users', userData);
+    const { data } = await api.post("/users", userData);
     return data;
   },
 
   getByIds: async (ids) => {
-    const { data } = await api.post('/users/by-ids', { ids });
+    const { data } = await api.post("/users/by-ids", { ids });
     return data;
   },
 
@@ -88,10 +87,10 @@ export const userService = {
 
   uploadAvatar: async (id, file) => {
     const formData = new FormData();
-    formData.append('avatar', {
+    formData.append("avatar", {
       uri: file.uri,
       name: file.name || `avatar-${Date.now()}.jpg`,
-      type: file.mimeType || file.type || 'image/jpeg',
+      type: file.mimeType || file.type || "image/jpeg",
     });
 
     const { data } = await api.post(
@@ -107,10 +106,10 @@ export const userService = {
     const formData = new FormData();
 
     files.forEach((file, index) => {
-      formData.append('documents', {
+      formData.append("documents", {
         uri: file.uri,
         name: file.name || `document-${index + 1}`,
-        type: file.mimeType || file.type || 'application/octet-stream',
+        type: file.mimeType || file.type || "application/octet-stream",
       });
     });
 
@@ -127,16 +126,21 @@ export const userService = {
     await api.delete(`/users/${id}`);
   },
 
+  // Delete (GDPR-erase) the currently authenticated user's own account.
+  deleteAccount: async () => {
+    await api.post("/gdpr/me/erase");
+  },
+
   getWorkers: async () => {
-    return await userService.getByRole('worker');
+    return await userService.getByRole("worker");
   },
 
   getProjectAdmins: async () => {
-    return await userService.getByRole('projectAdmin');
+    return await userService.getByRole("projectAdmin");
   },
 
   getCompanyAdmins: async () => {
-    return await userService.getByRole('companyAdmin');
+    return await userService.getByRole("companyAdmin");
   },
 };
 

@@ -753,7 +753,13 @@
     "phone": "Phone",
     "additionalDocs": "Additional documents",
     "noDocs": "No additional documents yet.",
-    "docsCount": "{{count}}/4 documents"
+    "docsCount": "{{count}}/4 documents",
+    "deleteAccountAction": "Delete account",
+    "deleteAccountTitle": "Delete account",
+    "deleteAccountConfirm": "This permanently deletes your account and removes you from all projects. This cannot be undone.",
+    "deleteAccountHint": "Permanently delete your account and personal data.",
+    "deleteAccountErrorTitle": "Unable to delete account",
+    "deleteAccountErrorMessage": "Something went wrong. Please try again."
   },
   "employeeProfile": {
     "noPhone": "No phone",
