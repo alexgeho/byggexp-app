@@ -27,7 +27,7 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.anonymous.totbygghubmobileapp",
-      "googleServicesFile": ""
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./scr/assets/favicon.png"
