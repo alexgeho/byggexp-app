@@ -523,7 +523,8 @@
     },
     "sections": {
       "shift-history": "Arbetspasshistorik",
-      "project-files": "Projektfiler"
+      "project-files": "Projektfiler",
+      "tasks-history": "Uppgifter"
     },
     "customizeTitle": "Anpassa startskärmen",
     "themes": "Teman"
@@ -940,5 +941,10 @@
     "lastName": "Efternamn",
     "personalNumber": "Personnummer",
     "privateNameRequired": "Ange förnamn och efternamn."
+  },
+  "tasksPreview": {
+    "noDate": "Inget datum",
+    "noTasks": "Inga öppna uppgifter",
+    "untitled": "Namnlös uppgift"
   }
 }

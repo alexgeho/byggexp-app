@@ -523,7 +523,8 @@
     },
     "sections": {
       "shift-history": "Shift history",
-      "project-files": "Project Files"
+      "project-files": "Project Files",
+      "tasks-history": "Tasks"
     },
     "customizeTitle": "Customize Home Screen",
     "themes": "Themes"
@@ -940,5 +941,10 @@
     "lastName": "Last name",
     "personalNumber": "Personal number",
     "privateNameRequired": "Enter first and last name."
+  },
+  "tasksPreview": {
+    "noDate": "No date",
+    "noTasks": "No open tasks",
+    "untitled": "Untitled task"
   }
 }

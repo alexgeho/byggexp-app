@@ -49,6 +49,7 @@ import {
   saveEnabledSections,
 } from "../../../utils/homeButtonsStorage";
 import ShiftHistoryPreview from "../../../components/common/ShiftHistoryPreview/ShiftHistoryPreview";
+import TasksPreview from "../../../components/common/TasksPreview/TasksPreview";
 import { isHomeButtonVisible } from "../../../utils/userRoles";
 
 export default function HomeVariant2() {
@@ -469,6 +470,14 @@ export default function HomeVariant2() {
                 colorMode={isLightBlueTheme ? "light" : "dark"}
                 refreshKey={previewRefreshKey}
                 onClose={() => handleHideSection("shift-history")}
+              />
+            )}
+
+            {enabledSections.includes("tasks-history") && (
+              <TasksPreview
+                colorMode={isLightBlueTheme ? "light" : "dark"}
+                refreshKey={previewRefreshKey}
+                onClose={() => handleHideSection("tasks-history")}
               />
             )}
 

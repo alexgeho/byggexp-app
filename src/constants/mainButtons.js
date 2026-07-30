@@ -50,6 +50,10 @@ export const homeSections = [
     title: "Shift history",
   },
   {
+    id: "tasks-history",
+    title: "Tasks",
+  },
+  {
     id: "project-files",
     title: "Project Files",
   },
@@ -67,5 +71,6 @@ export const defaultEnabledButtons = [
 
 export const defaultEnabledSections = [
   "shift-history",
+  "tasks-history",
   "project-files",
 ];
