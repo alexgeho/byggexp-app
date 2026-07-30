@@ -51,7 +51,6 @@ export default function CreateInvoiceScreen() {
   const [client, setClient] = useState(null);
   const [companyName, setCompanyName] = useState("");
   const [email, setEmail] = useState("");
-  const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState(
     addDaysIso(toIsoDate(new Date()), DEFAULT_TERMS_DAYS),
   );
@@ -91,7 +90,6 @@ export default function CreateInvoiceScreen() {
     postalCode: client?.postalCode || "",
     phone: client?.phone || "",
     email: email.trim(),
-    description: description.trim(), // stored via strict:false; PDF needs template support
     date: toIsoDate(new Date()),
     dueDate,
     reverseVAT: "false",
@@ -184,23 +182,6 @@ export default function CreateInvoiceScreen() {
             </Text>
             <Icon name="chevron-down" size={18} color="#687898" />
           </TouchableOpacity>
-        </View>
-
-        <View style={styles.field}>
-          <View style={styles.heroLabelRow}>
-            <Text style={styles.heroLabel}>
-              {t("billing.invoiceDescription")}
-            </Text>
-            <Text style={styles.heroMark}>{t("billing.mostImportant")}</Text>
-          </View>
-          <TextInput
-            style={[styles.input, styles.heroInput, styles.textarea]}
-            value={description}
-            onChangeText={setDescription}
-            placeholder={t("billing.invoiceDescriptionPlaceholder")}
-            placeholderTextColor="#9fb0c4"
-            multiline
-          />
         </View>
 
         <View style={styles.two}>

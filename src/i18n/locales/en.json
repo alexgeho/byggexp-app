@@ -911,8 +911,6 @@
     "missingCustomerTitle": "Customer missing",
     "missingCustomer": "Select or enter a customer first.",
     "newInvoiceTitle": "New invoice",
-    "invoiceDescription": "Description — what is invoiced",
-    "invoiceDescriptionPlaceholder": "Describe the work being invoiced…",
     "dueDate": "Due date",
     "invoiceRows": "Invoice rows",
     "rot": "ROT deduction",

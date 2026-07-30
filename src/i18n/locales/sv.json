@@ -911,8 +911,6 @@
     "missingCustomerTitle": "Kund saknas",
     "missingCustomer": "Välj eller ange en kund först.",
     "newInvoiceTitle": "Ny faktura",
-    "invoiceDescription": "Beskrivning — vad faktureras",
-    "invoiceDescriptionPlaceholder": "Beskriv arbetet som faktureras…",
     "dueDate": "Förfallodatum",
     "invoiceRows": "Fakturarader",
     "rot": "ROT-avdrag",
