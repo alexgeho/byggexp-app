@@ -30,11 +30,10 @@ export default function MainButtonsGrid() {
 
   const styles = createStyles(theme);
   const { unreadCount } = useUnreadChats();
-  const { openTaskCount, taskDeadline, projectDeadline } = useTaskProjectBadges(
-    {
+  const { openTaskCount, taskDeadlines, projectDeadline } =
+    useTaskProjectBadges({
       projectId: selectedProjectId,
-    },
-  );
+    });
   const showEmployeeStats = canViewEmployeeStatsForProject(
     user?.role,
     userId || user?._id || user?.id,
@@ -147,7 +146,7 @@ export default function MainButtonsGrid() {
                   showEmployeeStats={showEmployeeStats}
                   employeeStats={employeeStats}
                   shiftStats={shiftStats}
-                  taskDeadline={taskDeadline}
+                  taskDeadlines={taskDeadlines}
                   projectDeadline={projectDeadline}
                   style={styles.infoBadgesRow}
                 />

@@ -17,6 +17,10 @@ const BADGE_VARIANTS = {
     backgroundColor: "rgba(255, 149, 0, 0.2)",
     borderLeftColor: "#FF9500",
   },
+  overdue: {
+    backgroundColor: "rgba(252, 29, 44, 0.2)",
+    borderLeftColor: "#FC1D2C",
+  },
 };
 
 export function createStyles(variant) {

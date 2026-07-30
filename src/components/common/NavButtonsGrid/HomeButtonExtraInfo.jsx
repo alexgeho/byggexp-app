@@ -7,16 +7,22 @@ export function HomeButtonExtraInfo({
   buttonId,
   showEmployeeStats,
   employeeStats,
-  taskDeadline,
+  taskDeadlines,
   projectDeadline,
   style,
 }) {
   const { t } = useTranslation();
 
-  if (buttonId === "tasks" && taskDeadline) {
+  if (buttonId === "tasks" && taskDeadlines?.length) {
     return (
       <View style={style}>
-        <HomeButtonInfoBadge label={`📅 ${taskDeadline}`} variant="deadline" />
+        {taskDeadlines.map((deadline, index) => (
+          <HomeButtonInfoBadge
+            key={`${deadline.label}-${index}`}
+            label={deadline.label}
+            variant={deadline.overdue ? "overdue" : "deadline"}
+          />
+        ))}
       </View>
     );
   }
@@ -24,10 +30,7 @@ export function HomeButtonExtraInfo({
   if (buttonId === "projects" && projectDeadline) {
     return (
       <View style={style}>
-        <HomeButtonInfoBadge
-          label={`📅 ${projectDeadline}`}
-          variant="deadline"
-        />
+        <HomeButtonInfoBadge label={projectDeadline} variant="deadline" />
       </View>
     );
   }

@@ -33,13 +33,37 @@ const nextDeadline = (dateStrings) => {
   return upcoming.length ? formatDeadline(upcoming[0]) : null;
 };
 
+// Up to two task deadlines for the home tile, prioritising overdue:
+// two overdue if available, otherwise 1 overdue + 1 upcoming, otherwise
+// the two soonest upcoming. Each item is { label, overdue }.
+const buildTaskDeadlines = (dateStrings) => {
+  const today = startOfToday();
+  const times = dateStrings
+    .map((value) => new Date(value).getTime())
+    .filter((time) => Number.isFinite(time));
+
+  const overdue = times.filter((time) => time < today).sort((a, b) => a - b);
+  const upcoming = times.filter((time) => time >= today).sort((a, b) => a - b);
+
+  const picks = overdue
+    .slice(0, 2)
+    .map((time) => ({ label: formatDeadline(time), overdue: true }));
+
+  for (const time of upcoming) {
+    if (picks.length >= 2) break;
+    picks.push({ label: formatDeadline(time), overdue: false });
+  }
+
+  return picks;
+};
+
 /**
  * Home-tile badges for Tasks and Projects: open task count and the nearest
  * upcoming deadline. Scoped to a project when one is selected.
  */
 export function useTaskProjectBadges({ projectId } = {}) {
   const [openTaskCount, setOpenTaskCount] = useState(0);
-  const [taskDeadline, setTaskDeadline] = useState(null);
+  const [taskDeadlines, setTaskDeadlines] = useState([]);
   const [projectDeadline, setProjectDeadline] = useState(null);
 
   const load = useCallback(async () => {
@@ -56,8 +80,10 @@ export function useTaskProjectBadges({ projectId } = {}) {
       const openTasks = scopedTasks.filter(isOpenTask);
 
       setOpenTaskCount(openTasks.length);
-      setTaskDeadline(
-        nextDeadline(openTasks.map((task) => task.dueDate).filter(Boolean)),
+      setTaskDeadlines(
+        buildTaskDeadlines(
+          openTasks.map((task) => task.dueDate).filter(Boolean),
+        ),
       );
 
       const scopedProjects = (Array.isArray(projects) ? projects : []).filter(
@@ -71,7 +97,7 @@ export function useTaskProjectBadges({ projectId } = {}) {
     } catch (error) {
       console.error("Failed to load task/project badges:", error);
       setOpenTaskCount(0);
-      setTaskDeadline(null);
+      setTaskDeadlines([]);
       setProjectDeadline(null);
     }
   }, [projectId]);
@@ -82,7 +108,7 @@ export function useTaskProjectBadges({ projectId } = {}) {
     }, [load]),
   );
 
-  return { openTaskCount, taskDeadline, projectDeadline };
+  return { openTaskCount, taskDeadlines, projectDeadline };
 }
 
 export default useTaskProjectBadges;
