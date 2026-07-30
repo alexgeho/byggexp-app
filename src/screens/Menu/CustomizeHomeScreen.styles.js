@@ -96,6 +96,19 @@ export function createStyles(theme) {
       color: "#052D50",
     },
 
+    sectionRowActions: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+    },
+
+    reorderButton: {
+      width: 30,
+      height: 30,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+
     checkbox: {
       width: 24,
       height: 24,

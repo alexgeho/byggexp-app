@@ -3,25 +3,23 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   defaultEnabledButtons,
   defaultEnabledSections,
+  homeSections,
 } from "../constants/mainButtons";
 
 const STORAGE_KEY = "enabled-home-buttons";
 
+const SECTIONS_ORDER_KEY = "home-sections-order";
+
 const STORAGE_MIGRATIONS_KEY = "enabled-home-buttons-migrations";
 
-const ENABLED_BUTTON_MIGRATIONS = [
-  "tasks",
-];
+const ENABLED_BUTTON_MIGRATIONS = ["tasks"];
 
 const ENABLED_SECTIONS_KEY = "enabled-home-sections";
 
 const DISMISSED_SECTIONS_KEY = "dismissed-home-sections";
 
 export async function saveEnabledButtons(buttons) {
-  await AsyncStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify(buttons),
-  );
+  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(buttons));
 }
 
 export async function getEnabledButtons() {
@@ -61,19 +59,14 @@ export async function getEnabledButtons() {
   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(migratedButtons));
   await AsyncStorage.setItem(
     STORAGE_MIGRATIONS_KEY,
-    JSON.stringify([
-      ...appliedMigrations,
-      ...pendingButtonIds,
-    ]),
+    JSON.stringify([...appliedMigrations, ...pendingButtonIds]),
   );
 
   return migratedButtons;
 }
 
 export async function getEnabledSections() {
-  const savedSections = await AsyncStorage.getItem(
-    ENABLED_SECTIONS_KEY,
-  );
+  const savedSections = await AsyncStorage.getItem(ENABLED_SECTIONS_KEY);
 
   if (!savedSections) {
     return defaultEnabledSections;
@@ -83,16 +76,32 @@ export async function getEnabledSections() {
 }
 
 export async function saveEnabledSections(sections) {
-  await AsyncStorage.setItem(
-    ENABLED_SECTIONS_KEY,
-    JSON.stringify(sections),
-  );
+  await AsyncStorage.setItem(ENABLED_SECTIONS_KEY, JSON.stringify(sections));
+}
+
+// Full ordered list of home section ids (enabled or not). New sections
+// added to the app are appended so a saved order never hides them.
+export async function getSectionsOrder() {
+  const allIds = homeSections.map((section) => section.id);
+  const data = await AsyncStorage.getItem(SECTIONS_ORDER_KEY);
+
+  if (!data) {
+    return allIds;
+  }
+
+  const saved = JSON.parse(data);
+  const known = saved.filter((id) => allIds.includes(id));
+  const missing = allIds.filter((id) => !known.includes(id));
+
+  return [...known, ...missing];
+}
+
+export async function saveSectionsOrder(order) {
+  await AsyncStorage.setItem(SECTIONS_ORDER_KEY, JSON.stringify(order));
 }
 
 export async function getDismissedSections() {
-  const data = await AsyncStorage.getItem(
-    DISMISSED_SECTIONS_KEY,
-  );
+  const data = await AsyncStorage.getItem(DISMISSED_SECTIONS_KEY);
 
   if (!data) {
     return [];
@@ -102,8 +111,5 @@ export async function getDismissedSections() {
 }
 
 export async function saveDismissedSections(sections) {
-  await AsyncStorage.setItem(
-    DISMISSED_SECTIONS_KEY,
-    JSON.stringify(sections),
-  );
+  await AsyncStorage.setItem(DISMISSED_SECTIONS_KEY, JSON.stringify(sections));
 }

@@ -42,11 +42,13 @@ import {
   mainButtons,
   defaultEnabledButtons,
   defaultEnabledSections,
+  homeSections,
 } from "../../../constants/mainButtons";
 import {
   getEnabledButtons,
   getEnabledSections,
   saveEnabledSections,
+  getSectionsOrder,
 } from "../../../utils/homeButtonsStorage";
 import ShiftHistoryPreview from "../../../components/common/ShiftHistoryPreview/ShiftHistoryPreview";
 import TasksPreview from "../../../components/common/TasksPreview/TasksPreview";
@@ -90,6 +92,9 @@ export default function HomeVariant2() {
   const [enabledButtons, setEnabledButtons] = useState(defaultEnabledButtons);
   const [enabledSections, setEnabledSections] = useState(
     defaultEnabledSections,
+  );
+  const [sectionsOrder, setSectionsOrder] = useState(
+    homeSections.map((section) => section.id),
   );
   const [previewRefreshKey, setPreviewRefreshKey] = useState(0);
   const [scrollViewHeight, setScrollViewHeight] = useState(0);
@@ -237,10 +242,12 @@ export default function HomeVariant2() {
     React.useCallback(
       function loadHomeSettings() {
         async function fetchSettings() {
-          const [savedButtons, savedSections] = await Promise.all([
-            getEnabledButtons(),
-            getEnabledSections(),
-          ]);
+          const [savedButtons, savedSections, savedSectionsOrder] =
+            await Promise.all([
+              getEnabledButtons(),
+              getEnabledSections(),
+              getSectionsOrder(),
+            ]);
 
           if (savedButtons) {
             setEnabledButtons(savedButtons);
@@ -248,6 +255,10 @@ export default function HomeVariant2() {
 
           if (savedSections) {
             setEnabledSections(savedSections);
+          }
+
+          if (savedSectionsOrder) {
+            setSectionsOrder(savedSectionsOrder);
           }
 
           await Promise.all([
@@ -465,30 +476,49 @@ export default function HomeVariant2() {
               <MainButtonsGrid />
             </View>
 
-            {enabledSections.includes("shift-history") && (
-              <ShiftHistoryPreview
-                colorMode={isLightBlueTheme ? "light" : "dark"}
-                refreshKey={previewRefreshKey}
-                onClose={() => handleHideSection("shift-history")}
-              />
-            )}
+            {sectionsOrder.map(function renderSection(sectionId) {
+              if (!enabledSections.includes(sectionId)) {
+                return null;
+              }
 
-            {enabledSections.includes("tasks-history") && (
-              <TasksPreview
-                colorMode={isLightBlueTheme ? "light" : "dark"}
-                refreshKey={previewRefreshKey}
-                onClose={() => handleHideSection("tasks-history")}
-              />
-            )}
+              const colorMode = isLightBlueTheme ? "light" : "dark";
 
-            {enabledSections.includes("project-files") && (
-              <ProjectFilesSection
-                project={selectedProject}
-                colorMode={isLightBlueTheme ? "light" : "dark"}
-                refreshKey={previewRefreshKey}
-                onClose={() => handleHideSection("project-files")}
-              />
-            )}
+              if (sectionId === "shift-history") {
+                return (
+                  <ShiftHistoryPreview
+                    key={sectionId}
+                    colorMode={colorMode}
+                    refreshKey={previewRefreshKey}
+                    onClose={() => handleHideSection("shift-history")}
+                  />
+                );
+              }
+
+              if (sectionId === "tasks-history") {
+                return (
+                  <TasksPreview
+                    key={sectionId}
+                    colorMode={colorMode}
+                    refreshKey={previewRefreshKey}
+                    onClose={() => handleHideSection("tasks-history")}
+                  />
+                );
+              }
+
+              if (sectionId === "project-files") {
+                return (
+                  <ProjectFilesSection
+                    key={sectionId}
+                    project={selectedProject}
+                    colorMode={colorMode}
+                    refreshKey={previewRefreshKey}
+                    onClose={() => handleHideSection("project-files")}
+                  />
+                );
+              }
+
+              return null;
+            })}
           </View>
         </View>
       </ScrollView>
