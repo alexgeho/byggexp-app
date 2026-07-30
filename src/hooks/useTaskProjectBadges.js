@@ -46,7 +46,7 @@ const buildTaskDeadlines = (tasks) => {
   const today = startOfToday();
   const dated = tasks
     .map((task) => ({
-      title: task?.title || task?.name || "",
+      title: task?.taskTitle || task?.title || task?.name || "",
       time: new Date(task?.dueDate).getTime(),
     }))
     .filter((item) => Number.isFinite(item.time));
