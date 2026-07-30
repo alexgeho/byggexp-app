@@ -216,6 +216,7 @@
     "validationTitle": "Validation error",
     "validationSelectTarget": "Select a project or one user to create a task.",
     "titleRequired": "Task title is required.",
+    "datesRequired": "Select a start and end date, or turn on All day.",
     "created": "Task created",
     "createdMessage": "Task created successfully.",
     "createError": "Failed to create task.",
@@ -945,6 +946,7 @@
   "tasksPreview": {
     "noDate": "No date",
     "noTasks": "No open tasks",
-    "untitled": "Untitled task"
+    "untitled": "Untitled task",
+    "complete": "Mark as done"
   }
 }

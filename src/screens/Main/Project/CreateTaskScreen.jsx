@@ -458,6 +458,14 @@ export default function CreateTaskScreen() {
       return;
     }
 
+    if (!startDate || !dueDate) {
+      Alert.alert(
+        t("createTask.validationTitle"),
+        t("createTask.datesRequired"),
+      );
+      return;
+    }
+
     try {
       setSaving(true);
       const taskData = new FormData();

@@ -59,7 +59,7 @@ const buildTaskDeadlines = (tasks) => {
     .sort((a, b) => a.time - b.time);
 
   const toItem = (item, overdueFlag) => ({
-    label: [truncate(item.title), formatDeadline(item.time)]
+    label: [truncate(item.title, 10), formatDeadline(item.time)]
       .filter(Boolean)
       .join(" · "),
     overdue: overdueFlag,

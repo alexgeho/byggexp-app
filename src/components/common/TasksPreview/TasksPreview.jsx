@@ -2,6 +2,7 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -20,10 +21,35 @@ import { createStyles } from "../ShiftHistoryPreview/ShiftHistoryPreview.styles"
 
 const DONE_STATUSES = new Set(["done", "completed", "closed"]);
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+// Deadline urgency colors: overdue = red, due today/tomorrow = orange,
+// further out = blue.
+const URGENCY_COLORS = {
+  overdue: "#FF6B6B",
+  soon: "#FF9F43",
+  later: "#4D9BFF",
+};
+
 const startOfToday = () => {
   const date = new Date();
   date.setHours(0, 0, 0, 0);
   return date.getTime();
+};
+
+// Classify a due timestamp relative to the start of today.
+const getUrgency = (due, todayStart) => {
+  if (due == null) {
+    return null;
+  }
+  if (due < todayStart) {
+    return "overdue";
+  }
+  // Before the start of the day after tomorrow => due today or tomorrow.
+  if (due < todayStart + 2 * DAY_MS) {
+    return "soon";
+  }
+  return "later";
 };
 
 const formatDue = (value) => {
@@ -51,6 +77,7 @@ export function TasksPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
     colorMode === "light" ? `${theme.colors.text}80` : "rgba(255,255,255,0.72)";
   const [loading, setLoading] = useState(true);
   const [tasks, setTasks] = useState([]);
+  const [completingIds, setCompletingIds] = useState([]);
 
   const load = useCallback(async () => {
     try {
@@ -93,6 +120,28 @@ export function TasksPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
     void load();
   }, [load, refreshKey]);
 
+  // Tap the checkbox to complete a task right from the home screen. The row
+  // disappears immediately (completed tasks are hidden); reloads on failure.
+  const handleComplete = useCallback(
+    async (task) => {
+      const id = task._id || task.id;
+      if (!id || completingIds.includes(id)) {
+        return;
+      }
+      setCompletingIds((prev) => [...prev, id]);
+      setTasks((prev) => prev.filter((item) => (item._id || item.id) !== id));
+      try {
+        await taskService.complete(id);
+      } catch (error) {
+        console.error("Failed to complete task:", error);
+        await load();
+      } finally {
+        setCompletingIds((prev) => prev.filter((item) => item !== id));
+      }
+    },
+    [completingIds, load],
+  );
+
   const today = startOfToday();
 
   return (
@@ -117,7 +166,12 @@ export function TasksPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
         </View>
       </View>
 
-      <View style={styles.card}>
+      <View
+        style={[
+          styles.card,
+          !loading && tasks.length <= 1 && extraStyles.cardShort,
+        ]}
+      >
         {onClose ? (
           <TouchableOpacity
             style={styles.closeButton}
@@ -143,13 +197,14 @@ export function TasksPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
               const due = task.dueDate
                 ? new Date(task.dueDate).getTime()
                 : null;
-              const overdue = due != null && due < today;
+              const urgency = getUrgency(due, today);
+              const urgencyColor = urgency ? URGENCY_COLORS[urgency] : null;
 
               return (
                 <View
                   key={task._id || task.id || `${task.taskTitle}-${index}`}
                   style={[
-                    styles.item,
+                    extraStyles.item,
                     index !== tasks.length - 1 && styles.itemDivider,
                   ]}
                 >
@@ -159,23 +214,36 @@ export function TasksPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
                       : t("tasksPreview.noDate")}
                   </Text>
 
-                  <View style={styles.summaryRow}>
-                    <Text style={styles.projectText} numberOfLines={2}>
+                  <View style={extraStyles.titleRow}>
+                    <Text
+                      style={[styles.projectText, extraStyles.titleText]}
+                      numberOfLines={2}
+                    >
                       {task.taskTitle || t("tasksPreview.untitled")}
                     </Text>
 
-                    <View style={styles.summaryRightColumn}>
-                      <Text
-                        style={[
-                          styles.durationText,
-                          overdue && { color: "#FF9A9A" },
-                        ]}
-                      >
-                        {overdue
-                          ? t("task.status.overdue")
-                          : t("task.status.open")}
-                      </Text>
-                    </View>
+                    <Text
+                      style={[
+                        styles.durationText,
+                        urgencyColor && { color: urgencyColor },
+                      ]}
+                    >
+                      {urgency === "overdue"
+                        ? t("task.status.overdue")
+                        : t("task.status.open")}
+                    </Text>
+
+                    <TouchableOpacity
+                      style={[
+                        extraStyles.checkbox,
+                        { borderColor: urgencyColor || secondaryIconColor },
+                      ]}
+                      onPress={() => handleComplete(task)}
+                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                      activeOpacity={0.7}
+                      accessibilityRole="checkbox"
+                      accessibilityLabel={t("tasksPreview.complete")}
+                    />
                   </View>
                 </View>
               );
@@ -190,5 +258,32 @@ export function TasksPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
     </View>
   );
 }
+
+const extraStyles = StyleSheet.create({
+  // Shorter card when there is at most one task so it doesn't look empty.
+  cardShort: {
+    height: 104,
+  },
+  item: {
+    gap: 8,
+  },
+  // Title, status and checkbox share one row so the checkbox sits level
+  // with the task text.
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  titleText: {
+    flex: 1,
+  },
+  checkbox: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    borderWidth: 2.5,
+    backgroundColor: "#FFFFFF",
+  },
+});
 
 export default TasksPreview;

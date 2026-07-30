@@ -7,7 +7,9 @@ export default function HomeButtonInfoBadge({ label, variant }) {
 
   return (
     <View style={styles.badge}>
-      <Text style={styles.text}>{label}</Text>
+      <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">
+        {label}
+      </Text>
     </View>
   );
 }

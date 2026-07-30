@@ -216,6 +216,7 @@
     "validationTitle": "Valideringsfel",
     "validationSelectTarget": "Välj ett projekt eller en användare för att skapa en uppgift.",
     "titleRequired": "Uppgiftstitel krävs.",
+    "datesRequired": "Välj start- och slutdatum, eller aktivera Heldag.",
     "created": "Uppgift skapad",
     "createdMessage": "Uppgiften skapades.",
     "createError": "Det gick inte att skapa uppgiften.",
@@ -945,6 +946,7 @@
   "tasksPreview": {
     "noDate": "Inget datum",
     "noTasks": "Inga öppna uppgifter",
-    "untitled": "Namnlös uppgift"
+    "untitled": "Namnlös uppgift",
+    "complete": "Markera som klar"
   }
 }
