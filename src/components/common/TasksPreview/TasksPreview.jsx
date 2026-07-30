@@ -21,35 +21,13 @@ import { createStyles } from "../ShiftHistoryPreview/ShiftHistoryPreview.styles"
 
 const DONE_STATUSES = new Set(["done", "completed", "closed"]);
 
-const DAY_MS = 24 * 60 * 60 * 1000;
-
-// Deadline urgency colors: overdue = red, due today/tomorrow = orange,
-// further out = blue.
-const URGENCY_COLORS = {
-  overdue: "#FF6B6B",
-  soon: "#FF9F43",
-  later: "#4D9BFF",
-};
+// Overdue deadlines are highlighted in red (date text only).
+const OVERDUE_COLOR = "#FF6B6B";
 
 const startOfToday = () => {
   const date = new Date();
   date.setHours(0, 0, 0, 0);
   return date.getTime();
-};
-
-// Classify a due timestamp relative to the start of today.
-const getUrgency = (due, todayStart) => {
-  if (due == null) {
-    return null;
-  }
-  if (due < todayStart) {
-    return "overdue";
-  }
-  // Before the start of the day after tomorrow => due today or tomorrow.
-  if (due < todayStart + 2 * DAY_MS) {
-    return "soon";
-  }
-  return "later";
 };
 
 const formatDue = (value) => {
@@ -85,8 +63,12 @@ export function TasksPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
       const data = await taskService.getAll();
       const scoped = (Array.isArray(data) ? data : [])
         .filter(
+          // Tasks of the selected project plus the user's personal tasks
+          // (personal tasks have no projectId).
           (task) =>
-            !projectId || normalizeId(task.projectId) === String(projectId),
+            !projectId ||
+            !task.projectId ||
+            normalizeId(task.projectId) === String(projectId),
         )
         .filter(
           (task) => !DONE_STATUSES.has(String(task.status || "").toLowerCase()),
@@ -197,8 +179,7 @@ export function TasksPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
               const due = task.dueDate
                 ? new Date(task.dueDate).getTime()
                 : null;
-              const urgency = getUrgency(due, today);
-              const urgencyColor = urgency ? URGENCY_COLORS[urgency] : null;
+              const overdue = due != null && due < today;
 
               return (
                 <View
@@ -208,7 +189,12 @@ export function TasksPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
                     index !== tasks.length - 1 && styles.itemDivider,
                   ]}
                 >
-                  <Text style={styles.dateText}>
+                  <Text
+                    style={[
+                      styles.dateText,
+                      overdue && extraStyles.dateOverdue,
+                    ]}
+                  >
                     {task.dueDate
                       ? formatDue(task.dueDate)
                       : t("tasksPreview.noDate")}
@@ -222,21 +208,10 @@ export function TasksPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
                       {task.taskTitle || t("tasksPreview.untitled")}
                     </Text>
 
-                    <Text
-                      style={[
-                        styles.durationText,
-                        urgencyColor && { color: urgencyColor },
-                      ]}
-                    >
-                      {urgency === "overdue"
-                        ? t("task.status.overdue")
-                        : t("task.status.open")}
-                    </Text>
-
                     <TouchableOpacity
                       style={[
                         extraStyles.checkbox,
-                        { borderColor: urgencyColor || secondaryIconColor },
+                        { borderColor: secondaryIconColor },
                       ]}
                       onPress={() => handleComplete(task)}
                       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -262,10 +237,12 @@ export function TasksPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
 const extraStyles = StyleSheet.create({
   // Shorter card when there is at most one task so it doesn't look empty.
   cardShort: {
-    height: 104,
+    height: 120,
   },
   item: {
-    gap: 8,
+    // Extra gap so the title row + checkbox sit clearly below the date row
+    // and the checkbox never crowds the close (×) button.
+    gap: 14,
   },
   // Title, status and checkbox share one row so the checkbox sits level
   // with the task text.
@@ -276,6 +253,10 @@ const extraStyles = StyleSheet.create({
   },
   titleText: {
     flex: 1,
+  },
+  dateOverdue: {
+    color: OVERDUE_COLOR,
+    opacity: 1,
   },
   checkbox: {
     width: 28,

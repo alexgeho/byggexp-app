@@ -91,8 +91,12 @@ export function useTaskProjectBadges({ projectId } = {}) {
       ]);
 
       const scopedTasks = (Array.isArray(tasks) ? tasks : []).filter(
+        // Selected project plus personal tasks (personal tasks have no
+        // projectId) so the tile matches the Uppgifter section.
         (task) =>
-          !projectId || normalizeId(task.projectId) === String(projectId),
+          !projectId ||
+          !task.projectId ||
+          normalizeId(task.projectId) === String(projectId),
       );
       const openTasks = scopedTasks.filter(isOpenTask);
 

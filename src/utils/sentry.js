@@ -1,15 +1,17 @@
 import * as Sentry from "@sentry/react-native";
 
-// Crash/error reporting. Enabled only when a DSN is provided via env, so it
-// stays a no-op in local dev and won't break builds without configuration.
+// Crash/error reporting. Enabled only when a DSN is provided via env AND we
+// are not in development, so local/simulator dev errors don't spam Sentry
+// while the app is still being built. Re-enables automatically in
+// release builds.
 const DSN = process.env.EXPO_PUBLIC_SENTRY_DSN;
 
 let initialized = false;
 
-export const isSentryEnabled = Boolean(DSN);
+export const isSentryEnabled = Boolean(DSN) && !__DEV__;
 
 export const initSentry = () => {
-  if (initialized || !DSN) {
+  if (initialized || !isSentryEnabled) {
     return;
   }
 
@@ -25,7 +27,7 @@ export const initSentry = () => {
 
 // Report a handled error (e.g. from the ErrorBoundary). No-op without a DSN.
 export const captureException = (error, context) => {
-  if (!DSN) {
+  if (!isSentryEnabled) {
     return;
   }
 
