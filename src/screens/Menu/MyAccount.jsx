@@ -34,44 +34,6 @@ import { pickUploadAssets } from "../../utils/uploadPicker";
 import { userService } from "../../services";
 import { API_BASE_URL } from "../../config/env";
 
-const getLanguageInputValue = (language) => {
-  if (!language) {
-    return "";
-  }
-
-  if (typeof language === "string") {
-    return language;
-  }
-
-  if (typeof language === "object" && !Array.isArray(language)) {
-    const values = Object.values(language).filter(
-      (value) => typeof value === "string" && value.trim(),
-    );
-    return values[0] || "";
-  }
-
-  return "";
-};
-
-const buildLanguagePayload = (value, existingLanguage) => {
-  const trimmedValue = value.trim();
-
-  if (!trimmedValue) {
-    return {};
-  }
-
-  if (
-    existingLanguage &&
-    typeof existingLanguage === "object" &&
-    !Array.isArray(existingLanguage)
-  ) {
-    const firstKey = Object.keys(existingLanguage)[0] || "primary";
-    return { [firstKey]: trimmedValue };
-  }
-
-  return { primary: trimmedValue };
-};
-
 const parseOptionalNumber = (value) => {
   const normalized = String(value || "").replace(/\D/g, "");
   return normalized ? parseInt(normalized, 10) : undefined;
@@ -151,7 +113,6 @@ export const MyAccount = () => {
     email: "",
     phoneAreaCode: "",
     phoneNumber: "",
-    language: "",
   });
 
   const profileId = userId || user?._id || user?.id || null;
@@ -203,7 +164,6 @@ export const MyAccount = () => {
         ? String(userData.phoneAreaCode)
         : "",
       phoneNumber: userData?.phoneNumber ? String(userData.phoneNumber) : "",
-      language: getLanguageInputValue(userData?.language),
     });
   }, []);
 
@@ -323,7 +283,6 @@ export const MyAccount = () => {
       const payload = {
         name: trimmedName,
         profession: form.profession.trim(),
-        language: buildLanguagePayload(form.language, profile?.language),
       };
       const phoneAreaCode = parseOptionalNumber(form.phoneAreaCode);
       const phoneNumber = parseOptionalNumber(form.phoneNumber);
@@ -618,18 +577,6 @@ export const MyAccount = () => {
               keyboardType="phone-pad"
             />
           </View>
-        </View>
-
-        <View style={styles.inputContainer}>
-          <View style={styles.inputLabelRow}>
-            <Text style={styles.inputLabel}>{t("language.title")}</Text>
-          </View>
-          <TextInput
-            style={styles.textInput}
-            placeholder={t("myAccount.typePlaceholder")}
-            value={form.language}
-            onChangeText={(value) => handleChange("language", value)}
-          />
         </View>
 
         <View style={styles.documentsContainer}>
