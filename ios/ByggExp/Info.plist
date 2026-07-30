@@ -28,7 +28,7 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>byggexp</string>
-          <string>com.anonymous.totbygghubmobileapp</string>
+          <string>se.byggexp.app</string>
         </array>
       </dict>
     </array>

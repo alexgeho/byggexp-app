@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.totbygghubmobileapp",
+      "bundleIdentifier": "se.byggexp.app",
       "buildNumber": "10",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
@@ -26,7 +26,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.totbygghubmobileapp",
+      "package": "se.byggexp.app",
       "googleServicesFile": "./google-services.json"
     },
     "web": {

@@ -89,7 +89,7 @@ android {
 
     namespace 'com.anonymous.totbygghubmobileapp'
     defaultConfig {
-        applicationId 'com.anonymous.totbygghubmobileapp'
+        applicationId 'se.byggexp.app'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
