@@ -108,11 +108,15 @@ export function createStyles(theme) {
     },
     roleBadge: {
       backgroundColor: theme.colors.primary + "1A",
-      padding: 14,
+      paddingVertical: 8,
+      paddingHorizontal: 12,
       borderRadius: 89,
+      flexShrink: 0,
+      marginLeft: 8,
+      maxWidth: "46%",
     },
     roleText: {
-      fontSize: 16,
+      fontSize: 13,
       color: theme.colors.primary,
       fontWeight: "600",
     },

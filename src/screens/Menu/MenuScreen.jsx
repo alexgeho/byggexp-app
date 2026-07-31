@@ -307,6 +307,8 @@ export default function MenuScreen() {
                 styles.userName,
                 { fontFamily: theme.text.fontFamily["bold"] },
               ]}
+              numberOfLines={2}
+              ellipsizeMode="tail"
             >
               {user.name || t("menu.userFallback")}
             </Text>
@@ -314,7 +316,11 @@ export default function MenuScreen() {
 
           {/* BADGE */}
           <View style={styles.roleBadge}>
-            <Text style={styles.roleText}>
+            <Text
+              style={styles.roleText}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
               {user.role === "superadmin"
                 ? t("roles.superadmin")
                 : user.role === "companyAdmin"
