@@ -55,6 +55,10 @@ export function createStyles(theme) {
       height: 42,
       borderRadius: 999,
       overflow: "hidden",
+      // Outline the full circle so light/white theme halves stay visible
+      // against the screen background (were blending in and looking clipped).
+      borderWidth: 1,
+      borderColor: "#C2CCD6",
     },
 
     splitThemePreview: {
