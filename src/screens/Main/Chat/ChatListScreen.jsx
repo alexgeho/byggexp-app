@@ -354,7 +354,9 @@ const styles = StyleSheet.create({
   },
   chatBubble: {
     position: "absolute",
-    right: 16,
+    // Horizontally centered under the status badge (card padding 20 + roughly
+    // half the "At work" badge width).
+    right: 38,
     bottom: 16,
     width: 30,
     height: 30,
