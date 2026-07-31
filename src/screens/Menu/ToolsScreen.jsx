@@ -277,10 +277,11 @@ export default function ToolsScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#EEEEEE",
+    backgroundColor: "#F9FBFD",
   },
   pageContainer: {
     ...standardScreenContainer,
+    backgroundColor: "#F9FBFD",
     paddingBottom: 0,
   },
   header: {
@@ -293,13 +294,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scanButton: {
-    height: 40,
+    height: 44,
     minWidth: 72,
     paddingHorizontal: 14,
     borderRadius: 999,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#0785F4",
+    // Admin-style primary button glow for depth.
+    shadowColor: "#0089F6",
+    shadowOpacity: 0.28,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 4,
   },
   scanButtonText: {
     color: "#fff",

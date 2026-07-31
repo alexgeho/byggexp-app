@@ -4,12 +4,7 @@ import { LinearGradient } from "expo-linear-gradient";
 
 import { createStyles } from "./BackButton.styles";
 
-export function BackButton({
-  onPress,
-  iconSource,
-  style,
-  iconStyle,
-}) {
+export function BackButton({ onPress, iconSource, style, iconStyle }) {
   const styles = createStyles();
 
   return (
@@ -18,35 +13,33 @@ export function BackButton({
       activeOpacity={0.8}
       style={[styles.backButton, style]}
     >
-      <LinearGradient
-        colors={[
-          "rgba(255,255,255,0.78)",
-          "rgba(255,255,255,0.16)",
-        ]}
-        start={{ x: 0.1, y: 0 }}
-        end={{ x: 0.9, y: 1 }}
-        style={styles.baseGradient}
-      />
+      {/* Clipped glass layers (kept in an inner view so the button's own drop
+          shadow is not clipped by overflow:hidden). */}
+      <View style={styles.inner} pointerEvents="none">
+        <LinearGradient
+          colors={["rgba(255,255,255,0.78)", "rgba(255,255,255,0.16)"]}
+          start={{ x: 0.1, y: 0 }}
+          end={{ x: 0.9, y: 1 }}
+          style={styles.baseGradient}
+        />
 
-      <LinearGradient
-        colors={[
-          "rgba(255,255,255,0.92)",
-          "rgba(255,255,255,0.18)",
-          "rgba(255,255,255,0)",
-        ]}
-        start={{ x: 0.2, y: 0 }}
-        end={{ x: 0.8, y: 0.85 }}
-        style={styles.highlight}
-      />
+        <LinearGradient
+          colors={[
+            "rgba(255,255,255,0.92)",
+            "rgba(255,255,255,0.18)",
+            "rgba(255,255,255,0)",
+          ]}
+          start={{ x: 0.2, y: 0 }}
+          end={{ x: 0.8, y: 0.85 }}
+          style={styles.highlight}
+        />
 
-      <View style={styles.innerRing} pointerEvents="none" />
+        <View style={styles.innerRing} />
 
-      <View style={styles.hardLightGlow} />
+        <View style={styles.hardLightGlow} />
+      </View>
 
-      <Image
-        style={[styles.backIcon, iconStyle]}
-        source={iconSource}
-      />
+      <Image style={[styles.backIcon, iconStyle]} source={iconSource} />
     </TouchableOpacity>
   );
 }

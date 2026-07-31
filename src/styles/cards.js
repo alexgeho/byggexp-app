@@ -8,7 +8,14 @@ export const cardStyles = StyleSheet.create({
     borderRadius: 16,
     gap: 8,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.6)",
+    // Admin card look: visible light border + soft navy shadow so cards
+    // stand out from the light page background instead of blending in.
+    borderColor: "#E6EAF1",
+    shadowColor: "#0B2545",
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
   },
 
   cardSelected: {

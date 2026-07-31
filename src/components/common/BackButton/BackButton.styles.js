@@ -14,10 +14,25 @@ export function createStyles(theme) {
       borderRadius: 22,
 
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      // Admin card/button border — visible on light backgrounds where a plain
+      // white border used to disappear.
+      borderColor: "#E7ECF0",
 
       backgroundColor: "rgba(255,255,255,0.6)",
 
+      // Admin-style soft shadow (navy base, low opacity) for subtle depth.
+      shadowColor: "#0B2545",
+      shadowOpacity: 0.06,
+      shadowRadius: 6,
+      shadowOffset: { width: 0, height: 2 },
+      elevation: 2,
+    },
+
+    // Clips the glass gradients to the round shape without clipping the
+    // button's own drop shadow.
+    inner: {
+      ...StyleSheet.absoluteFillObject,
+      borderRadius: 22,
       overflow: "hidden",
     },
 
