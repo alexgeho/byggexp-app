@@ -1,6 +1,7 @@
 import React, {
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -93,6 +94,12 @@ export default function ScheduleScreen() {
   const [currentMonth, setCurrentMonth] = useState(() =>
     startOfMonth(new Date()),
   );
+  // Month shown in the header — follows the horizontal scroll position so it
+  // reflects the dates currently in view (not just the selected month).
+  const [visibleMonth, setVisibleMonth] = useState(() =>
+    startOfMonth(new Date()),
+  );
+  const [timelineViewportWidth, setTimelineViewportWidth] = useState(0);
   const [dayWidth, setDayWidth] = useState(BASE_DAY_WIDTH);
   const [bodyHeight, setBodyHeight] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -326,10 +333,21 @@ export default function ScheduleScreen() {
     : t("schedule.allStatuses");
 
   const onBodyHorizontalScroll = (event) => {
-    headerScrollRef.current?.scrollTo({
-      x: event.nativeEvent.contentOffset.x,
-      animated: false,
-    });
+    const x = event.nativeEvent.contentOffset.x;
+    headerScrollRef.current?.scrollTo({ x, animated: false });
+
+    // Switch the header month to the month at the centre of what's visible.
+    if (timelineViewportWidth > 0 && dayWidth > 0) {
+      const centerDayIndex = Math.floor(
+        (x + timelineViewportWidth / 2) / dayWidth,
+      );
+      const dateAtCenter = addDays(rangeStart, centerDayIndex);
+      setVisibleMonth((prev) =>
+        getMonthKey(prev) === getMonthKey(dateAtCenter)
+          ? prev
+          : startOfMonth(dateAtCenter),
+      );
+    }
   };
 
   const onBodyVerticalScroll = (event) => {
@@ -338,6 +356,14 @@ export default function ScheduleScreen() {
       animated: false,
     });
   };
+
+  // When the selected month changes (picker / arrows), reset the header label
+  // and jump the timeline back to the start of the range.
+  useEffect(() => {
+    setVisibleMonth(currentMonth);
+    bodyHScrollRef.current?.scrollTo({ x: 0, animated: false });
+    headerScrollRef.current?.scrollTo({ x: 0, animated: false });
+  }, [currentMonth]);
 
   const openItem = (item) => {
     if (item.type === "task") {
@@ -504,7 +530,7 @@ export default function ScheduleScreen() {
           activeOpacity={0.85}
         >
           <Text style={styles.monthLabel}>
-            {formatMonthLabel(currentMonth)}
+            {formatMonthLabel(visibleMonth)}
           </Text>
           <Icon name="chevron-down" size={18} color="#052D50" />
         </TouchableOpacity>
@@ -672,6 +698,9 @@ export default function ScheduleScreen() {
                 showsHorizontalScrollIndicator={false}
                 scrollEventThrottle={16}
                 onScroll={onBodyHorizontalScroll}
+                onLayout={(e) =>
+                  setTimelineViewportWidth(e.nativeEvent.layout.width)
+                }
               >
                 <ScrollView
                   ref={bodyVScrollRef}
