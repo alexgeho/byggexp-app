@@ -1,8 +1,8 @@
-import api from './api';
+import api from "./api";
 
 export const chatService = {
   getAll: async () => {
-    const { data } = await api.get('/chats');
+    const { data } = await api.get("/chats");
     return data;
   },
 
@@ -12,13 +12,19 @@ export const chatService = {
   },
 
   getOrCreateDirect: async (participantId) => {
-    const { data } = await api.post('/chats/direct', { participantId });
+    const { data } = await api.post("/chats/direct", { participantId });
     return data;
   },
 
   getOrCreateProjectGroup: async (projectId, title) => {
     const payload = title ? { projectId, title } : { projectId };
-    const { data } = await api.post('/chats/project-group', payload);
+    const { data } = await api.post("/chats/project-group", payload);
+    return data;
+  },
+
+  createGroup: async (memberIds, title) => {
+    const payload = title ? { memberIds, title } : { memberIds };
+    const { data } = await api.post("/chats/group", payload);
     return data;
   },
 
@@ -31,7 +37,7 @@ export const chatService = {
 
   getTranslationStatus: async () => {
     try {
-      const { data } = await api.get('/messages/translation/status');
+      const { data } = await api.get("/messages/translation/status");
       return Boolean(data?.enabled);
     } catch {
       return false;

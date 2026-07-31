@@ -6,6 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -20,7 +21,6 @@ import { chatService, projectService, userService } from "../../../services";
 import {
   standardScreenContainer,
   standardScreenHeader,
-  standardScreenHeaderPlaceholder,
 } from "../../../styles/screenLayout";
 import { cardStyles } from "../../../styles/cards";
 import { shouldShowAccountStatus, USER_ROLES } from "../../../utils/userRoles";
@@ -117,6 +117,8 @@ export default function ChatListScreen() {
   const [opening, setOpening] = useState(false);
   // Default to "All projects"; the dropdown narrows to a single project.
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
 
   const projectNameById = useMemo(
     () => buildProjectNameById(projects),
@@ -176,6 +178,13 @@ export default function ChatListScreen() {
       .sort((left, right) => getSortPriority(left) - getSortPriority(right));
   }, [colleagues, selectedProjectId, user?._id, user?.id]);
 
+  const openReturnedChat = (chat) => {
+    navigation.navigate(chat.type === "group" ? "GroupChat" : "SingleChat", {
+      chatId: chat._id,
+      initialChat: chat,
+    });
+  };
+
   const openChatWith = async (person) => {
     const id = getUserId(person);
     if (!id || opening) {
@@ -184,12 +193,54 @@ export default function ChatListScreen() {
     try {
       setOpening(true);
       const chat = await chatService.getOrCreateDirect(id);
-      navigation.navigate("SingleChat", {
-        chatId: chat._id,
-        initialChat: chat,
-      });
+      openReturnedChat(chat);
     } catch (error) {
       console.error("Failed to open chat:", error);
+      Alert.alert(t("common.error"), t("chat.loadError"));
+    } finally {
+      setOpening(false);
+    }
+  };
+
+  const toggleSelect = (id) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
+  };
+
+  const toggleSelectMode = () => {
+    setSelectMode((prev) => !prev);
+    setSelectedIds([]);
+  };
+
+  const openProjectGroup = async () => {
+    if (!selectedProjectId || opening) {
+      return;
+    }
+    try {
+      setOpening(true);
+      const chat = await chatService.getOrCreateProjectGroup(selectedProjectId);
+      openReturnedChat(chat);
+    } catch (error) {
+      console.error("Failed to open project group:", error);
+      Alert.alert(t("common.error"), t("chat.loadError"));
+    } finally {
+      setOpening(false);
+    }
+  };
+
+  const createGroup = async () => {
+    if (selectedIds.length === 0 || opening) {
+      return;
+    }
+    try {
+      setOpening(true);
+      const chat = await chatService.createGroup(selectedIds);
+      setSelectMode(false);
+      setSelectedIds([]);
+      openReturnedChat(chat);
+    } catch (error) {
+      console.error("Failed to create group:", error);
       Alert.alert(t("common.error"), t("chat.loadError"));
     } finally {
       setOpening(false);
@@ -213,7 +264,15 @@ export default function ChatListScreen() {
         >
           {t("chat.title")}
         </Text>
-        <View style={standardScreenHeaderPlaceholder} />
+        <TouchableOpacity
+          style={styles.headerButton}
+          onPress={toggleSelectMode}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.headerButtonText}>
+            {selectMode ? t("common.cancel") : t("chat.newGroup")}
+          </Text>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.searchContainer}>
@@ -223,6 +282,22 @@ export default function ChatListScreen() {
           onSelect={setSelectedProjectId}
         />
       </View>
+
+      {selectedProjectId && !selectMode ? (
+        <TouchableOpacity
+          style={styles.projectGroupButton}
+          onPress={openProjectGroup}
+          activeOpacity={0.85}
+        >
+          <Image
+            source={require("../../../assets/chatBubble.png")}
+            style={styles.projectGroupIcon}
+          />
+          <Text style={styles.projectGroupText}>
+            {t("chat.messageWholeProject")}
+          </Text>
+        </TouchableOpacity>
+      ) : null}
 
       {loading ? (
         <View style={styles.loadingContainer}>
@@ -269,7 +344,9 @@ export default function ChatListScreen() {
                   title={person.name || t("employees.unnamed")}
                   badgeLabel={badgeLabel}
                   badgeStyle={badgeStyle}
-                  onPress={() => openChatWith(person)}
+                  onPress={() =>
+                    selectMode ? toggleSelect(personId) : openChatWith(person)
+                  }
                 >
                   <Text
                     style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
@@ -287,19 +364,49 @@ export default function ChatListScreen() {
                     {projectLabel || t("employees.noProjectAssigned")}
                   </Text>
 
-                  {/* Chat affordance */}
-                  <View style={styles.chatBubble}>
-                    <Image
-                      source={require("../../../assets/chatBubble.png")}
-                      style={styles.chatBubbleIcon}
-                    />
-                  </View>
+                  {/* Chat affordance / selection checkbox */}
+                  {selectMode ? (
+                    <View
+                      style={[
+                        styles.selectCheckbox,
+                        selectedIds.includes(personId) &&
+                          styles.selectCheckboxOn,
+                      ]}
+                    >
+                      {selectedIds.includes(personId) ? (
+                        <Text style={styles.selectCheckmark}>✓</Text>
+                      ) : null}
+                    </View>
+                  ) : (
+                    <View style={styles.chatBubble}>
+                      <Image
+                        source={require("../../../assets/chatBubble.png")}
+                        style={styles.chatBubbleIcon}
+                      />
+                    </View>
+                  )}
                 </ListCard>
               );
             })
           )}
         </ScrollView>
       )}
+
+      {selectMode ? (
+        <TouchableOpacity
+          style={[
+            styles.createGroupButton,
+            selectedIds.length === 0 && styles.createGroupButtonDisabled,
+          ]}
+          onPress={createGroup}
+          disabled={selectedIds.length === 0 || opening}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.createGroupText}>
+            {t("chat.createGroupCount", { count: selectedIds.length })}
+          </Text>
+        </TouchableOpacity>
+      ) : null}
 
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
@@ -373,5 +480,82 @@ const styles = StyleSheet.create({
   chatBubbleIcon: {
     width: 16,
     height: 16,
+  },
+  headerButton: {
+    minWidth: 44,
+    height: 44,
+    alignItems: "flex-end",
+    justifyContent: "center",
+    paddingLeft: 8,
+  },
+  headerButtonText: {
+    color: "#2683f9",
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  projectGroupButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    backgroundColor: "#338600",
+    borderRadius: 14,
+    height: 46,
+    marginBottom: 12,
+  },
+  projectGroupIcon: {
+    width: 18,
+    height: 18,
+  },
+  projectGroupText: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  selectCheckbox: {
+    position: "absolute",
+    right: 16,
+    bottom: 16,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    borderWidth: 2,
+    borderColor: "#C2CCD6",
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  selectCheckboxOn: {
+    backgroundColor: "#338600",
+    borderColor: "#338600",
+  },
+  selectCheckmark: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  createGroupButton: {
+    position: "absolute",
+    left: 20,
+    right: 20,
+    bottom: 96,
+    height: 52,
+    borderRadius: 16,
+    backgroundColor: "#2683f9",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#0B2545",
+    shadowOpacity: 0.18,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
+  },
+  createGroupButtonDisabled: {
+    backgroundColor: "#9DB7D8",
+  },
+  createGroupText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "700",
   },
 });
