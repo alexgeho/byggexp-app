@@ -1,5 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { getDateLocale } from "../../../utils/dateLocale";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -7,234 +6,300 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../theme/ThemeContext";
+import AuthContext from "../../../contexts/AuthContext";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
-import { chatService } from "../../../services";
+import { ListCard } from "../../../components/common/ListCard/ListCard";
+import { ProjectFilterSelector } from "../../../components/common/ProjectFilterSelector/ProjectFilterSelector";
+import { chatService, projectService, userService } from "../../../services";
 import {
   standardScreenContainer,
   standardScreenHeader,
+  standardScreenHeaderPlaceholder,
 } from "../../../styles/screenLayout";
-import { resolveUploadUrl } from "../../../utils/shifts";
+import { cardStyles } from "../../../styles/cards";
+import { shouldShowAccountStatus, USER_ROLES } from "../../../utils/userRoles";
 
-const FILTERS = ["All", "Groups", "People", "Projects"];
+const getEntityId = (entity) => {
+  const id = entity?._id || entity?.id;
+  return id ? String(id) : "";
+};
 
-const formatChatTime = (value) => {
-  if (!value) return "";
+const getUserId = (person) => person?._id || person?.id;
 
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "";
-
-  return date.toLocaleDateString(getDateLocale(), {
-    month: "2-digit",
-    day: "2-digit",
+const buildProjectNameById = (projects) => {
+  const map = new Map();
+  projects.forEach((project) => {
+    const id = getEntityId(project);
+    if (id && project?.name) {
+      map.set(id, project.name);
+    }
   });
+  return map;
+};
+
+const getPersonProjectIds = (person, projects) => {
+  const ids = new Set();
+  const personId = getEntityId(person);
+
+  if (Array.isArray(person?.projectIds)) {
+    person.projectIds.forEach((projectId) => {
+      const normalizedId = getEntityId({ id: projectId });
+      if (normalizedId) {
+        ids.add(normalizedId);
+      }
+    });
+  }
+
+  projects.forEach((project) => {
+    if (!Array.isArray(project?.workers)) {
+      return;
+    }
+    const isAssigned = project.workers.some((worker) => {
+      const workerId =
+        typeof worker === "string" ? worker : worker?._id || worker?.id;
+      return getEntityId({ id: workerId }) === personId;
+    });
+    if (isAssigned) {
+      const projectId = getEntityId(project);
+      if (projectId) {
+        ids.add(projectId);
+      }
+    }
+  });
+
+  return [...ids];
+};
+
+const MAX_PROJECT_NAME_LENGTH = 35;
+
+const truncateProjectName = (name) => {
+  if (!name || name.length <= MAX_PROJECT_NAME_LENGTH) {
+    return name;
+  }
+  return `${name.slice(0, MAX_PROJECT_NAME_LENGTH - 3)}...`;
+};
+
+const isPersonAtWork = (person, selectedProjectId) => {
+  if (person?.workStatus !== "working") {
+    return false;
+  }
+  if (!selectedProjectId) {
+    return true;
+  }
+  return getEntityId({ id: person?.workStatusProjectId }) === selectedProjectId;
+};
+
+const getPersonProjectLabel = (person, projectNameById, projects) => {
+  const projectNames = getPersonProjectIds(person, projects)
+    .map((projectId) => truncateProjectName(projectNameById.get(projectId)))
+    .filter(Boolean);
+  if (projectNames.length === 0) {
+    return null;
+  }
+  return projectNames.join(", ");
 };
 
 export default function ChatListScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
-  const [activeFilter, setActiveFilter] = useState("All");
-  const [chats, setChats] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const { theme } = useTheme();
+  const { user, selectedProject } = useContext(AuthContext);
 
-  const loadChats = useCallback(async () => {
+  const [colleagues, setColleagues] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [opening, setOpening] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState(
+    () => selectedProject?._id || selectedProject?.id || null,
+  );
+
+  const projectNameById = useMemo(
+    () => buildProjectNameById(projects),
+    [projects],
+  );
+
+  const loadColleagues = useCallback(async () => {
     try {
       setLoading(true);
-      setError("");
-      const data = await chatService.getAll();
-      setChats(Array.isArray(data) ? data : []);
+      const [peopleData, projectsData] = await Promise.all([
+        (selectedProjectId
+          ? userService.getByProject(selectedProjectId)
+          : userService.getMyCompanyUsers()
+        ).catch(() => []),
+        (user?.role === "superadmin"
+          ? projectService.getAll()
+          : projectService.getMyProjects()
+        ).catch(() => []),
+      ]);
+      setColleagues(Array.isArray(peopleData) ? peopleData : []);
+      setProjects(Array.isArray(projectsData) ? projectsData : []);
     } catch (loadError) {
-      console.error("Failed to load chats:", loadError);
-      setError(t("chat.loadError"));
+      console.error("Failed to load colleagues:", loadError);
+      setColleagues([]);
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, [selectedProjectId, user?.role]);
 
   useFocusEffect(
     useCallback(() => {
-      loadChats();
-    }, [loadChats]),
+      loadColleagues();
+    }, [loadColleagues]),
   );
 
-  const filteredChats = useMemo(() => {
-    if (activeFilter === "Groups") {
-      return chats.filter((chat) => chat.type === "group");
+  const visibleColleagues = useMemo(() => {
+    const currentUserId = getEntityId({ id: user?._id || user?.id });
+    const getSortPriority = (person) => {
+      if (shouldShowAccountStatus(person?.accountStatus)) {
+        return 2;
+      }
+      return isPersonAtWork(person, selectedProjectId) ? 0 : 1;
+    };
+
+    // Don't list company/superadmin accounts or the current user.
+    const nonStaffRoles = [USER_ROLES.COMPANY_ADMIN, USER_ROLES.SUPERADMIN];
+
+    return [...colleagues]
+      .filter((person) => !nonStaffRoles.includes(person?.role))
+      .filter((person) => getEntityId(person) !== currentUserId)
+      .sort((left, right) => getSortPriority(left) - getSortPriority(right));
+  }, [colleagues, selectedProjectId, user?._id, user?.id]);
+
+  const openChatWith = async (person) => {
+    const id = getUserId(person);
+    if (!id || opening) {
+      return;
     }
-
-    if (activeFilter === "People") {
-      return chats.filter((chat) => chat.type === "direct");
+    try {
+      setOpening(true);
+      const chat = await chatService.getOrCreateDirect(id);
+      navigation.navigate("SingleChat", {
+        chatId: chat._id,
+        initialChat: chat,
+      });
+    } catch (error) {
+      console.error("Failed to open chat:", error);
+      Alert.alert(t("common.error"), t("chat.loadError"));
+    } finally {
+      setOpening(false);
     }
-
-    if (activeFilter === "Projects") {
-      return chats.filter((chat) => chat.project?._id);
-    }
-
-    return chats;
-  }, [activeFilter, chats]);
-
-  const openChat = (chat) => {
-    navigation.navigate(chat.type === "group" ? "GroupChat" : "SingleChat", {
-      chatId: chat._id,
-      initialChat: chat,
-    });
   };
 
-  const handleAddChat = () => {
-    Alert.alert(t("chat.newChatTitle"), t("chat.newChatMessage"), [
-      { text: t("common.cancel"), style: "cancel" },
-      {
-        text: t("chat.openProjects"),
-        onPress: () => navigation.navigate("Projects"),
-      },
-    ]);
-  };
+  const themedAccentTextStyle = { color: theme.colors.primary };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <BackButton
-          backgroundColor={"rgba(255, 255, 255, 0.6)"}
-          tint={"light"}
-          borderColor="#FFFFFF50"
           onPress={() => navigation.goBack()}
           iconSource={require("../../../assets/Arrow-left.png")}
         />
         <Text
           style={[
             styles.headerTitle,
-            { fontFamily: theme.text.fontFamily["semiBold"] },
+            { fontFamily: theme.text.fontFamily.medium },
           ]}
         >
           {t("chat.title")}
         </Text>
-        <BackButton
-          backgroundColor={"rgba(255, 255, 255, 0.6)"}
-          tint={"light"}
-          borderColor="#FFFFFF50"
-          onPress={loadChats}
-          iconSource={require("../../../assets/Search.png")}
+        <View style={standardScreenHeaderPlaceholder} />
+      </View>
+
+      <View style={styles.searchContainer}>
+        <ProjectFilterSelector
+          projects={projects}
+          selectedProjectId={selectedProjectId}
+          onSelect={setSelectedProjectId}
         />
       </View>
-      <View style={styles.chatHeader}>
-        <View style={styles.filterRow}>
-          {FILTERS.map((filter) => (
-            <TouchableOpacity
-              key={filter}
-              style={[
-                styles.filterButton,
-                activeFilter === filter && styles.activeFilterButton,
-              ]}
-              onPress={() => setActiveFilter(filter)}
-            >
-              <Text
-                style={
-                  activeFilter === filter
-                    ? styles.activeFilterText
-                    : styles.filterText
-                }
-              >
-                {t(`chat.filters.${filter.toLowerCase()}`, filter)}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-      {!loading && !error && filteredChats.length === 0 ? (
-        <View style={styles.emptyStateCard}>
-          <Text style={styles.stateTitle}>{t("chat.emptyTitle")}</Text>
-          <Text style={styles.stateText}>{t("chat.emptyText")}</Text>
-        </View>
-      ) : null}
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        style={styles.scrollContainer}
-        keyboardShouldPersistTaps="handled"
-      >
-        {loading ? (
-          <View style={styles.stateCard}>
-            <ActivityIndicator size="large" color="#0785F4" />
-            <Text style={styles.stateText}>{t("chat.loading")}</Text>
-          </View>
-        ) : null}
 
-        {!loading && error ? (
-          <View style={styles.stateCard}>
-            <Text style={styles.stateTitle}>{t("chat.loadErrorTitle")}</Text>
-            <Text style={styles.stateText}>{error}</Text>
-          </View>
-        ) : null}
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
+      ) : (
+        <ScrollView
+          style={styles.scrollContainer}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {visibleColleagues.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyTitle}>{t("chat.emptyTitle")}</Text>
+              <Text style={styles.emptySubtitle}>{t("chat.emptyText")}</Text>
+            </View>
+          ) : (
+            visibleColleagues.map((person) => {
+              const personId = getUserId(person);
+              const projectLabel = getPersonProjectLabel(
+                person,
+                projectNameById,
+                projects,
+              );
+              const showAccountStatus = shouldShowAccountStatus(
+                person.accountStatus,
+              );
+              const atWork = isPersonAtWork(person, selectedProjectId);
 
-        {!loading &&
-          !error &&
-          filteredChats.map((chat) => (
-            <TouchableOpacity
-              key={chat._id}
-              onPress={() => openChat(chat)}
-              style={styles.chatItem}
-            >
-              <Image
-                style={styles.chatImage}
-                source={
-                  chat.participant?.avatarUrl
-                    ? { uri: resolveUploadUrl(chat.participant.avatarUrl) }
-                    : require("../../../assets/chatImage.jpg")
-                }
-              />
-              <View style={styles.chatInfo}>
-                <View style={styles.chatInfoHeader}>
-                  <Text
-                    numberOfLines={1}
-                    style={[
-                      styles.projectName,
-                      chat.unreadCount > 0 && styles.unreadText,
-                      { fontFamily: theme.text.fontFamily["bold"] },
-                    ]}
-                  >
-                    {chat.title}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.statusBadge,
-                      chat.unreadCount > 0 && styles.unreadText,
-                    ]}
-                  >
-                    {formatChatTime(chat.lastMessageAt)}
-                  </Text>
-                </View>
-                <Text numberOfLines={1} style={styles.dateText}>
-                  {chat.type === "group"
-                    ? chat.project?.name ||
-                      t("chat.memberCount", { count: chat.memberCount || 0 })
-                    : chat.participant?.profession ||
-                      chat.participant?.email ||
-                      t("chat.directChat")}
-                </Text>
-                <Text
-                  numberOfLines={2}
-                  style={[
-                    styles.locationText,
-                    chat.unreadCount > 0 && styles.unreadText,
-                  ]}
+              const badgeLabel = showAccountStatus
+                ? t("employees.waitingApproval")
+                : atWork
+                  ? t("employees.atWork")
+                  : t("employees.notAtWork");
+              const badgeStyle = showAccountStatus
+                ? cardStyles.cardBadgeWarning
+                : atWork
+                  ? cardStyles.cardBadgeAtWork
+                  : cardStyles.cardBadgeAbsent;
+
+              return (
+                <ListCard
+                  key={personId}
+                  title={person.name || t("employees.unnamed")}
+                  badgeLabel={badgeLabel}
+                  badgeStyle={badgeStyle}
+                  onPress={() => openChatWith(person)}
                 >
-                  {chat.lastMessageText || t("chat.noMessages")}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          ))}
-      </ScrollView>
+                  <Text
+                    style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {person.profession || t("employees.noProfession")}
+                  </Text>
+
+                  <Text
+                    style={cardStyles.cardSecondaryText}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {projectLabel || t("employees.noProjectAssigned")}
+                  </Text>
+
+                  {/* Chat affordance */}
+                  <View style={styles.chatBubble}>
+                    <Image
+                      source={require("../../../assets/chatBubble.png")}
+                      style={styles.chatBubbleIcon}
+                    />
+                  </View>
+                </ListCard>
+              );
+            })
+          )}
+        </ScrollView>
+      )}
+
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
-        onAddPress={handleAddChat}
+        showAddButton={false}
       />
     </View>
   );
@@ -243,8 +308,7 @@ export default function ChatListScreen() {
 const styles = StyleSheet.create({
   container: {
     ...standardScreenContainer,
-    justifyContent: "space-between",
-    alignItems: "center",
+    backgroundColor: "#F9FBFD",
   },
   header: {
     ...standardScreenHeader,
@@ -253,132 +317,54 @@ const styles = StyleSheet.create({
     color: "#052D50",
     fontSize: 17,
     textAlign: "center",
+    flex: 1,
   },
-  placeholder: {
-    width: 44,
-    height: 44,
-  },
-  backButton: {
-    padding: 16,
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 9999,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  backIcon: {
-    width: 20,
-    height: 20,
-  },
-  chatHeader: {
+  searchContainer: {
     width: "100%",
-    gap: 12,
-    paddingBottom: 12,
-    paddingTop: 8,
+    marginBottom: 12,
   },
-  filterRow: {
-    width: "100%",
-    flexDirection: "row",
-    gap: 8,
-  },
-  filterButton: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 20,
-    padding: 4,
-    paddingRight: 12,
-    paddingLeft: 12,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  activeFilterButton: {
-    backgroundColor: "#0785F4",
-  },
-  filterText: {
-    color: "#052D50",
-  },
-  activeFilterText: {
-    color: "#ffffff",
+  loadingContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
   scrollContainer: {
     flex: 1,
     width: "100%",
   },
-  scrollContent: {
-    width: "100%",
+  listContent: {
+    paddingBottom: 140,
     gap: 12,
-    paddingBottom: 96,
   },
-  stateCard: {
-    width: "100%",
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 24,
-    padding: 20,
+  emptyState: {
+    paddingVertical: 48,
+    paddingHorizontal: 24,
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
   },
-  emptyStateCard: {
-    width: "100%",
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 24,
-    padding: 20,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-    marginBottom: 12,
-  },
-  stateTitle: {
-    color: "#052D50",
+  emptyTitle: {
     fontSize: 18,
-    marginBottom: 6,
+    fontWeight: "600",
+    color: "#052D50",
+    marginBottom: 8,
   },
-  stateText: {
-    color: "#698196",
+  emptySubtitle: {
+    fontSize: 14,
+    color: "rgba(5, 45, 80, 0.55)",
     textAlign: "center",
-    marginTop: 8,
   },
-  chatItem: {
-    width: "100%",
-    flexDirection: "row",
+  chatBubble: {
+    position: "absolute",
+    right: 16,
+    bottom: 16,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: "#338600",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    padding: 8,
-    borderRadius: 9999,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
+    justifyContent: "center",
   },
-  chatImage: {
-    width: 72,
-    height: 72,
-    borderRadius: 9999,
-  },
-  chatInfo: {
-    flex: 1,
-    justifyContent: "space-between",
-    paddingRight: 12,
-    paddingLeft: 12,
-  },
-  chatInfoHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    flex: 1,
-  },
-  projectName: {
-    color: "#052D50",
-  },
-  statusBadge: {
-    color: "#698196",
-    fontSize: 12,
-  },
-  dateText: {
-    color: "#698196",
-    marginTop: 2,
-  },
-  locationText: {
-    color: "#052D50",
-    marginTop: 4,
-  },
-  unreadText: {
-    fontFamily: "DMSans-Bold",
+  chatBubbleIcon: {
+    width: 16,
+    height: 16,
   },
 });

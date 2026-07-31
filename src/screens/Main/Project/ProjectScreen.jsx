@@ -559,38 +559,23 @@ export const ProjectScreen = () => {
         {modal === "Workers" &&
           (workers.length > 0 ? (
             workers.map((worker) => (
-              <TouchableOpacity
+              <ListCard
                 key={worker._id || worker.id}
-                style={styles.workerItem}
+                title={worker.name || t("project.unnamedWorker")}
                 onPress={() =>
                   navigation.navigate("Employee", {
                     employeeId: worker._id || worker.id,
                   })
                 }
               >
-                <Image
-                  style={styles.workerAvatar}
-                  source={
-                    worker.avatarUrl
-                      ? { uri: resolveUploadUrl(worker.avatarUrl) }
-                      : require("../../../assets/TasksAva.png")
-                  }
-                />
-                <View style={styles.workerInfo}>
-                  <Text style={styles.workerName}>
-                    {worker.name || t("project.unnamedWorker")}
-                  </Text>
-                  <Text style={styles.workerSubtitle}>
-                    {worker.profession ||
-                      worker.email ||
-                      t("project.workerRole")}
-                  </Text>
-                </View>
-                <Image
-                  style={styles.arrowIcon}
-                  source={require("../../../assets/Arrow-right.png")}
-                />
-              </TouchableOpacity>
+                <Text
+                  style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {worker.profession || worker.email || t("project.workerRole")}
+                </Text>
+              </ListCard>
             ))
           ) : (
             <View style={styles.emptyState}>
@@ -787,13 +772,19 @@ const styles = StyleSheet.create({
   },
   workerItem: {
     width: "100%",
-    padding: 8,
-    borderRadius: 999,
+    padding: 10,
+    borderRadius: 16,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: "#FFFFFF",
+    // Same admin card look as the Employees / Chat lists.
+    borderColor: "#E6EAF1",
+    shadowColor: "#0B2545",
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
     gap: 16,
     marginBottom: 12,
   },
