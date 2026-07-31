@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Font from "expo-font";
@@ -75,6 +76,7 @@ export default function App() {
         <ThemeProvider>
           <AuthProvider>
             <SafeAreaProvider>
+              <StatusBar style="dark" />
               <FeedbackProvider>
                 <NotificationBootstrap />
                 <ShiftLocationMonitor />

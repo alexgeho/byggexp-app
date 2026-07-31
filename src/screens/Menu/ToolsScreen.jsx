@@ -64,14 +64,15 @@ export default function ToolsScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const { user, selectedProject } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   const [tools, setTools] = useState([]);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedProjectId, setSelectedProjectId] = useState(
-    () => selectedProject?._id || selectedProject?.id || null,
-  );
+  // Default to "All projects" so every tool is visible (incl. newly created
+  // Storage tools with no project). Matches the admin panel; the filter UI
+  // still lets the user narrow to a single project.
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
 
   const loadTools = useCallback(async () => {
     try {

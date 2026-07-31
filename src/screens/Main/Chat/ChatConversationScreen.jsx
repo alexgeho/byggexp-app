@@ -246,10 +246,10 @@ export default function ChatConversationScreen({ variant }) {
                         {showingOriginal
                           ? t("chat.showTranslation")
                           : message.sourceLang
-                          ? t("chat.translatedFromShowOriginal", {
-                              lang: message.sourceLang,
-                            })
-                          : t("chat.translatedShowOriginal")}
+                            ? t("chat.translatedFromShowOriginal", {
+                                lang: message.sourceLang,
+                              })
+                            : t("chat.translatedShowOriginal")}
                       </Text>
                     </TouchableOpacity>
                   ) : null}
@@ -294,6 +294,7 @@ export default function ChatConversationScreen({ variant }) {
             value={messageText}
             style={styles.textInput}
             placeholder={t("chat.messagePlaceholder")}
+            placeholderTextColor="#8895A7"
             multiline
           />
           {messageText ? (
@@ -512,7 +513,9 @@ const styles = StyleSheet.create({
     minHeight: 48,
     flex: 1,
     borderRadius: 9999,
-    backgroundColor: "#EEEEEE",
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#DCE3EA",
     flexDirection: "row",
     alignItems: "center",
     padding: 12,
