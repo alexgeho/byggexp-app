@@ -109,15 +109,14 @@ export default function ChatListScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const { user, selectedProject } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   const [colleagues, setColleagues] = useState([]);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [opening, setOpening] = useState(false);
-  const [selectedProjectId, setSelectedProjectId] = useState(
-    () => selectedProject?._id || selectedProject?.id || null,
-  );
+  // Default to "All projects"; the dropdown narrows to a single project.
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
 
   const projectNameById = useMemo(
     () => buildProjectNameById(projects),
@@ -128,10 +127,7 @@ export default function ChatListScreen() {
     try {
       setLoading(true);
       const [peopleData, projectsData] = await Promise.all([
-        (selectedProjectId
-          ? userService.getByProject(selectedProjectId)
-          : userService.getMyCompanyUsers()
-        ).catch(() => []),
+        userService.getColleagues().catch(() => []),
         (user?.role === "superadmin"
           ? projectService.getAll()
           : projectService.getMyProjects()
@@ -145,7 +141,7 @@ export default function ChatListScreen() {
     } finally {
       setLoading(false);
     }
-  }, [selectedProjectId, user?.role]);
+  }, [user?.role]);
 
   useFocusEffect(
     useCallback(() => {
@@ -168,6 +164,15 @@ export default function ChatListScreen() {
     return [...colleagues]
       .filter((person) => !nonStaffRoles.includes(person?.role))
       .filter((person) => getEntityId(person) !== currentUserId)
+      .filter((person) => {
+        if (!selectedProjectId) {
+          return true;
+        }
+        const ids = Array.isArray(person?.projectIds)
+          ? person.projectIds.map((projectId) => getEntityId({ id: projectId }))
+          : [];
+        return ids.includes(String(selectedProjectId));
+      })
       .sort((left, right) => getSortPriority(left) - getSortPriority(right));
   }, [colleagues, selectedProjectId, user?._id, user?.id]);
 

@@ -25,6 +25,13 @@ export const userService = {
     return data;
   },
 
+  // Colleagues the current user can chat with (all roles; workers get
+  // co-project members, admins get the whole company).
+  getColleagues: async () => {
+    const { data } = await api.get("/users/colleagues");
+    return data;
+  },
+
   getByProject: async (projectId) => {
     const { data } = await api.get(`/users/project/${projectId}`);
     return data;
