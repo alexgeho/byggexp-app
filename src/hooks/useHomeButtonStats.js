@@ -80,8 +80,12 @@ function mergeProjectWorkers(employeesFromApi = [], populatedWorkers = []) {
     );
   });
 
-  return [...byId.values()].filter(function isWorker(user) {
-    return user?.role === "worker";
+  // Count the same staff the Employees screen shows: everyone assigned to the
+  // project except company admins and superadmins (so project admins / leads
+  // are included, not just the "worker" role).
+  const NON_STAFF_ROLES = ["companyAdmin", "superadmin"];
+  return [...byId.values()].filter(function isStaff(user) {
+    return !NON_STAFF_ROLES.includes(user?.role);
   });
 }
 
