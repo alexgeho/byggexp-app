@@ -21,8 +21,8 @@ import { createStyles } from "../ShiftHistoryPreview/ShiftHistoryPreview.styles"
 
 const DONE_STATUSES = new Set(["done", "completed", "closed"]);
 
-// Overdue deadlines are highlighted in red (date text only).
-const OVERDUE_COLOR = "#FF6B6B";
+// Overdue badge red — same as the UnreadBadge count badge.
+const OVERDUE_COLOR = "#FF3B30";
 
 const startOfToday = () => {
   const date = new Date();
@@ -189,18 +189,22 @@ export function TasksPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
                     index !== tasks.length - 1 && styles.itemDivider,
                   ]}
                 >
-                  <Text
-                    style={[
-                      styles.dateText,
-                      overdue && extraStyles.dateOverdue,
-                    ]}
-                  >
+                  <Text style={styles.dateText}>
                     {task.dueDate
                       ? formatDue(task.dueDate)
                       : t("tasksPreview.noDate")}
                   </Text>
 
                   <View style={extraStyles.titleRow}>
+                    {overdue ? (
+                      <View
+                        style={extraStyles.overdueBadge}
+                        accessibilityLabel={t("task.status.overdue")}
+                      >
+                        <Text style={extraStyles.overdueBadgeText}>!</Text>
+                      </View>
+                    ) : null}
+
                     <Text
                       style={[styles.projectText, extraStyles.titleText]}
                       numberOfLines={2}
@@ -254,9 +258,23 @@ const extraStyles = StyleSheet.create({
   titleText: {
     flex: 1,
   },
-  dateOverdue: {
-    color: OVERDUE_COLOR,
-    opacity: 1,
+  // Small red "!" badge marking an overdue task (text stays default color).
+  overdueBadge: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: OVERDUE_COLOR,
+    borderWidth: 2,
+    borderColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+  overdueBadgeText: {
+    color: "#FFFFFF",
+    fontSize: 13,
+    lineHeight: 16,
+    fontFamily: "DMSans-Bold",
   },
   checkbox: {
     width: 28,
