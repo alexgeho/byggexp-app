@@ -4,11 +4,14 @@ import {
   defaultEnabledButtons,
   defaultEnabledSections,
   homeSections,
+  mainButtons,
 } from "../constants/mainButtons";
 
 const STORAGE_KEY = "enabled-home-buttons";
 
 const SECTIONS_ORDER_KEY = "home-sections-order";
+
+const BUTTONS_ORDER_KEY = "home-buttons-order";
 
 const STORAGE_MIGRATIONS_KEY = "enabled-home-buttons-migrations";
 
@@ -98,6 +101,27 @@ export async function getSectionsOrder() {
 
 export async function saveSectionsOrder(order) {
   await AsyncStorage.setItem(SECTIONS_ORDER_KEY, JSON.stringify(order));
+}
+
+// Full ordered list of home button ids. New buttons added to the app are
+// appended so a saved order never hides them.
+export async function getButtonsOrder() {
+  const allIds = mainButtons.map((button) => button.id);
+  const data = await AsyncStorage.getItem(BUTTONS_ORDER_KEY);
+
+  if (!data) {
+    return allIds;
+  }
+
+  const saved = JSON.parse(data);
+  const known = saved.filter((id) => allIds.includes(id));
+  const missing = allIds.filter((id) => !known.includes(id));
+
+  return [...known, ...missing];
+}
+
+export async function saveButtonsOrder(order) {
+  await AsyncStorage.setItem(BUTTONS_ORDER_KEY, JSON.stringify(order));
 }
 
 export async function getDismissedSections() {

@@ -8,7 +8,10 @@ import {
   mainButtons,
   defaultEnabledButtons,
 } from "../../../constants/mainButtons";
-import { getEnabledButtons } from "../../../utils/homeButtonsStorage";
+import {
+  getEnabledButtons,
+  getButtonsOrder,
+} from "../../../utils/homeButtonsStorage";
 import {
   isHomeButtonVisible,
   canViewEmployeeStatsForProject,
@@ -45,20 +48,34 @@ export default function MainButtonsGrid() {
   });
 
   const [enabledButtons, setEnabledButtons] = useState(defaultEnabledButtons);
+  const [buttonsOrder, setButtonsOrder] = useState(() =>
+    mainButtons.map((button) => button.id),
+  );
 
   useFocusEffect(
     React.useCallback(function loadButtons() {
       async function fetchButtons() {
         const savedButtons = await getEnabledButtons();
+        const savedOrder = await getButtonsOrder();
 
         if (savedButtons) {
           setEnabledButtons(savedButtons);
         }
+
+        setButtonsOrder(savedOrder);
       }
 
       fetchButtons();
     }, []),
   );
+
+  const orderedButtons = buttonsOrder
+    .map(function toButton(id) {
+      return mainButtons.find(function byId(button) {
+        return button.id === id;
+      });
+    })
+    .filter(Boolean);
 
   function handlePress(screen) {
     navigation.navigate(screen);
@@ -66,7 +83,7 @@ export default function MainButtonsGrid() {
 
   return (
     <View style={styles.container}>
-      {mainButtons
+      {orderedButtons
         .filter(function filterButtons(button) {
           return isHomeButtonVisible(button, enabledButtons, user?.role);
         })

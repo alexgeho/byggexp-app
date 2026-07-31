@@ -28,6 +28,8 @@ import {
   saveEnabledSections,
   getSectionsOrder,
   saveSectionsOrder,
+  getButtonsOrder,
+  saveButtonsOrder,
 } from "../../utils/homeButtonsStorage";
 import Icon from "react-native-vector-icons/Feather";
 
@@ -59,6 +61,10 @@ export default function CustomizeHomeScreen() {
     homeSections.map((section) => section.id),
   );
 
+  const [buttonsOrder, setButtonsOrder] = useState(
+    mainButtons.map((button) => button.id),
+  );
+
   useFocusEffect(
     React.useCallback(function loadSettings() {
       async function fetchSettings() {
@@ -69,6 +75,8 @@ export default function CustomizeHomeScreen() {
         const savedDismissedSections = await getDismissedSections();
 
         const savedSectionsOrder = await getSectionsOrder();
+
+        const savedButtonsOrder = await getButtonsOrder();
 
         if (savedButtons) {
           setEnabledButtons(savedButtons);
@@ -81,6 +89,8 @@ export default function CustomizeHomeScreen() {
         setDismissedSections(savedDismissedSections);
 
         setSectionsOrder(savedSectionsOrder);
+
+        setButtonsOrder(savedButtonsOrder);
       }
 
       fetchSettings();
@@ -121,6 +131,26 @@ export default function CustomizeHomeScreen() {
     ];
     setSectionsOrder(nextOrder);
     saveSectionsOrder(nextOrder);
+  }
+
+  // Reorder within the visible (role-filtered) button list, persisting the
+  // swap into the full buttons order.
+  function moveButton(visibleIndex, direction, visibleList) {
+    const target = visibleIndex + direction;
+    if (target < 0 || target >= visibleList.length) {
+      return;
+    }
+    const idA = visibleList[visibleIndex].id;
+    const idB = visibleList[target].id;
+    const nextOrder = [...buttonsOrder];
+    const indexA = nextOrder.indexOf(idA);
+    const indexB = nextOrder.indexOf(idB);
+    [nextOrder[indexA], nextOrder[indexB]] = [
+      nextOrder[indexB],
+      nextOrder[indexA],
+    ];
+    setButtonsOrder(nextOrder);
+    saveButtonsOrder(nextOrder);
   }
 
   async function toggleSection(sectionId) {
@@ -229,20 +259,26 @@ export default function CustomizeHomeScreen() {
 
         {/* BUTTON LIST */}
         <View style={styles.list}>
-          {mainButtons
+          {buttonsOrder
+            .map(function toButton(id) {
+              return mainButtons.find(function byId(button) {
+                return button.id === id;
+              });
+            })
+            .filter(Boolean)
             .filter(function filterButton(button) {
               return isHomeButtonCustomizable(button, user?.role);
             })
-            .map(function renderButton(button, index, filteredButtons) {
+            .map(function renderButton(button, index, visibleButtons) {
               const isEnabled = enabledButtons.includes(button.id);
+
+              const isFirst = index === 0;
+              const isLast = index === visibleButtons.length - 1;
 
               return (
                 <TouchableOpacity
                   key={button.id}
-                  style={[
-                    styles.item,
-                    index !== filteredButtons.length - 1 && styles.itemBorder,
-                  ]}
+                  style={[styles.item, !isLast && styles.itemBorder]}
                   onPress={function handlePress() {
                     toggleButton(button.id);
                   }}
@@ -251,13 +287,45 @@ export default function CustomizeHomeScreen() {
                     {t(`home.buttons.${button.id}`, button.title)}
                   </Text>
 
-                  <View
-                    style={[
-                      styles.checkbox,
-                      isEnabled && styles.checkboxActive,
-                    ]}
-                  >
-                    {isEnabled && <Text style={styles.checkmark}>✓</Text>}
+                  <View style={styles.sectionRowActions}>
+                    <TouchableOpacity
+                      style={styles.reorderButton}
+                      disabled={isFirst}
+                      onPress={function moveUp() {
+                        moveButton(index, -1, visibleButtons);
+                      }}
+                      hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
+                    >
+                      <Icon
+                        name="chevron-up"
+                        size={20}
+                        color={isFirst ? "#c2ccd6" : "#052d50"}
+                      />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={styles.reorderButton}
+                      disabled={isLast}
+                      onPress={function moveDown() {
+                        moveButton(index, 1, visibleButtons);
+                      }}
+                      hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
+                    >
+                      <Icon
+                        name="chevron-down"
+                        size={20}
+                        color={isLast ? "#c2ccd6" : "#052d50"}
+                      />
+                    </TouchableOpacity>
+
+                    <View
+                      style={[
+                        styles.checkbox,
+                        isEnabled && styles.checkboxActive,
+                      ]}
+                    >
+                      {isEnabled && <Text style={styles.checkmark}>✓</Text>}
+                    </View>
                   </View>
                 </TouchableOpacity>
               );
