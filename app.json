@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "se.byggexp.app",
+      "bundleIdentifier": "com.anonymous.totbygghubmobileapp",
       "buildNumber": "10",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
