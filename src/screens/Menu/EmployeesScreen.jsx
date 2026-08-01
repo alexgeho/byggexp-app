@@ -201,20 +201,22 @@ export default function EmployeesScreen() {
         user?.role === "superadmin"
           ? projectService.getAll()
           : projectService.getMyProjects(),
-        shiftService
-          .list({
-            from: today,
-            to: today,
-            ...(selectedProjectId ? { projectId: selectedProjectId } : {}),
-          })
-          .catch(() => []),
+        // Same call the admin uses: today's shifts to tell "off duty" (worked
+        // earlier today) from "not at work" (no shift today).
+        shiftService.list({ dates: today }).catch(() => null),
       ]);
 
       setEmployees(Array.isArray(employeesData) ? employeesData : []);
       setProjects(Array.isArray(projectsData) ? projectsData : []);
+      // /shifts/list responds with { items: [...] }, not a bare array.
+      const shiftItems = Array.isArray(todayShifts?.items)
+        ? todayShifts.items
+        : Array.isArray(todayShifts)
+          ? todayShifts
+          : [];
       setWorkedTodayIds(
         new Set(
-          (Array.isArray(todayShifts) ? todayShifts : [])
+          shiftItems
             .map((shift) => getEntityId({ id: shift?.workerId }))
             .filter(Boolean),
         ),
