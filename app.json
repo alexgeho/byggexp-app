@@ -46,7 +46,7 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Allow ByggExp to access your location while creating a project."
+          "locationWhenInUsePermission": "Allow ByggExp to access your location while creating a project (to pre-fill the address) and when starting a work shift (to confirm you are at the project site)."
         }
       ],
       "expo-localization",

@@ -54,7 +54,7 @@
     <key>NSLocationAlwaysUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your location</string>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Allow ByggExp to access your location while creating a project.</string>
+    <string>Allow ByggExp to access your location while creating a project (to pre-fill the address) and when starting a work shift (to confirm you are at the project site).</string>
     <key>NSPhotoLibraryAddUsageDescription</key>
     <string>Allow ByggExp to save and attach shift photos.</string>
     <key>NSPhotoLibraryUsageDescription</key>
