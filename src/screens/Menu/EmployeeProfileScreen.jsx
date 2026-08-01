@@ -11,7 +11,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
 import { BackButton } from "../../components/common/BackButton/BackButton";
@@ -87,24 +91,38 @@ const TOOL_STATUS_BADGE_STYLES = {
   occupied: cardStyles.cardBadgeOccupied,
 };
 
-function ActionButton({ icon, label, onPress, tone = "primary", disabled = false }) {
+function ActionButton({
+  icon,
+  label,
+  onPress,
+  tone = "primary",
+  disabled = false,
+}) {
   return (
     <TouchableOpacity
       style={[
         styles.actionButton,
-        tone === "danger" ? styles.actionButtonDanger : styles.actionButtonPrimary,
+        tone === "danger"
+          ? styles.actionButtonDanger
+          : styles.actionButtonPrimary,
         disabled && styles.actionButtonDisabled,
       ]}
       onPress={onPress}
       disabled={disabled}
       activeOpacity={0.85}
     >
-      <Icon name={icon} size={16} color={tone === "danger" ? "#C62828" : "#052D50"} />
+      <Icon
+        name={icon}
+        size={15}
+        color={tone === "danger" ? "#C62828" : "#052D50"}
+      />
       <Text
         style={[
           styles.actionButtonText,
           tone === "danger" ? styles.actionButtonTextDanger : null,
         ]}
+        numberOfLines={1}
+        ellipsizeMode="tail"
       >
         {label}
       </Text>
@@ -128,7 +146,8 @@ export default function EmployeeProfileScreen() {
   const { theme } = useTheme();
   const { userId } = useContext(AuthContext);
   const { showSuccess } = useFeedback();
-  const employeeId = route.params?.employeeId || route.params?.workerId || userId;
+  const employeeId =
+    route.params?.employeeId || route.params?.workerId || userId;
 
   const [employee, setEmployee] = useState(null);
   const [notes, setNotes] = useState([]);
@@ -142,7 +161,9 @@ export default function EmployeeProfileScreen() {
   const canEdit = Boolean(employee?.permissions?.canEdit);
   const canDelete = Boolean(employee?.permissions?.canDelete);
   const canComment = Boolean(employee?.permissions?.canComment);
-  const canMessage = Boolean(employeeId && userId && String(employeeId) !== String(userId));
+  const canMessage = Boolean(
+    employeeId && userId && String(employeeId) !== String(userId),
+  );
   const employeeName = employee?.name || employee?.email || t("roles.user");
 
   const avatarSource = useMemo(() => {
@@ -288,26 +309,29 @@ export default function EmployeeProfileScreen() {
       t("employeeProfile.deleteCommentTitle"),
       t("employeeProfile.deleteCommentConfirm"),
       [
-      { text: t("common.cancel"), style: "cancel" },
-      {
-        text: t("employeeProfile.delete"),
-        style: "destructive",
-        onPress: async () => {
-          try {
-            await userService.deleteNote(employeeId, noteId);
-            setNotes((previous) => previous.filter((item) => item.id !== noteId));
-          } catch (noteError) {
-            console.error("Failed to delete worker note:", noteError);
-            Alert.alert(
-              t("employeeProfile.deleteCommentError"),
-              noteError?.response?.data?.message ||
-                noteError?.message ||
-                t("project.openErrorMessage"),
-            );
-          }
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("employeeProfile.delete"),
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await userService.deleteNote(employeeId, noteId);
+              setNotes((previous) =>
+                previous.filter((item) => item.id !== noteId),
+              );
+            } catch (noteError) {
+              console.error("Failed to delete worker note:", noteError);
+              Alert.alert(
+                t("employeeProfile.deleteCommentError"),
+                noteError?.response?.data?.message ||
+                  noteError?.message ||
+                  t("project.openErrorMessage"),
+              );
+            }
+          },
         },
-      },
-    ]);
+      ],
+    );
   };
 
   if (loading) {
@@ -414,7 +438,11 @@ export default function EmployeeProfileScreen() {
             {canMessage ? (
               <ActionButton
                 icon="message-circle"
-                label={chatLoading ? t("employeeProfile.opening") : t("employeeProfile.message")}
+                label={
+                  chatLoading
+                    ? t("employeeProfile.opening")
+                    : t("employeeProfile.message")
+                }
                 onPress={handleMessage}
                 disabled={chatLoading}
               />
@@ -433,7 +461,11 @@ export default function EmployeeProfileScreen() {
             {canDelete ? (
               <ActionButton
                 icon="trash-2"
-                label={deleteLoading ? t("employeeProfile.deleting") : t("employeeProfile.delete")}
+                label={
+                  deleteLoading
+                    ? t("employeeProfile.deleting")
+                    : t("employeeProfile.delete")
+                }
                 onPress={handleDelete}
                 disabled={deleteLoading}
                 tone="danger"
@@ -453,7 +485,11 @@ export default function EmployeeProfileScreen() {
             />
             <InfoRow
               label={t("myAccount.phone")}
-              value={formatPhone(employee.phoneAreaCode, employee.phoneNumber, t)}
+              value={formatPhone(
+                employee.phoneAreaCode,
+                employee.phoneNumber,
+                t,
+              )}
             />
             <InfoRow
               label={t("employeeProfile.company")}
@@ -464,7 +500,9 @@ export default function EmployeeProfileScreen() {
 
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>{t("menu.projects")}</Text>
-            <Text style={styles.sectionCount}>{employee.projects?.length || 0}</Text>
+            <Text style={styles.sectionCount}>
+              {employee.projects?.length || 0}
+            </Text>
           </View>
           {Array.isArray(employee.projects) && employee.projects.length > 0 ? (
             employee.projects.map((project) => (
@@ -503,25 +541,35 @@ export default function EmployeeProfileScreen() {
 
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>{t("menu.instruments")}</Text>
-            <Text style={styles.sectionCount}>{employee.tools?.length || 0}</Text>
+            <Text style={styles.sectionCount}>
+              {employee.tools?.length || 0}
+            </Text>
           </View>
           {Array.isArray(employee.tools) && employee.tools.length > 0 ? (
             employee.tools.map((tool) => {
-              const photoUrl = tool.photoUrl ? resolveUploadUrl(tool.photoUrl) : null;
+              const photoUrl = tool.photoUrl
+                ? resolveUploadUrl(tool.photoUrl)
+                : null;
               const statusMeta = getToolStatusMeta(tool.status);
 
               return (
                 <ListCard
                   key={tool.id}
                   title={tool.name || t("createProject.unnamedInstrument")}
-                  badgeLabel={t(`tools.status.${statusMeta.value}`, statusMeta.label)}
+                  badgeLabel={t(
+                    `tools.status.${statusMeta.value}`,
+                    statusMeta.label,
+                  )}
                   badgeStyle={
                     TOOL_STATUS_BADGE_STYLES[statusMeta.tone] ||
                     cardStyles.cardBadgeNeutral
                   }
                   leading={
                     photoUrl ? (
-                      <Image source={{ uri: photoUrl }} style={styles.toolPhoto} />
+                      <Image
+                        source={{ uri: photoUrl }}
+                        style={styles.toolPhoto}
+                      />
                     ) : (
                       <View style={styles.toolPhotoPlaceholder}>
                         <Icon
@@ -548,7 +596,9 @@ export default function EmployeeProfileScreen() {
           )}
 
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>{t("employeeProfile.comments")}</Text>
+            <Text style={styles.sectionTitle}>
+              {t("employeeProfile.comments")}
+            </Text>
             <Text style={styles.sectionCount}>{notes.length}</Text>
           </View>
           {canComment ? (
@@ -564,7 +614,8 @@ export default function EmployeeProfileScreen() {
               <TouchableOpacity
                 style={[
                   styles.noteSendButton,
-                  (!newNote.trim() || savingNote) && styles.actionButtonDisabled,
+                  (!newNote.trim() || savingNote) &&
+                    styles.actionButtonDisabled,
                 ]}
                 onPress={handleSaveNote}
                 disabled={!newNote.trim() || savingNote}
@@ -588,8 +639,13 @@ export default function EmployeeProfileScreen() {
                       {note.authorName || t("roles.user")}
                     </Text>
                     <Text style={styles.noteSubtitle}>
-                      {t(`roles.${note.authorRole}`, getRoleLabel(note.authorRole))}
-                      {formatDate(note.createdAt) ? `  ${formatDate(note.createdAt)}` : ""}
+                      {t(
+                        `roles.${note.authorRole}`,
+                        getRoleLabel(note.authorRole),
+                      )}
+                      {formatDate(note.createdAt)
+                        ? `  ${formatDate(note.createdAt)}`
+                        : ""}
                     </Text>
                   </View>
                   {canComment ? (
@@ -683,16 +739,17 @@ const styles = StyleSheet.create({
   },
   actionRow: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
+    gap: 8,
   },
   actionButton: {
+    flex: 1,
     minHeight: 42,
     borderRadius: 999,
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    justifyContent: "center",
+    gap: 6,
     borderWidth: 1,
   },
   actionButtonPrimary: {
@@ -708,8 +765,9 @@ const styles = StyleSheet.create({
   },
   actionButtonText: {
     color: "#052D50",
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "600",
+    flexShrink: 1,
   },
   actionButtonTextDanger: {
     color: "#C62828",

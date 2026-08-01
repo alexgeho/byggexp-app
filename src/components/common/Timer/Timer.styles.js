@@ -13,6 +13,7 @@ export const styles = StyleSheet.create({
     color: "#FFFFFF",
     includeFontPadding: false,
     paddingVertical: 0,
+    fontVariant: ["tabular-nums"],
   },
 
   timerTextSeconds: {
