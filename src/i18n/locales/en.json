@@ -808,6 +808,7 @@
     "emptyCanCreate": "Tap the add button below to create the first employee.",
     "atWork": "At work",
     "notAtWork": "Not at work",
+    "offDuty": "Off duty",
     "waitingApproval": "Waiting for approval",
     "unnamed": "Unnamed",
     "noProfession": "No profession",

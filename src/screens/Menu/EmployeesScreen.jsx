@@ -12,7 +12,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import AuthContext from "../../contexts/AuthContext";
 import { useTheme } from "../../theme/ThemeContext";
-import { projectService, userService } from "../../services";
+import { projectService, shiftService, userService } from "../../services";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { ListCard } from "../../components/common/ListCard/ListCard";
@@ -117,6 +117,47 @@ const isEmployeeAtWork = (employee, selectedProjectId) => {
   );
 };
 
+// Shift reasons that mean the worker's shift was auto-paused (went offline or
+// left the site) — still counts as "off duty" rather than "not at work".
+const AUTO_PAUSED_REASONS = new Set([
+  "offline",
+  "outside_project_area",
+  "outside_project_area_notified",
+]);
+
+const getTodayDateKey = () => {
+  const date = new Date();
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  const day = `${date.getDate()}`.padStart(2, "0");
+  return `${date.getFullYear()}-${month}-${day}`;
+};
+
+// Mirror the admin's live status: at_work / off_duty / not_at_work, plus the
+// app's waiting-approval state. "Off duty" = clocked in earlier today (or an
+// auto-paused shift) but not working now; "Not at work" = no shift today.
+const getEmployeeStatusKind = (employee, selectedProjectId, workedTodayIds) => {
+  if (shouldShowAccountStatus(employee?.accountStatus)) {
+    return "waiting";
+  }
+  if (isEmployeeAtWork(employee, selectedProjectId)) {
+    return "at_work";
+  }
+  const autoPaused =
+    employee?.workStatus === "outside_project_area" ||
+    AUTO_PAUSED_REASONS.has(employee?.workStatusReason || "");
+  const workedToday = workedTodayIds?.has(getEntityId(employee));
+  return autoPaused || workedToday ? "off_duty" : "not_at_work";
+};
+
+// Surface who needs attention first: not-yet-confirmed, then absent all day,
+// then off duty (worked earlier), then those currently at work.
+const STATUS_SORT_PRIORITY = {
+  waiting: 0,
+  not_at_work: 1,
+  off_duty: 2,
+  at_work: 3,
+};
+
 const getEmployeeProjectLabel = (employee, projectNameById, projects) => {
   const projectNames = getEmployeeProjectIds(employee, projects)
     .map((projectId) => truncateProjectName(projectNameById.get(projectId)))
@@ -137,6 +178,7 @@ export default function EmployeesScreen() {
 
   const [employees, setEmployees] = useState([]);
   const [projects, setProjects] = useState([]);
+  const [workedTodayIds, setWorkedTodayIds] = useState(() => new Set());
   const [loading, setLoading] = useState(true);
   const [selectedProjectId, setSelectedProjectId] = useState(
     () => selectedProject?._id || selectedProject?.id || null,
@@ -151,17 +193,32 @@ export default function EmployeesScreen() {
     try {
       setLoading(true);
 
-      const [employeesData, projectsData] = await Promise.all([
+      const today = getTodayDateKey();
+      const [employeesData, projectsData, todayShifts] = await Promise.all([
         selectedProjectId
           ? userService.getByProject(selectedProjectId)
           : userService.getMyCompanyUsers(),
         user?.role === "superadmin"
           ? projectService.getAll()
           : projectService.getMyProjects(),
+        shiftService
+          .list({
+            from: today,
+            to: today,
+            ...(selectedProjectId ? { projectId: selectedProjectId } : {}),
+          })
+          .catch(() => []),
       ]);
 
       setEmployees(Array.isArray(employeesData) ? employeesData : []);
       setProjects(Array.isArray(projectsData) ? projectsData : []);
+      setWorkedTodayIds(
+        new Set(
+          (Array.isArray(todayShifts) ? todayShifts : [])
+            .map((shift) => getEntityId({ id: shift?.workerId }))
+            .filter(Boolean),
+        ),
+      );
     } catch (error) {
       console.error("Failed to load employees:", error);
       Alert.alert(
@@ -174,15 +231,10 @@ export default function EmployeesScreen() {
   }, [selectedProjectId, user?.role]);
 
   const filteredEmployees = useMemo(() => {
-    // Surface who needs attention first: not-yet-confirmed accounts at the very
-    // top, then people who are away, and those currently at work last.
-    const getSortPriority = (employee) => {
-      if (shouldShowAccountStatus(employee?.accountStatus)) {
-        return 0;
-      }
-
-      return isEmployeeAtWork(employee, selectedProjectId) ? 2 : 1;
-    };
+    const getSortPriority = (employee) =>
+      STATUS_SORT_PRIORITY[
+        getEmployeeStatusKind(employee, selectedProjectId, workedTodayIds)
+      ] ?? 99;
 
     // The company/owner account (companyAdmin) and platform superadmin are not
     // employees, so keep them out of the list.
@@ -191,7 +243,7 @@ export default function EmployeesScreen() {
     return [...employees]
       .filter((employee) => !nonStaffRoles.includes(employee?.role))
       .sort((left, right) => getSortPriority(left) - getSortPriority(right));
-  }, [employees, selectedProjectId]);
+  }, [employees, selectedProjectId, workedTodayIds]);
 
   useFocusEffect(
     useCallback(() => {
@@ -290,21 +342,24 @@ export default function EmployeesScreen() {
                 projectNameById,
                 projects,
               );
-              const showAccountStatus = shouldShowAccountStatus(
-                employee.accountStatus,
+              const statusKind = getEmployeeStatusKind(
+                employee,
+                selectedProjectId,
+                workedTodayIds,
               );
-              const atWork = isEmployeeAtWork(employee, selectedProjectId);
 
-              const badgeLabel = showAccountStatus
-                ? t("employees.waitingApproval")
-                : atWork
-                  ? t("employees.atWork")
-                  : t("employees.notAtWork");
-              const badgeStyle = showAccountStatus
-                ? cardStyles.cardBadgeWarning
-                : atWork
-                  ? cardStyles.cardBadgeAtWork
-                  : cardStyles.cardBadgeAbsent;
+              const badgeLabel = {
+                waiting: t("employees.waitingApproval"),
+                at_work: t("employees.atWork"),
+                off_duty: t("employees.offDuty"),
+                not_at_work: t("employees.notAtWork"),
+              }[statusKind];
+              const badgeStyle = {
+                waiting: cardStyles.cardBadgeWarning,
+                at_work: cardStyles.cardBadgeAtWork,
+                off_duty: cardStyles.cardBadgeNeutral,
+                not_at_work: cardStyles.cardBadgeAbsent,
+              }[statusKind];
 
               return (
                 <ListCard

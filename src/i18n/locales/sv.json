@@ -808,6 +808,7 @@
     "emptyCanCreate": "Tryck på plusknappen nedan för att skapa den första anställda.",
     "atWork": "På jobbet",
     "notAtWork": "Inte på jobbet",
+    "offDuty": "Ej i tjänst",
     "waitingApproval": "Väntar på godkännande",
     "unnamed": "Namnlös",
     "noProfession": "Ingen yrkesroll",
