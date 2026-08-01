@@ -44,6 +44,7 @@ import {
   canCreateTasks,
   canManageDocuments,
   canManageWorkers,
+  shouldShowAccountStatus,
 } from "../../../utils/userRoles";
 import { API_BASE_URL } from "../../../config/env";
 
@@ -95,6 +96,25 @@ const taskBadgeStyles = {
   open: cardStyles.cardBadgeOpen,
   overdue: cardStyles.cardBadgeOverdue,
   completed: cardStyles.cardBadgeCompleted,
+};
+
+const normalizeRefId = (value) =>
+  String(value?._id || value?.id || value || "");
+
+// A worker counts as "at work" when their live status is working on this
+// project.
+const isWorkerAtWork = (worker, projectId) =>
+  worker?.workStatus === "working" &&
+  (!projectId ||
+    normalizeRefId(worker?.workStatusProjectId) === String(projectId));
+
+// Match the Employees list ordering: not-yet-confirmed accounts first (when
+// that field is available), then people who are away, and those at work last.
+const getWorkerSortPriority = (worker, projectId) => {
+  if (shouldShowAccountStatus(worker?.accountStatus)) {
+    return 0;
+  }
+  return isWorkerAtWork(worker, projectId) ? 2 : 1;
 };
 
 const formatFileSize = (value, t = null) => {
@@ -279,11 +299,15 @@ export const ProjectScreen = () => {
   const workers = useMemo(
     () =>
       Array.isArray(project?.workers)
-        ? project.workers.filter(
-            (worker) => worker && typeof worker === "object",
-          )
+        ? project.workers
+            .filter((worker) => worker && typeof worker === "object")
+            .sort(
+              (left, right) =>
+                getWorkerSortPriority(left, id) -
+                getWorkerSortPriority(right, id),
+            )
         : [],
-    [project?.workers],
+    [project?.workers, id],
   );
   const canCreateProjectTasks = canCreateTasks(user?.role);
   const canUploadDocuments = canManageDocuments(user?.role);
@@ -558,25 +582,46 @@ export const ProjectScreen = () => {
 
         {modal === "Workers" &&
           (workers.length > 0 ? (
-            workers.map((worker) => (
-              <ListCard
-                key={worker._id || worker.id}
-                title={worker.name || t("project.unnamedWorker")}
-                onPress={() =>
-                  navigation.navigate("Employee", {
-                    employeeId: worker._id || worker.id,
-                  })
-                }
-              >
-                <Text
-                  style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
+            workers.map((worker) => {
+              const showAccountStatus = shouldShowAccountStatus(
+                worker.accountStatus,
+              );
+              const atWork = isWorkerAtWork(worker, id);
+              const badgeLabel = showAccountStatus
+                ? t("employees.waitingApproval")
+                : atWork
+                  ? t("employees.atWork")
+                  : t("employees.notAtWork");
+              const badgeStyle = showAccountStatus
+                ? cardStyles.cardBadgeWarning
+                : atWork
+                  ? cardStyles.cardBadgeAtWork
+                  : cardStyles.cardBadgeAbsent;
+
+              return (
+                <ListCard
+                  key={worker._id || worker.id}
+                  title={worker.name || t("project.unnamedWorker")}
+                  badgeLabel={badgeLabel}
+                  badgeStyle={badgeStyle}
+                  onPress={() =>
+                    navigation.navigate("Employee", {
+                      employeeId: worker._id || worker.id,
+                    })
+                  }
                 >
-                  {worker.profession || worker.email || t("project.workerRole")}
-                </Text>
-              </ListCard>
-            ))
+                  <Text
+                    style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {worker.profession ||
+                      worker.email ||
+                      t("project.workerRole")}
+                  </Text>
+                </ListCard>
+              );
+            })
           ) : (
             <View style={styles.emptyState}>
               <Text style={styles.emptyStateTitle}>

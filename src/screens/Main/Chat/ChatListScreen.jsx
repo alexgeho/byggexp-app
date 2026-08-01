@@ -153,11 +153,13 @@ export default function ChatListScreen() {
 
   const visibleColleagues = useMemo(() => {
     const currentUserId = getEntityId({ id: user?._id || user?.id });
+    // Match the Employees list: not-yet-confirmed accounts first, then people
+    // who are away, and those currently at work last.
     const getSortPriority = (person) => {
       if (shouldShowAccountStatus(person?.accountStatus)) {
-        return 2;
+        return 0;
       }
-      return isPersonAtWork(person, selectedProjectId) ? 0 : 1;
+      return isPersonAtWork(person, selectedProjectId) ? 2 : 1;
     };
 
     // Don't list company/superadmin accounts or the current user.
