@@ -38,6 +38,19 @@ const TOOL_STATUS_BADGE_STYLES = {
   occupied: cardStyles.cardBadgeOccupied,
 };
 
+// Maintenance states (broken / in repair) are set manually and take priority.
+// Otherwise a tool that has an assigned worker or a current holder counts as
+// occupied ("in use"), and everything else is available.
+const getEffectiveToolStatus = (tool) => {
+  if (tool?.status === "broken" || tool?.status === "in_repair") {
+    return tool.status;
+  }
+  const inUse =
+    (Array.isArray(tool?.workerIds) && tool.workerIds.length > 0) ||
+    Boolean(tool?.currentHolderId);
+  return inUse ? "occupied" : "available";
+};
+
 const getEntityId = (entity) => {
   const id = entity?._id || entity?.id;
   return id ? String(id) : "";
@@ -212,7 +225,9 @@ export default function ToolsScreen() {
               filteredTools.map((tool) => {
                 const toolId = getEntityId(tool);
                 const photoUrl = resolvePhotoUrl(tool.photoUrl);
-                const statusMeta = getToolStatusMeta(tool.status);
+                const statusMeta = getToolStatusMeta(
+                  getEffectiveToolStatus(tool),
+                );
 
                 return (
                   <ListCard
