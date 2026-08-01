@@ -41,7 +41,7 @@ const truncate = (text, max = 16) => {
 // Up to two task deadlines for the home tile, prioritising overdue:
 // two overdue if available, otherwise 1 overdue + 1 upcoming, otherwise
 // the two soonest upcoming. Each item is { label, overdue } where the
-// label is "<short task title> · <date>".
+// label is "<date> · <short task title>".
 const buildTaskDeadlines = (tasks) => {
   const today = startOfToday();
   const dated = tasks
@@ -59,7 +59,7 @@ const buildTaskDeadlines = (tasks) => {
     .sort((a, b) => a.time - b.time);
 
   const toItem = (item, overdueFlag) => ({
-    label: [truncate(item.title, 10), formatDeadline(item.time)]
+    label: [formatDeadline(item.time), truncate(item.title, 10)]
       .filter(Boolean)
       .join(" · "),
     overdue: overdueFlag,
