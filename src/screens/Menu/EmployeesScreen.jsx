@@ -174,12 +174,14 @@ export default function EmployeesScreen() {
   }, [selectedProjectId, user?.role]);
 
   const filteredEmployees = useMemo(() => {
+    // Surface who needs attention first: not-yet-confirmed accounts at the very
+    // top, then people who are away, and those currently at work last.
     const getSortPriority = (employee) => {
       if (shouldShowAccountStatus(employee?.accountStatus)) {
-        return 2;
+        return 0;
       }
 
-      return isEmployeeAtWork(employee, selectedProjectId) ? 0 : 1;
+      return isEmployeeAtWork(employee, selectedProjectId) ? 2 : 1;
     };
 
     // The company/owner account (companyAdmin) and platform superadmin are not

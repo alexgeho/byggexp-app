@@ -221,7 +221,10 @@ export default function ToolsScreen() {
                     onPress={
                       canEditStatus ? () => handleChangeStatus(tool) : undefined
                     }
-                    badgeLabel={statusMeta.label}
+                    badgeLabel={t(
+                      `tools.status.${statusMeta.value}`,
+                      statusMeta.label,
+                    )}
                     badgeStyle={TOOL_STATUS_BADGE_STYLES[statusMeta.tone]}
                     leading={
                       photoUrl ? (
