@@ -30,7 +30,7 @@
       "googleServicesFile": "./google-services.json"
     },
     "web": {
-      "favicon": "./scr/assets/favicon.png"
+      "favicon": "./src/assets/favicon.png"
     },
     "plugins": [
       "expo-font",
