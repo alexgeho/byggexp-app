@@ -20,6 +20,39 @@ import AuthContext from "../../../contexts/AuthContext";
 import { useChatConversation } from "./useChatConversation";
 import { resolveUploadUrl } from "../../../utils/shifts";
 
+// Palette for the initials fallback avatar; white text reads well on all of
+// these.
+const AVATAR_COLORS = [
+  "#0089f6",
+  "#338600",
+  "#F5A524",
+  "#9333EA",
+  "#E11D48",
+  "#0891B2",
+  "#DB2777",
+  "#65A30D",
+];
+
+const getInitials = (name) => {
+  const words = String(name || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  if (words.length === 0) return "?";
+  if (words.length === 1) return words[0].charAt(0).toUpperCase();
+  return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
+};
+
+// Deterministic color per name, so the same person always gets the same one.
+const getAvatarColor = (name) => {
+  const key = String(name || "");
+  let hash = 0;
+  for (let i = 0; i < key.length; i += 1) {
+    hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
+  }
+  return AVATAR_COLORS[hash % AVATAR_COLORS.length];
+};
+
 const formatMessageTime = (value) => {
   if (!value) return "";
 
@@ -89,9 +122,13 @@ export default function ChatConversationScreen({ variant }) {
     () => getChatSubtitle(chat || initialChat, variant, t),
     [chat, initialChat, variant, t],
   );
-  const headerAvatarSource = (chat || initialChat)?.participant?.avatarUrl
-    ? { uri: resolveUploadUrl((chat || initialChat).participant.avatarUrl) }
-    : require("../../../assets/chatImage.jpg");
+  const participant = (chat || initialChat)?.participant;
+  const avatarUri = participant?.avatarUrl
+    ? resolveUploadUrl(participant.avatarUrl)
+    : null;
+  // Name to derive the initials fallback from: the other person for direct
+  // chats, otherwise the chat/group title.
+  const avatarName = participant?.name || headerTitle || "";
 
   const handleSendMessage = async () => {
     const text = messageText.trim();
@@ -145,7 +182,20 @@ export default function ChatConversationScreen({ variant }) {
           ) : null}
         </View>
         <TouchableOpacity style={styles.backAvatar} activeOpacity={0.8}>
-          <Image style={styles.avatarImage} source={headerAvatarSource} />
+          {avatarUri ? (
+            <Image style={styles.avatarImage} source={{ uri: avatarUri }} />
+          ) : (
+            <View
+              style={[
+                styles.avatarInitials,
+                { backgroundColor: getAvatarColor(avatarName) },
+              ]}
+            >
+              <Text style={styles.avatarInitialsText}>
+                {getInitials(avatarName)}
+              </Text>
+            </View>
+          )}
         </TouchableOpacity>
       </View>
 
@@ -376,6 +426,18 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     borderRadius: 999,
+  },
+  avatarInitials: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 999,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  avatarInitialsText: {
+    color: "#FFFFFF",
+    fontSize: 22,
+    fontWeight: "700",
   },
   messagesContainer: {
     flex: 1,
