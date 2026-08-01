@@ -109,19 +109,23 @@ export default function ToolsScreen() {
   }, [user?.role]);
 
   const filteredTools = useMemo(() => {
-    if (!selectedProjectId) {
-      return tools;
-    }
+    const scoped = !selectedProjectId
+      ? tools
+      : tools.filter(
+          (tool) =>
+            Array.isArray(tool?.projectIds) &&
+            tool.projectIds.some(
+              (projectId) => getRefId(projectId) === selectedProjectId,
+            ),
+        );
 
-    return tools.filter((tool) => {
-      if (!Array.isArray(tool?.projectIds)) {
-        return false;
-      }
-
-      return tool.projectIds.some(
-        (projectId) => getRefId(projectId) === selectedProjectId,
-      );
-    });
+    // Free (available) tools first, then occupied, then those needing service.
+    const statusOrder = { available: 0, occupied: 1, in_repair: 2, broken: 3 };
+    return [...scoped].sort(
+      (left, right) =>
+        (statusOrder[getEffectiveToolStatus(left)] ?? 99) -
+        (statusOrder[getEffectiveToolStatus(right)] ?? 99),
+    );
   }, [selectedProjectId, tools]);
 
   useFocusEffect(
