@@ -9,11 +9,10 @@ import {
   Modal,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
-import { useTheme } from "../../../theme/ThemeContext";
 import { offerService, invoiceService } from "../../../services";
-import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { getDateLocale } from "../../../utils/dateLocale";
 import { sortByNewest } from "../../../utils/sortByNewest";
@@ -73,7 +72,7 @@ function Pill({ label, active, onPress }) {
 export default function EconomyScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
-  const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
 
   const [mode, setMode] = useState("offers"); // 'offers' | 'invoices'
   const [offers, setOffers] = useState([]);
@@ -189,23 +188,23 @@ export default function EconomyScreen() {
 
     return (
       <TouchableOpacity key={id} style={styles.card} activeOpacity={0.85}>
-        <View style={styles.cardTop}>
+        <View style={styles.cardInfo}>
           <Text style={styles.cardNo}>
             {isOffers ? t("economy.offerNo") : t("economy.invoiceNo")} #{number}
           </Text>
+          <Text style={styles.cardCustomer} numberOfLines={1}>
+            {customer}
+          </Text>
+          <Text style={styles.cardMeta} numberOfLines={1}>
+            {dateLabel}
+          </Text>
+        </View>
+        <View style={styles.cardRight}>
           <View style={[styles.badge, styles[`badge_${tone}`]]}>
             <Text style={[styles.badgeText, styles[`badgeText_${tone}`]]}>
               {t(`economy.${statusNs}.${status}`, status)}
             </Text>
           </View>
-        </View>
-        <Text style={styles.cardCustomer} numberOfLines={1}>
-          {customer}
-        </Text>
-        <View style={styles.cardBottom}>
-          <Text style={styles.cardMeta} numberOfLines={1}>
-            {dateLabel}
-          </Text>
           <Text style={styles.cardAmount}>{formatAmount(amount)}</Text>
         </View>
       </TouchableOpacity>
@@ -214,17 +213,17 @@ export default function EconomyScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <BackButton
+      <View style={[styles.header, { marginTop: insets.top + 8 }]}>
+        <TouchableOpacity
+          style={styles.headerBtn}
           onPress={() => navigation.goBack()}
-          iconSource={require("../../../assets/Arrow-left.png")}
-        />
-        <Text
-          style={[styles.title, { fontFamily: theme.text.fontFamily.semiBold }]}
         >
-          {t("economy.title")}
-        </Text>
-        <View style={styles.placeholder} />
+          <Icon name="chevron-left" size={22} color="#030303" />
+        </TouchableOpacity>
+        <Text style={styles.title}>{t("economy.title")}</Text>
+        <View style={styles.headerBtn}>
+          <Icon name="sliders" size={20} color="#030303" />
+        </View>
       </View>
 
       <View style={styles.segmented}>
@@ -252,7 +251,7 @@ export default function EconomyScreen() {
           onPress={() => setCustomerModalVisible(true)}
           activeOpacity={0.85}
         >
-          <Icon name="briefcase" size={15} color="#2683f9" />
+          <Icon name="briefcase" size={15} color="#0785F4" />
           <Text style={styles.customerChipText} numberOfLines={1}>
             {customerFilter || t("economy.allCustomers")}
           </Text>
@@ -261,10 +260,10 @@ export default function EconomyScreen() {
               onPress={() => setCustomerFilter(null)}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <Icon name="x" size={16} color="#687898" />
+              <Icon name="x" size={16} color="#667E93" />
             </TouchableOpacity>
           ) : (
-            <Icon name="chevron-down" size={16} color="#687898" />
+            <Icon name="chevron-down" size={16} color="#667E93" />
           )}
         </TouchableOpacity>
       )}
@@ -277,14 +276,14 @@ export default function EconomyScreen() {
           contentContainerStyle={styles.pillsContent}
         >
           <Pill
-            label={`${t("economy.filters.all")} · ${byCustomer.length}`}
+            label={`${t("economy.filters.all")} (${byCustomer.length})`}
             active={!statusFilter}
             onPress={() => setStatusFilter(null)}
           />
           {filterOptions.map((status) => (
             <Pill
               key={status}
-              label={`${t(`economy.${statusNs}.${status}`, status)} · ${statusCounts[status]}`}
+              label={`${t(`economy.${statusNs}.${status}`, status)} (${statusCounts[status]})`}
               active={statusFilter === status}
               onPress={() => setStatusFilter(status)}
             />
@@ -298,7 +297,7 @@ export default function EconomyScreen() {
       >
         {loading ? (
           <View style={styles.center}>
-            <ActivityIndicator size="large" color="#2683f9" />
+            <ActivityIndicator size="large" color="#0785F4" />
           </View>
         ) : error ? (
           <View style={styles.center}>
@@ -306,7 +305,7 @@ export default function EconomyScreen() {
           </View>
         ) : filtered.length === 0 ? (
           <View style={styles.center}>
-            <Icon name="file-text" size={30} color="#9fb0c4" />
+            <Icon name="file-text" size={30} color="#9AA6B2" />
             <Text style={styles.emptyText}>
               {isOffers ? t("economy.emptyOffers") : t("economy.emptyInvoices")}
             </Text>
@@ -349,7 +348,7 @@ export default function EconomyScreen() {
                   {t("economy.allCustomers")}
                 </Text>
                 {!customerFilter && (
-                  <Icon name="check" size={18} color="#2683f9" />
+                  <Icon name="check" size={18} color="#0785F4" />
                 )}
               </TouchableOpacity>
               {customerOptions.map((option) => (
@@ -366,7 +365,7 @@ export default function EconomyScreen() {
                     {option.name} · {option.count}
                   </Text>
                   {customerFilter === option.name && (
-                    <Icon name="check" size={18} color="#2683f9" />
+                    <Icon name="check" size={18} color="#0785F4" />
                   )}
                 </TouchableOpacity>
               ))}

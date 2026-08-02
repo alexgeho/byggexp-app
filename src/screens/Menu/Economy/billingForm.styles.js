@@ -1,251 +1,262 @@
 import { StyleSheet } from "react-native";
 
-export const INK = "#052d50";
-export const PRIMARY = "#2683f9";
-export const MUTED = "#687898";
-export const LINE = "#e7ecf0";
-export const FIELD_BG = "#f4f7fa";
+/* Finance forms — pixel-matched to Figma "new invoice" / "new offer".
+   Palette and metrics come straight from the Figma nodes. */
+export const PAGE = "#F2F1F6";
+export const CARD = "#FFFFFF";
+export const INK = "#030303";
+export const PRIMARY = "#0785F4";
+export const MUTED = "#667E93";
+export const INPUT_BG = "#EEEEEE";
+export const PLACEHOLDER = "#9AA6B2";
+
+// Kept for existing imports (date-picker accent etc.)
+export const LINE = "#FFFFFF";
+export const FIELD_BG = "#FFFFFF";
+
+const F_MED = "DMSans-Medium"; // Figma weight 500
+const F_SEMI = "DMSans-SemiBold"; // Figma weight 600
 
 export const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f2f1f6", paddingTop: 48 },
+  container: { flex: 1, backgroundColor: PAGE },
+
+  /* Top bar: circle back + centered title + circle right button (44 / r22) */
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingBottom: 8,
+    height: 44,
+    marginHorizontal: 16,
+    marginBottom: 20,
   },
-  title: { fontSize: 18, fontWeight: "800", color: INK },
-  placeholder: { width: 40 },
-
-  scroll: { paddingHorizontal: 15, paddingBottom: 190, gap: 13 },
-
-  field: { gap: 5 },
-  label: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: MUTED,
-    marginLeft: 2,
+  headerBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: CARD,
+    alignItems: "center",
+    justifyContent: "center",
   },
+  title: { fontSize: 17, fontFamily: F_SEMI, color: INK },
+
+  scroll: { paddingHorizontal: 16, paddingBottom: 130, gap: 20 },
+
+  /* Label + field block (Figma: 8px gap between label and field) */
+  field: { gap: 8 },
+  label: { fontSize: 15, fontFamily: F_MED, color: INK },
+
+  /* Pill field (h44, r71, white) */
   input: {
-    backgroundColor: FIELD_BG,
-    borderWidth: 1,
-    borderColor: LINE,
-    borderRadius: 10,
-    paddingHorizontal: 13,
-    paddingVertical: 12,
+    backgroundColor: CARD,
+    borderRadius: 71,
+    paddingHorizontal: 16,
+    height: 44,
     fontSize: 15,
-    fontWeight: "600",
+    fontFamily: F_MED,
     color: INK,
-    minHeight: 46,
   },
   inputRow: {
-    backgroundColor: FIELD_BG,
-    borderWidth: 1,
-    borderColor: LINE,
-    borderRadius: 10,
-    paddingHorizontal: 13,
-    minHeight: 46,
+    backgroundColor: CARD,
+    borderRadius: 71,
+    paddingHorizontal: 16,
+    height: 44,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-  inputRowText: { fontSize: 15, fontWeight: "600", color: INK, flex: 1 },
-  inputRowPlaceholder: { color: "#9fb0c4", fontWeight: "500" },
-  textarea: { minHeight: 96, textAlignVertical: "top", paddingTop: 12 },
+  inputRowText: { fontSize: 15, fontFamily: F_MED, color: INK, flex: 1 },
+  inputRowPlaceholder: { color: PLACEHOLDER },
 
-  heroLabelRow: {
-    flexDirection: "row",
+  /* "Select customer" + plus button on the same row */
+  customerRow: { flexDirection: "row", gap: 10 },
+  customerField: { flex: 1 },
+  customerAdd: {
+    width: 44,
+    height: 44,
+    borderRadius: 71,
+    backgroundColor: CARD,
     alignItems: "center",
-    gap: 8,
-    marginLeft: 2,
-  },
-  heroLabel: { fontSize: 13, fontWeight: "800", color: INK },
-  heroMark: {
-    fontSize: 9.5,
-    fontWeight: "800",
-    letterSpacing: 0.6,
-    color: PRIMARY,
-    backgroundColor: "rgba(38,131,249,0.14)",
-    paddingHorizontal: 7,
-    paddingVertical: 2,
-    borderRadius: 6,
-    overflow: "hidden",
-    textTransform: "uppercase",
-  },
-  heroInput: {
-    backgroundColor: "#fff",
-    borderWidth: 1.5,
-    borderColor: "rgba(38,131,249,0.42)",
-    minHeight: 116,
+    justifyContent: "center",
   },
 
-  two: { flexDirection: "row", gap: 11 },
-  half: { flex: 1 },
-
-  // Centered section title with side rules — mirrors the admin form
-  // ("Offer rows", "ROT-avdrag").
-  sectionRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    marginTop: 8,
-    marginBottom: 2,
+  /* Textarea card (Description / Clarifications): r20 white, pad t17 l20 r20 */
+  textareaCard: {
+    backgroundColor: CARD,
+    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 17,
   },
-  sectionLine: { flex: 1, height: 1, backgroundColor: "#dbe2ea" },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: MUTED,
+  textarea: {
+    fontSize: 15,
+    fontFamily: F_MED,
+    color: INK,
+    minHeight: 94,
+    padding: 0,
+    textAlignVertical: "top",
   },
+  textareaShort: { minHeight: 47 },
 
+  /* Line-items card (r20 white, pad15) — one card per row */
   row: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: LINE,
-    borderRadius: 14,
-    padding: 12,
-    gap: 9,
+    backgroundColor: CARD,
+    borderRadius: 20,
+    padding: 15,
+    gap: 15,
   },
+  rowBlock: { gap: 8 },
   rowLabelLine: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
   rowDescField: {
-    backgroundColor: FIELD_BG,
-    borderWidth: 1,
-    borderColor: LINE,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 9,
-    fontSize: 14,
-    fontWeight: "600",
+    backgroundColor: INPUT_BG,
+    borderRadius: 71,
+    paddingHorizontal: 16,
+    minHeight: 44,
+    justifyContent: "center",
+    fontSize: 15,
+    fontFamily: F_MED,
     color: INK,
-    minHeight: 42,
-    textAlignVertical: "top",
+    textAlignVertical: "center",
   },
-  rowDelete: { padding: 4 },
-  rowGrid: { flexDirection: "row", gap: 8 },
-  cell: { flex: 1, gap: 3 },
-  cellLabel: { fontSize: 10.5, color: MUTED, fontWeight: "700" },
+  rowDelete: { padding: 2 },
+  rowGrid: { flexDirection: "row", gap: 15 },
+  cell: { flex: 1, gap: 8 },
+  cellLabel: { fontSize: 13, fontFamily: F_MED, color: INK },
   cellInput: {
-    backgroundColor: FIELD_BG,
-    borderWidth: 1,
-    borderColor: LINE,
-    borderRadius: 8,
-    paddingHorizontal: 9,
-    paddingVertical: 7,
-    fontSize: 13,
-    fontWeight: "700",
+    backgroundColor: INPUT_BG,
+    borderRadius: 71,
+    paddingHorizontal: 16,
+    height: 44,
+    fontSize: 15,
+    fontFamily: F_MED,
     color: INK,
     textAlign: "right",
   },
-  cellInputLeft: { textAlign: "left" },
+  cellInputLeft: { textAlign: "right" },
   rowAmount: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "baseline",
-    paddingTop: 2,
-  },
-  rowAmountLabel: { fontSize: 12, color: MUTED, fontWeight: "700" },
-  rowAmountValue: { fontSize: 15, fontWeight: "800", color: INK },
-  addRow: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: LINE,
-    borderRadius: 12,
-    paddingVertical: 13,
     alignItems: "center",
   },
-  addRowText: { color: PRIMARY, fontWeight: "700", fontSize: 14 },
+  rowAmountLabel: { fontSize: 13, fontFamily: F_MED, color: INK },
+  rowAmountValue: { fontSize: 17, fontFamily: F_SEMI, color: INK },
 
-  toggleRow: {
-    backgroundColor: "#fff",
+  /* Add row — pill, white, blue border + blue label */
+  addRow: {
+    height: 44,
+    borderRadius: 71,
     borderWidth: 1,
-    borderColor: LINE,
-    borderRadius: 14,
-    padding: 13,
+    borderColor: PRIMARY,
+    backgroundColor: CARD,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+  },
+  addRowText: { color: PRIMARY, fontFamily: F_MED, fontSize: 15 },
+
+  /* ROT card */
+  toggleRow: {
+    backgroundColor: CARD,
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    minHeight: 66,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     gap: 10,
   },
-  toggleTitle: { fontSize: 14, fontWeight: "700", color: INK },
-  toggleSub: { fontSize: 12, color: MUTED, marginTop: 2 },
+  toggleTitle: { fontSize: 15, fontFamily: F_SEMI, color: INK },
+  toggleSub: { fontSize: 13, fontFamily: F_MED, color: MUTED, marginTop: 2 },
+  toggleTrack: {
+    width: 51,
+    height: 31,
+    borderRadius: 100,
+    padding: 2,
+    justifyContent: "center",
+  },
+  toggleKnob: {
+    width: 27,
+    height: 27,
+    borderRadius: 100,
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#000000",
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 2,
+  },
 
+  /* Totals card (r20 white) */
   totals: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#eef2f6",
-    padding: 15,
-    gap: 7,
-    marginTop: 2,
+    backgroundColor: CARD,
+    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 17,
+    gap: 8,
   },
   totalLine: { flexDirection: "row", justifyContent: "space-between" },
-  totalLabel: { fontSize: 13.5, color: MUTED, fontWeight: "600" },
-  totalValue: { fontSize: 13.5, fontWeight: "700", color: INK },
-  totalValueNeg: { color: "#2fa84f" },
+  totalLabel: { fontSize: 15, fontFamily: F_MED, color: INK },
+  totalValue: { fontSize: 15, fontFamily: F_SEMI, color: INK },
+  totalValueNeg: { color: "#04B251" },
   grandLine: {
-    borderTopWidth: 1,
-    borderTopColor: "#eef2f6",
-    marginTop: 3,
-    paddingTop: 9,
+    marginTop: 7,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
-  grandLabel: { fontSize: 15, fontWeight: "800", color: INK },
-  grandValue: { fontSize: 19, fontWeight: "800", color: INK },
+  grandLabel: { fontSize: 17, fontFamily: F_SEMI, color: INK },
+  grandValue: { fontSize: 17, fontFamily: F_SEMI, color: INK },
 
+  /* Bottom action bar (white "Down" frame with two pills) */
   actions: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
     flexDirection: "row",
-    gap: 10,
-    paddingHorizontal: 15,
+    gap: 14,
+    paddingHorizontal: 20,
     paddingTop: 12,
     paddingBottom: 30,
-    backgroundColor: "#f2f1f6",
-    borderTopWidth: 1,
-    borderTopColor: "#e2e6ea",
+    backgroundColor: CARD,
   },
   btn: {
     flex: 1,
-    borderRadius: 12,
-    paddingVertical: 14,
+    height: 52,
+    borderRadius: 71,
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
-    gap: 7,
+    gap: 8,
   },
   btnPrimary: { backgroundColor: PRIMARY },
-  btnGhost: { backgroundColor: "#d9e9fb" },
-  btnText: { fontSize: 14.5, fontWeight: "800" },
-  btnTextPrimary: { color: "#fff" },
-  btnTextGhost: { color: "#0785f4" },
+  // Figma shows a white pill on the white bar; a hairline keeps it visible.
+  btnGhost: { backgroundColor: CARD, borderWidth: 1, borderColor: "#ECECEC" },
+  btnText: { fontSize: 15, fontFamily: F_MED },
+  btnTextPrimary: { color: "#FFFFFF" },
+  btnTextGhost: { color: INK },
   btnDisabled: { opacity: 0.5 },
 
+  /* two-column row (client picker) */
+  two: { flexDirection: "row", gap: 11 },
+  half: { flex: 1 },
+
+  /* company / private toggle (client picker) */
   typeToggle: {
     flexDirection: "row",
-    backgroundColor: "#dfe6ee",
-    borderRadius: 11,
+    backgroundColor: INPUT_BG,
+    borderRadius: 71,
     padding: 4,
     marginBottom: 12,
   },
   typeBtn: {
     flex: 1,
     paddingVertical: 9,
-    borderRadius: 8,
+    borderRadius: 71,
     alignItems: "center",
   },
-  typeBtnOn: {
-    backgroundColor: "#fff",
-  },
-  typeText: { fontSize: 14, fontWeight: "700", color: MUTED },
+  typeBtnOn: { backgroundColor: CARD },
+  typeText: { fontSize: 14, fontFamily: F_MED, color: MUTED },
   typeTextOn: { color: INK },
 
   /* client picker modal */
@@ -255,7 +266,7 @@ export const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   modalSheet: {
-    backgroundColor: "#fff",
+    backgroundColor: CARD,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingHorizontal: 18,
@@ -271,31 +282,40 @@ export const styles = StyleSheet.create({
     alignSelf: "center",
     marginBottom: 12,
   },
-  modalTitle: { fontSize: 17, fontWeight: "800", color: INK, marginBottom: 12 },
+  modalTitle: {
+    fontSize: 17,
+    fontFamily: F_SEMI,
+    color: INK,
+    marginBottom: 12,
+  },
   searchBar: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    backgroundColor: FIELD_BG,
-    borderWidth: 1,
-    borderColor: LINE,
-    borderRadius: 10,
-    paddingHorizontal: 12,
+    backgroundColor: INPUT_BG,
+    borderRadius: 71,
+    paddingHorizontal: 16,
     marginBottom: 10,
   },
-  searchInput: { flex: 1, paddingVertical: 11, fontSize: 15, color: INK },
+  searchInput: {
+    flex: 1,
+    paddingVertical: 11,
+    fontSize: 15,
+    fontFamily: F_MED,
+    color: INK,
+  },
   clientRow: {
     paddingVertical: 13,
     borderBottomWidth: 1,
     borderBottomColor: "#f0f3f6",
   },
-  clientName: { fontSize: 15, fontWeight: "700", color: INK },
-  clientMeta: { fontSize: 12.5, color: MUTED, marginTop: 2 },
+  clientName: { fontSize: 15, fontFamily: F_SEMI, color: INK },
+  clientMeta: { fontSize: 13, fontFamily: F_MED, color: MUTED, marginTop: 2 },
   newClientBtn: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
     paddingVertical: 14,
   },
-  newClientText: { color: PRIMARY, fontWeight: "800", fontSize: 15 },
+  newClientText: { color: PRIMARY, fontFamily: F_SEMI, fontSize: 15 },
 });

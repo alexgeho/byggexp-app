@@ -900,6 +900,7 @@
   },
   "billing": {
     "itemDescription": "Description",
+    "itemTitle": "Title",
     "quantity": "Qty",
     "unit": "Unit",
     "unitPrice": "Unit price",
@@ -910,6 +911,7 @@
     "clientSaveFailed": "Could not save the customer.",
     "newClient": "New customer",
     "selectClient": "Select customer",
+    "selectClientCompany": "Select customer/company",
     "clientName": "Customer / company",
     "email": "Email",
     "orgNumber": "Org. number",

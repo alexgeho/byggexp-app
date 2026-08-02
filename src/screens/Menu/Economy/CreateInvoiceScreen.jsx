@@ -9,13 +9,13 @@ import {
   Alert,
   Platform,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/Feather";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { invoiceService } from "../../../services";
 import { useFeedback } from "../../../contexts/FeedbackContext";
-import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { getDateLocale } from "../../../utils/dateLocale";
 import {
   computeTotals,
@@ -25,10 +25,9 @@ import {
   addDaysIso,
   emptyLineItem,
 } from "../../../utils/billingTotals";
-import { styles, PRIMARY } from "./billingForm.styles";
+import { styles, PRIMARY, INK, PLACEHOLDER } from "./billingForm.styles";
 import LineItemsEditor from "./LineItemsEditor";
 import ClientPickerModal from "./ClientPickerModal";
-import SectionTitle from "./SectionTitle";
 
 const DEFAULT_TERMS_DAYS = 20;
 
@@ -47,6 +46,7 @@ export default function CreateInvoiceScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const { showSuccess } = useFeedback();
+  const insets = useSafeAreaInsets();
 
   const [client, setClient] = useState(null);
   const [companyName, setCompanyName] = useState("");
@@ -151,24 +151,27 @@ export default function CreateInvoiceScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <BackButton
+      <View style={[styles.header, { marginTop: insets.top + 8 }]}>
+        <TouchableOpacity
+          style={styles.headerBtn}
           onPress={() => navigation.goBack()}
-          iconSource={require("../../../assets/Arrow-left.png")}
-        />
+        >
+          <Icon name="chevron-left" size={22} color={INK} />
+        </TouchableOpacity>
         <Text style={styles.title}>{t("billing.newInvoiceTitle")}</Text>
-        <View style={styles.placeholder} />
+        <View style={{ width: 44 }} />
       </View>
 
       <ScrollView
+        style={{ flex: 1 }}
         contentContainerStyle={styles.scroll}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.field}>
-          <Text style={styles.label}>{t("billing.customer")}</Text>
+        {/* Customer + add */}
+        <View style={styles.customerRow}>
           <TouchableOpacity
-            style={styles.inputRow}
+            style={[styles.inputRow, styles.customerField]}
             onPress={() => setClientPickerVisible(true)}
           >
             <Text
@@ -180,71 +183,76 @@ export default function CreateInvoiceScreen() {
             >
               {companyName || t("billing.selectClient")}
             </Text>
-            <Icon name="chevron-down" size={18} color="#687898" />
+            <Icon name="chevron-down" size={16} color={INK} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.customerAdd}
+            onPress={() => setClientPickerVisible(true)}
+          >
+            <Icon name="plus" size={20} color={INK} />
           </TouchableOpacity>
         </View>
 
-        <View style={styles.two}>
-          <View style={[styles.field, styles.half]}>
-            <Text style={styles.label}>{t("billing.dueDate")}</Text>
-            <TouchableOpacity
-              style={styles.inputRow}
-              onPress={() => setShowDatePicker(true)}
-            >
-              <Text style={styles.inputRowText}>
-                {formatDisplayDate(dueDate)}
-              </Text>
-              <Icon name="calendar" size={16} color="#687898" />
-            </TouchableOpacity>
-          </View>
-          <View style={[styles.field, styles.half]}>
-            <Text style={styles.label}>{t("billing.email")}</Text>
-            <TextInput
-              style={styles.input}
-              value={email}
-              onChangeText={setEmail}
-              placeholder="kund@…"
-              placeholderTextColor="#9fb0c4"
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-          </View>
+        {/* Due date */}
+        <View style={styles.field}>
+          <Text style={styles.label}>{t("billing.dueDate")}</Text>
+          <TouchableOpacity
+            style={styles.inputRow}
+            onPress={() => setShowDatePicker(true)}
+          >
+            <Text style={styles.inputRowText}>
+              {formatDisplayDate(dueDate)}
+            </Text>
+            <Icon name="calendar" size={18} color={INK} />
+          </TouchableOpacity>
         </View>
 
-        <SectionTitle title={t("billing.invoiceRows")} />
-        <LineItemsEditor items={items} onChange={setItems} />
+        {/* Email */}
+        <View style={styles.field}>
+          <Text style={styles.label}>{t("billing.email")}</Text>
+          <TextInput
+            style={styles.input}
+            value={email}
+            onChangeText={setEmail}
+            placeholder="kund@…"
+            placeholderTextColor={PLACEHOLDER}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+        </View>
 
-        <SectionTitle title={t("billing.rot")} />
-        <TouchableOpacity
-          style={styles.toggleRow}
-          activeOpacity={0.85}
-          onPress={() => setRotEnabled((prev) => !prev)}
-        >
-          <View style={{ flex: 1 }}>
-            <Text style={styles.toggleTitle}>{t("billing.rotApply")}</Text>
-            <Text style={styles.toggleSub}>{t("billing.rotHint")}</Text>
-          </View>
-          <View
-            style={{
-              width: 46,
-              height: 28,
-              borderRadius: 14,
-              backgroundColor: rotEnabled ? PRIMARY : "#cdd8e3",
-              justifyContent: "center",
-              paddingHorizontal: 3,
-              alignItems: rotEnabled ? "flex-end" : "flex-start",
-            }}
+        {/* Invoice rows */}
+        <LineItemsEditor
+          items={items}
+          onChange={setItems}
+          label={t("billing.invoiceRows")}
+        />
+
+        {/* ROT deduction */}
+        <View style={styles.field}>
+          <Text style={styles.label}>{t("billing.rot")}</Text>
+          <TouchableOpacity
+            style={styles.toggleRow}
+            activeOpacity={0.85}
+            onPress={() => setRotEnabled((prev) => !prev)}
           >
+            <View style={{ flex: 1 }}>
+              <Text style={styles.toggleTitle}>{t("billing.rotApply")}</Text>
+              <Text style={styles.toggleSub}>{t("billing.rotHint")}</Text>
+            </View>
             <View
-              style={{
-                width: 22,
-                height: 22,
-                borderRadius: 11,
-                backgroundColor: "#fff",
-              }}
-            />
-          </View>
-        </TouchableOpacity>
+              style={[
+                styles.toggleTrack,
+                {
+                  backgroundColor: rotEnabled ? PRIMARY : "#E2E5EA",
+                  alignItems: rotEnabled ? "flex-end" : "flex-start",
+                },
+              ]}
+            >
+              <View style={styles.toggleKnob} />
+            </View>
+          </TouchableOpacity>
+        </View>
 
         {rotEnabled && (
           <View style={styles.field}>
@@ -254,12 +262,13 @@ export default function CreateInvoiceScreen() {
               value={String(rotLaborAmount)}
               onChangeText={setRotLaborAmount}
               placeholder="0"
-              placeholderTextColor="#9fb0c4"
+              placeholderTextColor={PLACEHOLDER}
               keyboardType="decimal-pad"
             />
           </View>
         )}
 
+        {/* Totals */}
         <View style={styles.totals}>
           <View style={styles.totalLine}>
             <Text style={styles.totalLabel}>{t("billing.exVat")}</Text>
@@ -304,7 +313,7 @@ export default function CreateInvoiceScreen() {
         </View>
       </ScrollView>
 
-      <View style={styles.actions}>
+      <View style={[styles.actions, { paddingBottom: insets.bottom + 12 }]}>
         <TouchableOpacity
           style={[styles.btn, styles.btnGhost, saving && styles.btnDisabled]}
           onPress={handleSaveDraft}

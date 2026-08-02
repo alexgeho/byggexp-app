@@ -1,128 +1,136 @@
 import { StyleSheet } from "react-native";
 
-// Palette mirrors the admin panel: ink #052d50, primary #2683f9,
-// muted #687898, borders #e7ecf0, status tones draft/sent/ok/bad.
+/* Finance list — pixel-matched to Figma "offers" / "invoices". */
+const PAGE = "#F2F1F6";
+const CARD = "#FFFFFF";
+const INK = "#030303";
+const PRIMARY = "#0785F4";
+const MUTED = "#667E93";
+
+const F_MED = "DMSans-Medium";
+const F_SEMI = "DMSans-SemiBold";
+
 export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f2f1f6",
-    paddingTop: 48,
-  },
+  container: { flex: 1, backgroundColor: PAGE },
+
+  /* Top bar: circle back + centered title + circle right button */
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingBottom: 12,
+    height: 44,
+    marginHorizontal: 16,
+    marginBottom: 20,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: "800",
-    color: "#052d50",
+  headerBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: CARD,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  placeholder: { width: 40 },
+  title: { fontSize: 17, fontFamily: F_SEMI, color: INK },
 
+  /* Segmented Offers / Invoices — navy @5% track, white active pill (Figma) */
   segmented: {
     flexDirection: "row",
-    backgroundColor: "#dfe6ee",
-    borderRadius: 13,
+    backgroundColor: "rgba(5,45,80,0.05)",
+    borderRadius: 10,
     padding: 4,
-    marginHorizontal: 15,
-    marginBottom: 12,
+    height: 44,
+    marginHorizontal: 16,
+    marginBottom: 20,
   },
   segBtn: {
     flex: 1,
-    paddingVertical: 9,
     borderRadius: 10,
     alignItems: "center",
+    justifyContent: "center",
   },
-  segBtnOn: {
-    backgroundColor: "#fff",
-  },
-  segText: { fontSize: 14, fontWeight: "700", color: "#687898" },
-  segTextOn: { color: "#052d50" },
+  segBtnOn: { backgroundColor: CARD },
+  segText: { fontSize: 15, fontFamily: F_MED, color: INK },
+  segTextOn: { color: INK },
 
-  pillsRow: { flexGrow: 0, marginBottom: 10, maxHeight: 40 },
-  pillsContent: { paddingHorizontal: 15, gap: 7, alignItems: "center" },
+  /* Status filter pills */
+  pillsRow: { flexGrow: 0, marginBottom: 20, maxHeight: 44 },
+  pillsContent: { paddingHorizontal: 16, gap: 10, alignItems: "center" },
   pill: {
-    paddingVertical: 6,
-    paddingHorizontal: 13,
-    borderRadius: 999,
-    backgroundColor: "transparent",
+    height: 44,
+    paddingHorizontal: 18,
+    borderRadius: 71,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: CARD,
   },
-  pillOn: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#052d50",
-  },
-  pillText: { fontSize: 12.5, fontWeight: "600", color: "rgba(5,45,80,0.5)" },
-  pillTextOn: { color: "#052d50" },
+  pillOn: { backgroundColor: PRIMARY },
+  pillText: { fontSize: 15, fontFamily: F_MED, color: INK },
+  pillTextOn: { color: "#FFFFFF" },
 
-  listContent: { paddingHorizontal: 15, paddingBottom: 150, gap: 11 },
+  listContent: { paddingHorizontal: 16, paddingBottom: 160, gap: 10 },
   center: { paddingTop: 90, alignItems: "center", gap: 12 },
   emptyText: {
-    fontSize: 14,
-    color: "#687898",
+    fontSize: 15,
+    fontFamily: F_MED,
+    color: MUTED,
     textAlign: "center",
     paddingHorizontal: 30,
   },
 
+  /* Card */
   card: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 15,
-    gap: 6,
-  },
-  cardTop: {
+    backgroundColor: CARD,
+    borderRadius: 20,
+    padding: 20,
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
+    alignItems: "stretch",
   },
-  cardNo: { fontSize: 12, fontWeight: "600", color: "#687898" },
-  cardCustomer: { fontSize: 15.5, fontWeight: "700", color: "#052d50" },
-  cardBottom: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "space-between",
-  },
-  cardMeta: { fontSize: 12.5, color: "#687898", flex: 1 },
-  cardAmount: { fontSize: 15, fontWeight: "800", color: "#052d50" },
+  cardInfo: { gap: 14, flexShrink: 1, paddingRight: 12 },
+  cardNo: { fontSize: 13, fontFamily: F_MED, color: MUTED },
+  cardCustomer: { fontSize: 17, fontFamily: F_MED, color: INK },
+  cardMeta: { fontSize: 13, fontFamily: F_MED, color: MUTED },
+  cardRight: { alignItems: "flex-end", justifyContent: "space-between" },
+  cardAmount: { fontSize: 17, fontFamily: F_MED, color: INK },
 
-  badge: { paddingVertical: 4, paddingHorizontal: 9, borderRadius: 7 },
+  badge: {
+    paddingVertical: 3,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    alignSelf: "flex-end",
+  },
   badgeText: {
-    fontSize: 10.5,
-    fontWeight: "800",
-    letterSpacing: 0.4,
+    fontSize: 13,
+    fontFamily: F_MED,
     textTransform: "uppercase",
   },
-  badge_draft: { backgroundColor: "#eef1f5" },
-  badgeText_draft: { color: "#687898" },
-  badge_sent: { backgroundColor: "#e6f0ff" },
-  badgeText_sent: { color: "#1677ff" },
-  badge_ok: { backgroundColor: "#e7f6ec" },
-  badgeText_ok: { color: "#2fa84f" },
-  badge_bad: { backgroundColor: "#fdecec" },
-  badgeText_bad: { color: "#e5484d" },
+  badge_draft: { backgroundColor: "#EDF0F5" },
+  badgeText_draft: { color: MUTED },
+  badge_sent: { backgroundColor: "#EBF4FE" },
+  badgeText_sent: { color: "#0C77FD" },
+  badge_ok: { backgroundColor: "#E5F7EA" },
+  badgeText_ok: { color: "#04B251" },
+  badge_bad: { backgroundColor: "#FDECEC" },
+  badgeText_bad: { color: "#E5484D" },
 
+  /* Customer filter chip (app feature; styled as a Figma pill) */
   customerChip: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
     alignSelf: "flex-start",
-    marginHorizontal: 15,
-    marginBottom: 10,
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#e7ecf0",
-    borderRadius: 999,
-    paddingVertical: 8,
-    paddingHorizontal: 13,
+    marginHorizontal: 16,
+    marginBottom: 20,
+    backgroundColor: CARD,
+    borderRadius: 71,
+    height: 44,
+    paddingHorizontal: 16,
     maxWidth: "90%",
   },
   customerChipText: {
-    fontSize: 13.5,
-    fontWeight: "700",
-    color: "#052d50",
+    fontSize: 15,
+    fontFamily: F_MED,
+    color: INK,
     flexShrink: 1,
   },
 
@@ -132,7 +140,7 @@ export const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   modalSheet: {
-    backgroundColor: "#fff",
+    backgroundColor: CARD,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingHorizontal: 18,
@@ -150,8 +158,8 @@ export const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 17,
-    fontWeight: "800",
-    color: "#052d50",
+    fontFamily: F_SEMI,
+    color: INK,
     marginBottom: 8,
   },
   customerRow: {
@@ -165,8 +173,8 @@ export const styles = StyleSheet.create({
   },
   customerRowText: {
     fontSize: 15,
-    fontWeight: "600",
-    color: "#052d50",
+    fontFamily: F_MED,
+    color: INK,
     flex: 1,
   },
 });

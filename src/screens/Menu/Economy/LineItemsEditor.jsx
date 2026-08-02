@@ -8,11 +8,13 @@ import {
   formatMoney,
 } from "../../../utils/billingTotals";
 import { getDateLocale } from "../../../utils/dateLocale";
-import { styles, MUTED } from "./billingForm.styles";
+import { styles, PRIMARY, PLACEHOLDER } from "./billingForm.styles";
 
 // Editable list of offer/invoice line items. Fully controlled: the parent
-// owns `items` and receives the next array on every change.
-export default function LineItemsEditor({ items, onChange }) {
+// owns `items` and receives the next array on every change. Matches the Figma
+// "Invoice rows" section — section label, one white card per row, then a
+// pill "Add row" button, all 8px apart.
+export default function LineItemsEditor({ items, onChange, label }) {
   const { t } = useTranslation();
 
   const update = (index, patch) => {
@@ -38,27 +40,31 @@ export default function LineItemsEditor({ items, onChange }) {
   };
 
   return (
-    <View style={{ gap: 10 }}>
+    <View style={{ gap: 8 }}>
+      {label ? <Text style={styles.label}>{label}</Text> : null}
+
       {items.map((item, index) => (
         <View key={index} style={styles.row}>
-          <View style={styles.rowLabelLine}>
-            <Text style={styles.cellLabel}>{t("billing.itemDescription")}</Text>
-            <TouchableOpacity
-              style={styles.rowDelete}
-              onPress={() => remove(index)}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            >
-              <Icon name="trash-2" size={18} color="#e5484d" />
-            </TouchableOpacity>
+          <View style={styles.rowBlock}>
+            <View style={styles.rowLabelLine}>
+              <Text style={styles.cellLabel}>{t("billing.itemTitle")}</Text>
+              <TouchableOpacity
+                style={styles.rowDelete}
+                onPress={() => remove(index)}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <Icon name="trash-2" size={18} color="#EF4444" />
+              </TouchableOpacity>
+            </View>
+            <TextInput
+              style={styles.rowDescField}
+              value={item.description}
+              onChangeText={(text) => update(index, { description: text })}
+              placeholder={t("billing.itemDescriptionPlaceholder")}
+              placeholderTextColor={PLACEHOLDER}
+              multiline
+            />
           </View>
-          <TextInput
-            style={styles.rowDescField}
-            value={item.description}
-            onChangeText={(text) => update(index, { description: text })}
-            placeholder={t("billing.itemDescriptionPlaceholder")}
-            placeholderTextColor="#9fb0c4"
-            multiline
-          />
 
           <View style={styles.rowGrid}>
             <View style={styles.cell}>
@@ -105,9 +111,8 @@ export default function LineItemsEditor({ items, onChange }) {
       ))}
 
       <TouchableOpacity style={styles.addRow} onPress={add} activeOpacity={0.8}>
-        <Text style={styles.addRowText}>
-          <Icon name="plus" size={14} color={MUTED} /> {t("billing.addRow")}
-        </Text>
+        <Text style={styles.addRowText}>{t("billing.addRow")}</Text>
+        <Icon name="plus" size={20} color={PRIMARY} />
       </TouchableOpacity>
     </View>
   );

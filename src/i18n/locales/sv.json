@@ -900,6 +900,7 @@
   },
   "billing": {
     "itemDescription": "Beskrivning",
+    "itemTitle": "Titel",
     "quantity": "Antal",
     "unit": "Enhet",
     "unitPrice": "Á-pris",
@@ -910,6 +911,7 @@
     "clientSaveFailed": "Kunde inte spara kunden.",
     "newClient": "Ny kund",
     "selectClient": "Välj kund",
+    "selectClientCompany": "Välj kund/företag",
     "clientName": "Kund / företag",
     "email": "E-post",
     "orgNumber": "Org.nummer",
