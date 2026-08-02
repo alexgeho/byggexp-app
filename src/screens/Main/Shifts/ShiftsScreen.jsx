@@ -1,5 +1,6 @@
 import React, {
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -28,7 +29,9 @@ import { useTheme } from "../../../theme/ThemeContext";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
-import { shiftService } from "../../../services";
+import { ProjectFilterSelector } from "../../../components/common/ProjectFilterSelector/ProjectFilterSelector";
+import AuthContext from "../../../contexts/AuthContext";
+import { projectService, shiftService, userService } from "../../../services";
 import Icon from "react-native-vector-icons/Feather";
 import {
   buildExportMonthOptions,
@@ -63,6 +66,10 @@ export default function ShiftsScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { user } = useContext(AuthContext);
+  const isAdmin = ["companyAdmin", "superadmin", "projectAdmin"].includes(
+    user?.role,
+  );
   const weekdayLabels = t("shifts.weekdays", { returnObjects: true });
   const exportBottomSheetRef = useRef(null);
   const periodBottomSheetRef = useRef(null);
@@ -83,6 +90,16 @@ export default function ShiftsScreen() {
   const [datePickerTarget, setDatePickerTarget] = useState(null);
   const [exportPeriodApplied, setExportPeriodApplied] = useState(false);
   const [exporting, setExporting] = useState(false);
+  // Admin filters: scope the calendar + export to a project and/or people.
+  const [projects, setProjects] = useState([]);
+  const [employees, setEmployees] = useState([]);
+  const [filterProjectId, setFilterProjectId] = useState(null);
+  const [filterWorkerIds, setFilterWorkerIds] = useState([]);
+  const [employeePickerOpen, setEmployeePickerOpen] = useState(false);
+
+  const workerIdsParam = filterWorkerIds.length
+    ? filterWorkerIds.join(",")
+    : undefined;
 
   const currentMonthKey = useMemo(() => getCurrentMonthKey(), []);
   const todayDateKey = useMemo(() => getTodayDateKey(), []);
@@ -93,19 +110,26 @@ export default function ShiftsScreen() {
     return months;
   }, []);
 
-  const loadHistory = useCallback(async (month) => {
-    const data = await shiftService.getHistory(month ? { month } : {});
-    setAvailableMonths(data.availableMonths || []);
-    setCurrentMonthDuration(data.monthTotalDurationMs || 0);
-    setPreviousMonthDuration(data.previousMonthTotalDurationMs || 0);
-    setDays(data.days || []);
-    setSelectedMonth(data.month);
-    setSelectedDates((previousDates) =>
-      previousDates.filter((date) =>
-        (data.days || []).some((day) => day.date === date),
-      ),
-    );
-  }, []);
+  const loadHistory = useCallback(
+    async (month) => {
+      const data = await shiftService.getHistory({
+        ...(month ? { month } : {}),
+        ...(filterProjectId ? { projectId: filterProjectId } : {}),
+        ...(workerIdsParam ? { workerIds: workerIdsParam } : {}),
+      });
+      setAvailableMonths(data.availableMonths || []);
+      setCurrentMonthDuration(data.monthTotalDurationMs || 0);
+      setPreviousMonthDuration(data.previousMonthTotalDurationMs || 0);
+      setDays(data.days || []);
+      setSelectedMonth(data.month);
+      setSelectedDates((previousDates) =>
+        previousDates.filter((date) =>
+          (data.days || []).some((day) => day.date === date),
+        ),
+      );
+    },
+    [filterProjectId, workerIdsParam],
+  );
 
   const refreshHistory = useCallback(
     async (preferredMonth) => {
@@ -131,6 +155,36 @@ export default function ShiftsScreen() {
       refreshHistory(selectedMonth);
     }, [refreshHistory, selectedMonth]),
   );
+
+  // Load projects + colleagues so admins can filter the export by project/people.
+  useEffect(() => {
+    if (!isAdmin) {
+      return;
+    }
+    let active = true;
+    Promise.all([
+      (user?.role === "superadmin"
+        ? projectService.getAll()
+        : projectService.getMyProjects()
+      ).catch(() => []),
+      userService.getColleagues().catch(() => []),
+    ]).then(([projectData, employeeData]) => {
+      if (!active) {
+        return;
+      }
+      setProjects(Array.isArray(projectData) ? projectData : []);
+      setEmployees(Array.isArray(employeeData) ? employeeData : []);
+    });
+    return () => {
+      active = false;
+    };
+  }, [isAdmin, user?.role]);
+
+  // Re-pull the calendar when the admin filters change.
+  useEffect(() => {
+    refreshHistory(selectedMonth);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterProjectId, workerIdsParam]);
 
   const dayMap = useMemo(() => {
     const map = new Map();
@@ -495,6 +549,8 @@ export default function ShiftsScreen() {
         format: periodExportType,
         from: range.from,
         to: range.to,
+        ...(filterProjectId ? { projectId: filterProjectId } : {}),
+        ...(workerIdsParam ? { workerIds: workerIdsParam } : {}),
       });
       setExportPeriodApplied(true);
       closePeriodSheet();
@@ -585,6 +641,8 @@ export default function ShiftsScreen() {
       await shiftService.exportReport({
         format: selectedExportType,
         dates: sortedDates.join(","),
+        ...(filterProjectId ? { projectId: filterProjectId } : {}),
+        ...(workerIdsParam ? { workerIds: workerIdsParam } : {}),
       });
       closeExportSheet();
     } catch (error) {
@@ -654,6 +712,47 @@ export default function ShiftsScreen() {
               />
             </TouchableOpacity>
           </View>
+
+          {isAdmin ? (
+            <>
+              <View style={styles.exportSelector}>
+                <ProjectFilterSelector
+                  projects={projects}
+                  selectedProjectId={filterProjectId}
+                  onSelect={setFilterProjectId}
+                />
+              </View>
+              <View style={styles.exportSelector}>
+                <TouchableOpacity
+                  style={styles.dropdownButton}
+                  onPress={() => setEmployeePickerOpen(true)}
+                >
+                  <Text
+                    style={[
+                      styles.dropdownText,
+                      !filterWorkerIds.length && styles.dropdownPlaceholderText,
+                      {
+                        fontFamily:
+                          theme.text.fontFamily[
+                            filterWorkerIds.length ? "semiBold" : "regular"
+                          ],
+                      },
+                    ]}
+                  >
+                    {filterWorkerIds.length
+                      ? t("shifts.employeesSelected", {
+                          count: filterWorkerIds.length,
+                        })
+                      : t("shifts.allEmployees")}
+                  </Text>
+                  <Image
+                    style={styles.dropdownIcon}
+                    source={require("../../../assets/Arrow-down.png")}
+                  />
+                </TouchableOpacity>
+              </View>
+            </>
+          ) : null}
 
           <View style={styles.calendarContainer}>
             <View style={styles.calendarMonthBar}>
@@ -774,6 +873,11 @@ export default function ShiftsScreen() {
                 selectedShifts.map((shift) => {
                   return (
                     <View key={shift.id} style={styles.shiftCard}>
+                      {isAdmin && shift.workerName ? (
+                        <Text style={styles.shiftWorkerName} numberOfLines={1}>
+                          {shift.workerName}
+                        </Text>
+                      ) : null}
                       <View style={styles.shiftTimeRow}>
                         <Text
                           style={[
@@ -1227,6 +1331,66 @@ export default function ShiftsScreen() {
             <TouchableOpacity
               style={styles.datePickerButton}
               onPress={() => setDatePickerTarget(null)}
+            >
+              <Text style={styles.datePickerButtonText}>
+                {t("common.done")}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={employeePickerOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setEmployeePickerOpen(false)}
+      >
+        <View style={styles.datePickerOverlay}>
+          <View style={styles.employeePickerCard}>
+            <Text style={styles.datePickerTitle}>
+              {t("shifts.selectEmployees")}
+            </Text>
+            <ScrollView style={styles.employeeList}>
+              <TouchableOpacity
+                style={styles.employeeRow}
+                onPress={() => setFilterWorkerIds([])}
+              >
+                <Text style={styles.employeeName}>
+                  {t("shifts.allEmployees")}
+                </Text>
+                {filterWorkerIds.length === 0 ? (
+                  <Text style={styles.employeeCheck}>✓</Text>
+                ) : null}
+              </TouchableOpacity>
+              {employees.map((emp) => {
+                const id = String(emp._id || emp.id);
+                const selected = filterWorkerIds.includes(id);
+                return (
+                  <TouchableOpacity
+                    key={id}
+                    style={styles.employeeRow}
+                    onPress={() =>
+                      setFilterWorkerIds((prev) =>
+                        prev.includes(id)
+                          ? prev.filter((x) => x !== id)
+                          : [...prev, id],
+                      )
+                    }
+                  >
+                    <Text style={styles.employeeName} numberOfLines={1}>
+                      {emp.name || emp.email}
+                    </Text>
+                    {selected ? (
+                      <Text style={styles.employeeCheck}>✓</Text>
+                    ) : null}
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+            <TouchableOpacity
+              style={styles.datePickerButton}
+              onPress={() => setEmployeePickerOpen(false)}
             >
               <Text style={styles.datePickerButtonText}>
                 {t("common.done")}

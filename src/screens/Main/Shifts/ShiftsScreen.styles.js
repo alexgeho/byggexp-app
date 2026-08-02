@@ -537,6 +537,41 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#FFFFFF",
   },
+  employeePickerCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    padding: 16,
+    width: "100%",
+    maxHeight: "70%",
+  },
+  employeeList: {
+    marginTop: 4,
+  },
+  employeeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e9e9e9",
+  },
+  employeeName: {
+    flex: 1,
+    color: "#052D50",
+    fontSize: 16,
+  },
+  employeeCheck: {
+    color: "#0089f6",
+    fontSize: 18,
+    fontWeight: "700",
+    marginLeft: 12,
+  },
+  shiftWorkerName: {
+    color: "#052D50",
+    fontSize: 15,
+    fontWeight: "700",
+    marginBottom: 6,
+  },
   datePickerTitle: {
     color: "#052D50",
     fontSize: 18,
