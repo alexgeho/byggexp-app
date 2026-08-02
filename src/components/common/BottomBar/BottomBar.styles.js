@@ -72,8 +72,8 @@ export function createStyles(theme) {
     // overflow:hidden clips the blur to the pill.
     menuWrapperGlass: {
       backgroundColor: "rgba(255,255,255,0.55)",
-      borderWidth: 1,
-      borderColor: "rgba(255,255,255,0.7)",
+      borderWidth: 2,
+      borderColor: "#FFFFFF",
       overflow: "hidden",
     },
     navText: {

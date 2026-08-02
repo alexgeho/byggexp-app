@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
+import Svg, { Defs, RadialGradient, Stop, Rect } from "react-native-svg";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
@@ -104,6 +105,42 @@ export default function MainButtonsGrid() {
                 },
               ]}
             >
+              {theme.colors.cardGlow && !buttonColor ? (
+                <Svg pointerEvents="none" style={StyleSheet.absoluteFill}>
+                  <Defs>
+                    <RadialGradient
+                      id={`cardGlow-${button.id}`}
+                      cx="94%"
+                      cy="80%"
+                      rx="88%"
+                      ry="95%"
+                    >
+                      <Stop
+                        offset="0"
+                        stopColor={theme.colors.cardGlow}
+                        stopOpacity="0.1"
+                      />
+                      <Stop
+                        offset="0.6"
+                        stopColor={theme.colors.cardGlow}
+                        stopOpacity="0.04"
+                      />
+                      <Stop
+                        offset="1"
+                        stopColor={theme.colors.cardGlow}
+                        stopOpacity="0"
+                      />
+                    </RadialGradient>
+                  </Defs>
+                  <Rect
+                    x="0"
+                    y="0"
+                    width="100%"
+                    height="100%"
+                    fill={`url(#cardGlow-${button.id})`}
+                  />
+                </Svg>
+              ) : null}
               <TouchableOpacity
                 style={styles.buttonInner}
                 onPress={function onButtonPress() {

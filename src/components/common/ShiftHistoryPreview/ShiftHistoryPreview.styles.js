@@ -10,10 +10,12 @@ export function createStyles(theme, colorMode = "dark") {
   const secondaryTextColor = isLightMode
     ? `${theme.colors.text}B3`
     : themedTextColor || "rgba(255,255,255,0.72)";
-  const cardBackgroundColor = isLightMode ? "#FFFFFF" : "rgba(255,255,255,0.3)";
+  const cardBackgroundColor = isLightMode
+    ? "#FFFFFF"
+    : theme.colors.card || "#232323";
   const cardBorderColor = isLightMode
     ? `${theme.colors.primary}33`
-    : "rgba(255,255,255,0.2)";
+    : "transparent";
   const dividerColor = isLightMode
     ? `${theme.colors.primary}1F`
     : "rgba(255,255,255,0.14)";
@@ -36,8 +38,7 @@ export function createStyles(theme, colorMode = "dark") {
     },
     title: {
       color: headerTextColor,
-      fontSize: 15,
-      opacity: isLightMode ? 1 : 0.72,
+      fontSize: 17,
       fontFamily: theme.text.fontFamily.medium,
     },
     linkButton: {
@@ -47,8 +48,7 @@ export function createStyles(theme, colorMode = "dark") {
     },
     linkText: {
       color: headerTextColor,
-      fontSize: 15,
-      opacity: isLightMode ? 1 : 0.72,
+      fontSize: 17,
       fontFamily: theme.text.fontFamily.medium,
     },
     linkIcon: {
@@ -73,7 +73,7 @@ export function createStyles(theme, colorMode = "dark") {
       borderColor: cardBorderColor,
       borderRadius: 20,
       paddingHorizontal: 20,
-      paddingVertical: 16,
+      paddingVertical: 20,
     },
     loadingState: {
       flex: 1,
@@ -107,8 +107,8 @@ export function createStyles(theme, colorMode = "dark") {
     dateText: {
       color: primaryTextColor,
       opacity: 0.5,
-      fontSize: 13,
-      fontFamily: theme.text.fontFamily.regular,
+      fontSize: 15,
+      fontFamily: theme.text.fontFamily.medium,
     },
     summaryRow: {
       flexDirection: "row",
@@ -132,14 +132,14 @@ export function createStyles(theme, colorMode = "dark") {
     durationText: {
       color: primaryTextColor,
       fontSize: 15,
-      fontFamily: theme.text.fontFamily.medium,
+      fontFamily: theme.text.fontFamily.semiBold,
       textAlign: "right",
     },
     timeText: {
       color: primaryTextColor,
-      opacity: 0.7,
-      fontSize: 14,
-      fontFamily: theme.text.fontFamily.regular,
+      opacity: 0.5,
+      fontSize: 15,
+      fontFamily: theme.text.fontFamily.medium,
       textAlign: "right",
     },
   });

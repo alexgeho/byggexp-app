@@ -115,8 +115,8 @@ export const blueColors = {
 export const blackColors = {
   ...blueColors,
   background: "#1C1C1C",
-  primary: "#3B82F6",
-  glow: "#3B82F6",
+  primary: "#3097F7",
+  glow: "#2C9CFF",
   text: "#FFFFFF",
   card: "#232323",
   border: "rgba(255,255,255,0.2)",
@@ -127,6 +127,9 @@ export const blackColors = {
   bottomNav: "#FFFFFF",
   homeButtonBackground: "#232323",
   homeButtonBorder: "rgba(255,255,255,0.2)",
+  // Figma dark home: clean cards, no diagonal lines, soft blue corner glow.
+  hideButtonLines: true,
+  cardGlow: "#2C9CFF",
 };
 
 export const lightBlueColors = {
