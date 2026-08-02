@@ -54,7 +54,7 @@ export function BottomBar({
   const WrapperTag = glass ? BlurView : View;
   const wrapperProps = glass
     ? {
-        intensity: 28,
+        intensity: 45,
         tint: "light",
         style: [styles.menuWrapper, styles.menuWrapperGlass],
       }

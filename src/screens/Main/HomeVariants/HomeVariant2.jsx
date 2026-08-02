@@ -378,7 +378,7 @@ export default function HomeVariant2() {
             scrollViewHeight > 0 && {
               minHeight: scrollViewHeight,
             },
-          themeName === "colorful" && { paddingBottom: 104 },
+          themeName === "colorful" && { paddingBottom: 136 },
         ]}
         onLayout={function handleScrollViewLayout(event) {
           setScrollViewHeight(event.nativeEvent.layout.height);

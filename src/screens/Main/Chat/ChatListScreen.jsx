@@ -119,8 +119,8 @@ export default function ChatListScreen() {
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
-  // Per-colleague unread info from their direct chat: { [userId]: { count, at } }.
-  const [unreadByUser, setUnreadByUser] = useState({});
+  // Existing conversations (direct + group) that have unread messages.
+  const [unreadChats, setUnreadChats] = useState([]);
 
   const projectNameById = useMemo(
     () => buildProjectNameById(projects),
@@ -141,20 +141,15 @@ export default function ChatListScreen() {
       setColleagues(Array.isArray(peopleData) ? peopleData : []);
       setProjects(Array.isArray(projectsData) ? projectsData : []);
 
-      // Map each direct chat's unread count to its participant.
-      const unreadMap = {};
-      (Array.isArray(chatsData) ? chatsData : []).forEach((chat) => {
-        const participantId = getEntityId({
-          id: chat?.participant?._id || chat?.participant?.id,
-        });
-        if (chat?.type === "direct" && participantId) {
-          unreadMap[participantId] = {
-            count: Number(chat.unreadCount) || 0,
-            at: chat.lastMessageAt ? new Date(chat.lastMessageAt).getTime() : 0,
-          };
-        }
-      });
-      setUnreadByUser(unreadMap);
+      // Conversations with unread messages (direct + group), newest first.
+      const unread = (Array.isArray(chatsData) ? chatsData : [])
+        .filter((chat) => (Number(chat?.unreadCount) || 0) > 0)
+        .sort(
+          (a, b) =>
+            new Date(b?.lastMessageAt || 0).getTime() -
+            new Date(a?.lastMessageAt || 0).getTime(),
+        );
+      setUnreadChats(unread);
     } catch (loadError) {
       console.error("Failed to load colleagues:", loadError);
       setColleagues([]);
@@ -183,11 +178,21 @@ export default function ChatListScreen() {
     // Don't list company/superadmin accounts or the current user.
     const nonStaffRoles = [USER_ROLES.COMPANY_ADMIN, USER_ROLES.SUPERADMIN];
 
-    const unreadOf = (person) => unreadByUser[getEntityId(person)] || null;
+    // People we already show in the "New messages" section (unread direct
+    // chats) are excluded here to avoid duplication.
+    const unreadDirectIds = new Set(
+      unreadChats
+        .filter((chat) => chat?.type === "direct")
+        .map((chat) =>
+          getEntityId({ id: chat?.participant?._id || chat?.participant?.id }),
+        )
+        .filter(Boolean),
+    );
 
     return [...colleagues]
       .filter((person) => !nonStaffRoles.includes(person?.role))
       .filter((person) => getEntityId(person) !== currentUserId)
+      .filter((person) => !unreadDirectIds.has(getEntityId(person)))
       .filter((person) => {
         if (!selectedProjectId) {
           return true;
@@ -197,21 +202,8 @@ export default function ChatListScreen() {
           : [];
         return ids.includes(String(selectedProjectId));
       })
-      .sort((left, right) => {
-        // People who wrote (have unread) come first, newest message on top.
-        const lu = unreadOf(left);
-        const ru = unreadOf(right);
-        const lUnread = lu?.count > 0;
-        const rUnread = ru?.count > 0;
-        if (lUnread !== rUnread) {
-          return lUnread ? -1 : 1;
-        }
-        if (lUnread && rUnread) {
-          return (ru?.at || 0) - (lu?.at || 0);
-        }
-        return getSortPriority(left) - getSortPriority(right);
-      });
-  }, [colleagues, selectedProjectId, unreadByUser, user?._id, user?.id]);
+      .sort((left, right) => getSortPriority(left) - getSortPriority(right));
+  }, [colleagues, selectedProjectId, unreadChats, user?._id, user?.id]);
 
   const openReturnedChat = (chat) => {
     navigation.navigate(chat.type === "group" ? "GroupChat" : "SingleChat", {
@@ -284,11 +276,48 @@ export default function ChatListScreen() {
 
   const themedAccentTextStyle = { color: theme.colors.primary };
 
-  const isUnread = (person) =>
-    (unreadByUser[getEntityId(person)]?.count || 0) > 0;
-  const unreadColleagues = visibleColleagues.filter(isUnread);
-  const readColleagues = visibleColleagues.filter((p) => !isUnread(p));
-  const showUnreadSections = !selectMode && unreadColleagues.length > 0;
+  const showUnreadSection = !selectMode && unreadChats.length > 0;
+
+  // A conversation (direct or group) with unread messages.
+  const renderUnreadChat = (chat) => {
+    const isGroup = chat.type === "group";
+    const title = isGroup
+      ? chat.title || t("chat.groupChat")
+      : chat.participant?.name ||
+        chat.participant?.email ||
+        t("chat.directChat");
+    const count = Number(chat.unreadCount) || 0;
+
+    return (
+      <ListCard
+        key={chat._id}
+        title={title}
+        style={styles.cardUnread}
+        titleStyle={{ fontFamily: theme.text.fontFamily.bold }}
+        onPress={() => openReturnedChat(chat)}
+      >
+        <Text
+          style={cardStyles.cardSecondaryText}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {chat.lastMessageText || t("chat.tapToOpen")}
+        </Text>
+
+        <View style={styles.chatBubble}>
+          <Image
+            source={require("../../../assets/chatBubble.png")}
+            style={styles.chatBubbleIcon}
+          />
+          <View style={styles.unreadBadge}>
+            <Text style={styles.unreadBadgeText}>
+              {count > 9 ? "9+" : count}
+            </Text>
+          </View>
+        </View>
+      </ListCard>
+    );
+  };
 
   const renderColleague = (person) => {
     const personId = getUserId(person);
@@ -299,7 +328,6 @@ export default function ChatListScreen() {
     );
     const showAccountStatus = shouldShowAccountStatus(person.accountStatus);
     const atWork = isPersonAtWork(person, selectedProjectId);
-    const unreadCount = unreadByUser[getEntityId(person)]?.count || 0;
 
     const badgeLabel = showAccountStatus
       ? t("employees.waitingApproval")
@@ -318,10 +346,6 @@ export default function ChatListScreen() {
         title={person.name || t("employees.unnamed")}
         badgeLabel={badgeLabel}
         badgeStyle={badgeStyle}
-        style={unreadCount > 0 ? styles.cardUnread : null}
-        titleStyle={
-          unreadCount > 0 ? { fontFamily: theme.text.fontFamily.bold } : null
-        }
         onPress={() =>
           selectMode ? toggleSelect(personId) : openChatWith(person)
         }
@@ -360,13 +384,6 @@ export default function ChatListScreen() {
               source={require("../../../assets/chatBubble.png")}
               style={styles.chatBubbleIcon}
             />
-            {unreadCount > 0 ? (
-              <View style={styles.unreadBadge}>
-                <Text style={styles.unreadBadgeText}>
-                  {unreadCount > 9 ? "9+" : unreadCount}
-                </Text>
-              </View>
-            ) : null}
           </View>
         )}
       </ListCard>
@@ -438,16 +455,16 @@ export default function ChatListScreen() {
               <Text style={styles.emptyTitle}>{t("chat.emptyTitle")}</Text>
               <Text style={styles.emptySubtitle}>{t("chat.emptyText")}</Text>
             </View>
-          ) : showUnreadSections ? (
+          ) : showUnreadSection ? (
             <>
               <Text style={styles.sectionHeader}>{t("chat.newMessages")}</Text>
-              {unreadColleagues.map(renderColleague)}
-              {readColleagues.length ? (
+              {unreadChats.map(renderUnreadChat)}
+              {visibleColleagues.length ? (
                 <Text style={styles.sectionHeader}>
                   {t("chat.allColleagues")}
                 </Text>
               ) : null}
-              {readColleagues.map(renderColleague)}
+              {visibleColleagues.map(renderColleague)}
             </>
           ) : (
             visibleColleagues.map(renderColleague)
