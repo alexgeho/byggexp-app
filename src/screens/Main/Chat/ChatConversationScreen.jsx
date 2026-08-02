@@ -413,8 +413,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   backAvatar: {
-    width: 56,
-    height: 56,
+    width: 44,
+    height: 44,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 9999,
@@ -436,7 +436,7 @@ const styles = StyleSheet.create({
   },
   avatarInitialsText: {
     color: "#FFFFFF",
-    fontSize: 22,
+    fontSize: 17,
     fontWeight: "700",
   },
   messagesContainer: {
