@@ -119,6 +119,8 @@ export default function ChatListScreen() {
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
+  // Per-colleague unread info from their direct chat: { [userId]: { count, at } }.
+  const [unreadByUser, setUnreadByUser] = useState({});
 
   const projectNameById = useMemo(
     () => buildProjectNameById(projects),
@@ -128,15 +130,31 @@ export default function ChatListScreen() {
   const loadColleagues = useCallback(async () => {
     try {
       setLoading(true);
-      const [peopleData, projectsData] = await Promise.all([
+      const [peopleData, projectsData, chatsData] = await Promise.all([
         userService.getColleagues().catch(() => []),
         (user?.role === "superadmin"
           ? projectService.getAll()
           : projectService.getMyProjects()
         ).catch(() => []),
+        chatService.getAll().catch(() => []),
       ]);
       setColleagues(Array.isArray(peopleData) ? peopleData : []);
       setProjects(Array.isArray(projectsData) ? projectsData : []);
+
+      // Map each direct chat's unread count to its participant.
+      const unreadMap = {};
+      (Array.isArray(chatsData) ? chatsData : []).forEach((chat) => {
+        const participantId = getEntityId({
+          id: chat?.participant?._id || chat?.participant?.id,
+        });
+        if (chat?.type === "direct" && participantId) {
+          unreadMap[participantId] = {
+            count: Number(chat.unreadCount) || 0,
+            at: chat.lastMessageAt ? new Date(chat.lastMessageAt).getTime() : 0,
+          };
+        }
+      });
+      setUnreadByUser(unreadMap);
     } catch (loadError) {
       console.error("Failed to load colleagues:", loadError);
       setColleagues([]);
@@ -165,6 +183,8 @@ export default function ChatListScreen() {
     // Don't list company/superadmin accounts or the current user.
     const nonStaffRoles = [USER_ROLES.COMPANY_ADMIN, USER_ROLES.SUPERADMIN];
 
+    const unreadOf = (person) => unreadByUser[getEntityId(person)] || null;
+
     return [...colleagues]
       .filter((person) => !nonStaffRoles.includes(person?.role))
       .filter((person) => getEntityId(person) !== currentUserId)
@@ -177,8 +197,21 @@ export default function ChatListScreen() {
           : [];
         return ids.includes(String(selectedProjectId));
       })
-      .sort((left, right) => getSortPriority(left) - getSortPriority(right));
-  }, [colleagues, selectedProjectId, user?._id, user?.id]);
+      .sort((left, right) => {
+        // People who wrote (have unread) come first, newest message on top.
+        const lu = unreadOf(left);
+        const ru = unreadOf(right);
+        const lUnread = lu?.count > 0;
+        const rUnread = ru?.count > 0;
+        if (lUnread !== rUnread) {
+          return lUnread ? -1 : 1;
+        }
+        if (lUnread && rUnread) {
+          return (ru?.at || 0) - (lu?.at || 0);
+        }
+        return getSortPriority(left) - getSortPriority(right);
+      });
+  }, [colleagues, selectedProjectId, unreadByUser, user?._id, user?.id]);
 
   const openReturnedChat = (chat) => {
     navigation.navigate(chat.type === "group" ? "GroupChat" : "SingleChat", {
@@ -328,6 +361,7 @@ export default function ChatListScreen() {
                 person.accountStatus,
               );
               const atWork = isPersonAtWork(person, selectedProjectId);
+              const unreadCount = unreadByUser[getEntityId(person)]?.count || 0;
 
               const badgeLabel = showAccountStatus
                 ? t("employees.waitingApproval")
@@ -385,6 +419,13 @@ export default function ChatListScreen() {
                         source={require("../../../assets/chatBubble.png")}
                         style={styles.chatBubbleIcon}
                       />
+                      {unreadCount > 0 ? (
+                        <View style={styles.unreadBadge}>
+                          <Text style={styles.unreadBadgeText}>
+                            {unreadCount > 9 ? "9+" : unreadCount}
+                          </Text>
+                        </View>
+                      ) : null}
                     </View>
                   )}
                 </ListCard>
@@ -482,6 +523,25 @@ const styles = StyleSheet.create({
   chatBubbleIcon: {
     width: 16,
     height: 16,
+  },
+  unreadBadge: {
+    position: "absolute",
+    top: -6,
+    right: -6,
+    minWidth: 20,
+    height: 20,
+    borderRadius: 10,
+    paddingHorizontal: 5,
+    backgroundColor: "#FF3B30",
+    borderWidth: 2,
+    borderColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  unreadBadgeText: {
+    color: "#FFFFFF",
+    fontSize: 11,
+    fontWeight: "700",
   },
   headerButton: {
     height: 44,
