@@ -565,6 +565,7 @@ export const ProjectScreen = () => {
                   <Image
                     style={styles.documentArrowIcon}
                     source={require("../../../assets/Arrow-right.png")}
+                    resizeMode="contain"
                   />
                 </TouchableOpacity>
               );
@@ -825,11 +826,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     // Same admin card look as the Employees / Chat lists.
     borderColor: "#E6EAF1",
-    shadowColor: "#0B2545",
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
     gap: 16,
     marginBottom: 12,
   },

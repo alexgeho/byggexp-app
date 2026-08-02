@@ -11,11 +11,6 @@ export const cardStyles = StyleSheet.create({
     // Every entity card (projects, employees, tasks, tools, chats) shares this
     // one style: white border so the card reads as a clean white surface.
     borderColor: "#FFFFFF",
-    shadowColor: "#0B2545",
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
   },
 
   cardSelected: {

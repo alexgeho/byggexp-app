@@ -74,11 +74,6 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     backgroundColor: "#FFFFFF",
     paddingHorizontal: 34,
-    shadowColor: "#052D50",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.14,
-    shadowRadius: 24,
-    elevation: 8,
   },
   item: {
     alignItems: "center",

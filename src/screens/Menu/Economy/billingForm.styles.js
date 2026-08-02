@@ -244,11 +244,6 @@ export const styles = StyleSheet.create({
   },
   typeBtnOn: {
     backgroundColor: "#fff",
-    shadowColor: INK,
-    shadowOpacity: 0.12,
-    shadowRadius: 5,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
   },
   typeText: { fontSize: 14, fontWeight: "700", color: MUTED },
   typeTextOn: { color: INK },

@@ -324,11 +324,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#0785F4",
     // Admin-style primary button glow for depth.
-    shadowColor: "#0089F6",
-    shadowOpacity: 0.28,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 4,
   },
   scanButtonText: {
     color: "#fff",

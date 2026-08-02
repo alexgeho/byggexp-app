@@ -38,11 +38,6 @@ export const styles = StyleSheet.create({
   },
   segBtnOn: {
     backgroundColor: "#fff",
-    shadowColor: "#052d50",
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
   },
   segText: { fontSize: 14, fontWeight: "700", color: "#687898" },
   segTextOn: { color: "#052d50" },
@@ -77,11 +72,6 @@ export const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 15,
     gap: 6,
-    shadowColor: "#072b4a",
-    shadowOpacity: 0.06,
-    shadowRadius: 14,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 2,
   },
   cardTop: {
     flexDirection: "row",

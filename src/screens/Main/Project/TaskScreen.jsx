@@ -167,7 +167,9 @@ export default function TaskScreen() {
   const canReopen = canReopenTasks(user?.role);
   const canToggleCompletion =
     currentTask?.status === "completed" ? canReopen : canComplete;
-  const visibleTabs = project ? ["Edit", "Documents", "Workers"] : ["Edit", "Documents"];
+  const visibleTabs = project
+    ? ["Edit", "Documents", "Workers"]
+    : ["Edit", "Documents"];
 
   const documents = useMemo(
     () =>
@@ -182,9 +184,13 @@ export default function TaskScreen() {
               mimeType:
                 typeof document === "string" ? "" : document?.mimeType || "",
               uploadedAt:
-                typeof document === "string" ? null : document?.uploadedAt || null,
+                typeof document === "string"
+                  ? null
+                  : document?.uploadedAt || null,
               createdAt:
-                typeof document === "string" ? null : document?.createdAt || null,
+                typeof document === "string"
+                  ? null
+                  : document?.createdAt || null,
               isImage: isImageDocument({
                 name: getDocumentName(document, index),
                 mimeType:
@@ -397,8 +403,18 @@ export default function TaskScreen() {
               <GroupRow>
                 <View style={styles.rowTextContainer}>
                   <Text style={styles.rowLabel}>{t("task.statusLabel")}</Text>
-                  <View style={[styles.statusBadge, styles[`statusBadge_${taskStatus.tone}`]]}>
-                    <Text style={[styles.statusBadgeText, styles[`statusBadgeText_${taskStatus.tone}`]]}>
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      styles[`statusBadge_${taskStatus.tone}`],
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.statusBadgeText,
+                        styles[`statusBadgeText_${taskStatus.tone}`],
+                      ]}
+                    >
                       {t(`task.status.${taskStatus.tone}`, taskStatus.label)}
                     </Text>
                   </View>
@@ -426,7 +442,9 @@ export default function TaskScreen() {
               <GroupRow>
                 <View style={styles.rowTextContainer}>
                   <Text style={styles.rowLabel}>
-                    {project ? t("createTask.projectLabel") : t("task.assignee")}
+                    {project
+                      ? t("createTask.projectLabel")
+                      : t("task.assignee")}
                   </Text>
                   <Text style={styles.rowValue}>
                     {project?.name ||
@@ -437,7 +455,9 @@ export default function TaskScreen() {
               </GroupRow>
               <GroupRow>
                 <View style={styles.scheduleRowContent}>
-                  <Text style={styles.scheduleLabel}>{t("createTask.starts")}</Text>
+                  <Text style={styles.scheduleLabel}>
+                    {t("createTask.starts")}
+                  </Text>
                   {startDate ? (
                     <View style={styles.dateChips}>
                       <View style={styles.dateChip}>
@@ -458,7 +478,9 @@ export default function TaskScreen() {
               </GroupRow>
               <GroupRow isLast={true}>
                 <View style={styles.scheduleRowContent}>
-                  <Text style={styles.scheduleLabel}>{t("createTask.ends")}</Text>
+                  <Text style={styles.scheduleLabel}>
+                    {t("createTask.ends")}
+                  </Text>
                   {endDate ? (
                     <View style={styles.dateChips}>
                       <View style={styles.dateChip}>
@@ -512,13 +534,16 @@ export default function TaskScreen() {
                   <Image
                     style={styles.documentArrowIcon}
                     source={require("../../../assets/Arrow-right.png")}
+                    resizeMode="contain"
                   />
                 </TouchableOpacity>
               );
             })
           ) : (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyStateTitle}>{t("task.noDocsTitle")}</Text>
+              <Text style={styles.emptyStateTitle}>
+                {t("task.noDocsTitle")}
+              </Text>
               <Text style={styles.emptyStateText}>{t("task.noDocsText")}</Text>
             </View>
           )
@@ -541,7 +566,9 @@ export default function TaskScreen() {
                     {worker.name || t("project.unnamedWorker")}
                   </Text>
                   <Text style={styles.workerSubtitle}>
-                    {worker.profession || worker.email || t("project.workerRole")}
+                    {worker.profession ||
+                      worker.email ||
+                      t("project.workerRole")}
                   </Text>
                 </View>
               </View>
@@ -566,7 +593,9 @@ export default function TaskScreen() {
           (tab === "Documents" && canUploadDocuments) ||
           (tab === "Edit" && canToggleCompletion)
         }
-        onAddPress={tab === "Edit" ? handleToggleCompletion : handleAddDocuments}
+        onAddPress={
+          tab === "Edit" ? handleToggleCompletion : handleAddDocuments
+        }
         addDisabled={uploadingDocuments || updatingStatus}
         renderAddContent={() =>
           uploadingDocuments || updatingStatus ? (

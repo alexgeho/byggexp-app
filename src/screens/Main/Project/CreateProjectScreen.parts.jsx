@@ -339,6 +339,7 @@ export const SelectedItem = ({
         <Image
           style={styles.arrowIcon}
           source={require("../../../assets/Arrow-right.png")}
+          resizeMode="contain"
         />
       )}
     </TouchableOpacity>
