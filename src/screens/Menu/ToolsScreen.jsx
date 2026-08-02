@@ -299,11 +299,11 @@ export default function ToolsScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#F9FBFD",
+    backgroundColor: "#f2f1f6",
   },
   pageContainer: {
     ...standardScreenContainer,
-    backgroundColor: "#F9FBFD",
+    backgroundColor: "#f2f1f6",
     paddingBottom: 0,
   },
   header: {

@@ -422,7 +422,7 @@ export default function ChatListScreen() {
 const styles = StyleSheet.create({
   container: {
     ...standardScreenContainer,
-    backgroundColor: "#F9FBFD",
+    backgroundColor: "#f2f1f6",
   },
   header: {
     ...standardScreenHeader,
