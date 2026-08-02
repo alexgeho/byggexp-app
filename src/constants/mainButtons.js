@@ -8,7 +8,7 @@ export const mainButtons = [
   },
   {
     id: "tools",
-    title: "Instruments",
+    title: "Tools",
     icon: require("../assets/mainButtons/tools.png"),
     screen: "Tools",
   },
