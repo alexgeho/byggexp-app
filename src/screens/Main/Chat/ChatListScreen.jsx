@@ -284,6 +284,95 @@ export default function ChatListScreen() {
 
   const themedAccentTextStyle = { color: theme.colors.primary };
 
+  const isUnread = (person) =>
+    (unreadByUser[getEntityId(person)]?.count || 0) > 0;
+  const unreadColleagues = visibleColleagues.filter(isUnread);
+  const readColleagues = visibleColleagues.filter((p) => !isUnread(p));
+  const showUnreadSections = !selectMode && unreadColleagues.length > 0;
+
+  const renderColleague = (person) => {
+    const personId = getUserId(person);
+    const projectLabel = getPersonProjectLabel(
+      person,
+      projectNameById,
+      projects,
+    );
+    const showAccountStatus = shouldShowAccountStatus(person.accountStatus);
+    const atWork = isPersonAtWork(person, selectedProjectId);
+    const unreadCount = unreadByUser[getEntityId(person)]?.count || 0;
+
+    const badgeLabel = showAccountStatus
+      ? t("employees.waitingApproval")
+      : atWork
+        ? t("employees.atWork")
+        : t("employees.notAtWork");
+    const badgeStyle = showAccountStatus
+      ? cardStyles.cardBadgeWarning
+      : atWork
+        ? cardStyles.cardBadgeAtWork
+        : cardStyles.cardBadgeAbsent;
+
+    return (
+      <ListCard
+        key={personId}
+        title={person.name || t("employees.unnamed")}
+        badgeLabel={badgeLabel}
+        badgeStyle={badgeStyle}
+        style={unreadCount > 0 ? styles.cardUnread : null}
+        titleStyle={
+          unreadCount > 0 ? { fontFamily: theme.text.fontFamily.bold } : null
+        }
+        onPress={() =>
+          selectMode ? toggleSelect(personId) : openChatWith(person)
+        }
+      >
+        <Text
+          style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {person.profession || t("employees.noProfession")}
+        </Text>
+
+        <Text
+          style={cardStyles.cardSecondaryText}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {projectLabel || t("employees.noProjectAssigned")}
+        </Text>
+
+        {/* Chat affordance / selection checkbox */}
+        {selectMode ? (
+          <View
+            style={[
+              styles.selectCheckbox,
+              selectedIds.includes(personId) && styles.selectCheckboxOn,
+            ]}
+          >
+            {selectedIds.includes(personId) ? (
+              <Text style={styles.selectCheckmark}>✓</Text>
+            ) : null}
+          </View>
+        ) : (
+          <View style={styles.chatBubble}>
+            <Image
+              source={require("../../../assets/chatBubble.png")}
+              style={styles.chatBubbleIcon}
+            />
+            {unreadCount > 0 ? (
+              <View style={styles.unreadBadge}>
+                <Text style={styles.unreadBadgeText}>
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </Text>
+              </View>
+            ) : null}
+          </View>
+        )}
+      </ListCard>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -349,88 +438,19 @@ export default function ChatListScreen() {
               <Text style={styles.emptyTitle}>{t("chat.emptyTitle")}</Text>
               <Text style={styles.emptySubtitle}>{t("chat.emptyText")}</Text>
             </View>
+          ) : showUnreadSections ? (
+            <>
+              <Text style={styles.sectionHeader}>{t("chat.newMessages")}</Text>
+              {unreadColleagues.map(renderColleague)}
+              {readColleagues.length ? (
+                <Text style={styles.sectionHeader}>
+                  {t("chat.allColleagues")}
+                </Text>
+              ) : null}
+              {readColleagues.map(renderColleague)}
+            </>
           ) : (
-            visibleColleagues.map((person) => {
-              const personId = getUserId(person);
-              const projectLabel = getPersonProjectLabel(
-                person,
-                projectNameById,
-                projects,
-              );
-              const showAccountStatus = shouldShowAccountStatus(
-                person.accountStatus,
-              );
-              const atWork = isPersonAtWork(person, selectedProjectId);
-              const unreadCount = unreadByUser[getEntityId(person)]?.count || 0;
-
-              const badgeLabel = showAccountStatus
-                ? t("employees.waitingApproval")
-                : atWork
-                  ? t("employees.atWork")
-                  : t("employees.notAtWork");
-              const badgeStyle = showAccountStatus
-                ? cardStyles.cardBadgeWarning
-                : atWork
-                  ? cardStyles.cardBadgeAtWork
-                  : cardStyles.cardBadgeAbsent;
-
-              return (
-                <ListCard
-                  key={personId}
-                  title={person.name || t("employees.unnamed")}
-                  badgeLabel={badgeLabel}
-                  badgeStyle={badgeStyle}
-                  onPress={() =>
-                    selectMode ? toggleSelect(personId) : openChatWith(person)
-                  }
-                >
-                  <Text
-                    style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    {person.profession || t("employees.noProfession")}
-                  </Text>
-
-                  <Text
-                    style={cardStyles.cardSecondaryText}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    {projectLabel || t("employees.noProjectAssigned")}
-                  </Text>
-
-                  {/* Chat affordance / selection checkbox */}
-                  {selectMode ? (
-                    <View
-                      style={[
-                        styles.selectCheckbox,
-                        selectedIds.includes(personId) &&
-                          styles.selectCheckboxOn,
-                      ]}
-                    >
-                      {selectedIds.includes(personId) ? (
-                        <Text style={styles.selectCheckmark}>✓</Text>
-                      ) : null}
-                    </View>
-                  ) : (
-                    <View style={styles.chatBubble}>
-                      <Image
-                        source={require("../../../assets/chatBubble.png")}
-                        style={styles.chatBubbleIcon}
-                      />
-                      {unreadCount > 0 ? (
-                        <View style={styles.unreadBadge}>
-                          <Text style={styles.unreadBadgeText}>
-                            {unreadCount > 9 ? "9+" : unreadCount}
-                          </Text>
-                        </View>
-                      ) : null}
-                    </View>
-                  )}
-                </ListCard>
-              );
-            })
+            visibleColleagues.map(renderColleague)
           )}
         </ScrollView>
       )}
@@ -542,6 +562,18 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 11,
     fontWeight: "700",
+  },
+  cardUnread: {
+    backgroundColor: "#f2f9ff",
+    borderColor: "#cfe8ff",
+  },
+  sectionHeader: {
+    color: "#8296A7",
+    fontSize: 13,
+    fontWeight: "600",
+    marginTop: 6,
+    marginBottom: 8,
+    paddingHorizontal: 4,
   },
   headerButton: {
     height: 44,

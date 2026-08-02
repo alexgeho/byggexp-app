@@ -14,6 +14,7 @@ export function ListCard({
   leading,
   children,
   style,
+  titleStyle,
 }) {
   const { theme } = useTheme();
   const Container = onPress ? TouchableOpacity : View;
@@ -39,6 +40,7 @@ export function ListCard({
           style={[
             cardStyles.cardTitle,
             { fontFamily: theme.text.fontFamily.medium },
+            titleStyle,
           ]}
         >
           {title}

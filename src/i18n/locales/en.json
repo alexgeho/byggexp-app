@@ -503,6 +503,8 @@
     "directConversation": "Direct conversation",
     "groupChat": "Group chat",
     "sendFailedTitle": "Unable to send message",
+    "newMessages": "New messages",
+    "allColleagues": "All colleagues",
     "attachTitle": "Add to chat",
     "takePhoto": "Take photo",
     "attachFile": "Attach file",
