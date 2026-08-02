@@ -33,8 +33,7 @@ import { createStyles } from "./HomeVariant2.styles";
 import ProjectSelector2 from "../../../components/common/projectSelector/projectSelector";
 import { MainActionButtons } from "../../../components/common/mainActionButtons/mainActionButtons";
 
-import { FooterButtonsVariant2 } from "../../../components/common/footer/footer";
-import { FooterColorful } from "../../../components/common/footer/FooterColorful";
+import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 
 import ProjectFilesSection from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
 import MainButtonsGrid from "../../../components/common/NavButtonsGrid/MainButtonsGrid";
@@ -523,14 +522,13 @@ export default function HomeVariant2() {
         </View>
       </ScrollView>
 
-      {/* FOOTER */}
-      {themeName === "colorful" ? (
-        <FooterColorful />
-      ) : (
-        <FooterButtonsVariant2
-          iconStyle={isLightBlueTheme ? styles.footerIconLightBlue : null}
-        />
-      )}
+      {/* FOOTER — shared bottom bar, frosted glass over the gradient */}
+      <BottomBar
+        glass
+        onLeftPress={() => navigation.navigate("Main")}
+        onRightPress={() => navigation.navigate("Menu")}
+        showAddButton={false}
+      />
     </LinearGradient>
   );
 }

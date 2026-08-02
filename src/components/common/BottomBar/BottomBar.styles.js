@@ -66,6 +66,14 @@ export function createStyles(theme) {
       backgroundColor: "transparent",
       borderWidth: 0,
     },
+    // Frosted-glass pill for the home screen (Figma: white 20% fill, white 30%
+    // stroke, background blur). overflow:hidden clips the blur to the pill.
+    menuWrapperGlass: {
+      backgroundColor: "rgba(255,255,255,0.20)",
+      borderWidth: 1,
+      borderColor: "rgba(255,255,255,0.30)",
+      overflow: "hidden",
+    },
     navText: {
       marginTop: 4,
       fontSize: 15,

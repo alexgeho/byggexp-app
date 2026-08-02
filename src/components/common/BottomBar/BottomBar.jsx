@@ -1,21 +1,14 @@
 import React from "react";
 
-import {
-  Pressable,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
+import { BlurView } from "expo-blur";
 import { useNavigationState } from "@react-navigation/native";
 
 import { useTheme } from "../../../theme/ThemeContext";
 
 import { createStyles } from "./BottomBar.styles";
-import {
-  FooterHomeIcon,
-  FooterMenuIcon,
-} from "./BottomBarIcons";
+import { FooterHomeIcon, FooterMenuIcon } from "./BottomBarIcons";
 
 const ACTIVE_ICON_COLOR = "#052D50";
 const MENU_ROUTES = new Set([
@@ -41,6 +34,7 @@ export function BottomBar({
   addDisabled = false,
   showBackground = true,
   showText = false,
+  glass = false,
 }) {
   const { theme } = useTheme();
   const currentRouteName = useNavigationState(
@@ -51,34 +45,36 @@ export function BottomBar({
   const isMenuActive = MENU_ROUTES.has(currentRouteName);
   const isHomeActive = !isMenuActive;
 
-  const handleActionPress =
-    onActionPress ?? onAddPress;
+  const handleActionPress = onActionPress ?? onAddPress;
 
-  const actionContent =
-    renderActionContent ?? renderAddContent;
+  const actionContent = renderActionContent ?? renderAddContent;
+
+  // On the home screen the pill sits over the blue gradient, so render it as a
+  // frosted-glass bar (translucent white + background blur).
+  const WrapperTag = glass ? BlurView : View;
+  const wrapperProps = glass
+    ? {
+        intensity: 28,
+        tint: "light",
+        style: [styles.menuWrapper, styles.menuWrapperGlass],
+      }
+    : {
+        style: [
+          styles.menuWrapper,
+          !showBackground && styles.menuWrapperTransparent,
+        ],
+      };
 
   return (
     <View style={styles.container}>
-      <View
-        style={[
-          styles.menuWrapper,
-          !showBackground &&
-            styles.menuWrapperTransparent,
-        ]}
-      >
-        <Pressable
-          style={styles.navButton}
-          onPress={onLeftPress}
-        >
+      <WrapperTag {...wrapperProps}>
+        <Pressable style={styles.navButton} onPress={onLeftPress}>
           {({ hovered, pressed }) => {
             const isActive = isHomeActive || hovered || pressed;
 
             return (
               <>
-                <FooterHomeIcon
-                  size={styles.navIcon.width}
-                  filled={isActive}
-                />
+                <FooterHomeIcon size={styles.navIcon.width} filled={isActive} />
 
                 {showText && (
                   <Text
@@ -99,19 +95,13 @@ export function BottomBar({
           }}
         </Pressable>
 
-        <Pressable
-          style={styles.navButton}
-          onPress={onRightPress}
-        >
+        <Pressable style={styles.navButton} onPress={onRightPress}>
           {({ hovered, pressed }) => {
             const isActive = isMenuActive || hovered || pressed;
 
             return (
               <>
-                <FooterMenuIcon
-                  size={styles.navIcon.width}
-                  filled={isActive}
-                />
+                <FooterMenuIcon size={styles.navIcon.width} filled={isActive} />
 
                 {showText && (
                   <Text
@@ -131,7 +121,7 @@ export function BottomBar({
             );
           }}
         </Pressable>
-      </View>
+      </WrapperTag>
 
       {showAddButton && (
         <TouchableOpacity
@@ -142,11 +132,7 @@ export function BottomBar({
           {actionContent ? (
             actionContent()
           ) : (
-            <Icon
-              name="plus"
-              size={20}
-              color="#FFFFFF"
-            />
+            <Icon name="plus" size={20} color="#FFFFFF" />
           )}
         </TouchableOpacity>
       )}
