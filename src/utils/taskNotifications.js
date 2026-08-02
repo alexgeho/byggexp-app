@@ -31,6 +31,11 @@ export const createDefaultTaskNotificationSettings = () => ({
   // Keep pushing a reminder every `repeatIntervalMinutes` AFTER the due date
   // passes, until the task is marked done. Independent of `repeat`.
   remindUntilDone: false,
+  // Escalation: nag the assignee `maxReminders` times (0 = forever), then, if
+  // escalateToBoss, notify the boss (project manager / owner by default).
+  maxReminders: 3,
+  escalateToBoss: false,
+  escalateToUserIds: [],
 });
 
 const normalizeDate = (value) => {
@@ -88,6 +93,14 @@ export const normalizeTaskNotificationSettings = (value) => {
     remindUntilDone: Boolean(
       value?.remindUntilDone ?? defaults.remindUntilDone,
     ),
+    maxReminders: (() => {
+      const n = Number(value?.maxReminders);
+      return Number.isFinite(n) && n > 0 ? Math.min(100, Math.floor(n)) : 0;
+    })(),
+    escalateToBoss: Boolean(value?.escalateToBoss ?? defaults.escalateToBoss),
+    escalateToUserIds: Array.isArray(value?.escalateToUserIds)
+      ? value.escalateToUserIds.filter(Boolean)
+      : [],
   };
 };
 

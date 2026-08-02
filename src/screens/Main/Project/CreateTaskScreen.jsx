@@ -1159,6 +1159,62 @@ export default function CreateTaskScreen() {
                   </View>
                 ) : null}
 
+                {notificationSettings.remindUntilDone ? (
+                  <View style={styles.intervalBox}>
+                    <Text style={styles.inputLabel}>
+                      {t("createTask.maxRemindersLabel")}
+                    </Text>
+                    <TextInput
+                      style={styles.intervalInput}
+                      value={String(notificationSettings.maxReminders ?? 0)}
+                      onChangeText={(v) => {
+                        const n = parseInt(v.replace(/[^0-9]/g, ""), 10);
+                        updateNotificationSettings({
+                          maxReminders: Number.isFinite(n)
+                            ? Math.min(100, n)
+                            : 0,
+                        });
+                      }}
+                      keyboardType="number-pad"
+                      placeholder="3"
+                      placeholderTextColor="rgba(5, 45, 80, 0.45)"
+                    />
+                  </View>
+                ) : null}
+
+                {notificationSettings.remindUntilDone ? (
+                  <View
+                    style={[
+                      styles.messageBox,
+                      {
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      },
+                    ]}
+                  >
+                    <View style={{ flex: 1, paddingRight: 12 }}>
+                      <Text style={styles.inputLabel}>
+                        {t("createTask.escalateToBossLabel")}
+                      </Text>
+                      <Text style={styles.allDayHint}>
+                        {t("createTask.escalateToBossHint")}
+                      </Text>
+                    </View>
+                    <Switch
+                      value={Boolean(notificationSettings.escalateToBoss)}
+                      onValueChange={(value) =>
+                        updateNotificationSettings({ escalateToBoss: value })
+                      }
+                      trackColor={{
+                        false: "#D9E3EC",
+                        true: theme.colors.primary,
+                      }}
+                      thumbColor="#FFFFFF"
+                    />
+                  </View>
+                ) : null}
+
                 <View style={styles.messageBox}>
                   <Text style={styles.inputLabel}>
                     {t("createTask.customReminderLabel")}

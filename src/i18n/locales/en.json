@@ -258,6 +258,9 @@
     "customReminderPlaceholder": "Leave empty for auto reminder",
     "remindUntilDoneLabel": "Remind until done",
     "remindUntilDoneHint": "After the due date, remind every N minutes until the task is done",
+    "maxRemindersLabel": "Number of reminders",
+    "escalateToBossLabel": "Then notify the boss",
+    "escalateToBossHint": "After the reminders run out, escalate to the project manager / owner",
     "assignToLabel": "Assign to",
     "wholeProjectTeam": "Whole project team"
   },

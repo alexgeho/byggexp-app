@@ -258,6 +258,9 @@
     "customReminderPlaceholder": "Lämna tomt för automatisk påminnelse",
     "remindUntilDoneLabel": "Påminn tills klar",
     "remindUntilDoneHint": "Efter förfallodatumet, påminn var N:e minut tills uppgiften är klar",
+    "maxRemindersLabel": "Antal påminnelser",
+    "escalateToBossLabel": "Påminn chefen sen",
+    "escalateToBossHint": "När påminnelserna tar slut, eskalera till projektledaren / ägaren",
     "assignToLabel": "Tilldela till",
     "wholeProjectTeam": "Hela projektteamet"
   },
