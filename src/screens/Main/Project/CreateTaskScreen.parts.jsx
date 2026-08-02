@@ -387,6 +387,8 @@ export const UserPickerModal = ({
   selectedUserId,
   onSelect,
   onClose,
+  multiple = false,
+  selectedUserIds = [],
 }) => {
   const { t } = useTranslation();
   return (
@@ -421,7 +423,9 @@ export const UserPickerModal = ({
             ) : (
               users.map((item) => {
                 const id = getUserId(item);
-                const isSelected = id === selectedUserId;
+                const isSelected = multiple
+                  ? selectedUserIds.includes(id)
+                  : id === selectedUserId;
 
                 return (
                   <TouchableOpacity

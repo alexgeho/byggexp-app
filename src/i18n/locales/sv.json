@@ -257,7 +257,9 @@
     "customReminderLabel": "Anpassad påminnelse",
     "customReminderPlaceholder": "Lämna tomt för automatisk påminnelse",
     "remindUntilDoneLabel": "Påminn tills klar",
-    "remindUntilDoneHint": "Efter förfallodatumet, påminn var N:e minut tills uppgiften är klar"
+    "remindUntilDoneHint": "Efter förfallodatumet, påminn var N:e minut tills uppgiften är klar",
+    "assignToLabel": "Tilldela till",
+    "wholeProjectTeam": "Hela projektteamet"
   },
   "workers": {
     "loading": "Laddar arbetare...",

@@ -118,6 +118,8 @@ export default function CreateTaskScreen() {
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [showProjectPicker, setShowProjectPicker] = useState(false);
   const [showUserPicker, setShowUserPicker] = useState(false);
+  const [assigneeIds, setAssigneeIds] = useState([]);
+  const [showAssigneePicker, setShowAssigneePicker] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -226,9 +228,13 @@ export default function CreateTaskScreen() {
       return;
     }
 
-    setNotificationSettings(
-      normalizeTaskNotificationSettings(route.params.notificationSettings),
+    const normalized = normalizeTaskNotificationSettings(
+      route.params.notificationSettings,
     );
+    setNotificationSettings(normalized);
+    if (Array.isArray(normalized.assignees) && normalized.assignees.length) {
+      setAssigneeIds(normalized.assignees.map((a) => a.id).filter(Boolean));
+    }
   }, [route.params?.notificationSettings]);
 
   useEffect(() => {
@@ -405,6 +411,7 @@ export default function CreateTaskScreen() {
     setSelectedAssigneeName("");
     setSelectedAssigneeRole("");
     setShowProjectPicker(false);
+    setAssigneeIds([]);
     updateNotificationSettings(createDefaultTaskNotificationSettings());
 
     if (allDay) {
@@ -441,6 +448,24 @@ export default function CreateTaskScreen() {
     setSelectedAssigneeRole("");
   };
 
+  // Toggle a project member in/out of the task's assignee subset. Empty = the
+  // whole project team is notified.
+  const toggleAssignee = (item) => {
+    const id = getUserId(item);
+    if (!id) {
+      return;
+    }
+    setAssigneeIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
+  };
+
+  const assigneeSummary = assigneeIds
+    .map((id) => users.find((item) => getUserId(item) === id))
+    .filter(Boolean)
+    .map((item) => item.name || item.email)
+    .join(", ");
+
   const createTask = async () => {
     if (!selectedProjectId && !selectedAssigneeUserId) {
       Alert.alert(
@@ -469,19 +494,39 @@ export default function CreateTaskScreen() {
     try {
       setSaving(true);
       const taskData = new FormData();
-      const effectiveNotificationSettings = selectedAssigneeUserId
-        ? {
-            ...deriveNotificationReminderFlags(notificationSettings),
-            allMembersNotification: false,
-            assignees: [
-              {
-                id: selectedAssigneeUserId,
-                name: selectedAssigneeName,
-                profession: selectedAssigneeRole,
-              },
-            ],
-          }
-        : deriveNotificationReminderFlags(notificationSettings);
+      // Chosen project members (when creating a project task) become the task's
+      // assignee subset; empty keeps the whole-project-team default.
+      const chosenAssignees = assigneeIds
+        .map((id) => users.find((item) => getUserId(item) === id))
+        .filter(Boolean)
+        .map((item) => ({
+          id: getUserId(item),
+          name: item.name || item.email || "",
+          profession: item.profession || item.role || "",
+        }));
+      let effectiveNotificationSettings;
+      if (selectedAssigneeUserId) {
+        effectiveNotificationSettings = {
+          ...deriveNotificationReminderFlags(notificationSettings),
+          allMembersNotification: false,
+          assignees: [
+            {
+              id: selectedAssigneeUserId,
+              name: selectedAssigneeName,
+              profession: selectedAssigneeRole,
+            },
+          ],
+        };
+      } else if (chosenAssignees.length) {
+        effectiveNotificationSettings = {
+          ...deriveNotificationReminderFlags(notificationSettings),
+          allMembersNotification: false,
+          assignees: chosenAssignees,
+        };
+      } else {
+        effectiveNotificationSettings =
+          deriveNotificationReminderFlags(notificationSettings);
+      }
       const notifications = buildTaskNotificationsPayload({
         settings: effectiveNotificationSettings,
         dueDate,
@@ -704,6 +749,46 @@ export default function CreateTaskScreen() {
                 <Icon name="chevron-right" size={18} color="#052D50" />
               )}
             </TouchableOpacity>
+            {selectedProjectId && !selectedAssigneeUserId ? (
+              <TouchableOpacity
+                style={styles.groupRow}
+                onPress={() => setShowAssigneePicker(true)}
+                activeOpacity={0.85}
+                disabled={loadingUsers}
+              >
+                <View style={styles.rowContent}>
+                  <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
+                    <FieldIcon name="users" size={14} color="#FFFFFF" />
+                  </View>
+                  <View style={styles.rowTextContainer}>
+                    <Text style={styles.rowLabel}>
+                      {t("createTask.assignToLabel")}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.rowValue,
+                        assigneeIds.length === 0 && styles.rowPlaceholder,
+                      ]}
+                      numberOfLines={1}
+                    >
+                      {assigneeIds.length
+                        ? assigneeSummary
+                        : t("createTask.wholeProjectTeam")}
+                    </Text>
+                  </View>
+                </View>
+                {assigneeIds.length ? (
+                  <TouchableOpacity
+                    style={styles.clearInlineButton}
+                    onPress={() => setAssigneeIds([])}
+                  >
+                    <Icon name="x" size={16} color="#052D50" />
+                  </TouchableOpacity>
+                ) : (
+                  <Icon name="chevron-right" size={18} color="#052D50" />
+                )}
+              </TouchableOpacity>
+            ) : null}
             <GroupRow isLast={true}>
               <View style={styles.inputWrapper}>
                 <Text style={styles.inputLabel}>
@@ -917,6 +1002,14 @@ export default function CreateTaskScreen() {
             selectedUserId={selectedAssigneeUserId}
             onSelect={selectUser}
             onClose={() => setShowUserPicker(false)}
+          />
+          <UserPickerModal
+            visible={showAssigneePicker}
+            users={users}
+            multiple
+            selectedUserIds={assigneeIds}
+            onSelect={toggleAssignee}
+            onClose={() => setShowAssigneePicker(false)}
           />
         </ScrollView>
       </View>

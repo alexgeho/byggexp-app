@@ -257,7 +257,9 @@
     "customReminderLabel": "Custom reminder",
     "customReminderPlaceholder": "Leave empty for auto reminder",
     "remindUntilDoneLabel": "Remind until done",
-    "remindUntilDoneHint": "After the due date, remind every N minutes until the task is done"
+    "remindUntilDoneHint": "After the due date, remind every N minutes until the task is done",
+    "assignToLabel": "Assign to",
+    "wholeProjectTeam": "Whole project team"
   },
   "workers": {
     "loading": "Loading workers...",
