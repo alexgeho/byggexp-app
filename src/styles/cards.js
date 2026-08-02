@@ -8,9 +8,9 @@ export const cardStyles = StyleSheet.create({
     borderRadius: 16,
     gap: 8,
     borderWidth: 1,
-    // Admin card look: visible light border + soft navy shadow so cards
-    // stand out from the light page background instead of blending in.
-    borderColor: "#E6EAF1",
+    // Every entity card (projects, employees, tasks, tools, chats) shares this
+    // one style: white border so the card reads as a clean white surface.
+    borderColor: "#FFFFFF",
     shadowColor: "#0B2545",
     shadowOpacity: 0.06,
     shadowRadius: 8,
