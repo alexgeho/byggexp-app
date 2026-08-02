@@ -145,10 +145,6 @@ export default function ChatConversationScreen({ variant }) {
     }
   };
 
-  const onPlaceholderActionPress = () => {
-    Alert.alert(t("chat.notAvailableTitle"), t("chat.notAvailableMessage"));
-  };
-
   if (!chatId) {
     return (
       <View style={styles.centeredContainer}>
@@ -320,24 +316,6 @@ export default function ChatConversationScreen({ variant }) {
       )}
 
       <View style={styles.inputContainer}>
-        <TouchableOpacity
-          style={styles.inputButton}
-          onPress={onPlaceholderActionPress}
-        >
-          <Image
-            style={styles.inputIcon}
-            source={require("../../../assets/PlusBlack.png")}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.inputButton}
-          onPress={onPlaceholderActionPress}
-        >
-          <Image
-            style={styles.inputIcon}
-            source={require("../../../assets/CameraBlack.png")}
-          />
-        </TouchableOpacity>
         <View style={styles.textInputWrapper}>
           <TextInput
             onChangeText={setMessageText}
