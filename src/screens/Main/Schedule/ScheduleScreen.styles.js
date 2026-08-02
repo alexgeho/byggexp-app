@@ -13,7 +13,7 @@ export const SIDEBAR_WIDTH = 150;
 export const styles = StyleSheet.create({
   container: {
     ...standardScreenContainer,
-    backgroundColor: "#EEEEEE",
+    backgroundColor: "#f2f1f6",
   },
   header: {
     ...standardScreenHeader,
@@ -116,7 +116,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     height: HEADER_HEIGHT,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(5, 45, 80, 0.08)",
+    borderBottomColor: "#e9e9e9",
   },
   corner: {
     width: SIDEBAR_WIDTH,
@@ -125,7 +125,7 @@ export const styles = StyleSheet.create({
     paddingLeft: 12,
     paddingBottom: 8,
     borderRightWidth: 1,
-    borderRightColor: "rgba(5, 45, 80, 0.08)",
+    borderRightColor: "#e9e9e9",
   },
   cornerText: {
     color: "#052D50",
@@ -177,7 +177,7 @@ export const styles = StyleSheet.create({
   sidebar: {
     width: SIDEBAR_WIDTH,
     borderRightWidth: 1,
-    borderRightColor: "rgba(5, 45, 80, 0.08)",
+    borderRightColor: "#e9e9e9",
   },
   sidebarCell: {
     height: ROW_HEIGHT,

@@ -207,7 +207,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(5, 45, 80, 0.08)",
+    borderColor: "#e9e9e9",
     paddingVertical: 16,
     marginBottom: 12,
   },
@@ -373,7 +373,7 @@ export const styles = StyleSheet.create({
     borderColor: "#FFFFFF",
   },
   bottomSheetBackground: {
-    backgroundColor: "#EEEEEE",
+    backgroundColor: "#f2f1f6",
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
   },

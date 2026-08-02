@@ -3,7 +3,7 @@ export const standardScreenContentGap = 12;
 
 export const standardScreenContainer = {
   flex: 1,
-  backgroundColor: "#EEEEEE",
+  backgroundColor: "#f2f1f6",
   paddingHorizontal: 12,
   paddingTop: 48,
   paddingBottom: 48,

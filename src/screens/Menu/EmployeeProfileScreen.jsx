@@ -679,7 +679,7 @@ export default function EmployeeProfileScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#EEEEEE",
+    backgroundColor: "#f2f1f6",
   },
   pageContainer: {
     ...standardScreenContainer,
@@ -786,7 +786,7 @@ const styles = StyleSheet.create({
   },
   groupRowDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(5, 45, 80, 0.08)",
+    borderBottomColor: "#e9e9e9",
   },
   infoLabel: {
     fontSize: 12,

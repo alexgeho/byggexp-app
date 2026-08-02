@@ -304,7 +304,7 @@ export const styles = StyleSheet.create({
     width: "100%",
     height: 220,
     borderRadius: 16,
-    backgroundColor: "#EEEEEE",
+    backgroundColor: "#f2f1f6",
   },
   emptyTitle: {
     color: "#052D50",

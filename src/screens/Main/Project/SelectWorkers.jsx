@@ -207,13 +207,13 @@ export const SelectWorkers = () => {
         onRightPress={() => navigation.navigate("Menu")}
         onAddPress={handleSaveWorkers}
         addDisabled={saving}
-        renderAddContent={() => (
+        renderAddContent={() =>
           saving ? (
             <ActivityIndicator size="small" color="#FFFFFF" />
           ) : (
             <Icon name="check" size={24} color="#FFFFFF" />
           )
-        )}
+        }
       />
     </View>
   );
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#EEEEEE",
+    backgroundColor: "#f2f1f6",
   },
   header: {
     ...standardScreenHeader,

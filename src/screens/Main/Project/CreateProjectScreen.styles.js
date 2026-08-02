@@ -8,7 +8,7 @@ import {
 export const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#EEEEEE",
+    backgroundColor: "#f2f1f6",
   },
   pageContainer: {
     ...standardScreenContainer,
@@ -61,7 +61,7 @@ export const styles = StyleSheet.create({
   },
   groupRowDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(5, 45, 80, 0.08)",
+    borderBottomColor: "#e9e9e9",
   },
   groupRowLast: {
     borderBottomWidth: 0,
@@ -372,7 +372,7 @@ export const styles = StyleSheet.create({
   },
   workersModalContainer: {
     flex: 1,
-    backgroundColor: "#EEEEEE",
+    backgroundColor: "#f2f1f6",
     paddingHorizontal: 12,
     paddingTop: 48,
     paddingBottom: 24,
@@ -541,7 +541,7 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 24,
-    backgroundColor: "#EEEEEE",
+    backgroundColor: "#f2f1f6",
   },
   accessDeniedText: {
     fontSize: 24,
@@ -624,7 +624,7 @@ export const styles = StyleSheet.create({
     gap: 10,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(5, 45, 80, 0.08)",
+    borderBottomColor: "#e9e9e9",
   },
   mapSuggestionItemLast: {
     borderBottomWidth: 0,

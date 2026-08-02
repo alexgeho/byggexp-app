@@ -1,54 +1,53 @@
 export const baseColors = {
-  primary: '#007AFF',
-  secondary: '#5856D6',
-  success: '#34C759',
-  warning: '#FF9500',
-  danger: '#FF3B30',
+  primary: "#007AFF",
+  secondary: "#5856D6",
+  success: "#34C759",
+  warning: "#FF9500",
+  danger: "#FF3B30",
   background: {
-    light: '#EEEEEE',
-    dark: '#000000',
+    light: "#f2f1f6",
+    dark: "#000000",
   },
   text: {
-    light: '#000000',
-    dark: '#FFFFFF',
-    description: '#052D50'
+    light: "#000000",
+    dark: "#FFFFFF",
+    description: "#052D50",
   },
-
 };
 
 export const greenColors = {
-  background: '#EEEEEE',
+  background: "#f2f1f6",
 
-  primary: '#759D3C',
+  primary: "#759D3C",
 
-  glow: '#759D3C',
+  glow: "#759D3C",
 
-  text: '#282828',
-  
-  textBtn: '#4C9E3C',
+  text: "#282828",
 
-  hourBlockFilled: '#759D3C',
+  textBtn: "#4C9E3C",
 
-  hourBlockEmpty: '#759D3C4D',
+  hourBlockFilled: "#759D3C",
 
-  border: '#4C9E3C',
+  hourBlockEmpty: "#759D3C4D",
 
-  card: '#FFFFFF',
+  border: "#4C9E3C",
 
-  selectorBackground: '#FFFFFF',
+  card: "#FFFFFF",
 
-  selectorBorder: '#28282866',
+  selectorBackground: "#FFFFFF",
 
-  selectorArrow: '#282828',
+  selectorBorder: "#28282866",
 
-  icon: '#4C9E3C',
+  selectorArrow: "#282828",
 
-  bottomNav: '#4C9E3C',
-}
+  icon: "#4C9E3C",
+
+  bottomNav: "#4C9E3C",
+};
 
 export const lightColors = {
   ...greenColors,
-  background: "#EEEEEE",
+  background: "#f2f1f6",
   primary: "#0785F4",
   glow: "#0785F4",
   text: "#282828",
@@ -82,7 +81,7 @@ export const lightColors = {
 };
 
 export const blueColors = {
-  background: "#EEEEEE",
+  background: "#f2f1f6",
 
   primary: "#3B82F6",
 

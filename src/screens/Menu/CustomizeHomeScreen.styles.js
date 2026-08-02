@@ -92,7 +92,7 @@ export function createStyles(theme) {
 
     itemBorder: {
       borderBottomWidth: 1,
-      borderBottomColor: "#E7EDF3",
+      borderBottomColor: "#e9e9e9",
     },
 
     itemText: {

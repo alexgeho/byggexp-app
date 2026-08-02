@@ -1,5 +1,12 @@
 import React from "react";
-import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { BackButton } from "../../components/common/BackButton/BackButton";
@@ -28,10 +35,7 @@ function BulletSection({ title, items, theme }) {
       {bulletItems.map((item, index) => (
         <View key={index} style={styles.bulletRow}>
           <View
-            style={[
-              styles.bullet,
-              { backgroundColor: theme.colors.primary },
-            ]}
+            style={[styles.bullet, { backgroundColor: theme.colors.primary }]}
           />
           <Text
             style={[
@@ -176,7 +180,8 @@ export default function LegalPoliciesScreen() {
               key={item.key}
               style={[
                 styles.infoRow,
-                index !== appInformationRows.length - 1 && styles.infoRowDivider,
+                index !== appInformationRows.length - 1 &&
+                  styles.infoRowDivider,
               ]}
             >
               <Text
@@ -316,7 +321,7 @@ const styles = StyleSheet.create({
   },
   infoRowDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(5, 45, 80, 0.08)",
+    borderBottomColor: "#e9e9e9",
   },
   infoLabel: {
     color: "#698196",

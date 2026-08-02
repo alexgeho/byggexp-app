@@ -7,7 +7,7 @@ export const LINE = "#e7ecf0";
 export const FIELD_BG = "#f4f7fa";
 
 export const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#EEEEEE", paddingTop: 48 },
+  container: { flex: 1, backgroundColor: "#f2f1f6", paddingTop: 48 },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -209,7 +209,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingTop: 12,
     paddingBottom: 30,
-    backgroundColor: "#EEEEEE",
+    backgroundColor: "#f2f1f6",
     borderTopWidth: 1,
     borderTopColor: "#e2e6ea",
   },

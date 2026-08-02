@@ -7,7 +7,7 @@ import {
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#EEEEEE",
+    backgroundColor: "#f2f1f6",
   },
   pageContainer: {
     ...standardScreenContainer,
@@ -25,7 +25,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#EEEEEE",
+    backgroundColor: "#f2f1f6",
   },
   loadingText: {
     marginTop: 12,
@@ -36,7 +36,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 24,
-    backgroundColor: "#EEEEEE",
+    backgroundColor: "#f2f1f6",
   },
   accessDeniedText: {
     fontSize: 22,
@@ -90,7 +90,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(5, 45, 80, 0.08)",
+    borderBottomColor: "#e9e9e9",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -338,7 +338,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(5, 45, 80, 0.08)",
+    borderBottomColor: "#e9e9e9",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -450,7 +450,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(5, 45, 80, 0.08)",
+    borderBottomColor: "#e9e9e9",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -573,7 +573,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(5, 45, 80, 0.08)",
+    borderBottomColor: "#e9e9e9",
     flexDirection: "row",
     alignItems: "center",
     gap: 12,

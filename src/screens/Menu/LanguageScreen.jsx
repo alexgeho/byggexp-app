@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
   },
   languageRowDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(5, 45, 80, 0.08)",
+    borderBottomColor: "#e9e9e9",
   },
   languageLabel: {
     color: "#052D50",

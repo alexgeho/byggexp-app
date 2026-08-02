@@ -713,7 +713,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 24,
-    backgroundColor: "#EEEEEE",
+    backgroundColor: "#f2f1f6",
   },
   statusText: {
     marginTop: 12,
@@ -854,7 +854,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#EEEEEE",
+    backgroundColor: "#f2f1f6",
     position: "absolute",
     top: 12,
     right: 12,

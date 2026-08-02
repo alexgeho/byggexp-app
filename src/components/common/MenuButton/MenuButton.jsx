@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   },
   menuItemDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(5, 45, 80, 0.08)",
+    borderBottomColor: "#e9e9e9",
   },
   menuIconContainer: {
     width: 32,

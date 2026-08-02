@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { getDateLocale } from "../../utils/dateLocale";
 import {
   ActivityIndicator,
@@ -88,8 +94,7 @@ const normalizeDocuments = ({
 
   return documents
     .map((document, index) => {
-      const rawUrl =
-        typeof document === "string" ? document : document?.url;
+      const rawUrl = typeof document === "string" ? document : document?.url;
       const url = resolveDocumentUrl(rawUrl);
 
       if (!url) {
@@ -102,7 +107,10 @@ const normalizeDocuments = ({
       const uploadedAt =
         typeof document === "string"
           ? fallbackTimestamp || null
-          : document?.uploadedAt || document?.createdAt || fallbackTimestamp || null;
+          : document?.uploadedAt ||
+            document?.createdAt ||
+            fallbackTimestamp ||
+            null;
       const createdAt =
         typeof document === "string" ? null : document?.createdAt || null;
 
@@ -119,7 +127,9 @@ const normalizeDocuments = ({
         createdAt,
         parentName,
         secondaryLabel,
-        extension: name.includes(".") ? name.split(".").pop().toUpperCase() : "FILE",
+        extension: name.includes(".")
+          ? name.split(".").pop().toUpperCase()
+          : "FILE",
         isImage: isImageDocument({ name, mimeType, url }),
       };
     })
@@ -259,7 +269,12 @@ export default function DocumentsScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const { user, userId, logout, isLoading: authLoading } = useContext(AuthContext);
+  const {
+    user,
+    userId,
+    logout,
+    isLoading: authLoading,
+  } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState(null);
   const [projects, setProjects] = useState([]);
@@ -333,7 +348,10 @@ export default function DocumentsScreen() {
               parentName: task?.taskTitle || t("task.fallbackTitle"),
               secondaryLabel: project?.name || null,
               fallbackTimestamp:
-                task?.updatedAt || task?.createdAt || project?.createdAt || null,
+                task?.updatedAt ||
+                task?.createdAt ||
+                project?.createdAt ||
+                null,
               parentId: getEntityId(task),
             }),
           ),
@@ -370,7 +388,15 @@ export default function DocumentsScreen() {
         documents: personalDocuments,
       },
     ];
-  }, [profile?.additionalDocuments, profile?.createdAt, profile?.updatedAt, projects, user?.name, userId, t]);
+  }, [
+    profile?.additionalDocuments,
+    profile?.createdAt,
+    profile?.updatedAt,
+    projects,
+    user?.name,
+    userId,
+    t,
+  ]);
 
   const totalDocuments = sections.reduce(
     (count, section) => count + section.documents.length,
@@ -656,7 +682,7 @@ const styles = StyleSheet.create({
   },
   documentRowDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(5, 45, 80, 0.08)",
+    borderBottomColor: "#e9e9e9",
   },
   documentIconWrap: {
     width: 42,

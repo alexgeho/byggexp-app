@@ -94,24 +94,26 @@ export default function AboutAppScreen() {
             {t("about.featuresTitle")}
           </Text>
 
-          {(Array.isArray(appFeatures) ? appFeatures : []).map((item, index) => (
-            <View key={index} style={styles.bulletRow}>
-              <View
-                style={[
-                  styles.bullet,
-                  { backgroundColor: theme.colors.primary },
-                ]}
-              />
-              <Text
-                style={[
-                  styles.bulletText,
-                  { fontFamily: theme.text.fontFamily.medium },
-                ]}
-              >
-                {item}
-              </Text>
-            </View>
-          ))}
+          {(Array.isArray(appFeatures) ? appFeatures : []).map(
+            (item, index) => (
+              <View key={index} style={styles.bulletRow}>
+                <View
+                  style={[
+                    styles.bullet,
+                    { backgroundColor: theme.colors.primary },
+                  ]}
+                />
+                <Text
+                  style={[
+                    styles.bulletText,
+                    { fontFamily: theme.text.fontFamily.medium },
+                  ]}
+                >
+                  {item}
+                </Text>
+              </View>
+            ),
+          )}
         </View>
 
         <View style={styles.groupCard}>
@@ -150,7 +152,8 @@ export default function AboutAppScreen() {
               key={item.key}
               style={[
                 styles.infoRow,
-                index !== appInformationRows.length - 1 && styles.infoRowDivider,
+                index !== appInformationRows.length - 1 &&
+                  styles.infoRowDivider,
               ]}
             >
               <Text
@@ -289,7 +292,7 @@ const styles = StyleSheet.create({
   },
   infoRowDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(5, 45, 80, 0.08)",
+    borderBottomColor: "#e9e9e9",
   },
   infoLabel: {
     color: "#698196",
