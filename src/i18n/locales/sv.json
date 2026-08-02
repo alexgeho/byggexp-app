@@ -535,6 +535,10 @@
   },
   "menu": {
     "title": "Meny",
+    "sectionMain": "Allmänt",
+    "sectionWork": "Arbete",
+    "sectionEconomy": "Ekonomi",
+    "sectionSettings": "Inställningar",
     "customizeHome": "Anpassa startskärmen",
     "myAccount": "Mitt konto",
     "notifications": "Aviseringar",

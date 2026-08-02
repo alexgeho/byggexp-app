@@ -263,6 +263,44 @@ export default function MenuScreen() {
     },
   ];
 
+  // Group the flat menu items into labelled categories.
+  const menuSections = [
+    {
+      id: "main",
+      title: t("menu.sectionMain"),
+      items: menuItems.filter((item) =>
+        ["customizeHome", "account", "notifications", "documents"].includes(
+          item.id,
+        ),
+      ),
+    },
+    {
+      id: "work",
+      title: t("menu.sectionWork"),
+      items: menuItems.filter((item) =>
+        [
+          "tasks",
+          "shifts",
+          "workShifts",
+          "employees",
+          "tools",
+          "projects",
+          "planning",
+        ].includes(item.id),
+      ),
+    },
+    {
+      id: "economy",
+      title: t("menu.sectionEconomy"),
+      items: menuItems.filter((item) => item.id === "economy"),
+    },
+    {
+      id: "settings",
+      title: t("menu.sectionSettings"),
+      items: settingsItems,
+    },
+  ].filter((section) => section.items.length > 0);
+
   return (
     <View style={styles.container}>
       {/* HEADER */}
@@ -337,35 +375,23 @@ export default function MenuScreen() {
 
       {/* MAIN */}
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.menuSection}>
-          <View style={styles.groupCard}>
-            {menuItems.map((item, index) => (
-              <MenuButton
-                key={item.id}
-                screen={item.screen ? item.screen : "Menu"}
-                title={item.title}
-                color={item.color}
-                icon={item.icon}
-                isLast={index === menuItems.length - 1}
-              />
-            ))}
+        {menuSections.map((section) => (
+          <View key={section.id} style={styles.menuSection}>
+            <Text style={styles.sectionTitle}>{section.title}</Text>
+            <View style={styles.groupCard}>
+              {section.items.map((item, index) => (
+                <MenuButton
+                  key={item.id}
+                  screen={item.screen ? item.screen : "Menu"}
+                  title={item.title}
+                  color={item.color}
+                  icon={item.icon}
+                  isLast={index === section.items.length - 1}
+                />
+              ))}
+            </View>
           </View>
-        </View>
-
-        <View style={styles.settingsSection}>
-          <View style={styles.groupCard}>
-            {settingsItems.map((item, index) => (
-              <MenuButton
-                key={item.id}
-                screen={item.screen ? item.screen : "Menu"}
-                title={item.title}
-                color={item.color}
-                icon={item.icon}
-                isLast={index === settingsItems.length - 1}
-              />
-            ))}
-          </View>
-        </View>
+        ))}
       </ScrollView>
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}

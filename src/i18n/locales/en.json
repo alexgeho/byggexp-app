@@ -535,6 +535,10 @@
   },
   "menu": {
     "title": "Menu",
+    "sectionMain": "Main",
+    "sectionWork": "Work",
+    "sectionEconomy": "Economy",
+    "sectionSettings": "Settings",
     "customizeHome": "Customize Home Screen",
     "myAccount": "My account",
     "notifications": "Notifications",

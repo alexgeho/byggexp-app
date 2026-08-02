@@ -31,9 +31,11 @@ export function createStyles(theme) {
       ...standardScreenHeaderPlaceholder,
     },
     sectionTitle: {
-      color: "#698196",
-      fontSize: 13,
-      fontWeight: "600",
+      // Matches Figma: DM Sans Medium 17, color #8296A7.
+      color: "#8296A7",
+      fontSize: 17,
+      fontWeight: "500",
+      fontFamily: theme.text.fontFamily.medium,
       marginBottom: 8,
       marginTop: 8,
       paddingHorizontal: 8,
