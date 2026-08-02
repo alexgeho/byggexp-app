@@ -38,7 +38,11 @@ const guessMimeTypeFromName = (name = "") => {
 
   if (["mp4", "mov", "m4v", "webm", "avi", "mkv"].includes(extension)) {
     const mimeExtension =
-      extension === "mov" ? "quicktime" : extension === "mkv" ? "x-matroska" : extension;
+      extension === "mov"
+        ? "quicktime"
+        : extension === "mkv"
+          ? "x-matroska"
+          : extension;
     return `video/${mimeExtension}`;
   }
 
@@ -159,8 +163,7 @@ const chooseSource = () =>
       ],
       {
         cancelable: true,
-        onDismiss:
-          Platform.OS === "android" ? () => finish(null) : undefined,
+        onDismiss: Platform.OS === "android" ? () => finish(null) : undefined,
       },
     );
   });
@@ -193,6 +196,47 @@ export const pickUploadAssets = async ({
 
   return [];
 };
+
+const ensureCameraAccess = async () => {
+  let permission = await ImagePicker.getCameraPermissionsAsync();
+
+  if (!permission.granted) {
+    permission = await ImagePicker.requestCameraPermissionsAsync();
+  }
+
+  if (!permission.granted) {
+    Alert.alert("Camera access needed", "Allow camera access to take a photo.");
+    return false;
+  }
+
+  return true;
+};
+
+// Take a single photo with the camera. Returns normalized assets ([] if cancelled).
+export const pickFromCamera = async ({
+  fileNamePrefix = DEFAULT_FILE_NAME_PREFIX,
+} = {}) => {
+  const hasAccess = await ensureCameraAccess();
+  if (!hasAccess) {
+    return [];
+  }
+
+  const result = await ImagePicker.launchCameraAsync({ quality: 1 });
+
+  if (result.canceled || !result.assets?.length) {
+    return [];
+  }
+
+  return result.assets.map((asset, index) =>
+    normalizeMediaAsset(asset, fileNamePrefix, index),
+  );
+};
+
+// Pick one or more files/documents (images, PDFs, docs…).
+export const pickDocuments = ({
+  documentTypes = DEFAULT_DOCUMENT_TYPES,
+  fileNamePrefix = DEFAULT_FILE_NAME_PREFIX,
+} = {}) => pickFromFiles({ documentTypes, fileNamePrefix });
 
 export const isVideoAsset = (asset) => {
   const mimeType = asset?.mimeType || asset?.type || "";

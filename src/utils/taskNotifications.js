@@ -4,8 +4,8 @@ import {
   maxMinuteRepeatRuns,
   maxRepeatIntervalMinutes,
   minRepeatIntervalMinutes,
-} from '../theme/settings';
-import i18n from '../i18n';
+} from "../theme/settings";
+import i18n from "../i18n";
 
 const MINUTE_IN_MS = 60 * 1000;
 const HOUR_IN_MS = 60 * MINUTE_IN_MS;
@@ -13,11 +13,11 @@ const DAY_IN_MS = 24 * HOUR_IN_MS;
 const WEEK_IN_MS = 7 * DAY_IN_MS;
 
 export const REPEAT_OPTIONS = [
-  { key: 'none', label: 'Once' },
-  { key: 'minutes', label: 'Every N minutes' },
-  { key: 'hourly', label: 'Hourly' },
-  { key: 'daily', label: 'Daily' },
-  { key: 'weekly', label: 'Weekly' },
+  { key: "none", label: "Once" },
+  { key: "minutes", label: "Every N minutes" },
+  { key: "hourly", label: "Hourly" },
+  { key: "daily", label: "Daily" },
+  { key: "weekly", label: "Weekly" },
 ];
 
 export const createDefaultTaskNotificationSettings = () => ({
@@ -25,9 +25,12 @@ export const createDefaultTaskNotificationSettings = () => ({
   allMembersNotification: true,
   autoReminder: true,
   customReminder: false,
-  customMessage: '',
-  repeat: 'none',
+  customMessage: "",
+  repeat: "none",
   repeatIntervalMinutes: defaultRepeatIntervalMinutes,
+  // Keep pushing a reminder every `repeatIntervalMinutes` AFTER the due date
+  // passes, until the task is marked done. Independent of `repeat`.
+  remindUntilDone: false,
 });
 
 const normalizeDate = (value) => {
@@ -59,8 +62,8 @@ export const normalizeTaskNotificationSettings = (value) => {
         .filter((item) => item?.id)
         .map((item) => ({
           id: item.id,
-          name: item.name || i18n.t('project.unnamedWorker'),
-          profession: item.profession || '',
+          name: item.name || i18n.t("project.unnamedWorker"),
+          profession: item.profession || "",
         }))
     : [];
 
@@ -77,10 +80,13 @@ export const normalizeTaskNotificationSettings = (value) => {
     ),
     autoReminder: Boolean(value?.autoReminder ?? defaults.autoReminder),
     customReminder: Boolean(value?.customReminder ?? defaults.customReminder),
-    customMessage: value?.customMessage || '',
+    customMessage: value?.customMessage || "",
     repeat,
     repeatIntervalMinutes: normalizeRepeatIntervalMinutes(
       value?.repeatIntervalMinutes ?? defaults.repeatIntervalMinutes,
+    ),
+    remindUntilDone: Boolean(
+      value?.remindUntilDone ?? defaults.remindUntilDone,
     ),
   };
 };
@@ -98,9 +104,8 @@ export const deriveNotificationReminderFlags = (settings) => {
   };
 };
 
-const hasReminderEnabled = (settings) => (
-  Boolean(settings?.autoReminder || settings?.customReminder)
-);
+const hasReminderEnabled = (settings) =>
+  Boolean(settings?.autoReminder || settings?.customReminder);
 
 /** Time from now until due date (ignores start date — counting begins when saved). */
 const getReminderWindowMs = ({ dueDate }) => {
@@ -114,22 +119,22 @@ const getReminderWindowMs = ({ dueDate }) => {
 };
 
 export const getRepeatOptionState = ({ repeatKey, dueDate, settings }) => {
-  if (repeatKey === 'none') {
-    return { disabled: false, helperText: '' };
+  if (repeatKey === "none") {
+    return { disabled: false, helperText: "" };
   }
 
   const windowMs = getReminderWindowMs({ dueDate });
   if (windowMs === null) {
     return {
       disabled: false,
-      helperText: i18n.t('taskReminders.helper.needDueDate'),
+      helperText: i18n.t("taskReminders.helper.needDueDate"),
     };
   }
 
   if (windowMs <= 0) {
     return {
       disabled: false,
-      helperText: i18n.t('taskReminders.helper.dueInFuture'),
+      helperText: i18n.t("taskReminders.helper.dueInFuture"),
     };
   }
 
@@ -138,11 +143,11 @@ export const getRepeatOptionState = ({ repeatKey, dueDate, settings }) => {
   );
   const intervalMs = intervalMinutes * MINUTE_IN_MS;
 
-  if (repeatKey === 'minutes') {
+  if (repeatKey === "minutes") {
     if (windowMs < intervalMs) {
       return {
         disabled: false,
-        helperText: i18n.t('taskReminders.helper.minutesNeed', {
+        helperText: i18n.t("taskReminders.helper.minutesNeed", {
           minutes: intervalMinutes,
         }),
       };
@@ -155,18 +160,18 @@ export const getRepeatOptionState = ({ repeatKey, dueDate, settings }) => {
 
     return {
       disabled: false,
-      helperText: i18n.t('taskReminders.helper.minutesSends', {
+      helperText: i18n.t("taskReminders.helper.minutesSends", {
         maxRuns,
         minutes: intervalMinutes,
       }),
     };
   }
 
-  if (repeatKey === 'hourly') {
+  if (repeatKey === "hourly") {
     if (windowMs < HOUR_IN_MS) {
       return {
         disabled: false,
-        helperText: i18n.t('taskReminders.helper.hourlyNeed'),
+        helperText: i18n.t("taskReminders.helper.hourlyNeed"),
       };
     }
 
@@ -177,56 +182,56 @@ export const getRepeatOptionState = ({ repeatKey, dueDate, settings }) => {
 
     return {
       disabled: false,
-      helperText: i18n.t('taskReminders.helper.hourlySends', { maxRuns }),
+      helperText: i18n.t("taskReminders.helper.hourlySends", { maxRuns }),
     };
   }
 
-  if (repeatKey === 'daily') {
+  if (repeatKey === "daily") {
     if (windowMs < DAY_IN_MS) {
       return {
         disabled: false,
-        helperText: i18n.t('taskReminders.helper.dailyNeed'),
+        helperText: i18n.t("taskReminders.helper.dailyNeed"),
       };
     }
 
     if (windowMs > 30 * DAY_IN_MS) {
       return {
         disabled: false,
-        helperText: i18n.t('taskReminders.helper.dailyLimit'),
+        helperText: i18n.t("taskReminders.helper.dailyLimit"),
       };
     }
 
     return {
       disabled: false,
-      helperText: i18n.t('taskReminders.helper.dailySends'),
+      helperText: i18n.t("taskReminders.helper.dailySends"),
     };
   }
 
-  if (repeatKey === 'weekly') {
+  if (repeatKey === "weekly") {
     if (windowMs < WEEK_IN_MS) {
       return {
         disabled: false,
-        helperText: i18n.t('taskReminders.helper.weeklyNeed'),
+        helperText: i18n.t("taskReminders.helper.weeklyNeed"),
       };
     }
 
     return {
       disabled: false,
-      helperText: i18n.t('taskReminders.helper.weeklySends'),
+      helperText: i18n.t("taskReminders.helper.weeklySends"),
     };
   }
 
-  return { disabled: false, helperText: '' };
+  return { disabled: false, helperText: "" };
 };
 
 export const getRepeatLabel = (repeatKey, repeatIntervalMinutes) => {
-  if (repeatKey === 'minutes') {
+  if (repeatKey === "minutes") {
     const minutes = normalizeRepeatIntervalMinutes(repeatIntervalMinutes);
-    return i18n.t('taskReminders.everyMinutes', { minutes });
+    return i18n.t("taskReminders.everyMinutes", { minutes });
   }
 
   const fallback =
-    REPEAT_OPTIONS.find((option) => option.key === repeatKey)?.label || 'Once';
+    REPEAT_OPTIONS.find((option) => option.key === repeatKey)?.label || "Once";
   return i18n.t(`taskReminders.repeat.${repeatKey}`, fallback);
 };
 
@@ -234,7 +239,7 @@ export const getTaskNotificationSummary = (settings) => {
   const normalizedSettings = deriveNotificationReminderFlags(settings);
 
   if (!hasReminderEnabled(normalizedSettings)) {
-    return i18n.t('taskReminders.off');
+    return i18n.t("taskReminders.off");
   }
 
   const summaryParts = [
@@ -245,10 +250,14 @@ export const getTaskNotificationSummary = (settings) => {
   ];
 
   if (normalizedSettings.customMessage.trim()) {
-    summaryParts.push(i18n.t('taskReminders.custom'));
+    summaryParts.push(i18n.t("taskReminders.custom"));
   }
 
-  return summaryParts.join(' • ');
+  if (normalizedSettings.remindUntilDone) {
+    summaryParts.push(i18n.t("taskReminders.untilDone"));
+  }
+
+  return summaryParts.join(" • ");
 };
 
 export const buildTaskNotificationsPayload = ({ settings, dueDate }) => {
@@ -258,10 +267,14 @@ export const buildTaskNotificationsPayload = ({ settings, dueDate }) => {
     return [];
   }
 
-  const lines = ['All Members Notification: On'];
+  const lines = ["All Members Notification: On"];
 
-  lines.push(`Auto Reminder: ${normalizedSettings.autoReminder ? 'On' : 'Off'}`);
-  lines.push(`Custom Reminder: ${normalizedSettings.customReminder ? 'On' : 'Off'}`);
+  lines.push(
+    `Auto Reminder: ${normalizedSettings.autoReminder ? "On" : "Off"}`,
+  );
+  lines.push(
+    `Custom Reminder: ${normalizedSettings.customReminder ? "On" : "Off"}`,
+  );
 
   if (normalizedSettings.customMessage.trim()) {
     lines.push(`Message: ${normalizedSettings.customMessage.trim()}`);

@@ -255,7 +255,9 @@
     "whenToNotify": "När ska aviseringar skickas",
     "intervalLabel": "Intervall (minuter)",
     "customReminderLabel": "Anpassad påminnelse",
-    "customReminderPlaceholder": "Lämna tomt för automatisk påminnelse"
+    "customReminderPlaceholder": "Lämna tomt för automatisk påminnelse",
+    "remindUntilDoneLabel": "Påminn tills klar",
+    "remindUntilDoneHint": "Efter förfallodatumet, påminn var N:e minut tills uppgiften är klar"
   },
   "workers": {
     "loading": "Laddar arbetare...",
@@ -340,6 +342,7 @@
   "taskReminders": {
     "off": "Av",
     "custom": "Anpassad",
+    "untilDone": "Tills klar",
     "everyMinutes": "Var {{minutes}}:e min",
     "repeat": {
       "none": "En gång",
@@ -494,6 +497,9 @@
     "directConversation": "Direktkonversation",
     "groupChat": "Gruppchatt",
     "sendFailedTitle": "Det gick inte att skicka meddelandet",
+    "attachTitle": "Lägg till i chatten",
+    "takePhoto": "Ta foto",
+    "attachFile": "Bifoga fil",
     "notAvailableTitle": "Inte tillgängligt än",
     "notAvailableMessage": "Bilagor och kamera läggs till senare.",
     "idMissing": "Chatt-id saknas.",

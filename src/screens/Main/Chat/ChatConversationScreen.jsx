@@ -5,6 +5,7 @@ import {
   Alert,
   Image,
   KeyboardAvoidingView,
+  Linking,
   Platform,
   ScrollView,
   StyleSheet,
@@ -19,6 +20,7 @@ import { BackButton } from "../../../components/common/BackButton/BackButton";
 import AuthContext from "../../../contexts/AuthContext";
 import { useChatConversation } from "./useChatConversation";
 import { resolveUploadUrl } from "../../../utils/shifts";
+import { pickFromCamera, pickDocuments } from "../../../utils/uploadPicker";
 
 // Palette for the initials fallback avatar; white text reads well on all of
 // these.
@@ -97,11 +99,13 @@ export default function ChatConversationScreen({ variant }) {
     sending,
     error,
     sendMessage,
+    sendAttachments,
     translationEnabled,
     autoTranslate,
     setAutoTranslate,
   } = useChatConversation(chatId, initialChat);
   const [showOriginalIds, setShowOriginalIds] = useState(() => new Set());
+  const [uploading, setUploading] = useState(false);
 
   const toggleOriginal = (id) =>
     setShowOriginalIds((prev) => {
@@ -143,6 +147,38 @@ export default function ChatConversationScreen({ variant }) {
     } catch (_error) {
       Alert.alert(t("chat.sendFailedTitle"), t("common.tryAgain"));
     }
+  };
+
+  const runAttachmentPicker = async (picker) => {
+    if (uploading) {
+      return;
+    }
+    try {
+      const files = await picker({ fileNamePrefix: "chat" });
+      if (!files?.length) {
+        return;
+      }
+      setUploading(true);
+      await sendAttachments(files, "");
+    } catch (_error) {
+      Alert.alert(t("chat.sendFailedTitle"), t("common.tryAgain"));
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleAttachPress = () => {
+    Alert.alert(t("chat.attachTitle"), undefined, [
+      {
+        text: t("chat.takePhoto"),
+        onPress: () => runAttachmentPicker(pickFromCamera),
+      },
+      {
+        text: t("chat.attachFile"),
+        onPress: () => runAttachmentPicker(pickDocuments),
+      },
+      { text: t("common.cancel"), style: "cancel" },
+    ]);
   };
 
   if (!chatId) {
@@ -267,15 +303,50 @@ export default function ChatConversationScreen({ variant }) {
                   {!isMyMessage && variant === "group" ? (
                     <Text style={styles.senderName}>{message.senderName}</Text>
                   ) : null}
-                  <Text
-                    style={
-                      isMyMessage
-                        ? styles.myMessageText
-                        : styles.otherMessageText
-                    }
-                  >
-                    {bodyText}
-                  </Text>
+                  {message.attachments?.length ? (
+                    <View style={styles.attachments}>
+                      {message.attachments.map((att, attIndex) => {
+                        const url = resolveUploadUrl(att.url);
+                        return att.kind === "image" ? (
+                          <TouchableOpacity
+                            key={`${message._id}-att-${attIndex}`}
+                            activeOpacity={0.85}
+                            onPress={() => Linking.openURL(url)}
+                          >
+                            <Image
+                              style={styles.attachmentImage}
+                              source={{ uri: url }}
+                            />
+                          </TouchableOpacity>
+                        ) : (
+                          <TouchableOpacity
+                            key={`${message._id}-att-${attIndex}`}
+                            style={styles.attachmentFile}
+                            activeOpacity={0.85}
+                            onPress={() => Linking.openURL(url)}
+                          >
+                            <Text
+                              style={styles.attachmentFileName}
+                              numberOfLines={1}
+                            >
+                              📎 {att.name}
+                            </Text>
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </View>
+                  ) : null}
+                  {bodyText ? (
+                    <Text
+                      style={
+                        isMyMessage
+                          ? styles.myMessageText
+                          : styles.otherMessageText
+                      }
+                    >
+                      {bodyText}
+                    </Text>
+                  ) : null}
                   {hasTranslation ? (
                     <TouchableOpacity
                       onPress={() => toggleOriginal(message._id)}
@@ -316,6 +387,20 @@ export default function ChatConversationScreen({ variant }) {
       )}
 
       <View style={styles.inputContainer}>
+        <TouchableOpacity
+          style={styles.inputButton}
+          onPress={handleAttachPress}
+          disabled={uploading}
+        >
+          {uploading ? (
+            <ActivityIndicator size="small" color="#0785F4" />
+          ) : (
+            <Image
+              style={styles.inputIcon}
+              source={require("../../../assets/PlusBlack.png")}
+            />
+          )}
+        </TouchableOpacity>
         <View style={styles.textInputWrapper}>
           <TextInput
             onChangeText={setMessageText}
@@ -506,6 +591,29 @@ const styles = StyleSheet.create({
     color: "#698196",
     fontSize: 11,
     marginBottom: 4,
+  },
+  attachments: {
+    gap: 6,
+    marginBottom: 4,
+  },
+  attachmentImage: {
+    width: 200,
+    height: 200,
+    borderRadius: 12,
+    backgroundColor: "rgba(0,0,0,0.05)",
+  },
+  attachmentFile: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    backgroundColor: "rgba(0,0,0,0.06)",
+    maxWidth: 220,
+  },
+  attachmentFileName: {
+    color: "#052D50",
+    fontSize: 13,
   },
   myMessageText: {
     color: "#ffffff",

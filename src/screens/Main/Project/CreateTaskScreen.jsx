@@ -1009,7 +1009,39 @@ export default function CreateTaskScreen() {
                   })}
                 </View>
 
-                {notificationSettings.repeat === "minutes" ? (
+                <View
+                  style={[
+                    styles.messageBox,
+                    {
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    },
+                  ]}
+                >
+                  <View style={{ flex: 1, paddingRight: 12 }}>
+                    <Text style={styles.inputLabel}>
+                      {t("createTask.remindUntilDoneLabel")}
+                    </Text>
+                    <Text style={styles.allDayHint}>
+                      {t("createTask.remindUntilDoneHint")}
+                    </Text>
+                  </View>
+                  <Switch
+                    value={Boolean(notificationSettings.remindUntilDone)}
+                    onValueChange={(value) =>
+                      updateNotificationSettings({ remindUntilDone: value })
+                    }
+                    trackColor={{
+                      false: "#D9E3EC",
+                      true: theme.colors.primary,
+                    }}
+                    thumbColor="#FFFFFF"
+                  />
+                </View>
+
+                {notificationSettings.repeat === "minutes" ||
+                notificationSettings.remindUntilDone ? (
                   <View style={styles.intervalBox}>
                     <Text style={styles.inputLabel}>
                       {t("createTask.intervalLabel")}

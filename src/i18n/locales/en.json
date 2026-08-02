@@ -255,7 +255,9 @@
     "whenToNotify": "When to notify",
     "intervalLabel": "Interval (minutes)",
     "customReminderLabel": "Custom reminder",
-    "customReminderPlaceholder": "Leave empty for auto reminder"
+    "customReminderPlaceholder": "Leave empty for auto reminder",
+    "remindUntilDoneLabel": "Remind until done",
+    "remindUntilDoneHint": "After the due date, remind every N minutes until the task is done"
   },
   "workers": {
     "loading": "Loading workers...",
@@ -340,6 +342,7 @@
   "taskReminders": {
     "off": "Off",
     "custom": "Custom",
+    "untilDone": "Until done",
     "everyMinutes": "Every {{minutes}} min",
     "repeat": {
       "none": "Once",
@@ -494,6 +497,9 @@
     "directConversation": "Direct conversation",
     "groupChat": "Group chat",
     "sendFailedTitle": "Unable to send message",
+    "attachTitle": "Add to chat",
+    "takePhoto": "Take photo",
+    "attachFile": "Attach file",
     "notAvailableTitle": "Not available yet",
     "notAvailableMessage": "Attachments and camera will be added later.",
     "idMissing": "Chat id is missing.",

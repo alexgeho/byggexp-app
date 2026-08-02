@@ -53,6 +53,30 @@ export const chatService = {
     const { data } = await api.post(`/messages/chat/${chatId}`, { text });
     return data;
   },
+
+  sendAttachments: async (chatId, files, text) => {
+    const formData = new FormData();
+    files.forEach((file, index) => {
+      formData.append("files", {
+        uri: file.uri,
+        name: file.name || `attachment-${index + 1}`,
+        type: file.mimeType || file.type || "application/octet-stream",
+      });
+    });
+    if (text) {
+      formData.append("text", text);
+    }
+    const config =
+      typeof FormData !== "undefined" && formData instanceof FormData
+        ? { headers: { "Content-Type": "multipart/form-data" } }
+        : undefined;
+    const { data } = await api.post(
+      `/messages/chat/${chatId}/media`,
+      formData,
+      config,
+    );
+    return data;
+  },
 };
 
 export default chatService;
