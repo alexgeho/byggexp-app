@@ -83,7 +83,6 @@ export default function ShiftsScreen() {
   const [datePickerTarget, setDatePickerTarget] = useState(null);
   const [exportPeriodApplied, setExportPeriodApplied] = useState(false);
   const [exporting, setExporting] = useState(false);
-  const [expandedShiftId, setExpandedShiftId] = useState(null);
 
   const currentMonthKey = useMemo(() => getCurrentMonthKey(), []);
   const todayDateKey = useMemo(() => getTodayDateKey(), []);
@@ -225,10 +224,6 @@ export default function ShiftsScreen() {
     },
     [calendarLayout.rowDates, toggleDateGroup],
   );
-
-  useEffect(() => {
-    setExpandedShiftId(null);
-  }, [selectedDates]);
 
   const calendarRows = useMemo(() => {
     return calendarLayout.rows.map((row) => (
@@ -777,17 +772,8 @@ export default function ShiftsScreen() {
                 </Text>
               ) : (
                 selectedShifts.map((shift) => {
-                  const isExpanded = expandedShiftId === shift.id;
-
                   return (
-                    <TouchableOpacity
-                      key={shift.id}
-                      style={styles.shiftCard}
-                      onPress={() =>
-                        setExpandedShiftId(isExpanded ? null : shift.id)
-                      }
-                      activeOpacity={0.85}
-                    >
+                    <View key={shift.id} style={styles.shiftCard}>
                       <View style={styles.shiftTimeRow}>
                         <Text
                           style={[
@@ -807,119 +793,104 @@ export default function ShiftsScreen() {
                         </Text>
                       </View>
 
-                      {!isExpanded ? (
-                        <Text
-                          numberOfLines={1}
-                          style={[
-                            styles.shiftProjectName,
-                            { fontFamily: theme.text.fontFamily["regular"] },
-                          ]}
-                        >
-                          {formatShiftListProjectName(shift.projectName)}
-                        </Text>
-                      ) : (
-                        <View style={styles.shiftExpandedContent}>
-                          <View style={styles.shiftDetailRow}>
-                            <Text
-                              style={[
-                                styles.shiftDetailLabel,
-                                {
-                                  fontFamily: theme.text.fontFamily["regular"],
-                                },
-                              ]}
-                            >
-                              {t("createTask.projectLabel")}
-                            </Text>
-                            <Text
-                              numberOfLines={1}
-                              style={[
-                                styles.shiftDetailValue,
-                                {
-                                  fontFamily: theme.text.fontFamily["regular"],
-                                },
-                              ]}
-                            >
-                              {formatShiftListProjectName(shift.projectName)}
-                            </Text>
-                          </View>
-                          <View style={styles.shiftDetailRow}>
-                            <Text
-                              style={[
-                                styles.shiftDetailLabel,
-                                {
-                                  fontFamily: theme.text.fontFamily["regular"],
-                                },
-                              ]}
-                            >
-                              {t("createProject.location")}
-                            </Text>
-                            <Text
-                              style={[
-                                styles.shiftDetailValue,
-                                {
-                                  fontFamily: theme.text.fontFamily["regular"],
-                                },
-                              ]}
-                            >
-                              {shift.location || "—"}
-                            </Text>
-                          </View>
-                          <View style={styles.shiftDetailRow}>
-                            <Text
-                              style={[
-                                styles.shiftDetailLabel,
-                                {
-                                  fontFamily: theme.text.fontFamily["regular"],
-                                },
-                              ]}
-                            >
-                              {t("shifts.photos")}
-                            </Text>
-                            {shift.photos?.length ? (
-                              <View style={styles.shiftPhotosValue}>
-                                <ScrollView
-                                  horizontal
-                                  showsHorizontalScrollIndicator={false}
-                                  style={styles.shiftPhotosScroll}
-                                  contentContainerStyle={
-                                    styles.shiftPhotosScrollContent
-                                  }
-                                >
-                                  {shift.photos.map((photo, index) => (
-                                    <TouchableOpacity
-                                      key={`${shift.id}-photo-${index}`}
-                                      activeOpacity={0.85}
-                                      onPress={() =>
-                                        handleOpenShiftPhoto(photo)
-                                      }
-                                    >
-                                      <Image
-                                        style={styles.shiftImage}
-                                        source={{
-                                          uri: resolveUploadUrl(photo.url),
-                                        }}
-                                      />
-                                    </TouchableOpacity>
-                                  ))}
-                                </ScrollView>
-                              </View>
-                            ) : (
-                              <Text
-                                style={[
-                                  styles.shiftDetailValue,
-                                  {
-                                    fontFamily:
-                                      theme.text.fontFamily["regular"],
-                                  },
-                                ]}
-                              >
-                                {t("shifts.noPhotos")}
-                              </Text>
-                            )}
-                          </View>
+                      <View style={styles.shiftExpandedContent}>
+                        <View style={styles.shiftDetailRow}>
+                          <Text
+                            style={[
+                              styles.shiftDetailLabel,
+                              {
+                                fontFamily: theme.text.fontFamily["regular"],
+                              },
+                            ]}
+                          >
+                            {t("createTask.projectLabel")}
+                          </Text>
+                          <Text
+                            numberOfLines={1}
+                            style={[
+                              styles.shiftDetailValue,
+                              {
+                                fontFamily: theme.text.fontFamily["regular"],
+                              },
+                            ]}
+                          >
+                            {formatShiftListProjectName(shift.projectName)}
+                          </Text>
                         </View>
-                      )}
-                    </TouchableOpacity>
+                        <View style={styles.shiftDetailRow}>
+                          <Text
+                            style={[
+                              styles.shiftDetailLabel,
+                              {
+                                fontFamily: theme.text.fontFamily["regular"],
+                              },
+                            ]}
+                          >
+                            {t("createProject.location")}
+                          </Text>
+                          <Text
+                            style={[
+                              styles.shiftDetailValue,
+                              {
+                                fontFamily: theme.text.fontFamily["regular"],
+                              },
+                            ]}
+                          >
+                            {shift.location || "—"}
+                          </Text>
+                        </View>
+                        <View style={styles.shiftDetailRow}>
+                          <Text
+                            style={[
+                              styles.shiftDetailLabel,
+                              {
+                                fontFamily: theme.text.fontFamily["regular"],
+                              },
+                            ]}
+                          >
+                            {t("shifts.photos")}
+                          </Text>
+                          {shift.photos?.length ? (
+                            <View style={styles.shiftPhotosValue}>
+                              <ScrollView
+                                horizontal
+                                showsHorizontalScrollIndicator={false}
+                                style={styles.shiftPhotosScroll}
+                                contentContainerStyle={
+                                  styles.shiftPhotosScrollContent
+                                }
+                              >
+                                {shift.photos.map((photo, index) => (
+                                  <TouchableOpacity
+                                    key={`${shift.id}-photo-${index}`}
+                                    activeOpacity={0.85}
+                                    onPress={() => handleOpenShiftPhoto(photo)}
+                                  >
+                                    <Image
+                                      style={styles.shiftImage}
+                                      source={{
+                                        uri: resolveUploadUrl(photo.url),
+                                      }}
+                                    />
+                                  </TouchableOpacity>
+                                ))}
+                              </ScrollView>
+                            </View>
+                          ) : (
+                            <Text
+                              style={[
+                                styles.shiftDetailValue,
+                                {
+                                  fontFamily: theme.text.fontFamily["regular"],
+                                },
+                              ]}
+                            >
+                              {t("shifts.noPhotos")}
+                            </Text>
+                          )}
+                        </View>
+                      </View>
+                    </View>
                   );
                 })
               )}
