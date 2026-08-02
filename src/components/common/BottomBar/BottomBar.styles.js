@@ -70,10 +70,11 @@ export function createStyles(theme) {
     // stroke so the pill reads as a solid frosted surface over the light home
     // background instead of a washed-out blob showing the content behind it.
     // overflow:hidden clips the blur to the pill.
+    // Figma tab bar (Frame 5804): white 20% fill, white 30% stroke 1px, blur.
     menuWrapperGlass: {
-      backgroundColor: "rgba(255,255,255,0.55)",
-      borderWidth: 2,
-      borderColor: "#FFFFFF",
+      backgroundColor: "rgba(255,255,255,0.20)",
+      borderWidth: 1,
+      borderColor: "rgba(255,255,255,0.30)",
       overflow: "hidden",
     },
     navText: {

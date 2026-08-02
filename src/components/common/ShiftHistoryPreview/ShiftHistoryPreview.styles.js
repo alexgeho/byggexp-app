@@ -2,6 +2,9 @@ import { StyleSheet } from "react-native";
 
 export function createStyles(theme, colorMode = "dark") {
   const isLightMode = colorMode === "light";
+  // Only the pure black theme wants a solid dark card; other coloured themes
+  // (blue/green/orange/…) keep the translucent frosted card over their gradient.
+  const isBlack = Boolean(theme.colors.cardGlow);
   const themedTextColor = theme.colors.homeButtonText;
   const primaryTextColor = isLightMode
     ? theme.colors.text
@@ -12,10 +15,14 @@ export function createStyles(theme, colorMode = "dark") {
     : themedTextColor || "rgba(255,255,255,0.72)";
   const cardBackgroundColor = isLightMode
     ? "#FFFFFF"
-    : theme.colors.card || "#232323";
+    : isBlack
+      ? "#232323"
+      : "rgba(255,255,255,0.3)";
   const cardBorderColor = isLightMode
     ? `${theme.colors.primary}33`
-    : "transparent";
+    : isBlack
+      ? "transparent"
+      : "rgba(255,255,255,0.2)";
   const dividerColor = isLightMode
     ? `${theme.colors.primary}1F`
     : "rgba(255,255,255,0.14)";
