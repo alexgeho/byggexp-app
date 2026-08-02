@@ -33,7 +33,7 @@ export default function MainButtonsGrid() {
 
   const styles = createStyles(theme);
   const { unreadCount } = useUnreadChats();
-  const { openTaskCount, taskDeadlines, projectDeadline } =
+  const { overdueTaskCount, taskDeadlines, projectDeadline } =
     useTaskProjectBadges({
       projectId: selectedProjectId,
     });
@@ -145,7 +145,7 @@ export default function MainButtonsGrid() {
                   ) : null}
 
                   {button.id === "tasks" ? (
-                    <UnreadBadge count={openTaskCount} />
+                    <UnreadBadge count={overdueTaskCount} />
                   ) : null}
                 </View>
 

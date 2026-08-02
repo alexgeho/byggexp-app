@@ -80,6 +80,7 @@ const buildTaskDeadlines = (tasks) => {
  */
 export function useTaskProjectBadges({ projectId } = {}) {
   const [openTaskCount, setOpenTaskCount] = useState(0);
+  const [overdueTaskCount, setOverdueTaskCount] = useState(0);
   const [taskDeadlines, setTaskDeadlines] = useState([]);
   const [projectDeadline, setProjectDeadline] = useState(null);
 
@@ -99,8 +100,15 @@ export function useTaskProjectBadges({ projectId } = {}) {
           normalizeId(task.projectId) === String(projectId),
       );
       const openTasks = scopedTasks.filter(isOpenTask);
+      const today = startOfToday();
 
       setOpenTaskCount(openTasks.length);
+      setOverdueTaskCount(
+        openTasks.filter((task) => {
+          const due = new Date(task.dueDate).getTime();
+          return Number.isFinite(due) && due < today;
+        }).length,
+      );
       setTaskDeadlines(
         buildTaskDeadlines(openTasks.filter((task) => task.dueDate)),
       );
@@ -116,6 +124,7 @@ export function useTaskProjectBadges({ projectId } = {}) {
     } catch (error) {
       console.error("Failed to load task/project badges:", error);
       setOpenTaskCount(0);
+      setOverdueTaskCount(0);
       setTaskDeadlines([]);
       setProjectDeadline(null);
     }
@@ -127,7 +136,7 @@ export function useTaskProjectBadges({ projectId } = {}) {
     }, [load]),
   );
 
-  return { openTaskCount, taskDeadlines, projectDeadline };
+  return { openTaskCount, overdueTaskCount, taskDeadlines, projectDeadline };
 }
 
 export default useTaskProjectBadges;
