@@ -12,6 +12,7 @@ import {
   blueTheme,
   blackTheme,
   lightBlueTheme,
+  lightGrayTheme,
   colorfulTheme,
 } from "./themes";
 
@@ -21,6 +22,7 @@ const themes = {
   blue: blueTheme,
   black: blackTheme,
   lightBlue: lightBlueTheme,
+  lightGray: lightGrayTheme,
   colorful: colorfulTheme,
 };
 
@@ -44,15 +46,9 @@ export function ThemeProvider({ children }) {
 
     async function hydrateTheme() {
       try {
-        const savedTheme = await AsyncStorage.getItem(
-          THEME_STORAGE_KEY,
-        );
+        const savedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
 
-        if (
-          isMounted &&
-          savedTheme &&
-          themes[savedTheme]
-        ) {
+        if (isMounted && savedTheme && themes[savedTheme]) {
           setThemeName(savedTheme);
         }
       } catch (error) {
@@ -74,10 +70,7 @@ export function ThemeProvider({ children }) {
 
     setThemeName(nextTheme);
 
-    AsyncStorage.setItem(
-      THEME_STORAGE_KEY,
-      nextTheme,
-    ).catch((error) => {
+    AsyncStorage.setItem(THEME_STORAGE_KEY, nextTheme).catch((error) => {
       console.error("Failed to save theme:", error);
     });
   }, []);
@@ -92,8 +85,6 @@ export function ThemeProvider({ children }) {
   );
 
   return (
-    <ThemeContext.Provider value={value}>
-      {children}
-    </ThemeContext.Provider>
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
 }

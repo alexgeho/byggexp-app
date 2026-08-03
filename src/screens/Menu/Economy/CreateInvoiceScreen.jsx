@@ -207,20 +207,6 @@ export default function CreateInvoiceScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Email */}
-        <View style={styles.field}>
-          <Text style={styles.label}>{t("billing.email")}</Text>
-          <TextInput
-            style={styles.input}
-            value={email}
-            onChangeText={setEmail}
-            placeholder="kund@…"
-            placeholderTextColor={PLACEHOLDER}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-        </View>
-
         {/* Invoice rows */}
         <LineItemsEditor
           items={items}

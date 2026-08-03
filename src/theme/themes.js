@@ -2,6 +2,7 @@ import {
   blueColors,
   blackColors,
   lightBlueColors,
+  lightGrayColors,
   colorfulColors,
 } from "./colors";
 import { iconBadgeBackground } from "./colorUtils";
@@ -72,6 +73,11 @@ export const lightBlueTheme = {
   colors: withIconBadgeBackground(lightBlueColors),
 };
 
+export const lightGrayTheme = {
+  ...common,
+  colors: withIconBadgeBackground(lightGrayColors),
+};
+
 export const colorfulTheme = {
   ...common,
   // Pixel-perfect grid geometry from the Figma "colorful" mockup.
@@ -98,6 +104,11 @@ export const themeOptions = [
   {
     id: "lightBlue",
     color: lightBlueColors.background,
+  },
+  {
+    id: "lightGray",
+    color: lightGrayColors.background,
+    secondaryColor: lightGrayColors.primary,
   },
   {
     id: "colorful",

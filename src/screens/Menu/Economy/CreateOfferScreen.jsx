@@ -221,25 +221,12 @@ export default function CreateOfferScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Email */}
-        <View style={styles.field}>
-          <Text style={styles.label}>{t("billing.email")}</Text>
-          <TextInput
-            style={styles.input}
-            value={email}
-            onChangeText={setEmail}
-            placeholder="kund@…"
-            placeholderTextColor={PLACEHOLDER}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-        </View>
-
         {/* Offer rows */}
         <LineItemsEditor
           items={items}
           onChange={setItems}
           label={t("billing.offerRows")}
+          rowLabel={t("billing.itemDescription")}
         />
 
         {/* Clarifications */}

@@ -7,17 +7,9 @@ export function createStyles({
   theme,
   isLightBlue = false,
 }) {
-  const topPadding = veryCompact
-    ? 34
-    : compact
-      ? 44
-      : 60;
+  const topPadding = veryCompact ? 34 : compact ? 44 : 60;
   const horizontalPadding = compact ? 16 : 20;
-  const sectionGap = veryCompact
-    ? 14
-    : compact
-      ? 18
-      : 24;
+  const sectionGap = veryCompact ? 14 : compact ? 18 : 24;
   const timerBottomCompensation = veryCompact ? 8 : compact ? 12 : 16;
   const textColor = theme?.colors?.text || "#FFFFFF";
 
@@ -98,7 +90,8 @@ export function createStyles({
     selectorColorful: {
       backgroundColor: "rgba(5, 45, 80, 0.05)",
       borderColor: "transparent",
-      borderRadius: 16,
+      borderWidth: 0,
+      borderRadius: 100,
       minHeight: 52,
     },
     selectorTextColorful: {

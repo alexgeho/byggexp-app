@@ -164,15 +164,36 @@ export const lightBlueColors = {
   homeButtonText: "#010D18",
 };
 
+// Light grey home (Figma "Home / Blue" light variant): #EEEEEE page, white
+// cards, navy-outlined transparent selector, blue #3A81DB play button.
+export const lightGrayColors = {
+  ...lightBlueColors,
+  background: "#EEEEEE",
+  primary: "#3A81DB",
+  glow: "#3A81DB",
+  text: "#282828",
+  card: "#FFFFFF",
+  border: "rgba(40,40,40,0.30)",
+  selectorBackground: "transparent",
+  selectorBorder: "rgba(5,45,80,0.30)",
+  selectorArrow: "#282828",
+  icon: "#282828",
+  bottomNav: "#282828",
+  homeButtonBackground: "#FFFFFF",
+  homeButtonBorder: "rgba(40,40,40,0.06)",
+  homeButtonText: "#282828",
+};
+
 export const colorfulColors = {
   ...lightColors,
-  // Per-button background colors for the colorful home grid.
+  background: "#EEEEEE",
+  // Per-button background colors for the colorful home grid (Figma frame 57).
   buttonColors: {
     employees: "#0785F4",
     tools: "#5222FF",
     camera: "#FF5454",
     chats: "#F3B530",
-    shifts: "#282828",
+    shifts: "rgba(40,40,40,0.7)",
     projects: "#0785F4",
     tasks: "#0785F4",
   },

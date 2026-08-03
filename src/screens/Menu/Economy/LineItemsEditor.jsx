@@ -14,8 +14,9 @@ import { styles, PRIMARY, PLACEHOLDER } from "./billingForm.styles";
 // owns `items` and receives the next array on every change. Matches the Figma
 // "Invoice rows" section — section label, one white card per row, then a
 // pill "Add row" button, all 8px apart.
-export default function LineItemsEditor({ items, onChange, label }) {
+export default function LineItemsEditor({ items, onChange, label, rowLabel }) {
   const { t } = useTranslation();
+  const rowFieldLabel = rowLabel || t("billing.itemTitle");
 
   const update = (index, patch) => {
     const next = items.map((item, i) =>
@@ -47,7 +48,7 @@ export default function LineItemsEditor({ items, onChange, label }) {
         <View key={index} style={styles.row}>
           <View style={styles.rowBlock}>
             <View style={styles.rowLabelLine}>
-              <Text style={styles.cellLabel}>{t("billing.itemTitle")}</Text>
+              <Text style={styles.cellLabel}>{rowFieldLabel}</Text>
               <TouchableOpacity
                 style={styles.rowDelete}
                 onPress={() => remove(index)}

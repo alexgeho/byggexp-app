@@ -53,7 +53,8 @@ export const styles = StyleSheet.create({
   segTextOn: { color: INK },
 
   /* Status filter pills */
-  pillsRow: { flexGrow: 0, marginBottom: 20, maxHeight: 44 },
+  // Single horizontally-scrollable row of filter pills.
+  pillsRow: { flexGrow: 0, marginBottom: 20 },
   pillsContent: { paddingHorizontal: 16, gap: 10, alignItems: "center" },
   pill: {
     height: 44,
