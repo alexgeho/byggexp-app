@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, Image } from "react-native";
 import Svg, { Defs, RadialGradient, Stop, Rect } from "react-native-svg";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Feather";
@@ -106,24 +106,31 @@ export default function MainButtonsGrid() {
               ]}
             >
               {theme.colors.cardGlow && !buttonColor ? (
-                <Svg pointerEvents="none" style={StyleSheet.absoluteFill}>
+                // Fixed-size glow anchored to the bottom-right corner, so it
+                // looks identical whatever the card's height (Figma blurred
+                // ellipse). Card overflow:hidden clips it to the rounded corner.
+                <Svg
+                  pointerEvents="none"
+                  width={190}
+                  height={190}
+                  style={{ position: "absolute", right: -30, bottom: -30 }}
+                >
                   <Defs>
                     <RadialGradient
                       id={`cardGlow-${button.id}`}
-                      cx="94%"
-                      cy="80%"
-                      rx="88%"
-                      ry="95%"
+                      cx="50%"
+                      cy="50%"
+                      r="50%"
                     >
                       <Stop
                         offset="0"
                         stopColor={theme.colors.cardGlow}
-                        stopOpacity="0.1"
+                        stopOpacity="0.13"
                       />
                       <Stop
-                        offset="0.6"
+                        offset="0.55"
                         stopColor={theme.colors.cardGlow}
-                        stopOpacity="0.04"
+                        stopOpacity="0.05"
                       />
                       <Stop
                         offset="1"
@@ -135,8 +142,8 @@ export default function MainButtonsGrid() {
                   <Rect
                     x="0"
                     y="0"
-                    width="100%"
-                    height="100%"
+                    width="190"
+                    height="190"
                     fill={`url(#cardGlow-${button.id})`}
                   />
                 </Svg>
