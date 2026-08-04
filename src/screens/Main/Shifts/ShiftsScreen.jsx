@@ -814,8 +814,7 @@ export default function ShiftsScreen() {
           contentContainerStyle={styles.contentScrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* HOURS BY: which source drives the numbers/colours everywhere */}
-          <Text style={styles.hoursByLabel}>Hours by</Text>
+          {/* Planned / GPS / Manual — the source that drives numbers & colours */}
           <View style={styles.sourceToggle}>
             {HOURS_SOURCES.map((s) => {
               const on = s.key === hoursSource;
@@ -829,14 +828,14 @@ export default function ShiftsScreen() {
                   <Text
                     style={[
                       styles.sourceBtnText,
-                      { fontFamily: theme.text.fontFamily["semiBold"] },
+                      {
+                        fontFamily:
+                          theme.text.fontFamily[on ? "semiBold" : "medium"],
+                      },
                       on && { color: s.color },
                     ]}
                   >
                     {s.label}
-                  </Text>
-                  <Text style={[styles.sourceBtnSub, on && { color: s.color }]}>
-                    {s.sub}
                   </Text>
                 </TouchableOpacity>
               );
