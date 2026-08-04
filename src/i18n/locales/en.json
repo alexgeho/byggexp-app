@@ -279,7 +279,7 @@
   },
   "shifts": {
     "shiftPhoto": "Shift photo",
-    "selectPeriod": "Select period for export",
+    "selectPeriod": "Time period",
     "noPeriods": "No periods",
     "chooseBothMonths": "Choose both months for export.",
     "fromMonthBeforeTo": "The \"From\" month must be earlier than the \"To\" month.",
