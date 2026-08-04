@@ -1,15 +1,24 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   ActivityIndicator,
   Alert,
   Image,
   InteractionManager,
   Linking,
+  Modal,
   ScrollView,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import Icon from "react-native-vector-icons/Feather";
 import * as ImagePicker from "expo-image-picker";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
@@ -26,6 +35,28 @@ import {
 } from "../../../utils/uploadPicker";
 import { styles } from "./CameraScreen.styles";
 
+const CAMERA_TABS = [
+  { key: "shift", labelKey: "camera.modeShift" },
+  { key: "expense", labelKey: "camera.modeExpense" },
+];
+
+// Build date-grouped photo sections (newest first) from shift history days.
+const buildPhotoSections = (days) =>
+  (days || [])
+    .map((day) => {
+      const photos = (day.shifts || []).flatMap((shift) =>
+        (shift.photos || []).map((photo) => ({ ...photo })),
+      );
+      return {
+        date: day.date,
+        label: formatShiftDayLabel(day.date),
+        count: photos.length,
+        photos,
+      };
+    })
+    .filter((section) => section.count > 0)
+    .sort((a, b) => (a.date < b.date ? 1 : -1));
+
 export default function CameraScreen() {
   const navigation = useNavigation();
   const route = useRoute();
@@ -33,11 +64,15 @@ export default function CameraScreen() {
   const { theme } = useTheme();
   const { showSuccess } = useFeedback();
   const [shift, setShift] = useState(null);
+  const [photoSections, setPhotoSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [mode, setMode] = useState("shift"); // 'shift' | 'expense'
   const [scanning, setScanning] = useState(false);
   const [reviewData, setReviewData] = useState(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [previewPhoto, setPreviewPhoto] = useState(null);
   const autoLaunchTriggeredRef = useRef(false);
   const cameraLaunchInFlightRef = useRef(false);
 
@@ -54,34 +89,43 @@ export default function CameraScreen() {
   );
 
   const formatPhotoCountLabel = useCallback(
-    (count) => {
-      return t("camera.photoCount", { count });
-    },
+    (count) => t("camera.photoCount", { count }),
     [t],
   );
 
-  const loadShift = useCallback(async () => {
+  const refreshSections = useCallback(async () => {
+    try {
+      const history = await shiftService.getHistory();
+      setPhotoSections(buildPhotoSections(history?.days || []));
+    } catch (error) {
+      console.error("Failed to load shift photos history:", error);
+    }
+  }, []);
+
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      const currentShift = await shiftService.getCurrent();
+      const [currentShift] = await Promise.all([
+        shiftService.getCurrent().catch(() => null),
+        refreshSections(),
+      ]);
 
       if (route.params?.shiftId && currentShift?.id !== route.params.shiftId) {
         setShift(null);
-        return;
+      } else {
+        setShift(currentShift);
       }
-
-      setShift(currentShift);
     } catch (error) {
-      console.error("Failed to load current shift for camera:", error);
+      console.error("Failed to load camera data:", error);
       setShift(null);
     } finally {
       setLoading(false);
     }
-  }, [route.params?.shiftId]);
+  }, [refreshSections, route.params?.shiftId]);
 
   useEffect(() => {
-    loadShift();
-  }, [loadShift]);
+    loadData();
+  }, [loadData]);
 
   const uploadAssets = useCallback(
     async (assets) => {
@@ -103,8 +147,9 @@ export default function CameraScreen() {
       );
 
       setShift(updatedShift);
+      await refreshSections();
     },
-    [shift?.id],
+    [shift?.id, refreshSections],
   );
 
   // Kvitto mode: scan the captured photo, then open the review sheet.
@@ -312,6 +357,35 @@ export default function CameraScreen() {
     };
   }, [handleTakePhoto, loading, route.params?.autoOpen, shift?.id]);
 
+  const toggleSearch = useCallback(() => {
+    setSearchOpen((open) => {
+      if (open) {
+        setSearchQuery("");
+      }
+      return !open;
+    });
+  }, []);
+
+  const visibleSections = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) {
+      return photoSections;
+    }
+    return photoSections
+      .map((section) => {
+        if (section.label.toLowerCase().includes(query)) {
+          return section;
+        }
+        const photos = section.photos.filter((photo) =>
+          getPhotoFileName(photo).toLowerCase().includes(query),
+        );
+        return photos.length
+          ? { ...section, photos, count: photos.length }
+          : null;
+      })
+      .filter(Boolean);
+  }, [photoSections, searchQuery, getPhotoFileName]);
+
   const renderHeader = () => (
     <View style={styles.header}>
       <BackButton
@@ -329,38 +403,67 @@ export default function CameraScreen() {
       >
         {t("home.buttons.camera")}
       </Text>
-      <View style={styles.headerPlaceholder} />
+      <TouchableOpacity
+        style={styles.searchButton}
+        onPress={toggleSearch}
+        activeOpacity={0.85}
+      >
+        <Icon name={searchOpen ? "x" : "search"} size={20} color="#052D50" />
+      </TouchableOpacity>
     </View>
   );
 
-  const renderModeToggle = () => (
-    <View style={styles.modeToggle}>
-      <TouchableOpacity
-        style={[styles.modeBtn, mode === "shift" && styles.modeBtnActive]}
-        onPress={() => setMode("shift")}
+  const renderTabs = () => (
+    <View style={styles.tabs}>
+      {CAMERA_TABS.map((tab) => {
+        const active = mode === tab.key;
+        return (
+          <TouchableOpacity
+            key={tab.key}
+            style={[styles.tab, active && styles.tabActive]}
+            onPress={() => setMode(tab.key)}
+            activeOpacity={0.9}
+          >
+            <Text
+              style={[
+                styles.tabText,
+                {
+                  fontFamily:
+                    theme.text.fontFamily[active ? "semiBold" : "medium"],
+                },
+                active && styles.tabTextActive,
+              ]}
+            >
+              {t(tab.labelKey)}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+
+  const renderEmpty = (title, hint) => (
+    <View style={styles.emptyBlock}>
+      <Image
+        source={require("../../../assets/Camera-gray.png")}
+        style={styles.emptyIcon}
+      />
+      <Text
+        style={[
+          styles.emptyBlockTitle,
+          { fontFamily: theme.text.fontFamily.semiBold },
+        ]}
       >
-        <Text
-          style={[
-            styles.modeBtnText,
-            mode === "shift" && styles.modeBtnTextActive,
-          ]}
-        >
-          {t("camera.modeShift")}
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={[styles.modeBtn, mode === "expense" && styles.modeBtnActive]}
-        onPress={() => setMode("expense")}
+        {title}
+      </Text>
+      <Text
+        style={[
+          styles.emptyBlockText,
+          { fontFamily: theme.text.fontFamily.regular },
+        ]}
       >
-        <Text
-          style={[
-            styles.modeBtnText,
-            mode === "expense" && styles.modeBtnTextActive,
-          ]}
-        >
-          {t("camera.modeExpense")}
-        </Text>
-      </TouchableOpacity>
+        {hint}
+      </Text>
     </View>
   );
 
@@ -375,211 +478,101 @@ export default function CameraScreen() {
     );
   }
 
-  if (!shift && mode === "shift") {
-    return (
-      <View style={styles.centered}>
-        {renderHeader()}
-        {renderModeToggle()}
-        <View style={styles.emptyStateContent}>
-          <Text style={styles.emptyTitle}>{t("camera.noActiveShift")}</Text>
-          <Text style={styles.emptyText}>{t("camera.noShiftHint")}</Text>
-        </View>
-        <BottomBar
-          onLeftPress={() => navigation.navigate("Main")}
-          onRightPress={() => navigation.navigate("Menu")}
-          showAddButton={false}
-        />
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
       {renderHeader()}
-      {renderModeToggle()}
+
+      {searchOpen ? (
+        <View style={styles.searchBar}>
+          <Icon name="search" size={18} color="#698196" />
+          <TextInput
+            style={[
+              styles.searchInput,
+              { fontFamily: theme.text.fontFamily.regular },
+            ]}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder={t("camera.searchPlaceholder")}
+            placeholderTextColor="#9BB0C1"
+            autoFocus
+            returnKeyType="search"
+          />
+        </View>
+      ) : null}
+
+      {renderTabs()}
 
       <ScrollView
         style={styles.contentScroll}
         contentContainerStyle={styles.contentScrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={handleTakePhoto}
-          disabled={uploading}
-        >
-          {uploading ? (
-            <ActivityIndicator color="#ffffff" />
-          ) : (
-            <View style={styles.buttonContent}>
-              <Image
-                source={require("../../../assets/Camera-white.png")}
-                style={styles.buttonIcon}
-              />
-              <Text
-                style={[
-                  styles.actionButtonText,
-                  { fontFamily: theme.text.fontFamily.semiBold },
-                ]}
-              >
-                {t("camera.takePhoto")}
-              </Text>
-            </View>
-          )}
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.secondaryButton}
-          onPress={handleAttachFile}
-          disabled={uploading}
-        >
-          <View style={styles.buttonContent}>
-            <Image
-              source={require("../../../assets/Paperclip-blue.png")}
-              style={styles.secondaryButtonIcon}
-            />
-            <Text
-              style={[
-                styles.secondaryButtonText,
-                { fontFamily: theme.text.fontFamily.semiBold },
-              ]}
-            >
-              {t("camera.attachFile")}
-            </Text>
-          </View>
-        </TouchableOpacity>
-
-        {mode === "shift" && shift ? (
-          <View style={styles.photosCard}>
-            {!shift.photos?.length ? (
-              <>
-                <Text
-                  style={[
-                    styles.photosCardTitle,
-                    { fontFamily: theme.text.fontFamily.semiBold },
-                  ]}
-                >
-                  {t("camera.photosForShift")}
-                </Text>
-
-                <View style={styles.photosEmptyBlock}>
-                  <Image
-                    source={require("../../../assets/Camera-gray.png")}
-                    style={styles.photosEmptyIcon}
-                  />
-                  <Text
-                    style={[
-                      styles.photosEmptyTitle,
-                      { fontFamily: theme.text.fontFamily.semiBold },
-                    ]}
-                  >
-                    {t("camera.noPhotosYet")}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.photosEmptyDescription,
-                      { fontFamily: theme.text.fontFamily.regular },
-                    ]}
-                  >
-                    {t("camera.noPhotosHint")}
-                  </Text>
-                </View>
-              </>
-            ) : (
-              <View style={styles.photosAttachedBlock}>
-                <View style={styles.photosAttachedHeader}>
-                  <Text
-                    style={[
-                      styles.photosAttachedTitle,
-                      { fontFamily: theme.text.fontFamily.semiBold },
-                    ]}
-                  >
-                    {t("camera.attachedPhoto")}
-                  </Text>
-                  <View style={styles.activeShiftBadge}>
+        {mode === "shift"
+          ? visibleSections.length
+            ? visibleSections.map((section) => (
+                <View key={section.date} style={styles.section}>
+                  <View style={styles.sectionHeader}>
                     <Text
                       style={[
-                        styles.activeShiftBadgeText,
+                        styles.sectionDate,
                         { fontFamily: theme.text.fontFamily.medium },
                       ]}
                     >
-                      {formatPhotoCountLabel(shift.photos.length)}
+                      {section.label}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.sectionCount,
+                        { fontFamily: theme.text.fontFamily.regular },
+                      ]}
+                    >
+                      {formatPhotoCountLabel(section.count)}
                     </Text>
                   </View>
-                </View>
 
-                {shift.photos.map((photo, index) => (
-                  <View
-                    key={`${photo.url}-${index}`}
-                    style={[
-                      styles.attachedPhotoItem,
-                      index < shift.photos.length - 1 &&
-                        styles.attachedPhotoItemSpacing,
-                    ]}
-                  >
-                    <Image
-                      source={{ uri: resolveUploadUrl(photo.url) }}
-                      style={styles.photo}
-                    />
-                    <View style={styles.attachedPhotoMeta}>
-                      <View style={styles.attachedPhotoMetaText}>
-                        <Text
-                          style={[
-                            styles.attachedPhotoName,
-                            { fontFamily: theme.text.fontFamily.semiBold },
-                          ]}
-                        >
-                          {getPhotoFileName(photo)}
-                        </Text>
-                        <Text
-                          style={[
-                            styles.attachedPhotoDate,
-                            { fontFamily: theme.text.fontFamily.regular },
-                          ]}
-                        >
-                          {t("camera.dateShift", {
-                            date: formatShiftDayLabel(shift.shiftDate),
-                          })}
-                        </Text>
-                      </View>
-                      <View style={styles.visibleInShiftsBadge}>
-                        <Text
-                          style={[
-                            styles.visibleInShiftsBadgeText,
-                            { fontFamily: theme.text.fontFamily.medium },
-                          ]}
-                        >
-                          {t("camera.visibleInShifts")}
-                        </Text>
-                      </View>
-                    </View>
+                  <View style={styles.grid}>
+                    {section.photos.map((photo, index) => (
+                      <TouchableOpacity
+                        key={`${photo.url}-${index}`}
+                        activeOpacity={0.85}
+                        onPress={() =>
+                          setPreviewPhoto(resolveUploadUrl(photo.url))
+                        }
+                      >
+                        <Image
+                          source={{ uri: resolveUploadUrl(photo.url) }}
+                          style={styles.thumb}
+                        />
+                      </TouchableOpacity>
+                    ))}
                   </View>
-                ))}
-              </View>
+                </View>
+              ))
+            : renderEmpty(
+                searchQuery ? t("camera.noResults") : t("camera.noPhotosYet"),
+                searchQuery
+                  ? t("camera.noResultsHint")
+                  : t("camera.noPhotosHint"),
+              )
+          : renderEmpty(
+              t("camera.receiptsEmptyTitle"),
+              t("camera.receiptsEmptyHint"),
             )}
-
-            {!shift.photos?.length ? (
-              <>
-                <View style={styles.photosDivider} />
-
-                <Text
-                  style={[
-                    styles.photosFooter,
-                    { fontFamily: theme.text.fontFamily.regular },
-                  ]}
-                >
-                  {t("camera.photosFooter")}
-                </Text>
-              </>
-            ) : null}
-          </View>
-        ) : null}
       </ScrollView>
 
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
-        showAddButton={false}
+        showAddButton
+        onAddPress={handleTakePhoto}
+        addDisabled={uploading}
+        renderAddContent={() =>
+          uploading ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <Icon name="camera" size={26} color="#FFFFFF" />
+          )
+        }
       />
 
       {scanning ? (
@@ -605,6 +598,27 @@ export default function CameraScreen() {
           });
         }}
       />
+
+      <Modal
+        visible={!!previewPhoto}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setPreviewPhoto(null)}
+      >
+        <TouchableOpacity
+          style={styles.previewOverlay}
+          activeOpacity={1}
+          onPress={() => setPreviewPhoto(null)}
+        >
+          {previewPhoto ? (
+            <Image
+              source={{ uri: previewPhoto }}
+              style={styles.previewImage}
+              resizeMode="contain"
+            />
+          ) : null}
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 }
