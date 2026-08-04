@@ -692,6 +692,7 @@ export default function ShiftsScreen() {
       setExporting(true);
       await shiftService.exportReport({
         format: selectedExportType,
+        hoursSource,
         ...(usePeriod
           ? { from: range.from, to: range.to }
           : { dates: sortedDates.join(",") }),
@@ -713,6 +714,7 @@ export default function ShiftsScreen() {
     exportPeriodApplied,
     exporting,
     getPeriodExportRange,
+    hoursSource,
     selectedDates,
     selectedExportType,
   ]);
