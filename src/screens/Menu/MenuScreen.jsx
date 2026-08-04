@@ -27,8 +27,11 @@ export default function MenuScreen() {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = createStyles(theme);
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout, hasPermission } = useContext(AuthContext);
   const avatarSource = resolveImageUrl(user?.avatarUrl);
+  // Economy/invoicing is gated on the finance.manage capability, so a delegated
+  // "office" user sees it even without an admin role.
+  const canFinance = hasPermission("finance.manage");
 
   const menuItems = useMemo(() => {
     const baseItems = [
@@ -123,7 +126,7 @@ export default function MenuScreen() {
           color: theme.colors.primary,
         },
         planningItem,
-        economyItem,
+        ...(canFinance ? [economyItem] : []),
       ];
     }
 
@@ -155,7 +158,7 @@ export default function MenuScreen() {
           color: theme.colors.primary,
         },
         planningItem,
-        economyItem,
+        ...(canFinance ? [economyItem] : []),
       ];
     }
 
@@ -187,6 +190,7 @@ export default function MenuScreen() {
         employeesItem,
         toolsItem,
         planningItem,
+        ...(canFinance ? [economyItem] : []),
       ];
     }
 
@@ -215,8 +219,9 @@ export default function MenuScreen() {
         icon: require("../../assets/WorkShifts.png"),
         color: theme.colors.primary,
       },
+      ...(canFinance ? [economyItem] : []),
     ];
-  }, [theme.colors.primary, user?.role, t]);
+  }, [theme.colors.primary, user?.role, t, canFinance]);
 
   const settingsItems = [
     {
