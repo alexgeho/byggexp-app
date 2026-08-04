@@ -553,13 +553,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     borderRadius: 18,
     paddingVertical: 12,
     paddingHorizontal: 14,
   },
   rowSelected: {
     backgroundColor: "#4C9AF5",
+    borderColor: "#4C9AF5",
   },
   avatar: {
     width: 48,
