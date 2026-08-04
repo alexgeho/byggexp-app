@@ -300,8 +300,6 @@
   "shifts": {
     "shiftPhoto": "Shift photo",
     "selectPeriod": "Time period",
-    "clearFilters": "Clear filters",
-    "saveFilters": "Save filters",
     "noPeriods": "No periods",
     "chooseBothMonths": "Choose both months for export.",
     "fromMonthBeforeTo": "The \"From\" month must be earlier than the \"To\" month.",
