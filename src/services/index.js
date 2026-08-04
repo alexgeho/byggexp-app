@@ -13,6 +13,7 @@ export { chatService } from "./chat.service";
 export { leaveService } from "./leave.service";
 export { offerService } from "./offer.service";
 export { invoiceService } from "./invoice.service";
+export { projectFinanceService } from "./project-finance.service";
 export { clientService } from "./client.service";
 export { logUserActivity } from "./user-activity.service";
 

@@ -63,7 +63,27 @@
     "tabs": {
       "tasks": "Uppgifter",
       "documents": "Dokument",
-      "workers": "Arbetare"
+      "workers": "Arbetare",
+      "photos": "Foton",
+      "economy": "Ekonomi"
+    },
+    "noPhotosTitle": "Inga foton ännu",
+    "noPhotosText": "Foton tagna på arbetspass för detta projekt visas här.",
+    "economy": {
+      "result": "Resultat",
+      "marginPct": "{{pct}}% marginal",
+      "costs": "Kostnader",
+      "invoiced": "Fakturerat",
+      "materials": "Material",
+      "supplierInvoices": "Inköpsfakturor",
+      "expenses": "Utlägg (kvitton)",
+      "labourCost": "Arbete",
+      "ata": "ÄTA (godkänt)",
+      "totalCost": "Total kostnad",
+      "labour": "Arbete",
+      "hoursWorked": "Arbetade timmar",
+      "hoursValue": "{{hours}} h",
+      "labourBilled": "Arbete debiterat"
     },
     "noTasksTitle": "Inga uppgifter än",
     "noTasksText": "Det finns inga uppgifter kopplade till detta projekt.",

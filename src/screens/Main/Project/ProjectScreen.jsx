@@ -14,8 +14,10 @@ import React, {
 import {
   ActivityIndicator,
   Alert,
+  Dimensions,
   Image,
   Linking,
+  Modal,
   ScrollView,
   StyleSheet,
   Text,
@@ -34,9 +36,13 @@ import {
   standardScreenHeader,
 } from "../../../styles/screenLayout";
 import { useTheme } from "../../../theme/ThemeContext";
-import { projectService } from "../../../services";
+import {
+  projectService,
+  shiftService,
+  projectFinanceService,
+} from "../../../services";
 import { isPdfDocument } from "../../../utils/documentPreview";
-import { resolveUploadUrl } from "../../../utils/shifts";
+import { formatShiftDayLabel, resolveUploadUrl } from "../../../utils/shifts";
 import { sortByNewest } from "../../../utils/sortByNewest";
 import { cardStyles } from "../../../styles/cards";
 import { pickUploadAssets } from "../../../utils/uploadPicker";
@@ -47,6 +53,25 @@ import {
   shouldShowAccountStatus,
 } from "../../../utils/userRoles";
 import { API_BASE_URL } from "../../../config/env";
+
+const PHOTO_GAP = 10;
+const PHOTO_COLS = 3;
+const PHOTO_THUMB = Math.floor(
+  (Dimensions.get("window").width - 12 * 2 - PHOTO_GAP * (PHOTO_COLS - 1)) /
+    PHOTO_COLS,
+);
+
+// Group every photo across the project's shifts by day, newest first.
+const buildProjectPhotoSections = (days) =>
+  (days || [])
+    .map((day) => {
+      const photos = (day.shifts || []).flatMap((shift) =>
+        (shift.photos || []).map((photo) => ({ ...photo })),
+      );
+      return { date: day.date, count: photos.length, photos };
+    })
+    .filter((section) => section.count > 0)
+    .sort((a, b) => (a.date < b.date ? 1 : -1));
 
 const formatDate = (value, withTime = false, t = null) => {
   const noDate = t ? t("project.noDate") : "No date";
@@ -195,7 +220,7 @@ export const ProjectScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { t } = useTranslation();
-  const { user } = useContext(AuthContext);
+  const { user, hasPermission } = useContext(AuthContext);
   const { showSuccess } = useFeedback();
   const { theme } = useTheme();
   const { id, initialTab, refreshKey } = route.params || {};
@@ -204,6 +229,34 @@ export const ProjectScreen = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [uploadingDocuments, setUploadingDocuments] = useState(false);
+  const [photoSections, setPhotoSections] = useState(null);
+  const [hoursWorked, setHoursWorked] = useState(0);
+  const [loadingPhotos, setLoadingPhotos] = useState(false);
+  const [economy, setEconomy] = useState(null);
+  const [loadingEconomy, setLoadingEconomy] = useState(false);
+  const [previewPhoto, setPreviewPhoto] = useState(null);
+
+  // Economy (P&L) is finance data — admins/finance only. Photos are open to all.
+  const canSeeEconomy =
+    ["companyAdmin", "superadmin", "projectAdmin"].includes(user?.role) ||
+    Boolean(hasPermission?.("finance.manage"));
+
+  // Load every shift on the project once, feeding both the Photos grid and the
+  // hours-worked input for the economy P&L.
+  const loadShifts = useCallback(async () => {
+    if (!id) {
+      return { hours: 0 };
+    }
+    const data = await shiftService.list({ projectId: id });
+    setPhotoSections(buildProjectPhotoSections(data?.days || []));
+    const hours =
+      (data?.items || []).reduce(
+        (sum, shift) => sum + (Number(shift.durationMs) || 0),
+        0,
+      ) / 3600000;
+    setHoursWorked(hours);
+    return { hours };
+  }, [id]);
 
   const fetchProject = useCallback(async () => {
     if (!id) {
@@ -233,7 +286,52 @@ export const ProjectScreen = () => {
 
   useEffect(() => {
     setModal(initialTab || "Tasks");
+    // Reset lazily-loaded tabs when switching projects.
+    setPhotoSections(null);
+    setHoursWorked(0);
+    setEconomy(null);
   }, [initialTab, id]);
+
+  // Lazy-load the Photos grid when its tab is first opened.
+  useEffect(() => {
+    if (modal !== "Photos" || photoSections !== null || loadingPhotos) {
+      return;
+    }
+    setLoadingPhotos(true);
+    loadShifts().finally(() => setLoadingPhotos(false));
+  }, [modal, photoSections, loadingPhotos, loadShifts]);
+
+  // Lazy-load the project economy P&L when its tab is first opened.
+  useEffect(() => {
+    if (modal !== "Economy" || economy !== null || loadingEconomy || !project) {
+      return;
+    }
+    setLoadingEconomy(true);
+    (async () => {
+      try {
+        const { hours } =
+          photoSections === null ? await loadShifts() : { hours: hoursWorked };
+        const result = await projectFinanceService.getEconomy(id, {
+          project,
+          hoursWorked: hours,
+        });
+        setEconomy(result);
+      } catch (economyError) {
+        console.error("Failed to load project economy:", economyError);
+      } finally {
+        setLoadingEconomy(false);
+      }
+    })();
+  }, [
+    modal,
+    economy,
+    loadingEconomy,
+    project,
+    id,
+    photoSections,
+    hoursWorked,
+    loadShifts,
+  ]);
 
   useEffect(() => {
     if (!refreshKey) {
@@ -403,6 +501,26 @@ export const ProjectScreen = () => {
   const activeTabTextStyle = { color: theme.colors.primary };
   const themedAccentTextStyle = { color: theme.colors.primary };
 
+  const fmtMoney = (value) =>
+    `${Math.round(Number(value) || 0).toLocaleString(getDateLocale())} kr`;
+
+  const ecoRow = (key, label, value, opts = {}) => (
+    <View key={key} style={[styles.ecoRow, opts.total && styles.ecoRowTotal]}>
+      <Text style={[styles.ecoRowLabel, opts.total && styles.ecoRowStrong]}>
+        {label}
+      </Text>
+      <Text
+        style={[
+          styles.ecoRowValue,
+          opts.total && styles.ecoRowStrong,
+          opts.accent && { color: theme.colors.primary },
+        ]}
+      >
+        {value}
+      </Text>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -419,7 +537,12 @@ export const ProjectScreen = () => {
         <View style={styles.headerPlaceholder} />
       </View>
 
-      <View style={styles.tabContainer}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.tabScroll}
+        contentContainerStyle={styles.tabContainer}
+      >
         <TouchableOpacity
           onPress={() => setModal("Tasks")}
           style={[
@@ -465,7 +588,40 @@ export const ProjectScreen = () => {
             {t("project.tabs.workers")}
           </Text>
         </TouchableOpacity>
-      </View>
+        <TouchableOpacity
+          onPress={() => setModal("Photos")}
+          style={[
+            styles.tabButton,
+            modal === "Photos" && styles.activeTab,
+            modal === "Photos" && activeTabStyle,
+          ]}
+        >
+          <Text
+            style={[styles.tabText, modal === "Photos" && activeTabTextStyle]}
+          >
+            {t("project.tabs.photos")}
+          </Text>
+        </TouchableOpacity>
+        {canSeeEconomy ? (
+          <TouchableOpacity
+            onPress={() => setModal("Economy")}
+            style={[
+              styles.tabButton,
+              modal === "Economy" && styles.activeTab,
+              modal === "Economy" && activeTabStyle,
+            ]}
+          >
+            <Text
+              style={[
+                styles.tabText,
+                modal === "Economy" && activeTabTextStyle,
+              ]}
+            >
+              {t("project.tabs.economy")}
+            </Text>
+          </TouchableOpacity>
+        ) : null}
+      </ScrollView>
 
       <ScrollView
         style={styles.scrollContainer}
@@ -633,6 +789,147 @@ export const ProjectScreen = () => {
               </Text>
             </View>
           ))}
+
+        {modal === "Photos" &&
+          (loadingPhotos ? (
+            <View style={styles.tabLoading}>
+              <ActivityIndicator color={theme.colors.primary} />
+            </View>
+          ) : photoSections && photoSections.length ? (
+            photoSections.map((section) => (
+              <View key={section.date} style={styles.photoSection}>
+                <View style={styles.photoSectionHeader}>
+                  <Text style={styles.photoSectionDate}>
+                    {formatShiftDayLabel(section.date)}
+                  </Text>
+                  <Text style={styles.photoSectionCount}>
+                    {t("camera.photoCount", { count: section.count })}
+                  </Text>
+                </View>
+                <View style={styles.photoGrid}>
+                  {section.photos.map((photo, index) => (
+                    <TouchableOpacity
+                      key={`${photo.url}-${index}`}
+                      activeOpacity={0.85}
+                      onPress={() =>
+                        setPreviewPhoto(resolveUploadUrl(photo.url))
+                      }
+                    >
+                      <Image
+                        source={{ uri: resolveUploadUrl(photo.url) }}
+                        style={styles.photoThumb}
+                      />
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+            ))
+          ) : (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateTitle}>
+                {t("project.noPhotosTitle")}
+              </Text>
+              <Text style={styles.emptyStateText}>
+                {t("project.noPhotosText")}
+              </Text>
+            </View>
+          ))}
+
+        {modal === "Economy" &&
+          (loadingEconomy || !economy ? (
+            <View style={styles.tabLoading}>
+              <ActivityIndicator color={theme.colors.primary} />
+            </View>
+          ) : (
+            <View style={styles.ecoWrap}>
+              <View style={styles.ecoResultCard}>
+                <Text style={styles.ecoResultLabel}>
+                  {t("project.economy.result")}
+                </Text>
+                <Text
+                  style={[
+                    styles.ecoResultValue,
+                    { color: economy.margin >= 0 ? "#12B76A" : "#E5484D" },
+                  ]}
+                >
+                  {fmtMoney(economy.margin)}
+                </Text>
+                <Text style={styles.ecoResultSub}>
+                  {t("project.economy.marginPct", { pct: economy.marginPct })}
+                </Text>
+              </View>
+
+              <View style={styles.ecoCard}>
+                <Text style={styles.ecoCardTitle}>
+                  {t("project.economy.costs")}
+                </Text>
+                {ecoRow(
+                  "invoiced",
+                  t("project.economy.invoiced"),
+                  fmtMoney(economy.invoiced),
+                  { accent: true },
+                )}
+                {ecoRow(
+                  "materials",
+                  t("project.economy.materials"),
+                  fmtMoney(economy.materials),
+                )}
+                {ecoRow(
+                  "supplier",
+                  t("project.economy.supplierInvoices"),
+                  fmtMoney(economy.supplier),
+                )}
+                {ecoRow(
+                  "expenses",
+                  t("project.economy.expenses"),
+                  fmtMoney(economy.expenses),
+                )}
+                {ecoRow(
+                  "labour",
+                  t("project.economy.labourCost"),
+                  fmtMoney(economy.laborCost),
+                )}
+                {economy.ata > 0
+                  ? ecoRow(
+                      "ata",
+                      t("project.economy.ata"),
+                      fmtMoney(economy.ata),
+                    )
+                  : null}
+                {ecoRow(
+                  "total",
+                  t("project.economy.totalCost"),
+                  fmtMoney(economy.totalCost),
+                  { total: true },
+                )}
+              </View>
+
+              <View style={styles.ecoCard}>
+                <Text style={styles.ecoCardTitle}>
+                  {t("project.economy.labour")}
+                </Text>
+                {ecoRow(
+                  "hours",
+                  t("project.economy.hoursWorked"),
+                  t("project.economy.hoursValue", {
+                    hours: economy.hoursWorked,
+                  }),
+                )}
+                {ecoRow(
+                  "lcost",
+                  t("project.economy.labourCost"),
+                  fmtMoney(economy.laborCost),
+                )}
+                {economy.laborBilled > 0
+                  ? ecoRow(
+                      "lbilled",
+                      t("project.economy.labourBilled"),
+                      fmtMoney(economy.laborBilled),
+                    )
+                  : null}
+              </View>
+            </View>
+          ))}
       </ScrollView>
 
       <BottomBar
@@ -670,6 +967,27 @@ export const ProjectScreen = () => {
           )
         }
       />
+
+      <Modal
+        visible={!!previewPhoto}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setPreviewPhoto(null)}
+      >
+        <TouchableOpacity
+          style={styles.previewOverlay}
+          activeOpacity={1}
+          onPress={() => setPreviewPhoto(null)}
+        >
+          {previewPhoto ? (
+            <Image
+              source={{ uri: previewPhoto }}
+              style={styles.previewImage}
+              resizeMode="contain"
+            />
+          ) : null}
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 };
@@ -715,17 +1033,18 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
   },
-  tabContainer: {
+  tabScroll: {
     width: "100%",
+    flexGrow: 0,
+  },
+  tabContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 12,
+    gap: 8,
+    paddingRight: 12,
   },
   tabButton: {
-    padding: 4,
-    flex: 1,
-    paddingLeft: 8,
-    paddingRight: 8,
+    paddingVertical: 9,
+    paddingHorizontal: 16,
     backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderRadius: 999,
     borderWidth: 1,
@@ -736,8 +1055,120 @@ const styles = StyleSheet.create({
   },
   tabText: {
     color: "#052D50",
-    width: "100%",
     textAlign: "center",
+  },
+  tabLoading: {
+    paddingVertical: 40,
+    alignItems: "center",
+  },
+
+  // Photos grid
+  photoSection: {
+    gap: 12,
+    marginBottom: 12,
+  },
+  photoSectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  photoSectionDate: {
+    color: "#052D50",
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  photoSectionCount: {
+    color: "#698196",
+    fontSize: 14,
+  },
+  photoGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: PHOTO_GAP,
+  },
+  photoThumb: {
+    width: PHOTO_THUMB,
+    height: PHOTO_THUMB,
+    borderRadius: 14,
+    backgroundColor: "#E5E9ED",
+  },
+
+  // Economy (P&L)
+  ecoWrap: {
+    gap: 12,
+  },
+  ecoResultCard: {
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+    padding: 20,
+    alignItems: "center",
+  },
+  ecoResultLabel: {
+    color: "#698196",
+    fontSize: 14,
+    marginBottom: 6,
+  },
+  ecoResultValue: {
+    fontSize: 30,
+    fontWeight: "700",
+  },
+  ecoResultSub: {
+    color: "#698196",
+    fontSize: 14,
+    marginTop: 4,
+  },
+  ecoCard: {
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+    padding: 16,
+  },
+  ecoCardTitle: {
+    color: "#052D50",
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 8,
+  },
+  ecoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 8,
+  },
+  ecoRowTotal: {
+    borderTopWidth: 1,
+    borderTopColor: "rgba(5, 45, 80, 0.1)",
+    marginTop: 4,
+  },
+  ecoRowLabel: {
+    color: "#698196",
+    fontSize: 15,
+  },
+  ecoRowValue: {
+    color: "#052D50",
+    fontSize: 15,
+    fontWeight: "500",
+  },
+  ecoRowStrong: {
+    color: "#052D50",
+    fontWeight: "700",
+    fontSize: 16,
+  },
+
+  // Full-screen photo preview
+  previewOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.92)",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
+  },
+  previewImage: {
+    width: "100%",
+    height: "100%",
   },
   scrollContainer: {
     flex: 1,

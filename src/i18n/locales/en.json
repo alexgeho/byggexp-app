@@ -63,7 +63,27 @@
     "tabs": {
       "tasks": "Tasks",
       "documents": "Documents",
-      "workers": "Workers"
+      "workers": "Workers",
+      "photos": "Photos",
+      "economy": "Economy"
+    },
+    "noPhotosTitle": "No photos yet",
+    "noPhotosText": "Photos taken on shifts for this project will appear here.",
+    "economy": {
+      "result": "Result",
+      "marginPct": "{{pct}}% margin",
+      "costs": "Costs",
+      "invoiced": "Invoiced",
+      "materials": "Materials",
+      "supplierInvoices": "Purchase invoices",
+      "expenses": "Expenses (receipts)",
+      "labourCost": "Labour",
+      "ata": "ÄTA (approved)",
+      "totalCost": "Total cost",
+      "labour": "Labour",
+      "hoursWorked": "Hours worked",
+      "hoursValue": "{{hours}} h",
+      "labourBilled": "Labour billed"
     },
     "noTasksTitle": "No tasks yet",
     "noTasksText": "There are no tasks assigned to this project.",
