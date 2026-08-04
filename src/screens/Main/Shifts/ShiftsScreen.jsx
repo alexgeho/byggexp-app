@@ -613,6 +613,15 @@ export default function ShiftsScreen() {
     setSelectedDates([]);
     setExportPeriodApplied(true);
     closePeriodSheet();
+
+    // Jump the calendar to the chosen period's month and reload, so the grid
+    // reflects the selection instead of staying on the current month.
+    const targetMonth =
+      exportPeriodTab === "Month" ? exportFromMonth : range.from.slice(0, 7);
+    if (targetMonth) {
+      setSelectedMonth(targetMonth);
+      refreshHistory(targetMonth);
+    }
   }, [
     closePeriodSheet,
     exportFromDate,
@@ -621,6 +630,7 @@ export default function ShiftsScreen() {
     exportToDate,
     exportToMonth,
     getPeriodExportRange,
+    refreshHistory,
     t,
   ]);
 
