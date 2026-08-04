@@ -1,5 +1,6 @@
 import React, {
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -24,6 +25,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
+import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import { expenseService, shiftService } from "../../../services";
 import ExpenseReviewSheet from "./ExpenseReviewSheet";
@@ -63,6 +65,8 @@ export default function CameraScreen() {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const { showSuccess } = useFeedback();
+  const { user } = useContext(AuthContext);
+  const currentUserId = user?.id || user?._id || null;
   const [shift, setShift] = useState(null);
   const [photoSections, setPhotoSections] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -95,12 +99,16 @@ export default function CameraScreen() {
 
   const refreshSections = useCallback(async () => {
     try {
-      const history = await shiftService.getHistory();
+      // The camera gallery shows only the current user's own shift photos,
+      // never the whole project/company (admins would otherwise see everyone).
+      const history = await shiftService.getHistory(
+        currentUserId ? { workerId: currentUserId } : {},
+      );
       setPhotoSections(buildPhotoSections(history?.days || []));
     } catch (error) {
       console.error("Failed to load shift photos history:", error);
     }
-  }, []);
+  }, [currentUserId]);
 
   const loadData = useCallback(async () => {
     try {
