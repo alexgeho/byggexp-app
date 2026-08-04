@@ -100,5 +100,25 @@
     "metro-react-native-babel-preset": "^0.77.0",
     "prettier": "^3.9.6",
     "typescript": "~5.9.2"
+  },
+  "expo": {
+    "install": {
+      "exclude": [
+        "expo",
+        "expo-file-system",
+        "expo-font",
+        "@react-native-community/slider",
+        "react-native-webview"
+      ]
+    },
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "listUnknownPackages": false,
+        "exclude": [
+          "@react-native-community/checkbox",
+          "react-native-vector-icons"
+        ]
+      }
+    }
   }
 }
