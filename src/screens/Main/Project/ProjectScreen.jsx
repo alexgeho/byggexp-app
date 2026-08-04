@@ -39,7 +39,7 @@ import { useTheme } from "../../../theme/ThemeContext";
 import {
   projectService,
   shiftService,
-  projectFinanceService,
+  expenseService,
 } from "../../../services";
 import { isPdfDocument } from "../../../utils/documentPreview";
 import { formatShiftDayLabel, resolveUploadUrl } from "../../../utils/shifts";
@@ -61,17 +61,23 @@ const PHOTO_THUMB = Math.floor(
     PHOTO_COLS,
 );
 
-// Group every photo across the project's shifts by day, newest first.
-const buildProjectPhotoSections = (days) =>
-  (days || [])
-    .map((day) => {
-      const photos = (day.shifts || []).flatMap((shift) =>
-        (shift.photos || []).map((photo) => ({ ...photo })),
-      );
-      return { date: day.date, count: photos.length, photos };
-    })
-    .filter((section) => section.count > 0)
+// Group project photo items ({ url, date, isReceipt }) by day, newest first.
+const groupPhotoItemsByDate = (items) => {
+  const byDate = new Map();
+  for (const item of items) {
+    if (!item.url) {
+      continue;
+    }
+    const date = item.date || "";
+    if (!byDate.has(date)) {
+      byDate.set(date, []);
+    }
+    byDate.get(date).push(item);
+  }
+  return [...byDate.entries()]
+    .map(([date, photos]) => ({ date, count: photos.length, photos }))
     .sort((a, b) => (a.date < b.date ? 1 : -1));
+};
 
 const formatDate = (value, withTime = false, t = null) => {
   const noDate = t ? t("project.noDate") : "No date";
@@ -220,7 +226,7 @@ export const ProjectScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { t } = useTranslation();
-  const { user, hasPermission } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const { showSuccess } = useFeedback();
   const { theme } = useTheme();
   const { id, initialTab, refreshKey } = route.params || {};
@@ -230,32 +236,47 @@ export const ProjectScreen = () => {
   const [error, setError] = useState("");
   const [uploadingDocuments, setUploadingDocuments] = useState(false);
   const [photoSections, setPhotoSections] = useState(null);
-  const [hoursWorked, setHoursWorked] = useState(0);
   const [loadingPhotos, setLoadingPhotos] = useState(false);
-  const [economy, setEconomy] = useState(null);
-  const [loadingEconomy, setLoadingEconomy] = useState(false);
   const [previewPhoto, setPreviewPhoto] = useState(null);
 
-  // Economy (P&L) is finance data — admins/finance only. Photos are open to all.
-  const canSeeEconomy =
-    ["companyAdmin", "superadmin", "projectAdmin"].includes(user?.role) ||
-    Boolean(hasPermission?.("finance.manage"));
-
-  // Load every shift on the project once, feeding both the Photos grid and the
-  // hours-worked input for the economy P&L.
-  const loadShifts = useCallback(async () => {
+  // The project photo gallery = every shift photo + every scanned receipt for
+  // the project, so both a plain site photo and a receipt end up "in the
+  // project". Receipts additionally live as expenses (project economy).
+  const loadProjectPhotos = useCallback(async () => {
     if (!id) {
-      return { hours: 0 };
+      return;
     }
-    const data = await shiftService.list({ projectId: id });
-    setPhotoSections(buildProjectPhotoSections(data?.days || []));
-    const hours =
-      (data?.items || []).reduce(
-        (sum, shift) => sum + (Number(shift.durationMs) || 0),
-        0,
-      ) / 3600000;
-    setHoursWorked(hours);
-    return { hours };
+    const [shiftsRes, expensesRes] = await Promise.allSettled([
+      shiftService.list({ projectId: id }),
+      expenseService.list({ projectId: id }),
+    ]);
+
+    const days =
+      shiftsRes.status === "fulfilled" ? shiftsRes.value?.days || [] : [];
+    const shiftPhotos = days.flatMap((day) =>
+      (day.shifts || []).flatMap((shift) =>
+        (shift.photos || []).map((photo) => ({
+          url: photo.url,
+          date: day.date,
+          isReceipt: false,
+        })),
+      ),
+    );
+
+    const expensesRaw =
+      expensesRes.status === "fulfilled" ? expensesRes.value : [];
+    const expenses = Array.isArray(expensesRaw)
+      ? expensesRaw
+      : expensesRaw?.items || [];
+    const receiptPhotos = expenses
+      .filter((expense) => expense.receiptUrl)
+      .map((expense) => ({
+        url: expense.receiptUrl,
+        date: String(expense.date || expense.createdAt || "").slice(0, 10),
+        isReceipt: true,
+      }));
+
+    setPhotoSections(groupPhotoItemsByDate([...shiftPhotos, ...receiptPhotos]));
   }, [id]);
 
   const fetchProject = useCallback(async () => {
@@ -286,52 +307,18 @@ export const ProjectScreen = () => {
 
   useEffect(() => {
     setModal(initialTab || "Tasks");
-    // Reset lazily-loaded tabs when switching projects.
+    // Reset the lazily-loaded Photos tab when switching projects.
     setPhotoSections(null);
-    setHoursWorked(0);
-    setEconomy(null);
   }, [initialTab, id]);
 
-  // Lazy-load the Photos grid when its tab is first opened.
+  // Lazy-load the project photo gallery when its tab is first opened.
   useEffect(() => {
     if (modal !== "Photos" || photoSections !== null || loadingPhotos) {
       return;
     }
     setLoadingPhotos(true);
-    loadShifts().finally(() => setLoadingPhotos(false));
-  }, [modal, photoSections, loadingPhotos, loadShifts]);
-
-  // Lazy-load the project economy P&L when its tab is first opened.
-  useEffect(() => {
-    if (modal !== "Economy" || economy !== null || loadingEconomy || !project) {
-      return;
-    }
-    setLoadingEconomy(true);
-    (async () => {
-      try {
-        const { hours } =
-          photoSections === null ? await loadShifts() : { hours: hoursWorked };
-        const result = await projectFinanceService.getEconomy(id, {
-          project,
-          hoursWorked: hours,
-        });
-        setEconomy(result);
-      } catch (economyError) {
-        console.error("Failed to load project economy:", economyError);
-      } finally {
-        setLoadingEconomy(false);
-      }
-    })();
-  }, [
-    modal,
-    economy,
-    loadingEconomy,
-    project,
-    id,
-    photoSections,
-    hoursWorked,
-    loadShifts,
-  ]);
+    loadProjectPhotos().finally(() => setLoadingPhotos(false));
+  }, [modal, photoSections, loadingPhotos, loadProjectPhotos]);
 
   useEffect(() => {
     if (!refreshKey) {
@@ -501,26 +488,6 @@ export const ProjectScreen = () => {
   const activeTabTextStyle = { color: theme.colors.primary };
   const themedAccentTextStyle = { color: theme.colors.primary };
 
-  const fmtMoney = (value) =>
-    `${Math.round(Number(value) || 0).toLocaleString(getDateLocale())} kr`;
-
-  const ecoRow = (key, label, value, opts = {}) => (
-    <View key={key} style={[styles.ecoRow, opts.total && styles.ecoRowTotal]}>
-      <Text style={[styles.ecoRowLabel, opts.total && styles.ecoRowStrong]}>
-        {label}
-      </Text>
-      <Text
-        style={[
-          styles.ecoRowValue,
-          opts.total && styles.ecoRowStrong,
-          opts.accent && { color: theme.colors.primary },
-        ]}
-      >
-        {value}
-      </Text>
-    </View>
-  );
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -602,25 +569,6 @@ export const ProjectScreen = () => {
             {t("project.tabs.photos")}
           </Text>
         </TouchableOpacity>
-        {canSeeEconomy ? (
-          <TouchableOpacity
-            onPress={() => setModal("Economy")}
-            style={[
-              styles.tabButton,
-              modal === "Economy" && styles.activeTab,
-              modal === "Economy" && activeTabStyle,
-            ]}
-          >
-            <Text
-              style={[
-                styles.tabText,
-                modal === "Economy" && activeTabTextStyle,
-              ]}
-            >
-              {t("project.tabs.economy")}
-            </Text>
-          </TouchableOpacity>
-        ) : null}
       </ScrollView>
 
       <ScrollView
@@ -819,6 +767,11 @@ export const ProjectScreen = () => {
                         source={{ uri: resolveUploadUrl(photo.url) }}
                         style={styles.photoThumb}
                       />
+                      {photo.isReceipt ? (
+                        <View style={styles.receiptTag}>
+                          <Icon name="file-text" size={12} color="#FFFFFF" />
+                        </View>
+                      ) : null}
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -832,102 +785,6 @@ export const ProjectScreen = () => {
               <Text style={styles.emptyStateText}>
                 {t("project.noPhotosText")}
               </Text>
-            </View>
-          ))}
-
-        {modal === "Economy" &&
-          (loadingEconomy || !economy ? (
-            <View style={styles.tabLoading}>
-              <ActivityIndicator color={theme.colors.primary} />
-            </View>
-          ) : (
-            <View style={styles.ecoWrap}>
-              <View style={styles.ecoResultCard}>
-                <Text style={styles.ecoResultLabel}>
-                  {t("project.economy.result")}
-                </Text>
-                <Text
-                  style={[
-                    styles.ecoResultValue,
-                    { color: economy.margin >= 0 ? "#12B76A" : "#E5484D" },
-                  ]}
-                >
-                  {fmtMoney(economy.margin)}
-                </Text>
-                <Text style={styles.ecoResultSub}>
-                  {t("project.economy.marginPct", { pct: economy.marginPct })}
-                </Text>
-              </View>
-
-              <View style={styles.ecoCard}>
-                <Text style={styles.ecoCardTitle}>
-                  {t("project.economy.costs")}
-                </Text>
-                {ecoRow(
-                  "invoiced",
-                  t("project.economy.invoiced"),
-                  fmtMoney(economy.invoiced),
-                  { accent: true },
-                )}
-                {ecoRow(
-                  "materials",
-                  t("project.economy.materials"),
-                  fmtMoney(economy.materials),
-                )}
-                {ecoRow(
-                  "supplier",
-                  t("project.economy.supplierInvoices"),
-                  fmtMoney(economy.supplier),
-                )}
-                {ecoRow(
-                  "expenses",
-                  t("project.economy.expenses"),
-                  fmtMoney(economy.expenses),
-                )}
-                {ecoRow(
-                  "labour",
-                  t("project.economy.labourCost"),
-                  fmtMoney(economy.laborCost),
-                )}
-                {economy.ata > 0
-                  ? ecoRow(
-                      "ata",
-                      t("project.economy.ata"),
-                      fmtMoney(economy.ata),
-                    )
-                  : null}
-                {ecoRow(
-                  "total",
-                  t("project.economy.totalCost"),
-                  fmtMoney(economy.totalCost),
-                  { total: true },
-                )}
-              </View>
-
-              <View style={styles.ecoCard}>
-                <Text style={styles.ecoCardTitle}>
-                  {t("project.economy.labour")}
-                </Text>
-                {ecoRow(
-                  "hours",
-                  t("project.economy.hoursWorked"),
-                  t("project.economy.hoursValue", {
-                    hours: economy.hoursWorked,
-                  }),
-                )}
-                {ecoRow(
-                  "lcost",
-                  t("project.economy.labourCost"),
-                  fmtMoney(economy.laborCost),
-                )}
-                {economy.laborBilled > 0
-                  ? ecoRow(
-                      "lbilled",
-                      t("project.economy.labourBilled"),
-                      fmtMoney(economy.laborBilled),
-                    )
-                  : null}
-              </View>
             </View>
           ))}
       </ScrollView>
@@ -1092,70 +949,16 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     backgroundColor: "#E5E9ED",
   },
-
-  // Economy (P&L)
-  ecoWrap: {
-    gap: 12,
-  },
-  ecoResultCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-    padding: 20,
+  receiptTag: {
+    position: "absolute",
+    top: 6,
+    right: 6,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: "#F59E0B",
     alignItems: "center",
-  },
-  ecoResultLabel: {
-    color: "#698196",
-    fontSize: 14,
-    marginBottom: 6,
-  },
-  ecoResultValue: {
-    fontSize: 30,
-    fontWeight: "700",
-  },
-  ecoResultSub: {
-    color: "#698196",
-    fontSize: 14,
-    marginTop: 4,
-  },
-  ecoCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-    padding: 16,
-  },
-  ecoCardTitle: {
-    color: "#052D50",
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 8,
-  },
-  ecoRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 8,
-  },
-  ecoRowTotal: {
-    borderTopWidth: 1,
-    borderTopColor: "rgba(5, 45, 80, 0.1)",
-    marginTop: 4,
-  },
-  ecoRowLabel: {
-    color: "#698196",
-    fontSize: 15,
-  },
-  ecoRowValue: {
-    color: "#052D50",
-    fontSize: 15,
-    fontWeight: "500",
-  },
-  ecoRowStrong: {
-    color: "#052D50",
-    fontWeight: "700",
-    fontSize: 16,
+    justifyContent: "center",
   },
 
   // Full-screen photo preview
