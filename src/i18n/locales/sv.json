@@ -300,6 +300,8 @@
   "shifts": {
     "shiftPhoto": "Arbetspassfoto",
     "selectPeriod": "Tidsperiod",
+    "clearFilters": "Rensa filter",
+    "saveFilters": "Spara filter",
     "noPeriods": "Inga perioder",
     "chooseBothMonths": "Välj båda månaderna för export.",
     "fromMonthBeforeTo": "\"Från\"-månaden måste vara tidigare än \"Till\"-månaden.",

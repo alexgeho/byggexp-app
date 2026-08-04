@@ -83,6 +83,7 @@ export default function ShiftsScreen() {
   const weekdayLabels = t("shifts.weekdays", { returnObjects: true });
   const exportBottomSheetRef = useRef(null);
   const periodBottomSheetRef = useRef(null);
+  const filterBottomSheetRef = useRef(null);
   const [availableMonths, setAvailableMonths] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [selectedDates, setSelectedDates] = useState([]);
@@ -517,6 +518,21 @@ export default function ShiftsScreen() {
     periodBottomSheetRef.current?.close();
   }, []);
 
+  const openFilterSheet = useCallback(() => {
+    filterBottomSheetRef.current?.expand();
+  }, []);
+
+  const closeFilterSheet = useCallback(() => {
+    filterBottomSheetRef.current?.close();
+  }, []);
+
+  const clearFilters = useCallback(() => {
+    setFilterProjectId(null);
+    setFilterWorkerIds([]);
+    setExportPeriodApplied(false);
+    setSelectedDates([]);
+  }, []);
+
   const openPeriodSheet = useCallback(() => {
     setDatePickerTarget(null);
 
@@ -801,7 +817,13 @@ export default function ShiftsScreen() {
         >
           {t("menu.workShifts")}
         </Text>
-        <View style={styles.placeholder} />
+        <TouchableOpacity
+          style={styles.filterButton}
+          onPress={openFilterSheet}
+          activeOpacity={0.85}
+        >
+          <Icon name="sliders" size={20} color="#052D50" />
+        </TouchableOpacity>
       </View>
 
       {loading ? (
@@ -895,74 +917,6 @@ export default function ShiftsScreen() {
               </TouchableOpacity>
             ) : null}
           </View>
-
-          <View style={styles.exportSelector}>
-            <TouchableOpacity
-              style={styles.dropdownButton}
-              onPress={openPeriodSheet}
-            >
-              <Text
-                style={[
-                  styles.dropdownText,
-                  !exportPeriodApplied && styles.dropdownPlaceholderText,
-                  {
-                    fontFamily:
-                      theme.text.fontFamily[
-                        exportPeriodApplied ? "semiBold" : "regular"
-                      ],
-                  },
-                ]}
-              >
-                {exportPeriodLabel}
-              </Text>
-              <Image
-                style={styles.dropdownIcon}
-                source={require("../../../assets/Arrow-down.png")}
-              />
-            </TouchableOpacity>
-          </View>
-
-          {isAdmin ? (
-            <View style={styles.filtersRow}>
-              <View style={styles.filterHalf}>
-                <ProjectFilterSelector
-                  projects={projects}
-                  selectedProjectId={filterProjectId}
-                  onSelect={setFilterProjectId}
-                />
-              </View>
-              <View style={styles.filterHalf}>
-                <TouchableOpacity
-                  style={styles.dropdownButton}
-                  onPress={() => setEmployeePickerOpen(true)}
-                >
-                  <Text
-                    style={[
-                      styles.dropdownText,
-                      !filterWorkerIds.length && styles.dropdownPlaceholderText,
-                      {
-                        fontFamily:
-                          theme.text.fontFamily[
-                            filterWorkerIds.length ? "semiBold" : "regular"
-                          ],
-                      },
-                    ]}
-                    numberOfLines={1}
-                  >
-                    {filterWorkerIds.length
-                      ? t("shifts.employeesSelected", {
-                          count: filterWorkerIds.length,
-                        })
-                      : t("shifts.allEmployees")}
-                  </Text>
-                  <Image
-                    style={styles.dropdownIcon}
-                    source={require("../../../assets/Arrow-down.png")}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-          ) : null}
 
           <View style={styles.calendarContainer}>
             <View style={styles.calendarMonthBar}>
@@ -1217,6 +1171,84 @@ export default function ShiftsScreen() {
         )}
         addButtonStyle={styles.exportFabButton}
       />
+
+      <BottomSheet
+        ref={filterBottomSheetRef}
+        index={-1}
+        enableDynamicSizing
+        enablePanDownToClose
+        backgroundStyle={styles.bottomSheetBackground}
+        handleIndicatorStyle={styles.handleIndicator}
+        backdropComponent={renderSheetBackdrop}
+      >
+        <BottomSheetView style={styles.bottomSheetContent}>
+          <View style={styles.filterSheetBody}>
+            {isAdmin ? (
+              <View style={styles.filterProjectWrap}>
+                <ProjectFilterSelector
+                  projects={projects}
+                  selectedProjectId={filterProjectId}
+                  onSelect={setFilterProjectId}
+                />
+              </View>
+            ) : null}
+
+            {isAdmin ? (
+              <TouchableOpacity
+                style={styles.filterRow}
+                onPress={() => setEmployeePickerOpen(true)}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.filterRowText} numberOfLines={1}>
+                  {filterWorkerIds.length
+                    ? t("shifts.employeesSelected", {
+                        count: filterWorkerIds.length,
+                      })
+                    : t("shifts.allEmployees")}
+                </Text>
+                <Icon name="chevron-right" size={18} color="#052D50" />
+              </TouchableOpacity>
+            ) : null}
+
+            <TouchableOpacity
+              style={styles.filterRow}
+              onPress={() => {
+                closeFilterSheet();
+                openPeriodSheet();
+              }}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.filterRowText} numberOfLines={1}>
+                {exportPeriodApplied
+                  ? exportPeriodLabel
+                  : t("shifts.selectPeriod")}
+              </Text>
+              <Icon name="chevron-right" size={18} color="#052D50" />
+            </TouchableOpacity>
+
+            <View style={styles.filterSheetButtons}>
+              <TouchableOpacity
+                style={styles.clearFiltersBtn}
+                onPress={clearFilters}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.clearFiltersText}>
+                  {t("shifts.clearFilters")}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.saveFiltersBtn}
+                onPress={closeFilterSheet}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.saveFiltersText}>
+                  {t("shifts.saveFilters")}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </BottomSheetView>
+      </BottomSheet>
 
       <BottomSheet
         ref={exportBottomSheetRef}
