@@ -318,7 +318,7 @@ export default function ChatListScreen() {
             {person.name || t("employees.unnamed")}
             {timeAgo ? (
               <Text style={[styles.rowTime, selected && styles.rowTimeOnSel]}>
-                {`  ·  ${timeAgo}`}
+                {`  •  ${timeAgo}`}
               </Text>
             ) : null}
           </Text>
@@ -484,7 +484,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: "#052D50",
-    fontSize: 20,
+    fontSize: 17,
     textAlign: "center",
     flex: 1,
   },
@@ -494,9 +494,9 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: "#FFFFFF50",
+    borderColor: "#FFFFFF",
   },
   searchBar: {
     flexDirection: "row",
@@ -556,19 +556,19 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderWidth: 1,
     borderColor: "#FFFFFF",
-    borderRadius: 18,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
+    borderRadius: 20,
+    paddingVertical: 11,
+    paddingHorizontal: 16,
   },
   rowSelected: {
-    backgroundColor: "#4C9AF5",
-    borderColor: "#4C9AF5",
+    backgroundColor: "rgba(12, 119, 253, 0.6)",
+    borderColor: "rgba(12, 119, 253, 0.6)",
   },
   avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: "#E5E9ED",
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "#D9D9D9",
   },
   avatarFallback: {
     alignItems: "center",
@@ -576,7 +576,7 @@ const styles = StyleSheet.create({
   },
   avatarInitials: {
     color: "#052D50",
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "700",
   },
   rowBody: {
@@ -585,17 +585,18 @@ const styles = StyleSheet.create({
   },
   rowName: {
     color: "#052D50",
-    fontSize: 16,
-    fontWeight: "700",
+    fontSize: 17,
+    fontWeight: "500",
   },
   rowTime: {
-    color: "#8296A7",
+    color: "#667E93",
     fontSize: 13,
-    fontWeight: "400",
+    fontWeight: "500",
   },
   rowPreview: {
-    color: "#698196",
-    fontSize: 14,
+    color: "#667E93",
+    fontSize: 13,
+    fontWeight: "500",
   },
   rowTextOnSel: {
     color: "#FFFFFF",
@@ -610,13 +611,13 @@ const styles = StyleSheet.create({
   atWorkBadge: {
     paddingVertical: 3,
     paddingHorizontal: 10,
-    borderRadius: 10,
-    backgroundColor: "#E7F7EE",
+    borderRadius: 6,
+    backgroundColor: "#E5F7EA",
   },
   atWorkText: {
-    color: "#12B76A",
+    color: "#04B251",
     fontSize: 12,
-    fontWeight: "700",
+    fontWeight: "600",
   },
   pendingBadge: {
     paddingVertical: 3,
