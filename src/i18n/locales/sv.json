@@ -562,12 +562,29 @@
     "messagePlaceholder": "Meddelande",
     "memberCount_one": "{{count}} medlem",
     "memberCount_other": "{{count}} medlemmar",
+    "searchPlaceholder": "Sök",
+    "groupSelected": "Gruppera valda",
+    "justNow": "nyss",
+    "minAgo_one": "{{count}} min sedan",
+    "minAgo_other": "{{count}} min sedan",
+    "hourAgo_one": "{{count}} timme sedan",
+    "hourAgo_other": "{{count}} timmar sedan",
+    "dayAgo_one": "{{count}} dag sedan",
+    "dayAgo_other": "{{count}} dagar sedan",
     "filters": {
       "all": "Alla",
       "groups": "Grupper",
       "people": "Personer",
       "projects": "Projekt"
     }
+  },
+  "profile": {
+    "title": "Profildetaljer",
+    "email": "E-post",
+    "role": "Roll",
+    "professionalRole": "Yrkesroll",
+    "mobilePhone": "Mobilnummer",
+    "company": "Företag"
   },
   "home": {
     "buttons": {

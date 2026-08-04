@@ -20,6 +20,7 @@ import { ProjectScreen } from "../screens/Main/Project/ProjectScreen";
 import { SelectWorkers } from "../screens/Main/Project/SelectWorkers";
 import { SelectAdmin } from "../screens/Main/Project/SelectAdmin";
 import SingleChatScreen from "../screens/Main/Chat/SingleChatScreen";
+import ChatProfileScreen from "../screens/Main/Chat/ChatProfileScreen";
 import AuthContext from "../contexts/AuthContext";
 import { useTheme } from "../theme/ThemeContext";
 import { navigationRef } from "./navigationRef";
@@ -105,6 +106,7 @@ export default function AppNavigator() {
             <Stack.Screen name="Tasks" component={TasksScreen} />
             <Stack.Screen name="GroupChat" component={GroupChatScreen} />
             <Stack.Screen name="SingleChat" component={SingleChatScreen} />
+            <Stack.Screen name="ChatProfile" component={ChatProfileScreen} />
             <Stack.Screen
               name="DocumentPreview"
               component={DocumentPreviewScreen}

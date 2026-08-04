@@ -562,12 +562,29 @@
     "messagePlaceholder": "Message",
     "memberCount_one": "{{count}} member",
     "memberCount_other": "{{count}} members",
+    "searchPlaceholder": "Search",
+    "groupSelected": "Group selected",
+    "justNow": "just now",
+    "minAgo_one": "{{count}} min. ago",
+    "minAgo_other": "{{count}} min. ago",
+    "hourAgo_one": "{{count}} hour ago",
+    "hourAgo_other": "{{count}} hours ago",
+    "dayAgo_one": "{{count}} day ago",
+    "dayAgo_other": "{{count}} days ago",
     "filters": {
       "all": "All",
       "groups": "Groups",
       "people": "People",
       "projects": "Projects"
     }
+  },
+  "profile": {
+    "title": "Profile details",
+    "email": "Email",
+    "role": "Role",
+    "professionalRole": "Professional role",
+    "mobilePhone": "Mobile phone number",
+    "company": "Company"
   },
   "home": {
     "buttons": {

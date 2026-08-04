@@ -6,23 +6,24 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import Icon from "react-native-vector-icons/Feather";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../theme/ThemeContext";
 import AuthContext from "../../../contexts/AuthContext";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
-import { ListCard } from "../../../components/common/ListCard/ListCard";
 import { ProjectFilterSelector } from "../../../components/common/ProjectFilterSelector/ProjectFilterSelector";
 import { chatService, projectService, userService } from "../../../services";
 import {
   standardScreenContainer,
   standardScreenHeader,
 } from "../../../styles/screenLayout";
-import { cardStyles } from "../../../styles/cards";
+import { resolveUploadUrl } from "../../../utils/shifts";
 import { shouldShowAccountStatus, USER_ROLES } from "../../../utils/userRoles";
 
 const getEntityId = (entity) => {
@@ -32,58 +33,13 @@ const getEntityId = (entity) => {
 
 const getUserId = (person) => person?._id || person?.id;
 
-const buildProjectNameById = (projects) => {
-  const map = new Map();
-  projects.forEach((project) => {
-    const id = getEntityId(project);
-    if (id && project?.name) {
-      map.set(id, project.name);
-    }
-  });
-  return map;
-};
-
-const getPersonProjectIds = (person, projects) => {
-  const ids = new Set();
-  const personId = getEntityId(person);
-
-  if (Array.isArray(person?.projectIds)) {
-    person.projectIds.forEach((projectId) => {
-      const normalizedId = getEntityId({ id: projectId });
-      if (normalizedId) {
-        ids.add(normalizedId);
-      }
-    });
-  }
-
-  projects.forEach((project) => {
-    if (!Array.isArray(project?.workers)) {
-      return;
-    }
-    const isAssigned = project.workers.some((worker) => {
-      const workerId =
-        typeof worker === "string" ? worker : worker?._id || worker?.id;
-      return getEntityId({ id: workerId }) === personId;
-    });
-    if (isAssigned) {
-      const projectId = getEntityId(project);
-      if (projectId) {
-        ids.add(projectId);
-      }
-    }
-  });
-
-  return [...ids];
-};
-
-const MAX_PROJECT_NAME_LENGTH = 35;
-
-const truncateProjectName = (name) => {
-  if (!name || name.length <= MAX_PROJECT_NAME_LENGTH) {
-    return name;
-  }
-  return `${name.slice(0, MAX_PROJECT_NAME_LENGTH - 3)}...`;
-};
+const getInitials = (name) =>
+  (name || "")
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((word) => word[0]?.toUpperCase() || "")
+    .join("");
 
 const isPersonAtWork = (person, selectedProjectId) => {
   if (person?.workStatus !== "working") {
@@ -93,16 +49,6 @@ const isPersonAtWork = (person, selectedProjectId) => {
     return true;
   }
   return getEntityId({ id: person?.workStatusProjectId }) === selectedProjectId;
-};
-
-const getPersonProjectLabel = (person, projectNameById, projects) => {
-  const projectNames = getPersonProjectIds(person, projects)
-    .map((projectId) => truncateProjectName(projectNameById.get(projectId)))
-    .filter(Boolean);
-  if (projectNames.length === 0) {
-    return null;
-  }
-  return projectNames.join(", ");
 };
 
 export default function ChatListScreen() {
@@ -119,12 +65,36 @@ export default function ChatListScreen() {
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
-  // Existing conversations (direct + group) that have unread messages.
-  const [unreadChats, setUnreadChats] = useState([]);
+  // Direct conversation keyed by the other participant's id — for the row's
+  // last-message preview, timestamp and unread count.
+  const [chatByPersonId, setChatByPersonId] = useState({});
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const projectNameById = useMemo(
-    () => buildProjectNameById(projects),
-    [projects],
+  const formatTimeAgo = useCallback(
+    (value) => {
+      if (!value) {
+        return "";
+      }
+      const then = new Date(value).getTime();
+      if (Number.isNaN(then)) {
+        return "";
+      }
+      const mins = Math.max(0, Math.floor((Date.now() - then) / 60000));
+      if (mins < 1) {
+        return t("chat.justNow");
+      }
+      if (mins < 60) {
+        return t("chat.minAgo", { count: mins });
+      }
+      const hours = Math.floor(mins / 60);
+      if (hours < 24) {
+        return t("chat.hourAgo", { count: hours });
+      }
+      const days = Math.floor(hours / 24);
+      return t("chat.dayAgo", { count: days });
+    },
+    [t],
   );
 
   const loadColleagues = useCallback(async () => {
@@ -141,15 +111,21 @@ export default function ChatListScreen() {
       setColleagues(Array.isArray(peopleData) ? peopleData : []);
       setProjects(Array.isArray(projectsData) ? projectsData : []);
 
-      // Conversations with unread messages (direct + group), newest first.
-      const unread = (Array.isArray(chatsData) ? chatsData : [])
-        .filter((chat) => (Number(chat?.unreadCount) || 0) > 0)
-        .sort(
-          (a, b) =>
-            new Date(b?.lastMessageAt || 0).getTime() -
-            new Date(a?.lastMessageAt || 0).getTime(),
-        );
-      setUnreadChats(unread);
+      // Map each direct conversation to the other participant, so a colleague
+      // row can show its last message, time and unread count.
+      const allChats = Array.isArray(chatsData) ? chatsData : [];
+      const byPerson = {};
+      allChats
+        .filter((chat) => chat?.type === "direct")
+        .forEach((chat) => {
+          const pid = getEntityId({
+            id: chat?.participant?._id || chat?.participant?.id,
+          });
+          if (pid) {
+            byPerson[pid] = chat;
+          }
+        });
+      setChatByPersonId(byPerson);
     } catch (loadError) {
       console.error("Failed to load colleagues:", loadError);
       setColleagues([]);
@@ -178,21 +154,11 @@ export default function ChatListScreen() {
     // Don't list company/superadmin accounts or the current user.
     const nonStaffRoles = [USER_ROLES.COMPANY_ADMIN, USER_ROLES.SUPERADMIN];
 
-    // People we already show in the "New messages" section (unread direct
-    // chats) are excluded here to avoid duplication.
-    const unreadDirectIds = new Set(
-      unreadChats
-        .filter((chat) => chat?.type === "direct")
-        .map((chat) =>
-          getEntityId({ id: chat?.participant?._id || chat?.participant?.id }),
-        )
-        .filter(Boolean),
-    );
+    const query = searchQuery.trim().toLowerCase();
 
     return [...colleagues]
       .filter((person) => !nonStaffRoles.includes(person?.role))
       .filter((person) => getEntityId(person) !== currentUserId)
-      .filter((person) => !unreadDirectIds.has(getEntityId(person)))
       .filter((person) => {
         if (!selectedProjectId) {
           return true;
@@ -202,8 +168,16 @@ export default function ChatListScreen() {
           : [];
         return ids.includes(String(selectedProjectId));
       })
+      .filter((person) => {
+        if (!query) {
+          return true;
+        }
+        return (person?.name || person?.email || "")
+          .toLowerCase()
+          .includes(query);
+      })
       .sort((left, right) => getSortPriority(left) - getSortPriority(right));
-  }, [colleagues, selectedProjectId, unreadChats, user?._id, user?.id]);
+  }, [colleagues, selectedProjectId, searchQuery, user?._id, user?.id]);
 
   const openReturnedChat = (chat) => {
     navigation.navigate(chat.type === "group" ? "GroupChat" : "SingleChat", {
@@ -274,119 +248,111 @@ export default function ChatListScreen() {
     }
   };
 
-  const themedAccentTextStyle = { color: theme.colors.primary };
-
-  const showUnreadSection = !selectMode && unreadChats.length > 0;
-
-  // A conversation (direct or group) with unread messages.
-  const renderUnreadChat = (chat) => {
-    const isGroup = chat.type === "group";
-    const title = isGroup
-      ? chat.title || t("chat.groupChat")
-      : chat.participant?.name ||
-        chat.participant?.email ||
-        t("chat.directChat");
-    const count = Number(chat.unreadCount) || 0;
-
-    return (
-      <ListCard
-        key={chat._id}
-        title={title}
-        style={styles.cardUnread}
-        titleStyle={{ fontFamily: theme.text.fontFamily.bold }}
-        onPress={() => openReturnedChat(chat)}
-      >
-        <Text
-          style={cardStyles.cardSecondaryText}
-          numberOfLines={1}
-          ellipsizeMode="tail"
-        >
-          {chat.lastMessageText || t("chat.tapToOpen")}
-        </Text>
-
-        <View style={styles.chatBubble}>
-          <Image
-            source={require("../../../assets/chatBubble.png")}
-            style={styles.chatBubbleIcon}
-          />
-          <View style={styles.unreadBadge}>
-            <Text style={styles.unreadBadgeText}>
-              {count > 9 ? "9+" : count}
-            </Text>
-          </View>
-        </View>
-      </ListCard>
-    );
+  const enterSelection = (personId) => {
+    setSelectMode(true);
+    setSelectedIds(personId ? [personId] : []);
   };
 
-  const renderColleague = (person) => {
+  const toggleSearch = () => {
+    setSearchOpen((open) => {
+      if (open) {
+        setSearchQuery("");
+      }
+      return !open;
+    });
+  };
+
+  const openPersonProfile = (person) => {
+    navigation.navigate("ChatProfile", { person });
+  };
+
+  // One conversation row: avatar, name + relative time, last-message preview,
+  // and an "At work" presence badge. Selection turns the whole card blue
+  // (matching the Figma), long-press enters group-select mode.
+  const renderRow = (person) => {
     const personId = getUserId(person);
-    const projectLabel = getPersonProjectLabel(
-      person,
-      projectNameById,
-      projects,
-    );
+    const chat = chatByPersonId[String(personId)];
+    const selected = selectedIds.includes(personId);
     const showAccountStatus = shouldShowAccountStatus(person.accountStatus);
     const atWork = isPersonAtWork(person, selectedProjectId);
-
-    const badgeLabel = showAccountStatus
-      ? t("employees.waitingApproval")
-      : atWork
-        ? t("employees.atWork")
-        : t("employees.notAtWork");
-    const badgeStyle = showAccountStatus
-      ? cardStyles.cardBadgeWarning
-      : atWork
-        ? cardStyles.cardBadgeAtWork
-        : cardStyles.cardBadgeAbsent;
+    const timeAgo = chat ? formatTimeAgo(chat.lastMessageAt) : "";
+    const preview =
+      chat?.lastMessageText || person.profession || t("employees.noProfession");
+    const avatarUri = person.avatarUrl
+      ? resolveUploadUrl(person.avatarUrl)
+      : null;
+    const unread = Number(chat?.unreadCount) || 0;
 
     return (
-      <ListCard
+      <TouchableOpacity
         key={personId}
-        title={person.name || t("employees.unnamed")}
-        badgeLabel={badgeLabel}
-        badgeStyle={badgeStyle}
+        style={[styles.row, selected && styles.rowSelected]}
+        activeOpacity={0.85}
         onPress={() =>
           selectMode ? toggleSelect(personId) : openChatWith(person)
         }
+        onLongPress={() => enterSelection(personId)}
       >
-        <Text
-          style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
-          numberOfLines={1}
-          ellipsizeMode="tail"
+        <TouchableOpacity
+          activeOpacity={0.85}
+          onPress={() =>
+            selectMode ? toggleSelect(personId) : openPersonProfile(person)
+          }
         >
-          {person.profession || t("employees.noProfession")}
-        </Text>
+          {avatarUri ? (
+            <Image source={{ uri: avatarUri }} style={styles.avatar} />
+          ) : (
+            <View style={[styles.avatar, styles.avatarFallback]}>
+              <Text style={styles.avatarInitials}>
+                {getInitials(person.name)}
+              </Text>
+            </View>
+          )}
+        </TouchableOpacity>
 
-        <Text
-          style={cardStyles.cardSecondaryText}
-          numberOfLines={1}
-          ellipsizeMode="tail"
-        >
-          {projectLabel || t("employees.noProjectAssigned")}
-        </Text>
-
-        {/* Chat affordance / selection checkbox */}
-        {selectMode ? (
-          <View
-            style={[
-              styles.selectCheckbox,
-              selectedIds.includes(personId) && styles.selectCheckboxOn,
-            ]}
+        <View style={styles.rowBody}>
+          <Text
+            style={[styles.rowName, selected && styles.rowTextOnSel]}
+            numberOfLines={1}
           >
-            {selectedIds.includes(personId) ? (
-              <Text style={styles.selectCheckmark}>✓</Text>
+            {person.name || t("employees.unnamed")}
+            {timeAgo ? (
+              <Text style={[styles.rowTime, selected && styles.rowTimeOnSel]}>
+                {`  ·  ${timeAgo}`}
+              </Text>
             ) : null}
-          </View>
-        ) : (
-          <View style={styles.chatBubble}>
-            <Image
-              source={require("../../../assets/chatBubble.png")}
-              style={styles.chatBubbleIcon}
-            />
-          </View>
-        )}
-      </ListCard>
+          </Text>
+          <Text
+            style={[styles.rowPreview, selected && styles.rowTextOnSel]}
+            numberOfLines={1}
+          >
+            {preview}
+          </Text>
+        </View>
+
+        <View style={styles.rowRight}>
+          {atWork ? (
+            <View style={styles.atWorkBadge}>
+              <Text style={styles.atWorkText}>
+                {`• ${t("employees.atWork")}`}
+              </Text>
+            </View>
+          ) : showAccountStatus ? (
+            <View style={styles.pendingBadge}>
+              <Text style={styles.pendingText}>
+                {t("employees.waitingApproval")}
+              </Text>
+            </View>
+          ) : null}
+          {!selectMode && unread > 0 ? (
+            <View style={styles.unreadBadge}>
+              <Text style={styles.unreadBadgeText}>
+                {unread > 9 ? "9+" : unread}
+              </Text>
+            </View>
+          ) : null}
+        </View>
+      </TouchableOpacity>
     );
   };
 
@@ -400,21 +366,37 @@ export default function ChatListScreen() {
         <Text
           style={[
             styles.headerTitle,
-            { fontFamily: theme.text.fontFamily.medium },
+            { fontFamily: theme.text.fontFamily.semiBold },
           ]}
         >
           {t("chat.title")}
         </Text>
         <TouchableOpacity
-          style={styles.headerButton}
-          onPress={toggleSelectMode}
-          activeOpacity={0.8}
+          style={styles.searchButton}
+          onPress={toggleSearch}
+          activeOpacity={0.85}
         >
-          <Text style={styles.headerButtonText}>
-            {selectMode ? t("common.cancel") : t("chat.newGroup")}
-          </Text>
+          <Icon name={searchOpen ? "x" : "search"} size={20} color="#052D50" />
         </TouchableOpacity>
       </View>
+
+      {searchOpen ? (
+        <View style={styles.searchBar}>
+          <Icon name="search" size={18} color="#698196" />
+          <TextInput
+            style={[
+              styles.searchInput,
+              { fontFamily: theme.text.fontFamily.regular },
+            ]}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder={t("chat.searchPlaceholder")}
+            placeholderTextColor="#9BB0C1"
+            autoFocus
+            returnKeyType="search"
+          />
+        </View>
+      ) : null}
 
       <View style={styles.searchContainer}>
         <ProjectFilterSelector
@@ -430,10 +412,7 @@ export default function ChatListScreen() {
           onPress={openProjectGroup}
           activeOpacity={0.85}
         >
-          <Image
-            source={require("../../../assets/chatBubble.png")}
-            style={styles.projectGroupIcon}
-          />
+          <Icon name="users" size={18} color="#FFFFFF" />
           <Text style={styles.projectGroupText}>
             {t("chat.messageWholeProject")}
           </Text>
@@ -455,44 +434,42 @@ export default function ChatListScreen() {
               <Text style={styles.emptyTitle}>{t("chat.emptyTitle")}</Text>
               <Text style={styles.emptySubtitle}>{t("chat.emptyText")}</Text>
             </View>
-          ) : showUnreadSection ? (
-            <>
-              <Text style={styles.sectionHeader}>{t("chat.newMessages")}</Text>
-              {unreadChats.map(renderUnreadChat)}
-              {visibleColleagues.length ? (
-                <Text style={styles.sectionHeader}>
-                  {t("chat.allColleagues")}
-                </Text>
-              ) : null}
-              {visibleColleagues.map(renderColleague)}
-            </>
           ) : (
-            visibleColleagues.map(renderColleague)
+            visibleColleagues.map(renderRow)
           )}
         </ScrollView>
       )}
 
       {selectMode ? (
-        <TouchableOpacity
-          style={[
-            styles.createGroupButton,
-            selectedIds.length === 0 && styles.createGroupButtonDisabled,
-          ]}
-          onPress={createGroup}
-          disabled={selectedIds.length === 0 || opening}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.createGroupText}>
-            {t("chat.createGroupCount", { count: selectedIds.length })}
-          </Text>
-        </TouchableOpacity>
-      ) : null}
-
-      <BottomBar
-        onLeftPress={() => navigation.navigate("Main")}
-        onRightPress={() => navigation.navigate("Menu")}
-        showAddButton={false}
-      />
+        <View style={styles.selectionBar}>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={toggleSelectMode}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.cancelButtonText}>{t("common.cancel")}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.groupButton,
+              selectedIds.length === 0 && styles.groupButtonDisabled,
+            ]}
+            onPress={createGroup}
+            disabled={selectedIds.length === 0 || opening}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.groupButtonText}>
+              {t("chat.groupSelected")}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <BottomBar
+          onLeftPress={() => navigation.navigate("Main")}
+          onRightPress={() => navigation.navigate("Menu")}
+          showAddButton={false}
+        />
+      )}
     </View>
   );
 }
@@ -507,9 +484,35 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: "#052D50",
-    fontSize: 17,
+    fontSize: 20,
     textAlign: "center",
     flex: 1,
+  },
+  searchButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    borderWidth: 1,
+    borderColor: "#FFFFFF50",
+  },
+  searchBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    height: 48,
+    marginBottom: 12,
+    paddingHorizontal: 14,
+    borderRadius: 16,
+    backgroundColor: "#052D500D",
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 15,
+    color: "#052D50",
+    padding: 0,
   },
   searchContainer: {
     width: "100%",
@@ -526,7 +529,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: 190,
-    gap: 12,
+    gap: 10,
   },
   emptyState: {
     paddingVertical: 48,
@@ -544,34 +547,91 @@ const styles = StyleSheet.create({
     color: "rgba(5, 45, 80, 0.55)",
     textAlign: "center",
   },
-  chatBubble: {
-    position: "absolute",
-    // Horizontally centered under the status badge (card padding 20 + roughly
-    // half the "At work" badge width).
-    right: 38,
-    bottom: 16,
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: "#0089f6",
+
+  // Conversation row
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+  },
+  rowSelected: {
+    backgroundColor: "#4C9AF5",
+  },
+  avatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: "#E5E9ED",
+  },
+  avatarFallback: {
     alignItems: "center",
     justifyContent: "center",
   },
-  chatBubbleIcon: {
-    width: 16,
-    height: 16,
+  avatarInitials: {
+    color: "#052D50",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  rowBody: {
+    flex: 1,
+    gap: 2,
+  },
+  rowName: {
+    color: "#052D50",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  rowTime: {
+    color: "#8296A7",
+    fontSize: 13,
+    fontWeight: "400",
+  },
+  rowPreview: {
+    color: "#698196",
+    fontSize: 14,
+  },
+  rowTextOnSel: {
+    color: "#FFFFFF",
+  },
+  rowTimeOnSel: {
+    color: "rgba(255, 255, 255, 0.85)",
+  },
+  rowRight: {
+    alignItems: "flex-end",
+    gap: 6,
+  },
+  atWorkBadge: {
+    paddingVertical: 3,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    backgroundColor: "#E7F7EE",
+  },
+  atWorkText: {
+    color: "#12B76A",
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  pendingBadge: {
+    paddingVertical: 3,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    backgroundColor: "#FDF1DC",
+  },
+  pendingText: {
+    color: "#B5691A",
+    fontSize: 12,
+    fontWeight: "700",
   },
   unreadBadge: {
-    position: "absolute",
-    top: -6,
-    right: -6,
     minWidth: 20,
     height: 20,
     borderRadius: 10,
     paddingHorizontal: 5,
-    backgroundColor: "#FF3B30",
-    borderWidth: 2,
-    borderColor: "#FFFFFF",
+    backgroundColor: "#0785F4",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -580,88 +640,56 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "700",
   },
-  cardUnread: {
-    backgroundColor: "#f2f9ff",
-    borderColor: "#cfe8ff",
-  },
-  sectionHeader: {
-    color: "#8296A7",
-    fontSize: 13,
-    fontWeight: "600",
-    marginTop: 6,
-    marginBottom: 8,
-    paddingHorizontal: 4,
-  },
-  headerButton: {
-    height: 44,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 16,
-    borderRadius: 22,
-    backgroundColor: "#0089f6",
-  },
-  headerButtonText: {
-    color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "700",
-  },
   projectGroupButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
-    backgroundColor: "#0089f6",
+    backgroundColor: "#0785F4",
     borderRadius: 23,
     height: 46,
     marginBottom: 12,
-  },
-  projectGroupIcon: {
-    width: 18,
-    height: 18,
   },
   projectGroupText: {
     color: "#FFFFFF",
     fontSize: 15,
     fontWeight: "700",
   },
-  selectCheckbox: {
+
+  // Group-selection bottom bar
+  selectionBar: {
     position: "absolute",
-    // Centered under the status badge, same as the chat bubble.
-    right: 38,
-    bottom: 16,
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    borderWidth: 2,
-    borderColor: "#C2CCD6",
-    backgroundColor: "#FFFFFF",
+    left: 16,
+    right: 16,
+    bottom: 34,
+    flexDirection: "row",
+    gap: 12,
+  },
+  cancelButton: {
+    flex: 1,
+    height: 54,
+    borderRadius: 27,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "#FFFFFF",
   },
-  selectCheckboxOn: {
-    backgroundColor: "#0089f6",
-    borderColor: "#0089f6",
-  },
-  selectCheckmark: {
-    color: "#FFFFFF",
+  cancelButtonText: {
+    color: "#052D50",
     fontSize: 16,
     fontWeight: "700",
   },
-  createGroupButton: {
-    position: "absolute",
-    left: 20,
-    right: 20,
-    bottom: 120,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: "#0089f6",
+  groupButton: {
+    flex: 1,
+    height: 54,
+    borderRadius: 27,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "#0785F4",
   },
-  createGroupButtonDisabled: {
+  groupButtonDisabled: {
     backgroundColor: "#9DB7D8",
   },
-  createGroupText: {
+  groupButtonText: {
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "700",
