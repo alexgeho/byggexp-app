@@ -838,72 +838,18 @@ export default function ShiftsScreen() {
                   <Text
                     style={[
                       styles.sourceBtnText,
-                      {
-                        fontFamily:
-                          theme.text.fontFamily[on ? "semiBold" : "medium"],
-                      },
+                      { fontFamily: theme.text.fontFamily.medium },
                       on && { color: s.color },
                     ]}
                   >
-                    {s.label}
+                    {t(
+                      `shifts.hoursSource${s.key.charAt(0).toUpperCase()}${s.key.slice(1)}`,
+                      { defaultValue: s.label },
+                    )}
                   </Text>
                 </TouchableOpacity>
               );
             })}
-          </View>
-
-          {/* Single minimalist summary, coloured by the active source */}
-          <View style={styles.selectionSummaryCard}>
-            <View style={styles.selectionSummaryStat}>
-              <Text
-                style={[
-                  styles.selectionSummaryValue,
-                  {
-                    fontFamily: theme.text.fontFamily["semiBold"],
-                    color: sourceMeta.color,
-                  },
-                ]}
-              >
-                {formatDurationCompact(heroValueMs)}
-              </Text>
-              <Text style={styles.selectionSummaryLabel}>
-                {selectedDates.length
-                  ? t("shifts.selected")
-                  : t("shifts.currentMonth")}
-              </Text>
-            </View>
-
-            <View style={styles.selectionSummaryDivider} />
-
-            <View style={styles.selectionSummaryStat}>
-              <Text
-                style={[
-                  styles.selectionSummaryValue,
-                  { fontFamily: theme.text.fontFamily["semiBold"] },
-                ]}
-              >
-                {selectedDates.length
-                  ? t("shifts.dayCount", {
-                      count: selectionSummary?.dayCount || 0,
-                    })
-                  : formatDurationCompact(previousMonthDuration)}
-              </Text>
-              <Text style={styles.selectionSummaryLabel}>
-                {selectedDates.length
-                  ? t("shifts.selected")
-                  : t("shifts.previousMonth")}
-              </Text>
-            </View>
-
-            {selectedDates.length ? (
-              <TouchableOpacity
-                style={styles.clearSelectionButton}
-                onPress={clearSelectedDates}
-                activeOpacity={0.85}
-              >
-                <Icon name="x" size={18} color="#698196" />
-              </TouchableOpacity>
-            ) : null}
           </View>
 
           <View style={styles.exportSelector}>
@@ -915,12 +861,7 @@ export default function ShiftsScreen() {
                 style={[
                   styles.dropdownText,
                   !exportPeriodApplied && styles.dropdownPlaceholderText,
-                  {
-                    fontFamily:
-                      theme.text.fontFamily[
-                        exportPeriodApplied ? "semiBold" : "regular"
-                      ],
-                  },
+                  { fontFamily: theme.text.fontFamily.medium },
                 ]}
               >
                 {exportPeriodLabel}
@@ -950,12 +891,7 @@ export default function ShiftsScreen() {
                     style={[
                       styles.dropdownText,
                       !filterWorkerIds.length && styles.dropdownPlaceholderText,
-                      {
-                        fontFamily:
-                          theme.text.fontFamily[
-                            filterWorkerIds.length ? "semiBold" : "regular"
-                          ],
-                      },
+                      { fontFamily: theme.text.fontFamily.medium },
                     ]}
                     numberOfLines={1}
                   >
@@ -973,6 +909,57 @@ export default function ShiftsScreen() {
               </View>
             </View>
           ) : null}
+
+          {/* Single minimalist summary, coloured by the active source */}
+          <View style={styles.selectionSummaryCard}>
+            <View style={styles.selectionSummaryStat}>
+              <Text
+                style={[
+                  styles.selectionSummaryValue,
+                  { fontFamily: theme.text.fontFamily["regular"] },
+                ]}
+              >
+                {formatDurationCompact(heroValueMs)}
+              </Text>
+              <Text style={styles.selectionSummaryLabel}>
+                {selectedDates.length
+                  ? t("shifts.selected")
+                  : t("shifts.currentMonth")}
+              </Text>
+            </View>
+
+            <View style={styles.selectionSummaryDivider} />
+
+            <View style={styles.selectionSummaryStat}>
+              <Text
+                style={[
+                  styles.selectionSummaryValue,
+                  { fontFamily: theme.text.fontFamily["regular"] },
+                ]}
+              >
+                {selectedDates.length
+                  ? t("shifts.dayCount", {
+                      count: selectionSummary?.dayCount || 0,
+                    })
+                  : formatDurationCompact(previousMonthDuration)}
+              </Text>
+              <Text style={styles.selectionSummaryLabel}>
+                {selectedDates.length
+                  ? t("shifts.selected")
+                  : t("shifts.previousMonth")}
+              </Text>
+            </View>
+
+            {selectedDates.length ? (
+              <TouchableOpacity
+                style={styles.clearSelectionButton}
+                onPress={clearSelectedDates}
+                activeOpacity={0.85}
+              >
+                <Icon name="x" size={18} color="#698196" />
+              </TouchableOpacity>
+            ) : null}
+          </View>
 
           <View style={styles.calendarContainer}>
             <View style={styles.calendarMonthBar}>

@@ -7,7 +7,11 @@ import { styles } from "./ProjectFilterSelector.styles";
 
 const getProjectId = (project) => project?._id || project?.id;
 
-export function ProjectFilterSelector({ projects, selectedProjectId, onSelect }) {
+export function ProjectFilterSelector({
+  projects,
+  selectedProjectId,
+  onSelect,
+}) {
   const navigation = useNavigation();
   const { t } = useTranslation();
 
@@ -25,11 +29,19 @@ export function ProjectFilterSelector({ projects, selectedProjectId, onSelect })
             mode: "select-local",
             allowAll: true,
             currentProjectId: selectedProjectId,
-            onSelect: (project) => onSelect(project ? getProjectId(project) : null),
+            onSelect: (project) =>
+              onSelect(project ? getProjectId(project) : null),
           })
         }
       >
-        <Text style={styles.triggerText} numberOfLines={1} ellipsizeMode="tail">
+        <Text
+          style={[
+            styles.triggerText,
+            !selectedProject && styles.triggerPlaceholder,
+          ]}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
           {selectedProject?.name || t("projects.all")}
         </Text>
         <Icon name="chevron-down" size={18} color="rgba(5, 45, 80, 0.5)" />

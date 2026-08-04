@@ -8,7 +8,7 @@ export const styles = StyleSheet.create({
     width: "100%",
     height: 48,
     backgroundColor: "#052D500D",
-    borderRadius: 16,
+    borderRadius: 20,
     paddingHorizontal: 16,
     flexDirection: "row",
     alignItems: "center",
@@ -18,6 +18,10 @@ export const styles = StyleSheet.create({
   triggerText: {
     flex: 1,
     color: "#052D50",
-    fontSize: 16,
+    fontSize: 17,
+    fontWeight: "500",
+  },
+  triggerPlaceholder: {
+    color: "rgba(5, 45, 80, 0.5)",
   },
 });
