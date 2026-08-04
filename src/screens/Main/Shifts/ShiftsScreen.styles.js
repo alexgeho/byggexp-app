@@ -38,25 +38,130 @@ export const styles = StyleSheet.create({
   contentScrollContent: {
     paddingBottom: 140,
   },
+
+  /* Summary-first hero card (light, compact) */
+  hero: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    paddingHorizontal: 18,
+    paddingVertical: 15,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#EAEDF1",
+    flexDirection: "row",
+    alignItems: "flex-end",
+    justifyContent: "space-between",
+  },
+  heroMain: { flex: 1 },
+  heroSide: { alignItems: "flex-end", paddingLeft: 12, paddingBottom: 3 },
+  heroLabel: {
+    color: "#667E93",
+    fontSize: 12.5,
+    fontFamily: "DMSans-Medium",
+  },
+  heroValue: {
+    color: "#052D50",
+    fontSize: 30,
+    letterSpacing: -0.5,
+    marginTop: 2,
+  },
+  heroSub: {
+    color: "#667E93",
+    fontSize: 12.5,
+    fontFamily: "DMSans-Medium",
+    marginTop: 1,
+  },
+  heroStatsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 12,
+    gap: 16,
+  },
+  heroStat: { flexDirection: "column" },
+  heroStatValue: {
+    color: "#052D50",
+    fontSize: 14,
+    fontFamily: "DMSans-SemiBold",
+  },
+  heroStatLabel: {
+    color: "#667E93",
+    fontSize: 11,
+    fontFamily: "DMSans-Medium",
+    marginTop: 1,
+  },
+  heroStatDivider: {
+    width: 1,
+    height: 24,
+    backgroundColor: "#EAEDF1",
+  },
+
+  /* Hours-by source toggle (Planned / GPS / Manual) */
+  hoursByLabel: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#667E93",
+    letterSpacing: 0.4,
+    textTransform: "uppercase",
+    marginBottom: 8,
+    marginLeft: 2,
+  },
+  sourceToggle: {
+    flexDirection: "row",
+    backgroundColor: "#052D500D",
+    borderRadius: 16,
+    padding: 4,
+    marginBottom: 12,
+    gap: 4,
+  },
+  sourceBtn: {
+    flex: 1,
+    paddingVertical: 8,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  sourceBtnOn: {
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#052D50",
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 1,
+  },
+  sourceBtnText: { fontSize: 14, fontWeight: "600", color: "#667E93" },
+  sourceBtnSub: {
+    fontSize: 10,
+    fontWeight: "500",
+    color: "#9AA6B2",
+    marginTop: 1,
+  },
+
   exportSelector: {
     width: "100%",
+    marginBottom: 10,
   },
+  /* Project + Employee side by side to use the horizontal space */
+  filtersRow: {
+    flexDirection: "row",
+    gap: 10,
+    marginBottom: 10,
+  },
+  filterHalf: { flex: 1 },
   dropdownButton: {
     width: "100%",
-    height: 56,
+    height: 48,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     gap: 8,
-    paddingLeft: 24,
-    paddingRight: 16,
-    backgroundColor: "rgba(5, 45, 80, 0.05)",
-    borderRadius: 71,
+    paddingHorizontal: 16,
+    backgroundColor: "#052D500D",
+    borderRadius: 16,
   },
   dropdownText: {
     flex: 1,
     color: "#052D50",
-    fontSize: 19,
+    fontSize: 16,
     fontWeight: "600",
   },
   dropdownPlaceholderText: {
@@ -73,8 +178,8 @@ export const styles = StyleSheet.create({
     marginBottom: 12,
   },
   calendarMonthBar: {
-    paddingTop: 28,
-    paddingBottom: 20,
+    paddingTop: 10,
+    paddingBottom: 14,
   },
   calendarNav: {
     flexDirection: "row",

@@ -62,6 +62,15 @@ const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const EXPORT_PERIOD_TABS = ["Month", "Custom"];
 const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "spinner" : "default";
 
+// Which hours to show/bill by. GPS is the tracked timer duration (durationMs);
+// planned (contract, from the hours module) and manual (worker-entered) are
+// wired in once the backend exposes them per day. Colour-coded everywhere.
+const HOURS_SOURCES = [
+  { key: "planned", label: "Planned", sub: "contract", color: "#0785F4" },
+  { key: "gps", label: "GPS", sub: "measured", color: "#12B76A" },
+  { key: "manual", label: "Manual", sub: "worker", color: "#F59E0B" },
+];
+
 export default function ShiftsScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -96,6 +105,19 @@ export default function ShiftsScreen() {
   const [filterProjectId, setFilterProjectId] = useState(null);
   const [filterWorkerIds, setFilterWorkerIds] = useState([]);
   const [employeePickerOpen, setEmployeePickerOpen] = useState(false);
+  const [hoursSource, setHoursSource] = useState("gps");
+
+  const sourceMeta =
+    HOURS_SOURCES.find((s) => s.key === hoursSource) || HOURS_SOURCES[1];
+  // Duration for a day entry under the current source. GPS = tracked timer;
+  // planned/manual read their own field once the backend provides it.
+  const daySourceMs = useCallback(
+    (entry) =>
+      hoursSource === "gps"
+        ? Number(entry?.totalDurationMs) || 0
+        : Number(entry?.[`${hoursSource}DurationMs`]) || 0,
+    [hoursSource],
+  );
 
   const workerIdsParam = filterWorkerIds.length
     ? filterWorkerIds.join(",")
@@ -233,6 +255,33 @@ export default function ShiftsScreen() {
     return { totalDurationMs, dayCount: selectedDates.length };
   }, [dayMap, selectedDates]);
 
+  // Hero total under the active source: selected days, else the whole month.
+  const heroValueMs = useMemo(() => {
+    if (selectedDates.length) {
+      return selectedDates.reduce(
+        (sum, date) => sum + daySourceMs(dayMap.get(date)),
+        0,
+      );
+    }
+    if (hoursSource === "gps") {
+      return currentMonthDuration;
+    }
+    let sum = 0;
+    dayMap.forEach((entry, key) => {
+      if (selectedMonth && key.startsWith(selectedMonth)) {
+        sum += daySourceMs(entry);
+      }
+    });
+    return sum;
+  }, [
+    selectedDates,
+    dayMap,
+    daySourceMs,
+    hoursSource,
+    currentMonthDuration,
+    selectedMonth,
+  ]);
+
   const toggleDateGroup = useCallback((dates) => {
     if (!dates.length) {
       return;
@@ -302,6 +351,7 @@ export default function ShiftsScreen() {
 
             const day = Number(dateStr.split("-")[2]);
             const shiftDay = dayMap.get(dateStr);
+            const sourceMs = daySourceMs(shiftDay);
             const isSelected = selectedDates.includes(dateStr);
             const isToday = dateStr === todayDateKey;
 
@@ -310,6 +360,10 @@ export default function ShiftsScreen() {
                 key={dateStr}
                 style={[
                   styles.calendarCell,
+                  sourceMs > 0 &&
+                    !isSelected && {
+                      backgroundColor: `${sourceMeta.color}1A`,
+                    },
                   isToday && !isSelected && styles.calendarCellToday,
                   isSelected && styles.calendarCellSelected,
                 ]}
@@ -325,9 +379,14 @@ export default function ShiftsScreen() {
                 >
                   {day}
                 </Text>
-                {shiftDay ? (
-                  <Text style={styles.calendarHours}>
-                    {formatDurationShort(shiftDay.totalDurationMs)}
+                {sourceMs > 0 ? (
+                  <Text
+                    style={[
+                      styles.calendarHours,
+                      !isSelected && { color: sourceMeta.color },
+                    ]}
+                  >
+                    {formatDurationShort(sourceMs)}
                   </Text>
                 ) : null}
               </TouchableOpacity>
@@ -343,6 +402,8 @@ export default function ShiftsScreen() {
     todayDateKey,
     toggleSelectedDate,
     toggleWeekRow,
+    daySourceMs,
+    sourceMeta.color,
   ]);
 
   const handleOpenShiftPhoto = useCallback(
@@ -687,6 +748,91 @@ export default function ShiftsScreen() {
           contentContainerStyle={styles.contentScrollContent}
           showsVerticalScrollIndicator={false}
         >
+          {/* HOURS BY: which source drives the numbers/colours everywhere */}
+          <Text style={styles.hoursByLabel}>Hours by</Text>
+          <View style={styles.sourceToggle}>
+            {HOURS_SOURCES.map((s) => {
+              const on = s.key === hoursSource;
+              return (
+                <TouchableOpacity
+                  key={s.key}
+                  style={[styles.sourceBtn, on && styles.sourceBtnOn]}
+                  onPress={() => setHoursSource(s.key)}
+                  activeOpacity={0.85}
+                >
+                  <Text
+                    style={[
+                      styles.sourceBtnText,
+                      { fontFamily: theme.text.fontFamily["semiBold"] },
+                      on && { color: s.color },
+                    ]}
+                  >
+                    {s.label}
+                  </Text>
+                  <Text style={[styles.sourceBtnSub, on && { color: s.color }]}>
+                    {s.sub}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          {/* Single minimalist summary, coloured by the active source */}
+          <View style={styles.selectionSummaryCard}>
+            <View style={styles.selectionSummaryStat}>
+              <Text
+                style={[
+                  styles.selectionSummaryValue,
+                  {
+                    fontFamily: theme.text.fontFamily["semiBold"],
+                    color: sourceMeta.color,
+                  },
+                ]}
+              >
+                {formatDurationCompact(heroValueMs)}
+              </Text>
+              <Text style={styles.selectionSummaryLabel}>
+                {`${
+                  selectedDates.length
+                    ? t("shifts.selected")
+                    : t("shifts.currentMonth")
+                } · ${sourceMeta.label}`}
+              </Text>
+            </View>
+
+            <View style={styles.selectionSummaryDivider} />
+
+            <View style={styles.selectionSummaryStat}>
+              <Text
+                style={[
+                  styles.selectionSummaryValue,
+                  { fontFamily: theme.text.fontFamily["semiBold"] },
+                ]}
+              >
+                {selectedDates.length
+                  ? t("shifts.dayCount", {
+                      count: selectionSummary?.dayCount || 0,
+                    })
+                  : formatDurationCompact(previousMonthDuration)}
+              </Text>
+              <Text style={styles.selectionSummaryLabel}>
+                {selectedDates.length
+                  ? t("shifts.selected")
+                  : t("shifts.previousMonth")}
+              </Text>
+            </View>
+
+            {selectedDates.length ? (
+              <TouchableOpacity
+                style={styles.clearSelectionButton}
+                onPress={clearSelectedDates}
+                activeOpacity={0.85}
+              >
+                <Icon name="x" size={18} color="#698196" />
+              </TouchableOpacity>
+            ) : null}
+          </View>
+
           <View style={styles.exportSelector}>
             <TouchableOpacity
               style={styles.dropdownButton}
@@ -714,15 +860,15 @@ export default function ShiftsScreen() {
           </View>
 
           {isAdmin ? (
-            <>
-              <View style={styles.exportSelector}>
+            <View style={styles.filtersRow}>
+              <View style={styles.filterHalf}>
                 <ProjectFilterSelector
                   projects={projects}
                   selectedProjectId={filterProjectId}
                   onSelect={setFilterProjectId}
                 />
               </View>
-              <View style={styles.exportSelector}>
+              <View style={styles.filterHalf}>
                 <TouchableOpacity
                   style={styles.dropdownButton}
                   onPress={() => setEmployeePickerOpen(true)}
@@ -738,6 +884,7 @@ export default function ShiftsScreen() {
                           ],
                       },
                     ]}
+                    numberOfLines={1}
                   >
                     {filterWorkerIds.length
                       ? t("shifts.employeesSelected", {
@@ -751,7 +898,7 @@ export default function ShiftsScreen() {
                   />
                 </TouchableOpacity>
               </View>
-            </>
+            </View>
           ) : null}
 
           <View style={styles.calendarContainer}>
@@ -818,48 +965,6 @@ export default function ShiftsScreen() {
           </View>
 
           <View style={styles.shiftDetailsContainer}>
-            {selectedDates.length > 0 && selectionSummary ? (
-              <View style={styles.selectionSummaryCard}>
-                <View style={styles.selectionSummaryStat}>
-                  <Text
-                    style={[
-                      styles.selectionSummaryValue,
-                      { fontFamily: theme.text.fontFamily["semiBold"] },
-                    ]}
-                  >
-                    {formatDurationCompact(selectionSummary.totalDurationMs)}
-                  </Text>
-                  <Text style={styles.selectionSummaryLabel}>
-                    {t("shifts.selected")}
-                  </Text>
-                </View>
-
-                <View style={styles.selectionSummaryDivider} />
-
-                <View style={styles.selectionSummaryStat}>
-                  <Text
-                    style={[
-                      styles.selectionSummaryValue,
-                      { fontFamily: theme.text.fontFamily["semiBold"] },
-                    ]}
-                  >
-                    {t("shifts.dayCount", { count: selectionSummary.dayCount })}
-                  </Text>
-                  <Text style={styles.selectionSummaryLabel}>
-                    {t("shifts.selected")}
-                  </Text>
-                </View>
-
-                <TouchableOpacity
-                  style={styles.clearSelectionButton}
-                  onPress={clearSelectedDates}
-                  activeOpacity={0.85}
-                >
-                  <Icon name="x" size={18} color="#698196" />
-                </TouchableOpacity>
-              </View>
-            ) : null}
-
             <View style={styles.shiftDetailsContent}>
               {selectedDates.length === 0 ? (
                 <Text style={styles.emptyDetailsText}>
@@ -998,21 +1103,6 @@ export default function ShiftsScreen() {
                   );
                 })
               )}
-            </View>
-          </View>
-
-          <View style={styles.statsContainer}>
-            <View style={styles.statItem}>
-              <Text style={styles.statLabel}>{t("shifts.currentMonth")}</Text>
-              <Text style={styles.statValue}>
-                {formatDuration(currentMonthDuration)}
-              </Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statLabel}>{t("shifts.previousMonth")}</Text>
-              <Text style={styles.statValue}>
-                {formatDuration(previousMonthDuration)}
-              </Text>
             </View>
           </View>
         </ScrollView>
