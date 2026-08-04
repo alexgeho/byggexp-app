@@ -299,8 +299,9 @@
     "employeesSelected_other": "{{count}} anställda",
     "photos": "Foton",
     "noPhotos": "Inga foton bifogade",
-    "currentMonth": "Denna månad:",
-    "previousMonth": "Föregående månad:",
+    "currentMonth": "Denna månad",
+    "previousMonth": "Föregående månad",
+    "applyPeriod": "Använd",
     "exportTitle": "Exportera arbetspass",
     "weekdays": ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"],
     "periodTabs": {

@@ -90,7 +90,6 @@ export default function ShiftsScreen() {
   const [previousMonthDuration, setPreviousMonthDuration] = useState(0);
   const [loading, setLoading] = useState(true);
   const [selectedExportType, setSelectedExportType] = useState("pdf");
-  const [periodExportType, setPeriodExportType] = useState("pdf");
   const [exportPeriodTab, setExportPeriodTab] = useState("Month");
   const [exportFromMonth, setExportFromMonth] = useState("");
   const [exportToMonth, setExportToMonth] = useState("");
@@ -511,7 +510,6 @@ export default function ShiftsScreen() {
 
   const openPeriodSheet = useCallback(() => {
     setDatePickerTarget(null);
-    setPeriodExportType("pdf");
 
     if (!exportFromMonth) {
       const monthKey = getCurrentMonthKey();
@@ -560,11 +558,10 @@ export default function ShiftsScreen() {
     exportToMonth,
   ]);
 
-  const handlePeriodExport = useCallback(async () => {
-    if (exporting) {
-      return;
-    }
-
+  // The period sheet only *picks* a period — the export itself runs from the
+  // bottom Export button (see handleExport). Applying a period clears any
+  // ad-hoc day selection so there's a single, unambiguous export target.
+  const applyPeriod = useCallback(() => {
     if (exportPeriodTab === "Month") {
       if (!exportFromMonth || !exportToMonth) {
         Alert.alert(
@@ -604,26 +601,9 @@ export default function ShiftsScreen() {
       return;
     }
 
-    try {
-      setExporting(true);
-      await shiftService.exportReport({
-        format: periodExportType,
-        from: range.from,
-        to: range.to,
-        ...(filterProjectId ? { projectId: filterProjectId } : {}),
-        ...(workerIdsParam ? { workerIds: workerIdsParam } : {}),
-      });
-      setExportPeriodApplied(true);
-      closePeriodSheet();
-    } catch (error) {
-      const message =
-        error?.response?.data?.message ||
-        error?.message ||
-        t("shiftHistory.exportError");
-      Alert.alert(t("shiftHistory.exportFailedTitle"), message);
-    } finally {
-      setExporting(false);
-    }
+    setSelectedDates([]);
+    setExportPeriodApplied(true);
+    closePeriodSheet();
   }, [
     closePeriodSheet,
     exportFromDate,
@@ -631,9 +611,8 @@ export default function ShiftsScreen() {
     exportPeriodTab,
     exportToDate,
     exportToMonth,
-    exporting,
     getPeriodExportRange,
-    periodExportType,
+    t,
   ]);
 
   const exportMonthOptions = useMemo(
@@ -647,14 +626,14 @@ export default function ShiftsScreen() {
   );
 
   const openExportSheet = useCallback(() => {
-    if (!selectedDates.length) {
+    if (!selectedDates.length && !exportPeriodApplied) {
       Alert.alert(t("shifts.noDatesTitle"), t("shifts.noDatesMessage"));
       return;
     }
 
     setSelectedExportType("pdf");
     exportBottomSheetRef.current?.expand();
-  }, [selectedDates]);
+  }, [exportPeriodApplied, selectedDates]);
 
   const renderSheetBackdrop = useCallback(
     (props) => (
@@ -690,7 +669,19 @@ export default function ShiftsScreen() {
       return;
     }
 
-    if (!selectedDates.length) {
+    // An applied period exports by range; otherwise export the selected days.
+    const usePeriod = exportPeriodApplied && !selectedDates.length;
+    const range = usePeriod ? getPeriodExportRange() : null;
+
+    if (usePeriod && !range) {
+      Alert.alert(
+        t("shiftHistory.invalidPeriodTitle"),
+        t("shifts.chooseValidPeriod"),
+      );
+      return;
+    }
+
+    if (!usePeriod && !selectedDates.length) {
       Alert.alert(t("shifts.noDatesTitle"), t("shifts.noDatesMessage"));
       return;
     }
@@ -701,7 +692,9 @@ export default function ShiftsScreen() {
       setExporting(true);
       await shiftService.exportReport({
         format: selectedExportType,
-        dates: sortedDates.join(","),
+        ...(usePeriod
+          ? { from: range.from, to: range.to }
+          : { dates: sortedDates.join(",") }),
         ...(filterProjectId ? { projectId: filterProjectId } : {}),
         ...(workerIdsParam ? { workerIds: workerIdsParam } : {}),
       });
@@ -715,7 +708,14 @@ export default function ShiftsScreen() {
     } finally {
       setExporting(false);
     }
-  }, [closeExportSheet, exporting, selectedDates, selectedExportType]);
+  }, [
+    closeExportSheet,
+    exportPeriodApplied,
+    exporting,
+    getPeriodExportRange,
+    selectedDates,
+    selectedExportType,
+  ]);
 
   return (
     <View style={styles.container}>
@@ -792,11 +792,9 @@ export default function ShiftsScreen() {
                 {formatDurationCompact(heroValueMs)}
               </Text>
               <Text style={styles.selectionSummaryLabel}>
-                {`${
-                  selectedDates.length
-                    ? t("shifts.selected")
-                    : t("shifts.currentMonth")
-                } · ${sourceMeta.label}`}
+                {selectedDates.length
+                  ? t("shifts.selected")
+                  : t("shifts.currentMonth")}
               </Text>
             </View>
 
@@ -1220,47 +1218,6 @@ export default function ShiftsScreen() {
               {t("shiftHistory.periodLabel")}
             </Text>
 
-            <View style={styles.exportSheetCard}>
-              <View style={styles.exportButtonsContainer}>
-                <TouchableOpacity
-                  style={[
-                    styles.exportButton,
-                    periodExportType === "pdf" && styles.exportButtonActive,
-                  ]}
-                  onPress={() => setPeriodExportType("pdf")}
-                  activeOpacity={0.85}
-                >
-                  <Text
-                    style={[
-                      styles.exportButtonText,
-                      periodExportType === "pdf" &&
-                        styles.exportButtonTextActive,
-                    ]}
-                  >
-                    PDF
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[
-                    styles.exportButton,
-                    periodExportType === "excel" && styles.exportButtonActive,
-                  ]}
-                  onPress={() => setPeriodExportType("excel")}
-                  activeOpacity={0.85}
-                >
-                  <Text
-                    style={[
-                      styles.exportButtonText,
-                      periodExportType === "excel" &&
-                        styles.exportButtonTextActive,
-                    ]}
-                  >
-                    Excel
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
             <View style={styles.periodTabs}>
               {EXPORT_PERIOD_TABS.map((tab) => (
                 <TouchableOpacity
@@ -1378,21 +1335,13 @@ export default function ShiftsScreen() {
           </View>
 
           <TouchableOpacity
-            style={[
-              styles.exportMainButton,
-              exporting && styles.exportMainButtonDisabled,
-            ]}
-            onPress={handlePeriodExport}
-            disabled={exporting}
+            style={styles.exportMainButton}
+            onPress={applyPeriod}
             activeOpacity={0.85}
           >
-            {exporting ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <Text style={styles.exportMainButtonText}>
-                {t("shiftHistory.export")}
-              </Text>
-            )}
+            <Text style={styles.exportMainButtonText}>
+              {t("shifts.applyPeriod")}
+            </Text>
           </TouchableOpacity>
         </BottomSheetView>
       </BottomSheet>

@@ -299,8 +299,9 @@
     "employeesSelected_other": "{{count}} employees",
     "photos": "Photos",
     "noPhotos": "No photos attached",
-    "currentMonth": "Current month:",
-    "previousMonth": "Previous month:",
+    "currentMonth": "Current month",
+    "previousMonth": "Previous month",
+    "applyPeriod": "Apply",
     "exportTitle": "Export shifts",
     "weekdays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     "periodTabs": {
