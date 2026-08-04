@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   card: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
     borderColor: "#FFFFFF",
     borderRadius: 20,
