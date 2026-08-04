@@ -524,7 +524,7 @@
     }
   },
   "chat": {
-    "title": "Chat",
+    "title": "Chats",
     "loadError": "Failed to load chats",
     "loadErrorTitle": "Unable to load chats",
     "loading": "Loading chats...",

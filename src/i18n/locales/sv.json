@@ -524,7 +524,7 @@
     }
   },
   "chat": {
-    "title": "Chatt",
+    "title": "Chattar",
     "loadError": "Det gick inte att ladda chattar",
     "loadErrorTitle": "Det gick inte att ladda chattar",
     "loading": "Laddar chattar...",
