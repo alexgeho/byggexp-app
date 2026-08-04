@@ -14,6 +14,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Modal,
+  TextInput,
   Alert,
   Linking,
   Platform,
@@ -105,6 +106,14 @@ export default function ShiftsScreen() {
   const [filterWorkerIds, setFilterWorkerIds] = useState([]);
   const [employeePickerOpen, setEmployeePickerOpen] = useState(false);
   const [hoursSource, setHoursSource] = useState("gps");
+  // Worker manual-hours editor: the shift being edited, its hh/mm inputs, and
+  // the in-flight save flag.
+  const [manualHoursShift, setManualHoursShift] = useState(null);
+  const [manualHoursH, setManualHoursH] = useState("");
+  const [manualHoursM, setManualHoursM] = useState("");
+  const [savingManualHours, setSavingManualHours] = useState(false);
+
+  const currentUserId = user?.id || user?._id || null;
 
   const sourceMeta =
     HOURS_SOURCES.find((s) => s.key === hoursSource) || HOURS_SOURCES[1];
@@ -719,6 +728,61 @@ export default function ShiftsScreen() {
     selectedExportType,
   ]);
 
+  const openManualHoursEditor = useCallback((shift) => {
+    const ms = Number(shift?.manualDurationMs) || 0;
+    const totalMinutes = Math.round(ms / 60000);
+    setManualHoursH(ms ? String(Math.floor(totalMinutes / 60)) : "");
+    setManualHoursM(ms ? String(totalMinutes % 60) : "");
+    setManualHoursShift(shift);
+  }, []);
+
+  const closeManualHoursEditor = useCallback(() => {
+    setManualHoursShift(null);
+  }, []);
+
+  const submitManualHours = useCallback(
+    async (durationMs) => {
+      if (!manualHoursShift) {
+        return;
+      }
+
+      try {
+        setSavingManualHours(true);
+        await shiftService.setManualHours(manualHoursShift.id, durationMs);
+        setManualHoursShift(null);
+        await loadHistory(selectedMonth);
+      } catch (error) {
+        const message =
+          error?.response?.data?.message ||
+          error?.message ||
+          t("shifts.manualHoursError");
+        Alert.alert(t("shifts.manualHoursError"), message);
+      } finally {
+        setSavingManualHours(false);
+      }
+    },
+    [loadHistory, manualHoursShift, selectedMonth, t],
+  );
+
+  const saveManualHours = useCallback(() => {
+    const hours = parseInt(manualHoursH || "0", 10) || 0;
+    const minutes = parseInt(manualHoursM || "0", 10) || 0;
+
+    if (minutes > 59) {
+      Alert.alert(t("shifts.manualHoursError"), t("shifts.manualHoursInvalid"));
+      return;
+    }
+
+    const durationMs = (hours * 60 + minutes) * 60000;
+
+    if (durationMs > 24 * 60 * 60000) {
+      Alert.alert(t("shifts.manualHoursError"), t("shifts.manualHoursTooLong"));
+      return;
+    }
+
+    submitManualHours(durationMs);
+  }, [manualHoursH, manualHoursM, submitManualHours, t]);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -1003,6 +1067,42 @@ export default function ShiftsScreen() {
                       </View>
 
                       <View style={styles.shiftExpandedContent}>
+                        {shift.status === "completed" &&
+                        String(shift.workerId) === String(currentUserId) ? (
+                          <TouchableOpacity
+                            style={styles.shiftDetailRow}
+                            activeOpacity={0.7}
+                            onPress={() => openManualHoursEditor(shift)}
+                          >
+                            <Text
+                              style={[
+                                styles.shiftDetailLabel,
+                                {
+                                  fontFamily: theme.text.fontFamily["regular"],
+                                },
+                              ]}
+                            >
+                              {t("shifts.manualHours")}
+                            </Text>
+                            <Text
+                              style={[
+                                styles.manualHoursValue,
+                                {
+                                  fontFamily:
+                                    theme.text.fontFamily[
+                                      shift.manualDurationMs != null
+                                        ? "medium"
+                                        : "regular"
+                                    ],
+                                },
+                              ]}
+                            >
+                              {shift.manualDurationMs != null
+                                ? formatDuration(shift.manualDurationMs)
+                                : t("shifts.manualHoursAdd")}
+                            </Text>
+                          </TouchableOpacity>
+                        ) : null}
                         <View style={styles.shiftDetailRow}>
                           <Text
                             style={[
@@ -1435,6 +1535,98 @@ export default function ShiftsScreen() {
             >
               <Text style={styles.datePickerButtonText}>
                 {t("common.done")}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={Boolean(manualHoursShift)}
+        transparent
+        animationType="fade"
+        onRequestClose={closeManualHoursEditor}
+      >
+        <View style={styles.datePickerOverlay}>
+          <View style={styles.datePickerCard}>
+            <Text style={styles.datePickerTitle}>
+              {t("shifts.manualHoursTitle")}
+            </Text>
+            <Text style={styles.manualHoursHint}>
+              {t("shifts.manualHoursHint")}
+            </Text>
+
+            <View style={styles.manualHoursInputs}>
+              <View style={styles.manualHoursField}>
+                <TextInput
+                  style={styles.manualHoursInput}
+                  value={manualHoursH}
+                  onChangeText={(text) =>
+                    setManualHoursH(text.replace(/[^0-9]/g, "").slice(0, 2))
+                  }
+                  keyboardType="number-pad"
+                  placeholder="0"
+                  placeholderTextColor="#9BB0C1"
+                  maxLength={2}
+                />
+                <Text style={styles.manualHoursUnit}>
+                  {t("shifts.unitHour")}
+                </Text>
+              </View>
+              <View style={styles.manualHoursField}>
+                <TextInput
+                  style={styles.manualHoursInput}
+                  value={manualHoursM}
+                  onChangeText={(text) =>
+                    setManualHoursM(text.replace(/[^0-9]/g, "").slice(0, 2))
+                  }
+                  keyboardType="number-pad"
+                  placeholder="0"
+                  placeholderTextColor="#9BB0C1"
+                  maxLength={2}
+                />
+                <Text style={styles.manualHoursUnit}>
+                  {t("shifts.unitMinute")}
+                </Text>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              style={[
+                styles.datePickerButton,
+                savingManualHours && styles.exportMainButtonDisabled,
+              ]}
+              onPress={saveManualHours}
+              disabled={savingManualHours}
+            >
+              {savingManualHours ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Text style={styles.datePickerButtonText}>
+                  {t("common.save")}
+                </Text>
+              )}
+            </TouchableOpacity>
+
+            {manualHoursShift?.manualDurationMs != null ? (
+              <TouchableOpacity
+                style={styles.manualHoursClearButton}
+                onPress={() => submitManualHours(null)}
+                disabled={savingManualHours}
+              >
+                <Text style={styles.manualHoursClearText}>
+                  {t("shifts.manualHoursClear")}
+                </Text>
+              </TouchableOpacity>
+            ) : null}
+
+            <TouchableOpacity
+              style={styles.manualHoursCancelButton}
+              onPress={closeManualHoursEditor}
+              disabled={savingManualHours}
+            >
+              <Text style={styles.manualHoursCancelText}>
+                {t("common.cancel")}
               </Text>
             </TouchableOpacity>
           </View>

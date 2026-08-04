@@ -1,23 +1,22 @@
-import * as FileSystem from 'expo-file-system/legacy';
-import * as Sharing from 'expo-sharing';
-import { getToken } from '../utils/storage';
-import api, { API_BASE_URL } from './api';
+import * as FileSystem from "expo-file-system/legacy";
+import * as Sharing from "expo-sharing";
+import { getToken } from "../utils/storage";
+import api, { API_BASE_URL } from "./api";
 
-const getMultipartConfig = (payload) => (
-  typeof FormData !== 'undefined' && payload instanceof FormData
+const getMultipartConfig = (payload) =>
+  typeof FormData !== "undefined" && payload instanceof FormData
     ? {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       }
-    : undefined
-);
+    : undefined;
 
 const buildQueryString = (params = {}) => {
   const searchParams = new URLSearchParams();
 
   Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== '') {
+    if (value !== undefined && value !== null && value !== "") {
       searchParams.append(key, String(value));
     }
   });
@@ -25,33 +24,43 @@ const buildQueryString = (params = {}) => {
   return searchParams.toString();
 };
 
-const sanitizeFilePart = (value) => (
-  String(value || '')
+const sanitizeFilePart = (value) =>
+  String(value || "")
     .trim()
-    .replace(/[^a-zA-Z0-9-_]+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
-    .toLowerCase()
-);
+    .replace(/[^a-zA-Z0-9-_]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .toLowerCase();
 
-const buildExportFileName = ({ format = 'pdf', from, to, month, dates, workerName, projectName }) => {
-  const extension = format === 'excel' ? 'xlsx' : 'pdf';
-  const rangePart = sanitizeFilePart(
-    month ||
-      dates?.replace(/,/g, '-') ||
-      `${from || 'from'}-${to || 'to'}` ||
-      'all-time',
-  ) || 'all-time';
+const buildExportFileName = ({
+  format = "pdf",
+  from,
+  to,
+  month,
+  dates,
+  workerName,
+  projectName,
+}) => {
+  const extension = format === "excel" ? "xlsx" : "pdf";
+  const rangePart =
+    sanitizeFilePart(
+      month ||
+        dates?.replace(/,/g, "-") ||
+        `${from || "from"}-${to || "to"}` ||
+        "all-time",
+    ) || "all-time";
   const workerPart = sanitizeFilePart(workerName);
   const projectPart = sanitizeFilePart(projectName);
-  const nameParts = ['shift-report', rangePart, workerPart, projectPart].filter(Boolean);
+  const nameParts = ["shift-report", rangePart, workerPart, projectPart].filter(
+    Boolean,
+  );
 
-  return `${nameParts.join('-')}.${extension}`;
+  return `${nameParts.join("-")}.${extension}`;
 };
 
 export const shiftService = {
   start: async (projectId) => {
-    const { data } = await api.post('/shifts/start', { projectId });
+    const { data } = await api.post("/shifts/start", { projectId });
     return data;
   },
 
@@ -71,76 +80,98 @@ export const shiftService = {
   },
 
   getCurrent: async (projectId) => {
-    const { data } = await api.get('/shifts/current', {
+    const { data } = await api.get("/shifts/current", {
       params: projectId ? { projectId } : undefined,
     });
     return data;
   },
 
   getMonths: async (params = {}) => {
-    const { data } = await api.get('/shifts/months', { params });
+    const { data } = await api.get("/shifts/months", { params });
     return data;
   },
 
   getHistory: async (params = {}) => {
-    const { data } = await api.get('/shifts/history', { params });
+    const { data } = await api.get("/shifts/history", { params });
     return data;
   },
 
   list: async (params = {}) => {
-    const { data } = await api.get('/shifts/list', { params });
+    const { data } = await api.get("/shifts/list", { params });
     return data;
   },
 
-  exportReport: async ({ format = 'pdf', workerName, projectName, ...params } = {}) => {
+  exportReport: async ({
+    format = "pdf",
+    workerName,
+    projectName,
+    ...params
+  } = {}) => {
     const token = await getToken();
     if (!token) {
-      throw new Error('Authentication token is missing.');
+      throw new Error("Authentication token is missing.");
     }
 
-    const baseDirectory = FileSystem.cacheDirectory || FileSystem.documentDirectory;
+    const baseDirectory =
+      FileSystem.cacheDirectory || FileSystem.documentDirectory;
     if (!baseDirectory) {
-      throw new Error('Local file storage is unavailable on this device.');
+      throw new Error("Local file storage is unavailable on this device.");
     }
 
-    const fileName = buildExportFileName({ format, workerName, projectName, ...params });
-    const queryString = buildQueryString({ format, ...params });
-    const url = `${API_BASE_URL}/shifts/export${queryString ? `?${queryString}` : ''}`;
-    const downloadResult = await FileSystem.downloadAsync(url, `${baseDirectory}${fileName}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+    const fileName = buildExportFileName({
+      format,
+      workerName,
+      projectName,
+      ...params,
     });
+    const queryString = buildQueryString({ format, ...params });
+    const url = `${API_BASE_URL}/shifts/export${queryString ? `?${queryString}` : ""}`;
+    const downloadResult = await FileSystem.downloadAsync(
+      url,
+      `${baseDirectory}${fileName}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
 
     if (downloadResult.status < 200 || downloadResult.status >= 300) {
-      throw new Error('Failed to generate shift export.');
+      throw new Error("Failed to generate shift export.");
     }
 
     if (await Sharing.isAvailableAsync()) {
       await Sharing.shareAsync(downloadResult.uri, {
         mimeType:
-          format === 'excel'
-            ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            : 'application/pdf',
-        dialogTitle: 'Share shift report',
+          format === "excel"
+            ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            : "application/pdf",
+        dialogTitle: "Share shift report",
         UTI:
-          format === 'excel'
-            ? 'org.openxmlformats.spreadsheetml.sheet'
-            : 'com.adobe.pdf',
+          format === "excel"
+            ? "org.openxmlformats.spreadsheetml.sheet"
+            : "com.adobe.pdf",
       });
     }
 
     return downloadResult;
   },
 
+  setManualHours: async (shiftId, durationMs) => {
+    const { data } = await api.post(`/shifts/${shiftId}/manual-hours`, {
+      durationMs,
+    });
+    return data;
+  },
+
   uploadPhotos: async (shiftId, files) => {
     const formData = new FormData();
 
     files.forEach((file, index) => {
-      formData.append('photos', {
+      formData.append("photos", {
         uri: file.uri,
         name: file.name || `shift-photo-${index + 1}.jpg`,
-        type: file.mimeType || file.type || 'image/jpeg',
+        type: file.mimeType || file.type || "image/jpeg",
       });
     });
 
