@@ -53,7 +53,7 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow ByggExp to use your camera to scan tool QR codes."
+          "cameraPermission": "Allow ByggExp to use your camera to take shift photos, scan receipts and tool QR codes."
         }
       ],
       "@sentry/react-native"
