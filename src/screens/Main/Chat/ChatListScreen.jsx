@@ -24,7 +24,8 @@ import {
   standardScreenHeader,
 } from "../../../styles/screenLayout";
 import { resolveUploadUrl } from "../../../utils/shifts";
-import { shouldShowAccountStatus, USER_ROLES } from "../../../utils/userRoles";
+import { cardStyles } from "../../../styles/cards";
+import { getPersonWorkStatus, USER_ROLES } from "../../../utils/userRoles";
 
 const getEntityId = (entity) => {
   const id = entity?._id || entity?.id;
@@ -41,14 +42,13 @@ const getInitials = (name) =>
     .map((word) => word[0]?.toUpperCase() || "")
     .join("");
 
-const isPersonAtWork = (person, selectedProjectId) => {
-  if (person?.workStatus !== "working") {
-    return false;
-  }
-  if (!selectedProjectId) {
-    return true;
-  }
-  return getEntityId({ id: person?.workStatusProjectId }) === selectedProjectId;
+// Same ordering as the Employees list: not-yet-confirmed first, then away,
+// then off duty, then those currently at work.
+const STATUS_SORT_PRIORITY = {
+  waiting: 0,
+  not_at_work: 1,
+  off_duty: 2,
+  at_work: 3,
 };
 
 export default function ChatListScreen() {
@@ -142,14 +142,9 @@ export default function ChatListScreen() {
 
   const visibleColleagues = useMemo(() => {
     const currentUserId = getEntityId({ id: user?._id || user?.id });
-    // Match the Employees list: not-yet-confirmed accounts first, then people
-    // who are away, and those currently at work last.
-    const getSortPriority = (person) => {
-      if (shouldShowAccountStatus(person?.accountStatus)) {
-        return 0;
-      }
-      return isPersonAtWork(person, selectedProjectId) ? 2 : 1;
-    };
+    const getSortPriority = (person) =>
+      STATUS_SORT_PRIORITY[getPersonWorkStatus(person, selectedProjectId)] ??
+      99;
 
     // Don't list company/superadmin accounts or the current user.
     const nonStaffRoles = [USER_ROLES.COMPANY_ADMIN, USER_ROLES.SUPERADMIN];
@@ -273,8 +268,25 @@ export default function ChatListScreen() {
     const personId = getUserId(person);
     const chat = chatByPersonId[String(personId)];
     const selected = selectedIds.includes(personId);
-    const showAccountStatus = shouldShowAccountStatus(person.accountStatus);
-    const atWork = isPersonAtWork(person, selectedProjectId);
+    const statusKind = getPersonWorkStatus(person, selectedProjectId);
+    const statusBadge = {
+      waiting: {
+        label: t("employees.waitingApproval"),
+        style: cardStyles.cardBadgeWarning,
+      },
+      at_work: {
+        label: `• ${t("employees.atWork")}`,
+        style: cardStyles.cardBadgeAtWork,
+      },
+      off_duty: {
+        label: t("employees.offDuty"),
+        style: cardStyles.cardBadgeNeutral,
+      },
+      not_at_work: {
+        label: t("employees.notAtWork"),
+        style: cardStyles.cardBadgeAbsent,
+      },
+    }[statusKind];
     const timeAgo = chat ? formatTimeAgo(chat.lastMessageAt) : "";
     const preview =
       chat?.lastMessageText || person.profession || t("employees.noProfession");
@@ -331,16 +343,20 @@ export default function ChatListScreen() {
         </View>
 
         <View style={styles.rowRight}>
-          {atWork ? (
-            <View style={styles.atWorkBadge}>
-              <Text style={styles.atWorkText}>
-                {`• ${t("employees.atWork")}`}
-              </Text>
-            </View>
-          ) : showAccountStatus ? (
-            <View style={styles.pendingBadge}>
-              <Text style={styles.pendingText}>
-                {t("employees.waitingApproval")}
+          {statusBadge ? (
+            <View
+              style={[
+                styles.statusBadge,
+                { backgroundColor: statusBadge.style.backgroundColor },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.statusBadgeText,
+                  { color: statusBadge.style.color },
+                ]}
+              >
+                {statusBadge.label}
               </Text>
             </View>
           ) : null}
@@ -608,27 +624,14 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     gap: 6,
   },
-  atWorkBadge: {
+  statusBadge: {
     paddingVertical: 3,
     paddingHorizontal: 10,
-    borderRadius: 6,
-    backgroundColor: "#E5F7EA",
+    borderRadius: 8,
   },
-  atWorkText: {
-    color: "#04B251",
+  statusBadgeText: {
     fontSize: 12,
     fontWeight: "600",
-  },
-  pendingBadge: {
-    paddingVertical: 3,
-    paddingHorizontal: 10,
-    borderRadius: 10,
-    backgroundColor: "#FDF1DC",
-  },
-  pendingText: {
-    color: "#B5691A",
-    fontSize: 12,
-    fontWeight: "700",
   },
   unreadBadge: {
     minWidth: 20,

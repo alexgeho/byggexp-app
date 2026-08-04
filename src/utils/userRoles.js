@@ -124,6 +124,45 @@ export function getAccountStatusLabel(status) {
   return null;
 }
 
+// Shift reasons that mean the worker's shift was auto-paused (went offline or
+// left the site) — still counts as "off duty" rather than "not at work".
+export const AUTO_PAUSED_REASONS = new Set([
+  "offline",
+  "outside_project_area",
+  "outside_project_area_notified",
+]);
+
+// True when the person is currently on an active shift (optionally scoped to a
+// specific project).
+export function isPersonAtWork(person, selectedProjectId) {
+  if (person?.workStatus !== "working") {
+    return false;
+  }
+  if (!selectedProjectId) {
+    return true;
+  }
+  return getEntityId({ id: person?.workStatusProjectId }) === selectedProjectId;
+}
+
+// Single source of truth for a person's live work status, shared by the
+// Employees and Chats lists. Returns "waiting" | "at_work" | "off_duty" |
+// "not_at_work". workedTodayIds (a Set of user ids who clocked in today) is
+// optional; without it "worked earlier today" can't be told apart, so those
+// people read as "not_at_work" unless their shift is auto-paused.
+export function getPersonWorkStatus(person, selectedProjectId, workedTodayIds) {
+  if (shouldShowAccountStatus(person?.accountStatus)) {
+    return "waiting";
+  }
+  if (isPersonAtWork(person, selectedProjectId)) {
+    return "at_work";
+  }
+  const autoPaused =
+    person?.workStatus === "outside_project_area" ||
+    AUTO_PAUSED_REASONS.has(person?.workStatusReason || "");
+  const workedToday = workedTodayIds?.has(getEntityId(person));
+  return autoPaused || workedToday ? "off_duty" : "not_at_work";
+}
+
 export function getCreatableRoleOptions(role) {
   return getCreatableRoles(role).map((value) => ({
     value,

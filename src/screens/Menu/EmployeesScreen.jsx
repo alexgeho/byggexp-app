@@ -25,7 +25,7 @@ import {
 import { cardStyles } from "../../styles/cards";
 import {
   canManageEmployees,
-  shouldShowAccountStatus,
+  getPersonWorkStatus,
   USER_ROLES,
 } from "../../utils/userRoles";
 
@@ -103,50 +103,11 @@ const truncateProjectName = (name) => {
   return `${name.slice(0, MAX_PROJECT_NAME_LENGTH - 3)}...`;
 };
 
-const isEmployeeAtWork = (employee, selectedProjectId) => {
-  if (employee?.workStatus !== "working") {
-    return false;
-  }
-
-  if (!selectedProjectId) {
-    return true;
-  }
-
-  return (
-    getEntityId({ id: employee?.workStatusProjectId }) === selectedProjectId
-  );
-};
-
-// Shift reasons that mean the worker's shift was auto-paused (went offline or
-// left the site) — still counts as "off duty" rather than "not at work".
-const AUTO_PAUSED_REASONS = new Set([
-  "offline",
-  "outside_project_area",
-  "outside_project_area_notified",
-]);
-
 const getTodayDateKey = () => {
   const date = new Date();
   const month = `${date.getMonth() + 1}`.padStart(2, "0");
   const day = `${date.getDate()}`.padStart(2, "0");
   return `${date.getFullYear()}-${month}-${day}`;
-};
-
-// Mirror the admin's live status: at_work / off_duty / not_at_work, plus the
-// app's waiting-approval state. "Off duty" = clocked in earlier today (or an
-// auto-paused shift) but not working now; "Not at work" = no shift today.
-const getEmployeeStatusKind = (employee, selectedProjectId, workedTodayIds) => {
-  if (shouldShowAccountStatus(employee?.accountStatus)) {
-    return "waiting";
-  }
-  if (isEmployeeAtWork(employee, selectedProjectId)) {
-    return "at_work";
-  }
-  const autoPaused =
-    employee?.workStatus === "outside_project_area" ||
-    AUTO_PAUSED_REASONS.has(employee?.workStatusReason || "");
-  const workedToday = workedTodayIds?.has(getEntityId(employee));
-  return autoPaused || workedToday ? "off_duty" : "not_at_work";
 };
 
 // Surface who needs attention first: not-yet-confirmed, then absent all day,
@@ -235,7 +196,7 @@ export default function EmployeesScreen() {
   const filteredEmployees = useMemo(() => {
     const getSortPriority = (employee) =>
       STATUS_SORT_PRIORITY[
-        getEmployeeStatusKind(employee, selectedProjectId, workedTodayIds)
+        getPersonWorkStatus(employee, selectedProjectId, workedTodayIds)
       ] ?? 99;
 
     // The company/owner account (companyAdmin) and platform superadmin are not
@@ -344,7 +305,7 @@ export default function EmployeesScreen() {
                 projectNameById,
                 projects,
               );
-              const statusKind = getEmployeeStatusKind(
+              const statusKind = getPersonWorkStatus(
                 employee,
                 selectedProjectId,
                 workedTodayIds,
