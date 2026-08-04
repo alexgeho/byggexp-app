@@ -1,6 +1,5 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import { getLocales } from "expo-localization";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import en from "./locales/en.json";
@@ -19,8 +18,11 @@ export const SUPPORTED_LANGUAGES = [
 // English is the most complete set, so missing keys fall back to it.
 export const FALLBACK_LANGUAGE = "en";
 
-// Initial language when the device language is not one we support.
-export const DEFAULT_LANGUAGE = "sv";
+// Language shown on the very first launch, before the user has picked one.
+// Always English by design: the device language is intentionally ignored so
+// first-time users (and App Store reviewers) always start in English; the
+// user's own choice is persisted and honoured on every later launch.
+export const DEFAULT_LANGUAGE = "en";
 
 const resources = {
   en: { translation: en },
@@ -31,14 +33,9 @@ export function isSupportedLanguage(code) {
   return SUPPORTED_LANGUAGES.some((language) => language.code === code);
 }
 
-function getDeviceLanguage() {
-  const code = getLocales()?.[0]?.languageCode;
-  return isSupportedLanguage(code) ? code : DEFAULT_LANGUAGE;
-}
-
 i18n.use(initReactI18next).init({
   resources,
-  lng: getDeviceLanguage(),
+  lng: DEFAULT_LANGUAGE,
   fallbackLng: FALLBACK_LANGUAGE,
   interpolation: { escapeValue: false },
   react: { useSuspense: false },
