@@ -1,5 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
+  Dimensions,
   Image,
   ScrollView,
   StyleSheet,
@@ -20,6 +21,11 @@ import {
   standardScreenContainer,
   standardScreenHeader,
 } from "../../../styles/screenLayout";
+
+const PHOTO_GAP = 10;
+const PHOTO_THUMB = Math.floor(
+  (Dimensions.get("window").width - 12 * 2 - PHOTO_GAP * 2) / 3,
+);
 
 const getId = (entity) => entity?._id || entity?.id;
 
@@ -43,7 +49,7 @@ export default function ChatProfileScreen() {
     user?.role,
   );
 
-  const [photoDay, setPhotoDay] = useState(null);
+  const [photoSections, setPhotoSections] = useState([]);
 
   const loadRecentPhotos = useCallback(async () => {
     if (!personId) {
@@ -51,14 +57,14 @@ export default function ChatProfileScreen() {
     }
     try {
       const data = await shiftService.list({ workerId: personId });
-      const dayWithPhotos = (data?.days || [])
+      const sections = (data?.days || [])
         .map((day) => ({
           date: day.date,
           photos: (day.shifts || []).flatMap((shift) => shift.photos || []),
         }))
         .filter((day) => day.photos.length > 0)
-        .sort((a, b) => (a.date < b.date ? 1 : -1))[0];
-      setPhotoDay(dayWithPhotos || null);
+        .sort((a, b) => (a.date < b.date ? 1 : -1));
+      setPhotoSections(sections);
     } catch (error) {
       console.error("Failed to load profile photos:", error);
     }
@@ -164,7 +170,7 @@ export default function ChatProfileScreen() {
               <Text
                 style={[
                   styles.fieldValue,
-                  { fontFamily: theme.text.fontFamily.semiBold },
+                  { fontFamily: theme.text.fontFamily.medium },
                 ]}
               >
                 {field.value}
@@ -173,31 +179,27 @@ export default function ChatProfileScreen() {
           ))}
         </View>
 
-        {photoDay ? (
-          <View style={styles.photosBlock}>
+        {photoSections.map((section) => (
+          <View key={section.date} style={styles.photosBlock}>
             <View style={styles.photosHeader}>
               <Text style={styles.photosDate}>
-                {formatShiftDayLabel(photoDay.date)}
+                {formatShiftDayLabel(section.date)}
               </Text>
               <Text style={styles.photosCount}>
-                {t("camera.photoCount", { count: photoDay.photos.length })}
+                {t("camera.photoCount", { count: section.photos.length })}
               </Text>
             </View>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.photosStrip}
-            >
-              {photoDay.photos.map((photo, index) => (
+            <View style={styles.photoGrid}>
+              {section.photos.map((photo, index) => (
                 <Image
                   key={`${photo.url}-${index}`}
                   source={{ uri: resolveUploadUrl(photo.url) }}
                   style={styles.photoThumb}
                 />
               ))}
-            </ScrollView>
+            </View>
           </View>
-        ) : null}
+        ))}
       </ScrollView>
 
       <BottomBar
@@ -220,7 +222,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     flex: 1,
     color: "#052D50",
-    fontSize: 20,
+    fontSize: 17,
     textAlign: "center",
   },
   editButton: {
@@ -229,9 +231,9 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "rgba(255, 255, 255, 0.4)",
     borderWidth: 1,
-    borderColor: "#FFFFFF50",
+    borderColor: "#FFFFFF",
   },
   scroll: {
     flex: 1,
@@ -246,10 +248,10 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   avatar: {
-    width: 128,
-    height: 128,
-    borderRadius: 64,
-    backgroundColor: "#E5E9ED",
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: "#D9D9D9",
   },
   avatarFallback: {
     alignItems: "center",
@@ -266,11 +268,14 @@ const styles = StyleSheet.create({
     fontSize: 22,
   },
   subtitle: {
-    color: "#8296A7",
-    fontSize: 14,
+    color: "#667E93",
+    fontSize: 15,
+    fontWeight: "500",
   },
   card: {
-    backgroundColor: "rgba(255, 255, 255, 0.7)",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
     borderRadius: 20,
     padding: 20,
   },
@@ -278,15 +283,17 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   fieldSpacing: {
-    marginTop: 18,
+    marginTop: 12,
   },
   fieldLabel: {
-    color: "#8296A7",
-    fontSize: 13,
+    color: "rgba(5, 45, 80, 0.5)",
+    fontSize: 14,
+    fontWeight: "500",
   },
   fieldValue: {
     color: "#052D50",
-    fontSize: 16,
+    fontSize: 17,
+    fontWeight: "500",
   },
   photosBlock: {
     marginTop: 20,
@@ -298,22 +305,24 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   photosDate: {
-    color: "#052D50",
-    fontSize: 15,
+    color: "#667E93",
+    fontSize: 13,
     fontWeight: "500",
   },
   photosCount: {
-    color: "#8296A7",
-    fontSize: 14,
+    color: "#667E93",
+    fontSize: 13,
+    fontWeight: "500",
   },
-  photosStrip: {
-    gap: 10,
-    paddingRight: 12,
+  photoGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: PHOTO_GAP,
   },
   photoThumb: {
-    width: 120,
-    height: 120,
-    borderRadius: 14,
-    backgroundColor: "#E5E9ED",
+    width: PHOTO_THUMB,
+    height: PHOTO_THUMB,
+    borderRadius: 6,
+    backgroundColor: "#D9D9D9",
   },
 });
