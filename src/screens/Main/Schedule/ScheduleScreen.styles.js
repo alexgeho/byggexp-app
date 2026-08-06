@@ -76,23 +76,21 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 6,
-    height: 44,
+    gap: 8,
+    height: 48,
     paddingHorizontal: 16,
-    borderRadius: 22,
-    backgroundColor: "#ECECEC",
-    borderWidth: 1,
-    borderColor: "rgba(5, 45, 80, 0.12)",
-  },
-  filterChipActive: {
-    borderColor: "#0091FF",
-    backgroundColor: "rgba(0, 145, 255, 0.08)",
+    borderRadius: 20,
+    backgroundColor: "#052D500D",
   },
   filterChipText: {
     flex: 1,
     color: "#052D50",
-    fontSize: 14,
+    fontSize: 17,
+    fontWeight: "500",
     fontFamily: "DMSans-Medium",
+  },
+  filterChipPlaceholder: {
+    color: "rgba(5, 45, 80, 0.5)",
   },
   timelineCard: {
     flex: 1,
@@ -116,7 +114,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     height: HEADER_HEIGHT,
     borderBottomWidth: 1,
-    borderBottomColor: "#e9e9e9",
+    borderBottomColor: "#F0F2F4",
   },
   corner: {
     width: SIDEBAR_WIDTH,
@@ -125,7 +123,7 @@ export const styles = StyleSheet.create({
     paddingLeft: 12,
     paddingBottom: 8,
     borderRightWidth: 1,
-    borderRightColor: "#e9e9e9",
+    borderRightColor: "#F0F2F4",
   },
   cornerText: {
     color: "#052D50",
@@ -177,14 +175,12 @@ export const styles = StyleSheet.create({
   sidebar: {
     width: SIDEBAR_WIDTH,
     borderRightWidth: 1,
-    borderRightColor: "#e9e9e9",
+    borderRightColor: "#F0F2F4",
   },
   sidebarCell: {
     height: ROW_HEIGHT,
     justifyContent: "center",
     paddingHorizontal: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(5, 45, 80, 0.05)",
   },
   sidebarName: {
     color: "#052D50",
@@ -275,7 +271,7 @@ export const styles = StyleSheet.create({
   zoomGroup: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(237, 237, 237, 0.96)",
+    backgroundColor: "#E6E7EE",
     borderRadius: 16,
     padding: 4,
     gap: 4,

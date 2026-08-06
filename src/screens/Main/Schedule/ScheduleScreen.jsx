@@ -567,27 +567,33 @@ export default function ScheduleScreen() {
 
       <View style={styles.filterRow}>
         <TouchableOpacity
-          style={[
-            styles.filterChip,
-            selectedProjectIds.length > 0 && styles.filterChipActive,
-          ]}
+          style={styles.filterChip}
           onPress={() => setActiveFilter("project")}
           activeOpacity={0.85}
         >
-          <Text numberOfLines={1} style={styles.filterChipText}>
+          <Text
+            numberOfLines={1}
+            style={[
+              styles.filterChipText,
+              selectedProjectIds.length === 0 && styles.filterChipPlaceholder,
+            ]}
+          >
             {projectChipLabel}
           </Text>
           <Icon name="chevron-down" size={16} color="#052D50" />
         </TouchableOpacity>
         <TouchableOpacity
-          style={[
-            styles.filterChip,
-            selectedStatuses.length > 0 && styles.filterChipActive,
-          ]}
+          style={styles.filterChip}
           onPress={() => setActiveFilter("status")}
           activeOpacity={0.85}
         >
-          <Text numberOfLines={1} style={styles.filterChipText}>
+          <Text
+            numberOfLines={1}
+            style={[
+              styles.filterChipText,
+              selectedStatuses.length === 0 && styles.filterChipPlaceholder,
+            ]}
+          >
             {statusChipLabel}
           </Text>
           <Icon name="chevron-down" size={16} color="#052D50" />

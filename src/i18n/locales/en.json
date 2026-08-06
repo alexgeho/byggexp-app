@@ -605,7 +605,9 @@
       "tasks-history": "Tasks"
     },
     "customizeTitle": "Customize Home Screen",
-    "themes": "Themes"
+    "themes": "Themes",
+    "projectStart": "Start",
+    "projectEnd": "End"
   },
   "menu": {
     "title": "Menu",

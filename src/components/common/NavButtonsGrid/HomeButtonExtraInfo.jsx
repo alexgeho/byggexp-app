@@ -8,6 +8,7 @@ export function HomeButtonExtraInfo({
   showEmployeeStats,
   employeeStats,
   taskDeadlines,
+  projectStart,
   projectDeadline,
   style,
 }) {
@@ -29,10 +30,23 @@ export function HomeButtonExtraInfo({
     );
   }
 
-  if (buttonId === "projects" && projectDeadline) {
+  if (buttonId === "projects" && (projectStart || projectDeadline)) {
     return (
-      <View style={style}>
-        <HomeButtonInfoBadge label={projectDeadline} variant="deadline" />
+      <View
+        style={[style, { flexDirection: "column", alignItems: "flex-start" }]}
+      >
+        {projectStart ? (
+          <HomeButtonInfoBadge
+            label={`${t("home.projectStart")} · ${projectStart}`}
+            variant="deadline"
+          />
+        ) : null}
+        {projectDeadline ? (
+          <HomeButtonInfoBadge
+            label={`${t("home.projectEnd")} · ${projectDeadline}`}
+            variant="deadline"
+          />
+        ) : null}
       </View>
     );
   }

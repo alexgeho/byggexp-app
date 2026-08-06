@@ -146,8 +146,10 @@ export default function ChatListScreen() {
       STATUS_SORT_PRIORITY[getPersonWorkStatus(person, selectedProjectId)] ??
       99;
 
-    // Don't list company/superadmin accounts or the current user.
-    const nonStaffRoles = [USER_ROLES.COMPANY_ADMIN, USER_ROLES.SUPERADMIN];
+    // Hide only the platform superadmin and the current user. Company admins
+    // stay visible so workers can see and message their admin (and reply to
+    // messages the admin started).
+    const nonStaffRoles = [USER_ROLES.SUPERADMIN];
 
     const query = searchQuery.trim().toLowerCase();
 
@@ -156,6 +158,11 @@ export default function ChatListScreen() {
       .filter((person) => getEntityId(person) !== currentUserId)
       .filter((person) => {
         if (!selectedProjectId) {
+          return true;
+        }
+        // Company admins aren't tied to a single project — keep them reachable
+        // whichever project is selected.
+        if (person?.role === USER_ROLES.COMPANY_ADMIN) {
           return true;
         }
         const ids = Array.isArray(person?.projectIds)

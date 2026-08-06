@@ -10,7 +10,7 @@ export const EVENT_COLORS = [
   "#0089f6",
   "#11b8cf",
   "#8c00e9",
-  "#e56200",
+  "#e11d48",
   "#11a979",
   "#f05ba8",
   "#5568ff",
@@ -217,8 +217,11 @@ export const buildEmployeeItems = (tasks = [], projectMap = {}, employeeId) => {
         assigneeCount: workerIds.length,
         start: dates.start,
         end: dates.end,
-        // Same task name keeps the same color (like remato's typed bars).
-        color: colorForKey(task.taskTitle || normalizeId(task) || index),
+        // Explicit color (demo data) wins; otherwise same task name keeps the
+        // same color (like remato's typed bars).
+        color:
+          task.color ||
+          colorForKey(task.taskTitle || normalizeId(task) || index),
       },
     ];
   });
@@ -249,7 +252,7 @@ export const buildProjectItems = (tasks = [], projectMap = {}, projectId) => {
         subtitle: project?.name || "",
         start: dates.start,
         end: dates.end,
-        color: colorForKey(normalizeId(task) || index),
+        color: task.color || colorForKey(normalizeId(task) || index),
       },
     ];
   });
@@ -301,6 +304,8 @@ export const buildProjectSpanItem = (project, index = 0) => {
     assigneeCount: getWorkerIdsForProject(project).length,
     start: dates.start,
     end: dates.end,
-    color: colorForKey(project.name || normalizeId(project) || index),
+    color:
+      project.color ||
+      colorForKey(project.name || normalizeId(project) || index),
   };
 };

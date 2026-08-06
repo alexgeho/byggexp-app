@@ -31,12 +31,19 @@ export const getScheduleDemoData = () => {
     },
   ];
 
+  // Figma bar colors (blue / cyan / purple) — one per project so the demo
+  // calendar reads clean, staggered and colorful like the design.
+  const BLUE = "#2f6bed";
+  const CYAN = "#35bdd6";
+  const PURPLE = "#7a2bf0";
+
   const projects = [
     {
       _id: "demo-p1",
       name: "Villa Söderberg",
       location: "Storgatan 12",
       status: "in_progress",
+      color: BLUE,
       workers: ["demo-w1", "demo-w2", "demo-w3"],
       beginningDate: iso(1),
       endDate: iso(20),
@@ -46,8 +53,9 @@ export const getScheduleDemoData = () => {
       name: "Kontor Vasastan",
       location: "Vasagatan 5",
       status: "planning",
+      color: CYAN,
       workers: ["demo-w2", "demo-w4"],
-      beginningDate: iso(3),
+      beginningDate: iso(4),
       endDate: iso(24),
     },
     {
@@ -55,8 +63,9 @@ export const getScheduleDemoData = () => {
       name: "Lager Nord",
       location: "Hamnvägen 3",
       status: "in_progress",
+      color: PURPLE,
       workers: ["demo-w1", "demo-w4"],
-      beginningDate: iso(5),
+      beginningDate: iso(7),
       endDate: iso(26),
     },
   ];
@@ -67,7 +76,8 @@ export const getScheduleDemoData = () => {
       taskTitle: "Målning",
       projectId: "demo-p1",
       status: "open",
-      startDate: iso(2),
+      color: BLUE,
+      startDate: iso(1),
       dueDate: iso(6),
     },
     {
@@ -75,48 +85,54 @@ export const getScheduleDemoData = () => {
       taskTitle: "Rivning",
       projectId: "demo-p1",
       status: "open",
-      startDate: iso(8),
-      dueDate: iso(12),
+      color: BLUE,
+      startDate: iso(9),
+      dueDate: iso(13),
     },
     {
       _id: "demo-t3",
       taskTitle: "Elinstallation",
       projectId: "demo-p2",
       status: "open",
-      startDate: iso(3),
-      dueDate: iso(9),
+      color: CYAN,
+      startDate: iso(4),
+      dueDate: iso(10),
     },
     {
       _id: "demo-t4",
       taskTitle: "Gjutning",
       projectId: "demo-p3",
       status: "overdue",
-      startDate: iso(5),
-      dueDate: iso(12),
+      color: PURPLE,
+      startDate: iso(7),
+      dueDate: iso(14),
     },
     {
       _id: "demo-t5",
       taskTitle: "Stängsel",
       projectId: "demo-p1",
       status: "open",
-      startDate: iso(14),
-      dueDate: iso(17),
+      color: BLUE,
+      startDate: iso(15),
+      dueDate: iso(18),
     },
     {
       _id: "demo-t6",
       taskTitle: "Svetsning",
       projectId: "demo-p2",
       status: "completed",
+      color: CYAN,
       startDate: iso(12),
-      dueDate: iso(18),
+      dueDate: iso(19),
     },
     {
       _id: "demo-t7",
       taskTitle: "Golvläggning",
       projectId: "demo-p3",
       status: "open",
+      color: PURPLE,
       startDate: iso(16),
-      dueDate: iso(22),
+      dueDate: iso(23),
     },
   ];
 

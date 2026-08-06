@@ -33,6 +33,17 @@ const nextDeadline = (dateStrings) => {
   return upcoming.length ? formatDeadline(upcoming[0]) : null;
 };
 
+// Earliest date from a list, regardless of past/future — a project's start
+// is usually already behind us, so it must not be filtered like a deadline.
+const earliestDate = (dateStrings) => {
+  const times = dateStrings
+    .map((value) => new Date(value).getTime())
+    .filter((time) => Number.isFinite(time))
+    .sort((left, right) => left - right);
+
+  return times.length ? formatDeadline(times[0]) : null;
+};
+
 const truncate = (text, max = 16) => {
   const value = String(text || "").trim();
   return value.length > max ? `${value.slice(0, max - 1)}…` : value;
@@ -82,6 +93,7 @@ export function useTaskProjectBadges({ projectId } = {}) {
   const [openTaskCount, setOpenTaskCount] = useState(0);
   const [overdueTaskCount, setOverdueTaskCount] = useState(0);
   const [taskDeadlines, setTaskDeadlines] = useState([]);
+  const [projectStart, setProjectStart] = useState(null);
   const [projectDeadline, setProjectDeadline] = useState(null);
 
   const load = useCallback(async () => {
@@ -116,6 +128,13 @@ export function useTaskProjectBadges({ projectId } = {}) {
       const scopedProjects = (Array.isArray(projects) ? projects : []).filter(
         (project) => !projectId || normalizeId(project) === String(projectId),
       );
+      setProjectStart(
+        earliestDate(
+          scopedProjects
+            .map((project) => project.beginningDate)
+            .filter(Boolean),
+        ),
+      );
       setProjectDeadline(
         nextDeadline(
           scopedProjects.map((project) => project.endDate).filter(Boolean),
@@ -126,6 +145,7 @@ export function useTaskProjectBadges({ projectId } = {}) {
       setOpenTaskCount(0);
       setOverdueTaskCount(0);
       setTaskDeadlines([]);
+      setProjectStart(null);
       setProjectDeadline(null);
     }
   }, [projectId]);
@@ -136,7 +156,13 @@ export function useTaskProjectBadges({ projectId } = {}) {
     }, [load]),
   );
 
-  return { openTaskCount, overdueTaskCount, taskDeadlines, projectDeadline };
+  return {
+    openTaskCount,
+    overdueTaskCount,
+    taskDeadlines,
+    projectStart,
+    projectDeadline,
+  };
 }
 
 export default useTaskProjectBadges;

@@ -605,7 +605,9 @@
       "tasks-history": "Uppgifter"
     },
     "customizeTitle": "Anpassa startskärmen",
-    "themes": "Teman"
+    "themes": "Teman",
+    "projectStart": "Start",
+    "projectEnd": "Slut"
   },
   "menu": {
     "title": "Meny",
