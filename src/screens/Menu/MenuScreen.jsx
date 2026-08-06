@@ -1,10 +1,11 @@
-import React, { useContext, useMemo } from "react";
+import React, { useContext, useMemo, useState, useCallback } from "react";
 import { View, Text, Image, ScrollView } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../theme/ThemeContext";
 import { MenuButton } from "../../components/common/MenuButton/MenuButton";
 import AuthContext from "../../contexts/AuthContext";
+import { userService } from "../../services";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { createStyles } from "./MenuScreen.styles";
@@ -28,7 +29,38 @@ export default function MenuScreen() {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const { user, logout, hasPermission } = useContext(AuthContext);
-  const avatarSource = resolveImageUrl(user?.avatarUrl);
+  // The persisted AuthContext `user` (from login / getInfo) may not carry an
+  // avatarUrl, so the header would fall back to the placeholder even when the
+  // account has a real photo. Fetch the full profile on focus — like MyAccount —
+  // and prefer its avatarUrl, falling back to the context user.
+  const profileId = user?._id || user?.id || null;
+  const [profileAvatarUrl, setProfileAvatarUrl] = useState(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!profileId) {
+        return;
+      }
+
+      let active = true;
+      userService
+        .getById(profileId)
+        .then((profile) => {
+          if (active) {
+            setProfileAvatarUrl(profile?.avatarUrl ?? null);
+          }
+        })
+        .catch((error) => {
+          console.error("MenuScreen: Failed to load profile avatar:", error);
+        });
+
+      return () => {
+        active = false;
+      };
+    }, [profileId]),
+  );
+
+  const avatarSource = resolveImageUrl(profileAvatarUrl || user?.avatarUrl);
   // Economy/invoicing is gated on the finance.manage capability, so a delegated
   // "office" user sees it even without an admin role.
   const canFinance = hasPermission("finance.manage");
