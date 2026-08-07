@@ -53,6 +53,15 @@ export default function MainButtonsGrid() {
     mainButtons.map((button) => button.id),
   );
 
+  // Measure the grid width so the two columns get equal gaps (theme.gridGap)
+  // both horizontally and vertically, with the outer edges flush to the
+  // container. Without this, a percentage width + "space-between" makes the
+  // horizontal gap differ from the vertical one.
+  const [gridWidth, setGridWidth] = useState(0);
+  const gridGap = theme.homeButton.gridGap;
+  const columnButtonWidth =
+    gridWidth > 0 ? (gridWidth - gridGap) / 2 : theme.homeButton.width;
+
   useFocusEffect(
     React.useCallback(function loadButtons() {
       async function fetchButtons() {
@@ -83,7 +92,17 @@ export default function MainButtonsGrid() {
   }
 
   return (
-    <View style={styles.container}>
+    <View
+      style={styles.container}
+      onLayout={function onGridLayout(event) {
+        const nextWidth = event.nativeEvent.layout.width;
+        setGridWidth(function keepStable(previousWidth) {
+          return Math.abs(previousWidth - nextWidth) > 0.5
+            ? nextWidth
+            : previousWidth;
+        });
+      }}
+    >
       {orderedButtons
         .filter(function filterButtons(button) {
           return isHomeButtonVisible(button, enabledButtons, user?.role);
@@ -99,6 +118,7 @@ export default function MainButtonsGrid() {
               key={button.id}
               style={[
                 styles.button,
+                { width: columnButtonWidth },
                 buttonColor && {
                   backgroundColor: buttonColor,
                   borderColor: "#FFFFFF",
