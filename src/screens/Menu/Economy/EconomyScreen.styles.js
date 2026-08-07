@@ -55,7 +55,12 @@ export const styles = StyleSheet.create({
   /* Status filter pills */
   // Single horizontally-scrollable row of filter pills.
   pillsRow: { flexGrow: 0, marginBottom: 20 },
-  pillsContent: { paddingHorizontal: 16, gap: 10, alignItems: "center" },
+  pillsContent: {
+    paddingLeft: 16,
+    paddingRight: 24,
+    gap: 10,
+    alignItems: "center",
+  },
   pill: {
     height: 44,
     paddingHorizontal: 18,
@@ -114,24 +119,13 @@ export const styles = StyleSheet.create({
   badge_bad: { backgroundColor: "#FDECEC" },
   badgeText_bad: { color: "#E5484D" },
 
-  /* Customer filter chip (app feature; styled as a Figma pill) */
-  customerChip: {
+  /* Customer filter — first pill in the status-filter row */
+  customerPill: {
     flexDirection: "row",
-    alignItems: "center",
     gap: 8,
-    alignSelf: "flex-start",
-    marginHorizontal: 16,
-    marginBottom: 20,
-    backgroundColor: CARD,
-    borderRadius: 71,
-    height: 44,
-    paddingHorizontal: 16,
-    maxWidth: "90%",
+    maxWidth: 220,
   },
-  customerChipText: {
-    fontSize: 15,
-    fontFamily: F_MED,
-    color: INK,
+  customerPillText: {
     flexShrink: 1,
   },
 

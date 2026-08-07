@@ -245,41 +245,54 @@ export default function EconomyScreen() {
         </TouchableOpacity>
       </View>
 
-      {customerOptions.length > 0 && (
-        <TouchableOpacity
-          style={styles.customerChip}
-          onPress={() => setCustomerModalVisible(true)}
-          activeOpacity={0.85}
-        >
-          <Icon name="briefcase" size={15} color="#0785F4" />
-          <Text style={styles.customerChipText} numberOfLines={1}>
-            {customerFilter || t("economy.allCustomers")}
-          </Text>
-          {customerFilter ? (
-            <TouchableOpacity
-              onPress={() => setCustomerFilter(null)}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            >
-              <Icon name="x" size={16} color="#667E93" />
-            </TouchableOpacity>
-          ) : (
-            <Icon name="chevron-down" size={16} color="#667E93" />
-          )}
-        </TouchableOpacity>
-      )}
-
-      {filterOptions.length > 0 && (
+      {(customerOptions.length > 0 || filterOptions.length > 0) && (
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           style={styles.pillsRow}
           contentContainerStyle={styles.pillsContent}
         >
-          <Pill
-            label={`${t("economy.filters.all")} (${byCustomer.length})`}
-            active={!statusFilter}
-            onPress={() => setStatusFilter(null)}
-          />
+          {/* Customer filter sits first, in the same row as the status pills. */}
+          {customerOptions.length > 0 && (
+            <TouchableOpacity
+              style={[
+                styles.pill,
+                styles.customerPill,
+                customerFilter && styles.pillOn,
+              ]}
+              onPress={() => setCustomerModalVisible(true)}
+              activeOpacity={0.85}
+            >
+              <Text
+                style={[
+                  styles.pillText,
+                  styles.customerPillText,
+                  customerFilter && styles.pillTextOn,
+                ]}
+                numberOfLines={1}
+              >
+                {customerFilter || t("economy.allCustomers")}
+              </Text>
+              {customerFilter ? (
+                <TouchableOpacity
+                  onPress={() => setCustomerFilter(null)}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                  <Icon name="x" size={16} color="#FFFFFF" />
+                </TouchableOpacity>
+              ) : (
+                <Icon name="chevron-down" size={16} color="#667E93" />
+              )}
+            </TouchableOpacity>
+          )}
+
+          {filterOptions.length > 0 && (
+            <Pill
+              label={`${t("economy.filters.all")} (${byCustomer.length})`}
+              active={!statusFilter}
+              onPress={() => setStatusFilter(null)}
+            />
+          )}
           {filterOptions.map((status) => (
             <Pill
               key={status}
