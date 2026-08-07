@@ -245,10 +245,14 @@ export default function EconomyScreen() {
       </View>
 
       {(customerOptions.length > 0 || filterOptions.length > 0) && (
-        <View style={styles.pillsRow}>
-          {/* Customer filter sits first, in the same row as the status pills.
-              The row wraps to a second line instead of scrolling, so nothing
-              gets clipped when there are many status filters (invoices). */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.pillsRow}
+          contentContainerStyle={styles.pillsContent}
+        >
+          {/* Customer filter sits first, in the same horizontally-scrollable
+              row as the status pills. */}
           {customerOptions.length > 0 && (
             <TouchableOpacity
               style={[
@@ -297,7 +301,7 @@ export default function EconomyScreen() {
               onPress={() => setStatusFilter(status)}
             />
           ))}
-        </View>
+        </ScrollView>
       )}
 
       <ScrollView
