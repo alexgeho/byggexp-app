@@ -440,8 +440,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   addButtonIcon: {
-    width: 24,
-    height: 24,
+    width: 30,
+    height: 30,
     resizeMode: "contain",
     tintColor: "#FFFFFF",
   },

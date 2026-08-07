@@ -211,7 +211,7 @@ export const SelectWorkers = () => {
           saving ? (
             <ActivityIndicator size="small" color="#FFFFFF" />
           ) : (
-            <Icon name="check" size={24} color="#FFFFFF" />
+            <Icon name="check" size={30} color="#FFFFFF" />
           )
         }
       />
