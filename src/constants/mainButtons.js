@@ -39,7 +39,7 @@ export const mainButtons = [
   {
     id: "tasks",
     title: "Tasks",
-    vectorIcon: "check-square",
+    icon: require("../assets/Tasks.png"),
     screen: "Tasks",
   },
 ];
