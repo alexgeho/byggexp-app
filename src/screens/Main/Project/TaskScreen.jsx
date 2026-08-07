@@ -662,9 +662,9 @@ export default function TaskScreen() {
           uploadingDocuments || updatingStatus ? (
             <ActivityIndicator color="#FFFFFF" />
           ) : tab === "Edit" && currentTask?.status === "completed" ? (
-            <Icon name="rotate-ccw" size={28} color="#FFFFFF" />
+            <Icon name="rotate-ccw" size={33} color="#FFFFFF" />
           ) : tab === "Edit" ? (
-            <Icon name="check" size={28} color="#FFFFFF" />
+            <Icon name="check" size={33} color="#FFFFFF" />
           ) : (
             <Icon name="plus" size={22} color="#FFFFFF" />
           )

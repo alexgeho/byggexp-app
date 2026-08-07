@@ -820,7 +820,7 @@ export const ProjectScreen = () => {
           uploadingDocuments ? (
             <ActivityIndicator color="#FFFFFF" />
           ) : (
-            <Icon name="plus" size={28} color="#FFFFFF" />
+            <Icon name="plus" size={33} color="#FFFFFF" />
           )
         }
       />
