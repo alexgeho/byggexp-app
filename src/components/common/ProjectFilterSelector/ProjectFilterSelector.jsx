@@ -3,6 +3,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
+import { setLocalProjectSelectionHandler } from "../../../utils/localProjectSelection";
 import { styles } from "./ProjectFilterSelector.styles";
 
 const getProjectId = (project) => project?._id || project?.id;
@@ -24,15 +25,17 @@ export function ProjectFilterSelector({
       <TouchableOpacity
         style={styles.trigger}
         activeOpacity={0.85}
-        onPress={() =>
+        onPress={() => {
+          // Keep the callback out of navigation params (non-serializable).
+          setLocalProjectSelectionHandler((project) =>
+            onSelect(project ? getProjectId(project) : null),
+          );
           navigation.navigate("Projects", {
             mode: "select-local",
             allowAll: true,
             currentProjectId: selectedProjectId,
-            onSelect: (project) =>
-              onSelect(project ? getProjectId(project) : null),
-          })
-        }
+          });
+        }}
       >
         <Text
           style={[

@@ -35,6 +35,7 @@ import {
   standardScreenHeaderPlaceholder,
 } from "../../../styles/screenLayout";
 import { sortByNewest } from "../../../utils/sortByNewest";
+import { resolveLocalProjectSelection } from "../../../utils/localProjectSelection";
 import { cardStyles } from "../../../styles/cards";
 import { canCreateProjects } from "../../../utils/userRoles";
 import {
@@ -63,7 +64,7 @@ export default function ProjectsScreen() {
 
   const showCreateProject = canCreateProjects(user?.role);
   const selectedProjectId = isLocalSelectionMode
-    ? route.params?.currentProjectId ?? null
+    ? (route.params?.currentProjectId ?? null)
     : selectedProject?._id || selectedProject?.id;
 
   const getProjectId = (project) => project?._id || project?.id;
@@ -143,7 +144,7 @@ export default function ProjectsScreen() {
     }
 
     if (isLocalSelectionMode) {
-      route.params?.onSelect?.(project);
+      resolveLocalProjectSelection(project);
       navigation.goBack();
       return;
     }
@@ -205,7 +206,7 @@ export default function ProjectsScreen() {
         {allowAllProjectsOption ? (
           <ListCard
             onPress={() => {
-              route.params?.onSelect?.(null);
+              resolveLocalProjectSelection(null);
               navigation.goBack();
             }}
             selected={!selectedProjectId}
@@ -230,7 +231,9 @@ export default function ProjectsScreen() {
             >
               <Text style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}>
                 {t("projects.startLabel", {
-                  date: new Date(project.beginningDate).toLocaleDateString(getDateLocale()),
+                  date: new Date(project.beginningDate).toLocaleDateString(
+                    getDateLocale(),
+                  ),
                 })}
               </Text>
 
