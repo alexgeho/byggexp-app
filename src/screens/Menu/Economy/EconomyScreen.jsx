@@ -221,8 +221,8 @@ export default function EconomyScreen() {
           <Icon name="chevron-left" size={22} color="#030303" />
         </TouchableOpacity>
         <Text style={styles.title}>{t("economy.title")}</Text>
-        {/* Empty placeholder keeps the title centered (settings button removed). */}
-        <View style={styles.headerBtn} />
+        {/* Transparent spacer keeps the title centered (settings button removed). */}
+        <View style={styles.headerSpacer} />
       </View>
 
       <View style={styles.segmented}>

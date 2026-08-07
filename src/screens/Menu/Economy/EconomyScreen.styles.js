@@ -30,6 +30,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  headerSpacer: { width: 44, height: 44 },
   title: { fontSize: 17, fontFamily: F_SEMI, color: INK },
 
   /* Segmented Offers / Invoices — navy @5% track, white active pill (Figma) */
