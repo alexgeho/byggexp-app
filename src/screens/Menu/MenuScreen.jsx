@@ -95,6 +95,13 @@ export default function MenuScreen() {
         icon: require("../../assets/Documents.png"),
         color: theme.colors.primary,
       },
+      {
+        id: "chats",
+        screen: "Chats",
+        title: t("menu.chats", "Chats"),
+        icon: require("../../assets/mainButtons/messager.png"),
+        color: theme.colors.primary,
+      },
     ];
 
     const employeesItem = {
@@ -300,22 +307,22 @@ export default function MenuScreen() {
     },
   ];
 
+  // Settings groups the app-configuration entries: Customize screens (from the
+  // work/base items), Language and Notifications.
+  const settingsSectionItems = [
+    ...menuItems.filter((item) => item.id === "customizeHome"),
+    ...settingsItems.filter((item) => item.id === "language"),
+    ...menuItems.filter((item) => item.id === "notifications"),
+  ];
+
   // Group the flat menu items into labelled categories.
   const menuSections = [
-    {
-      id: "main",
-      title: t("menu.sectionMain"),
-      items: menuItems.filter((item) =>
-        ["customizeHome", "account", "notifications", "documents"].includes(
-          item.id,
-        ),
-      ),
-    },
     {
       id: "work",
       title: t("menu.sectionWork"),
       items: menuItems.filter((item) =>
         [
+          "chats",
           "tasks",
           "shifts",
           "workShifts",
@@ -327,6 +334,13 @@ export default function MenuScreen() {
       ),
     },
     {
+      id: "main",
+      title: t("menu.sectionMain"),
+      items: menuItems.filter((item) =>
+        ["account", "documents"].includes(item.id),
+      ),
+    },
+    {
       id: "economy",
       title: t("menu.sectionEconomy"),
       items: menuItems.filter((item) => item.id === "economy"),
@@ -334,7 +348,19 @@ export default function MenuScreen() {
     {
       id: "settings",
       title: t("menu.sectionSettings"),
-      items: settingsItems,
+      items: settingsSectionItems,
+    },
+    {
+      id: "support",
+      title: t("menu.sectionSupport", "Support"),
+      items: settingsItems.filter((item) =>
+        ["guide", "help", "reportBug", "about"].includes(item.id),
+      ),
+    },
+    {
+      id: "legal",
+      title: t("menu.sectionLegal", "Legal & Policies"),
+      items: settingsItems.filter((item) => item.id === "legal"),
     },
   ].filter((section) => section.items.length > 0);
 
