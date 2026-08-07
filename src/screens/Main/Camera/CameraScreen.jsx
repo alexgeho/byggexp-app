@@ -578,7 +578,7 @@ export default function CameraScreen() {
           uploading ? (
             <ActivityIndicator color="#FFFFFF" />
           ) : (
-            <Icon name="camera" size={40} color="#FFFFFF" />
+            <Icon name="camera" size={37} color="#FFFFFF" />
           )
         }
       />

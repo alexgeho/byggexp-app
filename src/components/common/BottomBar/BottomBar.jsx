@@ -145,7 +145,7 @@ export function BottomBar({
           {actionContent ? (
             actionContent()
           ) : (
-            <Icon name="plus" size={40} color="#FFFFFF" />
+            <Icon name="plus" size={37} color="#FFFFFF" />
           )}
         </TouchableOpacity>
       )}
