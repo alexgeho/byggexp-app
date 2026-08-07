@@ -435,7 +435,7 @@ export default function TaskScreen() {
           iconSource={require("../../../assets/Arrow-left.png")}
         />
         <Text numberOfLines={1} style={styles.headerTitle}>
-          {currentTask?.taskTitle || t("task.fallbackTitle")}
+          {t("task.fallbackTitle")}
         </Text>
         <View style={styles.placeholder} />
       </View>
