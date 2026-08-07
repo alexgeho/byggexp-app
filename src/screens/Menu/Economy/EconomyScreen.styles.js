@@ -55,7 +55,15 @@ export const styles = StyleSheet.create({
 
   /* Status filter pills */
   // Single horizontally-scrollable row of filter pills.
-  pillsRow: { flexGrow: 0, marginBottom: 20 },
+  pillsWrap: { position: "relative", marginBottom: 20 },
+  pillsRow: { flexGrow: 0 },
+  pillsFade: {
+    position: "absolute",
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: 36,
+  },
   pillsContent: {
     paddingLeft: 16,
     paddingRight: 24,

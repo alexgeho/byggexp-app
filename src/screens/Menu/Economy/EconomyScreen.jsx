@@ -9,6 +9,7 @@ import {
   Modal,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
+import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
@@ -245,63 +246,74 @@ export default function EconomyScreen() {
       </View>
 
       {(customerOptions.length > 0 || filterOptions.length > 0) && (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.pillsRow}
-          contentContainerStyle={styles.pillsContent}
-        >
-          {/* Customer filter sits first, in the same horizontally-scrollable
+        <View style={styles.pillsWrap}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.pillsRow}
+            contentContainerStyle={styles.pillsContent}
+          >
+            {/* Customer filter sits first, in the same horizontally-scrollable
               row as the status pills. */}
-          {customerOptions.length > 0 && (
-            <TouchableOpacity
-              style={[
-                styles.pill,
-                styles.customerPill,
-                customerFilter && styles.pillOn,
-              ]}
-              onPress={() => setCustomerModalVisible(true)}
-              activeOpacity={0.85}
-            >
-              <Text
+            {customerOptions.length > 0 && (
+              <TouchableOpacity
                 style={[
-                  styles.pillText,
-                  styles.customerPillText,
-                  customerFilter && styles.pillTextOn,
+                  styles.pill,
+                  styles.customerPill,
+                  customerFilter && styles.pillOn,
                 ]}
-                numberOfLines={1}
+                onPress={() => setCustomerModalVisible(true)}
+                activeOpacity={0.85}
               >
-                {customerFilter || t("economy.allCustomers")}
-              </Text>
-              {customerFilter ? (
-                <TouchableOpacity
-                  onPress={() => setCustomerFilter(null)}
-                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                <Text
+                  style={[
+                    styles.pillText,
+                    styles.customerPillText,
+                    customerFilter && styles.pillTextOn,
+                  ]}
+                  numberOfLines={1}
                 >
-                  <Icon name="x" size={16} color="#FFFFFF" />
-                </TouchableOpacity>
-              ) : (
-                <Icon name="chevron-down" size={16} color="#667E93" />
-              )}
-            </TouchableOpacity>
-          )}
+                  {customerFilter || t("economy.allCustomers")}
+                </Text>
+                {customerFilter ? (
+                  <TouchableOpacity
+                    onPress={() => setCustomerFilter(null)}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  >
+                    <Icon name="x" size={16} color="#FFFFFF" />
+                  </TouchableOpacity>
+                ) : (
+                  <Icon name="chevron-down" size={16} color="#667E93" />
+                )}
+              </TouchableOpacity>
+            )}
 
-          {filterOptions.length > 0 && (
-            <Pill
-              label={`${t("economy.filters.all")} (${byCustomer.length})`}
-              active={!statusFilter}
-              onPress={() => setStatusFilter(null)}
-            />
-          )}
-          {filterOptions.map((status) => (
-            <Pill
-              key={status}
-              label={`${t(`economy.${statusNs}.${status}`, status)} (${statusCounts[status]})`}
-              active={statusFilter === status}
-              onPress={() => setStatusFilter(status)}
-            />
-          ))}
-        </ScrollView>
+            {filterOptions.length > 0 && (
+              <Pill
+                label={`${t("economy.filters.all")} (${byCustomer.length})`}
+                active={!statusFilter}
+                onPress={() => setStatusFilter(null)}
+              />
+            )}
+            {filterOptions.map((status) => (
+              <Pill
+                key={status}
+                label={`${t(`economy.${statusNs}.${status}`, status)} (${statusCounts[status]})`}
+                active={statusFilter === status}
+                onPress={() => setStatusFilter(status)}
+              />
+            ))}
+          </ScrollView>
+          {/* Soft fade on the right edge so scrolled-off pills taper out
+              instead of being hard-cut by the screen edge. */}
+          <LinearGradient
+            pointerEvents="none"
+            colors={["rgba(242,241,246,0)", "#F2F1F6"]}
+            start={{ x: 0, y: 0.5 }}
+            end={{ x: 1, y: 0.5 }}
+            style={styles.pillsFade}
+          />
+        </View>
       )}
 
       <ScrollView
