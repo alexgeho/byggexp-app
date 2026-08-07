@@ -255,6 +255,26 @@ export default function ChatListScreen() {
     setSelectedIds(personId ? [personId] : []);
   };
 
+  // Selection-bar primary action: one person opens a direct chat, two or more
+  // create a group. Lets the user pick recipients first, then send.
+  const startConversation = async () => {
+    if (selectedIds.length === 0 || opening) {
+      return;
+    }
+    if (selectedIds.length === 1) {
+      const only = colleagues.find(
+        (person) => String(getUserId(person)) === String(selectedIds[0]),
+      );
+      if (only) {
+        setSelectMode(false);
+        setSelectedIds([]);
+        await openChatWith(only);
+      }
+      return;
+    }
+    await createGroup();
+  };
+
   const toggleSearch = () => {
     setSearchOpen((open) => {
       if (open) {
@@ -350,6 +370,15 @@ export default function ChatListScreen() {
         </View>
 
         <View style={styles.rowRight}>
+          {selectMode ? (
+            <View
+              style={[styles.checkCircle, selected && styles.checkCircleOn]}
+            >
+              {selected ? (
+                <Icon name="check" size={15} color="#0785F4" />
+              ) : null}
+            </View>
+          ) : null}
           {statusBadge ? (
             <View
               style={[
@@ -429,6 +458,17 @@ export default function ChatListScreen() {
         />
       </View>
 
+      {selectMode ? (
+        <View style={styles.selectHint}>
+          <Icon name="users" size={16} color="#0785F4" />
+          <Text style={styles.selectHintText}>
+            {selectedIds.length > 0
+              ? t("chat.selectedCount", { count: selectedIds.length })
+              : t("chat.selectPeopleHint")}
+          </Text>
+        </View>
+      ) : null}
+
       {selectedProjectId && !selectMode ? (
         <TouchableOpacity
           style={styles.projectGroupButton}
@@ -477,12 +517,14 @@ export default function ChatListScreen() {
               styles.groupButton,
               selectedIds.length === 0 && styles.groupButtonDisabled,
             ]}
-            onPress={createGroup}
+            onPress={startConversation}
             disabled={selectedIds.length === 0 || opening}
             activeOpacity={0.85}
           >
             <Text style={styles.groupButtonText}>
-              {t("chat.groupSelected")}
+              {selectedIds.length > 1
+                ? t("chat.createGroupCount", { count: selectedIds.length })
+                : t("chat.messageAction")}
             </Text>
           </TouchableOpacity>
         </View>
@@ -490,7 +532,7 @@ export default function ChatListScreen() {
         <BottomBar
           onLeftPress={() => navigation.navigate("Main")}
           onRightPress={() => navigation.navigate("Menu")}
-          showAddButton={false}
+          onAddPress={() => enterSelection()}
         />
       )}
     </View>
@@ -630,6 +672,37 @@ const styles = StyleSheet.create({
   rowRight: {
     alignItems: "flex-end",
     gap: 6,
+  },
+  // Multi-select check indicator shown on each row while picking recipients.
+  checkCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: "#C3D2E0",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "transparent",
+  },
+  checkCircleOn: {
+    backgroundColor: "#FFFFFF",
+    borderColor: "#FFFFFF",
+  },
+  // "Select people" hint / live count shown above the list in select mode.
+  selectHint: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 16,
+    backgroundColor: "rgba(7, 133, 244, 0.10)",
+  },
+  selectHintText: {
+    color: "#0785F4",
+    fontSize: 14,
+    fontWeight: "600",
   },
   statusBadge: {
     paddingVertical: 3,
