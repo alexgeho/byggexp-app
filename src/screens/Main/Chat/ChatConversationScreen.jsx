@@ -1,11 +1,14 @@
-import React, { useContext, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { getDateLocale } from "../../../utils/dateLocale";
 import {
   ActivityIndicator,
   Alert,
+  Animated,
   Image,
   KeyboardAvoidingView,
   Linking,
+  Modal,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,6 +16,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Icon from "react-native-vector-icons/Feather";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
@@ -197,18 +201,37 @@ export default function ChatConversationScreen({ variant }) {
     }
   };
 
+  const [attachSheetVisible, setAttachSheetVisible] = useState(false);
+  const sheetAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(
+    function animateSheetIn() {
+      if (attachSheetVisible) {
+        Animated.timing(sheetAnim, {
+          toValue: 1,
+          duration: 220,
+          useNativeDriver: true,
+        }).start();
+      }
+    },
+    [attachSheetVisible, sheetAnim],
+  );
+
+  const closeAttachSheet = (after) => {
+    Animated.timing(sheetAnim, {
+      toValue: 0,
+      duration: 170,
+      useNativeDriver: true,
+    }).start(() => {
+      setAttachSheetVisible(false);
+      if (typeof after === "function") {
+        after();
+      }
+    });
+  };
+
   const handleAttachPress = () => {
-    Alert.alert(t("chat.attachTitle"), undefined, [
-      {
-        text: t("chat.takePhoto"),
-        onPress: () => runAttachmentPicker(pickFromCamera),
-      },
-      {
-        text: t("chat.attachFile"),
-        onPress: () => runAttachmentPicker(pickDocuments),
-      },
-      { text: t("common.cancel"), style: "cancel" },
-    ]);
+    setAttachSheetVisible(true);
   };
 
   if (!chatId) {
@@ -475,6 +498,68 @@ export default function ChatConversationScreen({ variant }) {
           )}
         </View>
       </View>
+
+      <Modal
+        visible={attachSheetVisible}
+        transparent
+        animationType="none"
+        onRequestClose={() => closeAttachSheet()}
+      >
+        <Animated.View style={[styles.sheetBackdrop, { opacity: sheetAnim }]}>
+          <Pressable
+            style={styles.sheetBackdropPress}
+            onPress={() => closeAttachSheet()}
+          />
+        </Animated.View>
+        <Animated.View
+          style={[
+            styles.sheet,
+            {
+              transform: [
+                {
+                  translateY: sheetAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [400, 0],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <View style={styles.sheetHandle} />
+          <TouchableOpacity
+            style={styles.sheetOption}
+            activeOpacity={0.7}
+            onPress={() =>
+              closeAttachSheet(() => runAttachmentPicker(pickFromCamera))
+            }
+          >
+            <View style={styles.sheetIcon}>
+              <Icon name="camera" size={22} color="#0785F4" />
+            </View>
+            <Text style={styles.sheetOptionText}>{t("chat.takePhoto")}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.sheetOption}
+            activeOpacity={0.7}
+            onPress={() =>
+              closeAttachSheet(() => runAttachmentPicker(pickDocuments))
+            }
+          >
+            <View style={styles.sheetIcon}>
+              <Icon name="paperclip" size={22} color="#0785F4" />
+            </View>
+            <Text style={styles.sheetOptionText}>{t("chat.attachFile")}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.sheetCancel}
+            activeOpacity={0.7}
+            onPress={() => closeAttachSheet()}
+          >
+            <Text style={styles.sheetCancelText}>{t("common.cancel")}</Text>
+          </TouchableOpacity>
+        </Animated.View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 }
@@ -722,9 +807,10 @@ const styles = StyleSheet.create({
     minHeight: 48,
     flex: 1,
     borderRadius: 9999,
-    backgroundColor: "#FFFFFF",
+    // Match the "+" attach button on the left.
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
     borderWidth: 1,
-    borderColor: "#DCE3EA",
+    borderColor: "#FFFFFF",
     flexDirection: "row",
     alignItems: "center",
     padding: 12,
@@ -746,5 +832,64 @@ const styles = StyleSheet.create({
   voiceIcon: {
     width: 24,
     height: 24,
+  },
+  sheetBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.35)",
+  },
+  sheetBackdropPress: {
+    flex: 1,
+  },
+  sheet: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingHorizontal: 16,
+    paddingTop: 10,
+    paddingBottom: 36,
+  },
+  sheetHandle: {
+    alignSelf: "center",
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: "rgba(5, 45, 80, 0.2)",
+    marginBottom: 14,
+  },
+  sheetOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+    paddingVertical: 12,
+  },
+  sheetIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: "rgba(7, 133, 244, 0.1)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  sheetOptionText: {
+    fontSize: 16,
+    color: "#052D50",
+    fontFamily: "DMSans-Medium",
+  },
+  sheetCancel: {
+    marginTop: 10,
+    height: 52,
+    borderRadius: 16,
+    backgroundColor: "rgba(5, 45, 80, 0.06)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  sheetCancelText: {
+    fontSize: 16,
+    color: "#052D50",
+    fontFamily: "DMSans-SemiBold",
   },
 });

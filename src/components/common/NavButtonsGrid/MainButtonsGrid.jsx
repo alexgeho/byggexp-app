@@ -59,8 +59,12 @@ export default function MainButtonsGrid() {
   // horizontal gap differ from the vertical one.
   const [gridWidth, setGridWidth] = useState(0);
   const gridGap = theme.homeButton.gridGap;
+  // Floor the width so two columns always fit: a fractional width rounds up on
+  // Android's pixel grid and pushes the second button onto its own row.
   const columnButtonWidth =
-    gridWidth > 0 ? (gridWidth - gridGap) / 2 : theme.homeButton.width;
+    gridWidth > 0
+      ? Math.floor((gridWidth - gridGap) / 2)
+      : theme.homeButton.width;
 
   useFocusEffect(
     React.useCallback(function loadButtons() {

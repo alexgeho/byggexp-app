@@ -66,6 +66,8 @@ export function BottomBar({
     wrapperProps = {
       intensity: 45,
       tint: "light",
+      // Android needs the native blur method or it renders no blur at all.
+      experimentalBlurMethod: "dimezisBlurView",
       style: [styles.menuWrapper, styles.menuWrapperGlass],
     };
   } else {
@@ -74,6 +76,7 @@ export function BottomBar({
     wrapperProps = {
       intensity: 40,
       tint: "light",
+      experimentalBlurMethod: "dimezisBlurView",
       style: styles.menuWrapper,
     };
   }
