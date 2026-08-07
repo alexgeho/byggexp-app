@@ -6,7 +6,6 @@ import {
   Image,
   KeyboardAvoidingView,
   Linking,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -64,6 +63,37 @@ const formatMessageTime = (value) => {
   return date.toLocaleTimeString(getDateLocale(), {
     hour: "2-digit",
     minute: "2-digit",
+  });
+};
+
+const isSameDay = (a, b) => {
+  const da = new Date(a);
+  const db = new Date(b);
+  return (
+    da.getFullYear() === db.getFullYear() &&
+    da.getMonth() === db.getMonth() &&
+    da.getDate() === db.getDate()
+  );
+};
+
+// Telegram-style centered day label: "Today" / "Yesterday" / a full date.
+const formatDaySeparator = (value, t) => {
+  if (!value) return "";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const now = new Date();
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+
+  if (isSameDay(date, now)) return t("chat.today", "Today");
+  if (isSameDay(date, yesterday)) return t("chat.yesterday", "Yesterday");
+
+  return date.toLocaleDateString(getDateLocale(), {
+    day: "numeric",
+    month: "long",
+    ...(date.getFullYear() === now.getFullYear() ? {} : { year: "numeric" }),
   });
 };
 
@@ -192,7 +222,9 @@ export default function ChatConversationScreen({ variant }) {
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      // With edge-to-edge enabled, Android no longer resizes the window for the
+      // keyboard, so "padding" is needed on both platforms to lift the input.
+      behavior="padding"
     >
       <Image
         style={styles.backgroundBlur}
@@ -274,7 +306,7 @@ export default function ChatConversationScreen({ variant }) {
             </View>
           ) : null}
 
-          {messages.map((message) => {
+          {messages.map((message, index) => {
             const isMyMessage = message.userId === currentUserId;
             const hasTranslation =
               autoTranslate && Boolean(message.translatedText);
@@ -284,103 +316,117 @@ export default function ChatConversationScreen({ variant }) {
                 ? message.translatedText
                 : message.text;
 
+            const previous = index > 0 ? messages[index - 1] : null;
+            const showDaySeparator =
+              !previous || !isSameDay(previous.timestamp, message.timestamp);
+
             return (
-              <View
-                key={message._id}
-                style={[
-                  styles.messageRow,
-                  isMyMessage ? styles.myMessageRow : styles.otherMessageRow,
-                ]}
-              >
+              <React.Fragment key={message._id}>
+                {showDaySeparator ? (
+                  <View style={styles.daySeparator}>
+                    <Text style={styles.daySeparatorText}>
+                      {formatDaySeparator(message.timestamp, t)}
+                    </Text>
+                  </View>
+                ) : null}
                 <View
                   style={[
-                    styles.messageBubble,
-                    isMyMessage
-                      ? styles.myMessageBubble
-                      : styles.otherMessageBubble,
+                    styles.messageRow,
+                    isMyMessage ? styles.myMessageRow : styles.otherMessageRow,
                   ]}
                 >
-                  {!isMyMessage && variant === "group" ? (
-                    <Text style={styles.senderName}>{message.senderName}</Text>
-                  ) : null}
-                  {message.attachments?.length ? (
-                    <View style={styles.attachments}>
-                      {message.attachments.map((att, attIndex) => {
-                        const url = resolveUploadUrl(att.url);
-                        return att.kind === "image" ? (
-                          <TouchableOpacity
-                            key={`${message._id}-att-${attIndex}`}
-                            activeOpacity={0.85}
-                            onPress={() => Linking.openURL(url)}
-                          >
-                            <Image
-                              style={styles.attachmentImage}
-                              source={{ uri: url }}
-                            />
-                          </TouchableOpacity>
-                        ) : (
-                          <TouchableOpacity
-                            key={`${message._id}-att-${attIndex}`}
-                            style={styles.attachmentFile}
-                            activeOpacity={0.85}
-                            onPress={() => Linking.openURL(url)}
-                          >
-                            <Text
-                              style={styles.attachmentFileName}
-                              numberOfLines={1}
+                  <View
+                    style={[
+                      styles.messageBubble,
+                      isMyMessage
+                        ? styles.myMessageBubble
+                        : styles.otherMessageBubble,
+                    ]}
+                  >
+                    {!isMyMessage && variant === "group" ? (
+                      <Text style={styles.senderName}>
+                        {message.senderName}
+                      </Text>
+                    ) : null}
+                    {message.attachments?.length ? (
+                      <View style={styles.attachments}>
+                        {message.attachments.map((att, attIndex) => {
+                          const url = resolveUploadUrl(att.url);
+                          return att.kind === "image" ? (
+                            <TouchableOpacity
+                              key={`${message._id}-att-${attIndex}`}
+                              activeOpacity={0.85}
+                              onPress={() => Linking.openURL(url)}
                             >
-                              📎 {att.name}
-                            </Text>
-                          </TouchableOpacity>
-                        );
-                      })}
-                    </View>
-                  ) : null}
-                  {bodyText ? (
+                              <Image
+                                style={styles.attachmentImage}
+                                source={{ uri: url }}
+                              />
+                            </TouchableOpacity>
+                          ) : (
+                            <TouchableOpacity
+                              key={`${message._id}-att-${attIndex}`}
+                              style={styles.attachmentFile}
+                              activeOpacity={0.85}
+                              onPress={() => Linking.openURL(url)}
+                            >
+                              <Text
+                                style={styles.attachmentFileName}
+                                numberOfLines={1}
+                              >
+                                📎 {att.name}
+                              </Text>
+                            </TouchableOpacity>
+                          );
+                        })}
+                      </View>
+                    ) : null}
+                    {bodyText ? (
+                      <Text
+                        style={
+                          isMyMessage
+                            ? styles.myMessageText
+                            : styles.otherMessageText
+                        }
+                      >
+                        {bodyText}
+                      </Text>
+                    ) : null}
+                    {hasTranslation ? (
+                      <TouchableOpacity
+                        onPress={() => toggleOriginal(message._id)}
+                        activeOpacity={0.7}
+                      >
+                        <Text
+                          style={[
+                            styles.translatedHint,
+                            isMyMessage
+                              ? styles.myTranslatedHint
+                              : styles.otherTranslatedHint,
+                          ]}
+                        >
+                          {showingOriginal
+                            ? t("chat.showTranslation")
+                            : message.sourceLang
+                              ? t("chat.translatedFromShowOriginal", {
+                                  lang: message.sourceLang,
+                                })
+                              : t("chat.translatedShowOriginal")}
+                        </Text>
+                      </TouchableOpacity>
+                    ) : null}
                     <Text
                       style={
                         isMyMessage
-                          ? styles.myMessageText
-                          : styles.otherMessageText
+                          ? styles.myMessageDate
+                          : styles.otherMessageDate
                       }
                     >
-                      {bodyText}
+                      {formatMessageTime(message.timestamp)}
                     </Text>
-                  ) : null}
-                  {hasTranslation ? (
-                    <TouchableOpacity
-                      onPress={() => toggleOriginal(message._id)}
-                      activeOpacity={0.7}
-                    >
-                      <Text
-                        style={[
-                          styles.translatedHint,
-                          isMyMessage
-                            ? styles.myTranslatedHint
-                            : styles.otherTranslatedHint,
-                        ]}
-                      >
-                        {showingOriginal
-                          ? t("chat.showTranslation")
-                          : message.sourceLang
-                            ? t("chat.translatedFromShowOriginal", {
-                                lang: message.sourceLang,
-                              })
-                            : t("chat.translatedShowOriginal")}
-                      </Text>
-                    </TouchableOpacity>
-                  ) : null}
-                  <Text
-                    style={
-                      isMyMessage
-                        ? styles.myMessageDate
-                        : styles.otherMessageDate
-                    }
-                  >
-                    {formatMessageTime(message.timestamp)}
-                  </Text>
+                  </View>
                 </View>
-              </View>
+              </React.Fragment>
             );
           })}
         </ScrollView>
@@ -562,6 +608,21 @@ const styles = StyleSheet.create({
   },
   otherTranslatedHint: {
     color: "#0785F4",
+  },
+  daySeparator: {
+    alignSelf: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.75)",
+    borderRadius: 999,
+    paddingHorizontal: 14,
+    paddingVertical: 5,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+  },
+  daySeparatorText: {
+    color: "#052D50",
+    fontSize: 12,
+    fontFamily: "DMSans-SemiBold",
   },
   messageRow: {
     marginBottom: 12,

@@ -528,6 +528,8 @@
   },
   "chat": {
     "title": "Chattar",
+    "today": "Idag",
+    "yesterday": "Igår",
     "loadError": "Det gick inte att ladda chattar",
     "loadErrorTitle": "Det gick inte att ladda chattar",
     "loading": "Laddar chattar...",
