@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { getDateLocale } from "../../../utils/dateLocale";
-import React, { useContext, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -152,11 +152,47 @@ export default function TaskScreen() {
   const navigation = useNavigation();
   const route = useRoute();
   const { t } = useTranslation();
-  const { task, project, projectRouteKey, tasksRouteKey } = route.params || {};
+  const { task, project, projectRouteKey, tasksRouteKey, taskId, projectId } =
+    route.params || {};
   const { user } = useContext(AuthContext);
   const { showSuccess } = useFeedback();
   const [tab, setTab] = useState("Edit");
   const [currentTask, setCurrentTask] = useState(task || null);
+  const [loadingTask, setLoadingTask] = useState(false);
+
+  // Deep-link entry (e.g. tapping a task reminder push): only the id is
+  // passed, so fetch the full task before rendering the details.
+  useEffect(
+    function loadTaskFromId() {
+      if (currentTask || !taskId) {
+        return;
+      }
+
+      let active = true;
+      setLoadingTask(true);
+
+      taskService
+        .getById(taskId, projectId)
+        .then(function applyTask(fetched) {
+          if (active && fetched) {
+            setCurrentTask(fetched);
+          }
+        })
+        .catch(function onError(error) {
+          console.error("Failed to load task from notification:", error);
+        })
+        .finally(function done() {
+          if (active) {
+            setLoadingTask(false);
+          }
+        });
+
+      return function cleanup() {
+        active = false;
+      };
+    },
+    [currentTask, taskId, projectId],
+  );
   const [uploadingDocuments, setUploadingDocuments] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const startDate = formatDateParts(currentTask?.startDate);
@@ -362,6 +398,31 @@ export default function TaskScreen() {
       setUpdatingStatus(false);
     }
   };
+
+  if (loadingTask && !currentTask) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <BackButton
+            backgroundColor={"rgba(255, 255, 255, 0.6)"}
+            tint="light"
+            borderColor="#FFFFFF50"
+            onPress={() => navigation.goBack()}
+            iconSource={require("../../../assets/Arrow-left.png")}
+          />
+          <Text numberOfLines={1} style={styles.headerTitle}>
+            {t("task.fallbackTitle")}
+          </Text>
+          <View style={styles.placeholder} />
+        </View>
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <ActivityIndicator size="large" color="#0091FF" />
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

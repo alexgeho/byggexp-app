@@ -28,6 +28,28 @@ export const taskService = {
     return data;
   },
 
+  // Fetch a single task by id. Used for deep-linking from a push
+  // notification, where only the id is known. Falls back to locating the
+  // task within its project (or the full list) if the backend has no
+  // single-task endpoint.
+  getById: async (id, projectId) => {
+    try {
+      const { data } = await api.get(`/tasks/${id}`);
+      return data;
+    } catch (error) {
+      const list = projectId
+        ? await taskService.getByProject(projectId)
+        : await taskService.getAll();
+      const match = (Array.isArray(list) ? list : []).find(
+        (item) => (item?._id || item?.id) === id,
+      );
+      if (match) {
+        return match;
+      }
+      throw error;
+    }
+  },
+
   update: async (id, taskData) => {
     const { data } = await api.put(`/tasks/${id}`, taskData);
     return data;
