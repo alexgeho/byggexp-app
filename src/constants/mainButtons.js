@@ -1,45 +1,48 @@
+// Icons are the Feather (fi:*) glyphs used in the Figma design, rendered as
+// vectors so they stay crisp at any DPI (the old PNG exports were low-res and
+// pixelated when upscaled on the home grid).
 export const mainButtons = [
   {
     id: "employees",
     title: "Employees",
-    icon: require("../assets/mainButtons/employees.png"),
+    vectorIcon: "user-plus",
     screen: "Employees",
     adminOnly: true,
   },
   {
     id: "tools",
     title: "Tools",
-    icon: require("../assets/mainButtons/tools.png"),
+    vectorIcon: "tool",
     screen: "Tools",
   },
   {
     id: "camera",
     title: "Camera",
-    icon: require("../assets/mainButtons/Camera.png"),
+    vectorIcon: "camera",
     screen: "Camera",
   },
   {
     id: "chats",
     title: "Chats",
-    icon: require("../assets/mainButtons/messager.png"),
+    vectorIcon: "message-circle",
     screen: "Chats",
   },
   {
     id: "shifts",
     title: "Shifts",
-    icon: require("../assets/mainButtons/shifts.png"),
+    vectorIcon: "clock",
     screen: "Shifts",
   },
   {
     id: "projects",
     title: "Projects",
-    icon: require("../assets/mainButtons/projects.png"),
+    vectorIcon: "folder",
     screen: "Projects",
   },
   {
     id: "tasks",
     title: "Tasks",
-    icon: require("../assets/Tasks.png"),
+    vectorIcon: "check-square",
     screen: "Tasks",
   },
 ];

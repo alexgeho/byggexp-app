@@ -2,12 +2,12 @@ import React, { useCallback, useContext, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  Image,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
+import Icon from "react-native-vector-icons/Feather";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import AuthContext from "../../contexts/AuthContext";
@@ -364,10 +364,7 @@ export default function EmployeesScreen() {
         showAddButton
         onAddPress={() => navigation.navigate("CreateEmployee")}
         renderAddContent={() => (
-          <Image
-            source={require("../../assets/mainButtons/employees.png")}
-            style={styles.addButtonIcon}
-          />
+          <Icon name="user-plus" size={30} color="#FFFFFF" />
         )}
       />
     </View>
@@ -438,11 +435,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#5a6b7d",
     textAlign: "center",
-  },
-  addButtonIcon: {
-    width: 36,
-    height: 36,
-    resizeMode: "contain",
-    tintColor: "#FFFFFF",
   },
 });
