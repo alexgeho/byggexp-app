@@ -307,16 +307,31 @@ export default function MenuScreen() {
     },
   ];
 
-  // Settings groups the app-configuration entries: Customize screens (from the
-  // work/base items), Language and Notifications.
+  // Settings groups the personal + app-configuration entries: My account,
+  // Documents, Customize screens, Language and Notifications.
   const settingsSectionItems = [
+    ...menuItems.filter((item) => item.id === "account"),
+    ...menuItems.filter((item) => item.id === "documents"),
     ...menuItems.filter((item) => item.id === "customizeHome"),
     ...settingsItems.filter((item) => item.id === "language"),
     ...menuItems.filter((item) => item.id === "notifications"),
   ];
 
   // Group the flat menu items into labelled categories.
+  // Order: Settings, Support, Work (incl. Finance), Legal.
   const menuSections = [
+    {
+      id: "settings",
+      title: t("menu.sectionSettings"),
+      items: settingsSectionItems,
+    },
+    {
+      id: "support",
+      title: t("menu.sectionSupport", "Support"),
+      items: settingsItems.filter((item) =>
+        ["guide", "help", "reportBug", "about"].includes(item.id),
+      ),
+    },
     {
       id: "work",
       title: t("menu.sectionWork"),
@@ -330,31 +345,8 @@ export default function MenuScreen() {
           "tools",
           "projects",
           "planning",
+          "economy",
         ].includes(item.id),
-      ),
-    },
-    {
-      id: "main",
-      title: t("menu.sectionMain"),
-      items: menuItems.filter((item) =>
-        ["account", "documents"].includes(item.id),
-      ),
-    },
-    {
-      id: "economy",
-      title: t("menu.sectionEconomy"),
-      items: menuItems.filter((item) => item.id === "economy"),
-    },
-    {
-      id: "settings",
-      title: t("menu.sectionSettings"),
-      items: settingsSectionItems,
-    },
-    {
-      id: "support",
-      title: t("menu.sectionSupport", "Support"),
-      items: settingsItems.filter((item) =>
-        ["guide", "help", "reportBug", "about"].includes(item.id),
       ),
     },
     {
