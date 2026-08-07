@@ -221,9 +221,8 @@ export default function EconomyScreen() {
           <Icon name="chevron-left" size={22} color="#030303" />
         </TouchableOpacity>
         <Text style={styles.title}>{t("economy.title")}</Text>
-        <View style={styles.headerBtn}>
-          <Icon name="sliders" size={20} color="#030303" />
-        </View>
+        {/* Empty placeholder keeps the title centered (settings button removed). */}
+        <View style={styles.headerBtn} />
       </View>
 
       <View style={styles.segmented}>
@@ -246,13 +245,10 @@ export default function EconomyScreen() {
       </View>
 
       {(customerOptions.length > 0 || filterOptions.length > 0) && (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.pillsRow}
-          contentContainerStyle={styles.pillsContent}
-        >
-          {/* Customer filter sits first, in the same row as the status pills. */}
+        <View style={styles.pillsRow}>
+          {/* Customer filter sits first, in the same row as the status pills.
+              The row wraps to a second line instead of scrolling, so nothing
+              gets clipped when there are many status filters (invoices). */}
           {customerOptions.length > 0 && (
             <TouchableOpacity
               style={[
@@ -301,7 +297,7 @@ export default function EconomyScreen() {
               onPress={() => setStatusFilter(status)}
             />
           ))}
-        </ScrollView>
+        </View>
       )}
 
       <ScrollView
