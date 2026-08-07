@@ -49,21 +49,34 @@ export function BottomBar({
 
   const actionContent = renderActionContent ?? renderAddContent;
 
-  // On the home screen the pill sits over the blue gradient, so render it as a
-  // frosted-glass bar (translucent white + background blur).
-  const WrapperTag = glass ? BlurView : View;
-  const wrapperProps = glass
-    ? {
-        intensity: 45,
-        tint: "light",
-        style: [styles.menuWrapper, styles.menuWrapperGlass],
-      }
-    : {
-        style: [
-          styles.menuWrapper,
-          !showBackground && styles.menuWrapperTransparent,
-        ],
-      };
+  // The pill is always a frosted-glass bar with a background blur — on the home
+  // screen it sits over the blue gradient (subtle white glass), on inner
+  // screens over the light background (crisp white border). Only the explicit
+  // transparent variant (showBackground=false) stays a plain View.
+  const isTransparent = !glass && !showBackground;
+  let WrapperTag = BlurView;
+  let wrapperProps;
+
+  if (isTransparent) {
+    WrapperTag = View;
+    wrapperProps = {
+      style: [styles.menuWrapper, styles.menuWrapperTransparent],
+    };
+  } else if (glass) {
+    wrapperProps = {
+      intensity: 45,
+      tint: "light",
+      style: [styles.menuWrapper, styles.menuWrapperGlass],
+    };
+  } else {
+    // Inner screens: keep the 2px white border + white fill from menuWrapper,
+    // now with a real background blur behind it.
+    wrapperProps = {
+      intensity: 40,
+      tint: "light",
+      style: styles.menuWrapper,
+    };
+  }
 
   return (
     <View style={styles.container}>

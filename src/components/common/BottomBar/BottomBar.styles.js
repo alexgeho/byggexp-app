@@ -31,6 +31,7 @@ export function createStyles(theme) {
       backgroundColor: "rgba(255,255,255,0.6)",
       flexDirection: "row",
       justifyContent: "space-around",
+      overflow: "hidden",
     },
     navButton: {
       width: 80,
