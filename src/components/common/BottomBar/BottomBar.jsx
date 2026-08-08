@@ -1,6 +1,12 @@
 import React from "react";
 
-import { Pressable, Text, TouchableOpacity, View } from "react-native";
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { BlurView } from "expo-blur";
 import { useNavigationState } from "@react-navigation/native";
@@ -49,41 +55,45 @@ export function BottomBar({
 
   const actionContent = renderActionContent ?? renderAddContent;
 
-  // The pill is always a frosted-glass bar with a background blur — on the home
-  // screen it sits over the blue gradient (subtle white glass), on inner
+  // The pill is a frosted-glass bar: a background blur + a translucent white
+  // fill as absolutely-positioned layers, then the icons on top. On the home
+  // screen it sits over the blue gradient (subtle white glass); on inner
   // screens over the light background (crisp white border). Only the explicit
-  // transparent variant (showBackground=false) stays a plain View.
+  // transparent variant (showBackground=false) drops the blur/fill.
+  //
+  // The icons must NEVER be children of the BlurView: Android's
+  // dimezisBlurView blurs its children, which paints a soft dark halo/"glow"
+  // around each icon (worst on the solid filled icon). Keeping them as later
+  // siblings, above the blur, renders them crisp with no halo.
   const isTransparent = !glass && !showBackground;
-  let WrapperTag = BlurView;
-  let wrapperProps;
-
-  if (isTransparent) {
-    WrapperTag = View;
-    wrapperProps = {
-      style: [styles.menuWrapper, styles.menuWrapperTransparent],
-    };
-  } else if (glass) {
-    wrapperProps = {
-      intensity: 45,
-      tint: "light",
-      // Android needs the native blur method or it renders no blur at all.
-      experimentalBlurMethod: "dimezisBlurView",
-      style: [styles.menuWrapper, styles.menuWrapperGlass],
-    };
-  } else {
-    // Inner screens: keep the 2px white border + white fill from menuWrapper,
-    // now with a real background blur behind it.
-    wrapperProps = {
-      intensity: 40,
-      tint: "light",
-      experimentalBlurMethod: "dimezisBlurView",
-      style: styles.menuWrapper,
-    };
-  }
+  const fillColor = isTransparent
+    ? "transparent"
+    : glass
+      ? "rgba(255,255,255,0.20)"
+      : "rgba(255,255,255,0.6)";
+  const wrapperStyle = [
+    styles.menuWrapper,
+    isTransparent && styles.menuWrapperTransparent,
+    glass && styles.menuWrapperGlass,
+  ];
 
   return (
     <View style={styles.container}>
-      <WrapperTag {...wrapperProps}>
+      <View style={wrapperStyle}>
+        {!isTransparent ? (
+          <BlurView
+            pointerEvents="none"
+            intensity={glass ? 45 : 40}
+            tint="light"
+            // Android needs the native blur method or it renders no blur at all.
+            experimentalBlurMethod="dimezisBlurView"
+            style={StyleSheet.absoluteFill}
+          />
+        ) : null}
+        <View
+          pointerEvents="none"
+          style={[StyleSheet.absoluteFill, { backgroundColor: fillColor }]}
+        />
         <Pressable style={styles.navButton} onPress={onLeftPress}>
           {({ hovered, pressed }) => {
             const isActive = isHomeActive || hovered || pressed;
@@ -137,7 +147,7 @@ export function BottomBar({
             );
           }}
         </Pressable>
-      </WrapperTag>
+      </View>
 
       {showAddButton && (
         <TouchableOpacity
