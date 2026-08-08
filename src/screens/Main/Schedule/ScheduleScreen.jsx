@@ -65,6 +65,38 @@ const BAR_RADIUS = 16;
 const DONE_STATUSES = new Set(["done", "completed", "closed"]);
 const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "spinner" : "default";
 
+// Bar/lane geometry. A single-lane row keeps the original 64px height
+// (8 + 48 + 8). When a row's items overlap in time they are stacked into
+// separate lanes and the row grows, so overlapping bars never draw on top of
+// each other.
+const LANE_VPAD = 8;
+const BAR_HEIGHT = ROW_HEIGHT - LANE_VPAD * 2; // 48
+const LANE_GAP = 8;
+const LANE_STRIDE = BAR_HEIGHT + LANE_GAP;
+const rowHeightForLanes = (laneCount) =>
+  LANE_VPAD * 2 +
+  laneCount * BAR_HEIGHT +
+  Math.max(0, laneCount - 1) * LANE_GAP;
+
+// Greedy interval partitioning: place each item in the first lane whose last
+// bar has already ended, otherwise open a new lane. Returns the items tagged
+// with a `lane` index and the total lane count for the row.
+const assignLanes = (items) => {
+  const sorted = [...items].sort((a, b) => a.start - b.start);
+  const laneEnds = [];
+  const laid = sorted.map((item) => {
+    let lane = laneEnds.findIndex((end) => item.start >= end);
+    if (lane === -1) {
+      lane = laneEnds.length;
+      laneEnds.push(item.end);
+    } else {
+      laneEnds[lane] = item.end;
+    }
+    return { ...item, lane };
+  });
+  return { items: laid, laneCount: Math.max(1, laneEnds.length) };
+};
+
 const formatFullDate = (date) =>
   new Intl.DateTimeFormat(getDateLocale(), {
     day: "numeric",
@@ -255,6 +287,17 @@ export default function ScheduleScreen() {
     return map;
   }, [mode, rows, filteredTasks, projectMap, leaves]);
 
+  // Stack overlapping items into lanes and give each row a height that fits its
+  // lane count, so bars in the same row never overlap.
+  const rowLayout = useMemo(() => {
+    const out = {};
+    rows.forEach((row) => {
+      const { items, laneCount } = assignLanes(itemsByRow[row.id] || []);
+      out[row.id] = { items, laneCount, height: rowHeightForLanes(laneCount) };
+    });
+    return out;
+  }, [rows, itemsByRow]);
+
   const rangeStart = useMemo(
     () => startOfWeek(startOfMonth(currentMonth)),
     [currentMonth],
@@ -311,7 +354,13 @@ export default function ScheduleScreen() {
     return options;
   }, []);
 
-  const contentHeight = Math.max(rows.length, 1) * ROW_HEIGHT;
+  const contentHeight = Math.max(
+    rows.reduce(
+      (sum, row) => sum + (rowLayout[row.id]?.height || ROW_HEIGHT),
+      0,
+    ),
+    ROW_HEIGHT,
+  );
 
   const filterOptions =
     activeFilter === "project" ? projectFilterOptions : statusOptions;
@@ -469,6 +518,8 @@ export default function ScheduleScreen() {
           {
             left,
             width: Math.max(width, 8),
+            top: LANE_VPAD + (item.lane || 0) * LANE_STRIDE,
+            height: BAR_HEIGHT,
             backgroundColor: isLeave ? "#E7E3D5" : item.color,
             opacity: done ? 0.55 : 1,
             borderTopLeftRadius: clippedLeft ? 0 : BAR_RADIUS,
@@ -685,7 +736,13 @@ export default function ScheduleScreen() {
                 ]}
               >
                 {rows.map((row) => (
-                  <View key={row.id} style={styles.sidebarCell}>
+                  <View
+                    key={row.id}
+                    style={[
+                      styles.sidebarCell,
+                      { height: rowLayout[row.id]?.height || ROW_HEIGHT },
+                    ]}
+                  >
                     <Text numberOfLines={1} style={styles.sidebarName}>
                       {row.name}
                     </Text>
@@ -731,8 +788,14 @@ export default function ScheduleScreen() {
 
                     {/* Rows */}
                     {rows.map((row) => (
-                      <View key={row.id} style={styles.timelineRow}>
-                        {(itemsByRow[row.id] || []).map(renderBar)}
+                      <View
+                        key={row.id}
+                        style={[
+                          styles.timelineRow,
+                          { height: rowLayout[row.id]?.height || ROW_HEIGHT },
+                        ]}
+                      >
+                        {(rowLayout[row.id]?.items || []).map(renderBar)}
                       </View>
                     ))}
 
