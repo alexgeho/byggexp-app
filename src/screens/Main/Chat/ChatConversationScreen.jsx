@@ -339,6 +339,16 @@ export default function ChatConversationScreen({ variant }) {
                 ? message.translatedText
                 : message.text;
 
+            const attachments = message.attachments || [];
+            // Image-only messages render as the bare photo (rounded corners,
+            // timestamp overlaid) instead of inside the colored chat bubble, so
+            // there's no blue frame around the picture.
+            const isImageOnly =
+              attachments.length > 0 &&
+              attachments.every((att) => att.kind === "image") &&
+              !bodyText &&
+              !hasTranslation;
+
             const previous = index > 0 ? messages[index - 1] : null;
             const showDaySeparator =
               !previous || !isSameDay(previous.timestamp, message.timestamp);
@@ -364,6 +374,7 @@ export default function ChatConversationScreen({ variant }) {
                       isMyMessage
                         ? styles.myMessageBubble
                         : styles.otherMessageBubble,
+                      isImageOnly && styles.mediaBubble,
                     ]}
                   >
                     {!isMyMessage && variant === "group" ? (
@@ -372,7 +383,12 @@ export default function ChatConversationScreen({ variant }) {
                       </Text>
                     ) : null}
                     {message.attachments?.length ? (
-                      <View style={styles.attachments}>
+                      <View
+                        style={[
+                          styles.attachments,
+                          isImageOnly && styles.attachmentsMedia,
+                        ]}
+                      >
                         {message.attachments.map((att, attIndex) => {
                           const url = resolveUploadUrl(att.url);
                           return att.kind === "image" ? (
@@ -438,15 +454,26 @@ export default function ChatConversationScreen({ variant }) {
                         </Text>
                       </TouchableOpacity>
                     ) : null}
-                    <Text
-                      style={
-                        isMyMessage
-                          ? styles.myMessageDate
-                          : styles.otherMessageDate
-                      }
-                    >
-                      {formatMessageTime(message.timestamp)}
-                    </Text>
+                    {isImageOnly ? (
+                      <View
+                        style={styles.mediaTimeOverlay}
+                        pointerEvents="none"
+                      >
+                        <Text style={styles.mediaTimeText}>
+                          {formatMessageTime(message.timestamp)}
+                        </Text>
+                      </View>
+                    ) : (
+                      <Text
+                        style={
+                          isMyMessage
+                            ? styles.myMessageDate
+                            : styles.otherMessageDate
+                        }
+                      >
+                        {formatMessageTime(message.timestamp)}
+                      </Text>
+                    )}
                   </View>
                 </View>
               </React.Fragment>
@@ -527,30 +554,50 @@ export default function ChatConversationScreen({ variant }) {
           ]}
         >
           <View style={styles.sheetHandle} />
-          <TouchableOpacity
-            style={styles.sheetOption}
-            activeOpacity={0.7}
-            onPress={() =>
-              closeAttachSheet(() => runAttachmentPicker(pickFromCamera))
-            }
-          >
-            <View style={styles.sheetIcon}>
-              <Icon name="camera" size={22} color="#0785F4" />
-            </View>
-            <Text style={styles.sheetOptionText}>{t("chat.takePhoto")}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.sheetOption}
-            activeOpacity={0.7}
-            onPress={() =>
-              closeAttachSheet(() => runAttachmentPicker(pickDocuments))
-            }
-          >
-            <View style={styles.sheetIcon}>
-              <Icon name="paperclip" size={22} color="#0785F4" />
-            </View>
-            <Text style={styles.sheetOptionText}>{t("chat.attachFile")}</Text>
-          </TouchableOpacity>
+          <Text style={styles.sheetTitle}>{t("chat.attachTitle")}</Text>
+          <View style={styles.sheetCard}>
+            <TouchableOpacity
+              style={styles.sheetOption}
+              activeOpacity={0.6}
+              onPress={() =>
+                closeAttachSheet(() => runAttachmentPicker(pickFromCamera))
+              }
+            >
+              <View style={[styles.sheetIcon, styles.sheetIconCamera]}>
+                <Icon name="camera" size={22} color="#0785F4" />
+              </View>
+              <View style={styles.sheetOptionCopy}>
+                <Text style={styles.sheetOptionText}>
+                  {t("chat.takePhoto")}
+                </Text>
+                <Text style={styles.sheetOptionHint}>
+                  {t("chat.takePhotoHint")}
+                </Text>
+              </View>
+              <Icon name="chevron-right" size={20} color="#C2CCD6" />
+            </TouchableOpacity>
+            <View style={styles.sheetDivider} />
+            <TouchableOpacity
+              style={styles.sheetOption}
+              activeOpacity={0.6}
+              onPress={() =>
+                closeAttachSheet(() => runAttachmentPicker(pickDocuments))
+              }
+            >
+              <View style={[styles.sheetIcon, styles.sheetIconFile]}>
+                <Icon name="paperclip" size={22} color="#9333EA" />
+              </View>
+              <View style={styles.sheetOptionCopy}>
+                <Text style={styles.sheetOptionText}>
+                  {t("chat.attachFile")}
+                </Text>
+                <Text style={styles.sheetOptionHint}>
+                  {t("chat.attachFileHint")}
+                </Text>
+              </View>
+              <Icon name="chevron-right" size={20} color="#C2CCD6" />
+            </TouchableOpacity>
+          </View>
           <TouchableOpacity
             style={styles.sheetCancel}
             activeOpacity={0.7}
@@ -723,6 +770,31 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     maxWidth: "70%",
   },
+  // Image-only messages: drop the colored bubble so the photo shows on its own.
+  mediaBubble: {
+    padding: 0,
+    backgroundColor: "transparent",
+    borderWidth: 0,
+    borderRadius: 18,
+    overflow: "hidden",
+  },
+  attachmentsMedia: {
+    marginBottom: 0,
+    gap: 0,
+  },
+  mediaTimeOverlay: {
+    position: "absolute",
+    right: 8,
+    bottom: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
+    backgroundColor: "rgba(5, 45, 80, 0.45)",
+  },
+  mediaTimeText: {
+    color: "#FFFFFF",
+    fontSize: 10,
+  },
   myMessageBubble: {
     backgroundColor: "#0785F4",
     borderBottomRightRadius: 0,
@@ -743,9 +815,9 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   attachmentImage: {
-    width: 200,
-    height: 200,
-    borderRadius: 12,
+    width: 220,
+    height: 220,
+    borderRadius: 18,
     backgroundColor: "rgba(0,0,0,0.05)",
   },
   attachmentFile: {
@@ -845,9 +917,9 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "#FFFFFF",
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    backgroundColor: "#F2F1F6",
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
     paddingHorizontal: 16,
     paddingTop: 10,
     paddingBottom: 36,
@@ -855,35 +927,68 @@ const styles = StyleSheet.create({
   sheetHandle: {
     alignSelf: "center",
     width: 40,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: "rgba(5, 45, 80, 0.2)",
+    height: 5,
+    borderRadius: 999,
+    backgroundColor: "rgba(5, 45, 80, 0.18)",
     marginBottom: 14,
+  },
+  sheetTitle: {
+    textAlign: "center",
+    fontSize: 13,
+    letterSpacing: 0.3,
+    color: "#8895A7",
+    fontFamily: "DMSans-SemiBold",
+    marginBottom: 12,
+  },
+  // Grouped iOS-style card holding the options; white rows on the light sheet.
+  sheetCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    overflow: "hidden",
+    marginBottom: 10,
   },
   sheetOption: {
     flexDirection: "row",
     alignItems: "center",
     gap: 14,
-    paddingVertical: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+  },
+  sheetDivider: {
+    height: 1,
+    marginLeft: 72,
+    backgroundColor: "rgba(5, 45, 80, 0.07)",
   },
   sheetIcon: {
     width: 44,
     height: 44,
     borderRadius: 14,
-    backgroundColor: "rgba(7, 133, 244, 0.1)",
     alignItems: "center",
     justifyContent: "center",
+  },
+  sheetIconCamera: {
+    backgroundColor: "rgba(7, 133, 244, 0.12)",
+  },
+  sheetIconFile: {
+    backgroundColor: "rgba(147, 51, 234, 0.12)",
+  },
+  sheetOptionCopy: {
+    flex: 1,
   },
   sheetOptionText: {
     fontSize: 16,
     color: "#052D50",
-    fontFamily: "DMSans-Medium",
+    fontFamily: "DMSans-SemiBold",
+  },
+  sheetOptionHint: {
+    fontSize: 13,
+    color: "#8895A7",
+    marginTop: 2,
   },
   sheetCancel: {
-    marginTop: 10,
-    height: 52,
-    borderRadius: 16,
-    backgroundColor: "rgba(5, 45, 80, 0.06)",
+    height: 54,
+    borderRadius: 18,
+    backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
   },
