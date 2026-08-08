@@ -61,7 +61,8 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 12,
     padding: 4,
-    borderRadius: 100,
+    // Figma: segmented control uses a soft 10px radius, not a full pill.
+    borderRadius: 10,
     backgroundColor: "#052D500D",
   },
   tab: {
@@ -69,7 +70,7 @@ export const styles = StyleSheet.create({
     height: 44,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 100,
+    borderRadius: 10,
   },
   tabActive: {
     backgroundColor: "#FFFFFF",
@@ -122,7 +123,8 @@ export const styles = StyleSheet.create({
   thumb: {
     width: THUMB,
     height: THUMB,
-    borderRadius: 14,
+    // Figma: photo thumbnails use a 6px radius.
+    borderRadius: 6,
     backgroundColor: "#E5E9ED",
   },
 
