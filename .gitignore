@@ -26,3 +26,8 @@ GoogleService-Info.plist
 *.keystore
 # Use yarn (yarn.lock) as the single lockfile; block npm's lockfile
 package-lock.json
+
+# Build artifacts (uploaded to the stores directly, never versioned)
+*.aab
+*.apk
+*.ipa
