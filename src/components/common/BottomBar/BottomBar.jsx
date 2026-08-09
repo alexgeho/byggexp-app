@@ -1,6 +1,7 @@
 import React from "react";
 
 import {
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -80,7 +81,7 @@ export function BottomBar({
   return (
     <View style={styles.container}>
       <View style={wrapperStyle}>
-        {!isTransparent ? (
+        {!isTransparent && Platform.OS !== "android" ? (
           <BlurView
             pointerEvents="none"
             intensity={glass ? 45 : 40}
