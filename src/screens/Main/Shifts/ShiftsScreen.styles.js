@@ -745,6 +745,57 @@ export const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "600",
   },
+  manualAddButton: {
+    height: 46,
+    borderRadius: 14,
+    backgroundColor: "#F59E0B",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 14,
+  },
+  manualAddButtonText: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  manualProjectPicker: {
+    marginBottom: 16,
+  },
+  manualProjectLabel: {
+    color: "rgba(122, 148, 168, 1)",
+    fontSize: 13,
+    fontWeight: "600",
+    marginBottom: 8,
+  },
+  manualProjectList: {
+    maxHeight: 150,
+  },
+  manualProjectEmpty: {
+    color: "rgba(122, 148, 168, 1)",
+    fontSize: 14,
+    paddingVertical: 8,
+  },
+  manualProjectOption: {
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: "#052D500D",
+    justifyContent: "center",
+    paddingHorizontal: 14,
+    marginBottom: 8,
+  },
+  manualProjectOptionActive: {
+    backgroundColor: "#F59E0B1A",
+    borderWidth: 1,
+    borderColor: "#F59E0B",
+  },
+  manualProjectOptionText: {
+    color: "#052D50",
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  manualProjectOptionTextActive: {
+    color: "#B8760A",
+  },
   exportMainButtonDisabled: {
     opacity: 0.7,
   },

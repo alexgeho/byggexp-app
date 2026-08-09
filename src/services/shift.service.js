@@ -164,6 +164,19 @@ export const shiftService = {
     return data;
   },
 
+  // Create (or update) a manual-hours entry for a specific date, with no
+  // clock-in. Workers may only pass their own workerId. Upserts by
+  // worker+project+date on the backend.
+  addManualHours: async ({ workerId, projectId, date, durationMs }) => {
+    const { data } = await api.post("/shifts/manual", {
+      workerId,
+      projectId,
+      date,
+      durationMs,
+    });
+    return data;
+  },
+
   uploadPhotos: async (shiftId, files) => {
     const formData = new FormData();
 

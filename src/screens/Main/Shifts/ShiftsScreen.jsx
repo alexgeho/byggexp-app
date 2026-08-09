@@ -76,7 +76,7 @@ export default function ShiftsScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const { user } = useContext(AuthContext);
+  const { user, selectedProject } = useContext(AuthContext);
   const isAdmin = ["companyAdmin", "superadmin", "projectAdmin"].includes(
     user?.role,
   );
@@ -112,6 +112,10 @@ export default function ShiftsScreen() {
   const [manualHoursH, setManualHoursH] = useState("");
   const [manualHoursM, setManualHoursM] = useState("");
   const [savingManualHours, setSavingManualHours] = useState(false);
+  // Date-based manual entry (Manuell tab): log hours for a day that has no
+  // clock-in. Holds the target date and the project to attach the hours to.
+  const [manualDateEntry, setManualDateEntry] = useState(null);
+  const [manualProjectId, setManualProjectId] = useState(null);
 
   const currentUserId = user?.id || user?._id || null;
 
@@ -186,18 +190,18 @@ export default function ShiftsScreen() {
     }, [refreshHistory, selectedMonth]),
   );
 
-  // Load projects + colleagues so admins can filter the export by project/people.
+  // Load projects for everyone (admins filter the export by project; workers
+  // pick one when logging manual hours) and colleagues for admins' people filter.
   useEffect(() => {
-    if (!isAdmin) {
-      return;
-    }
     let active = true;
     Promise.all([
       (user?.role === "superadmin"
         ? projectService.getAll()
         : projectService.getMyProjects()
       ).catch(() => []),
-      userService.getColleagues().catch(() => []),
+      isAdmin
+        ? userService.getColleagues().catch(() => [])
+        : Promise.resolve([]),
     ]).then(([projectData, employeeData]) => {
       if (!active) {
         return;
@@ -748,7 +752,72 @@ export default function ShiftsScreen() {
 
   const closeManualHoursEditor = useCallback(() => {
     setManualHoursShift(null);
+    setManualDateEntry(null);
   }, []);
+
+  const openManualDateEditor = useCallback(
+    (date) => {
+      // Prefill from any manual hours already logged for this day.
+      const dayEntry = days.find((day) => day.date === date);
+      const ms = Number(dayEntry?.manualDurationMs) || 0;
+      const totalMinutes = Math.round(ms / 60000);
+      setManualHoursH(ms ? String(Math.floor(totalMinutes / 60)) : "");
+      setManualHoursM(ms ? String(totalMinutes % 60) : "");
+
+      const defaultProjectId =
+        selectedProject?._id ||
+        selectedProject?.id ||
+        projects[0]?._id ||
+        projects[0]?.id ||
+        null;
+      setManualProjectId(defaultProjectId);
+      setManualDateEntry({ date });
+    },
+    [days, projects, selectedProject],
+  );
+
+  const submitManualDateHours = useCallback(
+    async (durationMs) => {
+      if (!manualDateEntry) {
+        return;
+      }
+      if (!manualProjectId) {
+        Alert.alert(
+          t("shifts.manualHoursError"),
+          t("shifts.manualHoursNoProject"),
+        );
+        return;
+      }
+
+      try {
+        setSavingManualHours(true);
+        await shiftService.addManualHours({
+          workerId: currentUserId,
+          projectId: manualProjectId,
+          date: manualDateEntry.date,
+          durationMs,
+        });
+        setManualDateEntry(null);
+        await loadHistory(selectedMonth);
+      } catch (error) {
+        const message =
+          error?.response?.data?.message ||
+          error?.message ||
+          t("shifts.manualHoursError");
+        Alert.alert(t("shifts.manualHoursError"), message);
+      } finally {
+        setSavingManualHours(false);
+      }
+    },
+    [
+      manualDateEntry,
+      manualProjectId,
+      currentUserId,
+      loadHistory,
+      selectedMonth,
+      t,
+    ],
+  );
 
   const submitManualHours = useCallback(
     async (durationMs) => {
@@ -790,8 +859,19 @@ export default function ShiftsScreen() {
       return;
     }
 
-    submitManualHours(durationMs);
-  }, [manualHoursH, manualHoursM, submitManualHours, t]);
+    if (manualDateEntry) {
+      submitManualDateHours(durationMs);
+    } else {
+      submitManualHours(durationMs);
+    }
+  }, [
+    manualHoursH,
+    manualHoursM,
+    manualDateEntry,
+    submitManualDateHours,
+    submitManualHours,
+    t,
+  ]);
 
   return (
     <View style={styles.container}>
@@ -1026,6 +1106,17 @@ export default function ShiftsScreen() {
 
           <View style={styles.shiftDetailsContainer}>
             <View style={styles.shiftDetailsContent}>
+              {hoursSource === "manual" && selectedDates.length === 1 ? (
+                <TouchableOpacity
+                  style={styles.manualAddButton}
+                  activeOpacity={0.85}
+                  onPress={() => openManualDateEditor(selectedDates[0])}
+                >
+                  <Text style={styles.manualAddButtonText}>
+                    {t("shifts.manualAddForDate")}
+                  </Text>
+                </TouchableOpacity>
+              ) : null}
               {selectedDates.length === 0 ? (
                 <Text style={styles.emptyDetailsText}>
                   {t("shifts.selectDatesHint")}
@@ -1538,7 +1629,7 @@ export default function ShiftsScreen() {
       </Modal>
 
       <Modal
-        visible={Boolean(manualHoursShift)}
+        visible={Boolean(manualHoursShift) || Boolean(manualDateEntry)}
         transparent
         animationType="fade"
         onRequestClose={closeManualHoursEditor}
@@ -1549,8 +1640,55 @@ export default function ShiftsScreen() {
               {t("shifts.manualHoursTitle")}
             </Text>
             <Text style={styles.manualHoursHint}>
-              {t("shifts.manualHoursHint")}
+              {manualDateEntry
+                ? manualDateEntry.date
+                : t("shifts.manualHoursHint")}
             </Text>
+
+            {manualDateEntry ? (
+              <View style={styles.manualProjectPicker}>
+                <Text style={styles.manualProjectLabel}>
+                  {t("createTask.projectLabel")}
+                </Text>
+                <ScrollView
+                  style={styles.manualProjectList}
+                  nestedScrollEnabled
+                  keyboardShouldPersistTaps="handled"
+                >
+                  {projects.length === 0 ? (
+                    <Text style={styles.manualProjectEmpty}>
+                      {t("shifts.manualHoursNoProject")}
+                    </Text>
+                  ) : (
+                    projects.map((project) => {
+                      const projectId = project._id || project.id;
+                      const active = projectId === manualProjectId;
+                      return (
+                        <TouchableOpacity
+                          key={projectId}
+                          style={[
+                            styles.manualProjectOption,
+                            active && styles.manualProjectOptionActive,
+                          ]}
+                          activeOpacity={0.8}
+                          onPress={() => setManualProjectId(projectId)}
+                        >
+                          <Text
+                            numberOfLines={1}
+                            style={[
+                              styles.manualProjectOptionText,
+                              active && styles.manualProjectOptionTextActive,
+                            ]}
+                          >
+                            {project.name || project.projectName || projectId}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })
+                  )}
+                </ScrollView>
+              </View>
+            ) : null}
 
             <View style={styles.manualHoursInputs}>
               <View style={styles.manualHoursField}>

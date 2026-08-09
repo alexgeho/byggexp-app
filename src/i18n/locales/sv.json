@@ -353,6 +353,8 @@
     "manualHoursInvalid": "Minuter måste vara mellan 0 och 59.",
     "manualHoursTooLong": "Timmar kan inte överstiga 24h.",
     "manualHoursClear": "Rensa",
+    "manualAddForDate": "Lägg till manuella timmar",
+    "manualHoursNoProject": "Välj ett projekt för dessa timmar.",
     "unitHour": "h",
     "unitMinute": "min",
     "exportTitle": "Exportera arbetspass",
