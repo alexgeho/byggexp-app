@@ -126,6 +126,11 @@ export default function ShiftsScreen() {
   // then the header check saves them all in one go.
   const [pendingManual, setPendingManual] = useState({});
   const [savingBatch, setSavingBatch] = useState(false);
+  // Scroll the edited day above the keyboard. calendarYRef = the calendar's
+  // offset in the scroll content; rowYRef = each date's row offset within it.
+  const scrollViewRef = useRef(null);
+  const calendarYRef = useRef(0);
+  const rowYRef = useRef({});
 
   const currentUserId = user?.id || user?._id || null;
 
@@ -359,6 +364,17 @@ export default function ShiftsScreen() {
       inlineValueRef.current = seed;
       setInlineManualSeed(seed);
       setInlineManualDate(dateStr);
+
+      // Lift the edited day above the keyboard once it has animated up.
+      const rowY = rowYRef.current[dateStr];
+      if (rowY != null) {
+        setTimeout(() => {
+          scrollViewRef.current?.scrollTo({
+            y: Math.max(0, calendarYRef.current + rowY - 12),
+            animated: true,
+          });
+        }, 300);
+      }
     },
     [dayMap, pendingManual],
   );
@@ -523,7 +539,18 @@ export default function ShiftsScreen() {
 
   const calendarRows = useMemo(() => {
     return calendarLayout.rows.map((row) => (
-      <View key={`row-${row.rowIndex}`} style={styles.calendarRow}>
+      <View
+        key={`row-${row.rowIndex}`}
+        style={styles.calendarRow}
+        onLayout={(e) => {
+          const { y } = e.nativeEvent.layout;
+          row.cells.forEach((cellDate) => {
+            if (cellDate) {
+              rowYRef.current[cellDate] = y;
+            }
+          });
+        }}
+      >
         <TouchableOpacity
           style={styles.calendarWeekNumberCell}
           onPress={() => toggleWeekRow(row.rowIndex)}
@@ -1115,9 +1142,12 @@ export default function ShiftsScreen() {
         </View>
       ) : (
         <ScrollView
+          ref={scrollViewRef}
           style={styles.contentScroll}
           contentContainerStyle={styles.contentScrollContent}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          automaticallyAdjustKeyboardInsets
         >
           {/* Planned / GPS / Manual — the source that drives numbers & colours */}
           <View style={styles.sourceToggle}>
@@ -1256,7 +1286,12 @@ export default function ShiftsScreen() {
             ) : null}
           </View>
 
-          <View style={styles.calendarContainer}>
+          <View
+            style={styles.calendarContainer}
+            onLayout={(e) => {
+              calendarYRef.current = e.nativeEvent.layout.y;
+            }}
+          >
             <View style={styles.calendarMonthBar}>
               <View style={styles.calendarNav}>
                 <TouchableOpacity
