@@ -355,6 +355,7 @@
     "manualHoursClear": "Rensa",
     "manualAddForDate": "Lägg till manuella timmar",
     "manualHoursNoProject": "Välj ett projekt för dessa timmar.",
+    "manualTapHint": "Tryck på en dag för att ange timmar",
     "unitHour": "h",
     "unitMinute": "min",
     "exportTitle": "Exportera arbetspass",

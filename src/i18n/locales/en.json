@@ -355,6 +355,7 @@
     "manualHoursClear": "Clear entry",
     "manualAddForDate": "Add manual hours",
     "manualHoursNoProject": "Select a project for these hours.",
+    "manualTapHint": "Tap a day to enter hours",
     "unitHour": "h",
     "unitMinute": "min",
     "exportTitle": "Export shifts",

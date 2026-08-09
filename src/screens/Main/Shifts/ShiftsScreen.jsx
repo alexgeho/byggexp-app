@@ -552,6 +552,15 @@ export default function ShiftsScreen() {
                   >
                     {formatDurationShort(sourceMs)}
                   </Text>
+                ) : hoursSource === "manual" ? (
+                  <Text
+                    style={[
+                      styles.calendarPlus,
+                      isSelected && styles.calendarPlusSelected,
+                    ]}
+                  >
+                    +
+                  </Text>
                 ) : null}
               </TouchableOpacity>
             );
@@ -1097,6 +1106,20 @@ export default function ShiftsScreen() {
               );
             })}
           </View>
+
+          {hoursSource === "manual" ? (
+            <View style={styles.manualHint}>
+              <Icon
+                name="edit-2"
+                size={13}
+                color="#B8760A"
+                style={styles.manualHintIcon}
+              />
+              <Text style={styles.manualHintText}>
+                {t("shifts.manualTapHint")}
+              </Text>
+            </View>
+          ) : null}
 
           <View style={styles.exportSelector}>
             <TouchableOpacity

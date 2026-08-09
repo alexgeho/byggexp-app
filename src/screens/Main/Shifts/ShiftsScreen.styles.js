@@ -311,6 +311,33 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  manualHint: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    marginTop: 10,
+    marginBottom: 2,
+  },
+  manualHintIcon: {
+    marginTop: 1,
+  },
+  manualHintText: {
+    fontFamily: "DMSans-Medium",
+    color: "#B8760A",
+    fontSize: 13,
+  },
+  calendarPlus: {
+    fontFamily: "DMSans-Bold",
+    color: "#F59E0B",
+    fontSize: 14,
+    lineHeight: 14,
+    opacity: 0.55,
+  },
+  calendarPlusSelected: {
+    color: "#FFFFFF",
+    opacity: 0.9,
+  },
   shiftDetailsContainer: {
     width: "100%",
     marginBottom: 12,
