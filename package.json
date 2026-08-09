@@ -66,6 +66,7 @@
     "expo-notifications": "~0.32.17",
     "expo-sharing": "~14.0.8",
     "expo-status-bar": "~3.0.8",
+    "expo-task-manager": "~14.0.9",
     "i18next": "^26.3.6",
     "jwt-decode": "^4.0.0",
     "react": "19.1.0",

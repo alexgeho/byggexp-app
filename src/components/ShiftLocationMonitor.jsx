@@ -15,6 +15,12 @@ import {
   emitShiftAutoStarted,
   emitShiftLocationCheckError,
 } from "../utils/shiftExitAutoCompleteEvents";
+import {
+  hasBackgroundLocationPermission,
+  isBackgroundGeofencingSupported,
+  stopShiftGeofencing,
+  syncShiftGeofenceForProject,
+} from "../utils/backgroundGeofence";
 
 const MONITORED_SHIFT_STATUSES = new Set(["active", "paused"]);
 
@@ -30,12 +36,52 @@ export default function ShiftLocationMonitor() {
   const selectedGeofenceInsideRef = useRef(null);
   const projectCacheRef = useRef(new Map());
   const selectedProjectRef = useRef(selectedProject);
+  // When the OS-level geofence is active it handles auto start/stop even while
+  // the app is closed, so the foreground timer must NOT also fire (that would
+  // double check-in/out). These refs track what we've registered with the OS.
+  const backgroundActiveRef = useRef(false);
+  const geofencedProjectIdRef = useRef(null);
 
   useEffect(() => {
     selectedProjectRef.current = selectedProject;
     selectedGeofenceInsideRef.current = null;
     startedProjectIdRef.current = null;
   }, [selectedProject]);
+
+  // Register (or refresh) the OS geofence for the given project. Returns true
+  // when a background geofence is now active for it, meaning the foreground
+  // loop should stand down for this cycle.
+  const syncBackgroundGeofence = useCallback(
+    async (project, fallbackProjectLocation) => {
+      if (!isBackgroundGeofencingSupported()) {
+        return false;
+      }
+
+      if (!(await hasBackgroundLocationPermission())) {
+        backgroundActiveRef.current = false;
+        geofencedProjectIdRef.current = null;
+        return false;
+      }
+
+      const projectId = getProjectId(project) || null;
+      if (
+        backgroundActiveRef.current &&
+        geofencedProjectIdRef.current === projectId
+      ) {
+        return true;
+      }
+
+      const active = await syncShiftGeofenceForProject({
+        project,
+        fallbackProjectLocation,
+      }).catch(() => false);
+
+      backgroundActiveRef.current = active;
+      geofencedProjectIdRef.current = active ? projectId : null;
+      return active;
+    },
+    [],
+  );
 
   const getShiftProject = useCallback(async (shift) => {
     const currentSelectedProject = selectedProjectRef.current;
@@ -216,22 +262,60 @@ export default function ShiftLocationMonitor() {
       const shiftId = getShiftId(currentShift);
 
       if (shiftId && MONITORED_SHIFT_STATUSES.has(currentShift?.status)) {
+        // Monitor the running shift's project for exit. If the OS geofence is
+        // active it handles auto-checkout in the background; stand down here.
+        const shiftProject = await getShiftProject(currentShift).catch(
+          () => null,
+        );
+        const backgroundActive = await syncBackgroundGeofence(
+          shiftProject,
+          currentShift.location,
+        );
+        if (backgroundActive) {
+          return;
+        }
+
         await verifyOpenShiftGeofence(currentShift);
         return;
       }
 
       shiftGeofenceInsideRef.current = null;
       completedShiftIdRef.current = null;
+
+      // No open shift: watch the selected project for entry. If the OS geofence
+      // is active it handles auto-checkin in the background; stand down here.
+      const selectedProjectForGeofence = await getSelectedProject().catch(
+        () => null,
+      );
+      const backgroundActive = await syncBackgroundGeofence(
+        selectedProjectForGeofence,
+      );
+      if (backgroundActive) {
+        return;
+      }
+
       await verifySelectedProjectCheckIn();
     } catch (error) {
       await emitShiftLocationCheckError(error);
     } finally {
       isCheckingRef.current = false;
     }
-  }, [isAuthenticated, verifyOpenShiftGeofence, verifySelectedProjectCheckIn]);
+  }, [
+    isAuthenticated,
+    verifyOpenShiftGeofence,
+    verifySelectedProjectCheckIn,
+    getShiftProject,
+    getSelectedProject,
+    syncBackgroundGeofence,
+  ]);
 
   useEffect(() => {
     if (!isAuthenticated || !shiftLocationPolicy.enabled) {
+      // Signed out or disabled: tear down any OS geofence so the background
+      // task can't fire shift calls without a valid session.
+      backgroundActiveRef.current = false;
+      geofencedProjectIdRef.current = null;
+      void stopShiftGeofencing();
       return undefined;
     }
 

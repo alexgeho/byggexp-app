@@ -20,7 +20,8 @@ const ensureLocationPermission = async () => {
     return;
   }
 
-  const requestedPermission = await Location.requestForegroundPermissionsAsync();
+  const requestedPermission =
+    await Location.requestForegroundPermissionsAsync();
   if (requestedPermission.status !== "granted") {
     throw new Error(
       "Location permission is required to start a shift at this project.",
@@ -164,8 +165,7 @@ export const getShiftLocationCheck = async ({
   project,
   fallbackProjectLocation,
 }) => {
-  const maxDistanceMeters =
-    getProjectMaxDistanceMeters(project);
+  const maxDistanceMeters = getProjectMaxDistanceMeters(project);
   const resolvedProjectCoordinate = await resolveProjectCoordinate({
     project,
     fallbackProjectLocation,
@@ -191,6 +191,42 @@ export const getShiftLocationCheck = async ({
     enforced: true,
     distanceMeters,
     maxDistanceMeters,
+  };
+};
+
+// Resolve a native geofencing region for a project: its coordinate (saved or
+// geocoded) and radius. Returns null when the project has no usable location,
+// so callers can decide not to register a geofence. Used by the OS-level
+// background geofence (expo-location + expo-task-manager).
+export const resolveProjectGeofenceRegion = async ({
+  project,
+  fallbackProjectLocation,
+} = {}) => {
+  const identifier = project?._id || project?.id;
+  if (!identifier) {
+    return null;
+  }
+
+  let resolved;
+  try {
+    resolved = await resolveProjectCoordinate({
+      project,
+      fallbackProjectLocation,
+    });
+  } catch {
+    // Address won't geocode / no coordinates — no reliable geofence.
+    return null;
+  }
+
+  if (!resolved.enforced || !resolved.projectCoordinate) {
+    return null;
+  }
+
+  return {
+    identifier: String(identifier),
+    latitude: resolved.projectCoordinate.latitude,
+    longitude: resolved.projectCoordinate.longitude,
+    radius: getProjectMaxDistanceMeters(project),
   };
 };
 

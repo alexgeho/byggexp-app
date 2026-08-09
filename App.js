@@ -11,7 +11,11 @@ import { FeedbackProvider } from "./src/contexts/FeedbackContext";
 import { ThemeProvider } from "./src/theme/ThemeContext";
 import NotificationBootstrap from "./src/components/NotificationBootstrap";
 import ShiftLocationMonitor from "./src/components/ShiftLocationMonitor";
+import LocationConsentBootstrap from "./src/components/LocationConsentBootstrap";
 import MagicLinkHandler from "./src/components/MagicLinkHandler";
+// Side-effect import: registers the background geofence task via
+// TaskManager.defineTask at module load, before the OS can invoke it headless.
+import "./src/tasks/shiftGeofenceTask";
 import ErrorBoundary from "./src/components/common/ErrorBoundary/ErrorBoundary";
 import { initSentry } from "./src/utils/sentry";
 import { loadStoredLanguage } from "./src/i18n";
@@ -80,6 +84,7 @@ export default function App() {
               <FeedbackProvider>
                 <NotificationBootstrap />
                 <ShiftLocationMonitor />
+                <LocationConsentBootstrap />
                 <MagicLinkHandler />
                 <AppNavigator />
               </FeedbackProvider>

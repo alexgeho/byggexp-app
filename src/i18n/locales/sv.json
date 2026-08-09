@@ -18,6 +18,26 @@
     "ok": "OK",
     "tryAgain": "Försök igen."
   },
+  "locationConsent": {
+    "title": "Automatiska arbetspass",
+    "heroTitle": "Låt ByggExp registrera dina pass",
+    "heroText": "ByggExp använder din plats i bakgrunden för att stämpla in och ut dig på projektplatsen, så att du aldrig glömmer att starta eller avsluta ett pass.",
+    "bulletStart": "Startar ditt pass automatiskt när du kommer fram till projektplatsen.",
+    "bulletStop": "Avslutar ditt pass automatiskt när du lämnar — även om appen är stängd eller telefonen är låst.",
+    "bulletControl": "Du kan stänga av detta när som helst i telefonens platsinställningar.",
+    "disclaimer": "Din plats används endast för att upptäcka när du kommer till och lämnar dina projektplatser. Den delas aldrig för annonsering.",
+    "enable": "Aktivera automatiska pass",
+    "notNow": "Inte nu",
+    "deniedTitle": "Bakgrundsplats är avstängd",
+    "deniedBody": "För att aktivera automatiska pass, tillåt platsåtkomst \"Alltid\" för ByggExp i telefonens inställningar.",
+    "openSettings": "Öppna inställningar"
+  },
+  "shiftGeofence": {
+    "autoStartedTitle": "Pass startat",
+    "autoStartedBody": "Du kom in i projektområdet, så ditt pass startade automatiskt.",
+    "autoCompletedTitle": "Pass avslutat",
+    "autoCompletedBody": "Du lämnade projektområdet, så ditt pass avslutades automatiskt."
+  },
   "documentPreview": {
     "fallbackName": "Dokument",
     "downloadFailedTitle": "Nedladdning misslyckades",

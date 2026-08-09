@@ -18,6 +18,26 @@
     "ok": "OK",
     "tryAgain": "Please try again."
   },
+  "locationConsent": {
+    "title": "Automatic shifts",
+    "heroTitle": "Let ByggExp track shifts for you",
+    "heroText": "ByggExp uses your location in the background to clock you in and out of the project site so you never forget to start or stop a shift.",
+    "bulletStart": "Starts your shift automatically when you arrive at the project site.",
+    "bulletStop": "Ends your shift automatically when you leave — even if the app is closed or your phone is locked.",
+    "bulletControl": "You can turn this off any time in your phone's location settings.",
+    "disclaimer": "Your location is used only to detect arrival at and departure from your project sites. It is never shared for advertising.",
+    "enable": "Enable automatic shifts",
+    "notNow": "Not now",
+    "deniedTitle": "Background location is off",
+    "deniedBody": "To enable automatic shifts, allow location access \"Always\" for ByggExp in your phone settings.",
+    "openSettings": "Open settings"
+  },
+  "shiftGeofence": {
+    "autoStartedTitle": "Shift started",
+    "autoStartedBody": "You entered the project area, so your shift started automatically.",
+    "autoCompletedTitle": "Shift ended",
+    "autoCompletedBody": "You left the project area, so your shift was ended automatically."
+  },
   "documentPreview": {
     "fallbackName": "Document",
     "downloadFailedTitle": "Download failed",

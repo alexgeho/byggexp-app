@@ -50,9 +50,9 @@
     <key>NSCameraUsageDescription</key>
     <string>Allow ByggExp to use your camera so you can take shift photos.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your location</string>
+    <string>Allow ByggExp to use your location in the background so it can automatically start your shift when you arrive at the project site and end it when you leave — even when the app is closed or your phone is locked.</string>
     <key>NSLocationAlwaysUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your location</string>
+    <string>Allow ByggExp to use your location in the background so it can automatically start your shift when you arrive at the project site and end it when you leave — even when the app is closed or your phone is locked.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>Allow ByggExp to access your location while creating a project (to pre-fill the address) and when starting a work shift (to confirm you are at the project site).</string>
     <key>NSPhotoLibraryAddUsageDescription</key>
@@ -61,6 +61,11 @@
     <string>Allow ByggExp to access your photos so you can upload an avatar or attach shift images.</string>
     <key>RCTNewArchEnabled</key>
     <true/>
+    <key>UIBackgroundModes</key>
+    <array>
+      <string>location</string>
+      <string>fetch</string>
+    </array>
     <key>UILaunchStoryboardName</key>
     <string>SplashScreen</string>
     <key>UIRequiredDeviceCapabilities</key>
