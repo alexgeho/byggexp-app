@@ -67,11 +67,18 @@ export function BottomBar({
   // around each icon (worst on the solid filled icon). Keeping them as later
   // siblings, above the blur, renders them crisp with no halo.
   const isTransparent = !glass && !showBackground;
+  // Android has no BlurView (it crashed Fabric), so the fill must carry the
+  // whole look — make it much more opaque there than the iOS blur+fill.
+  const isAndroid = Platform.OS === "android";
   const fillColor = isTransparent
     ? "transparent"
     : glass
-      ? "rgba(255,255,255,0.20)"
-      : "rgba(255,255,255,0.6)";
+      ? isAndroid
+        ? "rgba(255,255,255,0.72)"
+        : "rgba(255,255,255,0.20)"
+      : isAndroid
+        ? "rgba(255,255,255,0.8)"
+        : "rgba(255,255,255,0.6)";
   const wrapperStyle = [
     styles.menuWrapper,
     isTransparent && styles.menuWrapperTransparent,
