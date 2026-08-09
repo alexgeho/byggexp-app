@@ -116,8 +116,25 @@ export default function ShiftsScreen() {
   // clock-in. Holds the target date and the project to attach the hours to.
   const [manualDateEntry, setManualDateEntry] = useState(null);
   const [manualProjectId, setManualProjectId] = useState(null);
+  // Inline in-cell manual entry: the date whose calendar cell is being typed
+  // into, its seed text (defaultValue), and a ref holding the live text.
+  const [inlineManualDate, setInlineManualDate] = useState(null);
+  const [inlineManualSeed, setInlineManualSeed] = useState("");
+  const inlineValueRef = useRef("");
 
   const currentUserId = user?.id || user?._id || null;
+
+  // Project a manual-hours entry attaches to when no explicit picker is used:
+  // the app-wide selected project, else the first of the user's projects.
+  const resolveManualProjectId = useCallback(
+    () =>
+      selectedProject?._id ||
+      selectedProject?.id ||
+      projects[0]?._id ||
+      projects[0]?.id ||
+      null,
+    [projects, selectedProject],
+  );
 
   const sourceMeta =
     HOURS_SOURCES.find((s) => s.key === hoursSource) || HOURS_SOURCES[1];
@@ -321,6 +338,99 @@ export default function ShiftsScreen() {
     setSelectedDates([]);
   }, []);
 
+  // Begin typing hours straight into a day's calendar cell (Manuell tab).
+  const startInlineManual = useCallback(
+    (dateStr) => {
+      const ms = Number(dayMap.get(dateStr)?.manualDurationMs) || 0;
+      const hours = ms ? Number((ms / 3600000).toFixed(2)) : 0;
+      const seed = hours ? String(hours).replace(".", ",") : "";
+      inlineValueRef.current = seed;
+      setInlineManualSeed(seed);
+      setSelectedDates([dateStr]);
+      setInlineManualDate(dateStr);
+    },
+    [dayMap],
+  );
+
+  // Save the in-cell value for a specific date (called on blur/submit). The
+  // date is passed in so a blur that fires while another cell is opening still
+  // saves the right day; the live text is read from the ref.
+  const commitInlineManual = useCallback(
+    async (dateStr) => {
+      if (!dateStr) {
+        return;
+      }
+      setInlineManualDate((current) => (current === dateStr ? null : current));
+
+      const raw = String(inlineValueRef.current || "")
+        .replace(",", ".")
+        .trim();
+      const hours = raw === "" ? 0 : parseFloat(raw);
+      if (!Number.isFinite(hours) || hours < 0) {
+        return;
+      }
+      if (hours > 24) {
+        Alert.alert(
+          t("shifts.manualHoursError"),
+          t("shifts.manualHoursTooLong"),
+        );
+        return;
+      }
+
+      const durationMs = Math.round(hours * 3600000);
+      const existingMs = Number(dayMap.get(dateStr)?.manualDurationMs) || 0;
+      if (durationMs === existingMs) {
+        return;
+      }
+
+      const projectId = resolveManualProjectId();
+      if (!projectId) {
+        Alert.alert(
+          t("shifts.manualHoursError"),
+          t("shifts.manualHoursNoProject"),
+        );
+        return;
+      }
+
+      try {
+        await shiftService.addManualHours({
+          workerId: currentUserId,
+          projectId,
+          date: dateStr,
+          durationMs,
+        });
+        await loadHistory(selectedMonth);
+      } catch (error) {
+        const message =
+          error?.response?.data?.message ||
+          error?.message ||
+          t("shifts.manualHoursError");
+        Alert.alert(t("shifts.manualHoursError"), message);
+      }
+    },
+    [
+      dayMap,
+      resolveManualProjectId,
+      currentUserId,
+      loadHistory,
+      selectedMonth,
+      t,
+    ],
+  );
+
+  // On the Manuell tab a tap edits the cell inline; otherwise it toggles date
+  // selection as before.
+  const handleDayPress = useCallback(
+    (dateStr) => {
+      if (hoursSource === "manual") {
+        startInlineManual(dateStr);
+      } else {
+        toggleSelectedDate(dateStr);
+      }
+    },
+    [hoursSource, startInlineManual, toggleSelectedDate],
+  );
+
   const calendarLayout = useMemo(
     () => buildCalendarLayout(selectedMonth),
     [selectedMonth],
@@ -367,6 +477,9 @@ export default function ShiftsScreen() {
             const isSelected = selectedDates.includes(dateStr);
             const isToday = dateStr === todayDateKey;
 
+            const isInlineEditing =
+              hoursSource === "manual" && inlineManualDate === dateStr;
+
             return (
               <TouchableOpacity
                 key={dateStr}
@@ -379,7 +492,7 @@ export default function ShiftsScreen() {
                   isToday && !isSelected && styles.calendarCellToday,
                   isSelected && styles.calendarCellSelected,
                 ]}
-                onPress={() => toggleSelectedDate(dateStr)}
+                onPress={() => handleDayPress(dateStr)}
                 activeOpacity={0.85}
               >
                 <Text
@@ -391,7 +504,25 @@ export default function ShiftsScreen() {
                 >
                   {day}
                 </Text>
-                {sourceMs > 0 ? (
+                {isInlineEditing ? (
+                  <TextInput
+                    style={styles.calendarHoursInput}
+                    defaultValue={inlineManualSeed}
+                    onChangeText={(text) => {
+                      inlineValueRef.current = text
+                        .replace(/[^0-9.,]/g, "")
+                        .slice(0, 5);
+                    }}
+                    keyboardType="decimal-pad"
+                    autoFocus
+                    selectTextOnFocus
+                    returnKeyType="done"
+                    placeholder="0"
+                    placeholderTextColor="#F59E0B99"
+                    onBlur={() => commitInlineManual(dateStr)}
+                    onSubmitEditing={() => commitInlineManual(dateStr)}
+                  />
+                ) : sourceMs > 0 ? (
                   <Text
                     style={[
                       styles.calendarHours,
@@ -412,10 +543,14 @@ export default function ShiftsScreen() {
     dayMap,
     selectedDates,
     todayDateKey,
-    toggleSelectedDate,
+    handleDayPress,
     toggleWeekRow,
     daySourceMs,
     sourceMeta.color,
+    hoursSource,
+    inlineManualDate,
+    inlineManualSeed,
+    commitInlineManual,
   ]);
 
   const handleOpenShiftPhoto = useCallback(
