@@ -920,27 +920,6 @@ export default function ShiftsScreen() {
     setManualDateEntry(null);
   }, []);
 
-  const openManualDateEditor = useCallback(
-    (date) => {
-      // Prefill from any manual hours already logged for this day.
-      const dayEntry = days.find((day) => day.date === date);
-      const ms = Number(dayEntry?.manualDurationMs) || 0;
-      const totalMinutes = Math.round(ms / 60000);
-      setManualHoursH(ms ? String(Math.floor(totalMinutes / 60)) : "");
-      setManualHoursM(ms ? String(totalMinutes % 60) : "");
-
-      const defaultProjectId =
-        selectedProject?._id ||
-        selectedProject?.id ||
-        projects[0]?._id ||
-        projects[0]?.id ||
-        null;
-      setManualProjectId(defaultProjectId);
-      setManualDateEntry({ date });
-    },
-    [days, projects, selectedProject],
-  );
-
   const submitManualDateHours = useCallback(
     async (durationMs) => {
       if (!manualDateEntry) {
@@ -1106,20 +1085,6 @@ export default function ShiftsScreen() {
               );
             })}
           </View>
-
-          {hoursSource === "manual" ? (
-            <View style={styles.manualHint}>
-              <Icon
-                name="edit-2"
-                size={13}
-                color="#B8760A"
-                style={styles.manualHintIcon}
-              />
-              <Text style={styles.manualHintText}>
-                {t("shifts.manualTapHint")}
-              </Text>
-            </View>
-          ) : null}
 
           <View style={styles.exportSelector}>
             <TouchableOpacity
@@ -1295,17 +1260,6 @@ export default function ShiftsScreen() {
 
           <View style={styles.shiftDetailsContainer}>
             <View style={styles.shiftDetailsContent}>
-              {hoursSource === "manual" && selectedDates.length === 1 ? (
-                <TouchableOpacity
-                  style={styles.manualAddButton}
-                  activeOpacity={0.85}
-                  onPress={() => openManualDateEditor(selectedDates[0])}
-                >
-                  <Text style={styles.manualAddButtonText}>
-                    {t("shifts.manualAddForDate")}
-                  </Text>
-                </TouchableOpacity>
-              ) : null}
               {selectedDates.length === 0 ? (
                 <Text style={styles.emptyDetailsText}>
                   {t("shifts.selectDatesHint")}
