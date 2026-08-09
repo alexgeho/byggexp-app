@@ -1,3 +1,4 @@
+import { Platform } from "react-native";
 import * as Device from "expo-device";
 import * as Location from "expo-location";
 
@@ -9,7 +10,12 @@ import { resolveProjectGeofenceRegion } from "./shiftLocationGuard";
 // screen, so it is offered at most once automatically.
 export const LOCATION_CONSENT_PROMPTED_KEY = "shiftGeofenceConsentPromptedAt";
 
+// iOS only for now. Android background geofencing needs a properly declared
+// location foreground service (via prebuild) + the Play Store background
+// location declaration; without them startGeofencingAsync destabilises the
+// app. On Android the foreground shift monitor still handles auto in/out.
 export const isBackgroundGeofencingSupported = () =>
+  Platform.OS === "ios" &&
   shiftLocationPolicy.enabled &&
   shiftLocationPolicy.backgroundGeofencingEnabled &&
   Device.isDevice;
