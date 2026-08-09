@@ -301,9 +301,26 @@ export const styles = StyleSheet.create({
     marginBottom: 1,
     borderRadius: 6,
     backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#F59E0B",
     includeFontPadding: false,
+  },
+  manualAccessoryBar: {
+    backgroundColor: "#F2F1F6",
+    borderTopWidth: 1,
+    borderTopColor: "#D9DCE3",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    alignItems: "flex-end",
+  },
+  manualAccessoryButton: {
+    backgroundColor: "#0785F4",
+    paddingHorizontal: 22,
+    paddingVertical: 9,
+    borderRadius: 10,
+  },
+  manualAccessoryButtonText: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "700",
   },
   shiftDetailsContainer: {
     width: "100%",

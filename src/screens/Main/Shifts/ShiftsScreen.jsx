@@ -18,6 +18,7 @@ import {
   Alert,
   Linking,
   Platform,
+  InputAccessoryView,
 } from "react-native";
 import BottomSheet, {
   BottomSheetBackdrop,
@@ -61,6 +62,7 @@ import { styles } from "./ShiftsScreen.styles";
 
 const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const EXPORT_PERIOD_TABS = ["Month", "Custom"];
+const MANUAL_HOURS_ACCESSORY_ID = "manualHoursAccessory";
 const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "spinner" : "default";
 
 // Which hours to show/bill by. GPS is the tracked timer duration (durationMs);
@@ -418,6 +420,13 @@ export default function ShiftsScreen() {
     ],
   );
 
+  // The blue "Done" bar above the keyboard commits the day currently open.
+  const commitInlineFromAccessory = useCallback(() => {
+    if (inlineManualDate) {
+      commitInlineManual(inlineManualDate);
+    }
+  }, [inlineManualDate, commitInlineManual]);
+
   // On the Manuell tab a tap edits the cell inline; otherwise it toggles date
   // selection as before.
   const handleDayPress = useCallback(
@@ -518,7 +527,12 @@ export default function ShiftsScreen() {
                     selectTextOnFocus
                     returnKeyType="done"
                     placeholder="0"
-                    placeholderTextColor="#F59E0B99"
+                    placeholderTextColor="#9BB0C1"
+                    inputAccessoryViewID={
+                      Platform.OS === "ios"
+                        ? MANUAL_HOURS_ACCESSORY_ID
+                        : undefined
+                    }
                     onBlur={() => commitInlineManual(dateStr)}
                     onSubmitEditing={() => commitInlineManual(dateStr)}
                   />
@@ -1762,6 +1776,22 @@ export default function ShiftsScreen() {
           </View>
         </View>
       </Modal>
+
+      {Platform.OS === "ios" ? (
+        <InputAccessoryView nativeID={MANUAL_HOURS_ACCESSORY_ID}>
+          <View style={styles.manualAccessoryBar}>
+            <TouchableOpacity
+              style={styles.manualAccessoryButton}
+              onPress={commitInlineFromAccessory}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.manualAccessoryButtonText}>
+                {t("common.done")}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </InputAccessoryView>
+      ) : null}
 
       <Modal
         visible={Boolean(manualHoursShift) || Boolean(manualDateEntry)}
