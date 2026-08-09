@@ -232,12 +232,28 @@ export default function ShiftLocationMonitor() {
     }
 
     try {
-      const startedShift = await startShiftWithLocationGuard({
-        projectId,
-        project,
-        fallbackProjectLocation: project?.location,
-        skipLocationCheck: true,
-      });
+      // The backend allows one open shift per project/day, so resume today's
+      // shift if it's paused rather than starting a second one.
+      const current = await shiftService
+        .getCurrent(projectId)
+        .catch(() => null);
+      const currentId = getShiftId(current);
+
+      if (currentId && current?.status === "active") {
+        startedProjectIdRef.current = projectId;
+        shiftGeofenceInsideRef.current = true;
+        return;
+      }
+
+      const startedShift =
+        currentId && current?.status === "paused"
+          ? await shiftService.resume(currentId)
+          : await startShiftWithLocationGuard({
+              projectId,
+              project,
+              fallbackProjectLocation: project?.location,
+              skipLocationCheck: true,
+            });
 
       startedProjectIdRef.current = projectId;
       completedShiftIdRef.current = null;

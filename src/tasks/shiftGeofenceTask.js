@@ -59,19 +59,26 @@ const handleEnter = async (region) => {
     return;
   }
 
-  const currentShift = await shiftService.getCurrent();
+  // Scope to this project: the backend allows only one open shift per
+  // project/day, so returning to a site must resume today's shift rather than
+  // start a second one.
+  const currentShift = await shiftService.getCurrent(projectId);
   const shiftId = getShiftId(currentShift);
 
-  // Only auto-start when there is no shift running at all. Don't touch a shift
-  // that belongs to a different project.
-  if (shiftId && MONITORED_SHIFT_STATUSES.has(currentShift?.status)) {
+  // Already running for this project — nothing to do.
+  if (shiftId && currentShift?.status === "active") {
     return;
   }
 
-  const startedShift = await shiftService.start(projectId);
+  // Paused earlier today (manual break, auto-pause, or a prior geofence exit)
+  // — resume it instead of starting a new one.
+  const shift =
+    shiftId && currentShift?.status === "paused"
+      ? await shiftService.resume(shiftId)
+      : await shiftService.start(projectId);
 
-  await notifyShiftAutoStarted(startedShift);
-  await emitShiftAutoStarted(startedShift);
+  await notifyShiftAutoStarted(shift);
+  await emitShiftAutoStarted(shift);
 };
 
 TaskManager.defineTask(SHIFT_GEOFENCE_TASK, async ({ data, error }) => {
