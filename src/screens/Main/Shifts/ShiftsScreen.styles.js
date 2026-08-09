@@ -338,6 +338,15 @@ export const styles = StyleSheet.create({
     color: "#FFFFFF",
     opacity: 0.9,
   },
+  pendingDot: {
+    position: "absolute",
+    top: 4,
+    right: 4,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#F59E0B",
+  },
   shiftDetailsContainer: {
     width: "100%",
     marginBottom: 12,

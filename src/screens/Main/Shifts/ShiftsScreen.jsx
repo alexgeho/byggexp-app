@@ -69,8 +69,8 @@ const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "spinner" : "default";
 // wired in once the backend exposes them per day. Colour-coded everywhere.
 const HOURS_SOURCES = [
   { key: "planned", label: "Planned", sub: "contract", color: "#0785F4" },
-  { key: "gps", label: "GPS", sub: "measured", color: "#12B76A" },
   { key: "manual", label: "Manual", sub: "worker", color: "#F59E0B" },
+  { key: "gps", label: "GPS", sub: "measured", color: "#12B76A" },
 ];
 
 export default function ShiftsScreen() {
@@ -106,7 +106,7 @@ export default function ShiftsScreen() {
   const [filterProjectId, setFilterProjectId] = useState(null);
   const [filterWorkerIds, setFilterWorkerIds] = useState([]);
   const [employeePickerOpen, setEmployeePickerOpen] = useState(false);
-  const [hoursSource, setHoursSource] = useState("gps");
+  const [hoursSource, setHoursSource] = useState("manual");
   // Worker manual-hours editor: the shift being edited, its hh/mm inputs, and
   // the in-flight save flag.
   const [manualHoursShift, setManualHoursShift] = useState(null);
@@ -122,6 +122,10 @@ export default function ShiftsScreen() {
   const [inlineManualDate, setInlineManualDate] = useState(null);
   const [inlineManualSeed, setInlineManualSeed] = useState("");
   const inlineValueRef = useRef("");
+  // Unsaved manual hours keyed by date (hours as a number). Fill several days,
+  // then the header check saves them all in one go.
+  const [pendingManual, setPendingManual] = useState({});
+  const [savingBatch, setSavingBatch] = useState(false);
 
   const currentUserId = user?.id || user?._id || null;
 
@@ -339,106 +343,149 @@ export default function ShiftsScreen() {
     setSelectedDates([]);
   }, []);
 
-  // Begin typing hours straight into a day's calendar cell (Manuell tab).
+  // Begin typing hours straight into a day's calendar cell (Manuell tab). Seed
+  // from a pending edit if present, else from what's already saved.
   const startInlineManual = useCallback(
     (dateStr) => {
-      const ms = Number(dayMap.get(dateStr)?.manualDurationMs) || 0;
-      const hours = ms ? Number((ms / 3600000).toFixed(2)) : 0;
+      const pending = pendingManual[dateStr];
+      const savedMs = Number(dayMap.get(dateStr)?.manualDurationMs) || 0;
+      const hours =
+        pending != null
+          ? pending
+          : savedMs
+            ? Number((savedMs / 3600000).toFixed(2))
+            : 0;
       const seed = hours ? String(hours).replace(".", ",") : "";
       inlineValueRef.current = seed;
       setInlineManualSeed(seed);
-      setSelectedDates([dateStr]);
       setInlineManualDate(dateStr);
     },
-    [dayMap],
+    [dayMap, pendingManual],
   );
 
-  // Save the in-cell value for a specific date (called on blur/submit). The
-  // date is passed in so a blur that fires while another cell is opening still
-  // saves the right day; the live text is read from the ref.
-  const commitInlineManual = useCallback(
-    async (dateStr) => {
-      if (!dateStr) {
-        return;
-      }
-      setInlineManualDate((current) => (current === dateStr ? null : current));
+  // Move the open cell's typed value into the pending map (no network). Dedups
+  // against the saved value so unchanged days don't count as unsaved.
+  const stashOpenInput = useCallback(() => {
+    const dateStr = inlineManualDate;
+    if (!dateStr) {
+      return;
+    }
+    const raw = String(inlineValueRef.current || "")
+      .replace(",", ".")
+      .trim();
+    const savedMs = Number(dayMap.get(dateStr)?.manualDurationMs) || 0;
 
+    setPendingManual((prev) => {
+      const next = { ...prev };
+      if (raw === "") {
+        // Empty clears to 0 only when there was a saved value to remove.
+        if (savedMs > 0) {
+          next[dateStr] = 0;
+        } else {
+          delete next[dateStr];
+        }
+        return next;
+      }
+      const hours = parseFloat(raw);
+      if (!Number.isFinite(hours) || hours < 0) {
+        delete next[dateStr];
+        return next;
+      }
+      const capped = Math.min(hours, 24);
+      if (Math.round(capped * 3600000) === savedMs) {
+        delete next[dateStr]; // same as saved — nothing to save
+      } else {
+        next[dateStr] = capped;
+      }
+      return next;
+    });
+  }, [inlineManualDate, dayMap]);
+
+  // The blue header check saves every pending day in one go (including the one
+  // still open in the input).
+  const saveAllManual = useCallback(async () => {
+    Keyboard.dismiss();
+
+    // Merge the currently-open cell into a local copy so we don't race the
+    // async setPendingManual from stashOpenInput.
+    const merged = { ...pendingManual };
+    const openDate = inlineManualDate;
+    if (openDate) {
       const raw = String(inlineValueRef.current || "")
         .replace(",", ".")
         .trim();
-      const hours = raw === "" ? 0 : parseFloat(raw);
-      if (!Number.isFinite(hours) || hours < 0) {
-        return;
+      const savedMs = Number(dayMap.get(openDate)?.manualDurationMs) || 0;
+      if (raw === "") {
+        if (savedMs > 0) merged[openDate] = 0;
+        else delete merged[openDate];
+      } else {
+        const hours = parseFloat(raw);
+        if (Number.isFinite(hours) && hours >= 0) {
+          const capped = Math.min(hours, 24);
+          if (Math.round(capped * 3600000) === savedMs) delete merged[openDate];
+          else merged[openDate] = capped;
+        }
       }
-      if (hours > 24) {
-        Alert.alert(
-          t("shifts.manualHoursError"),
-          t("shifts.manualHoursTooLong"),
-        );
-        return;
-      }
+    }
+    setInlineManualDate(null);
 
-      const durationMs = Math.round(hours * 3600000);
-      const existingMs = Number(dayMap.get(dateStr)?.manualDurationMs) || 0;
-      if (durationMs === existingMs) {
-        return;
-      }
+    const entries = Object.entries(merged);
+    if (entries.length === 0) {
+      setPendingManual({});
+      return;
+    }
 
-      const projectId = resolveManualProjectId();
-      if (!projectId) {
-        Alert.alert(
-          t("shifts.manualHoursError"),
-          t("shifts.manualHoursNoProject"),
-        );
-        return;
-      }
+    const projectId = resolveManualProjectId();
+    if (!projectId) {
+      Alert.alert(
+        t("shifts.manualHoursError"),
+        t("shifts.manualHoursNoProject"),
+      );
+      return;
+    }
 
-      try {
+    try {
+      setSavingBatch(true);
+      for (const [date, hours] of entries) {
+        const durationMs = Math.round(Number(hours) * 3600000);
         await shiftService.addManualHours({
           workerId: currentUserId,
           projectId,
-          date: dateStr,
+          date,
           durationMs,
         });
-        await loadHistory(selectedMonth);
-      } catch (error) {
-        const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          t("shifts.manualHoursError");
-        Alert.alert(t("shifts.manualHoursError"), message);
       }
-    },
-    [
-      dayMap,
-      resolveManualProjectId,
-      currentUserId,
-      loadHistory,
-      selectedMonth,
-      t,
-    ],
-  );
-
-  // The blue check in the header (shown while the keyboard is up) saves the
-  // day currently being typed into.
-  const commitOpenInline = useCallback(() => {
-    if (inlineManualDate) {
-      Keyboard.dismiss();
-      commitInlineManual(inlineManualDate);
+      setPendingManual({});
+      await loadHistory(selectedMonth);
+    } catch (error) {
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        t("shifts.manualHoursError");
+      Alert.alert(t("shifts.manualHoursError"), message);
+    } finally {
+      setSavingBatch(false);
     }
-  }, [inlineManualDate, commitInlineManual]);
+  }, [
+    pendingManual,
+    inlineManualDate,
+    dayMap,
+    resolveManualProjectId,
+    currentUserId,
+    loadHistory,
+    selectedMonth,
+    t,
+  ]);
 
   // On the Manuell tab a tap edits the cell inline; otherwise it toggles date
-  // selection as before. Switching to another day banks the one being edited.
+  // selection. Moving to another day banks the one being typed into (locally).
   const handleDayPress = useCallback(
     (dateStr) => {
       if (hoursSource === "manual") {
         if (inlineManualDate === dateStr) {
           return; // already editing this day — keep the typed value
         }
-        if (inlineManualDate) {
-          commitInlineManual(inlineManualDate);
-        }
+        stashOpenInput();
         startInlineManual(dateStr);
       } else {
         toggleSelectedDate(dateStr);
@@ -447,11 +494,13 @@ export default function ShiftsScreen() {
     [
       hoursSource,
       inlineManualDate,
-      commitInlineManual,
+      stashOpenInput,
       startInlineManual,
       toggleSelectedDate,
     ],
   );
+
+  const hasPendingManual = Object.keys(pendingManual).length > 0;
 
   const calendarLayout = useMemo(
     () => buildCalendarLayout(selectedMonth),
@@ -495,7 +544,12 @@ export default function ShiftsScreen() {
 
             const day = Number(dateStr.split("-")[2]);
             const shiftDay = dayMap.get(dateStr);
-            const sourceMs = daySourceMs(shiftDay);
+            const savedMs = daySourceMs(shiftDay);
+            const pendingHours = pendingManual[dateStr];
+            const hasPending = hoursSource === "manual" && pendingHours != null;
+            const displayMs = hasPending
+              ? Math.round(pendingHours * 3600000)
+              : savedMs;
             const isSelected = selectedDates.includes(dateStr);
             const isToday = dateStr === todayDateKey;
 
@@ -507,7 +561,7 @@ export default function ShiftsScreen() {
                 key={dateStr}
                 style={[
                   styles.calendarCell,
-                  sourceMs > 0 &&
+                  displayMs > 0 &&
                     !isSelected && {
                       backgroundColor: `${sourceMeta.color}1A`,
                     },
@@ -517,6 +571,7 @@ export default function ShiftsScreen() {
                 onPress={() => handleDayPress(dateStr)}
                 activeOpacity={0.85}
               >
+                {hasPending ? <View style={styles.pendingDot} /> : null}
                 <Text
                   style={[
                     styles.calendarDay,
@@ -541,16 +596,16 @@ export default function ShiftsScreen() {
                     returnKeyType="done"
                     placeholder="0"
                     placeholderTextColor="#9BB0C1"
-                    onSubmitEditing={() => commitInlineManual(dateStr)}
+                    onSubmitEditing={stashOpenInput}
                   />
-                ) : sourceMs > 0 ? (
+                ) : displayMs > 0 ? (
                   <Text
                     style={[
                       styles.calendarHours,
                       !isSelected && { color: sourceMeta.color },
                     ]}
                   >
-                    {formatDurationShort(sourceMs)}
+                    {formatDurationShort(displayMs)}
                   </Text>
                 ) : hoursSource === "manual" ? (
                   <Text
@@ -580,7 +635,8 @@ export default function ShiftsScreen() {
     hoursSource,
     inlineManualDate,
     inlineManualSeed,
-    commitInlineManual,
+    pendingManual,
+    stashOpenInput,
   ]);
 
   const handleOpenShiftPhoto = useCallback(
@@ -1035,13 +1091,18 @@ export default function ShiftsScreen() {
         >
           {t("menu.workShifts")}
         </Text>
-        {inlineManualDate ? (
+        {hoursSource === "manual" && (inlineManualDate || hasPendingManual) ? (
           <TouchableOpacity
             style={styles.headerSaveButton}
-            onPress={commitOpenInline}
+            onPress={saveAllManual}
             activeOpacity={0.85}
+            disabled={savingBatch}
           >
-            <Icon name="check" size={22} color="#FFFFFF" />
+            {savingBatch ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Icon name="check" size={22} color="#FFFFFF" />
+            )}
           </TouchableOpacity>
         ) : (
           <View style={styles.placeholder} />
