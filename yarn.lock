@@ -1406,11 +1406,6 @@
   resolved "https://registry.npmjs.org/@expo/schema-utils/-/schema-utils-0.1.8.tgz"
   integrity sha512-9I6ZqvnAvKKDiO+ZF8BpQQFYWXOJvTAL5L/227RUbWG1OVZDInFifzCBiqAZ3b67NRfeAgpgvbA7rejsqhY62A==
 
-"@expo/schema-utils@^57.0.2":
-  version "57.0.2"
-  resolved "https://registry.yarnpkg.com/@expo/schema-utils/-/schema-utils-57.0.2.tgz#abbce2902bd23a338691d600815a6093cc6f4403"
-  integrity sha512-fMu/jyN0l1Wzv7XkeWR4IYCx1M8ryui3FdBNGrWwbRgJ7EhxXxK8E2jxP2W3pbgUwUY0V3hG8+GyfCZwny+Lxw==
-
 "@expo/sdk-runtime-versions@^1.0.0":
   version "1.0.0"
   resolved "https://registry.npmjs.org/@expo/sdk-runtime-versions/-/sdk-runtime-versions-1.0.0.tgz"
@@ -4288,38 +4283,6 @@ expo-constants@~18.0.13:
     "@expo/config" "~12.0.13"
     "@expo/env" "~2.0.8"
 
-expo-dev-client@^57.0.10:
-  version "57.0.10"
-  resolved "https://registry.yarnpkg.com/expo-dev-client/-/expo-dev-client-57.0.10.tgz#4dc35368e806169ed00afbe5e65417cb36446e9c"
-  integrity sha512-aY6PVbD1R+XwIcrOucRnB/yJfB6qVHIHqgRV6F8LwOzo7DwZaa/ixs+O2itHH7BNbUiwkS8tFjtbzJ4vDx/ulw==
-  dependencies:
-    expo-dev-launcher "~57.0.10"
-    expo-dev-menu "~57.0.10"
-    expo-dev-menu-interface "~57.0.0"
-    expo-manifests "~57.0.1"
-    expo-updates-interface "~57.0.1"
-
-expo-dev-launcher@~57.0.10:
-  version "57.0.10"
-  resolved "https://registry.yarnpkg.com/expo-dev-launcher/-/expo-dev-launcher-57.0.10.tgz#5b8c01bbb3868a764ac1c686d23622a94c34cb30"
-  integrity sha512-LfGfiKDBzVgCXbIozbyzPU7yLdOtvmuH2U9jJbLEmkJxoExOy8NiFJoL8U+I/pYw3tj4I3GVkVOtZtItDFGn8Q==
-  dependencies:
-    "@expo/schema-utils" "^57.0.2"
-    expo-dev-menu "~57.0.10"
-    expo-manifests "~57.0.1"
-
-expo-dev-menu-interface@~57.0.0:
-  version "57.0.0"
-  resolved "https://registry.yarnpkg.com/expo-dev-menu-interface/-/expo-dev-menu-interface-57.0.0.tgz#23bd53c35d00cead3fd963a9bc3e2abf8c00467d"
-  integrity sha512-F47VdzOHYc19FhI/jBgctpO8a5UskTIxG6a1E5t3W5gF8VImuvBQffdXXfLHhsuCl7dS3v3U0R45cleeVXO1Zg==
-
-expo-dev-menu@~57.0.10:
-  version "57.0.10"
-  resolved "https://registry.yarnpkg.com/expo-dev-menu/-/expo-dev-menu-57.0.10.tgz#82c5721caee48fda2b3c60a85cef55a25491f63e"
-  integrity sha512-y9S8J2MfqEO1T6daH3HNsjR7S4TcLf3CpSvNAwSzj5x6wmJoMYEvxWkzKy7Ep1R21EFBeSET1sZ1mFCCCYjgBw==
-  dependencies:
-    expo-dev-menu-interface "~57.0.0"
-
 expo-device@~8.0.10:
   version "8.0.10"
   resolved "https://registry.npmjs.org/expo-device/-/expo-device-8.0.10.tgz"
@@ -4361,11 +4324,6 @@ expo-image-picker@~17.0.10:
   dependencies:
     expo-image-loader "~6.0.0"
 
-expo-json-utils@~57.0.1:
-  version "57.0.1"
-  resolved "https://registry.yarnpkg.com/expo-json-utils/-/expo-json-utils-57.0.1.tgz#1635b80ccb124e2635765611957ac4e825880130"
-  integrity sha512-cgTe1NqzQdYs/WN+3nIY5IZg8s0pb0xaTUbhYvxQDn137GbwRfHoGM2se3m3Vsl4Qu+B9G4RPEK5WJDEU2Do7g==
-
 expo-keep-awake@~15.0.8:
   version "15.0.8"
   resolved "https://registry.npmjs.org/expo-keep-awake/-/expo-keep-awake-15.0.8.tgz"
@@ -4387,13 +4345,6 @@ expo-location@~19.0.8:
   version "19.0.8"
   resolved "https://registry.npmjs.org/expo-location/-/expo-location-19.0.8.tgz"
   integrity sha512-H/FI75VuJ1coodJbbMu82pf+Zjess8X8Xkiv9Bv58ZgPKS/2ztjC1YO1/XMcGz7+s9DrbLuMIw22dFuP4HqneA==
-
-expo-manifests@~57.0.1:
-  version "57.0.1"
-  resolved "https://registry.yarnpkg.com/expo-manifests/-/expo-manifests-57.0.1.tgz#4596d35f82d65293570fcd8b636b51c5d9696dc4"
-  integrity sha512-qB/mDG2dYdl+EvUeQuqP8KFYCFgFCQjJYdWIHo8SFBgDzMYmdF286DFY2M1M9Okr99wkb5M4tgA3aCcwv3aEQA==
-  dependencies:
-    expo-json-utils "~57.0.1"
 
 expo-modules-autolinking@3.0.25:
   version "3.0.25"
@@ -4449,11 +4400,6 @@ expo-task-manager@~14.0.9:
   integrity sha512-GKWtXrkedr4XChHfTm5IyTcSfMtCPxzx89y4CMVqKfyfROATibrE/8UI5j7UC/pUOfFoYlQvulQEvECMreYuUA==
   dependencies:
     unimodules-app-loader "~6.0.8"
-
-expo-updates-interface@~57.0.1:
-  version "57.0.1"
-  resolved "https://registry.yarnpkg.com/expo-updates-interface/-/expo-updates-interface-57.0.1.tgz#2ff8a65f9ec139743b9b29273e42f2888420db00"
-  integrity sha512-+LUWwJ0gf/TEKMVdQAw/Gjih4dvrk+URgy24X9qEGKuuMDZqjBRm9T4yQyBVALGL5TTdPUaB6ILxx3lshm3pwQ==
 
 expo@~54.0.34:
   version "54.0.34"
