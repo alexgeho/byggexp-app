@@ -44,7 +44,9 @@ const handleExit = async () => {
   const completedShift = await shiftService.complete(shiftId, {
     reason: "outside_project_area",
     source: "mobile_geofence_checkout",
-    notifyUser: true,
+    // The app posts its own local notification in the user's language
+    // (notifyShiftAutoCompleted), so don't also send the server push.
+    notifyUser: false,
   });
 
   await notifyShiftAutoCompleted(completedShift);

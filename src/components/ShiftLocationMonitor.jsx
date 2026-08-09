@@ -140,7 +140,9 @@ export default function ShiftLocationMonitor() {
     const completedShift = await shiftService.complete(shiftId, {
       reason: "outside_project_area",
       source: "mobile_geofence_checkout",
-      notifyUser: true,
+      // Notify in-app in the user's language (emitShiftAutoCompleted → Alert)
+      // instead of the server push, so the language always matches the app.
+      notifyUser: false,
     });
 
     completedShiftIdRef.current = shiftId;
