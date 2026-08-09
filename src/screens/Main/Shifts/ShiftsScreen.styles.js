@@ -303,24 +303,13 @@ export const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     includeFontPadding: false,
   },
-  manualAccessoryBar: {
-    backgroundColor: "#F2F1F6",
-    borderTopWidth: 1,
-    borderTopColor: "#D9DCE3",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    alignItems: "flex-end",
-  },
-  manualAccessoryButton: {
+  headerSaveButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 9999,
     backgroundColor: "#0785F4",
-    paddingHorizontal: 22,
-    paddingVertical: 9,
-    borderRadius: 10,
-  },
-  manualAccessoryButtonText: {
-    color: "#FFFFFF",
-    fontSize: 15,
-    fontWeight: "700",
+    alignItems: "center",
+    justifyContent: "center",
   },
   shiftDetailsContainer: {
     width: "100%",
