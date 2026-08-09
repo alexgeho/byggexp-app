@@ -131,6 +131,8 @@ export default function ShiftsScreen() {
   const scrollViewRef = useRef(null);
   const calendarYRef = useRef(0);
   const rowYRef = useRef({});
+  const scrollViewHeightRef = useRef(0);
+  const keyboardHeightRef = useRef(336);
 
   const currentUserId = user?.id || user?._id || null;
 
@@ -145,6 +147,14 @@ export default function ShiftsScreen() {
       null,
     [projects, selectedProject],
   );
+
+  // Track the keyboard height so we can park the edited day just above it.
+  useEffect(() => {
+    const show = Keyboard.addListener("keyboardWillShow", (e) => {
+      keyboardHeightRef.current = e.endCoordinates?.height || 336;
+    });
+    return () => show.remove();
+  }, []);
 
   const sourceMeta =
     HOURS_SOURCES.find((s) => s.key === hoursSource) || HOURS_SOURCES[1];
@@ -365,12 +375,15 @@ export default function ShiftsScreen() {
       setInlineManualSeed(seed);
       setInlineManualDate(dateStr);
 
-      // Lift the edited day above the keyboard once it has animated up.
+      // Park the edited day just above the keyboard (not jammed to the top).
       const rowY = rowYRef.current[dateStr];
       if (rowY != null) {
         setTimeout(() => {
+          const visibleAboveKb =
+            (scrollViewHeightRef.current || 500) - keyboardHeightRef.current;
+          const targetFromTop = Math.max(150, visibleAboveKb - 110);
           scrollViewRef.current?.scrollTo({
-            y: Math.max(0, calendarYRef.current + rowY - 12),
+            y: Math.max(0, calendarYRef.current + rowY - targetFromTop),
             animated: true,
           });
         }, 300);
@@ -1148,6 +1161,9 @@ export default function ShiftsScreen() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           automaticallyAdjustKeyboardInsets
+          onLayout={(e) => {
+            scrollViewHeightRef.current = e.nativeEvent.layout.height;
+          }}
         >
           {/* Planned / GPS / Manual — the source that drives numbers & colours */}
           <View style={styles.sourceToggle}>
