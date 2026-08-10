@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../theme/ThemeContext";
 import AuthContext from "../../../contexts/AuthContext";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
+import { ProjectGroupIcon } from "../../../components/common/icons/ProjectGroupIcon";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { ProjectFilterSelector } from "../../../components/common/ProjectFilterSelector/ProjectFilterSelector";
 import { chatService, projectService, userService } from "../../../services";
@@ -475,7 +476,7 @@ export default function ChatListScreen() {
           onPress={openProjectGroup}
           activeOpacity={0.85}
         >
-          <Icon name="users" size={18} color="#FFFFFF" />
+          <ProjectGroupIcon width={30} height={18} color="#FFFFFF" />
           <Text style={styles.projectGroupText}>
             {t("chat.messageWholeProject")}
           </Text>
