@@ -108,7 +108,7 @@ const getSavedProjectCoordinate = (project) => {
 
 const toRadians = (value) => (value * Math.PI) / 180;
 
-const calculateDistanceMeters = (
+export const calculateDistanceMeters = (
   sourceLatitude,
   sourceLongitude,
   targetLatitude,

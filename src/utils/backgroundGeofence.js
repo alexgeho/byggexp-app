@@ -1,21 +1,30 @@
 import { Platform } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Device from "expo-device";
 import * as Location from "expo-location";
 
 import { shiftLocationPolicy } from "../config/shiftLocationPolicy";
 import { SHIFT_GEOFENCE_TASK } from "../tasks/shiftGeofenceTask";
+import {
+  SHIFT_LOCATION_TASK,
+  SHIFT_LOCATION_TARGET_KEY,
+  SHIFT_LOCATION_INSIDE_KEY,
+} from "../tasks/shiftLocationUpdatesTask";
 import { resolveProjectGeofenceRegion } from "./shiftLocationGuard";
 
 // AsyncStorage key: timestamp of when we last showed the consent priming
 // screen, so it is offered at most once automatically.
 export const LOCATION_CONSENT_PROMPTED_KEY = "shiftGeofenceConsentPromptedAt";
 
-// iOS only for now. Android background geofencing needs a properly declared
-// location foreground service (via prebuild) + the Play Store background
-// location declaration; without them startGeofencingAsync destabilises the
-// app. On Android the foreground shift monitor still handles auto in/out.
+const isAndroid = Platform.OS === "android";
+
+// Background auto start/stop is supported on both platforms, but via different
+// mechanisms: iOS uses OS-level region monitoring (startGeofencingAsync);
+// Android uses a foreground-service location stream (startLocationUpdatesAsync)
+// because strict Android builds reject Play-Services geofencing. Both need
+// "Always"/background location granted and a physical device.
 export const isBackgroundGeofencingSupported = () =>
-  Platform.OS === "ios" &&
+  (Platform.OS === "ios" || Platform.OS === "android") &&
   shiftLocationPolicy.enabled &&
   shiftLocationPolicy.backgroundGeofencingEnabled &&
   Device.isDevice;
@@ -65,12 +74,30 @@ const clampRadius = (radius) => {
   return Math.max(value, min);
 };
 
+const clearAndroidState = async () => {
+  await AsyncStorage.removeItem(SHIFT_LOCATION_TARGET_KEY).catch(() => {});
+  await AsyncStorage.removeItem(SHIFT_LOCATION_INSIDE_KEY).catch(() => {});
+};
+
+// Stop whichever background monitor is running on this platform.
 const stopIfRunning = async () => {
-  const started = await Location.hasStartedGeofencingAsync(
+  if (isAndroid) {
+    const updating = await Location.hasStartedLocationUpdatesAsync(
+      SHIFT_LOCATION_TASK,
+    ).catch(() => false);
+    if (updating) {
+      await Location.stopLocationUpdatesAsync(SHIFT_LOCATION_TASK).catch(
+        () => {},
+      );
+    }
+    await clearAndroidState();
+    return;
+  }
+
+  const geofencing = await Location.hasStartedGeofencingAsync(
     SHIFT_GEOFENCE_TASK,
   ).catch(() => false);
-
-  if (started) {
+  if (geofencing) {
     await Location.stopGeofencingAsync(SHIFT_GEOFENCE_TASK).catch(() => {});
   }
 };
@@ -79,9 +106,59 @@ export const stopShiftGeofencing = async () => {
   await stopIfRunning();
 };
 
-// Register the OS-level geofence for a single project. The task fires enter/exit
-// even when the app is closed or the phone is asleep. Returns true when a
-// geofence is now active for the project, false otherwise (unsupported, no
+// Android: start (or keep) a foreground-service location stream for the given
+// project region. The task in shiftLocationUpdatesTask computes enter/exit from
+// the stream. Idempotent — a stream already running for the same project is
+// left untouched so its inside/outside state is preserved.
+const syncAndroidLocationUpdates = async (region) => {
+  const target = {
+    projectId: region.identifier,
+    latitude: region.latitude,
+    longitude: region.longitude,
+    radius: clampRadius(region.radius),
+  };
+
+  const alreadyRunning = await Location.hasStartedLocationUpdatesAsync(
+    SHIFT_LOCATION_TASK,
+  ).catch(() => false);
+
+  if (alreadyRunning) {
+    const raw = await AsyncStorage.getItem(SHIFT_LOCATION_TARGET_KEY).catch(
+      () => null,
+    );
+    const existing = raw ? JSON.parse(raw) : null;
+    if (existing?.projectId === target.projectId) {
+      return true;
+    }
+    // Switched to a different project: stop and re-register with fresh state.
+    await Location.stopLocationUpdatesAsync(SHIFT_LOCATION_TASK).catch(
+      () => {},
+    );
+  }
+
+  await AsyncStorage.removeItem(SHIFT_LOCATION_INSIDE_KEY).catch(() => {});
+  await AsyncStorage.setItem(SHIFT_LOCATION_TARGET_KEY, JSON.stringify(target));
+
+  await Location.startLocationUpdatesAsync(SHIFT_LOCATION_TASK, {
+    accuracy: Location.Accuracy.Balanced,
+    timeInterval: 30000,
+    distanceInterval: 25,
+    pausesUpdatesAutomatically: false,
+    showsBackgroundLocationIndicator: false,
+    foregroundService: {
+      notificationTitle: "Shift location active",
+      notificationBody:
+        "ByggExp checks you in and out as you arrive at and leave the project site.",
+      notificationColor: "#052D50",
+      killServiceOnDestroy: false,
+    },
+  });
+
+  return true;
+};
+
+// Register (or refresh) background auto start/stop for a single project. Returns
+// true when monitoring is now active for it, false otherwise (unsupported, no
 // permission, or the project has no usable location).
 export const syncShiftGeofenceForProject = async ({
   project,
@@ -102,19 +179,24 @@ export const syncShiftGeofenceForProject = async ({
     return false;
   }
 
-  // startGeofencingAsync replaces any regions previously registered for the
-  // task, so we don't need to stop first — but stop keeps state clean if the
-  // new region list is otherwise identical.
-  await Location.startGeofencingAsync(SHIFT_GEOFENCE_TASK, [
-    {
-      identifier: region.identifier,
-      latitude: region.latitude,
-      longitude: region.longitude,
-      radius: clampRadius(region.radius),
-      notifyOnEnter: true,
-      notifyOnExit: true,
-    },
-  ]);
+  try {
+    if (isAndroid) {
+      return await syncAndroidLocationUpdates(region);
+    }
 
-  return true;
+    await Location.startGeofencingAsync(SHIFT_GEOFENCE_TASK, [
+      {
+        identifier: region.identifier,
+        latitude: region.latitude,
+        longitude: region.longitude,
+        radius: clampRadius(region.radius),
+        notifyOnEnter: true,
+        notifyOnExit: true,
+      },
+    ]);
+    return true;
+  } catch {
+    await stopIfRunning();
+    return false;
+  }
 };

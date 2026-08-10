@@ -13,9 +13,12 @@ import NotificationBootstrap from "./src/components/NotificationBootstrap";
 import ShiftLocationMonitor from "./src/components/ShiftLocationMonitor";
 import LocationConsentBootstrap from "./src/components/LocationConsentBootstrap";
 import MagicLinkHandler from "./src/components/MagicLinkHandler";
-// Side-effect import: registers the background geofence task via
-// TaskManager.defineTask at module load, before the OS can invoke it headless.
+// Side-effect imports: register the background location tasks via
+// TaskManager.defineTask at module load, before the OS can invoke them
+// headless. iOS uses the native geofence task; Android uses the
+// foreground-service location task.
 import "./src/tasks/shiftGeofenceTask";
+import "./src/tasks/shiftLocationUpdatesTask";
 import ErrorBoundary from "./src/components/common/ErrorBoundary/ErrorBoundary";
 import { initSentry } from "./src/utils/sentry";
 import { loadStoredLanguage } from "./src/i18n";

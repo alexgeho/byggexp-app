@@ -33,5 +33,10 @@
         <data android:scheme="byggexp"/>
       </intent-filter>
     </activity>
+    <!-- expo-location foreground service: streams GPS under a persistent
+         notification so Android auto check-in/out works even where strict
+         builds reject Play-Services geofencing. Hand-added because android/ is
+         committed (expo prebuild does not run on EAS for this repo). -->
+    <service android:name="expo.modules.location.services.LocationTaskService" android:exported="false" android:foregroundServiceType="location"/>
   </application>
 </manifest>
