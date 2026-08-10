@@ -112,7 +112,16 @@ export default function AppNavigator() {
               name="DocumentPreview"
               component={DocumentPreviewScreen}
             />
-            <Stack.Screen name="Projects" component={ProjectsScreen} />
+            <Stack.Screen
+              name="Projects"
+              component={ProjectsScreen}
+              // Disable the native-stack transition: selecting a project
+              // re-renders Home, and doing that during the close animation
+              // raced Fabric on the New Architecture and crashed with "Unable
+              // to find viewState for tag" (release-only). No animation → no
+              // mid-transition mount race.
+              options={{ animation: "none" }}
+            />
             <Stack.Screen name="Project" component={ProjectScreen} />
             <Stack.Screen name="Task" component={TaskScreen} />
             <Stack.Screen
