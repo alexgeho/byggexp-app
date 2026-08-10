@@ -23,7 +23,12 @@ import {
   canManageWorkers as checkCanManageWorkers,
   canManageDocuments as checkCanManageDocuments,
 } from "../utils/userRoles";
-import { authService, userService, logUserActivity } from "../services";
+import {
+  authService,
+  userService,
+  logUserActivity,
+  shiftService,
+} from "../services";
 import { jwtDecode } from "jwt-decode";
 import { unregisterPushToken } from "../services/notifications.service";
 import { setUnauthorizedHandler } from "../services/api";
@@ -38,6 +43,9 @@ export const AuthProvider = ({ children }) => {
   const [selectedProject, setSelectedProject] = useState(null);
   // Guards the persist effect so it doesn't wipe storage before hydration.
   const projectHydratedRef = useRef(false);
+  // Tracks the previously selected project so switching projects can close the
+  // old project's open shift.
+  const prevProjectRef = useRef(null);
 
   useEffect(() => {
     const loadTokenAndUser = async () => {
@@ -74,6 +82,51 @@ export const AuthProvider = ({ children }) => {
     } else {
       removeSelectedProject();
     }
+  }, [selectedProject]);
+
+  // When the user switches to a different project, close any open shift on the
+  // project they left — you can only be clocked in on one site at a time. Runs
+  // only for genuine switches (project A -> project B), not on hydration,
+  // logout, or clearing the selection.
+  useEffect(() => {
+    if (!projectHydratedRef.current) {
+      return;
+    }
+
+    const previousProject = prevProjectRef.current;
+    const previousProjectId = previousProject?._id || previousProject?.id;
+    const nextProjectId = selectedProject?._id || selectedProject?.id;
+    prevProjectRef.current = selectedProject;
+
+    if (
+      !previousProjectId ||
+      !nextProjectId ||
+      previousProjectId === nextProjectId
+    ) {
+      return;
+    }
+
+    (async () => {
+      try {
+        const openShift = await shiftService.getCurrent(previousProjectId);
+        const openShiftId = openShift?.id || openShift?._id;
+        if (
+          openShiftId &&
+          (openShift.status === "active" || openShift.status === "paused")
+        ) {
+          await shiftService.complete(openShiftId, {
+            reason: "project_switch",
+            source: "mobile_project_switch",
+            notifyUser: false,
+          });
+        }
+      } catch (error) {
+        console.error(
+          "AuthContext: Failed to close previous project shift on switch:",
+          error,
+        );
+      }
+    })();
   }, [selectedProject]);
 
   useEffect(() => {
