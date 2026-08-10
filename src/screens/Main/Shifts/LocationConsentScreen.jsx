@@ -4,6 +4,7 @@ import {
   Alert,
   Image,
   Linking,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -26,6 +27,9 @@ import {
   requestBackgroundLocationPermission,
 } from "../../../utils/backgroundGeofence";
 
+// AsyncStorage key: only prompt for the battery-optimization exemption once.
+const BATTERY_OPT_PROMPTED_KEY = "shiftBatteryOptPromptedAt";
+
 export default function LocationConsentScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -39,6 +43,45 @@ export default function LocationConsentScreen() {
       String(Date.now()),
     ).catch(() => {});
   }, []);
+
+  // Android throttles the foreground-service location stream under Doze unless
+  // the app is exempt from battery optimisation, so auto check-out only fires
+  // when the phone wakes. After background permission is granted, walk the user
+  // to "Unrestricted" once. (iOS handles background geofencing natively — no
+  // equivalent step.)
+  const maybePromptBatteryOptimization = async () => {
+    if (Platform.OS !== "android") {
+      return;
+    }
+
+    const alreadyPrompted = await AsyncStorage.getItem(
+      BATTERY_OPT_PROMPTED_KEY,
+    ).catch(() => null);
+    if (alreadyPrompted) {
+      return;
+    }
+    await AsyncStorage.setItem(
+      BATTERY_OPT_PROMPTED_KEY,
+      String(Date.now()),
+    ).catch(() => {});
+
+    Alert.alert(
+      t("locationConsent.batteryTitle", { defaultValue: "One more step" }),
+      t("locationConsent.batteryBody", {
+        defaultValue:
+          'So ByggExp can start and end shifts while your phone is locked, set its battery usage to "Unrestricted" (App battery usage → Unrestricted).',
+      }),
+      [
+        { text: t("locationConsent.batteryLater", { defaultValue: "Later" }) },
+        {
+          text: t("locationConsent.openSettings", {
+            defaultValue: "Open settings",
+          }),
+          onPress: () => Linking.openSettings().catch(() => {}),
+        },
+      ],
+    );
+  };
 
   const bullets = [
     t("locationConsent.bulletStart", {
@@ -64,6 +107,7 @@ export default function LocationConsentScreen() {
     try {
       const granted = await requestBackgroundLocationPermission();
       if (granted) {
+        await maybePromptBatteryOptimization();
         navigation.goBack();
         return;
       }
