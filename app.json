@@ -23,7 +23,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/adaptive-icon.png",
-        "backgroundColor": "#6FA8E2"
+        "backgroundColor": "#54B2EC"
       },
       "edgeToEdgeEnabled": true,
       "package": "se.byggexp.app",
