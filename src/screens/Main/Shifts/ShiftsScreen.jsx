@@ -19,11 +19,9 @@ import {
   Linking,
   Platform,
   Keyboard,
+  Pressable,
+  StyleSheet,
 } from "react-native";
-import BottomSheet, {
-  BottomSheetBackdrop,
-  BottomSheetView,
-} from "@gorhom/bottom-sheet";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTranslation } from "react-i18next";
@@ -64,6 +62,31 @@ const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const EXPORT_PERIOD_TABS = ["Month", "Custom"];
 const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "spinner" : "default";
 
+// Plain-Modal bottom sheet — replaces @gorhom/bottom-sheet, which hangs the JS
+// thread on Android under the New Architecture (reanimated 4 / RN 0.81).
+const sheetStyles = StyleSheet.create({
+  backdrop: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.4)",
+  },
+  container: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingTop: 10,
+    paddingBottom: 28,
+    maxHeight: "90%",
+  },
+});
+
 // Which hours to show/bill by. GPS is the tracked timer duration (durationMs);
 // planned (contract, from the hours module) and manual (worker-entered) are
 // wired in once the backend exposes them per day. Colour-coded everywhere.
@@ -82,8 +105,8 @@ export default function ShiftsScreen() {
     user?.role,
   );
   const weekdayLabels = t("shifts.weekdays", { returnObjects: true });
-  const exportBottomSheetRef = useRef(null);
-  const periodBottomSheetRef = useRef(null);
+  const [exportSheetOpen, setExportSheetOpen] = useState(false);
+  const [periodSheetOpen, setPeriodSheetOpen] = useState(false);
   const [availableMonths, setAvailableMonths] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [selectedDates, setSelectedDates] = useState([]);
@@ -774,12 +797,12 @@ export default function ShiftsScreen() {
   ]);
 
   const closeExportSheet = useCallback(() => {
-    exportBottomSheetRef.current?.close();
+    setExportSheetOpen(false);
   }, []);
 
   const closePeriodSheet = useCallback(() => {
     setDatePickerTarget(null);
-    periodBottomSheetRef.current?.close();
+    setPeriodSheetOpen(false);
   }, []);
 
   const openPeriodSheet = useCallback(() => {
@@ -797,7 +820,7 @@ export default function ShiftsScreen() {
       setExportToDate(today);
     }
 
-    periodBottomSheetRef.current?.expand();
+    setPeriodSheetOpen(true);
   }, [exportFromDate, exportFromMonth]);
 
   const getPeriodExportRange = useCallback(() => {
@@ -916,21 +939,8 @@ export default function ShiftsScreen() {
     }
 
     setSelectedExportType("pdf");
-    exportBottomSheetRef.current?.expand();
+    setExportSheetOpen(true);
   }, [exportPeriodApplied, selectedDates]);
-
-  const renderSheetBackdrop = useCallback(
-    (props) => (
-      <BottomSheetBackdrop
-        {...props}
-        appearsOnIndex={0}
-        disappearsOnIndex={-1}
-        opacity={0.59}
-        pressBehavior="close"
-      />
-    ),
-    [],
-  );
 
   const handleCustomDateChange = useCallback(
     (_event, date) => {
@@ -1561,234 +1571,245 @@ export default function ShiftsScreen() {
         addButtonStyle={styles.exportFabButton}
       />
 
-      <BottomSheet
-        ref={exportBottomSheetRef}
-        index={-1}
-        enableDynamicSizing
-        enablePanDownToClose
-        backgroundStyle={styles.bottomSheetBackground}
-        handleIndicatorStyle={styles.handleIndicator}
-        backdropComponent={renderSheetBackdrop}
+      <Modal
+        visible={exportSheetOpen}
+        transparent
+        animationType="slide"
+        statusBarTranslucent
+        onRequestClose={() => setExportSheetOpen(false)}
       >
-        <BottomSheetView style={styles.bottomSheetContent}>
-          <View style={styles.exportSheetBody}>
-            <Text
-              style={[
-                styles.exportSheetTitle,
-                { fontFamily: theme.text.fontFamily["semiBold"] },
-              ]}
-            >
-              {t("shifts.exportTitle")}
-            </Text>
+        <Pressable
+          style={sheetStyles.backdrop}
+          onPress={() => setExportSheetOpen(false)}
+        />
+        <View style={sheetStyles.container}>
+          <View style={styles.handleIndicator} />
+          <View style={styles.bottomSheetContent}>
+            <View style={styles.exportSheetBody}>
+              <Text
+                style={[
+                  styles.exportSheetTitle,
+                  { fontFamily: theme.text.fontFamily["semiBold"] },
+                ]}
+              >
+                {t("shifts.exportTitle")}
+              </Text>
 
-            <View style={styles.exportSheetCard}>
-              <View style={styles.exportButtonsContainer}>
-                <TouchableOpacity
-                  style={[
-                    styles.exportButton,
-                    selectedExportType === "pdf" && styles.exportButtonActive,
-                  ]}
-                  onPress={() => setSelectedExportType("pdf")}
-                  activeOpacity={0.85}
-                >
-                  <Text
+              <View style={styles.exportSheetCard}>
+                <View style={styles.exportButtonsContainer}>
+                  <TouchableOpacity
                     style={[
-                      styles.exportButtonText,
-                      selectedExportType === "pdf" &&
-                        styles.exportButtonTextActive,
+                      styles.exportButton,
+                      selectedExportType === "pdf" && styles.exportButtonActive,
                     ]}
+                    onPress={() => setSelectedExportType("pdf")}
+                    activeOpacity={0.85}
                   >
-                    PDF
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[
-                    styles.exportButton,
-                    selectedExportType === "excel" && styles.exportButtonActive,
-                  ]}
-                  onPress={() => setSelectedExportType("excel")}
-                  activeOpacity={0.85}
-                >
-                  <Text
+                    <Text
+                      style={[
+                        styles.exportButtonText,
+                        selectedExportType === "pdf" &&
+                          styles.exportButtonTextActive,
+                      ]}
+                    >
+                      PDF
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
                     style={[
-                      styles.exportButtonText,
+                      styles.exportButton,
                       selectedExportType === "excel" &&
-                        styles.exportButtonTextActive,
+                        styles.exportButtonActive,
                     ]}
+                    onPress={() => setSelectedExportType("excel")}
+                    activeOpacity={0.85}
                   >
-                    Excel
-                  </Text>
-                </TouchableOpacity>
+                    <Text
+                      style={[
+                        styles.exportButtonText,
+                        selectedExportType === "excel" &&
+                          styles.exportButtonTextActive,
+                      ]}
+                    >
+                      Excel
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-          </View>
 
-          <TouchableOpacity
-            style={[
-              styles.exportMainButton,
-              exporting && styles.exportMainButtonDisabled,
-            ]}
-            onPress={handleExport}
-            disabled={exporting}
-          >
-            {exporting ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <Text style={styles.exportMainButtonText}>
-                {t("shiftHistory.export")}
-              </Text>
-            )}
-          </TouchableOpacity>
-        </BottomSheetView>
-      </BottomSheet>
-
-      <BottomSheet
-        ref={periodBottomSheetRef}
-        index={-1}
-        enableDynamicSizing
-        enablePanDownToClose
-        backgroundStyle={styles.bottomSheetBackground}
-        handleIndicatorStyle={styles.handleIndicator}
-        backdropComponent={renderSheetBackdrop}
-      >
-        <BottomSheetView style={styles.bottomSheetContent}>
-          <View style={styles.exportSheetBody}>
-            <Text
+            <TouchableOpacity
               style={[
-                styles.exportSheetTitle,
-                { fontFamily: theme.text.fontFamily["semiBold"] },
+                styles.exportMainButton,
+                exporting && styles.exportMainButtonDisabled,
               ]}
+              onPress={handleExport}
+              disabled={exporting}
             >
-              {t("shiftHistory.periodLabel")}
-            </Text>
-
-            <View style={styles.periodTabs}>
-              {EXPORT_PERIOD_TABS.map((tab) => (
-                <TouchableOpacity
-                  key={tab}
-                  style={[
-                    styles.periodTab,
-                    exportPeriodTab === tab && styles.periodTabActive,
-                  ]}
-                  onPress={() => setExportPeriodTab(tab)}
-                  activeOpacity={0.85}
-                >
-                  <Text
-                    style={[
-                      styles.periodTabText,
-                      exportPeriodTab === tab && styles.periodTabTextActive,
-                    ]}
-                  >
-                    {t(`shifts.periodTabs.${tab.toLowerCase()}`, tab)}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            <View style={styles.periodCard}>
-              {exportPeriodTab === "Month" ? (
-                <View style={styles.dateContainer}>
-                  <View style={styles.monthDateField}>
-                    <Text style={styles.monthDateLabel}>
-                      {t("shiftHistory.from")}
-                    </Text>
-                    <View style={styles.monthWheelContainer}>
-                      <Picker
-                        selectedValue={exportFromMonth}
-                        onValueChange={setExportFromMonth}
-                        style={styles.monthWheel}
-                        itemStyle={styles.monthWheelItem}
-                        selectionColor="rgb(245, 245, 245)"
-                      >
-                        {exportMonthOptions.map((month) => (
-                          <Picker.Item
-                            key={`from-${month}`}
-                            label={formatMonthLabel(month)}
-                            value={month}
-                          />
-                        ))}
-                      </Picker>
-                    </View>
-                  </View>
-                  <View style={styles.monthDateField}>
-                    <Text style={styles.monthDateLabel}>
-                      {t("shiftHistory.to")}
-                    </Text>
-                    <View style={styles.monthWheelContainer}>
-                      <Picker
-                        selectedValue={exportToMonth}
-                        onValueChange={setExportToMonth}
-                        style={styles.monthWheel}
-                        itemStyle={styles.monthWheelItem}
-                        selectionColor="rgb(245, 245, 245)"
-                      >
-                        {exportMonthOptions.map((month) => (
-                          <Picker.Item
-                            key={`to-${month}`}
-                            label={formatMonthLabel(month)}
-                            value={month}
-                          />
-                        ))}
-                      </Picker>
-                    </View>
-                  </View>
-                </View>
+              {exporting ? (
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
-                <View style={styles.dateContainer}>
-                  <View style={styles.monthDateField}>
-                    <Text style={styles.monthDateLabel}>
-                      {t("shiftHistory.from")}
-                    </Text>
-                    <TouchableOpacity
-                      style={styles.dateValueCard}
-                      onPress={() => setDatePickerTarget("from")}
-                      activeOpacity={0.85}
-                    >
-                      <Text
-                        style={[
-                          styles.dateValueText,
-                          !exportFromDate && styles.dateValuePlaceholder,
-                        ]}
-                      >
-                        {formatExportPickerDate(exportFromDate)}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View style={styles.monthDateField}>
-                    <Text style={styles.monthDateLabel}>
-                      {t("shiftHistory.to")}
-                    </Text>
-                    <TouchableOpacity
-                      style={styles.dateValueCard}
-                      onPress={() => setDatePickerTarget("to")}
-                      activeOpacity={0.85}
-                    >
-                      <Text
-                        style={[
-                          styles.dateValueText,
-                          !exportToDate && styles.dateValuePlaceholder,
-                        ]}
-                      >
-                        {formatExportPickerDate(exportToDate)}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
+                <Text style={styles.exportMainButtonText}>
+                  {t("shiftHistory.export")}
+                </Text>
               )}
-            </View>
+            </TouchableOpacity>
           </View>
+        </View>
+      </Modal>
 
-          <TouchableOpacity
-            style={styles.exportMainButton}
-            onPress={applyPeriod}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.exportMainButtonText}>
-              {t("shifts.applyPeriod")}
-            </Text>
-          </TouchableOpacity>
-        </BottomSheetView>
-      </BottomSheet>
+      <Modal
+        visible={periodSheetOpen}
+        transparent
+        animationType="slide"
+        statusBarTranslucent
+        onRequestClose={() => setPeriodSheetOpen(false)}
+      >
+        <Pressable
+          style={sheetStyles.backdrop}
+          onPress={() => setPeriodSheetOpen(false)}
+        />
+        <View style={sheetStyles.container}>
+          <View style={styles.handleIndicator} />
+          <View style={styles.bottomSheetContent}>
+            <View style={styles.exportSheetBody}>
+              <Text
+                style={[
+                  styles.exportSheetTitle,
+                  { fontFamily: theme.text.fontFamily["semiBold"] },
+                ]}
+              >
+                {t("shiftHistory.periodLabel")}
+              </Text>
+
+              <View style={styles.periodTabs}>
+                {EXPORT_PERIOD_TABS.map((tab) => (
+                  <TouchableOpacity
+                    key={tab}
+                    style={[
+                      styles.periodTab,
+                      exportPeriodTab === tab && styles.periodTabActive,
+                    ]}
+                    onPress={() => setExportPeriodTab(tab)}
+                    activeOpacity={0.85}
+                  >
+                    <Text
+                      style={[
+                        styles.periodTabText,
+                        exportPeriodTab === tab && styles.periodTabTextActive,
+                      ]}
+                    >
+                      {t(`shifts.periodTabs.${tab.toLowerCase()}`, tab)}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <View style={styles.periodCard}>
+                {exportPeriodTab === "Month" ? (
+                  <View style={styles.dateContainer}>
+                    <View style={styles.monthDateField}>
+                      <Text style={styles.monthDateLabel}>
+                        {t("shiftHistory.from")}
+                      </Text>
+                      <View style={styles.monthWheelContainer}>
+                        <Picker
+                          selectedValue={exportFromMonth}
+                          onValueChange={setExportFromMonth}
+                          style={styles.monthWheel}
+                          itemStyle={styles.monthWheelItem}
+                          selectionColor="rgb(245, 245, 245)"
+                        >
+                          {exportMonthOptions.map((month) => (
+                            <Picker.Item
+                              key={`from-${month}`}
+                              label={formatMonthLabel(month)}
+                              value={month}
+                            />
+                          ))}
+                        </Picker>
+                      </View>
+                    </View>
+                    <View style={styles.monthDateField}>
+                      <Text style={styles.monthDateLabel}>
+                        {t("shiftHistory.to")}
+                      </Text>
+                      <View style={styles.monthWheelContainer}>
+                        <Picker
+                          selectedValue={exportToMonth}
+                          onValueChange={setExportToMonth}
+                          style={styles.monthWheel}
+                          itemStyle={styles.monthWheelItem}
+                          selectionColor="rgb(245, 245, 245)"
+                        >
+                          {exportMonthOptions.map((month) => (
+                            <Picker.Item
+                              key={`to-${month}`}
+                              label={formatMonthLabel(month)}
+                              value={month}
+                            />
+                          ))}
+                        </Picker>
+                      </View>
+                    </View>
+                  </View>
+                ) : (
+                  <View style={styles.dateContainer}>
+                    <View style={styles.monthDateField}>
+                      <Text style={styles.monthDateLabel}>
+                        {t("shiftHistory.from")}
+                      </Text>
+                      <TouchableOpacity
+                        style={styles.dateValueCard}
+                        onPress={() => setDatePickerTarget("from")}
+                        activeOpacity={0.85}
+                      >
+                        <Text
+                          style={[
+                            styles.dateValueText,
+                            !exportFromDate && styles.dateValuePlaceholder,
+                          ]}
+                        >
+                          {formatExportPickerDate(exportFromDate)}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.monthDateField}>
+                      <Text style={styles.monthDateLabel}>
+                        {t("shiftHistory.to")}
+                      </Text>
+                      <TouchableOpacity
+                        style={styles.dateValueCard}
+                        onPress={() => setDatePickerTarget("to")}
+                        activeOpacity={0.85}
+                      >
+                        <Text
+                          style={[
+                            styles.dateValueText,
+                            !exportToDate && styles.dateValuePlaceholder,
+                          ]}
+                        >
+                          {formatExportPickerDate(exportToDate)}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+              </View>
+            </View>
+
+            <TouchableOpacity
+              style={styles.exportMainButton}
+              onPress={applyPeriod}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.exportMainButtonText}>
+                {t("shifts.applyPeriod")}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       <Modal
         visible={Boolean(datePickerTarget)}
