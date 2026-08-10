@@ -151,30 +151,20 @@ export default function HomeVariant2() {
       setCurrentShift(shift);
 
       if (shift) {
+        // Sync the timer only. Do NOT force the selected project to the
+        // shift's project: the selected project is user-controlled, and
+        // auto check-in/out already targets whatever project the user has
+        // selected. Forcing it here snapped the selector back to the site the
+        // worker was physically standing in, which flickered and — by
+        // re-rendering Home mid-navigation — crashed Fabric on the New Arch
+        // ("Unable to find viewState for tag").
         sync(shift);
-
-        setSelectedProject(function updateProject(previousProject) {
-          if (
-            previousProject?._id === shift.projectId ||
-            previousProject?.id === shift.projectId
-          ) {
-            return previousProject;
-          }
-
-          return {
-            _id: shift.projectId,
-            id: shift.projectId,
-            name: shift.projectName,
-            location: shift.location,
-          };
-        });
-
         return;
       }
 
       reset();
     },
-    [reset, setSelectedProject, sync],
+    [reset, sync],
   );
 
   const loadCurrentShift = useCallback(
