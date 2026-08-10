@@ -140,9 +140,14 @@ const syncAndroidLocationUpdates = async (region) => {
   await AsyncStorage.setItem(SHIFT_LOCATION_TARGET_KEY, JSON.stringify(target));
 
   await Location.startLocationUpdatesAsync(SHIFT_LOCATION_TASK, {
-    accuracy: Location.Accuracy.Balanced,
-    timeInterval: 30000,
-    distanceInterval: 25,
+    accuracy: Location.Accuracy.High,
+    // Fixed cadence, no distance gate, and no deferral so Doze/battery
+    // optimisation can't batch updates until the screen wakes — otherwise the
+    // enter/exit only fires when the app is reopened.
+    timeInterval: 15000,
+    distanceInterval: 0,
+    deferredUpdatesInterval: 0,
+    deferredUpdatesDistance: 0,
     pausesUpdatesAutomatically: false,
     showsBackgroundLocationIndicator: false,
     foregroundService: {
