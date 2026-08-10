@@ -476,7 +476,7 @@ export default function ChatListScreen() {
           onPress={openProjectGroup}
           activeOpacity={0.85}
         >
-          <ProjectGroupIcon width={30} height={18} color="#FFFFFF" />
+          <Icon name="users" size={18} color="#FFFFFF" />
           <Text style={styles.projectGroupText}>
             {t("chat.messageWholeProject")}
           </Text>
@@ -534,6 +534,9 @@ export default function ChatListScreen() {
           onLeftPress={() => navigation.navigate("Main")}
           onRightPress={() => navigation.navigate("Menu")}
           onAddPress={() => enterSelection()}
+          renderAddContent={() => (
+            <ProjectGroupIcon width={32} height={20} color="#FFFFFF" />
+          )}
         />
       )}
     </View>
