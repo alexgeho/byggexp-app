@@ -217,22 +217,6 @@ export default function ChatListScreen() {
     setSelectedIds([]);
   };
 
-  const openProjectGroup = async () => {
-    if (!selectedProjectId || opening) {
-      return;
-    }
-    try {
-      setOpening(true);
-      const chat = await chatService.getOrCreateProjectGroup(selectedProjectId);
-      openReturnedChat(chat);
-    } catch (error) {
-      console.error("Failed to open project group:", error);
-      Alert.alert(t("common.error"), t("chat.loadError"));
-    } finally {
-      setOpening(false);
-    }
-  };
-
   const createGroup = async () => {
     if (selectedIds.length === 0 || opening) {
       return;
@@ -468,19 +452,6 @@ export default function ChatListScreen() {
               : t("chat.selectPeopleHint")}
           </Text>
         </View>
-      ) : null}
-
-      {selectedProjectId && !selectMode ? (
-        <TouchableOpacity
-          style={styles.projectGroupButton}
-          onPress={openProjectGroup}
-          activeOpacity={0.85}
-        >
-          <Icon name="users" size={18} color="#FFFFFF" />
-          <Text style={styles.projectGroupText}>
-            {t("chat.messageWholeProject")}
-          </Text>
-        </TouchableOpacity>
       ) : null}
 
       {loading ? (
