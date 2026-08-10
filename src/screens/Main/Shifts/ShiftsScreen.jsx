@@ -156,6 +156,9 @@ export default function ShiftsScreen() {
   const rowYRef = useRef({});
   const scrollViewHeightRef = useRef(0);
   const keyboardHeightRef = useRef(336);
+  // Keyboard height as state so Android can pad the scroll content (iOS relies
+  // on automaticallyAdjustKeyboardInsets instead).
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const currentUserId = user?.id || user?._id || null;
 
@@ -171,13 +174,42 @@ export default function ShiftsScreen() {
     [projects, selectedProject],
   );
 
-  // Track the keyboard height so we can park the edited day just above it.
+  // Track the keyboard height so we can park the edited day just above it and
+  // give Android enough scroll room to lift the edited cell above the keyboard.
   useEffect(() => {
-    const show = Keyboard.addListener("keyboardWillShow", (e) => {
-      keyboardHeightRef.current = e.endCoordinates?.height || 336;
+    const showEvent =
+      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
+    const hideEvent =
+      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+    const show = Keyboard.addListener(showEvent, (e) => {
+      const h = e.endCoordinates?.height || 336;
+      keyboardHeightRef.current = h;
+      setKeyboardHeight(h);
     });
-    return () => show.remove();
+    const hide = Keyboard.addListener(hideEvent, () => setKeyboardHeight(0));
+    return () => {
+      show.remove();
+      hide.remove();
+    };
   }, []);
+
+  // Once the keyboard is actually up, lift the edited day above it.
+  useEffect(() => {
+    if (!inlineManualDate || keyboardHeight <= 0) {
+      return;
+    }
+    const rowY = rowYRef.current[inlineManualDate];
+    if (rowY == null) {
+      return;
+    }
+    const visibleAboveKb =
+      (scrollViewHeightRef.current || 500) - keyboardHeight;
+    const targetFromTop = Math.max(150, visibleAboveKb - 110);
+    scrollViewRef.current?.scrollTo({
+      y: Math.max(0, calendarYRef.current + rowY - targetFromTop),
+      animated: true,
+    });
+  }, [inlineManualDate, keyboardHeight]);
 
   const sourceMeta =
     HOURS_SOURCES.find((s) => s.key === hoursSource) || HOURS_SOURCES[1];
@@ -1167,10 +1199,14 @@ export default function ShiftsScreen() {
         <ScrollView
           ref={scrollViewRef}
           style={styles.contentScroll}
-          contentContainerStyle={styles.contentScrollContent}
+          contentContainerStyle={[
+            styles.contentScrollContent,
+            Platform.OS === "android" &&
+              keyboardHeight > 0 && { paddingBottom: keyboardHeight + 24 },
+          ]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
-          automaticallyAdjustKeyboardInsets
+          automaticallyAdjustKeyboardInsets={Platform.OS === "ios"}
           onLayout={(e) => {
             scrollViewHeightRef.current = e.nativeEvent.layout.height;
           }}
