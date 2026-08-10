@@ -20,6 +20,7 @@ import {
   ScrollView,
   StyleSheet,
   ActivityIndicator,
+  InteractionManager,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
@@ -136,10 +137,15 @@ export default function ProjectsScreen() {
 
   const handleProjectPress = (project) => {
     if (isSelectionMode) {
-      setSelectedProject(project);
-      setTimeout(() => {
-        navigation.goBack();
-      }, 120);
+      // Go back first, then switch the global selected project AFTER the back
+      // transition settles. Updating selectedProject re-renders Home; doing it
+      // mid-transition raced react-native-screens on the New Architecture and
+      // crashed with "Unable to find viewState for tag" (a release-only Fabric
+      // mount race). Deferring past the interaction avoids the race.
+      navigation.goBack();
+      InteractionManager.runAfterInteractions(() => {
+        setSelectedProject(project);
+      });
       return;
     }
 
