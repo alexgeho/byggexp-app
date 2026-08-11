@@ -20,7 +20,8 @@
     "test:i18n": "node scripts/check-i18n-parity.js",
     "verify": "yarn lint && yarn compile && yarn test:i18n && yarn test",
     "format": "prettier --write .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "postinstall": "patch-package"
   },
   "jest": {
     "preset": "jest-expo"

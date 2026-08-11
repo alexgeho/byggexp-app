@@ -1,0 +1,22 @@
+diff --git a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/fabric/mounting/MountItemDispatcher.kt b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/fabric/mounting/MountItemDispatcher.kt
+index cb5ef2f..081495d 100644
+--- a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/fabric/mounting/MountItemDispatcher.kt
++++ b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/fabric/mounting/MountItemDispatcher.kt
+@@ -219,6 +219,17 @@ internal class MountItemDispatcher(
+ 
+         try {
+           executeOrEnqueue(mountItem)
++        } catch (e: RetryableMountingLayerException) {
++          // Recoverable race between JS re-renders and native screen transitions
++          // (New Architecture / Fabric). This item could not be mounted because its
++          // parent view was already removed from the native tree (e.g. during a
++          // navigation pop with animation:none). Log softly and continue; React will
++          // reconcile on the next render pass.
++          ReactSoftExceptionLogger.logSoftException(
++              TAG,
++              ReactNoCrashSoftException(
++                  "dispatchMountItems: RetryableMountingLayerException for mountItem: $mountItem",
++                  e))
+         } catch (e: Throwable) {
+           // If there's an exception, we want to log diagnostics in prod and rethrow.
+           FLog.e(TAG, "dispatchMountItems: caught exception, displaying mount state", e)
