@@ -210,7 +210,10 @@ export default function HomeVariant2() {
   /* LOAD ACTIVE SHIFT */
   useEffect(
     function loadShift() {
-      loadCurrentShift(selectedProjectId);
+      const task = InteractionManager.runAfterInteractions(() => {
+        loadCurrentShift(selectedProjectId);
+      });
+      return () => task.cancel();
     },
     [loadCurrentShift, selectedProjectId],
   );
