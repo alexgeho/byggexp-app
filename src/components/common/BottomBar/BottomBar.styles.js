@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 export function createStyles(theme) {
   return StyleSheet.create({
     container: {
@@ -74,8 +74,11 @@ export function createStyles(theme) {
     // Figma tab bar (Frame 5804): white 20% fill, white 30% stroke 1px, blur.
     menuWrapperGlass: {
       backgroundColor: "rgba(255,255,255,0.20)",
-      borderWidth: 1,
-      borderColor: "rgba(255,255,255,0.30)",
+      // Android has no BlurView, so the pill leans on a crisp solid-white
+      // stroke to read as a defined surface; iOS keeps the soft glass stroke.
+      borderWidth: 2,
+      borderColor:
+        Platform.OS === "android" ? "#FFFFFF" : "rgba(255,255,255,0.30)",
       overflow: "hidden",
     },
     navText: {

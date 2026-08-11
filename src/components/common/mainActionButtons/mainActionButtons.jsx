@@ -73,7 +73,10 @@ export function MainActionButtons({
           cameraButtonColor && {
             backgroundColor: cameraButtonColor,
           },
-          cameraButtonColor && styles.actionButtonCameraThemed,
+          // Full opacity whenever we render the crisp vector camera (themed
+          // button OR an explicit icon colour), so the white icon isn't faded.
+          (cameraButtonColor || cameraIconColor) &&
+            styles.actionButtonCameraThemed,
         ]}
         onPress={onCameraPress}
       >

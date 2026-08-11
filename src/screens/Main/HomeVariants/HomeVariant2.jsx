@@ -531,7 +531,7 @@ export default function HomeVariant2() {
                 actionIconColor={isLightBlueTheme ? "#FFFFFF" : undefined}
                 cameraButtonColor={isLightBlueTheme ? "#FFFFFF" : undefined}
                 cameraIconColor={
-                  isLightBlueTheme ? theme.colors.text : undefined
+                  isLightBlueTheme ? theme.colors.text : "#FFFFFF"
                 }
               />
 

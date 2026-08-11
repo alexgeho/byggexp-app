@@ -318,19 +318,12 @@ export default function MenuScreen() {
   ];
 
   // Group the flat menu items into labelled categories.
-  // Order: Settings, Support, Work (incl. Finance), Legal.
+  // Order: Settings, Work (incl. Finance), Information, Support (Support last).
   const menuSections = [
     {
       id: "settings",
       title: t("menu.sectionSettings"),
       items: settingsSectionItems,
-    },
-    {
-      id: "support",
-      title: t("menu.sectionSupport", "Support"),
-      items: settingsItems.filter((item) =>
-        ["guide", "help", "reportBug", "about"].includes(item.id),
-      ),
     },
     {
       id: "work",
@@ -350,9 +343,18 @@ export default function MenuScreen() {
       ),
     },
     {
-      id: "legal",
-      title: t("menu.sectionLegal", "Legal & Policies"),
-      items: settingsItems.filter((item) => item.id === "legal"),
+      id: "information",
+      title: t("menu.sectionInformation", "Information"),
+      items: settingsItems.filter((item) =>
+        ["legal", "about"].includes(item.id),
+      ),
+    },
+    {
+      id: "support",
+      title: t("menu.sectionSupport", "Support"),
+      items: settingsItems.filter((item) =>
+        ["guide", "help", "reportBug"].includes(item.id),
+      ),
     },
   ].filter((section) => section.items.length > 0);
 
