@@ -101,6 +101,7 @@
     "jest-expo": "~54.0.17",
     "lint-staged": "^15",
     "metro-react-native-babel-preset": "^0.77.0",
+    "patch-package": "^8.0.0",
     "prettier": "^3.9.6",
     "typescript": "~5.9.2"
   },
