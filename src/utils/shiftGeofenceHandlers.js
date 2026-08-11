@@ -1,4 +1,4 @@
-import { Alert } from "react-native";
+import { Alert, InteractionManager } from "react-native";
 
 export const createShiftGeofenceHandlers = ({
   applyShiftState,
@@ -7,31 +7,37 @@ export const createShiftGeofenceHandlers = ({
   start,
 }) => ({
   onShiftAutoCompleted: () => {
-    setCurrentShift(null);
-    reset();
+    InteractionManager.runAfterInteractions(() => {
+      setCurrentShift(null);
+      reset();
 
-    Alert.alert(
-      "Shift completed",
-      "You left the project area, so your current shift was ended automatically.",
-    );
+      Alert.alert(
+        "Shift completed",
+        "You left the project area, so your current shift was ended automatically.",
+      );
+    });
   },
   onShiftAutoStarted: (shift) => {
-    applyShiftState(shift);
-    start(shift);
+    InteractionManager.runAfterInteractions(() => {
+      applyShiftState(shift);
+      start(shift);
 
-    Alert.alert(
-      "Shift started",
-      "You entered the project area, so your shift started automatically.",
-    );
+      Alert.alert(
+        "Shift started",
+        "You entered the project area, so your shift started automatically.",
+      );
+    });
   },
   onShiftAutoResumed: (shift) => {
-    applyShiftState(shift);
-    start(shift);
+    InteractionManager.runAfterInteractions(() => {
+      applyShiftState(shift);
+      start(shift);
 
-    Alert.alert(
-      "Shift resumed",
-      "You entered the project area, so your shift resumed automatically.",
-    );
+      Alert.alert(
+        "Shift resumed",
+        "You entered the project area, so your shift resumed automatically.",
+      );
+    });
   },
   onCheckError: (error) => {
     console.error("Failed to verify shift geofence:", error);
