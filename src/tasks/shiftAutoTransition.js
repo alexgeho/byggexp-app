@@ -21,15 +21,26 @@ const getShiftId = (shift) => shift?.id || shift?._id || null;
 // transition more than once, and only one of the two monitors should ever run
 // per platform, but this guard keeps a rapid duplicate from firing twice while
 // the JS context stays alive.
-let lastHandled = { key: null, at: 0 };
+//
+// Each key (e.g. "enter:projectId") gets its own timestamp so that alternating
+// enter/exit events don't reset each other's window.
+const lastHandledMap = {};
+const DEDUPE_WINDOW_MS = 3 * 60 * 1000; // 3 minutes per-event type
 
 export const isDuplicateTransition = (key, nowMs) => {
-  if (lastHandled.key === key && nowMs - lastHandled.at < 30000) {
+  const last = lastHandledMap[key] || 0;
+  if (nowMs - last < DEDUPE_WINDOW_MS) {
     return true;
   }
-  lastHandled = { key, at: nowMs };
+  lastHandledMap[key] = nowMs;
   return false;
 };
+
+// Re-entry cooldown: after an exit, don't auto-start again for this project
+// until at least RE_ENTRY_COOLDOWN_MS has passed. Prevents GPS oscillation at
+// the boundary from rapidly cycling the shift on/off.
+const lastExitAtMap = {};
+const RE_ENTRY_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutes
 
 export const handleShiftExit = async () => {
   const currentShift = await shiftService.getCurrent();
@@ -47,12 +58,25 @@ export const handleShiftExit = async () => {
     notifyUser: false,
   });
 
+  // Record the exit time so handleShiftEnter can enforce the re-entry cooldown.
+  if (currentShift.projectId) {
+    lastExitAtMap[currentShift.projectId] = Date.now();
+  }
+
   await notifyShiftAutoCompleted(completedShift);
   await emitShiftAutoCompleted(completedShift);
 };
 
 export const handleShiftEnter = async (projectId) => {
   if (!projectId) {
+    return;
+  }
+
+  // Re-entry cooldown: if we just exited this project's geofence recently it
+  // is most likely GPS oscillation at the boundary, not a real arrival. Skip
+  // auto-start until the cooldown expires.
+  const lastExit = lastExitAtMap[projectId] || 0;
+  if (Date.now() - lastExit < RE_ENTRY_COOLDOWN_MS) {
     return;
   }
 
