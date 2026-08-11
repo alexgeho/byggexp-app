@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { enableFreeze } from "react-native-screens";
 import LoaderScreen from "../screens/LoaderScreen";
 import AuthNavigator from "./AuthNavigator";
 import CameraScreen from "../screens/Main/Camera/CameraScreen";
@@ -54,6 +55,8 @@ import {
   canManageWorkers as checkCanManageWorkers,
   canManageEmployees as checkCanManageEmployees,
 } from "../utils/userRoles";
+
+enableFreeze(true);
 
 const Stack = createNativeStackNavigator();
 
