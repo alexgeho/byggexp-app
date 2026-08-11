@@ -100,6 +100,9 @@ export default function HomeVariant2() {
 
   /* CURRENT ACTIVE SHIFT */
   const [currentShift, setCurrentShift] = useState(null);
+  const currentShiftRef = useRef(currentShift);
+  currentShiftRef.current = currentShift;
+  const focusFetchIdRef = useRef(0);
   const [enabledButtons, setEnabledButtons] = useState(defaultEnabledButtons);
   const [enabledSections, setEnabledSections] = useState(
     defaultEnabledSections,
@@ -205,6 +208,36 @@ export default function HomeVariant2() {
     [loadCurrentShift, selectedProjectId],
   );
 
+  /* AUTO-COMPLETE SHIFT WHEN USER SWITCHES PROJECT */
+  const prevProjectIdRef = useRef(selectedProjectId);
+  useEffect(
+    function stopShiftOnProjectSwitch() {
+      const prevId = prevProjectIdRef.current;
+      prevProjectIdRef.current = selectedProjectId;
+
+      if (!prevId || !selectedProjectId || prevId === selectedProjectId) {
+        return;
+      }
+
+      const activeShift = currentShiftRef.current;
+      if (!activeShift?.id) {
+        return;
+      }
+
+      setCurrentShift(null);
+      reset();
+      shiftService
+        .complete(activeShift.id)
+        .catch((err) =>
+          console.error(
+            "Failed to auto-complete shift on project switch:",
+            err,
+          ),
+        );
+    },
+    [selectedProjectId, reset],
+  );
+
   const refreshSelectedProject = useCallback(async () => {
     const projectId = selectedProjectIdRef.current;
 
@@ -243,6 +276,8 @@ export default function HomeVariant2() {
   useFocusEffect(
     React.useCallback(
       function loadHomeSettings() {
+        const fetchId = ++focusFetchIdRef.current;
+
         async function fetchSettings() {
           const [savedButtons, savedSections, savedSectionsOrder] =
             await Promise.all([
@@ -250,6 +285,10 @@ export default function HomeVariant2() {
               getEnabledSections(),
               getSectionsOrder(),
             ]);
+
+          if (fetchId !== focusFetchIdRef.current) {
+            return;
+          }
 
           if (savedButtons) {
             setEnabledButtons(savedButtons);
@@ -268,6 +307,10 @@ export default function HomeVariant2() {
             refreshSelectedProject(),
           ]);
 
+          if (fetchId !== focusFetchIdRef.current) {
+            return;
+          }
+
           setPreviewRefreshKey((previousKey) => previousKey + 1);
         }
 
@@ -279,7 +322,10 @@ export default function HomeVariant2() {
           fetchSettings();
         });
 
-        return () => task.cancel();
+        return () => {
+          task.cancel();
+          focusFetchIdRef.current++;
+        };
       },
       [loadCurrentShift, refreshSelectedProject],
     ),
