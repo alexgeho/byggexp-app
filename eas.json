@@ -18,6 +18,9 @@
     },
     "preview": {
       "distribution": "internal",
+      "env": {
+        "COREPACK_ENABLE": "1"
+      },
       "android": {
         "buildType": "apk"
       },
