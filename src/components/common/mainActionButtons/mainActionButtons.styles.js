@@ -29,6 +29,11 @@ export const styles = StyleSheet.create({
   actionButtonCameraThemed: {
     borderRadius: 999,
     opacity: 1,
+    // Figma: frosted translucent circle behind the white camera icon.
+    // A hairline white stroke defines its edge over the blue gradient; on the
+    // solid-white light-theme button the same stroke is invisible (white/white).
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.35)",
   },
 
   iconAction: {
