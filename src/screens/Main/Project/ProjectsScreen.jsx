@@ -150,8 +150,10 @@ export default function ProjectsScreen() {
     }
 
     if (isLocalSelectionMode) {
-      resolveLocalProjectSelection(project);
       navigation.goBack();
+      InteractionManager.runAfterInteractions(() => {
+        resolveLocalProjectSelection(project);
+      });
       return;
     }
 
@@ -212,8 +214,10 @@ export default function ProjectsScreen() {
         {allowAllProjectsOption ? (
           <ListCard
             onPress={() => {
-              resolveLocalProjectSelection(null);
               navigation.goBack();
+              InteractionManager.runAfterInteractions(() => {
+                resolveLocalProjectSelection(null);
+              });
             }}
             selected={!selectedProjectId}
             title={t("projects.all")}

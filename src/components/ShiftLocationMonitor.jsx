@@ -16,7 +16,7 @@ import {
   emitShiftLocationCheckError,
 } from "../utils/shiftExitAutoCompleteEvents";
 import {
-  hasBackgroundLocationPermission,
+  hasLocationTaskPermission,
   isBackgroundGeofencingSupported,
   stopShiftGeofencing,
   syncShiftGeofenceForProject,
@@ -57,7 +57,7 @@ export default function ShiftLocationMonitor() {
         return false;
       }
 
-      if (!(await hasBackgroundLocationPermission())) {
+      if (!(await hasLocationTaskPermission())) {
         backgroundActiveRef.current = false;
         geofencedProjectIdRef.current = null;
         return false;

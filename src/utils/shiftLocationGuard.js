@@ -38,6 +38,7 @@ const getCurrentShiftCoordinate = async () => {
 
   const currentPosition = await Location.getCurrentPositionAsync({
     accuracy: Location.Accuracy.Balanced,
+    timeout: 15000,
   });
 
   return {
@@ -278,11 +279,32 @@ export const startShiftWithLocationGuard = async ({
   return shiftService.start(projectId);
 };
 
-export const resumeShiftWithGuards = async ({ shiftId, project }) => {
+export const resumeShiftWithGuards = async ({
+  shiftId,
+  project,
+  skipLocationCheck = false,
+}) => {
   if (!shiftId) {
     throw new Error("Shift is required to resume.");
   }
 
   assertShiftScheduleAllowsStart(project);
+
+  if (!skipLocationCheck) {
+    const locationCheck = await getShiftLocationCheck({
+      project,
+      fallbackProjectLocation: project?.location,
+    });
+
+    if (
+      locationCheck.enforced &&
+      locationCheck.distanceMeters > locationCheck.maxDistanceMeters
+    ) {
+      throw new Error(
+        `You are not at the project location. Move within ${locationCheck.maxDistanceMeters} meters of the project to start a shift.`,
+      );
+    }
+  }
+
   return shiftService.resume(shiftId);
 };

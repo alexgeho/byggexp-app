@@ -38,6 +38,25 @@ export const hasBackgroundLocationPermission = async () => {
   return status === "granted";
 };
 
+// Returns true when the location task CAN be started: on Android this requires
+// only foreground ("while using") permission because the foreground service
+// keeps running while the app is open or backgrounded; on iOS we need the full
+// "always" grant for OS-level region monitoring.
+export const hasLocationTaskPermission = async () => {
+  if (!isBackgroundGeofencingSupported()) {
+    return false;
+  }
+
+  if (isAndroid) {
+    const { status } = await Location.getForegroundPermissionsAsync().catch(
+      () => ({ status: "denied" }),
+    );
+    return status === "granted";
+  }
+
+  return hasBackgroundLocationPermission();
+};
+
 // "granted" | "denied" | "undetermined". Used to decide whether to show the
 // consent priming screen (only when we can still raise the OS dialog).
 export const getBackgroundPermissionStatus = async () => {
@@ -169,7 +188,25 @@ export const syncShiftGeofenceForProject = async ({
   project,
   fallbackProjectLocation,
 } = {}) => {
-  if (!(await hasBackgroundLocationPermission())) {
+  if (!isBackgroundGeofencingSupported()) {
+    return false;
+  }
+
+  // Android: startLocationUpdatesAsync with a foreground service works with
+  // foreground ("while using") permission — the service stays alive while the
+  // app is open or backgrounded. With "Always" it also survives app destroy.
+  // Do NOT gate on background permission here so at least foreground tracking
+  // is active even when the user has only granted "while using".
+  if (isAndroid) {
+    const { status: fgStatus } =
+      await Location.getForegroundPermissionsAsync().catch(() => ({
+        status: "denied",
+      }));
+    if (fgStatus !== "granted") {
+      await stopIfRunning();
+      return false;
+    }
+  } else if (!(await hasBackgroundLocationPermission())) {
     await stopIfRunning();
     return false;
   }
