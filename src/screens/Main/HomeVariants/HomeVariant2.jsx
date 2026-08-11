@@ -3,6 +3,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -88,6 +89,8 @@ export default function HomeVariant2() {
   /* SELECTED PROJECT */
   const { selectedProject, setSelectedProject, user } = useContext(AuthContext);
   const selectedProjectId = selectedProject?._id || selectedProject?.id;
+  const selectedProjectIdRef = useRef(selectedProjectId);
+  selectedProjectIdRef.current = selectedProjectId;
 
   /* NAVIGATION */
   const navigation = useNavigation();
@@ -203,21 +206,22 @@ export default function HomeVariant2() {
   );
 
   const refreshSelectedProject = useCallback(async () => {
-    if (!selectedProjectId) {
+    const projectId = selectedProjectIdRef.current;
+
+    if (!projectId) {
       return;
     }
 
     try {
-      const populatedProject =
-        await projectService.getPopulatedById(selectedProjectId);
+      const populatedProject = await projectService.getPopulatedById(projectId);
 
-      if (populatedProject) {
+      if (populatedProject && selectedProjectIdRef.current === projectId) {
         setSelectedProject(populatedProject);
       }
     } catch (error) {
       console.error("Failed to refresh selected project on home:", error);
     }
-  }, [selectedProjectId, setSelectedProject]);
+  }, [setSelectedProject]);
 
   const geofenceHandlers = useMemo(
     () =>
@@ -260,7 +264,7 @@ export default function HomeVariant2() {
           }
 
           await Promise.all([
-            loadCurrentShift(selectedProjectId),
+            loadCurrentShift(selectedProjectIdRef.current),
             refreshSelectedProject(),
           ]);
 
@@ -277,7 +281,7 @@ export default function HomeVariant2() {
 
         return () => task.cancel();
       },
-      [loadCurrentShift, refreshSelectedProject, selectedProjectId],
+      [loadCurrentShift, refreshSelectedProject],
     ),
   );
 
