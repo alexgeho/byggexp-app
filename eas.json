@@ -18,7 +18,6 @@
     },
     "preview": {
       "distribution": "internal",
-      "preInstallCommand": "corepack enable && corepack prepare yarn@1.22.22 --activate",
       "android": {
         "buildType": "apk"
       },

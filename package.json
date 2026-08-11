@@ -21,7 +21,8 @@
     "verify": "yarn lint && yarn compile && yarn test:i18n && yarn test",
     "format": "prettier --write .",
     "prepare": "husky",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "eas-build-pre-install": "corepack enable && corepack prepare yarn@1.22.22 --activate"
   },
   "jest": {
     "preset": "jest-expo"
