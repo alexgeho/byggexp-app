@@ -6,7 +6,13 @@ import React, {
   useState,
 } from "react";
 
-import { View, ScrollView, Alert, useWindowDimensions } from "react-native";
+import {
+  View,
+  ScrollView,
+  Alert,
+  useWindowDimensions,
+  InteractionManager,
+} from "react-native";
 
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -261,7 +267,15 @@ export default function HomeVariant2() {
           setPreviewRefreshKey((previousKey) => previousKey + 1);
         }
 
-        fetchSettings();
+        // Defer the whole state burst until the navigation transition settles.
+        // Running it while returning to Home (e.g. after picking a project)
+        // re-rendered Home mid-transition and raced Fabric on the New Arch,
+        // crashing with "Unable to find viewState for tag".
+        const task = InteractionManager.runAfterInteractions(() => {
+          fetchSettings();
+        });
+
+        return () => task.cancel();
       },
       [loadCurrentShift, refreshSelectedProject, selectedProjectId],
     ),
