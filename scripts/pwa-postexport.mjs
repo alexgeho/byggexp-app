@@ -42,7 +42,14 @@ const HEAD_TAGS = `${SENTINEL}
          mobile browser a fixed-width element can push content past the viewport
          edge ("off screen"). Clamp width + hide horizontal overflow so nothing
          drifts sideways. Vertical scrolling inside ScrollViews is unaffected. */
-      html, body { overflow-x: hidden !important; max-width: 100%; }
+      html, body {
+        overflow-x: hidden !important;
+        max-width: 100%;
+        /* The Home screen's blue gradient is the first thing users see; paint
+           the page background the same blue so the status-bar strip doesn't
+           show as a white band above it on mobile. */
+        background-color: #5BC8FF;
+      }
       #root { max-width: 100vw; overflow-x: hidden; }
     </style>`;
 
