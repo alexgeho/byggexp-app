@@ -37,7 +37,6 @@ const HEAD_TAGS = `${SENTINEL}
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="ByggExp" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <style>
       /* PWA safety net: native RN screens are sized in device px; on a narrow
          mobile browser a fixed-width element can push content past the viewport
