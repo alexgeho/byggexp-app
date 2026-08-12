@@ -35,23 +35,23 @@ const HEAD_TAGS = `${SENTINEL}
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="ByggExp" />
     <style>
       /* PWA safety net: native RN screens are sized in device px; on a narrow
          mobile browser a fixed-width element can push content past the viewport
          edge ("off screen"). Clamp width + hide horizontal overflow so nothing
          drifts sideways. Vertical scrolling inside ScrollViews is unaffected. */
-      html, body {
-        overflow-x: hidden !important;
-        max-width: 100%;
-        /* The Home screen's blue gradient is the first thing users see; paint
-           the page background the same blue so the status-bar strip doesn't
-           show as a white band above it on mobile. */
-        background-color: #5BC8FF;
-      }
+      html, body { overflow-x: hidden !important; max-width: 100%; }
       #root { max-width: 100vw; overflow-x: hidden; }
     </style>`;
+
+// The viewport meta Expo generates lacks viewport-fit=cover, so on mobile the
+// app is inset below the status bar and the page background shows as a strip
+// above each screen. Replace it (don't add a second — two viewport metas made
+// the layout drift sideways) so screens bleed edge-to-edge under the status bar.
+const VIEWPORT_META =
+  '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />';
 
 async function main() {
   try {
@@ -71,10 +71,21 @@ async function main() {
     );
   }
 
-  // 2. Inject head tags (skip if already present).
+  // 2. Rewrite the viewport meta for viewport-fit=cover + inject head tags.
   let html = await fs.readFile(indexHtml, "utf8");
+  let changed = false;
+
+  if (!html.includes("viewport-fit=cover")) {
+    html = html.replace(/<meta\s+name="viewport"[^>]*>/i, VIEWPORT_META);
+    changed = true;
+  }
+
   if (!html.includes(SENTINEL)) {
     html = html.replace(/<\/head>/i, `    ${HEAD_TAGS}\n  </head>`);
+    changed = true;
+  }
+
+  if (changed) {
     await fs.writeFile(indexHtml, html, "utf8");
   }
 

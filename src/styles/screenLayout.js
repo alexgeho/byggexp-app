@@ -3,10 +3,9 @@ import { Platform } from "react-native";
 /** Gap between screen header and the first block below (search, form, scroll, etc.). */
 export const standardScreenContentGap = 12;
 
-// Native needs ~48 to clear the status bar / notch. On web the browser already
-// reserves the status-bar area, so 48 stacks on top of it and leaves a big
-// empty gap above the header — use a small top padding there instead.
-const screenPaddingTop = Platform.OS === "web" ? 16 : 48;
+// The web build is full-bleed (viewport-fit=cover), so like native it draws
+// under the status bar and needs top padding (~50) to clear it.
+const screenPaddingTop = Platform.OS === "web" ? 50 : 48;
 
 export const standardScreenContainer = {
   flex: 1,

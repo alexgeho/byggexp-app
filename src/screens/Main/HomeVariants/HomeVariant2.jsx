@@ -11,6 +11,7 @@ import {
   View,
   ScrollView,
   Alert,
+  Platform,
   useWindowDimensions,
   InteractionManager,
 } from "react-native";
@@ -59,6 +60,19 @@ import {
 import ShiftHistoryPreview from "../../../components/common/ShiftHistoryPreview/ShiftHistoryPreview";
 import TasksPreview from "../../../components/common/TasksPreview/TasksPreview";
 import { isHomeButtonVisible } from "../../../utils/userRoles";
+
+// react-native-web's Alert.alert is a no-op, so on web the shift-guard messages
+// (e.g. "You are not at the project location…") never reach the user and the
+// shift just silently fails to start. Fall back to the browser dialog there.
+function showShiftAlert(title, message) {
+  if (Platform.OS === "web") {
+    if (typeof window !== "undefined" && typeof window.alert === "function") {
+      window.alert(message ? `${title}\n\n${message}` : title);
+    }
+    return;
+  }
+  Alert.alert(title, message);
+}
 
 export default function HomeVariant2() {
   const { theme, themeName } = useTheme();
@@ -390,7 +404,7 @@ export default function HomeVariant2() {
       }
 
       if (!selectedProjectId) {
-        Alert.alert(
+        showShiftAlert(
           "Project required",
           "Select a project before starting a shift.",
         );
@@ -421,7 +435,7 @@ export default function HomeVariant2() {
       start(startedShift);
     } catch (error) {
       console.error("Shift action failed:", error);
-      Alert.alert(
+      showShiftAlert(
         "Shift error",
         getErrorMessage(error, "Unable to update the shift right now."),
       );
