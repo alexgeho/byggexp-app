@@ -1,0 +1,70 @@
+#!/usr/bin/env node
+// Post-processes the Expo web export (`dist/`) into an installable PWA.
+//
+// The classic (non-expo-router) Metro web export generates a bare index.html
+// with no PWA manifest link or iOS "add to home screen" meta tags, and does not
+// always copy `public/`. This script is idempotent: run it after
+// `expo export -p web` and before `eas deploy`.
+//
+//   npx expo export -p web && node scripts/pwa-postexport.mjs
+//
+// It (1) copies the manifest + icons from public/ into dist/, and (2) injects
+// the PWA/iOS head tags into dist/index.html.
+
+import { promises as fs } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const distDir = path.join(root, "dist");
+const publicDir = path.join(root, "public");
+const indexHtml = path.join(distDir, "index.html");
+
+const ASSETS = [
+  "manifest.webmanifest",
+  "pwa-192.png",
+  "pwa-512.png",
+  "apple-touch-icon.png",
+];
+
+// Tags injected into <head>. Marked with a sentinel so re-runs don't duplicate.
+const SENTINEL = "<!-- pwa-postexport -->";
+const HEAD_TAGS = `${SENTINEL}
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#2F80ED" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="ByggExp" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />`;
+
+async function main() {
+  try {
+    await fs.access(indexHtml);
+  } catch {
+    console.error(
+      "[pwa-postexport] dist/index.html not found. Run `npx expo export -p web` first.",
+    );
+    process.exit(1);
+  }
+
+  // 1. Copy PWA assets into dist/.
+  for (const asset of ASSETS) {
+    await fs.copyFile(
+      path.join(publicDir, asset),
+      path.join(distDir, asset),
+    );
+  }
+
+  // 2. Inject head tags (skip if already present).
+  let html = await fs.readFile(indexHtml, "utf8");
+  if (!html.includes(SENTINEL)) {
+    html = html.replace(/<\/head>/i, `    ${HEAD_TAGS}\n  </head>`);
+    await fs.writeFile(indexHtml, html, "utf8");
+  }
+
+  console.log(`[pwa-postexport] Patched ${ASSETS.length} assets + index.html.`);
+}
+
+main();
