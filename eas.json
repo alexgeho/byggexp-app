@@ -18,8 +18,12 @@
     },
     "preview": {
       "distribution": "internal",
+      "env": {
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
+      },
       "android": {
-        "buildType": "apk"
+        "buildType": "apk",
+        "autoIncrement": true
       },
       "ios": {
         "simulator": false,
@@ -27,6 +31,9 @@
       }
     },
     "production": {
+      "env": {
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
+      },
       "android": {
         "buildType": "app-bundle",
         "autoIncrement": true

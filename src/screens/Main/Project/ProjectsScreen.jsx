@@ -9,6 +9,7 @@ import {
 import React, {
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -44,6 +45,25 @@ import {
   getProjectStatusBadgeStyle,
 } from "../../../utils/projectStatus";
 
+const projectsCache = new Map();
+
+const getProjectId = (project) => project?._id || project?.id;
+
+function getProjectsSignature(projects) {
+  return projects
+    .map((project) =>
+      [
+        getProjectId(project),
+        project?.updatedAt,
+        project?.name,
+        project?.status,
+        project?.location,
+        project?.beginningDate,
+      ].join("|"),
+    )
+    .join(";");
+}
+
 export default function ProjectsScreen() {
   const navigation = useNavigation();
   const route = useRoute();
@@ -56,27 +76,86 @@ export default function ProjectsScreen() {
     selectedProject,
     setSelectedProject,
   } = useContext(AuthContext);
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const isSelectionMode = route.params?.mode === "select";
   const isLocalSelectionMode = route.params?.mode === "select-local";
   const allowAllProjectsOption = isLocalSelectionMode && route.params?.allowAll;
+  const cacheKey = `${user?.role || "user"}:${userId || "anonymous"}`;
+  const [projects, setProjects] = useState(
+    () => projectsCache.get(cacheKey) || [],
+  );
+  const [loading, setLoading] = useState(projects.length === 0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const isFocusedRef = useRef(false);
+  const isLeavingRef = useRef(false);
+  const fetchRequestIdRef = useRef(0);
+  const projectsSignatureRef = useRef(getProjectsSignature(projects));
 
   const showCreateProject = canCreateProjects(user?.role);
   const selectedProjectId = isLocalSelectionMode
     ? (route.params?.currentProjectId ?? null)
     : selectedProject?._id || selectedProject?.id;
 
-  const getProjectId = (project) => project?._id || project?.id;
-
   const projectsRef = useRef(projects);
   projectsRef.current = projects;
 
+  const invalidatePendingFetches = useCallback(() => {
+    isFocusedRef.current = false;
+    fetchRequestIdRef.current += 1;
+  }, []);
+
+  const beginLeaving = useCallback(() => {
+    if (isLeavingRef.current) {
+      return false;
+    }
+
+    isLeavingRef.current = true;
+    invalidatePendingFetches();
+    return true;
+  }, [invalidatePendingFetches]);
+
+  const goBackSafely = useCallback(() => {
+    if (!beginLeaving()) {
+      return;
+    }
+
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+      return;
+    }
+
+    navigation.navigate("Main");
+  }, [beginLeaving, navigation]);
+
+  const navigateSafely = useCallback(
+    (screen, params) => {
+      if (!beginLeaving()) {
+        return;
+      }
+
+      navigation.navigate(screen, params);
+    },
+    [beginLeaving, navigation],
+  );
+
+  useEffect(
+    () =>
+      navigation.addListener("beforeRemove", () => {
+        isLeavingRef.current = true;
+        invalidatePendingFetches();
+      }),
+    [invalidatePendingFetches, navigation],
+  );
+
   const fetchProjects = useCallback(
     async (silent = false) => {
+      const requestId = ++fetchRequestIdRef.current;
+
       try {
-        if (!silent) {
+        if (
+          !silent &&
+          isFocusedRef.current &&
+          projectsRef.current.length === 0
+        ) {
           setLoading(true);
         }
 
@@ -86,27 +165,46 @@ export default function ProjectsScreen() {
             ? await projectService.getAll()
             : await projectService.getMyProjects();
 
-        setProjects(Array.isArray(data) ? data : []);
+        const nextProjects = Array.isArray(data) ? data : [];
+        const nextSignature = getProjectsSignature(nextProjects);
+        projectsCache.set(cacheKey, nextProjects);
+
+        if (
+          isFocusedRef.current &&
+          requestId === fetchRequestIdRef.current &&
+          nextSignature !== projectsSignatureRef.current
+        ) {
+          projectsSignatureRef.current = nextSignature;
+          setProjects(nextProjects);
+        }
       } catch (err) {
         console.error("Failed to fetch projects:", err);
-        setProjects([]);
       } finally {
-        if (!silent) {
+        if (
+          !silent &&
+          isFocusedRef.current &&
+          requestId === fetchRequestIdRef.current
+        ) {
           setLoading(false);
         }
       }
     },
-    [user?.role],
+    [cacheKey, user?.role],
   );
 
   useFocusEffect(
     useCallback(() => {
-      if (authLoading || !userId) {
-        return;
+      isFocusedRef.current = true;
+      isLeavingRef.current = false;
+
+      if (!authLoading && userId) {
+        fetchProjects(projectsRef.current.length > 0);
       }
 
-      fetchProjects(projectsRef.current.length > 0);
-    }, [authLoading, fetchProjects, userId]),
+      return () => {
+        invalidatePendingFetches();
+      };
+    }, [authLoading, fetchProjects, invalidatePendingFetches, userId]),
   );
 
   const filteredProjects = useMemo(() => {
@@ -142,6 +240,9 @@ export default function ProjectsScreen() {
       // mid-transition raced react-native-screens on the New Architecture and
       // crashed with "Unable to find viewState for tag" (a release-only Fabric
       // mount race). Deferring past the interaction avoids the race.
+      if (!beginLeaving()) {
+        return;
+      }
       navigation.goBack();
       InteractionManager.runAfterInteractions(() => {
         setSelectedProject(project);
@@ -150,6 +251,9 @@ export default function ProjectsScreen() {
     }
 
     if (isLocalSelectionMode) {
+      if (!beginLeaving()) {
+        return;
+      }
       navigation.goBack();
       InteractionManager.runAfterInteractions(() => {
         resolveLocalProjectSelection(project);
@@ -157,17 +261,8 @@ export default function ProjectsScreen() {
       return;
     }
 
-    navigation.navigate("Project", { id: getProjectId(project) });
+    navigateSafely("Project", { id: getProjectId(project) });
   };
-
-  if (authLoading || loading) {
-    return (
-      <View style={styles.centeredContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text>{t("common.loading")}</Text>
-      </View>
-    );
-  }
 
   const themedAccentTextStyle = { color: theme.colors.primary };
 
@@ -178,7 +273,7 @@ export default function ProjectsScreen() {
           backgroundColor={"rgba(255, 255, 255, 0.6)"}
           tint="light"
           borderColor="#FFFFFF50"
-          onPress={() => navigation.goBack()}
+          onPress={goBackSafely}
           iconSource={require("../../../assets/Arrow-left.png")}
         />
         <Text
@@ -211,55 +306,73 @@ export default function ProjectsScreen() {
         contentContainerStyle={styles.scrollContent}
         style={styles.scrollContainer}
       >
-        {allowAllProjectsOption ? (
-          <ListCard
-            onPress={() => {
-              navigation.goBack();
-              InteractionManager.runAfterInteractions(() => {
-                resolveLocalProjectSelection(null);
-              });
-            }}
-            selected={!selectedProjectId}
-            title={t("projects.all")}
-          />
-        ) : null}
-
-        {filteredProjects.length === 0 ? (
-          <Text style={styles.noProjectsText}>{t("projects.notFound")}</Text>
+        {authLoading || (loading && projects.length === 0) ? (
+          <View style={styles.inlineLoader}>
+            <ActivityIndicator size="large" color={theme.colors.primary} />
+            <Text>{t("common.loading")}</Text>
+          </View>
         ) : (
-          filteredProjects.map((project) => (
-            <ListCard
-              key={getProjectId(project)}
-              onPress={() => handleProjectPress(project)}
-              selected={selectedProjectId === getProjectId(project)}
-              title={project.name}
-              badgeLabel={t(
-                `projects.status.${project.status}`,
-                formatProjectStatus(project.status),
-              )}
-              badgeStyle={getProjectStatusBadgeStyle(project.status)}
-            >
-              <Text style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}>
-                {t("projects.startLabel", {
-                  date: new Date(project.beginningDate).toLocaleDateString(
-                    getDateLocale(),
-                  ),
-                })}
-              </Text>
+          <>
+            {allowAllProjectsOption ? (
+              <ListCard
+                onPress={() => {
+                  if (!beginLeaving()) {
+                    return;
+                  }
+                  navigation.goBack();
+                  InteractionManager.runAfterInteractions(() => {
+                    resolveLocalProjectSelection(null);
+                  });
+                }}
+                selected={!selectedProjectId}
+                title={t("projects.all")}
+              />
+            ) : null}
 
-              <Text style={cardStyles.cardSecondaryText}>
-                {t("projects.locationLabel", { location: project.location })}
+            {filteredProjects.length === 0 ? (
+              <Text style={styles.noProjectsText}>
+                {t("projects.notFound")}
               </Text>
-            </ListCard>
-          ))
+            ) : (
+              filteredProjects.map((project) => (
+                <ListCard
+                  key={getProjectId(project)}
+                  onPress={() => handleProjectPress(project)}
+                  selected={selectedProjectId === getProjectId(project)}
+                  title={project.name}
+                  badgeLabel={t(
+                    `projects.status.${project.status}`,
+                    formatProjectStatus(project.status),
+                  )}
+                  badgeStyle={getProjectStatusBadgeStyle(project.status)}
+                >
+                  <Text
+                    style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
+                  >
+                    {t("projects.startLabel", {
+                      date: new Date(project.beginningDate).toLocaleDateString(
+                        getDateLocale(),
+                      ),
+                    })}
+                  </Text>
+
+                  <Text style={cardStyles.cardSecondaryText}>
+                    {t("projects.locationLabel", {
+                      location: project.location,
+                    })}
+                  </Text>
+                </ListCard>
+              ))
+            )}
+          </>
         )}
       </ScrollView>
 
       <BottomBar
-        onLeftPress={() => navigation.navigate("Main")}
-        onRightPress={() => navigation.navigate("Menu")}
+        onLeftPress={() => navigateSafely("Main")}
+        onRightPress={() => navigateSafely("Menu")}
         showAddButton={showCreateProject}
-        onAddPress={() => navigation.navigate("CreateProject")}
+        onAddPress={() => navigateSafely("CreateProject")}
       />
     </View>
   );
@@ -272,10 +385,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
   },
-  centeredContainer: {
-    flex: 1,
+  inlineLoader: {
+    minHeight: 240,
     justifyContent: "center",
     alignItems: "center",
+    gap: 8,
   },
   header: {
     ...standardScreenHeader,
