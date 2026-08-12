@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 
 export function createStyles({
   compact = false,
@@ -7,7 +7,11 @@ export function createStyles({
   theme,
   isLightBlue = false,
 }) {
-  const topPadding = veryCompact ? 34 : compact ? 44 : 60;
+  // Native needs a large top padding to clear the status bar / notch. On web
+  // the browser already reserves the status-bar area, so the same value leaves
+  // a big empty gap above the project selector — use a small padding there.
+  const topPadding =
+    Platform.OS === "web" ? 12 : veryCompact ? 34 : compact ? 44 : 60;
   const horizontalPadding = compact ? 16 : 20;
   const sectionGap = veryCompact ? 14 : compact ? 18 : 24;
   const timerBottomCompensation = veryCompact ? 8 : compact ? 12 : 16;
