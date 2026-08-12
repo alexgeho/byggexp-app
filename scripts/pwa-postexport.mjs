@@ -37,7 +37,15 @@ const HEAD_TAGS = `${SENTINEL}
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="ByggExp" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />`;
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <style>
+      /* PWA safety net: native RN screens are sized in device px; on a narrow
+         mobile browser a fixed-width element can push content past the viewport
+         edge ("off screen"). Clamp width + hide horizontal overflow so nothing
+         drifts sideways. Vertical scrolling inside ScrollViews is unaffected. */
+      html, body { overflow-x: hidden !important; max-width: 100%; }
+      #root { max-width: 100vw; overflow-x: hidden; }
+    </style>`;
 
 async function main() {
   try {
