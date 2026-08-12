@@ -1,53 +1,51 @@
-import React, { useEffect, useContext } from 'react';
-import { View, StyleSheet } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withDelay,
-  withTiming,
-} from 'react-native-reanimated';
-import AuthContext from '../contexts/AuthContext';
-import { baseColors } from '../theme/colors';
-import { useTheme } from '../theme/ThemeContext';
+import React, { useEffect, useContext, useRef } from "react";
+import { Animated, View, StyleSheet } from "react-native";
+import AuthContext from "../contexts/AuthContext";
+import { baseColors } from "../theme/colors";
+import { useTheme } from "../theme/ThemeContext";
 
 export default function LoaderScreen() {
   const { setIsAuthenticated } = useContext(AuthContext);
   const { theme } = useTheme();
 
-  const logoOpacity = useSharedValue(0);
-  const textOpacity = useSharedValue(0);
+  const logoOpacity = useRef(new Animated.Value(0)).current;
+  const textOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    logoOpacity.value = withTiming(1, { duration: 800 });
+    const animation = Animated.parallel([
+      Animated.timing(logoOpacity, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.sequence([
+        Animated.delay(300),
+        Animated.timing(textOpacity, {
+          toValue: 1,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+      ]),
+    ]);
 
-    textOpacity.value = withDelay(300, withTiming(1, { duration: 800 }));
+    animation.start();
 
     const timer = setTimeout(() => {
       setIsAuthenticated(false);
     }, 10000);
 
-    return () => clearTimeout(timer);
-  }, []);
-
-  const logoAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: logoOpacity.value,
+    return () => {
+      animation.stop();
+      clearTimeout(timer);
     };
-  });
-
-  const textAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: textOpacity.value,
-    };
-  });
+  }, [logoOpacity, setIsAuthenticated, textOpacity]);
 
   return (
     <View style={styles.container}>
       <Animated.Text
         style={[
           styles.logoText,
-          { fontFamily: theme.text.fontFamily['bold'] },
-          logoAnimatedStyle,
+          { fontFamily: theme.text.fontFamily["bold"], opacity: logoOpacity },
         ]}
       >
         BYGGEXP
@@ -55,8 +53,10 @@ export default function LoaderScreen() {
       <Animated.Text
         style={[
           styles.subtitle,
-          { fontFamily: theme.text.fontFamily['regular'] },
-          textAnimatedStyle,
+          {
+            fontFamily: theme.text.fontFamily["regular"],
+            opacity: textOpacity,
+          },
         ]}
       >
         Construction management software
@@ -68,14 +68,14 @@ export default function LoaderScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
   },
   logoText: {
     fontSize: 32,
-    fontWeight: 'bold',
-    color: '#000',
+    fontWeight: "bold",
+    color: "#000",
     marginBottom: 10,
   },
   subtitle: {
@@ -83,4 +83,3 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
 });
-

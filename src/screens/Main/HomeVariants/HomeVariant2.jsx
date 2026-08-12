@@ -103,6 +103,7 @@ export default function HomeVariant2() {
   const currentShiftRef = useRef(currentShift);
   currentShiftRef.current = currentShift;
   const focusFetchIdRef = useRef(0);
+  const projectsNavigationPendingRef = useRef(false);
   const [enabledButtons, setEnabledButtons] = useState(defaultEnabledButtons);
   const [enabledSections, setEnabledSections] = useState(
     defaultEnabledSections,
@@ -286,6 +287,7 @@ export default function HomeVariant2() {
   useFocusEffect(
     React.useCallback(
       function loadHomeSettings() {
+        projectsNavigationPendingRef.current = false;
         const fetchId = ++focusFetchIdRef.current;
 
         async function fetchSettings() {
@@ -343,6 +345,11 @@ export default function HomeVariant2() {
 
   /* OPEN PROJECTS SCREEN */
   function openProjects() {
+    if (projectsNavigationPendingRef.current) {
+      return;
+    }
+
+    projectsNavigationPendingRef.current = true;
     navigation.navigate("Projects", {
       mode: "select",
     });
