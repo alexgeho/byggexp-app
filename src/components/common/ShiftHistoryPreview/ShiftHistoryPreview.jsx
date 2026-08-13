@@ -194,7 +194,7 @@ export function ShiftHistoryPreview({
                           style={styles.hoursInput}
                           defaultValue={hoursFromMs(shift.durationMs)}
                           keyboardType="numeric"
-                          placeholder="0"
+                          placeholder="–"
                           placeholderTextColor={secondaryIconColor}
                           returnKeyType="done"
                           onEndEditing={function onEndEditing(event) {

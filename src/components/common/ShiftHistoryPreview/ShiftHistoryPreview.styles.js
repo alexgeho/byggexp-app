@@ -191,12 +191,12 @@ export function createStyles(theme, colorMode = "dark") {
       alignItems: "center",
       gap: 5,
       backgroundColor: isLightMode
-        ? `${theme.colors.primary}12`
-        : "rgba(255,255,255,0.14)",
+        ? `${theme.colors.primary}08`
+        : "rgba(255,255,255,0.06)",
       borderWidth: 1,
       borderColor: isLightMode
-        ? `${theme.colors.primary}59`
-        : "rgba(255,255,255,0.45)",
+        ? `${theme.colors.primary}26`
+        : "rgba(255,255,255,0.18)",
       borderRadius: 12,
       paddingHorizontal: 12,
       paddingVertical: 4,
