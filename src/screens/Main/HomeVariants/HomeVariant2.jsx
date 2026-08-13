@@ -430,6 +430,23 @@ export default function HomeVariant2() {
       )}`;
 
       try {
+        // Logging today's hours manually supersedes a live timer: if a shift
+        // is currently ticking (status "active"), stop it first so the manual
+        // total isn't double-counted against a running clock.
+        const activeShift = currentShiftRef.current;
+        if (activeShift?.id && activeShift.status === "active") {
+          try {
+            await shiftService.complete(activeShift.id);
+          } catch (stopError) {
+            console.error(
+              "Failed to stop running shift before logging hours:",
+              stopError,
+            );
+          }
+          setCurrentShift(null);
+          reset();
+        }
+
         await shiftService.addManualHours({
           workerId: user?._id || user?.id,
           projectId: selectedProjectId,
@@ -442,7 +459,7 @@ export default function HomeVariant2() {
         showShiftAlert("Error", "Unable to save hours right now.");
       }
     },
-    [selectedProjectId, user],
+    [selectedProjectId, user, reset],
   );
 
   /* PLAY / PAUSE BUTTON */
