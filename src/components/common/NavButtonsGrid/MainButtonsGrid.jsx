@@ -178,19 +178,6 @@ export default function MainButtonsGrid() {
                   handlePress(button.screen);
                 }}
               >
-                <View
-                  style={[
-                    styles.linesContainer,
-                    (theme.colors.hideButtonLines || buttonColor) &&
-                      styles.linesContainerHidden,
-                  ]}
-                >
-                  <View style={styles.line} />
-                  <View style={styles.line} />
-                  <View style={styles.line} />
-                  <View style={styles.line} />
-                </View>
-
                 <View style={styles.iconWrapper}>
                   {button.vectorIcon ? (
                     <Icon
