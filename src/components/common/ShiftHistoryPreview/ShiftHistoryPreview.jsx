@@ -231,14 +231,20 @@ export function ShiftHistoryPreview({
   // (addManualHours); a real today row uses setManualHours on its id.
   const todayShift = baseShifts.find(isTodayShift);
   const olderShifts = baseShifts.filter(isPastShift);
-  const todayRow = todayShift || {
-    id: "today-entry",
-    isTodayPlaceholder: true,
-    shiftDate: todayDateStr(),
-    projectName: todayProjectName,
-    durationMs: 0,
-    photos: [],
-  };
+  // isTodayRow is set explicitly (not re-derived from the date) so the first
+  // row always renders the big white entry + pencil, never the muted "h" past
+  // style — even across date rollovers or timezone quirks.
+  const todayRow = todayShift
+    ? { ...todayShift, isTodayRow: true }
+    : {
+        id: "today-entry",
+        isTodayRow: true,
+        isTodayPlaceholder: true,
+        shiftDate: todayDateStr(),
+        projectName: todayProjectName,
+        durationMs: 0,
+        photos: [],
+      };
   const displayShifts = [todayRow, ...olderShifts];
 
   return (
@@ -303,7 +309,7 @@ export function ShiftHistoryPreview({
                   })}
                 </View>
               ) : null;
-              const today = isTodayShift(shift);
+              const today = shift.isTodayRow === true;
 
               return (
                 <View
