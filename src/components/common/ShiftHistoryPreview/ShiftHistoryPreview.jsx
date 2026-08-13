@@ -75,6 +75,13 @@ function isTodayShift(shift) {
   );
 }
 
+// Today's date as YYYY-MM-DD for the always-present "log today's hours" row.
+function todayDateStr() {
+  const now = new Date();
+  const pad = (value) => String(value).padStart(2, "0");
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+}
+
 // Preview-only mock rows for populating the block during design review.
 // Off in production — real data comes from the API.
 const SHOW_MOCK_DATA = false;
@@ -119,6 +126,8 @@ export function ShiftHistoryPreview({
   colorMode = "dark",
   onClose,
   refreshKey = 0,
+  todayProjectName = "",
+  onSaveTodayHours,
 }) {
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -191,9 +200,27 @@ export function ShiftHistoryPreview({
     [loadShifts],
   );
 
-  const displayShifts = SHOW_MOCK_DATA
+  const baseShifts = SHOW_MOCK_DATA
     ? [...buildMockShifts(), ...shifts]
     : shifts;
+
+  // Always surface a "today" row at the top so the worker can log today's
+  // hours even before any shift exists for today. Its save goes through
+  // onSaveTodayHours (addManualHours) instead of setManualHours on an id.
+  const hasTodayShift = baseShifts.some(isTodayShift);
+  const displayShifts = hasTodayShift
+    ? baseShifts
+    : [
+        {
+          id: "today-entry",
+          isTodayPlaceholder: true,
+          shiftDate: todayDateStr(),
+          projectName: todayProjectName,
+          durationMs: 0,
+          photos: [],
+        },
+        ...baseShifts,
+      ];
 
   return (
     <View style={styles.section}>
@@ -290,7 +317,13 @@ export function ShiftHistoryPreview({
                             placeholderTextColor="rgba(255,255,255,0.7)"
                             returnKeyType="done"
                             onEndEditing={function onEndEditing(event) {
-                              handleSaveHours(shift, event.nativeEvent.text);
+                              if (shift.isTodayPlaceholder) {
+                                if (onSaveTodayHours) {
+                                  onSaveTodayHours(event.nativeEvent.text);
+                                }
+                              } else {
+                                handleSaveHours(shift, event.nativeEvent.text);
+                              }
                             }}
                           />
                           <Icon

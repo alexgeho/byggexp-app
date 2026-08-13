@@ -648,6 +648,8 @@ export default function HomeVariant2() {
                     key={sectionId}
                     colorMode={colorMode}
                     refreshKey={previewRefreshKey}
+                    todayProjectName={selectedProject?.name}
+                    onSaveTodayHours={handleSaveTodayHours}
                     onClose={() => handleHideSection("shift-history")}
                   />
                 );
