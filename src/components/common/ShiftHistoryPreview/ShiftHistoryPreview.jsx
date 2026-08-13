@@ -146,11 +146,14 @@ function buildMockShifts() {
 // Today's hours entry — mirrors the round action button: a big white number,
 // no "h", and a pencil that shows only while empty/unfocused. Tapping the
 // pencil (or the field) focuses the input; on blur it saves.
-function TodayHoursField({ styles, initialValue, onSave }) {
+function TodayHoursField({ styles, initialValue, suffix, onSave }) {
   const inputRef = useRef(null);
   const [text, setText] = useState(initialValue || "");
   const [focused, setFocused] = useState(false);
   const showPencil = !text && !focused;
+  // Once a value is committed (blurred), show it as "8 h" / "8 t" like the
+  // past days; while editing, just the number so typing stays clean.
+  const showSuffix = Boolean(text) && !focused;
 
   return (
     <View style={styles.todayHoursRow}>
@@ -171,6 +174,7 @@ function TodayHoursField({ styles, initialValue, onSave }) {
           }
         }}
       />
+      {showSuffix ? <Text style={styles.hoursSuffixBig}>{suffix}</Text> : null}
       {showPencil ? (
         <TouchableOpacity
           activeOpacity={0.8}
@@ -396,6 +400,7 @@ export function ShiftHistoryPreview({
                         <TodayHoursField
                           styles={styles}
                           initialValue={hoursFromMs(shift.durationMs)}
+                          suffix={t("shiftHistory.hoursSuffix")}
                           onSave={function onSaveToday(text) {
                             // Today's hours always upsert by date so it works
                             // whether or not a shift already exists today.
@@ -419,7 +424,9 @@ export function ShiftHistoryPreview({
                               handleSaveHours(shift, event.nativeEvent.text);
                             }}
                           />
-                          <Text style={styles.hoursSuffixMuted}>h</Text>
+                          <Text style={styles.hoursSuffixMuted}>
+                            {t("shiftHistory.hoursSuffix")}
+                          </Text>
                         </View>
                       )}
                     </View>

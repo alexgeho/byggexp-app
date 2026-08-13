@@ -371,6 +371,7 @@
   },
   "shiftHistory": {
     "title": "Daily report",
+    "hoursSuffix": "h",
     "empty": "No shifts found yet.",
     "total": "Total: {{duration}}",
     "noLocation": "No location",

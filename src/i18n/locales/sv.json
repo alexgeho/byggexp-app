@@ -371,6 +371,7 @@
   },
   "shiftHistory": {
     "title": "Dagsrapport",
+    "hoursSuffix": "t",
     "empty": "Inga arbetspass hittades ännu.",
     "total": "Totalt: {{duration}}",
     "noLocation": "Ingen plats",
