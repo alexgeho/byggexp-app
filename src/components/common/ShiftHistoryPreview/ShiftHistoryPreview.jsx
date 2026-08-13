@@ -55,16 +55,21 @@ function formatShortDay(raw) {
   return `${SHORT_MONTHS[dt.getMonth()]} ${dt.getDate()}`;
 }
 
-// Today's row gets the big white hours entry; past rows show muted hours.
-function isTodayShift(shift) {
+function parseShiftDate(shift) {
   const raw = shift?.shiftDate || shift?.startedAt;
   if (!raw) {
-    return false;
+    return null;
   }
   const dt = /^\d{4}-\d{2}-\d{2}$/.test(raw)
     ? new Date(`${raw}T00:00:00`)
     : new Date(raw);
-  if (Number.isNaN(dt.getTime())) {
+  return Number.isNaN(dt.getTime()) ? null : dt;
+}
+
+// Today's row gets the big white hours entry; past rows show muted hours.
+function isTodayShift(shift) {
+  const dt = parseShiftDate(shift);
+  if (!dt) {
     return false;
   }
   const now = new Date();
@@ -73,6 +78,22 @@ function isTodayShift(shift) {
     dt.getMonth() === now.getMonth() &&
     dt.getDate() === now.getDate()
   );
+}
+
+// Daily report only ever shows today + earlier days — future-dated shifts
+// (test data, scheduling) are hidden so the block reads as a diary.
+function isPastShift(shift) {
+  const dt = parseShiftDate(shift);
+  if (!dt) {
+    return false;
+  }
+  const now = new Date();
+  const startOfToday = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+  );
+  return dt.getTime() < startOfToday.getTime();
 }
 
 // Today's date as YYYY-MM-DD for the always-present "log today's hours" row.
@@ -209,7 +230,7 @@ export function ShiftHistoryPreview({
   // can still log hours. Placeholder saves go through onSaveTodayHours
   // (addManualHours); a real today row uses setManualHours on its id.
   const todayShift = baseShifts.find(isTodayShift);
-  const olderShifts = baseShifts.filter((shift) => !isTodayShift(shift));
+  const olderShifts = baseShifts.filter(isPastShift);
   const todayRow = todayShift || {
     id: "today-entry",
     isTodayPlaceholder: true,
@@ -315,10 +336,10 @@ export function ShiftHistoryPreview({
                             placeholderTextColor="rgba(255,255,255,0.7)"
                             returnKeyType="done"
                             onEndEditing={function onEndEditing(event) {
-                              if (shift.isTodayPlaceholder) {
-                                if (onSaveTodayHours) {
-                                  onSaveTodayHours(event.nativeEvent.text);
-                                }
+                              // Today's hours always upsert by date so it works
+                              // whether or not a shift already exists today.
+                              if (onSaveTodayHours) {
+                                onSaveTodayHours(event.nativeEvent.text);
                               } else {
                                 handleSaveHours(shift, event.nativeEvent.text);
                               }
