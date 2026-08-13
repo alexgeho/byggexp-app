@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -141,6 +141,55 @@ function buildMockShifts() {
       photos: [],
     },
   ];
+}
+
+// Today's hours entry — mirrors the round action button: a big white number,
+// no "h", and a pencil that shows only while empty/unfocused. Tapping the
+// pencil (or the field) focuses the input; on blur it saves.
+function TodayHoursField({ styles, initialValue, onSave }) {
+  const inputRef = useRef(null);
+  const [text, setText] = useState(initialValue || "");
+  const [focused, setFocused] = useState(false);
+  const showPencil = !text && !focused;
+
+  return (
+    <View style={styles.todayHoursRow}>
+      <TextInput
+        ref={inputRef}
+        style={styles.hoursInputBig}
+        value={text}
+        onChangeText={setText}
+        keyboardType="numeric"
+        returnKeyType="done"
+        onFocus={function onFocus() {
+          setFocused(true);
+        }}
+        onBlur={function onBlur() {
+          setFocused(false);
+          if (onSave) {
+            onSave(text);
+          }
+        }}
+      />
+      {showPencil ? (
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={function focusInput() {
+            if (inputRef.current) {
+              inputRef.current.focus();
+            }
+          }}
+        >
+          <Icon
+            name="edit-2"
+            size={24}
+            color="#FFFFFF"
+            style={styles.hoursPencil}
+          />
+        </TouchableOpacity>
+      ) : null}
+    </View>
+  );
 }
 
 export function ShiftHistoryPreview({
@@ -333,31 +382,19 @@ export function ShiftHistoryPreview({
 
                     <View style={styles.summaryRightColumn}>
                       {today ? (
-                        <View style={styles.todayHoursRow}>
-                          <TextInput
-                            style={styles.hoursInputBig}
-                            defaultValue={hoursFromMs(shift.durationMs)}
-                            keyboardType="numeric"
-                            placeholder=""
-                            placeholderTextColor="rgba(255,255,255,0.7)"
-                            returnKeyType="done"
-                            onEndEditing={function onEndEditing(event) {
-                              // Today's hours always upsert by date so it works
-                              // whether or not a shift already exists today.
-                              if (onSaveTodayHours) {
-                                onSaveTodayHours(event.nativeEvent.text);
-                              } else {
-                                handleSaveHours(shift, event.nativeEvent.text);
-                              }
-                            }}
-                          />
-                          <Icon
-                            name="edit-2"
-                            size={24}
-                            color="#FFFFFF"
-                            style={styles.hoursPencil}
-                          />
-                        </View>
+                        <TodayHoursField
+                          styles={styles}
+                          initialValue={hoursFromMs(shift.durationMs)}
+                          onSave={function onSaveToday(text) {
+                            // Today's hours always upsert by date so it works
+                            // whether or not a shift already exists today.
+                            if (onSaveTodayHours) {
+                              onSaveTodayHours(text);
+                            } else {
+                              handleSaveHours(shift, text);
+                            }
+                          }}
+                        />
                       ) : (
                         <View style={styles.hoursInputRow}>
                           <TextInput
