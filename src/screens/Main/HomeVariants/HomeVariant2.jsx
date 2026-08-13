@@ -58,6 +58,7 @@ import {
   getEnabledSections,
   saveEnabledSections,
   getSectionsOrder,
+  getSecondaryAction,
 } from "../../../utils/homeButtonsStorage";
 import ShiftHistoryPreview from "../../../components/common/ShiftHistoryPreview/ShiftHistoryPreview";
 import TasksPreview from "../../../components/common/TasksPreview/TasksPreview";
@@ -122,6 +123,7 @@ export default function HomeVariant2() {
   const focusFetchIdRef = useRef(0);
   const projectsNavigationPendingRef = useRef(false);
   const [enabledButtons, setEnabledButtons] = useState(defaultEnabledButtons);
+  const [secondaryAction, setSecondaryAction] = useState("camera");
   const [enabledSections, setEnabledSections] = useState(
     defaultEnabledSections,
   );
@@ -312,12 +314,17 @@ export default function HomeVariant2() {
         const fetchId = ++focusFetchIdRef.current;
 
         async function fetchSettings() {
-          const [savedButtons, savedSections, savedSectionsOrder] =
-            await Promise.all([
-              getEnabledButtons(),
-              getEnabledSections(),
-              getSectionsOrder(),
-            ]);
+          const [
+            savedButtons,
+            savedSections,
+            savedSectionsOrder,
+            savedSecondary,
+          ] = await Promise.all([
+            getEnabledButtons(),
+            getEnabledSections(),
+            getSectionsOrder(),
+            getSecondaryAction(),
+          ]);
 
           if (fetchId !== focusFetchIdRef.current) {
             return;
@@ -333,6 +340,10 @@ export default function HomeVariant2() {
 
           if (savedSectionsOrder) {
             setSectionsOrder(savedSectionsOrder);
+          }
+
+          if (savedSecondary) {
+            setSecondaryAction(savedSecondary);
           }
 
           await Promise.all([
@@ -388,6 +399,51 @@ export default function HomeVariant2() {
   function handleCameraPress() {
     navigation.navigate("Camera");
   }
+
+  // Save today's hours from the secondary "hours" round button. Upserts a
+  // manual-hours entry for today on the selected project.
+  const handleSaveTodayHours = useCallback(
+    async function handleSaveTodayHours(rawText) {
+      if (!selectedProjectId) {
+        showShiftAlert(
+          "Project required",
+          "Select a project before logging hours.",
+        );
+        return;
+      }
+
+      const normalized = String(rawText || "")
+        .replace(",", ".")
+        .trim();
+      if (!normalized) {
+        return;
+      }
+      const hours = Number(normalized);
+      if (!Number.isFinite(hours) || hours < 0) {
+        return;
+      }
+
+      const now = new Date();
+      const pad = (value) => String(value).padStart(2, "0");
+      const date = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(
+        now.getDate(),
+      )}`;
+
+      try {
+        await shiftService.addManualHours({
+          workerId: user?._id || user?.id,
+          projectId: selectedProjectId,
+          date,
+          durationMs: Math.round(hours * 3600000),
+        });
+        setPreviewRefreshKey((previousKey) => previousKey + 1);
+      } catch (error) {
+        console.error("Failed to save today's hours:", error);
+        showShiftAlert("Error", "Unable to save hours right now.");
+      }
+    },
+    [selectedProjectId, user],
+  );
 
   /* PLAY / PAUSE BUTTON */
   async function handlePlayPause() {
@@ -556,6 +612,8 @@ export default function HomeVariant2() {
                 loading={loadingShift}
                 onPlayPress={handlePlayPause}
                 onCameraPress={handleCameraPress}
+                secondaryMode={secondaryAction}
+                onSaveTodayHours={handleSaveTodayHours}
                 compact={isCompact}
                 veryCompact={isVeryCompact}
                 actionButtonColor={

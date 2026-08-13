@@ -640,6 +640,10 @@
     },
     "customizeTitle": "Anpassa startskärmen",
     "themes": "Teman",
+    "secondaryButton": "Andra runda knappen",
+    "secondaryCamera": "Kamera",
+    "secondaryHours": "Dagens timmar",
+    "secondaryPlay": "Spela",
     "projectStart": "Start",
     "projectEnd": "Slut"
   },

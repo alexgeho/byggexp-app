@@ -640,6 +640,10 @@
     },
     "customizeTitle": "Customize Home Screen",
     "themes": "Themes",
+    "secondaryButton": "Second round button",
+    "secondaryCamera": "Camera",
+    "secondaryHours": "Today's hours",
+    "secondaryPlay": "Play",
     "projectStart": "Start",
     "projectEnd": "End"
   },

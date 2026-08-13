@@ -14,7 +14,7 @@ import Icon from "react-native-vector-icons/Feather";
 
 import { useTheme } from "../../../theme/ThemeContext";
 import shiftService from "../../../services/shift.service";
-import { formatShiftDayLabel, resolveUploadUrl } from "../../../utils/shifts";
+import { resolveUploadUrl } from "../../../utils/shifts";
 
 import { createStyles } from "./ShiftHistoryPreview.styles";
 
@@ -24,6 +24,95 @@ function hoursFromMs(durationMs) {
     return "";
   }
   return String(Math.round((durationMs / 3600000) * 10) / 10);
+}
+
+const SHORT_MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
+// Compact date like "Aug 13" for the single-line date + project meta row.
+function formatShortDay(raw) {
+  if (!raw) {
+    return "";
+  }
+  const dt = /^\d{4}-\d{2}-\d{2}$/.test(raw)
+    ? new Date(`${raw}T00:00:00`)
+    : new Date(raw);
+  if (Number.isNaN(dt.getTime())) {
+    return "";
+  }
+  return `${SHORT_MONTHS[dt.getMonth()]} ${dt.getDate()}`;
+}
+
+// Today's row gets the big white hours entry; past rows show muted hours.
+function isTodayShift(shift) {
+  const raw = shift?.shiftDate || shift?.startedAt;
+  if (!raw) {
+    return false;
+  }
+  const dt = /^\d{4}-\d{2}-\d{2}$/.test(raw)
+    ? new Date(`${raw}T00:00:00`)
+    : new Date(raw);
+  if (Number.isNaN(dt.getTime())) {
+    return false;
+  }
+  const now = new Date();
+  return (
+    dt.getFullYear() === now.getFullYear() &&
+    dt.getMonth() === now.getMonth() &&
+    dt.getDate() === now.getDate()
+  );
+}
+
+// Preview-only mock rows for populating the block during design review.
+// Off in production — real data comes from the API.
+const SHOW_MOCK_DATA = false;
+
+function buildMockShifts() {
+  const dayMs = 24 * 60 * 60 * 1000;
+  const now = Date.now();
+  const iso = (offsetDays) => new Date(now - offsetDays * dayMs).toISOString();
+  const day = (offsetDays) => iso(offsetDays).slice(0, 10);
+  return [
+    {
+      id: "mock-today",
+      shiftDate: day(0),
+      startedAt: iso(0),
+      projectName: "GPS test By 18",
+      durationMs: 0, // no hours yet -> editable field
+      photos: [
+        { url: "https://picsum.photos/id/1067/200/200" },
+        { url: "https://picsum.photos/id/1078/200/200" },
+      ],
+    },
+    {
+      id: "mock-1",
+      shiftDate: day(1),
+      startedAt: iso(1),
+      projectName: "Byggnation av BRF Peter",
+      durationMs: 8 * 3600000, // has hours -> read-only, no field
+      photos: [],
+    },
+    {
+      id: "mock-2",
+      shiftDate: day(2),
+      startedAt: iso(2),
+      projectName: "Stambyte BRF Solrosen",
+      durationMs: 6.5 * 3600000,
+      photos: [],
+    },
+  ];
 }
 
 export function ShiftHistoryPreview({
@@ -102,6 +191,10 @@ export function ShiftHistoryPreview({
     [loadShifts],
   );
 
+  const displayShifts = SHOW_MOCK_DATA
+    ? [...buildMockShifts(), ...shifts]
+    : shifts;
+
   return (
     <View style={styles.section}>
       <View style={styles.header}>
@@ -139,70 +232,90 @@ export function ShiftHistoryPreview({
           <View style={styles.loadingState}>
             <ActivityIndicator color="#FFFFFF" />
           </View>
-        ) : shifts.length ? (
+        ) : displayShifts.length ? (
           <ScrollView
             style={styles.scrollArea}
             contentContainerStyle={styles.list}
             showsVerticalScrollIndicator={false}
             nestedScrollEnabled={true}
           >
-            {shifts.map(function renderShift(shift, index) {
+            {displayShifts.map(function renderShift(shift, index) {
+              const photosNode = shift.photos?.length ? (
+                <View style={styles.photosRow}>
+                  {shift.photos.slice(0, 3).map(function renderPhoto(photo, i) {
+                    return (
+                      <View
+                        key={shift.id + "-photo-" + i}
+                        style={styles.photoSquare}
+                      >
+                        <Image
+                          style={styles.photoImage}
+                          source={{ uri: resolveUploadUrl(photo.url) }}
+                        />
+                      </View>
+                    );
+                  })}
+                </View>
+              ) : null;
+              const today = isTodayShift(shift);
+
               return (
                 <View
                   key={shift.id || `${shift.startedAt}-${index}`}
                   style={[
                     styles.item,
-                    index !== shifts.length - 1 && styles.itemDivider,
+                    index !== displayShifts.length - 1 && styles.itemDivider,
                   ]}
                 >
-                  <Text style={styles.dateText}>
-                    {formatShiftDayLabel(shift.shiftDate || shift.startedAt)}
-                  </Text>
-
-                  <View style={styles.summaryRow}>
+                  <View
+                    style={[styles.summaryRow, today && styles.summaryRowToday]}
+                  >
                     <View style={styles.summaryLeftColumn}>
-                      <Text style={styles.projectText} numberOfLines={2}>
+                      <Text style={styles.metaText} numberOfLines={1}>
+                        {formatShortDay(shift.shiftDate || shift.startedAt)}
+                        {" · "}
                         {shift.projectName || t("createTask.untitledProject")}
                       </Text>
-
-                      {shift.photos?.length ? (
-                        <View style={styles.photosRow}>
-                          {shift.photos
-                            .slice(0, 3)
-                            .map(function renderPhoto(photo, photoIndex) {
-                              return (
-                                <View
-                                  key={`${shift.id}-photo-${photoIndex}`}
-                                  style={styles.photoSquare}
-                                >
-                                  <Image
-                                    style={styles.photoImage}
-                                    source={{
-                                      uri: resolveUploadUrl(photo.url),
-                                    }}
-                                  />
-                                </View>
-                              );
-                            })}
-                        </View>
-                      ) : null}
+                      {photosNode}
                     </View>
 
                     <View style={styles.summaryRightColumn}>
-                      <View style={styles.hoursInputRow}>
-                        <TextInput
-                          style={styles.hoursInput}
-                          defaultValue={hoursFromMs(shift.durationMs)}
-                          keyboardType="numeric"
-                          placeholder="–"
-                          placeholderTextColor={secondaryIconColor}
-                          returnKeyType="done"
-                          onEndEditing={function onEndEditing(event) {
-                            handleSaveHours(shift, event.nativeEvent.text);
-                          }}
-                        />
-                        <Text style={styles.hoursSuffix}>h</Text>
-                      </View>
+                      {today ? (
+                        <View style={styles.todayHoursRow}>
+                          <TextInput
+                            style={styles.hoursInputBig}
+                            defaultValue={hoursFromMs(shift.durationMs)}
+                            keyboardType="numeric"
+                            placeholder=""
+                            placeholderTextColor="rgba(255,255,255,0.7)"
+                            returnKeyType="done"
+                            onEndEditing={function onEndEditing(event) {
+                              handleSaveHours(shift, event.nativeEvent.text);
+                            }}
+                          />
+                          <Icon
+                            name="edit-2"
+                            size={24}
+                            color="#FFFFFF"
+                            style={styles.hoursPencil}
+                          />
+                        </View>
+                      ) : (
+                        <View style={styles.hoursInputRow}>
+                          <TextInput
+                            style={styles.hoursInputMuted}
+                            defaultValue={hoursFromMs(shift.durationMs)}
+                            keyboardType="numeric"
+                            placeholder=""
+                            placeholderTextColor={secondaryIconColor}
+                            returnKeyType="done"
+                            onEndEditing={function onEndEditing(event) {
+                              handleSaveHours(shift, event.nativeEvent.text);
+                            }}
+                          />
+                          <Text style={styles.hoursSuffixMuted}>h</Text>
+                        </View>
+                      )}
                     </View>
                   </View>
                 </View>

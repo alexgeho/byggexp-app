@@ -135,5 +135,33 @@ export function createStyles(theme) {
       fontSize: 16,
       fontWeight: "700",
     },
+
+    secondaryRow: {
+      flexDirection: "row",
+      gap: 10,
+    },
+    secondaryOption: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 6,
+      paddingVertical: 16,
+      borderRadius: 16,
+      backgroundColor: "#ffffff",
+      borderWidth: 1,
+      borderColor: `${theme.colors.primary}26`,
+    },
+    secondaryOptionActive: {
+      backgroundColor: theme.colors.primary,
+      borderColor: theme.colors.primary,
+    },
+    secondaryOptionLabel: {
+      fontSize: 13,
+      color: "#052d50",
+      fontFamily: theme.text.fontFamily.medium,
+    },
+    secondaryOptionLabelActive: {
+      color: "#ffffff",
+    },
   });
 }

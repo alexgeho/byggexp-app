@@ -49,4 +49,21 @@ export const styles = StyleSheet.create({
     height: 124,
     resizeMode: "contain",
   },
+  hoursPencilOverlay: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  hoursCircleInput: {
+    color: "#FFFFFF",
+    fontSize: 40,
+    fontWeight: "700",
+    textAlign: "center",
+    padding: 0,
+    minWidth: 40,
+  },
 });

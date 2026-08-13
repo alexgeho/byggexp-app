@@ -30,6 +30,8 @@ import {
   saveSectionsOrder,
   getButtonsOrder,
   saveButtonsOrder,
+  getSecondaryAction,
+  saveSecondaryAction,
 } from "../../utils/homeButtonsStorage";
 import Icon from "react-native-vector-icons/Feather";
 
@@ -65,6 +67,8 @@ export default function CustomizeHomeScreen() {
     mainButtons.map((button) => button.id),
   );
 
+  const [secondaryAction, setSecondaryAction] = useState("camera");
+
   useFocusEffect(
     React.useCallback(function loadSettings() {
       async function fetchSettings() {
@@ -77,6 +81,9 @@ export default function CustomizeHomeScreen() {
         const savedSectionsOrder = await getSectionsOrder();
 
         const savedButtonsOrder = await getButtonsOrder();
+
+        const savedSecondary = await getSecondaryAction();
+        setSecondaryAction(savedSecondary);
 
         if (savedButtons) {
           setEnabledButtons(savedButtons);
@@ -117,6 +124,11 @@ export default function CustomizeHomeScreen() {
     setEnabledButtons(updatedButtons);
 
     await saveEnabledButtons(updatedButtons);
+  }
+
+  async function handlePickSecondary(action) {
+    setSecondaryAction(action);
+    await saveSecondaryAction(action);
   }
 
   function moveSection(index, direction) {
@@ -251,6 +263,62 @@ export default function CustomizeHomeScreen() {
                       />
                     </View>
                   ) : null}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+
+        {/* SECONDARY ROUND BUTTON */}
+        <View style={styles.themeContainer}>
+          <Text style={styles.sectionTitle}>
+            {t("home.secondaryButton", "Second round button")}
+          </Text>
+
+          <View style={styles.secondaryRow}>
+            {[
+              {
+                id: "camera",
+                icon: "camera",
+                label: t("home.secondaryCamera", "Camera"),
+              },
+              {
+                id: "hours",
+                icon: "edit-2",
+                label: t("home.secondaryHours", "Today's hours"),
+              },
+              {
+                id: "play",
+                icon: "play",
+                label: t("home.secondaryPlay", "Play"),
+              },
+            ].map(function renderOption(option) {
+              const active = secondaryAction === option.id;
+
+              return (
+                <TouchableOpacity
+                  key={option.id}
+                  style={[
+                    styles.secondaryOption,
+                    active && styles.secondaryOptionActive,
+                  ]}
+                  onPress={function pickSecondary() {
+                    handlePickSecondary(option.id);
+                  }}
+                >
+                  <Icon
+                    name={option.icon}
+                    size={22}
+                    color={active ? "#FFFFFF" : "#052d50"}
+                  />
+                  <Text
+                    style={[
+                      styles.secondaryOptionLabel,
+                      active && styles.secondaryOptionLabelActive,
+                    ]}
+                  >
+                    {option.label}
+                  </Text>
                 </TouchableOpacity>
               );
             })}

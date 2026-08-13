@@ -21,6 +21,24 @@ const ENABLED_SECTIONS_KEY = "enabled-home-sections";
 
 const DISMISSED_SECTIONS_KEY = "dismissed-home-sections";
 
+// The secondary round action on the home screen (next to Play). One of
+// "camera" | "hours" | "play". Configurable in Customize Home Screen.
+const SECONDARY_ACTION_KEY = "home-secondary-action";
+export const SECONDARY_ACTIONS = ["camera", "hours", "play"];
+export const DEFAULT_SECONDARY_ACTION = "camera";
+
+export async function getSecondaryAction() {
+  const data = await AsyncStorage.getItem(SECONDARY_ACTION_KEY);
+  if (data && SECONDARY_ACTIONS.includes(data)) {
+    return data;
+  }
+  return DEFAULT_SECONDARY_ACTION;
+}
+
+export async function saveSecondaryAction(action) {
+  await AsyncStorage.setItem(SECONDARY_ACTION_KEY, action);
+}
+
 export async function saveEnabledButtons(buttons) {
   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(buttons));
 }
