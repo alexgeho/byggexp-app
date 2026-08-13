@@ -50,7 +50,7 @@ export const mainButtons = [
 export const homeSections = [
   {
     id: "shift-history",
-    title: "Shift history",
+    title: "Daily report",
   },
   {
     id: "tasks-history",

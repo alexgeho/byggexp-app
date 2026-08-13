@@ -370,7 +370,7 @@
     }
   },
   "shiftHistory": {
-    "title": "Shift history",
+    "title": "Daily report",
     "empty": "No shifts found yet.",
     "total": "Total: {{duration}}",
     "noLocation": "No location",
@@ -634,7 +634,7 @@
       "tasks": "Tasks"
     },
     "sections": {
-      "shift-history": "Shift history",
+      "shift-history": "Daily report",
       "project-files": "Project Files",
       "tasks-history": "Tasks"
     },

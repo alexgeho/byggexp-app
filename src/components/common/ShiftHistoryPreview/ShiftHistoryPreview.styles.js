@@ -123,8 +123,10 @@ export function createStyles(theme, colorMode = "dark") {
       justifyContent: "space-between",
       gap: 12,
     },
-    projectText: {
+    summaryLeftColumn: {
       flex: 1,
+    },
+    projectText: {
       color: primaryTextColor,
       fontSize: 15,
       fontFamily: theme.text.fontFamily.medium,
@@ -148,6 +150,71 @@ export function createStyles(theme, colorMode = "dark") {
       fontSize: 15,
       fontFamily: theme.text.fontFamily.medium,
       textAlign: "right",
+    },
+    photosRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      marginTop: 8,
+    },
+    photoSquare: {
+      width: 38,
+      height: 38,
+      borderRadius: 8,
+      overflow: "hidden",
+      borderWidth: 1,
+      borderColor: isLightMode
+        ? `${theme.colors.primary}26`
+        : "rgba(255,255,255,0.28)",
+    },
+    photoImage: {
+      width: "100%",
+      height: "100%",
+    },
+    addSquare: {
+      width: 38,
+      height: 38,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderStyle: "dashed",
+      borderColor: isLightMode
+        ? `${theme.colors.primary}66`
+        : "rgba(255,255,255,0.5)",
+      backgroundColor: isLightMode
+        ? `${theme.colors.primary}0D`
+        : "rgba(255,255,255,0.08)",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    hoursInputRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 5,
+      backgroundColor: isLightMode
+        ? `${theme.colors.primary}12`
+        : "rgba(255,255,255,0.14)",
+      borderWidth: 1,
+      borderColor: isLightMode
+        ? `${theme.colors.primary}59`
+        : "rgba(255,255,255,0.45)",
+      borderRadius: 12,
+      paddingHorizontal: 12,
+      paddingVertical: 4,
+      minWidth: 64,
+      justifyContent: "center",
+    },
+    hoursInput: {
+      color: primaryTextColor,
+      fontSize: 20,
+      fontFamily: theme.text.fontFamily.semiBold,
+      textAlign: "center",
+      padding: 0,
+      minWidth: 22,
+    },
+    hoursSuffix: {
+      color: secondaryTextColor,
+      fontSize: 14,
+      fontFamily: theme.text.fontFamily.medium,
     },
   });
 }

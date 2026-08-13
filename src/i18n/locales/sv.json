@@ -370,7 +370,7 @@
     }
   },
   "shiftHistory": {
-    "title": "Arbetspasshistorik",
+    "title": "Dagsrapport",
     "empty": "Inga arbetspass hittades ännu.",
     "total": "Totalt: {{duration}}",
     "noLocation": "Ingen plats",
@@ -634,7 +634,7 @@
       "tasks": "Uppgifter"
     },
     "sections": {
-      "shift-history": "Arbetspasshistorik",
+      "shift-history": "Dagsrapport",
       "project-files": "Projektfiler",
       "tasks-history": "Uppgifter"
     },

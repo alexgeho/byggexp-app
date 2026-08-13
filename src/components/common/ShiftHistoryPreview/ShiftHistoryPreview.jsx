@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Image,
   ScrollView,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -12,38 +14,16 @@ import Icon from "react-native-vector-icons/Feather";
 
 import { useTheme } from "../../../theme/ThemeContext";
 import shiftService from "../../../services/shift.service";
-import { formatDuration, formatShiftDayLabel } from "../../../utils/shifts";
+import { formatShiftDayLabel, resolveUploadUrl } from "../../../utils/shifts";
 
 import { createStyles } from "./ShiftHistoryPreview.styles";
 
-function formatTimeLabel(dateValue) {
-  if (!dateValue) {
-    return null;
+// The daily-hours field shows/edits whole (or half) hours; the API stores ms.
+function hoursFromMs(durationMs) {
+  if (!durationMs) {
+    return "";
   }
-
-  const date = new Date(dateValue);
-  if (Number.isNaN(date.getTime())) {
-    return null;
-  }
-
-  const hours = date.getHours();
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-
-  return `${hours}:${minutes}`;
-}
-
-function formatTimeRangeCompact(startedAt, endedAt) {
-  const startLabel = formatTimeLabel(startedAt);
-  if (!startLabel) {
-    return "—";
-  }
-
-  const endLabel = formatTimeLabel(endedAt);
-  if (!endLabel) {
-    return `${startLabel}-...`;
-  }
-
-  return `${startLabel}-${endLabel}`;
+  return String(Math.round((durationMs / 3600000) * 10) / 10);
 }
 
 export function ShiftHistoryPreview({
@@ -92,6 +72,35 @@ export function ShiftHistoryPreview({
   useEffect(() => {
     void loadShifts();
   }, [loadShifts, refreshKey]);
+
+  const handleSaveHours = useCallback(
+    async function handleSaveHours(shift, rawText) {
+      const normalized = String(rawText || "")
+        .replace(",", ".")
+        .trim();
+      if (!normalized) {
+        return;
+      }
+
+      const hours = Number(normalized);
+      if (!Number.isFinite(hours) || hours < 0) {
+        return;
+      }
+
+      const durationMs = Math.round(hours * 3600000);
+      if (durationMs === shift.durationMs) {
+        return;
+      }
+
+      try {
+        await shiftService.setManualHours(shift.id, durationMs);
+        loadShifts();
+      } catch (error) {
+        console.error("Failed to save manual hours:", error);
+      }
+    },
+    [loadShifts],
+  );
 
   return (
     <View style={styles.section}>
@@ -151,18 +160,49 @@ export function ShiftHistoryPreview({
                   </Text>
 
                   <View style={styles.summaryRow}>
-                    <Text style={styles.projectText} numberOfLines={2}>
-                      {shift.projectName || t("createTask.untitledProject")}
-                    </Text>
+                    <View style={styles.summaryLeftColumn}>
+                      <Text style={styles.projectText} numberOfLines={2}>
+                        {shift.projectName || t("createTask.untitledProject")}
+                      </Text>
+
+                      {shift.photos?.length ? (
+                        <View style={styles.photosRow}>
+                          {shift.photos
+                            .slice(0, 3)
+                            .map(function renderPhoto(photo, photoIndex) {
+                              return (
+                                <View
+                                  key={`${shift.id}-photo-${photoIndex}`}
+                                  style={styles.photoSquare}
+                                >
+                                  <Image
+                                    style={styles.photoImage}
+                                    source={{
+                                      uri: resolveUploadUrl(photo.url),
+                                    }}
+                                  />
+                                </View>
+                              );
+                            })}
+                        </View>
+                      ) : null}
+                    </View>
 
                     <View style={styles.summaryRightColumn}>
-                      <Text style={styles.durationText}>
-                        {formatDuration(shift.durationMs)}
-                      </Text>
-
-                      <Text style={styles.timeText}>
-                        {formatTimeRangeCompact(shift.startedAt, shift.endedAt)}
-                      </Text>
+                      <View style={styles.hoursInputRow}>
+                        <TextInput
+                          style={styles.hoursInput}
+                          defaultValue={hoursFromMs(shift.durationMs)}
+                          keyboardType="numeric"
+                          placeholder="0"
+                          placeholderTextColor={secondaryIconColor}
+                          returnKeyType="done"
+                          onEndEditing={function onEndEditing(event) {
+                            handleSaveHours(shift, event.nativeEvent.text);
+                          }}
+                        />
+                        <Text style={styles.hoursSuffix}>h</Text>
+                      </View>
                     </View>
                   </View>
                 </View>
