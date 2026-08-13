@@ -204,23 +204,21 @@ export function ShiftHistoryPreview({
     ? [...buildMockShifts(), ...shifts]
     : shifts;
 
-  // Always surface a "today" row at the top so the worker can log today's
-  // hours even before any shift exists for today. Its save goes through
-  // onSaveTodayHours (addManualHours) instead of setManualHours on an id.
-  const hasTodayShift = baseShifts.some(isTodayShift);
-  const displayShifts = hasTodayShift
-    ? baseShifts
-    : [
-        {
-          id: "today-entry",
-          isTodayPlaceholder: true,
-          shiftDate: todayDateStr(),
-          projectName: todayProjectName,
-          durationMs: 0,
-          photos: [],
-        },
-        ...baseShifts,
-      ];
+  // Exactly one "today" row, always first: reuse the real shift for today if
+  // one exists (deduping any repeats), otherwise a placeholder so the worker
+  // can still log hours. Placeholder saves go through onSaveTodayHours
+  // (addManualHours); a real today row uses setManualHours on its id.
+  const todayShift = baseShifts.find(isTodayShift);
+  const olderShifts = baseShifts.filter((shift) => !isTodayShift(shift));
+  const todayRow = todayShift || {
+    id: "today-entry",
+    isTodayPlaceholder: true,
+    shiftDate: todayDateStr(),
+    projectName: todayProjectName,
+    durationMs: 0,
+    photos: [],
+  };
+  const displayShifts = [todayRow, ...olderShifts];
 
   return (
     <View style={styles.section}>
