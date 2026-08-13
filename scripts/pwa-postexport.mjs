@@ -43,6 +43,9 @@ const HEAD_TAGS = `${SENTINEL}
          edge ("off screen"). Clamp width + hide horizontal overflow so nothing
          drifts sideways. Vertical scrolling inside ScrollViews is unaffected. */
       html, body { overflow-x: hidden !important; max-width: 100%; }
+      /* Fill the full dynamic viewport so the app background reaches under the
+         home indicator — otherwise the bottom safe-area shows as a white strip. */
+      html, body, #root { min-height: 100dvh; }
       #root { max-width: 100vw; overflow-x: hidden; }
     </style>`;
 
