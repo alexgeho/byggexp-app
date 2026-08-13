@@ -36,7 +36,11 @@
     "autoStartedTitle": "Shift started",
     "autoStartedBody": "You entered the project area, so your shift started automatically.",
     "autoCompletedTitle": "Shift ended",
-    "autoCompletedBody": "You left the project area, so your shift was ended automatically."
+    "autoCompletedBody": "You left the project area, so your shift was ended automatically.",
+    "autoPausedTitle": "Shift paused",
+    "autoPausedBody": "You left the project area, so time tracking was paused. It resumes automatically when you return.",
+    "autoResumedTitle": "Shift resumed",
+    "autoResumedBody": "You are back in the project area, so your shift resumed automatically."
   },
   "documentPreview": {
     "fallbackName": "Document",

@@ -5,6 +5,11 @@ import projectService from "../services/project.service";
 import { shiftService } from "../services";
 import { shiftLocationPolicy } from "../config/shiftLocationPolicy";
 import {
+  findExistingShiftForProject,
+  isShiftAlreadyExistsError,
+  reportUnrecoverableShiftConflict,
+} from "./shiftConflict";
+import {
   getShiftScheduleWindow,
   getStartWindowErrorMessage,
 } from "./shiftSchedule";
@@ -276,7 +281,30 @@ export const startShiftWithLocationGuard = async ({
     }
   }
 
-  return shiftService.start(projectId);
+  try {
+    return await shiftService.start(projectId);
+  } catch (error) {
+    if (!isShiftAlreadyExistsError(error)) {
+      throw error;
+    }
+
+    // Today's shift for this project already exists. The location and schedule
+    // checks above have already passed, so resume it instead of showing the
+    // backend's "Resume it instead" message as an error.
+    const existingShift = await findExistingShiftForProject(projectId);
+    const existingShiftId = existingShift?.id || existingShift?._id;
+
+    if (!existingShiftId) {
+      reportUnrecoverableShiftConflict(projectId, error);
+      throw error;
+    }
+
+    if (existingShift.status === "active") {
+      return existingShift;
+    }
+
+    return shiftService.resume(existingShiftId);
+  }
 };
 
 export const resumeShiftWithGuards = async ({

@@ -1,103 +1,208 @@
 import { shiftService } from "../services";
+import { runExclusive } from "../utils/shiftTransitionQueue";
+import { shouldSkipTransition } from "../utils/shiftTransitionLog";
+import { assertShiftScheduleAllowsStart } from "../utils/shiftLocationGuard";
 import {
-  emitShiftAutoCompleted,
-  emitShiftAutoStarted,
-} from "../utils/shiftExitAutoCompleteEvents";
+  findExistingShiftForProject,
+  isShiftAlreadyExistsError,
+  reportUnrecoverableShiftConflict,
+} from "../utils/shiftConflict";
 import {
-  notifyShiftAutoCompleted,
-  notifyShiftAutoStarted,
-} from "../utils/shiftBackgroundNotifications";
+  announceShiftAutoCompleted,
+  announceShiftAutoPaused,
+  announceShiftAutoResumed,
+  announceShiftAutoStarted,
+} from "../utils/shiftAutoAnnounce";
 
-// Auto start/stop a shift when the worker enters or leaves the project area.
-// Shared by both background monitors: the iOS native geofence task
-// (shiftGeofenceTask) and the Android foreground-service location task
-// (shiftLocationUpdatesTask), so a transition behaves identically on both.
+// Single source of truth for automatic shift transitions.
+//
+// Used by every caller that can move a shift without the user pressing a
+// button: the iOS region-monitoring task (shiftGeofenceTask), the Android
+// foreground-service location task (shiftLocationUpdatesTask) and the
+// foreground monitor (ShiftLocationMonitor). Routing all of them through the
+// same functions is what keeps foreground and background behaviour identical.
+//
+// State model, matching the backend contract (one open shift per project/day):
+//
+//   leaving the area  -> pause    (keeps the shift open, stops the clock)
+//   returning         -> resume   (same shift, accumulated time is preserved)
+//   switching project -> complete (the old project's shift really is finished)
+//
+// The previous implementation completed the shift on exit and then only knew
+// how to resume a *paused* shift on re-entry, so returning the same day always
+// fell through to `start` and the backend rejected it with
+// "A shift for this project already exists today. Resume it instead."
 
-const MONITORED_SHIFT_STATUSES = new Set(["active", "paused"]);
+export const SHIFT_ENTER = "enter";
+export const SHIFT_EXIT = "exit";
 
 const getShiftId = (shift) => shift?.id || shift?._id || null;
 
-// Best-effort de-dupe shared across both tasks: the OS can deliver the same
-// transition more than once, and only one of the two monitors should ever run
-// per platform, but this guard keeps a rapid duplicate from firing twice while
-// the JS context stays alive.
-//
-// Each key (e.g. "enter:projectId") gets its own timestamp so that alternating
-// enter/exit events don't reset each other's window.
-const lastHandledMap = {};
-const DEDUPE_WINDOW_MS = 3 * 60 * 1000; // 3 minutes per-event type
-
-export const isDuplicateTransition = (key, nowMs) => {
-  const last = lastHandledMap[key] || 0;
-  if (nowMs - last < DEDUPE_WINDOW_MS) {
-    return true;
+const resumeExisting = async (shift) => {
+  const shiftId = getShiftId(shift);
+  if (!shiftId) {
+    return null;
   }
-  lastHandledMap[key] = nowMs;
-  return false;
+
+  const resumedShift = (await shiftService.resume(shiftId)) || shift;
+  await announceShiftAutoResumed(resumedShift);
+
+  return resumedShift;
 };
 
-// Re-entry cooldown: after an exit, don't auto-start again for this project
-// until at least RE_ENTRY_COOLDOWN_MS has passed. Prevents GPS oscillation at
-// the boundary from rapidly cycling the shift on/off.
-const lastExitAtMap = {};
-const RE_ENTRY_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutes
+// Recovery path for a `start` the backend rejected because today's shift
+// already exists: re-read it and resume it instead of bubbling the error up as
+// a "Resume it instead" dialog.
+const recoverFromExistingShift = async (projectId, error) => {
+  const existingShift = await findExistingShiftForProject(projectId);
 
-export const handleShiftExit = async () => {
-  const currentShift = await shiftService.getCurrent();
-  const shiftId = getShiftId(currentShift);
-
-  if (!shiftId || !MONITORED_SHIFT_STATUSES.has(currentShift?.status)) {
-    return;
+  if (!getShiftId(existingShift)) {
+    reportUnrecoverableShiftConflict(projectId, error);
+    throw error;
   }
 
-  const completedShift = await shiftService.complete(shiftId, {
-    reason: "outside_project_area",
-    source: "mobile_geofence_checkout",
-    // The app posts its own local notification in the user's language
-    // (notifyShiftAutoCompleted), so don't also send the server push.
-    notifyUser: false,
+  if (existingShift.status === "active") {
+    return existingShift;
+  }
+
+  return resumeExisting(existingShift);
+};
+
+// Unqueued primitives, composed inside a single queued operation by
+// handleProjectSwitch. External callers use the queued wrappers further down so
+// transitions can never interleave.
+
+const performShiftEnter = async ({ projectId, project } = {}) => {
+  if (!projectId) {
+    return null;
+  }
+
+  const currentShift = await shiftService.getCurrent(projectId);
+  const currentShiftId = getShiftId(currentShift);
+
+  // Already running for this project — a repeated enter event is a no-op.
+  if (currentShiftId && currentShift.status === "active") {
+    return currentShift;
+  }
+
+  if (currentShiftId && currentShift.status === "paused") {
+    return resumeExisting(currentShift);
+  }
+
+  // Only the foreground monitor knows the full project, so the schedule window
+  // is asserted when it is available; the backend validates it in every case.
+  if (project) {
+    assertShiftScheduleAllowsStart(project);
+  }
+
+  let startedShift;
+  try {
+    startedShift = await shiftService.start(projectId);
+  } catch (error) {
+    if (!isShiftAlreadyExistsError(error)) {
+      throw error;
+    }
+
+    return recoverFromExistingShift(projectId, error);
+  }
+
+  await announceShiftAutoStarted(startedShift);
+
+  return startedShift;
+};
+
+const performShiftExit = async ({ projectId } = {}) => {
+  const currentShift = await shiftService.getCurrent(projectId || undefined);
+  const currentShiftId = getShiftId(currentShift);
+
+  // Only an actively running shift has a clock to stop. A paused shift is
+  // already where an exit would leave it.
+  if (!currentShiftId || currentShift.status !== "active") {
+    return null;
+  }
+
+  const pausedShift =
+    (await shiftService.pause(currentShiftId)) || currentShift;
+
+  await announceShiftAutoPaused(pausedShift);
+
+  return pausedShift;
+};
+
+const performShiftComplete = async ({ projectId, shiftId } = {}) => {
+  let targetShiftId = shiftId || null;
+  let targetShift = null;
+
+  if (!targetShiftId) {
+    targetShift = await shiftService.getCurrent(projectId || undefined);
+    targetShiftId = getShiftId(targetShift);
+  }
+
+  if (!targetShiftId) {
+    return null;
+  }
+
+  const completedShift =
+    (await shiftService.complete(targetShiftId, {
+      reason: "project_switched",
+      source: "mobile_project_switch",
+      // The app posts its own message in the user's language.
+      notifyUser: false,
+    })) || targetShift;
+
+  await announceShiftAutoCompleted(completedShift);
+
+  return completedShift;
+};
+
+// Queued public API.
+
+export const handleShiftEnter = (options) => {
+  // Backwards-compatible with the previous positional signature.
+  const normalized =
+    typeof options === "string" ? { projectId: options } : options || {};
+
+  return runExclusive(() => performShiftEnter(normalized));
+};
+
+export const handleShiftExit = (options) => {
+  const normalized =
+    typeof options === "string" ? { projectId: options } : options || {};
+
+  return runExclusive(() => performShiftExit(normalized));
+};
+
+// Switching project finishes the old project's shift for good, then hands the
+// new project to the normal enter logic — which resumes today's shift for it or
+// starts a fresh one. Both steps run inside one queued operation so a start for
+// B can never overtake the complete for A.
+export const handleProjectSwitch = ({
+  fromProjectId,
+  fromShiftId,
+  toProjectId,
+  toProject,
+  isWithinTargetArea = false,
+} = {}) =>
+  runExclusive(async () => {
+    const completedShift = await performShiftComplete({
+      projectId: fromProjectId,
+      shiftId: fromShiftId,
+    });
+
+    if (!toProjectId || !isWithinTargetArea) {
+      return { completedShift, startedShift: null };
+    }
+
+    const startedShift = await performShiftEnter({
+      projectId: toProjectId,
+      project: toProject,
+    });
+
+    return { completedShift, startedShift };
   });
 
-  // Record the exit time so handleShiftEnter can enforce the re-entry cooldown.
-  if (currentShift.projectId) {
-    lastExitAtMap[currentShift.projectId] = Date.now();
-  }
-
-  await notifyShiftAutoCompleted(completedShift);
-  await emitShiftAutoCompleted(completedShift);
-};
-
-export const handleShiftEnter = async (projectId) => {
-  if (!projectId) {
-    return;
-  }
-
-  // Re-entry cooldown: if we just exited this project's geofence recently it
-  // is most likely GPS oscillation at the boundary, not a real arrival. Skip
-  // auto-start until the cooldown expires.
-  const lastExit = lastExitAtMap[projectId] || 0;
-  if (Date.now() - lastExit < RE_ENTRY_COOLDOWN_MS) {
-    return;
-  }
-
-  // Scope to this project: the backend allows only one open shift per
-  // project/day, so returning to a site must resume today's shift rather than
-  // start a second one.
-  const currentShift = await shiftService.getCurrent(projectId);
-  const shiftId = getShiftId(currentShift);
-
-  // Already running for this project — nothing to do.
-  if (shiftId && currentShift?.status === "active") {
-    return;
-  }
-
-  // Paused earlier today (manual break, auto-pause, or a prior exit) — resume
-  // it instead of starting a new one.
-  const shift =
-    shiftId && currentShift?.status === "paused"
-      ? await shiftService.resume(shiftId)
-      : await shiftService.start(projectId);
-
-  await notifyShiftAutoStarted(shift);
-  await emitShiftAutoStarted(shift);
-};
+// De-dupe helper used by the two background tasks before dispatching. The
+// handlers above are idempotent on their own; this only avoids redundant API
+// calls when the OS redelivers a transition or the GPS flaps at the boundary.
+export const isDuplicateTransition = (direction, projectId, nowMs) =>
+  shouldSkipTransition(direction, projectId, nowMs);

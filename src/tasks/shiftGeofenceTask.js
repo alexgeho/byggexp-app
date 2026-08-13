@@ -3,6 +3,8 @@ import * as TaskManager from "expo-task-manager";
 
 import { emitShiftLocationCheckError } from "../utils/shiftExitAutoCompleteEvents";
 import {
+  SHIFT_ENTER,
+  SHIFT_EXIT,
   handleShiftEnter,
   handleShiftExit,
   isDuplicateTransition,
@@ -34,15 +36,15 @@ TaskManager.defineTask(SHIFT_GEOFENCE_TASK, async ({ data, error }) => {
 
   try {
     if (eventType === Location.GeofencingEventType.Exit) {
-      if (isDuplicateTransition(`exit:${region.identifier}`, nowMs)) {
+      if (await isDuplicateTransition(SHIFT_EXIT, region.identifier, nowMs)) {
         return;
       }
-      await handleShiftExit();
+      await handleShiftExit({ projectId: region.identifier });
     } else if (eventType === Location.GeofencingEventType.Enter) {
-      if (isDuplicateTransition(`enter:${region.identifier}`, nowMs)) {
+      if (await isDuplicateTransition(SHIFT_ENTER, region.identifier, nowMs)) {
         return;
       }
-      await handleShiftEnter(region.identifier);
+      await handleShiftEnter({ projectId: region.identifier });
     }
   } catch (taskError) {
     await emitShiftLocationCheckError(taskError);

@@ -34,6 +34,7 @@ import {
   startShiftWithLocationGuard,
 } from "../../../utils/shiftLocationGuard";
 import { createShiftGeofenceHandlers } from "../../../utils/shiftGeofenceHandlers";
+import { handleProjectSwitch } from "../../../tasks/shiftAutoTransition";
 
 import { createStyles } from "./HomeVariant2.styles";
 
@@ -237,14 +238,18 @@ export default function HomeVariant2() {
 
       setCurrentShift(null);
       reset();
-      shiftService
-        .complete(activeShift.id)
-        .catch((err) =>
-          console.error(
-            "Failed to auto-complete shift on project switch:",
-            err,
-          ),
-        );
+
+      // Completing the old project's shift and picking up the new project's
+      // shift run as one queued transition, so a start for the new project can
+      // never overtake the complete for the old one. The location monitor
+      // decides afterwards whether the worker is actually inside the new area.
+      handleProjectSwitch({
+        fromProjectId: prevId,
+        fromShiftId: activeShift.id,
+        toProjectId: selectedProjectId,
+      }).catch((err) =>
+        console.error("Failed to auto-complete shift on project switch:", err),
+      );
     },
     [selectedProjectId, reset],
   );

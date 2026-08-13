@@ -4,6 +4,8 @@ import * as TaskManager from "expo-task-manager";
 import { calculateDistanceMeters } from "../utils/shiftLocationGuard";
 import { emitShiftLocationCheckError } from "../utils/shiftExitAutoCompleteEvents";
 import {
+  SHIFT_ENTER,
+  SHIFT_EXIT,
   handleShiftEnter,
   handleShiftExit,
   isDuplicateTransition,
@@ -75,11 +77,15 @@ TaskManager.defineTask(SHIFT_LOCATION_TASK, async ({ data, error }) => {
     // inside auto-starts.
     if (prevRaw === null || inside !== prevInside) {
       if (inside) {
-        if (!isDuplicateTransition(`enter:${target.projectId}`, nowMs)) {
-          await handleShiftEnter(target.projectId);
+        if (
+          !(await isDuplicateTransition(SHIFT_ENTER, target.projectId, nowMs))
+        ) {
+          await handleShiftEnter({ projectId: target.projectId });
         }
-      } else if (!isDuplicateTransition(`exit:${target.projectId}`, nowMs)) {
-        await handleShiftExit();
+      } else if (
+        !(await isDuplicateTransition(SHIFT_EXIT, target.projectId, nowMs))
+      ) {
+        await handleShiftExit({ projectId: target.projectId });
       }
     }
   } catch (taskError) {

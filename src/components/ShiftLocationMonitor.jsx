@@ -8,13 +8,12 @@ import { shiftLocationPolicy } from "../config/shiftLocationPolicy";
 import {
   getShiftLocationCheck,
   isWithinProjectLocation,
-  startShiftWithLocationGuard,
 } from "../utils/shiftLocationGuard";
+import { emitShiftLocationCheckError } from "../utils/shiftExitAutoCompleteEvents";
 import {
-  emitShiftAutoCompleted,
-  emitShiftAutoStarted,
-  emitShiftLocationCheckError,
-} from "../utils/shiftExitAutoCompleteEvents";
+  handleShiftEnter,
+  handleShiftExit,
+} from "../tasks/shiftAutoTransition";
 import {
   hasLocationTaskPermission,
   isBackgroundGeofencingSupported,
@@ -30,7 +29,7 @@ const getShiftId = (shift) => shift?.id || shift?._id;
 export default function ShiftLocationMonitor() {
   const { isAuthenticated, selectedProject } = useContext(AuthContext);
   const isCheckingRef = useRef(false);
-  const completedShiftIdRef = useRef(null);
+  const pausedShiftIdRef = useRef(null);
   const startedProjectIdRef = useRef(null);
   const shiftGeofenceInsideRef = useRef(null);
   const selectedGeofenceInsideRef = useRef(null);
@@ -132,27 +131,25 @@ export default function ShiftLocationMonitor() {
     return loadedProject;
   }, []);
 
-  const completeShiftOutsideArea = useCallback(async (shiftId) => {
-    if (completedShiftIdRef.current === shiftId) {
+  // Leaving the area pauses the shift instead of completing it, so returning
+  // the same day resumes the very same shift with its accumulated time. The
+  // actual transition lives in shiftAutoTransition, shared with the background
+  // tasks, so foreground and background behave identically.
+  const pauseShiftOutsideArea = useCallback(async (currentShift) => {
+    const shiftId = getShiftId(currentShift);
+
+    if (pausedShiftIdRef.current === shiftId) {
       return;
     }
 
-    const completedShift = await shiftService.complete(shiftId, {
-      reason: "outside_project_area",
-      source: "mobile_geofence_checkout",
-      // Notify in-app in the user's language (emitShiftAutoCompleted → Alert)
-      // instead of the server push, so the language always matches the app.
-      notifyUser: false,
-    });
+    await handleShiftExit({ projectId: currentShift.projectId });
 
-    completedShiftIdRef.current = shiftId;
+    pausedShiftIdRef.current = shiftId;
     startedProjectIdRef.current = null;
-    await emitShiftAutoCompleted(completedShift);
   }, []);
 
   const verifyOpenShiftGeofence = useCallback(
     async (currentShift) => {
-      const shiftId = getShiftId(currentShift);
       const project = await getShiftProject(currentShift).catch(() => null);
       const isWithinBounds = await isWithinProjectLocation({
         project,
@@ -162,9 +159,9 @@ export default function ShiftLocationMonitor() {
       if (!isWithinBounds) {
         if (
           shiftLocationPolicy.autoCheckOutEnabled &&
-          completedShiftIdRef.current !== shiftId
+          currentShift.status === "active"
         ) {
-          await completeShiftOutsideArea(shiftId);
+          await pauseShiftOutsideArea(currentShift);
         }
 
         shiftGeofenceInsideRef.current = false;
@@ -172,9 +169,22 @@ export default function ShiftLocationMonitor() {
       }
 
       shiftGeofenceInsideRef.current = true;
-      completedShiftIdRef.current = null;
+      pausedShiftIdRef.current = null;
+
+      // Back inside with a shift that was paused on the way out: resume it.
+      if (
+        shiftLocationPolicy.autoCheckInEnabled &&
+        currentShift.status === "paused" &&
+        currentShift.projectId
+      ) {
+        await handleShiftEnter({
+          projectId: currentShift.projectId,
+          project,
+        });
+        startedProjectIdRef.current = currentShift.projectId;
+      }
     },
-    [completeShiftOutsideArea, getShiftProject],
+    [getShiftProject, pauseShiftOutsideArea],
   );
 
   const verifySelectedProjectCheckIn = useCallback(async () => {
@@ -232,33 +242,14 @@ export default function ShiftLocationMonitor() {
     }
 
     try {
-      // The backend allows one open shift per project/day, so resume today's
-      // shift if it's paused rather than starting a second one.
-      const current = await shiftService
-        .getCurrent(projectId)
-        .catch(() => null);
-      const currentId = getShiftId(current);
-
-      if (currentId && current?.status === "active") {
-        startedProjectIdRef.current = projectId;
-        shiftGeofenceInsideRef.current = true;
-        return;
-      }
-
-      const startedShift =
-        currentId && current?.status === "paused"
-          ? await shiftService.resume(currentId)
-          : await startShiftWithLocationGuard({
-              projectId,
-              project,
-              fallbackProjectLocation: project?.location,
-              skipLocationCheck: true,
-            });
+      // Shared with the background tasks: resumes today's shift for this
+      // project when one exists, starts a new one otherwise, and recovers on
+      // its own if the backend reports that today's shift already exists.
+      await handleShiftEnter({ projectId, project });
 
       startedProjectIdRef.current = projectId;
-      completedShiftIdRef.current = null;
+      pausedShiftIdRef.current = null;
       shiftGeofenceInsideRef.current = true;
-      await emitShiftAutoStarted(startedShift);
     } catch (error) {
       await emitShiftLocationCheckError(error);
     }
@@ -298,7 +289,7 @@ export default function ShiftLocationMonitor() {
       }
 
       shiftGeofenceInsideRef.current = null;
-      completedShiftIdRef.current = null;
+      pausedShiftIdRef.current = null;
 
       // No open shift: watch the selected project for entry. If the OS geofence
       // is active it handles auto-checkin in the background; stand down here.

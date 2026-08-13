@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import {
   subscribeToShiftAutoCompleted,
+  subscribeToShiftAutoPaused,
   subscribeToShiftAutoResumed,
   subscribeToShiftAutoStarted,
   subscribeToShiftLocationCheckError,
@@ -15,6 +16,7 @@ export const useShiftGeofenceSync = ({
   onShiftAutoCompleted,
   onShiftAutoStarted,
   onShiftAutoResumed,
+  onShiftAutoPaused,
   onCheckError,
 }) => {
   const handledShiftIdRef = useRef(null);
@@ -22,6 +24,7 @@ export const useShiftGeofenceSync = ({
     onShiftAutoCompleted,
     onShiftAutoStarted,
     onShiftAutoResumed,
+    onShiftAutoPaused,
     onCheckError,
   });
 
@@ -30,12 +33,14 @@ export const useShiftGeofenceSync = ({
       onShiftAutoCompleted,
       onShiftAutoStarted,
       onShiftAutoResumed,
+      onShiftAutoPaused,
       onCheckError,
     };
   }, [
     onShiftAutoCompleted,
     onShiftAutoStarted,
     onShiftAutoResumed,
+    onShiftAutoPaused,
     onCheckError,
   ]);
 
@@ -81,15 +86,41 @@ export const useShiftGeofenceSync = ({
       },
     );
 
+    // A resume can arrive while the screen has no shift loaded yet (the app was
+    // reopened after a background transition), so match on the project as well
+    // as on the shift id rather than requiring a local shift to already exist.
     const unsubscribeAutoResumed = subscribeToShiftAutoResumed(
       async (resumedShift) => {
         const resumedShiftId = getShiftId(resumedShift);
+        const resumedProjectId = resumedShift?.projectId;
 
-        if (!shiftId || shiftId !== resumedShiftId) {
+        if (shiftId && resumedShiftId && shiftId !== resumedShiftId) {
           return;
         }
 
+        if (
+          !shiftId &&
+          selectedProjectId &&
+          resumedProjectId &&
+          selectedProjectId !== resumedProjectId
+        ) {
+          return;
+        }
+
+        handledShiftIdRef.current = null;
         await callbacksRef.current.onShiftAutoResumed?.(resumedShift);
+      },
+    );
+
+    const unsubscribeAutoPaused = subscribeToShiftAutoPaused(
+      async (pausedShift) => {
+        const pausedShiftId = getShiftId(pausedShift);
+
+        if (!shiftId || !pausedShiftId || shiftId !== pausedShiftId) {
+          return;
+        }
+
+        await callbacksRef.current.onShiftAutoPaused?.(pausedShift);
       },
     );
 
@@ -103,6 +134,7 @@ export const useShiftGeofenceSync = ({
       unsubscribeAutoCompleted();
       unsubscribeAutoStarted();
       unsubscribeAutoResumed();
+      unsubscribeAutoPaused();
       unsubscribeCheckError();
     };
   }, [currentShift, selectedProject]);

@@ -36,7 +36,11 @@
     "autoStartedTitle": "Pass startat",
     "autoStartedBody": "Du kom in i projektområdet, så ditt pass startade automatiskt.",
     "autoCompletedTitle": "Pass avslutat",
-    "autoCompletedBody": "Du lämnade projektområdet, så ditt pass avslutades automatiskt."
+    "autoCompletedBody": "Du lämnade projektområdet, så ditt pass avslutades automatiskt.",
+    "autoPausedTitle": "Pass pausat",
+    "autoPausedBody": "Du lämnade projektområdet, så tidtagningen pausades. Den återupptas automatiskt när du kommer tillbaka.",
+    "autoResumedTitle": "Pass återupptaget",
+    "autoResumedBody": "Du är tillbaka i projektområdet, så ditt pass återupptogs automatiskt."
   },
   "documentPreview": {
     "fallbackName": "Dokument",
