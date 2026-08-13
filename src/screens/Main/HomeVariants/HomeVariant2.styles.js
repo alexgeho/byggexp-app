@@ -7,6 +7,8 @@ export function createStyles({
   theme,
   isLightBlue = false,
 }) {
+  // Native clears the status bar / notch with a fixed pad; web overrides this
+  // inline with the real safe-area inset (see HomeVariant2 LinearGradient).
   const topPadding = veryCompact ? 34 : compact ? 44 : 60;
   const horizontalPadding = compact ? 16 : 20;
   const sectionGap = veryCompact ? 14 : compact ? 18 : 24;

@@ -1,0 +1,16 @@
+{
+  "name": "ByggExp",
+  "short_name": "ByggExp",
+  "description": "Skift, projekt och team – allt-i-ett för byggbranschen.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#EAF2FB",
+  "theme_color": "#2F80ED",
+  "icons": [
+    { "src": "/pwa-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/pwa-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/pwa-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

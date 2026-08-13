@@ -11,6 +11,7 @@ import {
   View,
   ScrollView,
   Alert,
+  Platform,
   useWindowDimensions,
   InteractionManager,
 } from "react-native";
@@ -18,6 +19,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import AuthContext from "../../../contexts/AuthContext";
 import { useTheme } from "../../../theme/ThemeContext";
@@ -61,6 +63,19 @@ import ShiftHistoryPreview from "../../../components/common/ShiftHistoryPreview/
 import TasksPreview from "../../../components/common/TasksPreview/TasksPreview";
 import { isHomeButtonVisible } from "../../../utils/userRoles";
 
+// react-native-web's Alert.alert is a no-op, so on web the shift-guard messages
+// (e.g. "You are not at the project location…") never reach the user and the
+// shift just silently fails to start. Fall back to the browser dialog there.
+function showShiftAlert(title, message) {
+  if (Platform.OS === "web") {
+    if (typeof window !== "undefined" && typeof window.alert === "function") {
+      window.alert(message ? `${title}\n\n${message}` : title);
+    }
+    return;
+  }
+  Alert.alert(title, message);
+}
+
 export default function HomeVariant2() {
   const { theme, themeName } = useTheme();
   // Light-background home themes share the same "light" treatment
@@ -95,6 +110,7 @@ export default function HomeVariant2() {
 
   /* NAVIGATION */
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
 
   /* LOADING STATE */
   const [loadingShift, setLoadingShift] = useState(false);
@@ -395,7 +411,7 @@ export default function HomeVariant2() {
       }
 
       if (!selectedProjectId) {
-        Alert.alert(
+        showShiftAlert(
           "Project required",
           "Select a project before starting a shift.",
         );
@@ -426,7 +442,7 @@ export default function HomeVariant2() {
       start(startedShift);
     } catch (error) {
       console.error("Shift action failed:", error);
-      Alert.alert(
+      showShiftAlert(
         "Shift error",
         getErrorMessage(error, "Unable to update the shift right now."),
       );
@@ -446,7 +462,12 @@ export default function HomeVariant2() {
         x: 0,
         y: 1,
       }}
-      style={styles.container}
+      // On web the fixed native top padding double-counts the status bar; use
+      // the real safe-area inset instead (env-based on iOS PWA, 0 on desktop).
+      style={[
+        styles.container,
+        Platform.OS === "web" && { paddingTop: insets.top },
+      ]}
     >
       <ScrollView
         style={styles.scrollView}
