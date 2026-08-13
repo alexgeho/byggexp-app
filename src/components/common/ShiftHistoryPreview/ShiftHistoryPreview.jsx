@@ -207,10 +207,16 @@ export function ShiftHistoryPreview({
     colorMode === "light" ? `${theme.colors.text}80` : "rgba(255,255,255,0.72)";
   const [loading, setLoading] = useState(true);
   const [shifts, setShifts] = useState([]);
+  // Only the very first load shows the spinner. Background refreshes (focus,
+  // refreshKey after saving hours) keep the list mounted, so the today field
+  // isn't torn down and re-created — which was wiping the just-entered number.
+  const hasLoadedRef = useRef(false);
 
   const loadShifts = useCallback(async function loadShifts() {
     try {
-      setLoading(true);
+      if (!hasLoadedRef.current) {
+        setLoading(true);
+      }
 
       const data = await shiftService.list();
       const nextShifts = [...(data?.items || [])].sort(
@@ -227,6 +233,7 @@ export function ShiftHistoryPreview({
       console.error("Failed to load shift history preview:", error);
       setShifts([]);
     } finally {
+      hasLoadedRef.current = true;
       setLoading(false);
     }
   }, []);
