@@ -362,7 +362,11 @@ export function ShiftHistoryPreview({
 
               return (
                 <View
-                  key={shift.id || `${shift.startedAt}-${index}`}
+                  key={
+                    shift.isTodayRow
+                      ? "today-row"
+                      : shift.id || `${shift.startedAt}-${index}`
+                  }
                   style={[
                     styles.item,
                     index !== displayShifts.length - 1 && styles.itemDivider,
