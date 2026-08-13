@@ -19,6 +19,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import AuthContext from "../../../contexts/AuthContext";
 import { useTheme } from "../../../theme/ThemeContext";
@@ -108,6 +109,7 @@ export default function HomeVariant2() {
 
   /* NAVIGATION */
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
 
   /* LOADING STATE */
   const [loadingShift, setLoadingShift] = useState(false);
@@ -455,7 +457,12 @@ export default function HomeVariant2() {
         x: 0,
         y: 1,
       }}
-      style={styles.container}
+      // On web the fixed native top padding double-counts the status bar; use
+      // the real safe-area inset instead (env-based on iOS PWA, 0 on desktop).
+      style={[
+        styles.container,
+        Platform.OS === "web" && { paddingTop: insets.top },
+      ]}
     >
       <ScrollView
         style={styles.scrollView}

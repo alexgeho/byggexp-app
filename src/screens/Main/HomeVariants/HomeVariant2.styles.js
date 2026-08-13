@@ -1,4 +1,4 @@
-import { Platform, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 
 export function createStyles({
   compact = false,
@@ -7,10 +7,9 @@ export function createStyles({
   theme,
   isLightBlue = false,
 }) {
-  // The web build is full-bleed (viewport-fit=cover), so like native it draws
-  // under the status bar and needs top padding to clear it.
-  const topPadding =
-    Platform.OS === "web" ? 50 : veryCompact ? 34 : compact ? 44 : 60;
+  // Native clears the status bar / notch with a fixed pad; web overrides this
+  // inline with the real safe-area inset (see HomeVariant2 LinearGradient).
+  const topPadding = veryCompact ? 34 : compact ? 44 : 60;
   const horizontalPadding = compact ? 16 : 20;
   const sectionGap = veryCompact ? 14 : compact ? 18 : 24;
   const timerBottomCompensation = veryCompact ? 8 : compact ? 12 : 16;
