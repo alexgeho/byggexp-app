@@ -15,6 +15,7 @@ function WheelColumn({
   fontSize,
   itemHeight,
   peek,
+  letterSpacing,
 }) {
   const scrollY = useRef(
     new Animated.Value(Math.max(0, values.indexOf(selected)) * itemHeight),
@@ -65,7 +66,12 @@ function WheelColumn({
               <Text
                 style={[
                   styles.digit,
-                  { color: textColor, fontSize, lineHeight: itemHeight },
+                  {
+                    color: textColor,
+                    fontSize,
+                    lineHeight: itemHeight,
+                    letterSpacing,
+                  },
                 ]}
                 numberOfLines={1}
               >
@@ -90,6 +96,7 @@ export function HoursWheelPicker({
   fontSize = 140,
   itemHeight = 132,
   peek = 26,
+  letterSpacing = -2.5,
 }) {
   return (
     <View style={styles.row} pointerEvents="box-none">
@@ -101,6 +108,7 @@ export function HoursWheelPicker({
         fontSize={fontSize}
         itemHeight={itemHeight}
         peek={peek}
+        letterSpacing={letterSpacing}
       />
       <WheelColumn
         values={MINUTES}
@@ -110,6 +118,7 @@ export function HoursWheelPicker({
         fontSize={fontSize}
         itemHeight={itemHeight}
         peek={peek}
+        letterSpacing={letterSpacing}
       />
     </View>
   );

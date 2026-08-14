@@ -108,6 +108,7 @@ export default function HomeVariant2() {
   // never shifts the digits or the round buttons. Matches the timer line height.
   const timerSlotHeight = isVeryCompact ? 96 : isCompact ? 112 : 132;
   const timerWheelFontSize = isVeryCompact ? 100 : isCompact ? 118 : 140;
+  const timerLetterSpacing = isVeryCompact ? -1.4 : isCompact ? -2 : -2.5;
   /* SELECTED PROJECT */
   const { selectedProject, setSelectedProject, user } = useContext(AuthContext);
   const selectedProjectId = selectedProject?._id || selectedProject?.id;
@@ -673,6 +674,7 @@ export default function HomeVariant2() {
                     fontSize={timerWheelFontSize}
                     itemHeight={clockHeight || timerSlotHeight}
                     peek={isCompact ? 20 : 26}
+                    letterSpacing={timerLetterSpacing}
                   />
                 </View>
               ) : (
