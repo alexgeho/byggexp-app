@@ -71,7 +71,23 @@
     "fillAllFields": "Please fill in all fields.",
     "loginFailedTitle": "Login failed",
     "loginFailedMessage": "Invalid email or password.",
-    "loginWithCode": "Sign in with an email code →"
+    "loginWithCode": "Sign in with an email code →",
+    "confirmPassword": "Confirm password",
+    "confirmPasswordPlaceholder": "repeat your password",
+    "passwordTooShort": "Password must be at least 6 characters.",
+    "passwordsDontMatch": "Passwords don't match."
+  },
+  "registerVerify": {
+    "title": "Confirm your email",
+    "sentTo": "Enter the code we sent to {{email}}",
+    "codeLabel": "Confirmation code",
+    "codePlaceholder": "6-digit code",
+    "verify": "Confirm & create account",
+    "resend": "Resend code",
+    "resent": "A new code has been sent.",
+    "changeDetails": "Change my details",
+    "enterCode": "Enter the 6-digit code from your email.",
+    "invalidCode": "Invalid or expired code."
   },
   "codeLogin": {
     "title": "Sign in with a code",

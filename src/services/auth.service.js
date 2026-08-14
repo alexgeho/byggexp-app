@@ -11,12 +11,29 @@ export const authService = {
     return data;
   },
 
-  registerCompany: async ({ companyName, userName, email }) => {
+  // Step 1: request a verification code. No account is created yet.
+  registerCompany: async ({ companyName, userName, email, password }) => {
     const { data } = await api.post("/auth/register-company", {
       companyName,
       userName,
       email,
+      password,
     });
+    return data;
+  },
+
+  // Step 2: verify the emailed code -> creates the company and returns a session.
+  verifyRegistration: async (email, code) => {
+    const { data } = await api.post("/auth/register-company/verify", {
+      email,
+      code,
+    });
+    return data;
+  },
+
+  // Re-send the verification code for a pending sign-up.
+  resendRegistration: async (email) => {
+    const { data } = await api.post("/auth/register-company/resend", { email });
     return data;
   },
 
