@@ -4,7 +4,6 @@ import {
   Image,
   ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -18,7 +17,7 @@ import { resolveUploadUrl } from "../../../utils/shifts";
 
 import { createStyles } from "./ShiftHistoryPreview.styles";
 
-// The daily-hours field shows/edits whole (or half) hours; the API stores ms.
+// Hours shown as whole/half hours; the API stores milliseconds.
 function hoursFromMs(durationMs) {
   if (!durationMs) {
     return "";
@@ -55,153 +54,13 @@ function formatShortDay(raw) {
   return `${SHORT_MONTHS[dt.getMonth()]} ${dt.getDate()}`;
 }
 
-function parseShiftDate(shift) {
-  const raw = shift?.shiftDate || shift?.startedAt;
-  if (!raw) {
-    return null;
-  }
-  const dt = /^\d{4}-\d{2}-\d{2}$/.test(raw)
-    ? new Date(`${raw}T00:00:00`)
-    : new Date(raw);
-  return Number.isNaN(dt.getTime()) ? null : dt;
-}
-
-// Today's row gets the big white hours entry; past rows show muted hours.
-function isTodayShift(shift) {
-  const dt = parseShiftDate(shift);
-  if (!dt) {
-    return false;
-  }
-  const now = new Date();
-  return (
-    dt.getFullYear() === now.getFullYear() &&
-    dt.getMonth() === now.getMonth() &&
-    dt.getDate() === now.getDate()
-  );
-}
-
-// Daily report only ever shows today + earlier days — future-dated shifts
-// (test data, scheduling) are hidden so the block reads as a diary.
-function isPastShift(shift) {
-  const dt = parseShiftDate(shift);
-  if (!dt) {
-    return false;
-  }
-  const now = new Date();
-  const startOfToday = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate(),
-  );
-  return dt.getTime() < startOfToday.getTime();
-}
-
-// Today's date as YYYY-MM-DD for the always-present "log today's hours" row.
-function todayDateStr() {
-  const now = new Date();
-  const pad = (value) => String(value).padStart(2, "0");
-  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
-}
-
-// Preview-only mock rows for populating the block during design review.
-// Off in production — real data comes from the API.
-const SHOW_MOCK_DATA = false;
-
-function buildMockShifts() {
-  const dayMs = 24 * 60 * 60 * 1000;
-  const now = Date.now();
-  const iso = (offsetDays) => new Date(now - offsetDays * dayMs).toISOString();
-  const day = (offsetDays) => iso(offsetDays).slice(0, 10);
-  return [
-    {
-      id: "mock-today",
-      shiftDate: day(0),
-      startedAt: iso(0),
-      projectName: "GPS test By 18",
-      durationMs: 0, // no hours yet -> editable field
-      photos: [
-        { url: "https://picsum.photos/id/1067/200/200" },
-        { url: "https://picsum.photos/id/1078/200/200" },
-      ],
-    },
-    {
-      id: "mock-1",
-      shiftDate: day(1),
-      startedAt: iso(1),
-      projectName: "Byggnation av BRF Peter",
-      durationMs: 8 * 3600000, // has hours -> read-only, no field
-      photos: [],
-    },
-    {
-      id: "mock-2",
-      shiftDate: day(2),
-      startedAt: iso(2),
-      projectName: "Stambyte BRF Solrosen",
-      durationMs: 6.5 * 3600000,
-      photos: [],
-    },
-  ];
-}
-
-// Today's hours entry — mirrors the round action button: a big white number,
-// no "h", and a pencil that shows only while empty/unfocused. Tapping the
-// pencil (or the field) focuses the input; on blur it saves.
-function TodayHoursField({ styles, initialValue, suffix, onSave }) {
-  const inputRef = useRef(null);
-  const [text, setText] = useState(initialValue || "");
-  const [focused, setFocused] = useState(false);
-  const showPencil = !text && !focused;
-  // Once a value is committed (blurred), show it as "8 h" / "8 t" like the
-  // past days; while editing, just the number so typing stays clean.
-  const showSuffix = Boolean(text) && !focused;
-
-  return (
-    <View style={styles.todayHoursRow}>
-      <TextInput
-        ref={inputRef}
-        style={styles.hoursInputBig}
-        value={text}
-        onChangeText={setText}
-        keyboardType="numeric"
-        returnKeyType="done"
-        onFocus={function onFocus() {
-          setFocused(true);
-        }}
-        onBlur={function onBlur() {
-          setFocused(false);
-          if (onSave) {
-            onSave(text);
-          }
-        }}
-      />
-      {showSuffix ? <Text style={styles.hoursSuffixBig}>{suffix}</Text> : null}
-      {showPencil ? (
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={function focusInput() {
-            if (inputRef.current) {
-              inputRef.current.focus();
-            }
-          }}
-        >
-          <Icon
-            name="edit-2"
-            size={24}
-            color="#FFFFFF"
-            style={styles.hoursPencil}
-          />
-        </TouchableOpacity>
-      ) : null}
-    </View>
-  );
-}
-
+// Read-only daily-report preview: a compact shift history. Tapping anywhere
+// opens the full Shifts screen — no inline editing here (hours are entered on
+// the home screen's round button).
 export function ShiftHistoryPreview({
   colorMode = "dark",
   onClose,
   refreshKey = 0,
-  todayProjectName = "",
-  onSaveTodayHours,
 }) {
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -211,9 +70,6 @@ export function ShiftHistoryPreview({
     colorMode === "light" ? `${theme.colors.text}80` : "rgba(255,255,255,0.72)";
   const [loading, setLoading] = useState(true);
   const [shifts, setShifts] = useState([]);
-  // Only the very first load shows the spinner. Background refreshes (focus,
-  // refreshKey after saving hours) keep the list mounted, so the today field
-  // isn't torn down and re-created — which was wiping the just-entered number.
   const hasLoadedRef = useRef(false);
 
   const loadShifts = useCallback(async function loadShifts() {
@@ -252,60 +108,12 @@ export function ShiftHistoryPreview({
     void loadShifts();
   }, [loadShifts, refreshKey]);
 
-  const handleSaveHours = useCallback(
-    async function handleSaveHours(shift, rawText) {
-      const normalized = String(rawText || "")
-        .replace(",", ".")
-        .trim();
-      if (!normalized) {
-        return;
-      }
-
-      const hours = Number(normalized);
-      if (!Number.isFinite(hours) || hours < 0) {
-        return;
-      }
-
-      const durationMs = Math.round(hours * 3600000);
-      if (durationMs === shift.durationMs) {
-        return;
-      }
-
-      try {
-        await shiftService.setManualHours(shift.id, durationMs);
-        loadShifts();
-      } catch (error) {
-        console.error("Failed to save manual hours:", error);
-      }
+  const goToShifts = useCallback(
+    function goToShifts() {
+      navigation.navigate("Shifts");
     },
-    [loadShifts],
+    [navigation],
   );
-
-  const baseShifts = SHOW_MOCK_DATA
-    ? [...buildMockShifts(), ...shifts]
-    : shifts;
-
-  // Exactly one "today" row, always first: reuse the real shift for today if
-  // one exists (deduping any repeats), otherwise a placeholder so the worker
-  // can still log hours. Placeholder saves go through onSaveTodayHours
-  // (addManualHours); a real today row uses setManualHours on its id.
-  const todayShift = baseShifts.find(isTodayShift);
-  const olderShifts = baseShifts.filter(isPastShift);
-  // isTodayRow is set explicitly (not re-derived from the date) so the first
-  // row always renders the big white entry + pencil, never the muted "h" past
-  // style — even across date rollovers or timezone quirks.
-  const todayRow = todayShift
-    ? { ...todayShift, isTodayRow: true }
-    : {
-        id: "today-entry",
-        isTodayRow: true,
-        isTodayPlaceholder: true,
-        shiftDate: todayDateStr(),
-        projectName: todayProjectName,
-        durationMs: 0,
-        photos: [],
-      };
-  const displayShifts = [todayRow, ...olderShifts];
 
   return (
     <View style={styles.section}>
@@ -315,7 +123,7 @@ export function ShiftHistoryPreview({
         <View style={styles.headerActions}>
           <TouchableOpacity
             style={styles.linkButton}
-            onPress={() => navigation.navigate("Shifts")}
+            onPress={goToShifts}
             activeOpacity={0.8}
           >
             <Text style={styles.linkText}>{t("common.viewAll")}</Text>
@@ -344,14 +152,14 @@ export function ShiftHistoryPreview({
           <View style={styles.loadingState}>
             <ActivityIndicator color="#FFFFFF" />
           </View>
-        ) : displayShifts.length ? (
+        ) : shifts.length ? (
           <ScrollView
             style={styles.scrollArea}
             contentContainerStyle={styles.list}
             showsVerticalScrollIndicator={false}
             nestedScrollEnabled={true}
           >
-            {displayShifts.map(function renderShift(shift, index) {
+            {shifts.map(function renderShift(shift, index) {
               const photosNode = shift.photos?.length ? (
                 <View style={styles.photosRow}>
                   {shift.photos.slice(0, 3).map(function renderPhoto(photo, i) {
@@ -369,23 +177,18 @@ export function ShiftHistoryPreview({
                   })}
                 </View>
               ) : null;
-              const today = shift.isTodayRow === true;
 
               return (
-                <View
-                  key={
-                    shift.isTodayRow
-                      ? "today-row"
-                      : shift.id || `${shift.startedAt}-${index}`
-                  }
+                <TouchableOpacity
+                  key={shift.id || `${shift.startedAt}-${index}`}
                   style={[
                     styles.item,
-                    index !== displayShifts.length - 1 && styles.itemDivider,
+                    index !== shifts.length - 1 && styles.itemDivider,
                   ]}
+                  activeOpacity={0.7}
+                  onPress={goToShifts}
                 >
-                  <View
-                    style={[styles.summaryRow, today && styles.summaryRowToday]}
-                  >
+                  <View style={styles.summaryRow}>
                     <View style={styles.summaryLeftColumn}>
                       <Text style={styles.metaText} numberOfLines={1}>
                         {formatShortDay(shift.shiftDate || shift.startedAt)}
@@ -395,52 +198,29 @@ export function ShiftHistoryPreview({
                       {photosNode}
                     </View>
 
-                    <View style={styles.summaryRightColumn}>
-                      {today ? (
-                        <TodayHoursField
-                          styles={styles}
-                          initialValue={hoursFromMs(shift.durationMs)}
-                          suffix={t("shiftHistory.hoursSuffix")}
-                          onSave={function onSaveToday(text) {
-                            // Today's hours always upsert by date so it works
-                            // whether or not a shift already exists today.
-                            if (onSaveTodayHours) {
-                              onSaveTodayHours(text);
-                            } else {
-                              handleSaveHours(shift, text);
-                            }
-                          }}
-                        />
-                      ) : (
-                        <View style={styles.hoursInputRow}>
-                          <TextInput
-                            style={styles.hoursInputMuted}
-                            defaultValue={hoursFromMs(shift.durationMs)}
-                            keyboardType="numeric"
-                            placeholder=""
-                            placeholderTextColor={secondaryIconColor}
-                            returnKeyType="done"
-                            onEndEditing={function onEndEditing(event) {
-                              handleSaveHours(shift, event.nativeEvent.text);
-                            }}
-                          />
-                          <Text style={styles.hoursSuffixMuted}>
-                            {t("shiftHistory.hoursSuffix")}
-                          </Text>
-                        </View>
-                      )}
-                    </View>
+                    {shift.durationMs ? (
+                      <View style={styles.hoursInputRow}>
+                        <Text style={styles.hoursInputMuted}>
+                          {hoursFromMs(shift.durationMs)}
+                        </Text>
+                        <Text style={styles.hoursSuffixMuted}>
+                          {t("shiftHistory.hoursSuffix")}
+                        </Text>
+                      </View>
+                    ) : null}
                   </View>
-                </View>
+                </TouchableOpacity>
               );
             })}
           </ScrollView>
         ) : (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>
-              {t("shiftHistory.noShiftsYet")}
-            </Text>
-          </View>
+          <TouchableOpacity
+            style={styles.emptyState}
+            activeOpacity={0.8}
+            onPress={goToShifts}
+          >
+            <Text style={styles.emptyText}>{t("shiftHistory.empty")}</Text>
+          </TouchableOpacity>
         )}
       </View>
     </View>

@@ -28,6 +28,7 @@ import { useTimer } from "../../../hooks/useTimer";
 import { useShiftExitAutoComplete } from "../../../hooks/useShiftExitAutoComplete";
 
 import { Timer } from "../../../components/common/Timer/Timer";
+import { HoursWheelPicker } from "../../../components/common/HoursWheelPicker/HoursWheelPicker";
 
 import shiftService from "../../../services/shift.service";
 import { projectService } from "../../../services";
@@ -124,6 +125,11 @@ export default function HomeVariant2() {
   const projectsNavigationPendingRef = useRef(false);
   const [enabledButtons, setEnabledButtons] = useState(defaultEnabledButtons);
   const [secondaryAction, setSecondaryAction] = useState("camera");
+  // Manual-hours edit mode (hours secondary button): the top clock turns into
+  // an hours/minutes wheel and the pencil becomes a save checkmark.
+  const [isEditingHours, setIsEditingHours] = useState(false);
+  const [editHours, setEditHours] = useState(0);
+  const [editMinutes, setEditMinutes] = useState(0);
   const [enabledSections, setEnabledSections] = useState(
     defaultEnabledSections,
   );
@@ -168,8 +174,16 @@ export default function HomeVariant2() {
   );
 
   /* TIMER LOGIC */
-  const { formattedTime, isRunning, isPaused, start, pause, sync, reset } =
-    useTimer();
+  const {
+    formattedTime,
+    timeElapsed,
+    isRunning,
+    isPaused,
+    start,
+    pause,
+    sync,
+    reset,
+  } = useTimer();
 
   const getErrorMessage = useCallback(function getErrorMessage(
     error,
@@ -400,10 +414,11 @@ export default function HomeVariant2() {
     navigation.navigate("Camera");
   }
 
-  // Save today's hours from the secondary "hours" round button. Upserts a
-  // manual-hours entry for today on the selected project.
-  const handleSaveTodayHours = useCallback(
-    async function handleSaveTodayHours(rawText) {
+  // Upsert a manual-hours entry for today on the selected project. Logging
+  // hours manually supersedes a live timer: if a shift is ticking (status
+  // "active"), stop it first so the manual total isn't double-counted.
+  const saveManualHours = useCallback(
+    async function saveManualHours(durationMs) {
       if (!selectedProjectId) {
         showShiftAlert(
           "Project required",
@@ -411,15 +426,7 @@ export default function HomeVariant2() {
         );
         return;
       }
-
-      const normalized = String(rawText || "")
-        .replace(",", ".")
-        .trim();
-      if (!normalized) {
-        return;
-      }
-      const hours = Number(normalized);
-      if (!Number.isFinite(hours) || hours < 0) {
+      if (!durationMs || durationMs <= 0) {
         return;
       }
 
@@ -430,9 +437,6 @@ export default function HomeVariant2() {
       )}`;
 
       try {
-        // Logging today's hours manually supersedes a live timer: if a shift
-        // is currently ticking (status "active"), stop it first so the manual
-        // total isn't double-counted against a running clock.
         const activeShift = currentShiftRef.current;
         if (activeShift?.id && activeShift.status === "active") {
           try {
@@ -451,16 +455,31 @@ export default function HomeVariant2() {
           workerId: user?._id || user?.id,
           projectId: selectedProjectId,
           date,
-          durationMs: Math.round(hours * 3600000),
+          durationMs,
         });
         setPreviewRefreshKey((previousKey) => previousKey + 1);
       } catch (error) {
-        console.error("Failed to save today's hours:", error);
+        console.error("Failed to save manual hours:", error);
         showShiftAlert("Error", "Unable to save hours right now.");
       }
     },
     [selectedProjectId, user, reset],
   );
+
+  // Enter edit mode: seed the wheel from the currently-tracked time so the
+  // worker can fine-tune rather than start from zero.
+  function handleEnterEditHours() {
+    const totalMs = timeElapsed || 0;
+    setEditHours(Math.min(24, Math.floor(totalMs / 3600000)));
+    setEditMinutes(Math.floor((totalMs % 3600000) / 60000));
+    setIsEditingHours(true);
+  }
+
+  async function handleConfirmEditHours() {
+    const durationMs = editHours * 3600000 + editMinutes * 60000;
+    setIsEditingHours(false);
+    await saveManualHours(durationMs);
+  }
 
   /* PLAY / PAUSE BUTTON */
   async function handlePlayPause() {
@@ -602,21 +621,42 @@ export default function HomeVariant2() {
                   styles.coreControlsGroupEvenlySpaced,
               ]}
             >
-              {/* TIMER */}
-              <Timer
-                hours={formattedTime.hours}
-                minutes={formattedTime.minutes}
-                seconds={formattedTime.seconds}
-                containerStyle={styles.timerContainer}
-                textStyle={[
-                  isCompact ? styles.timerTextCompact : styles.timerTextRegular,
-                  isLightBlueTheme && styles.timerTextLightBlue,
-                ]}
-                secondsStyle={[
-                  isCompact ? styles.timerSecondsCompact : null,
-                  isLightBlueTheme && styles.timerSecondsLightBlue,
-                ]}
-              />
+              {/* TIMER — replaced by the hours/minutes wheel while editing */}
+              {isEditingHours ? (
+                <View style={styles.timerContainer}>
+                  <HoursWheelPicker
+                    hours={editHours}
+                    minutes={editMinutes}
+                    onChange={(h, m) => {
+                      setEditHours(h);
+                      setEditMinutes(m);
+                    }}
+                    textColor={isLightBlueTheme ? theme.colors.text : "#FFFFFF"}
+                    labelColor={
+                      isLightBlueTheme
+                        ? `${theme.colors.text}B3`
+                        : "rgba(255,255,255,0.7)"
+                    }
+                  />
+                </View>
+              ) : (
+                <Timer
+                  hours={formattedTime.hours}
+                  minutes={formattedTime.minutes}
+                  seconds={formattedTime.seconds}
+                  containerStyle={styles.timerContainer}
+                  textStyle={[
+                    isCompact
+                      ? styles.timerTextCompact
+                      : styles.timerTextRegular,
+                    isLightBlueTheme && styles.timerTextLightBlue,
+                  ]}
+                  secondsStyle={[
+                    isCompact ? styles.timerSecondsCompact : null,
+                    isLightBlueTheme && styles.timerSecondsLightBlue,
+                  ]}
+                />
+              )}
 
               {showCoreSpacers ? (
                 <View style={styles.timerToActionsSpacer} />
@@ -630,7 +670,9 @@ export default function HomeVariant2() {
                 onPlayPress={handlePlayPause}
                 onCameraPress={handleCameraPress}
                 secondaryMode={secondaryAction}
-                onSaveTodayHours={handleSaveTodayHours}
+                isEditingHours={isEditingHours}
+                onEnterEditHours={handleEnterEditHours}
+                onConfirmEditHours={handleConfirmEditHours}
                 compact={isCompact}
                 veryCompact={isVeryCompact}
                 actionButtonColor={
@@ -665,8 +707,6 @@ export default function HomeVariant2() {
                     key={sectionId}
                     colorMode={colorMode}
                     refreshKey={previewRefreshKey}
-                    todayProjectName={selectedProject?.name}
-                    onSaveTodayHours={handleSaveTodayHours}
                     onClose={() => handleHideSection("shift-history")}
                   />
                 );

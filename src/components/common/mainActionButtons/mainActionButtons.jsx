@@ -1,12 +1,6 @@
-import React, { useRef, useState } from "react";
+import React from "react";
 
-import {
-  View,
-  TextInput,
-  TouchableOpacity,
-  Image,
-  ActivityIndicator,
-} from "react-native";
+import { View, TouchableOpacity, Image, ActivityIndicator } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 
 import { styles } from "./mainActionButtons.styles";
@@ -25,20 +19,16 @@ export function MainActionButtons({
   cameraIconColor,
   // Secondary round action: "camera" | "hours" | "play".
   secondaryMode = "camera",
-  todayHoursValue = "",
-  onSaveTodayHours,
+  // Hours mode: the pencil turns the top clock into an editable hours/minutes
+  // wheel; while editing it becomes a checkmark that saves.
+  isEditingHours = false,
+  onEnterEditHours,
+  onConfirmEditHours,
 }) {
   const actionButtonSize = veryCompact ? 96 : compact ? 108 : 124;
   const iconActionSize = veryCompact ? 32 : compact ? 36 : 40;
   const secondaryButtonSize = veryCompact ? 96 : compact ? 108 : 124;
   const buttonsGap = veryCompact ? 20 : compact ? 26 : 35;
-
-  // Hours secondary button: show a big centred pencil until tapped; tapping it
-  // focuses the input (keyboard up) and reveals the centred number.
-  const hoursInputRef = useRef(null);
-  const [hoursText, setHoursText] = useState(todayHoursValue || "");
-  const [hoursFocused, setHoursFocused] = useState(false);
-  const showHoursPencil = !hoursText && !hoursFocused;
 
   return (
     <View style={[styles.mainActionButtons, { gap: buttonsGap }]}>
@@ -81,52 +71,22 @@ export function MainActionButtons({
       </TouchableOpacity>
 
       {secondaryMode === "hours" ? (
-        <View
+        <TouchableOpacity
           style={[
             styles.actionButtonCamera,
             { width: secondaryButtonSize, height: secondaryButtonSize },
             cameraButtonColor && { backgroundColor: cameraButtonColor },
             styles.actionButtonCameraThemed,
           ]}
+          activeOpacity={0.8}
+          onPress={isEditingHours ? onConfirmEditHours : onEnterEditHours}
         >
-          <TextInput
-            ref={hoursInputRef}
-            style={[
-              styles.hoursCircleInput,
-              cameraIconColor && { color: cameraIconColor },
-            ]}
-            value={hoursText}
-            onChangeText={setHoursText}
-            keyboardType="numeric"
-            returnKeyType="done"
-            onFocus={function onFocus() {
-              setHoursFocused(true);
-            }}
-            onBlur={function onBlur() {
-              setHoursFocused(false);
-              if (onSaveTodayHours) {
-                onSaveTodayHours(hoursText);
-              }
-            }}
+          <Icon
+            name={isEditingHours ? "check" : "edit-2"}
+            size={iconActionSize}
+            color={cameraIconColor || "#FFFFFF"}
           />
-          {showHoursPencil ? (
-            <TouchableOpacity
-              style={styles.hoursPencilOverlay}
-              activeOpacity={0.8}
-              onPress={function focusHours() {
-                if (hoursInputRef.current) {
-                  hoursInputRef.current.focus();
-                }
-              }}
-            >
-              <Icon
-                name="edit-2"
-                size={iconActionSize}
-                color={cameraIconColor || "#FFFFFF"}
-              />
-            </TouchableOpacity>
-          ) : null}
-        </View>
+        </TouchableOpacity>
       ) : secondaryMode === "play" ? (
         <TouchableOpacity
           style={[
