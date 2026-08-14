@@ -9,7 +9,6 @@ import React, {
 
 import {
   View,
-  Text,
   TouchableOpacity,
   ScrollView,
   Alert,
@@ -22,8 +21,8 @@ import { LinearGradient } from "expo-linear-gradient";
 
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTranslation } from "react-i18next";
 import { BlurView } from "expo-blur";
+import Icon from "react-native-vector-icons/Feather";
 
 import AuthContext from "../../../contexts/AuthContext";
 import { useTheme } from "../../../theme/ThemeContext";
@@ -122,7 +121,6 @@ export default function HomeVariant2() {
   /* NAVIGATION */
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
-  const { t } = useTranslation();
 
   /* LOADING STATE */
   const [loadingShift, setLoadingShift] = useState(false);
@@ -827,7 +825,11 @@ export default function HomeVariant2() {
                 onPress={handleConfirmEditHours}
                 activeOpacity={0.85}
               >
-                <Text style={styles.doneRoundText}>{t("common.done")}</Text>
+                <Icon
+                  name="check"
+                  size={60}
+                  color={isLightBlueTheme ? "#FFFFFF" : theme.colors.primary}
+                />
               </TouchableOpacity>
             </View>
           </View>
