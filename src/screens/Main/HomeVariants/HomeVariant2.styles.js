@@ -110,13 +110,28 @@ export function createStyles({
     timerContainer: {
       width: "100%",
     },
-    // Fixed-height slot shared by the clock and the hours wheel so switching
-    // between them never shifts the layout below. overflow is visible so the
-    // wheel's peeking neighbour digits can extend past the one-row slot.
+    // The clock always defines this slot's height (it stays in layout even
+    // while editing); the wheel is drawn as an absolute overlay on top.
     timerSlot: {
+      position: "relative",
+      width: "100%",
       justifyContent: "center",
       alignItems: "center",
-      overflow: "visible",
+    },
+    // Hide the clock (opacity) while editing but keep it in the layout so the
+    // buttons below never move.
+    timerHidden: {
+      opacity: 0,
+    },
+    // Centred over the clock area; overflow lets the peeking digits show.
+    wheelOverlay: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      alignItems: "center",
+      justifyContent: "center",
     },
     timerTextLightBlue: {
       color: textColor,

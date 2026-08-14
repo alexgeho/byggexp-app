@@ -135,9 +135,6 @@ export default function HomeVariant2() {
   const [isEditingHours, setIsEditingHours] = useState(false);
   const [editHours, setEditHours] = useState(0);
   const [editMinutes, setEditMinutes] = useState(0);
-  // Measured height of the rendered clock line, so the hours wheel occupies the
-  // exact same space and the round buttons never move when switching modes.
-  const [clockHeight, setClockHeight] = useState(0);
   const [enabledSections, setEnabledSections] = useState(
     defaultEnabledSections,
   );
@@ -652,60 +649,51 @@ export default function HomeVariant2() {
                   styles.coreControlsGroupEvenlySpaced,
               ]}
             >
-              {/* The clock renders normally; while editing it's swapped for the
-                  hours wheel inside a box of the same height, so the round
-                  buttons below don't shift. */}
-              {isEditingHours ? (
-                <View
-                  style={[
+              {/* The clock stays in the layout at all times (just hidden while
+                  editing) so the round buttons never move. The hours wheel is
+                  drawn as an overlay centred over the exact clock area, so the
+                  digits don't jump either. */}
+              <View style={styles.timerSlot}>
+                <Timer
+                  hours={formattedTime.hours}
+                  minutes={formattedTime.minutes}
+                  seconds={formattedTime.seconds}
+                  containerStyle={[
                     styles.timerContainer,
-                    styles.timerSlot,
-                    { height: clockHeight || timerSlotHeight },
+                    isEditingHours && styles.timerHidden,
                   ]}
-                >
-                  <HoursWheelPicker
-                    hours={editHours}
-                    minutes={editMinutes}
-                    onChange={(h, m) => {
-                      setEditHours(h);
-                      setEditMinutes(m);
-                    }}
-                    textColor={isLightBlueTheme ? theme.colors.text : "#FFFFFF"}
-                    fontSize={timerWheelFontSize}
-                    itemHeight={clockHeight || timerSlotHeight}
-                    peek={isCompact ? 20 : 26}
-                    letterSpacing={timerLetterSpacing}
-                  />
-                </View>
-              ) : (
-                <View
-                  onLayout={(event) => {
-                    const measured = Math.round(
-                      event.nativeEvent.layout.height,
-                    );
-                    if (measured > 0 && measured !== clockHeight) {
-                      setClockHeight(measured);
-                    }
-                  }}
-                >
-                  <Timer
-                    hours={formattedTime.hours}
-                    minutes={formattedTime.minutes}
-                    seconds={formattedTime.seconds}
-                    containerStyle={styles.timerContainer}
-                    textStyle={[
-                      isCompact
-                        ? styles.timerTextCompact
-                        : styles.timerTextRegular,
-                      isLightBlueTheme && styles.timerTextLightBlue,
-                    ]}
-                    secondsStyle={[
-                      isCompact ? styles.timerSecondsCompact : null,
-                      isLightBlueTheme && styles.timerSecondsLightBlue,
-                    ]}
-                  />
-                </View>
-              )}
+                  textStyle={[
+                    isCompact
+                      ? styles.timerTextCompact
+                      : styles.timerTextRegular,
+                    isLightBlueTheme && styles.timerTextLightBlue,
+                  ]}
+                  secondsStyle={[
+                    isCompact ? styles.timerSecondsCompact : null,
+                    isLightBlueTheme && styles.timerSecondsLightBlue,
+                  ]}
+                />
+
+                {isEditingHours ? (
+                  <View style={styles.wheelOverlay} pointerEvents="box-none">
+                    <HoursWheelPicker
+                      hours={editHours}
+                      minutes={editMinutes}
+                      onChange={(h, m) => {
+                        setEditHours(h);
+                        setEditMinutes(m);
+                      }}
+                      textColor={
+                        isLightBlueTheme ? theme.colors.text : "#FFFFFF"
+                      }
+                      fontSize={timerWheelFontSize}
+                      itemHeight={timerSlotHeight}
+                      peek={isCompact ? 18 : 24}
+                      letterSpacing={timerLetterSpacing}
+                    />
+                  </View>
+                ) : null}
+              </View>
 
               {showCoreSpacers ? (
                 <View style={styles.timerToActionsSpacer} />
