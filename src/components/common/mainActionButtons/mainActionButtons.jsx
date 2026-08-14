@@ -32,43 +32,47 @@ export function MainActionButtons({
 
   return (
     <View style={[styles.mainActionButtons, { gap: buttonsGap }]}>
-      <TouchableOpacity
-        style={[
-          styles.actionButton,
-          {
-            width: actionButtonSize,
-            height: actionButtonSize,
-          },
-          actionButtonColor && {
-            backgroundColor: actionButtonColor,
-          },
-          isPaused && styles.actionButtonPaused,
-        ]}
-        onPress={onPlayPress}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color={actionIconColor || "#2F80ED"} />
-        ) : (
-          <Image
-            style={[
-              styles.iconAction,
-              {
-                width: iconActionSize,
-                height: iconActionSize,
-              },
-              actionIconColor && {
-                tintColor: actionIconColor,
-              },
-            ]}
-            source={
-              isRunning
-                ? require("../../../assets/HomeScreen2/Pause.png")
-                : require("../../../assets/HomeScreen2/Play.png")
-            }
-          />
-        )}
-      </TouchableOpacity>
+      {/* Play/Pause is hidden while entering hours — only the save button
+          remains, centred by the row. */}
+      {isEditingHours ? null : (
+        <TouchableOpacity
+          style={[
+            styles.actionButton,
+            {
+              width: actionButtonSize,
+              height: actionButtonSize,
+            },
+            actionButtonColor && {
+              backgroundColor: actionButtonColor,
+            },
+            isPaused && styles.actionButtonPaused,
+          ]}
+          onPress={onPlayPress}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color={actionIconColor || "#2F80ED"} />
+          ) : (
+            <Image
+              style={[
+                styles.iconAction,
+                {
+                  width: iconActionSize,
+                  height: iconActionSize,
+                },
+                actionIconColor && {
+                  tintColor: actionIconColor,
+                },
+              ]}
+              source={
+                isRunning
+                  ? require("../../../assets/HomeScreen2/Pause.png")
+                  : require("../../../assets/HomeScreen2/Play.png")
+              }
+            />
+          )}
+        </TouchableOpacity>
+      )}
 
       {secondaryMode === "hours" ? (
         <TouchableOpacity
