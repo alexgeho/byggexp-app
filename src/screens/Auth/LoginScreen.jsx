@@ -48,65 +48,97 @@ export default function LoginScreen({ navigation }) {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.card}>
-        <View style={styles.header}>
-          <Text style={[styles.welcome, { fontFamily: theme.text.fontFamily.regular }]}>
-            {t("auth.welcome")}
-          </Text>
-          <Text style={[styles.heading, { fontFamily: theme.text.fontFamily.regular }]}>
-            {t("auth.loginSubtitle")}
-          </Text>
-        </View>
+            <View style={styles.header}>
+              <Text
+                style={[
+                  styles.welcome,
+                  { fontFamily: theme.text.fontFamily.regular },
+                ]}
+              >
+                {t("auth.welcome")}
+              </Text>
+              <Text
+                style={[
+                  styles.heading,
+                  { fontFamily: theme.text.fontFamily.regular },
+                ]}
+              >
+                {t("auth.loginSubtitle")}
+              </Text>
+            </View>
 
-        <Text style={styles.label}>{t("auth.emailOrUsername")}</Text>
-        <View style={styles.inputWrapper}>
-          <Icon name="mail" size={16} color="#687898" style={styles.inputIcon} />
-          <TextInput
-            placeholder={t("auth.emailPlaceholder")}
-            placeholderTextColor="#a7b3c2"
-            style={styles.input}
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoComplete="username"
-          />
-        </View>
+            <Text style={styles.label}>{t("auth.emailOrUsername")}</Text>
+            <View style={styles.inputWrapper}>
+              <Icon
+                name="mail"
+                size={16}
+                color="#687898"
+                style={styles.inputIcon}
+              />
+              <TextInput
+                placeholder={t("auth.emailPlaceholder")}
+                placeholderTextColor="#a7b3c2"
+                style={styles.input}
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="username"
+              />
+            </View>
 
-        <Text style={styles.label}>{t("auth.password")}</Text>
-        <View style={styles.inputWrapper}>
-          <Icon name="lock" size={16} color="#687898" style={styles.inputIcon} />
-          <TextInput
-            placeholder={t("auth.passwordPlaceholder")}
-            placeholderTextColor="#a7b3c2"
-            style={styles.input}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            autoComplete="current-password"
-          />
-        </View>
+            <Text style={styles.label}>{t("auth.password")}</Text>
+            <View style={styles.inputWrapper}>
+              <Icon
+                name="lock"
+                size={16}
+                color="#687898"
+                style={styles.inputIcon}
+              />
+              <TextInput
+                placeholder={t("auth.passwordPlaceholder")}
+                placeholderTextColor="#a7b3c2"
+                style={styles.input}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                autoComplete="current-password"
+              />
+            </View>
 
-        <TouchableOpacity
-          onPress={handleLogin}
-          disabled={isLoading}
-          activeOpacity={0.85}
-          style={[styles.button, isLoading && styles.buttonDisabled]}
-        >
-          {isLoading ? (
-            <ActivityIndicator color="#ffffff" />
-          ) : (
-            <Text style={styles.buttonText}>{t("auth.logIn")}</Text>
-          )}
-        </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleLogin}
+              disabled={isLoading}
+              activeOpacity={0.85}
+              style={[styles.button, isLoading && styles.buttonDisabled]}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#ffffff" />
+              ) : (
+                <Text style={styles.buttonText}>{t("auth.logIn")}</Text>
+              )}
+            </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Register")}
-          style={styles.footerLink}
-        >
-          <Text style={styles.footerText}>
-            {t("auth.noAccount")}<Text style={styles.footerLinkText}>{t("auth.createHere")}</Text>
-          </Text>
-        </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("CodeLogin")}
+              style={styles.footerLink}
+            >
+              <Text style={styles.footerLinkText}>
+                {t("auth.loginWithCode")}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Register")}
+              style={styles.footerLink}
+            >
+              <Text style={styles.footerText}>
+                {t("auth.noAccount")}
+                <Text style={styles.footerLinkText}>
+                  {t("auth.createHere")}
+                </Text>
+              </Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

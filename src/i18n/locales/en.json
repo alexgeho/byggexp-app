@@ -70,7 +70,24 @@
     "loginHere": "Login here →",
     "fillAllFields": "Please fill in all fields.",
     "loginFailedTitle": "Login failed",
-    "loginFailedMessage": "Invalid email or password."
+    "loginFailedMessage": "Invalid email or password.",
+    "loginWithCode": "Sign in with an email code →"
+  },
+  "codeLogin": {
+    "title": "Sign in with a code",
+    "subtitle": "We'll email you a 6-digit code",
+    "emailLabel": "E-Mail",
+    "sendCode": "Send code",
+    "sentTo": "We emailed a code to {{email}}",
+    "codeLabel": "Code from email",
+    "codePlaceholder": "6-digit code",
+    "verify": "Sign in",
+    "resend": "Resend code",
+    "changeEmail": "Use a different email",
+    "enterEmail": "Enter your email first.",
+    "enterCode": "Enter the 6-digit code from your email.",
+    "invalidCode": "Invalid or expired code.",
+    "backToLogin": "Back to password login"
   },
   "access": {
     "denied": "Access denied",
