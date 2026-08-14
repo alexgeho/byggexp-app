@@ -424,10 +424,10 @@ export default function HomeVariant2() {
           "Project required",
           "Select a project before logging hours.",
         );
-        return;
+        return false;
       }
       if (!durationMs || durationMs <= 0) {
-        return;
+        return false;
       }
 
       const now = new Date();
@@ -458,9 +458,11 @@ export default function HomeVariant2() {
           durationMs,
         });
         setPreviewRefreshKey((previousKey) => previousKey + 1);
+        return true;
       } catch (error) {
         console.error("Failed to save manual hours:", error);
         showShiftAlert("Error", "Unable to save hours right now.");
+        return false;
       }
     },
     [selectedProjectId, user, reset],
@@ -490,7 +492,11 @@ export default function HomeVariant2() {
   async function handleConfirmEditHours() {
     const durationMs = editHours * 3600000 + editMinutes * 60000;
     setIsEditingHours(false);
-    await saveManualHours(durationMs);
+    const saved = await saveManualHours(durationMs);
+    if (saved) {
+      // Show the saved total on the top display instead of resetting to 00:00.
+      sync({ durationMs, status: "completed" });
+    }
   }
 
   /* PLAY / PAUSE BUTTON */
@@ -699,52 +705,65 @@ export default function HomeVariant2() {
                 <View style={styles.actionsToQuickActionsSpacer} />
               ) : null}
 
-              <MainButtonsGrid />
+              <View
+                style={isEditingHours && styles.inactiveDimmed}
+                pointerEvents={isEditingHours ? "none" : "auto"}
+              >
+                <MainButtonsGrid />
+              </View>
             </View>
 
-            {sectionsOrder.map(function renderSection(sectionId) {
-              if (!enabledSections.includes(sectionId)) {
+            <View
+              style={[
+                styles.mainContentGroup,
+                isEditingHours && styles.inactiveDimmed,
+              ]}
+              pointerEvents={isEditingHours ? "none" : "auto"}
+            >
+              {sectionsOrder.map(function renderSection(sectionId) {
+                if (!enabledSections.includes(sectionId)) {
+                  return null;
+                }
+
+                const colorMode = isLightBlueTheme ? "light" : "dark";
+
+                if (sectionId === "shift-history") {
+                  return (
+                    <ShiftHistoryPreview
+                      key={sectionId}
+                      colorMode={colorMode}
+                      refreshKey={previewRefreshKey}
+                      onClose={() => handleHideSection("shift-history")}
+                    />
+                  );
+                }
+
+                if (sectionId === "tasks-history") {
+                  return (
+                    <TasksPreview
+                      key={sectionId}
+                      colorMode={colorMode}
+                      refreshKey={previewRefreshKey}
+                      onClose={() => handleHideSection("tasks-history")}
+                    />
+                  );
+                }
+
+                if (sectionId === "project-files") {
+                  return (
+                    <ProjectFilesSection
+                      key={sectionId}
+                      project={selectedProject}
+                      colorMode={colorMode}
+                      refreshKey={previewRefreshKey}
+                      onClose={() => handleHideSection("project-files")}
+                    />
+                  );
+                }
+
                 return null;
-              }
-
-              const colorMode = isLightBlueTheme ? "light" : "dark";
-
-              if (sectionId === "shift-history") {
-                return (
-                  <ShiftHistoryPreview
-                    key={sectionId}
-                    colorMode={colorMode}
-                    refreshKey={previewRefreshKey}
-                    onClose={() => handleHideSection("shift-history")}
-                  />
-                );
-              }
-
-              if (sectionId === "tasks-history") {
-                return (
-                  <TasksPreview
-                    key={sectionId}
-                    colorMode={colorMode}
-                    refreshKey={previewRefreshKey}
-                    onClose={() => handleHideSection("tasks-history")}
-                  />
-                );
-              }
-
-              if (sectionId === "project-files") {
-                return (
-                  <ProjectFilesSection
-                    key={sectionId}
-                    project={selectedProject}
-                    colorMode={colorMode}
-                    refreshKey={previewRefreshKey}
-                    onClose={() => handleHideSection("project-files")}
-                  />
-                );
-              }
-
-              return null;
-            })}
+              })}
+            </View>
           </View>
         </View>
       </ScrollView>

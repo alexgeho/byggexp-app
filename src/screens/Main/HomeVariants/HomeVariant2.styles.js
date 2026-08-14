@@ -55,6 +55,10 @@ export function createStyles({
     mainContentGroupExpanded: {
       flex: 1,
     },
+    // Lower blocks are inactive while entering hours on the wheel — dim them.
+    inactiveDimmed: {
+      opacity: 0.35,
+    },
     coreControlsGroup: {
       alignItems: "stretch",
     },
