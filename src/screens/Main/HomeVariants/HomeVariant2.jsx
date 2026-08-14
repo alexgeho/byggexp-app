@@ -467,12 +467,24 @@ export default function HomeVariant2() {
   );
 
   // Enter edit mode: seed the wheel from the currently-tracked time so the
-  // worker can fine-tune rather than start from zero.
-  function handleEnterEditHours() {
+  // worker can fine-tune rather than start from zero. Switching to manual
+  // entry also stops the live timer right away (the shift is completed).
+  async function handleEnterEditHours() {
     const totalMs = timeElapsed || 0;
     setEditHours(Math.min(24, Math.floor(totalMs / 3600000)));
     setEditMinutes(Math.floor((totalMs % 3600000) / 60000));
     setIsEditingHours(true);
+
+    const activeShift = currentShiftRef.current;
+    if (activeShift?.id && activeShift.status === "active") {
+      try {
+        await shiftService.complete(activeShift.id);
+      } catch (error) {
+        console.error("Failed to stop running shift on manual edit:", error);
+      }
+      setCurrentShift(null);
+      reset();
+    }
   }
 
   async function handleConfirmEditHours() {
@@ -632,7 +644,7 @@ export default function HomeVariant2() {
                       setEditMinutes(m);
                     }}
                     textColor={isLightBlueTheme ? theme.colors.text : "#FFFFFF"}
-                    fontSize={isCompact ? 108 : 128}
+                    fontSize={isCompact ? 120 : 140}
                   />
                 </View>
               ) : (
