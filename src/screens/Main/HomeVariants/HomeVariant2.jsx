@@ -134,6 +134,9 @@ export default function HomeVariant2() {
   const [isEditingHours, setIsEditingHours] = useState(false);
   const [editHours, setEditHours] = useState(0);
   const [editMinutes, setEditMinutes] = useState(0);
+  // Measured height of the rendered clock line, so the hours wheel occupies the
+  // exact same space and the round buttons never move when switching modes.
+  const [clockHeight, setClockHeight] = useState(0);
   const [enabledSections, setEnabledSections] = useState(
     defaultEnabledSections,
   );
@@ -656,7 +659,7 @@ export default function HomeVariant2() {
                   style={[
                     styles.timerContainer,
                     styles.timerSlot,
-                    { height: timerSlotHeight },
+                    { height: clockHeight || timerSlotHeight },
                   ]}
                 >
                   <HoursWheelPicker
@@ -668,27 +671,38 @@ export default function HomeVariant2() {
                     }}
                     textColor={isLightBlueTheme ? theme.colors.text : "#FFFFFF"}
                     fontSize={timerWheelFontSize}
-                    itemHeight={timerSlotHeight}
+                    itemHeight={clockHeight || timerSlotHeight}
                     peek={isCompact ? 20 : 26}
                   />
                 </View>
               ) : (
-                <Timer
-                  hours={formattedTime.hours}
-                  minutes={formattedTime.minutes}
-                  seconds={formattedTime.seconds}
-                  containerStyle={styles.timerContainer}
-                  textStyle={[
-                    isCompact
-                      ? styles.timerTextCompact
-                      : styles.timerTextRegular,
-                    isLightBlueTheme && styles.timerTextLightBlue,
-                  ]}
-                  secondsStyle={[
-                    isCompact ? styles.timerSecondsCompact : null,
-                    isLightBlueTheme && styles.timerSecondsLightBlue,
-                  ]}
-                />
+                <View
+                  onLayout={(event) => {
+                    const measured = Math.round(
+                      event.nativeEvent.layout.height,
+                    );
+                    if (measured > 0 && measured !== clockHeight) {
+                      setClockHeight(measured);
+                    }
+                  }}
+                >
+                  <Timer
+                    hours={formattedTime.hours}
+                    minutes={formattedTime.minutes}
+                    seconds={formattedTime.seconds}
+                    containerStyle={styles.timerContainer}
+                    textStyle={[
+                      isCompact
+                        ? styles.timerTextCompact
+                        : styles.timerTextRegular,
+                      isLightBlueTheme && styles.timerTextLightBlue,
+                    ]}
+                    secondsStyle={[
+                      isCompact ? styles.timerSecondsCompact : null,
+                      isLightBlueTheme && styles.timerSecondsLightBlue,
+                    ]}
+                  />
+                </View>
               )}
 
               {showCoreSpacers ? (
@@ -787,13 +801,19 @@ export default function HomeVariant2() {
         </View>
       </ScrollView>
 
-      {/* FOOTER — shared bottom bar, frosted glass over the gradient */}
-      <BottomBar
-        glass
-        onLeftPress={() => navigation.navigate("Main")}
-        onRightPress={() => navigation.navigate("Menu")}
-        showAddButton={false}
-      />
+      {/* FOOTER — shared bottom bar, frosted glass over the gradient.
+          Dimmed & inactive while editing hours, like the other blocks. */}
+      <View
+        style={isEditingHours && styles.inactiveDimmed}
+        pointerEvents={isEditingHours ? "none" : "auto"}
+      >
+        <BottomBar
+          glass
+          onLeftPress={() => navigation.navigate("Main")}
+          onRightPress={() => navigation.navigate("Menu")}
+          showAddButton={false}
+        />
+      </View>
     </LinearGradient>
   );
 }
