@@ -820,15 +820,16 @@ export default function HomeVariant2() {
               letterSpacing={timerLetterSpacing}
             />
 
-            <View style={styles.editSpacer} />
-
-            <TouchableOpacity
-              style={styles.doneButton}
-              onPress={handleConfirmEditHours}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.doneButtonText}>{t("common.done")}</Text>
-            </TouchableOpacity>
+            {/* Round "Done" button, centred between the digits and the bottom. */}
+            <View style={styles.doneCenter}>
+              <TouchableOpacity
+                style={styles.doneRound}
+                onPress={handleConfirmEditHours}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.doneRoundText}>{t("common.done")}</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       ) : null}

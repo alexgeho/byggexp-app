@@ -136,20 +136,23 @@ export function createStyles({
       alignItems: "center",
       paddingHorizontal: 24,
     },
-    editSpacer: {
+    // Fills the space below the wheel and centres the round Done button there.
+    doneCenter: {
       flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
     },
-    doneButton: {
-      alignSelf: "stretch",
-      height: 56,
-      borderRadius: 28,
+    doneRound: {
+      width: 148,
+      height: 148,
+      borderRadius: 74,
       backgroundColor: isLightBlue ? theme.colors.primary : "#FFFFFF",
       alignItems: "center",
       justifyContent: "center",
     },
-    doneButtonText: {
+    doneRoundText: {
       color: isLightBlue ? "#FFFFFF" : theme.colors.primary,
-      fontSize: 18,
+      fontSize: 22,
       fontFamily: theme.text.fontFamily.semiBold,
     },
     timerTextLightBlue: {
