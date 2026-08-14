@@ -49,13 +49,17 @@ function WheelColumn({
         onMomentumScrollEnd={handleMomentumEnd}
       >
         {values.map((value, index) => {
+          // Fade neighbours out to fully transparent by ±1.5 rows so the
+          // peeking digits dissolve smoothly toward the edges (no hard cut).
           const opacity = scrollY.interpolate({
             inputRange: [
-              (index - 1) * itemHeight,
+              (index - 1.5) * itemHeight,
+              (index - 0.75) * itemHeight,
               index * itemHeight,
-              (index + 1) * itemHeight,
+              (index + 0.75) * itemHeight,
+              (index + 1.5) * itemHeight,
             ],
-            outputRange: [0.22, 1, 0.22],
+            outputRange: [0, 0.5, 1, 0.5, 0],
             extrapolate: "clamp",
           });
           return (

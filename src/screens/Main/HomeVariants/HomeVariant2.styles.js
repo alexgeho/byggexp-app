@@ -142,18 +142,16 @@ export function createStyles({
       alignItems: "center",
       justifyContent: "center",
     },
+    // Same look as the home-screen secondary round button (frosted circle).
     doneRound: {
-      width: 148,
-      height: 148,
-      borderRadius: 74,
-      backgroundColor: isLightBlue ? theme.colors.primary : "#FFFFFF",
+      width: 124,
+      height: 124,
+      borderRadius: 999,
+      backgroundColor: isLightBlue ? "#FFFFFF" : "rgba(255,255,255,0.20)",
+      borderWidth: 1,
+      borderColor: "rgba(255,255,255,0.35)",
       alignItems: "center",
       justifyContent: "center",
-    },
-    doneRoundText: {
-      color: isLightBlue ? "#FFFFFF" : theme.colors.primary,
-      fontSize: 22,
-      fontFamily: theme.text.fontFamily.semiBold,
     },
     timerTextLightBlue: {
       color: textColor,

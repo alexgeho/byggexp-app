@@ -814,7 +814,7 @@ export default function HomeVariant2() {
               textColor={isLightBlueTheme ? theme.colors.text : "#FFFFFF"}
               fontSize={timerWheelFontSize}
               itemHeight={timerSlotHeight}
-              peek={isCompact ? 22 : 30}
+              peek={timerSlotHeight}
               letterSpacing={timerLetterSpacing}
             />
 
@@ -827,8 +827,8 @@ export default function HomeVariant2() {
               >
                 <Icon
                   name="check"
-                  size={60}
-                  color={isLightBlueTheme ? "#FFFFFF" : theme.colors.primary}
+                  size={40}
+                  color={isLightBlueTheme ? theme.colors.text : "#FFFFFF"}
                 />
               </TouchableOpacity>
             </View>
