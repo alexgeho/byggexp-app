@@ -21,7 +21,7 @@ function WheelColumn({
     new Animated.Value(Math.max(0, values.indexOf(selected)) * itemHeight),
   ).current;
 
-  const handleMomentumEnd = (event) => {
+  const commitFromOffset = (event) => {
     const y = event.nativeEvent.contentOffset.y;
     const index = Math.round(y / itemHeight);
     const clamped = Math.max(0, Math.min(values.length - 1, index));
@@ -35,6 +35,8 @@ function WheelColumn({
       <Animated.ScrollView
         showsVerticalScrollIndicator={false}
         snapToInterval={itemHeight}
+        snapToAlignment="start"
+        disableIntervalMomentum
         decelerationRate="fast"
         contentOffset={{
           x: 0,
@@ -46,7 +48,8 @@ function WheelColumn({
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: true },
         )}
-        onMomentumScrollEnd={handleMomentumEnd}
+        onMomentumScrollEnd={commitFromOffset}
+        onScrollEndDrag={commitFromOffset}
       >
         {values.map((value, index) => {
           // Fade neighbours out to fully transparent by ±1.5 rows so the

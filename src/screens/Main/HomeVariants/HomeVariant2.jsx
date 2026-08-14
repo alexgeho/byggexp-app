@@ -507,6 +507,12 @@ export default function HomeVariant2() {
     }
   }
 
+  // Close the editor without saving. The shift was already stopped when the
+  // editor opened, so the clock stays where it is.
+  function handleCancelEditHours() {
+    setIsEditingHours(false);
+  }
+
   /* PLAY / PAUSE BUTTON */
   async function handlePlayPause() {
     if (loadingShift) {
@@ -820,19 +826,33 @@ export default function HomeVariant2() {
 
             <View style={styles.doneGap} />
 
-            {/* Round "Done" button. The whole group is centred vertically so the
-                space above the digits and below the button is equal. */}
-            <TouchableOpacity
-              style={styles.doneRound}
-              onPress={handleConfirmEditHours}
-              activeOpacity={0.85}
-            >
-              <Icon
-                name="check"
-                size={40}
-                color={isLightBlueTheme ? theme.colors.text : "#FFFFFF"}
-              />
-            </TouchableOpacity>
+            {/* Cancel (left) + Done (right). The whole group is centred
+                vertically so the space above and below is equal. */}
+            <View style={styles.editButtonRow}>
+              <TouchableOpacity
+                style={styles.doneRound}
+                onPress={handleCancelEditHours}
+                activeOpacity={0.85}
+              >
+                <Icon
+                  name="x"
+                  size={40}
+                  color={isLightBlueTheme ? theme.colors.text : "#FFFFFF"}
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.doneRound}
+                onPress={handleConfirmEditHours}
+                activeOpacity={0.85}
+              >
+                <Icon
+                  name="check"
+                  size={40}
+                  color={isLightBlueTheme ? theme.colors.text : "#FFFFFF"}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       ) : null}
