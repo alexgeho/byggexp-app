@@ -198,22 +198,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Step 1: request a verification code. Does NOT sign in — the account isn't
-  // created until the code is verified.
-  const registerCompany = async ({
-    companyName,
-    userName,
-    email,
-    password,
-  }) => {
+  // Step 1: minimal sign-up (name/company + email). Does NOT sign in — the
+  // account is created only after the user confirms and sets a password.
+  const registerCompany = async ({ companyName, email }) => {
     try {
       setIsLoading(true);
-      const data = await authService.registerCompany({
-        companyName,
-        userName,
-        email,
-        password,
-      });
+      const data = await authService.registerCompany({ companyName, email });
       setIsLoading(false);
       return { success: true, email: data?.email || email };
     } catch (error) {

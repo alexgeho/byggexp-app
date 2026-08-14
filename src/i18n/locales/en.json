@@ -58,6 +58,8 @@
     "emailPlaceholder": "example@gmail.com",
     "password": "Password",
     "passwordPlaceholder": "your password here",
+    "nameOrCompany": "Name or company",
+    "nameOrCompanyPlaceholder": "Your name or company",
     "companyName": "Company name",
     "companyNamePlaceholder": "Your company name",
     "yourName": "Your name",
