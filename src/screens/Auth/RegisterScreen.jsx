@@ -16,15 +16,14 @@ import { useTranslation } from "react-i18next";
 import AuthContext from "../../contexts/AuthContext";
 import { useTheme } from "../../theme/ThemeContext";
 
+// Minimal-friction sign-up: just a name/company + email. The password is chosen
+// later, on the page opened from the confirmation link.
 export default function RegisterScreen({ navigation }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const { registerCompany, isLoading } = useContext(AuthContext);
   const [companyName, setCompanyName] = useState("");
-  const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
 
   const handleSignup = async () => {
@@ -32,38 +31,19 @@ export default function RegisterScreen({ navigation }) {
       return;
     }
 
-    const trimmedCompany = companyName.trim();
-    const trimmedName = userName.trim();
+    const trimmedName = companyName.trim();
     const trimmedEmail = email.trim();
 
-    if (
-      !trimmedCompany ||
-      !trimmedName ||
-      !trimmedEmail ||
-      !password ||
-      !confirmPassword
-    ) {
+    if (!trimmedName || !trimmedEmail) {
       setError(t("auth.fillAllFields"));
-      return;
-    }
-
-    if (password.length < 6) {
-      setError(t("auth.passwordTooShort"));
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError(t("auth.passwordsDontMatch"));
       return;
     }
 
     setError("");
 
     const result = await registerCompany({
-      companyName: trimmedCompany,
-      userName: trimmedName,
+      companyName: trimmedName,
       email: trimmedEmail,
-      password,
     });
 
     if (!result.success) {
@@ -71,7 +51,8 @@ export default function RegisterScreen({ navigation }) {
       return;
     }
 
-    // Account isn't created until the emailed code is verified.
+    // We emailed a confirmation link; the account is created once they open it
+    // and choose a password.
     navigation.navigate("RegisterVerify", {
       email: result.email || trimmedEmail,
     });
@@ -114,7 +95,7 @@ export default function RegisterScreen({ navigation }) {
 
             {error ? <Text style={styles.error}>{error}</Text> : null}
 
-            <Text style={styles.label}>{t("auth.companyName")}</Text>
+            <Text style={styles.label}>{t("auth.nameOrCompany")}</Text>
             <View style={styles.inputWrapper}>
               <Icon
                 name="briefcase"
@@ -123,31 +104,12 @@ export default function RegisterScreen({ navigation }) {
                 style={styles.inputIcon}
               />
               <TextInput
-                placeholder={t("auth.companyNamePlaceholder")}
+                placeholder={t("auth.nameOrCompanyPlaceholder")}
                 placeholderTextColor="#a7b3c2"
                 style={styles.input}
                 value={companyName}
                 onChangeText={setCompanyName}
                 autoCapitalize="words"
-              />
-            </View>
-
-            <Text style={styles.label}>{t("auth.yourName")}</Text>
-            <View style={styles.inputWrapper}>
-              <Icon
-                name="user"
-                size={16}
-                color="#687898"
-                style={styles.inputIcon}
-              />
-              <TextInput
-                placeholder={t("auth.yourNamePlaceholder")}
-                placeholderTextColor="#a7b3c2"
-                style={styles.input}
-                value={userName}
-                onChangeText={setUserName}
-                autoCapitalize="words"
-                autoComplete="name"
               />
             </View>
 
@@ -168,46 +130,6 @@ export default function RegisterScreen({ navigation }) {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoComplete="email"
-              />
-            </View>
-
-            <Text style={styles.label}>{t("auth.password")}</Text>
-            <View style={styles.inputWrapper}>
-              <Icon
-                name="lock"
-                size={16}
-                color="#687898"
-                style={styles.inputIcon}
-              />
-              <TextInput
-                placeholder={t("auth.passwordPlaceholder")}
-                placeholderTextColor="#a7b3c2"
-                style={styles.input}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                autoCapitalize="none"
-                autoComplete="password-new"
-              />
-            </View>
-
-            <Text style={styles.label}>{t("auth.confirmPassword")}</Text>
-            <View style={styles.inputWrapper}>
-              <Icon
-                name="lock"
-                size={16}
-                color="#687898"
-                style={styles.inputIcon}
-              />
-              <TextInput
-                placeholder={t("auth.confirmPasswordPlaceholder")}
-                placeholderTextColor="#a7b3c2"
-                style={styles.input}
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                secureTextEntry
-                autoCapitalize="none"
-                autoComplete="password-new"
               />
             </View>
 

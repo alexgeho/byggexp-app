@@ -58,6 +58,8 @@
     "emailPlaceholder": "exempel@gmail.com",
     "password": "Lösenord",
     "passwordPlaceholder": "ditt lösenord här",
+    "nameOrCompany": "Namn eller företag",
+    "nameOrCompanyPlaceholder": "Ditt namn eller företag",
     "companyName": "Företagsnamn",
     "companyNamePlaceholder": "Ditt företagsnamn",
     "yourName": "Ditt namn",

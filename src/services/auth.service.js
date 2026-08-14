@@ -11,13 +11,12 @@ export const authService = {
     return data;
   },
 
-  // Step 1: request a verification code. No account is created yet.
-  registerCompany: async ({ companyName, userName, email, password }) => {
+  // Step 1: minimal sign-up — name/company + email only. A confirmation link is
+  // emailed; the password is chosen later, on the page that link opens.
+  registerCompany: async ({ companyName, email }) => {
     const { data } = await api.post("/auth/register-company", {
       companyName,
-      userName,
       email,
-      password,
     });
     return data;
   },
