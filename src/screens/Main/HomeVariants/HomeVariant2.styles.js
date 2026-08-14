@@ -123,7 +123,9 @@ export function createStyles({
     timerHidden: {
       opacity: 0,
     },
-    // Centred over the clock area; overflow lets the peeking digits show.
+    // Centred over the clock area and clipped to it (overflow hidden) so the
+    // wheel's peeking digits never extend past where the clock was — the gap
+    // to the round buttons stays identical before and after tapping the pencil.
     wheelOverlay: {
       position: "absolute",
       top: 0,
@@ -132,6 +134,7 @@ export function createStyles({
       bottom: 0,
       alignItems: "center",
       justifyContent: "center",
+      overflow: "hidden",
     },
     timerTextLightBlue: {
       color: textColor,
