@@ -632,11 +632,7 @@ export default function HomeVariant2() {
                       setEditMinutes(m);
                     }}
                     textColor={isLightBlueTheme ? theme.colors.text : "#FFFFFF"}
-                    labelColor={
-                      isLightBlueTheme
-                        ? `${theme.colors.text}B3`
-                        : "rgba(255,255,255,0.7)"
-                    }
+                    fontSize={isCompact ? 84 : 100}
                   />
                 </View>
               ) : (

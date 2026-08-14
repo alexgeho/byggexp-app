@@ -1,10 +1,73 @@
-import React from "react";
-import { View, Text, StyleSheet, Platform } from "react-native";
-import { Picker } from "@react-native-picker/picker";
+import React, { useRef } from "react";
+import { View, Text, Animated, StyleSheet } from "react-native";
 
-// Scrollable hours/minutes wheel shown in place of the running timer while the
-// worker logs the day's hours manually (mirrors the iOS Timers picker). On iOS
-// this renders as a native wheel; Android shows a spinner and web a select.
+// A scroll-snap wheel that keeps the exact look of the running timer — the same
+// big Landasans digits — but they spin. The centred value is full opacity, the
+// peeking neighbours fade out. Used in place of the clock while logging hours.
+const ITEM_HEIGHT = 104;
+const CONTAINER_HEIGHT = Math.round(ITEM_HEIGHT * 1.7); // center + peeking rows
+const PAD = (CONTAINER_HEIGHT - ITEM_HEIGHT) / 2;
+
+function WheelColumn({ values, selected, onSelect, textColor, fontSize }) {
+  const scrollY = useRef(
+    new Animated.Value(Math.max(0, values.indexOf(selected)) * ITEM_HEIGHT),
+  ).current;
+
+  const handleMomentumEnd = (event) => {
+    const y = event.nativeEvent.contentOffset.y;
+    const index = Math.round(y / ITEM_HEIGHT);
+    const clamped = Math.max(0, Math.min(values.length - 1, index));
+    if (values[clamped] !== selected) {
+      onSelect(values[clamped]);
+    }
+  };
+
+  return (
+    <View style={{ height: CONTAINER_HEIGHT, overflow: "hidden" }}>
+      <Animated.ScrollView
+        showsVerticalScrollIndicator={false}
+        snapToInterval={ITEM_HEIGHT}
+        decelerationRate="fast"
+        contentOffset={{
+          x: 0,
+          y: Math.max(0, values.indexOf(selected)) * ITEM_HEIGHT,
+        }}
+        contentContainerStyle={{ paddingVertical: PAD }}
+        scrollEventThrottle={16}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true },
+        )}
+        onMomentumScrollEnd={handleMomentumEnd}
+      >
+        {values.map((value, index) => {
+          const opacity = scrollY.interpolate({
+            inputRange: [
+              (index - 2) * ITEM_HEIGHT,
+              (index - 1) * ITEM_HEIGHT,
+              index * ITEM_HEIGHT,
+              (index + 1) * ITEM_HEIGHT,
+              (index + 2) * ITEM_HEIGHT,
+            ],
+            outputRange: [0.12, 0.35, 1, 0.35, 0.12],
+            extrapolate: "clamp",
+          });
+          return (
+            <Animated.View key={value} style={[styles.itemRow, { opacity }]}>
+              <Text
+                style={[styles.digit, { color: textColor, fontSize }]}
+                numberOfLines={1}
+              >
+                {String(value).padStart(2, "0")}
+              </Text>
+            </Animated.View>
+          );
+        })}
+      </Animated.ScrollView>
+    </View>
+  );
+}
+
 const HOURS = Array.from({ length: 25 }, (_, i) => i); // 0..24
 const MINUTES = Array.from({ length: 60 }, (_, i) => i); // 0..59
 
@@ -13,51 +76,24 @@ export function HoursWheelPicker({
   minutes,
   onChange,
   textColor = "#FFFFFF",
-  labelColor = "rgba(255,255,255,0.7)",
+  fontSize = 96,
 }) {
   return (
     <View style={styles.row}>
-      <View style={styles.column}>
-        <Picker
-          selectedValue={hours}
-          onValueChange={(value) => onChange(value, minutes)}
-          style={styles.picker}
-          itemStyle={[styles.item, { color: textColor }]}
-          dropdownIconColor={textColor}
-          mode="dropdown"
-        >
-          {HOURS.map((h) => (
-            <Picker.Item
-              key={h}
-              label={String(h)}
-              value={h}
-              color={Platform.OS === "android" ? "#052d50" : textColor}
-            />
-          ))}
-        </Picker>
-        <Text style={[styles.unit, { color: labelColor }]}>h</Text>
-      </View>
-
-      <View style={styles.column}>
-        <Picker
-          selectedValue={minutes}
-          onValueChange={(value) => onChange(hours, value)}
-          style={styles.picker}
-          itemStyle={[styles.item, { color: textColor }]}
-          dropdownIconColor={textColor}
-          mode="dropdown"
-        >
-          {MINUTES.map((m) => (
-            <Picker.Item
-              key={m}
-              label={String(m).padStart(2, "0")}
-              value={m}
-              color={Platform.OS === "android" ? "#052d50" : textColor}
-            />
-          ))}
-        </Picker>
-        <Text style={[styles.unit, { color: labelColor }]}>min</Text>
-      </View>
+      <WheelColumn
+        values={HOURS}
+        selected={hours}
+        onSelect={(h) => onChange(h, minutes)}
+        textColor={textColor}
+        fontSize={fontSize}
+      />
+      <WheelColumn
+        values={MINUTES}
+        selected={minutes}
+        onSelect={(m) => onChange(hours, m)}
+        textColor={textColor}
+        fontSize={fontSize}
+      />
     </View>
   );
 }
@@ -67,24 +103,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
+    gap: 18,
   },
-  column: {
-    flexDirection: "row",
+  itemRow: {
+    height: ITEM_HEIGHT,
+    justifyContent: "center",
     alignItems: "center",
-    gap: 4,
   },
-  picker: {
-    width: Platform.OS === "ios" ? 96 : 110,
-    height: Platform.OS === "ios" ? 180 : 56,
-  },
-  item: {
-    fontSize: 40,
-    fontWeight: "700",
-  },
-  unit: {
-    fontSize: 18,
-    fontWeight: "500",
+  digit: {
+    fontFamily: "Landasans-Medium",
+    lineHeight: ITEM_HEIGHT,
+    letterSpacing: -2.5,
+    includeFontPadding: false,
+    fontVariant: ["tabular-nums"],
   },
 });
 
