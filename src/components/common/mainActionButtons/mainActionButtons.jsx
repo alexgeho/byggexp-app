@@ -19,11 +19,10 @@ export function MainActionButtons({
   cameraIconColor,
   // Secondary round action: "camera" | "hours" | "play".
   secondaryMode = "camera",
-  // Hours mode: the pencil turns the top clock into an editable hours/minutes
-  // wheel; while editing it becomes a checkmark that saves.
+  // Hours mode: the pencil opens the full-screen hours editor. While editing
+  // the round button is hidden (the wheel + Done button are on the overlay).
   isEditingHours = false,
   onEnterEditHours,
-  onConfirmEditHours,
 }) {
   const actionButtonSize = veryCompact ? 96 : compact ? 108 : 124;
   const iconActionSize = veryCompact ? 32 : compact ? 36 : 40;
@@ -75,22 +74,26 @@ export function MainActionButtons({
       )}
 
       {secondaryMode === "hours" ? (
-        <TouchableOpacity
-          style={[
-            styles.actionButtonCamera,
-            { width: secondaryButtonSize, height: secondaryButtonSize },
-            cameraButtonColor && { backgroundColor: cameraButtonColor },
-            styles.actionButtonCameraThemed,
-          ]}
-          activeOpacity={0.8}
-          onPress={isEditingHours ? onConfirmEditHours : onEnterEditHours}
-        >
-          <Icon
-            name={isEditingHours ? "check" : "edit-2"}
-            size={iconActionSize}
-            color={cameraIconColor || "#FFFFFF"}
-          />
-        </TouchableOpacity>
+        // While editing, the wheel + "Done" button live in the full-screen
+        // overlay, so the round button is hidden.
+        isEditingHours ? null : (
+          <TouchableOpacity
+            style={[
+              styles.actionButtonCamera,
+              { width: secondaryButtonSize, height: secondaryButtonSize },
+              cameraButtonColor && { backgroundColor: cameraButtonColor },
+              styles.actionButtonCameraThemed,
+            ]}
+            activeOpacity={0.8}
+            onPress={onEnterEditHours}
+          >
+            <Icon
+              name="edit-2"
+              size={iconActionSize}
+              color={cameraIconColor || "#FFFFFF"}
+            />
+          </TouchableOpacity>
+        )
       ) : secondaryMode === "play" ? (
         <TouchableOpacity
           style={[

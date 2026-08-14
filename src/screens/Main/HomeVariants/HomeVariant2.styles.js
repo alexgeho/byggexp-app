@@ -123,18 +123,34 @@ export function createStyles({
     timerHidden: {
       opacity: 0,
     },
-    // Centred over the clock area and clipped to it (overflow hidden) so the
-    // wheel's peeking digits never extend past where the clock was — the gap
-    // to the round buttons stays identical before and after tapping the pencil.
-    wheelOverlay: {
-      position: "absolute",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
+    // Full-screen manual-hours editor: blurred backdrop + wheel + Done button.
+    editOverlay: {
+      ...StyleSheet.absoluteFillObject,
+      zIndex: 20,
+    },
+    editBlur: {
+      ...StyleSheet.absoluteFillObject,
+    },
+    editContent: {
+      flex: 1,
+      alignItems: "center",
+      paddingHorizontal: 24,
+    },
+    editSpacer: {
+      flex: 1,
+    },
+    doneButton: {
+      alignSelf: "stretch",
+      height: 56,
+      borderRadius: 28,
+      backgroundColor: isLightBlue ? theme.colors.primary : "#FFFFFF",
       alignItems: "center",
       justifyContent: "center",
-      overflow: "hidden",
+    },
+    doneButtonText: {
+      color: isLightBlue ? "#FFFFFF" : theme.colors.primary,
+      fontSize: 18,
+      fontFamily: theme.text.fontFamily.semiBold,
     },
     timerTextLightBlue: {
       color: textColor,

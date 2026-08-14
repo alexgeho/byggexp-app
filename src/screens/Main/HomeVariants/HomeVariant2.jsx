@@ -9,6 +9,8 @@ import React, {
 
 import {
   View,
+  Text,
+  TouchableOpacity,
   ScrollView,
   Alert,
   Platform,
@@ -20,6 +22,8 @@ import { LinearGradient } from "expo-linear-gradient";
 
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
+import { BlurView } from "expo-blur";
 
 import AuthContext from "../../../contexts/AuthContext";
 import { useTheme } from "../../../theme/ThemeContext";
@@ -118,6 +122,7 @@ export default function HomeVariant2() {
   /* NAVIGATION */
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   /* LOADING STATE */
   const [loadingShift, setLoadingShift] = useState(false);
@@ -649,10 +654,9 @@ export default function HomeVariant2() {
                   styles.coreControlsGroupEvenlySpaced,
               ]}
             >
-              {/* The clock stays in the layout at all times (just hidden while
-                  editing) so the round buttons never move. The hours wheel is
-                  drawn as an overlay centred over the exact clock area, so the
-                  digits don't jump either. */}
+              {/* The clock stays in the layout (hidden while editing) so nothing
+                  below moves. The hours wheel + Done button live in a full-screen
+                  blurred overlay rendered at the bottom of this file. */}
               <View style={styles.timerSlot}>
                 <Timer
                   hours={formattedTime.hours}
@@ -673,26 +677,6 @@ export default function HomeVariant2() {
                     isLightBlueTheme && styles.timerSecondsLightBlue,
                   ]}
                 />
-
-                {isEditingHours ? (
-                  <View style={styles.wheelOverlay} pointerEvents="box-none">
-                    <HoursWheelPicker
-                      hours={editHours}
-                      minutes={editMinutes}
-                      onChange={(h, m) => {
-                        setEditHours(h);
-                        setEditMinutes(m);
-                      }}
-                      textColor={
-                        isLightBlueTheme ? theme.colors.text : "#FFFFFF"
-                      }
-                      fontSize={timerWheelFontSize}
-                      itemHeight={timerSlotHeight}
-                      peek={isCompact ? 18 : 24}
-                      letterSpacing={timerLetterSpacing}
-                    />
-                  </View>
-                ) : null}
               </View>
 
               {showCoreSpacers ? (
@@ -709,7 +693,6 @@ export default function HomeVariant2() {
                 secondaryMode={secondaryAction}
                 isEditingHours={isEditingHours}
                 onEnterEditHours={handleEnterEditHours}
-                onConfirmEditHours={handleConfirmEditHours}
                 compact={isCompact}
                 veryCompact={isVeryCompact}
                 actionButtonColor={
@@ -804,6 +787,51 @@ export default function HomeVariant2() {
           showAddButton={false}
         />
       </View>
+
+      {/* Manual-hours editor: a full-screen blurred overlay with the hours
+          wheel sitting a bit lower, and a "Done" button pinned to the bottom. */}
+      {isEditingHours ? (
+        <View style={styles.editOverlay}>
+          <BlurView
+            intensity={40}
+            tint={isLightBlueTheme ? "light" : "dark"}
+            style={styles.editBlur}
+          />
+          <View
+            style={[
+              styles.editContent,
+              {
+                paddingTop: insets.top + (isCompact ? 150 : 200),
+                paddingBottom: insets.bottom + 24,
+              },
+            ]}
+          >
+            <HoursWheelPicker
+              hours={editHours}
+              minutes={editMinutes}
+              onChange={(h, m) => {
+                setEditHours(h);
+                setEditMinutes(m);
+              }}
+              textColor={isLightBlueTheme ? theme.colors.text : "#FFFFFF"}
+              fontSize={timerWheelFontSize}
+              itemHeight={timerSlotHeight}
+              peek={isCompact ? 22 : 30}
+              letterSpacing={timerLetterSpacing}
+            />
+
+            <View style={styles.editSpacer} />
+
+            <TouchableOpacity
+              style={styles.doneButton}
+              onPress={handleConfirmEditHours}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.doneButtonText}>{t("common.done")}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      ) : null}
     </LinearGradient>
   );
 }
