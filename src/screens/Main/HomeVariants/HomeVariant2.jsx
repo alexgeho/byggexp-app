@@ -799,7 +799,7 @@ export default function HomeVariant2() {
             style={[
               styles.editContent,
               {
-                paddingTop: insets.top + (isCompact ? 150 : 200),
+                paddingTop: insets.top + 24,
                 paddingBottom: insets.bottom + 24,
               },
             ]}
@@ -818,20 +818,21 @@ export default function HomeVariant2() {
               letterSpacing={timerLetterSpacing}
             />
 
-            {/* Round "Done" button, centred between the digits and the bottom. */}
-            <View style={styles.doneCenter}>
-              <TouchableOpacity
-                style={styles.doneRound}
-                onPress={handleConfirmEditHours}
-                activeOpacity={0.85}
-              >
-                <Icon
-                  name="check"
-                  size={40}
-                  color={isLightBlueTheme ? theme.colors.text : "#FFFFFF"}
-                />
-              </TouchableOpacity>
-            </View>
+            <View style={styles.doneGap} />
+
+            {/* Round "Done" button. The whole group is centred vertically so the
+                space above the digits and below the button is equal. */}
+            <TouchableOpacity
+              style={styles.doneRound}
+              onPress={handleConfirmEditHours}
+              activeOpacity={0.85}
+            >
+              <Icon
+                name="check"
+                size={40}
+                color={isLightBlueTheme ? theme.colors.text : "#FFFFFF"}
+              />
+            </TouchableOpacity>
           </View>
         </View>
       ) : null}

@@ -134,13 +134,13 @@ export function createStyles({
     editContent: {
       flex: 1,
       alignItems: "center",
+      justifyContent: "center",
       paddingHorizontal: 24,
     },
-    // Fills the space below the wheel and centres the round Done button there.
-    doneCenter: {
-      flex: 1,
-      alignItems: "center",
-      justifyContent: "center",
+    // Fixed gap between the wheel and the Done button; the whole group is
+    // centred vertically so top and bottom spacing are equal.
+    doneGap: {
+      height: 40,
     },
     // Same look as the home-screen secondary round button (frosted circle).
     doneRound: {
