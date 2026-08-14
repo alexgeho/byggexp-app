@@ -79,15 +79,12 @@
   },
   "registerVerify": {
     "title": "Confirm your email",
-    "sentTo": "Enter the code we sent to {{email}}",
-    "codeLabel": "Confirmation code",
-    "codePlaceholder": "6-digit code",
-    "verify": "Confirm & create account",
-    "resend": "Resend code",
-    "resent": "A new code has been sent.",
+    "sentTo": "We've emailed a confirmation link to {{email}}.",
+    "hint": "Open it on this phone to finish — you'll be signed in automatically.",
+    "resend": "Resend link",
+    "resent": "A new link has been sent.",
     "changeDetails": "Change my details",
-    "enterCode": "Enter the 6-digit code from your email.",
-    "invalidCode": "Invalid or expired code."
+    "backToLogin": "Back to login"
   },
   "codeLogin": {
     "title": "Sign in with a code",

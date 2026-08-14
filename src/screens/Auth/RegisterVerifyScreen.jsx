@@ -2,13 +2,11 @@ import React, { useState, useContext } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Icon from "react-native-vector-icons/Feather";
@@ -16,33 +14,18 @@ import { useTranslation } from "react-i18next";
 import AuthContext from "../../contexts/AuthContext";
 import { useTheme } from "../../theme/ThemeContext";
 
+// After sign-up we email a confirmation link. The user opens it on their phone;
+// the app catches the deep link and signs them in automatically (MagicLinkHandler).
+// This screen just tells them to check their inbox, with a resend option.
 export default function RegisterVerifyScreen({ navigation, route }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const { verifyRegistration, resendRegistrationCode, isLoading } =
-    useContext(AuthContext);
+  const { resendRegistrationCode } = useContext(AuthContext);
 
   const email = route?.params?.email || "";
-  const [code, setCode] = useState("");
-  const [error, setError] = useState("");
   const [resent, setResent] = useState(false);
 
-  const handleVerify = async () => {
-    const trimmedCode = code.trim();
-    if (trimmedCode.length < 4) {
-      setError(t("registerVerify.enterCode"));
-      return;
-    }
-    setError("");
-    const result = await verifyRegistration(email, trimmedCode);
-    if (!result.success) {
-      setError(result.message || t("registerVerify.invalidCode"));
-    }
-    // On success the app switches to the main navigator automatically.
-  };
-
   const handleResend = async () => {
-    setError("");
     await resendRegistrationCode(email);
     setResent(true);
   };
@@ -63,67 +46,33 @@ export default function RegisterVerifyScreen({ navigation, route }) {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.card}>
-            <View style={styles.header}>
-              <Text
-                style={[
-                  styles.welcome,
-                  { fontFamily: theme.text.fontFamily.regular },
-                ]}
-              >
-                {t("registerVerify.title")}
-              </Text>
-              <Text
-                style={[
-                  styles.heading,
-                  { fontFamily: theme.text.fontFamily.regular },
-                ]}
-              >
-                {t("registerVerify.sentTo", { email })}
-              </Text>
+            <View style={styles.iconCircle}>
+              <Icon name="mail" size={28} color="#3183ff" />
             </View>
 
-            {error ? <Text style={styles.error}>{error}</Text> : null}
+            <Text
+              style={[
+                styles.heading,
+                { fontFamily: theme.text.fontFamily.regular },
+              ]}
+            >
+              {t("registerVerify.title")}
+            </Text>
+            <Text style={styles.body}>
+              {t("registerVerify.sentTo", { email })}
+            </Text>
+            <Text style={styles.hint}>{t("registerVerify.hint")}</Text>
+
             {resent ? (
               <Text style={styles.info}>{t("registerVerify.resent")}</Text>
             ) : null}
 
-            <Text style={styles.label}>{t("registerVerify.codeLabel")}</Text>
-            <View style={styles.inputWrapper}>
-              <Icon
-                name="key"
-                size={16}
-                color="#687898"
-                style={styles.inputIcon}
-              />
-              <TextInput
-                placeholder={t("registerVerify.codePlaceholder")}
-                placeholderTextColor="#a7b3c2"
-                style={[styles.input, styles.codeInput]}
-                value={code}
-                onChangeText={setCode}
-                keyboardType="number-pad"
-                autoFocus
-                maxLength={6}
-              />
-            </View>
-
             <TouchableOpacity
-              onPress={handleVerify}
-              disabled={isLoading}
+              onPress={handleResend}
               activeOpacity={0.85}
-              style={[styles.button, isLoading && styles.buttonDisabled]}
+              style={styles.button}
             >
-              {isLoading ? (
-                <ActivityIndicator color="#ffffff" />
-              ) : (
-                <Text style={styles.buttonText}>
-                  {t("registerVerify.verify")}
-                </Text>
-              )}
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={handleResend} style={styles.footerLink}>
-              <Text style={styles.footerLinkText}>
+              <Text style={styles.buttonText}>
                 {t("registerVerify.resend")}
               </Text>
             </TouchableOpacity>
@@ -134,6 +83,15 @@ export default function RegisterVerifyScreen({ navigation, route }) {
             >
               <Text style={styles.footerText}>
                 {t("registerVerify.changeDetails")}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Login")}
+              style={styles.footerLink}
+            >
+              <Text style={styles.footerText}>
+                {t("registerVerify.backToLogin")}
               </Text>
             </TouchableOpacity>
           </View>
@@ -157,61 +115,42 @@ const styles = StyleSheet.create({
     padding: 32,
     backgroundColor: "#ffffff",
     borderRadius: 16,
+    alignItems: "center",
   },
-  header: {
-    marginBottom: 28,
-  },
-  welcome: {
-    color: "#687898",
-    fontSize: 16,
-    fontWeight: "500",
-    marginBottom: 4,
+  iconCircle: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: "#eaf2fb",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 20,
   },
   heading: {
     color: "#052d50",
-    fontSize: 22,
-    lineHeight: 30,
+    fontSize: 24,
+    lineHeight: 32,
     fontWeight: "700",
+    textAlign: "center",
+    marginBottom: 12,
   },
-  error: {
-    color: "#c62828",
-    marginBottom: 16,
+  body: {
+    color: "#052d50",
+    fontSize: 15,
+    lineHeight: 22,
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  hint: {
+    color: "#687898",
     fontSize: 13,
+    lineHeight: 19,
+    textAlign: "center",
   },
   info: {
     color: "#2f80ed",
-    marginBottom: 16,
     fontSize: 13,
-  },
-  label: {
-    color: "#052d50",
-    fontSize: 12,
-    marginBottom: 8,
-  },
-  inputWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    height: 44,
-    paddingHorizontal: 16,
-    borderWidth: 1,
-    borderColor: "#e7ecf0",
-    borderRadius: 24,
-    backgroundColor: "#ffffff",
-    marginBottom: 20,
-  },
-  inputIcon: {
-    marginRight: 8,
-  },
-  input: {
-    flex: 1,
-    height: "100%",
-    color: "#052d50",
-    fontSize: 14,
-  },
-  codeInput: {
-    fontSize: 20,
-    letterSpacing: 6,
-    fontWeight: "700",
+    marginTop: 16,
   },
   button: {
     height: 48,
@@ -219,10 +158,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#3183ff",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 20,
-  },
-  buttonDisabled: {
-    opacity: 0.7,
+    alignSelf: "stretch",
+    marginTop: 24,
   },
   buttonText: {
     color: "#ffffff",
@@ -230,16 +167,11 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   footerLink: {
-    marginTop: 20,
+    marginTop: 18,
     alignItems: "center",
   },
   footerText: {
     color: "#687898",
-    fontSize: 12,
-  },
-  footerLinkText: {
-    color: "#052d50",
     fontSize: 13,
-    fontWeight: "600",
   },
 });
