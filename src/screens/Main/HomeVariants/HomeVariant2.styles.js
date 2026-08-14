@@ -110,6 +110,13 @@ export function createStyles({
     timerContainer: {
       width: "100%",
     },
+    // Fixed-height slot shared by the clock and the hours wheel so switching
+    // between them never shifts the layout below.
+    timerSlot: {
+      justifyContent: "center",
+      alignItems: "center",
+      overflow: "hidden",
+    },
     timerTextLightBlue: {
       color: textColor,
     },

@@ -2,20 +2,25 @@ import React, { useRef } from "react";
 import { View, Text, Animated, StyleSheet } from "react-native";
 
 // A scroll-snap wheel that keeps the exact look of the running timer — the same
-// big Landasans digits — but they spin. The centred value is full opacity, the
-// peeking neighbours fade out. Used in place of the clock while logging hours.
-const ITEM_HEIGHT = 148;
-const CONTAINER_HEIGHT = Math.round(ITEM_HEIGHT * 1.55); // center + peeking rows
-const PAD = (CONTAINER_HEIGHT - ITEM_HEIGHT) / 2;
+// big Landasans digits — but they spin. It occupies exactly one row (the same
+// height as the clock line) so swapping the clock for the wheel doesn't shift
+// the layout: the digits and the round buttons stay put.
 
-function WheelColumn({ values, selected, onSelect, textColor, fontSize }) {
+function WheelColumn({
+  values,
+  selected,
+  onSelect,
+  textColor,
+  fontSize,
+  itemHeight,
+}) {
   const scrollY = useRef(
-    new Animated.Value(Math.max(0, values.indexOf(selected)) * ITEM_HEIGHT),
+    new Animated.Value(Math.max(0, values.indexOf(selected)) * itemHeight),
   ).current;
 
   const handleMomentumEnd = (event) => {
     const y = event.nativeEvent.contentOffset.y;
-    const index = Math.round(y / ITEM_HEIGHT);
+    const index = Math.round(y / itemHeight);
     const clamped = Math.max(0, Math.min(values.length - 1, index));
     if (values[clamped] !== selected) {
       onSelect(values[clamped]);
@@ -23,16 +28,15 @@ function WheelColumn({ values, selected, onSelect, textColor, fontSize }) {
   };
 
   return (
-    <View style={{ height: CONTAINER_HEIGHT, overflow: "hidden" }}>
+    <View style={{ height: itemHeight, overflow: "hidden" }}>
       <Animated.ScrollView
         showsVerticalScrollIndicator={false}
-        snapToInterval={ITEM_HEIGHT}
+        snapToInterval={itemHeight}
         decelerationRate="fast"
         contentOffset={{
           x: 0,
-          y: Math.max(0, values.indexOf(selected)) * ITEM_HEIGHT,
+          y: Math.max(0, values.indexOf(selected)) * itemHeight,
         }}
-        contentContainerStyle={{ paddingVertical: PAD }}
         scrollEventThrottle={16}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
@@ -43,19 +47,23 @@ function WheelColumn({ values, selected, onSelect, textColor, fontSize }) {
         {values.map((value, index) => {
           const opacity = scrollY.interpolate({
             inputRange: [
-              (index - 2) * ITEM_HEIGHT,
-              (index - 1) * ITEM_HEIGHT,
-              index * ITEM_HEIGHT,
-              (index + 1) * ITEM_HEIGHT,
-              (index + 2) * ITEM_HEIGHT,
+              (index - 1) * itemHeight,
+              index * itemHeight,
+              (index + 1) * itemHeight,
             ],
-            outputRange: [0.12, 0.35, 1, 0.35, 0.12],
+            outputRange: [0.25, 1, 0.25],
             extrapolate: "clamp",
           });
           return (
-            <Animated.View key={value} style={[styles.itemRow, { opacity }]}>
+            <Animated.View
+              key={value}
+              style={[styles.itemRow, { height: itemHeight, opacity }]}
+            >
               <Text
-                style={[styles.digit, { color: textColor, fontSize }]}
+                style={[
+                  styles.digit,
+                  { color: textColor, fontSize, lineHeight: itemHeight },
+                ]}
                 numberOfLines={1}
               >
                 {String(value).padStart(2, "0")}
@@ -76,7 +84,8 @@ export function HoursWheelPicker({
   minutes,
   onChange,
   textColor = "#FFFFFF",
-  fontSize = 96,
+  fontSize = 140,
+  itemHeight = 132,
 }) {
   return (
     <View style={styles.row}>
@@ -86,6 +95,7 @@ export function HoursWheelPicker({
         onSelect={(h) => onChange(h, minutes)}
         textColor={textColor}
         fontSize={fontSize}
+        itemHeight={itemHeight}
       />
       <WheelColumn
         values={MINUTES}
@@ -93,6 +103,7 @@ export function HoursWheelPicker({
         onSelect={(m) => onChange(hours, m)}
         textColor={textColor}
         fontSize={fontSize}
+        itemHeight={itemHeight}
       />
     </View>
   );
@@ -106,15 +117,14 @@ const styles = StyleSheet.create({
     gap: 18,
   },
   itemRow: {
-    height: ITEM_HEIGHT,
     justifyContent: "center",
     alignItems: "center",
   },
   digit: {
     fontFamily: "Landasans-Medium",
-    lineHeight: ITEM_HEIGHT,
     letterSpacing: -2.5,
     includeFontPadding: false,
+    textAlign: "center",
     fontVariant: ["tabular-nums"],
   },
 });
