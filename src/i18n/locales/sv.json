@@ -79,15 +79,12 @@
   },
   "registerVerify": {
     "title": "Bekräfta din e-post",
-    "sentTo": "Ange koden vi skickade till {{email}}",
-    "codeLabel": "Bekräftelsekod",
-    "codePlaceholder": "6-siffrig kod",
-    "verify": "Bekräfta och skapa konto",
-    "resend": "Skicka ny kod",
-    "resent": "En ny kod har skickats.",
+    "sentTo": "Vi har mejlat en bekräftelselänk till {{email}}.",
+    "hint": "Öppna den på den här telefonen för att slutföra — du loggas in automatiskt.",
+    "resend": "Skicka ny länk",
+    "resent": "En ny länk har skickats.",
     "changeDetails": "Ändra mina uppgifter",
-    "enterCode": "Ange den 6-siffriga koden från mejlet.",
-    "invalidCode": "Ogiltig eller utgången kod."
+    "backToLogin": "Tillbaka till inloggning"
   },
   "codeLogin": {
     "title": "Logga in med kod",

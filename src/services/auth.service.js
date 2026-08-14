@@ -22,16 +22,7 @@ export const authService = {
     return data;
   },
 
-  // Step 2: verify the emailed code -> creates the company and returns a session.
-  verifyRegistration: async (email, code) => {
-    const { data } = await api.post("/auth/register-company/verify", {
-      email,
-      code,
-    });
-    return data;
-  },
-
-  // Re-send the verification code for a pending sign-up.
+  // Re-send the confirmation link for a pending sign-up.
   resendRegistration: async (email) => {
     const { data } = await api.post("/auth/register-company/resend", { email });
     return data;

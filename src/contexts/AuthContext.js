@@ -236,24 +236,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Step 2: verify the emailed code -> creates the account and signs in.
-  const verifyRegistration = async (email, code) => {
-    try {
-      setIsLoading(true);
-      const data = await authService.verifyRegistration(email, code);
-      await applyAuthSession(data);
-      setIsLoading(false);
-      return { success: true };
-    } catch (error) {
-      console.error("AuthContext: Registration verification failed:", error);
-      setIsLoading(false);
-      return {
-        success: false,
-        message: getApiErrorMessage(error, "Invalid or expired code"),
-      };
-    }
-  };
-
   const logout = async () => {
     await authService.logout();
     await logUserActivity({
@@ -316,7 +298,6 @@ export const AuthProvider = ({ children }) => {
         requestLoginCode,
         loginWithCode,
         registerCompany,
-        verifyRegistration,
         resendRegistrationCode,
         logout,
         userId,
