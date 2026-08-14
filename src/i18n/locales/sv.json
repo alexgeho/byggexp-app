@@ -74,10 +74,21 @@
     "loginFailedTitle": "Inloggning misslyckades",
     "loginFailedMessage": "Fel e-post eller lösenord.",
     "loginWithCode": "Logga in med mejlkod →",
+    "forgotPassword": "Glömt lösenordet? →",
     "confirmPassword": "Bekräfta lösenord",
     "confirmPasswordPlaceholder": "upprepa ditt lösenord",
     "passwordTooShort": "Lösenordet måste vara minst 6 tecken.",
     "passwordsDontMatch": "Lösenorden matchar inte."
+  },
+  "forgotPassword": {
+    "eyebrow": "Ingen fara",
+    "title": "Återställ ditt lösenord",
+    "subtitle": "Ange din konto-e-post så skickar vi en länk där du väljer ett nytt lösenord.",
+    "submit": "Skicka återställningslänk",
+    "sentTitle": "Kolla din e-post",
+    "sentTo": "Om {{email}} har ett konto har vi skickat en återställningslänk dit.",
+    "hint": "Öppna länken, välj ett nytt lösenord och logga sedan in igen.",
+    "backToLogin": "Tillbaka till inloggning"
   },
   "registerVerify": {
     "title": "Bekräfta din e-post",

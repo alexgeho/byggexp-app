@@ -120,6 +120,15 @@ export default function LoginScreen({ navigation }) {
             </TouchableOpacity>
 
             <TouchableOpacity
+              onPress={() => navigation.navigate("ForgotPassword")}
+              style={styles.footerLink}
+            >
+              <Text style={styles.footerLinkText}>
+                {t("auth.forgotPassword")}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
               onPress={() => navigation.navigate("CodeLogin")}
               style={styles.footerLink}
             >

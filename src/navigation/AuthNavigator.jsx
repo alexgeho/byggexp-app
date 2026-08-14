@@ -4,6 +4,7 @@ import LoginScreen from "../screens/Auth/LoginScreen";
 import RegisterScreen from "../screens/Auth/RegisterScreen";
 import RegisterVerifyScreen from "../screens/Auth/RegisterVerifyScreen";
 import CodeLoginScreen from "../screens/Auth/CodeLoginScreen";
+import ForgotPasswordScreen from "../screens/Auth/ForgotPasswordScreen";
 
 const Stack = createStackNavigator();
 
@@ -14,6 +15,7 @@ export default function AuthNavigator() {
       <Stack.Screen name="Register" component={RegisterScreen} />
       <Stack.Screen name="RegisterVerify" component={RegisterVerifyScreen} />
       <Stack.Screen name="CodeLogin" component={CodeLoginScreen} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
     </Stack.Navigator>
   );
 }

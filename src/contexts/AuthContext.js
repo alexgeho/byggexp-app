@@ -216,6 +216,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // "Forgot password": ask the backend to email a reset link. Resolves true even
+  // when the email isn't registered (the API never reveals that).
+  const requestPasswordReset = async (email) => {
+    try {
+      await authService.requestPasswordReset(email);
+      return true;
+    } catch (error) {
+      console.error("AuthContext: Request password reset failed:", error);
+      return false;
+    }
+  };
+
   const resendRegistrationCode = async (email) => {
     try {
       await authService.resendRegistration(email);
@@ -289,6 +301,7 @@ export const AuthProvider = ({ children }) => {
         loginWithCode,
         registerCompany,
         resendRegistrationCode,
+        requestPasswordReset,
         logout,
         userId,
         user,

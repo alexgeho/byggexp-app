@@ -27,6 +27,14 @@ export const authService = {
     return data;
   },
 
+  // "Forgot password": email a reset link. Always resolves (the API returns 200
+  // even when the email isn't registered). The link opens a web page where the
+  // user picks a new password, then signs in with email + that password.
+  requestPasswordReset: async (email) => {
+    const { data } = await api.post("/auth/forgot-password", { email });
+    return data;
+  },
+
   registerSuperAdmin: async (userData) => {
     const { data } = await api.post("/auth/register-superadmin", userData);
     return data;
