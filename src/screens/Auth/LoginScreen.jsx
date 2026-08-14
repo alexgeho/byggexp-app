@@ -129,15 +129,6 @@ export default function LoginScreen({ navigation }) {
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => navigation.navigate("CodeLogin")}
-              style={styles.footerLink}
-            >
-              <Text style={styles.footerLinkText}>
-                {t("auth.loginWithCode")}
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
               onPress={() => navigation.navigate("Register")}
               style={styles.footerLink}
             >
