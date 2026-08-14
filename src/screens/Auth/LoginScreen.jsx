@@ -118,13 +118,6 @@ export default function LoginScreen({ navigation }) {
             </View>
 
             <TouchableOpacity
-              onPress={() => navigation.navigate("ForgotPassword")}
-              style={styles.forgotLink}
-            >
-              <Text style={styles.footerText}>{t("auth.forgotPassword")}</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
               onPress={handleLogin}
               disabled={isLoading}
               activeOpacity={0.85}
@@ -135,6 +128,13 @@ export default function LoginScreen({ navigation }) {
               ) : (
                 <Text style={styles.buttonText}>{t("auth.logIn")}</Text>
               )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate("ForgotPassword")}
+              style={styles.footerLink}
+            >
+              <Text style={styles.footerText}>{t("auth.forgotPassword")}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -234,11 +234,6 @@ const styles = StyleSheet.create({
   footerLink: {
     marginTop: 24,
     alignItems: "flex-start",
-  },
-  forgotLink: {
-    alignSelf: "flex-start",
-    marginTop: -12,
-    marginBottom: 4,
   },
   footerText: {
     color: "#687898",
