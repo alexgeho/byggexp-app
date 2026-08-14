@@ -69,6 +69,15 @@ const buildNavigationTarget = (data = {}) => {
     return taskId ? { screen, params: { taskId, projectId } } : null;
   }
 
+  if (screen === "Shifts") {
+    // "Log your hours" reminder: land on the manual entry for the given day.
+    const params =
+      data.type === "hours_reminder"
+        ? { openHoursEntry: true, date: data.date || null }
+        : {};
+    return { screen, params };
+  }
+
   return { screen, params: {} };
 };
 

@@ -26,7 +26,11 @@ import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../theme/ThemeContext";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { ProjectFilterSelector } from "../../../components/common/ProjectFilterSelector/ProjectFilterSelector";
@@ -98,6 +102,9 @@ const HOURS_SOURCES = [
 
 export default function ShiftsScreen() {
   const navigation = useNavigation();
+  const route = useRoute();
+  // Guards the one-shot deep-link from a "log your hours" reminder push.
+  const handledHoursEntryRef = useRef(false);
   const { t } = useTranslation();
   const { theme } = useTheme();
   const { user, selectedProject } = useContext(AuthContext);
@@ -446,6 +453,24 @@ export default function ShiftsScreen() {
     },
     [dayMap, pendingManual],
   );
+
+  // Deep-link from a "log your hours" reminder push: switch to the Manual tab
+  // and open today's cell for entry. Runs once, then clears the route param.
+  useEffect(() => {
+    if (!route.params?.openHoursEntry || handledHoursEntryRef.current) {
+      return;
+    }
+    handledHoursEntryRef.current = true;
+    setHoursSource("manual");
+    startInlineManual(route.params.date || todayDateKey);
+    navigation.setParams({ openHoursEntry: undefined, date: undefined });
+  }, [
+    route.params?.openHoursEntry,
+    route.params?.date,
+    startInlineManual,
+    todayDateKey,
+    navigation,
+  ]);
 
   // Move the open cell's typed value into the pending map (no network). Dedups
   // against the saved value so unchanged days don't count as unsaved.
