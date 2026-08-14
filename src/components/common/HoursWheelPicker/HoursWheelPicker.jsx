@@ -2,9 +2,10 @@ import React, { useRef } from "react";
 import { View, Text, Animated, StyleSheet } from "react-native";
 
 // A scroll-snap wheel that keeps the exact look of the running timer — the same
-// big Landasans digits — but they spin. It occupies exactly one row (the same
-// height as the clock line) so swapping the clock for the wheel doesn't shift
-// the layout: the digits and the round buttons stay put.
+// big Landasans digits — but they spin. The centred value is full opacity and
+// the neighbours peek above/below (faded) so it clearly reads as scrollable.
+// The wheel overflows its fixed one-row slot, so showing the peek never shifts
+// the layout below (the round buttons stay put).
 
 function WheelColumn({
   values,
@@ -13,6 +14,7 @@ function WheelColumn({
   textColor,
   fontSize,
   itemHeight,
+  peek,
 }) {
   const scrollY = useRef(
     new Animated.Value(Math.max(0, values.indexOf(selected)) * itemHeight),
@@ -28,7 +30,7 @@ function WheelColumn({
   };
 
   return (
-    <View style={{ height: itemHeight, overflow: "hidden" }}>
+    <View style={{ height: itemHeight + peek * 2, overflow: "hidden" }}>
       <Animated.ScrollView
         showsVerticalScrollIndicator={false}
         snapToInterval={itemHeight}
@@ -37,6 +39,7 @@ function WheelColumn({
           x: 0,
           y: Math.max(0, values.indexOf(selected)) * itemHeight,
         }}
+        contentContainerStyle={{ paddingVertical: peek }}
         scrollEventThrottle={16}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
@@ -51,7 +54,7 @@ function WheelColumn({
               index * itemHeight,
               (index + 1) * itemHeight,
             ],
-            outputRange: [0.25, 1, 0.25],
+            outputRange: [0.22, 1, 0.22],
             extrapolate: "clamp",
           });
           return (
@@ -86,59 +89,38 @@ export function HoursWheelPicker({
   textColor = "#FFFFFF",
   fontSize = 140,
   itemHeight = 132,
-  bandColor = "rgba(255,255,255,0.12)",
+  peek = 26,
 }) {
   return (
-    <View style={[styles.frame, { height: itemHeight }]}>
-      {/* Selection pill behind the digits — the iOS-picker cue that it spins. */}
-      <View
-        style={[
-          styles.band,
-          { backgroundColor: bandColor, borderColor: bandColor },
-        ]}
+    <View style={styles.row} pointerEvents="box-none">
+      <WheelColumn
+        values={HOURS}
+        selected={hours}
+        onSelect={(h) => onChange(h, minutes)}
+        textColor={textColor}
+        fontSize={fontSize}
+        itemHeight={itemHeight}
+        peek={peek}
       />
-      <View style={styles.row}>
-        <WheelColumn
-          values={HOURS}
-          selected={hours}
-          onSelect={(h) => onChange(h, minutes)}
-          textColor={textColor}
-          fontSize={fontSize}
-          itemHeight={itemHeight}
-        />
-        <WheelColumn
-          values={MINUTES}
-          selected={minutes}
-          onSelect={(m) => onChange(hours, m)}
-          textColor={textColor}
-          fontSize={fontSize}
-          itemHeight={itemHeight}
-        />
-      </View>
+      <WheelColumn
+        values={MINUTES}
+        selected={minutes}
+        onSelect={(m) => onChange(hours, m)}
+        textColor={textColor}
+        fontSize={fontSize}
+        itemHeight={itemHeight}
+        peek={peek}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  frame: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  band: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    borderRadius: 28,
-    borderWidth: 1,
-  },
   row: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 18,
-    paddingHorizontal: 22,
   },
   itemRow: {
     justifyContent: "center",

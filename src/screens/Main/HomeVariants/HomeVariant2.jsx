@@ -668,11 +668,7 @@ export default function HomeVariant2() {
                     textColor={isLightBlueTheme ? theme.colors.text : "#FFFFFF"}
                     fontSize={timerWheelFontSize}
                     itemHeight={timerSlotHeight}
-                    bandColor={
-                      isLightBlueTheme
-                        ? "rgba(0,0,0,0.06)"
-                        : "rgba(255,255,255,0.14)"
-                    }
+                    peek={isCompact ? 20 : 26}
                   />
                 ) : (
                   <Timer

@@ -111,11 +111,12 @@ export function createStyles({
       width: "100%",
     },
     // Fixed-height slot shared by the clock and the hours wheel so switching
-    // between them never shifts the layout below.
+    // between them never shifts the layout below. overflow is visible so the
+    // wheel's peeking neighbour digits can extend past the one-row slot.
     timerSlot: {
       justifyContent: "center",
       alignItems: "center",
-      overflow: "hidden",
+      overflow: "visible",
     },
     timerTextLightBlue: {
       color: textColor,
