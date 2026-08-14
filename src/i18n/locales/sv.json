@@ -71,7 +71,23 @@
     "fillAllFields": "Fyll i alla fält.",
     "loginFailedTitle": "Inloggning misslyckades",
     "loginFailedMessage": "Fel e-post eller lösenord.",
-    "loginWithCode": "Logga in med mejlkod →"
+    "loginWithCode": "Logga in med mejlkod →",
+    "confirmPassword": "Bekräfta lösenord",
+    "confirmPasswordPlaceholder": "upprepa ditt lösenord",
+    "passwordTooShort": "Lösenordet måste vara minst 6 tecken.",
+    "passwordsDontMatch": "Lösenorden matchar inte."
+  },
+  "registerVerify": {
+    "title": "Bekräfta din e-post",
+    "sentTo": "Ange koden vi skickade till {{email}}",
+    "codeLabel": "Bekräftelsekod",
+    "codePlaceholder": "6-siffrig kod",
+    "verify": "Bekräfta och skapa konto",
+    "resend": "Skicka ny kod",
+    "resent": "En ny kod har skickats.",
+    "changeDetails": "Ändra mina uppgifter",
+    "enterCode": "Ange den 6-siffriga koden från mejlet.",
+    "invalidCode": "Ogiltig eller utgången kod."
   },
   "codeLogin": {
     "title": "Logga in med kod",

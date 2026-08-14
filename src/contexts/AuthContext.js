@@ -198,23 +198,58 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const registerCompany = async ({ companyName, userName, email }) => {
+  // Step 1: request a verification code. Does NOT sign in — the account isn't
+  // created until the code is verified.
+  const registerCompany = async ({
+    companyName,
+    userName,
+    email,
+    password,
+  }) => {
     try {
       setIsLoading(true);
       const data = await authService.registerCompany({
         companyName,
         userName,
         email,
+        password,
       });
-      await applyAuthSession(data);
       setIsLoading(false);
-      return { success: true };
+      return { success: true, email: data?.email || email };
     } catch (error) {
       console.error("AuthContext: Registration failed:", error);
       setIsLoading(false);
       return {
         success: false,
         message: getApiErrorMessage(error, "Registration failed"),
+      };
+    }
+  };
+
+  const resendRegistrationCode = async (email) => {
+    try {
+      await authService.resendRegistration(email);
+      return true;
+    } catch (error) {
+      console.error("AuthContext: Resend registration code failed:", error);
+      return false;
+    }
+  };
+
+  // Step 2: verify the emailed code -> creates the account and signs in.
+  const verifyRegistration = async (email, code) => {
+    try {
+      setIsLoading(true);
+      const data = await authService.verifyRegistration(email, code);
+      await applyAuthSession(data);
+      setIsLoading(false);
+      return { success: true };
+    } catch (error) {
+      console.error("AuthContext: Registration verification failed:", error);
+      setIsLoading(false);
+      return {
+        success: false,
+        message: getApiErrorMessage(error, "Invalid or expired code"),
       };
     }
   };
@@ -281,6 +316,8 @@ export const AuthProvider = ({ children }) => {
         requestLoginCode,
         loginWithCode,
         registerCompany,
+        verifyRegistration,
+        resendRegistrationCode,
         logout,
         userId,
         user,
