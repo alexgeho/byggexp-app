@@ -648,16 +648,17 @@ export default function HomeVariant2() {
                   styles.coreControlsGroupEvenlySpaced,
               ]}
             >
-              {/* Fixed-height clock slot: the wheel replaces the clock in place
-                  while editing, so nothing below (the round buttons) shifts. */}
-              <View
-                style={[
-                  styles.timerContainer,
-                  styles.timerSlot,
-                  { height: timerSlotHeight },
-                ]}
-              >
-                {isEditingHours ? (
+              {/* The clock renders normally; while editing it's swapped for the
+                  hours wheel inside a box of the same height, so the round
+                  buttons below don't shift. */}
+              {isEditingHours ? (
+                <View
+                  style={[
+                    styles.timerContainer,
+                    styles.timerSlot,
+                    { height: timerSlotHeight },
+                  ]}
+                >
                   <HoursWheelPicker
                     hours={editHours}
                     minutes={editMinutes}
@@ -670,24 +671,25 @@ export default function HomeVariant2() {
                     itemHeight={timerSlotHeight}
                     peek={isCompact ? 20 : 26}
                   />
-                ) : (
-                  <Timer
-                    hours={formattedTime.hours}
-                    minutes={formattedTime.minutes}
-                    seconds={formattedTime.seconds}
-                    textStyle={[
-                      isCompact
-                        ? styles.timerTextCompact
-                        : styles.timerTextRegular,
-                      isLightBlueTheme && styles.timerTextLightBlue,
-                    ]}
-                    secondsStyle={[
-                      isCompact ? styles.timerSecondsCompact : null,
-                      isLightBlueTheme && styles.timerSecondsLightBlue,
-                    ]}
-                  />
-                )}
-              </View>
+                </View>
+              ) : (
+                <Timer
+                  hours={formattedTime.hours}
+                  minutes={formattedTime.minutes}
+                  seconds={formattedTime.seconds}
+                  containerStyle={styles.timerContainer}
+                  textStyle={[
+                    isCompact
+                      ? styles.timerTextCompact
+                      : styles.timerTextRegular,
+                    isLightBlueTheme && styles.timerTextLightBlue,
+                  ]}
+                  secondsStyle={[
+                    isCompact ? styles.timerSecondsCompact : null,
+                    isLightBlueTheme && styles.timerSecondsLightBlue,
+                  ]}
+                />
+              )}
 
               {showCoreSpacers ? (
                 <View style={styles.timerToActionsSpacer} />
