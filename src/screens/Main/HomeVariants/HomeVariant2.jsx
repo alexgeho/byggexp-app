@@ -602,27 +602,32 @@ export default function HomeVariant2() {
         }}
         showsVerticalScrollIndicator={false}
       >
-        {/* PROJECT SELECTOR */}
-        <ProjectSelector2
-          value={selectedProject}
-          onPress={openProjects}
-          style={[
-            styles.selectorTop,
-            isLightBlueTheme && styles.selectorLightBlue,
-            themeName === "colorful" && styles.selectorColorful,
-            isCompact ? styles.selectorCompact : null,
-          ]}
-          textStyle={[
-            isLightBlueTheme && styles.selectorTextLightBlue,
-            themeName === "colorful" && styles.selectorTextColorful,
-            isCompact ? styles.selectorTextCompact : null,
-          ]}
-          iconStyle={[
-            isLightBlueTheme && styles.selectorIconLightBlue,
-            themeName === "colorful" && styles.selectorIconColorful,
-            isCompact ? styles.selectorIconCompact : null,
-          ]}
-        />
+        {/* PROJECT SELECTOR — dimmed & inactive while editing hours */}
+        <View
+          style={isEditingHours && styles.inactiveDimmed}
+          pointerEvents={isEditingHours ? "none" : "auto"}
+        >
+          <ProjectSelector2
+            value={selectedProject}
+            onPress={openProjects}
+            style={[
+              styles.selectorTop,
+              isLightBlueTheme && styles.selectorLightBlue,
+              themeName === "colorful" && styles.selectorColorful,
+              isCompact ? styles.selectorCompact : null,
+            ]}
+            textStyle={[
+              isLightBlueTheme && styles.selectorTextLightBlue,
+              themeName === "colorful" && styles.selectorTextColorful,
+              isCompact ? styles.selectorTextCompact : null,
+            ]}
+            iconStyle={[
+              isLightBlueTheme && styles.selectorIconLightBlue,
+              themeName === "colorful" && styles.selectorIconColorful,
+              isCompact ? styles.selectorIconCompact : null,
+            ]}
+          />
+        </View>
 
         <View
           style={[
@@ -663,6 +668,11 @@ export default function HomeVariant2() {
                     textColor={isLightBlueTheme ? theme.colors.text : "#FFFFFF"}
                     fontSize={timerWheelFontSize}
                     itemHeight={timerSlotHeight}
+                    bandColor={
+                      isLightBlueTheme
+                        ? "rgba(0,0,0,0.06)"
+                        : "rgba(255,255,255,0.14)"
+                    }
                   />
                 ) : (
                   <Timer

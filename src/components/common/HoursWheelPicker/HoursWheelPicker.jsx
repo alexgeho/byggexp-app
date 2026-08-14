@@ -86,35 +86,59 @@ export function HoursWheelPicker({
   textColor = "#FFFFFF",
   fontSize = 140,
   itemHeight = 132,
+  bandColor = "rgba(255,255,255,0.12)",
 }) {
   return (
-    <View style={styles.row}>
-      <WheelColumn
-        values={HOURS}
-        selected={hours}
-        onSelect={(h) => onChange(h, minutes)}
-        textColor={textColor}
-        fontSize={fontSize}
-        itemHeight={itemHeight}
+    <View style={[styles.frame, { height: itemHeight }]}>
+      {/* Selection pill behind the digits — the iOS-picker cue that it spins. */}
+      <View
+        style={[
+          styles.band,
+          { backgroundColor: bandColor, borderColor: bandColor },
+        ]}
       />
-      <WheelColumn
-        values={MINUTES}
-        selected={minutes}
-        onSelect={(m) => onChange(hours, m)}
-        textColor={textColor}
-        fontSize={fontSize}
-        itemHeight={itemHeight}
-      />
+      <View style={styles.row}>
+        <WheelColumn
+          values={HOURS}
+          selected={hours}
+          onSelect={(h) => onChange(h, minutes)}
+          textColor={textColor}
+          fontSize={fontSize}
+          itemHeight={itemHeight}
+        />
+        <WheelColumn
+          values={MINUTES}
+          selected={minutes}
+          onSelect={(m) => onChange(hours, m)}
+          textColor={textColor}
+          fontSize={fontSize}
+          itemHeight={itemHeight}
+        />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  frame: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  band: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    borderRadius: 28,
+    borderWidth: 1,
+  },
   row: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 18,
+    paddingHorizontal: 22,
   },
   itemRow: {
     justifyContent: "center",
