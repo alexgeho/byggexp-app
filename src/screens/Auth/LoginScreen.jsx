@@ -23,6 +23,7 @@ export default function LoginScreen({ navigation }) {
   const { login, isLoading } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     const success = await login(email, password);
@@ -101,9 +102,19 @@ export default function LoginScreen({ navigation }) {
                 style={styles.input}
                 value={password}
                 onChangeText={setPassword}
-                secureTextEntry
+                secureTextEntry={!showPassword}
                 autoComplete="current-password"
               />
+              <TouchableOpacity
+                onPress={() => setShowPassword((v) => !v)}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <Icon
+                  name={showPassword ? "eye-off" : "eye"}
+                  size={16}
+                  color="#687898"
+                />
+              </TouchableOpacity>
             </View>
 
             <TouchableOpacity
@@ -222,10 +233,10 @@ const styles = StyleSheet.create({
   },
   footerLink: {
     marginTop: 24,
-    alignItems: "center",
+    alignItems: "flex-start",
   },
   forgotLink: {
-    alignSelf: "flex-end",
+    alignSelf: "flex-start",
     marginTop: -12,
     marginBottom: 4,
   },
