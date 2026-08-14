@@ -4,8 +4,8 @@ import { View, Text, Animated, StyleSheet } from "react-native";
 // A scroll-snap wheel that keeps the exact look of the running timer — the same
 // big Landasans digits — but they spin. The centred value is full opacity, the
 // peeking neighbours fade out. Used in place of the clock while logging hours.
-const ITEM_HEIGHT = 104;
-const CONTAINER_HEIGHT = Math.round(ITEM_HEIGHT * 1.7); // center + peeking rows
+const ITEM_HEIGHT = 132;
+const CONTAINER_HEIGHT = Math.round(ITEM_HEIGHT * 1.6); // center + peeking rows
 const PAD = (CONTAINER_HEIGHT - ITEM_HEIGHT) / 2;
 
 function WheelColumn({ values, selected, onSelect, textColor, fontSize }) {

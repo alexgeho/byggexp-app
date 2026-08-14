@@ -632,7 +632,7 @@ export default function HomeVariant2() {
                       setEditMinutes(m);
                     }}
                     textColor={isLightBlueTheme ? theme.colors.text : "#FFFFFF"}
-                    fontSize={isCompact ? 84 : 100}
+                    fontSize={isCompact ? 108 : 128}
                   />
                 </View>
               ) : (
