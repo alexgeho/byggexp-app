@@ -10,12 +10,14 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
+  Image,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import AuthContext from "../../contexts/AuthContext";
 import { useTheme } from "../../theme/ThemeContext";
+import logoByggexp from "../../assets/logo-byggexp.png";
 
 export default function LoginScreen({ navigation }) {
   const { theme } = useTheme();
@@ -24,10 +26,13 @@ export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  // The reset link only surfaces after a failed sign-in — no clutter otherwise.
+  const [showForgot, setShowForgot] = useState(false);
 
   const handleLogin = async () => {
     const success = await login(email, password);
     if (!success) {
+      setShowForgot(true);
       Alert.alert(t("auth.loginFailedTitle"), t("auth.loginFailedMessage"));
     }
   };
@@ -130,12 +135,16 @@ export default function LoginScreen({ navigation }) {
               )}
             </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={() => navigation.navigate("ForgotPassword")}
-              style={styles.footerLink}
-            >
-              <Text style={styles.footerText}>{t("auth.forgotPassword")}</Text>
-            </TouchableOpacity>
+            {showForgot ? (
+              <TouchableOpacity
+                onPress={() => navigation.navigate("ForgotPassword")}
+                style={styles.footerLink}
+              >
+                <Text style={styles.footerText}>
+                  {t("auth.forgotPassword")}
+                </Text>
+              </TouchableOpacity>
+            ) : null}
 
             <TouchableOpacity
               onPress={() => navigation.navigate("Register")}
@@ -151,6 +160,14 @@ export default function LoginScreen({ navigation }) {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <View style={styles.brandRow} pointerEvents="none">
+        <Image
+          source={logoByggexp}
+          style={styles.brandLogo}
+          resizeMode="contain"
+        />
+      </View>
     </LinearGradient>
   );
 }
@@ -234,6 +251,17 @@ const styles = StyleSheet.create({
   footerLink: {
     marginTop: 24,
     alignItems: "flex-start",
+  },
+  brandRow: {
+    position: "absolute",
+    bottom: 40,
+    left: 0,
+    right: 0,
+    alignItems: "center",
+  },
+  brandLogo: {
+    width: 150,
+    height: 20,
   },
   footerText: {
     color: "#687898",
