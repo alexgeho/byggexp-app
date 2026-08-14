@@ -168,6 +168,36 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Ask the backend to email a fresh 6-digit sign-in code. Resolves true even
+  // when the email isn't registered (the API never reveals that).
+  const requestLoginCode = async (email) => {
+    try {
+      await authService.requestCode(email);
+      return true;
+    } catch (error) {
+      console.error("AuthContext: Request login code failed:", error);
+      return false;
+    }
+  };
+
+  // Exchange the emailed 6-digit code for a session.
+  const loginWithCode = async (email, code) => {
+    try {
+      setIsLoading(true);
+      const data = await authService.codeLogin(email, code);
+      await applyAuthSession(data);
+      setIsLoading(false);
+      return { success: true };
+    } catch (error) {
+      console.error("AuthContext: Code login failed:", error);
+      setIsLoading(false);
+      return {
+        success: false,
+        message: getApiErrorMessage(error, "Invalid or expired code"),
+      };
+    }
+  };
+
   const registerCompany = async ({ companyName, userName, email }) => {
     try {
       setIsLoading(true);
@@ -248,6 +278,8 @@ export const AuthProvider = ({ children }) => {
         isLoading,
         login,
         magicLogin,
+        requestLoginCode,
+        loginWithCode,
         registerCompany,
         logout,
         userId,

@@ -70,7 +70,24 @@
     "loginHere": "Logga in här →",
     "fillAllFields": "Fyll i alla fält.",
     "loginFailedTitle": "Inloggning misslyckades",
-    "loginFailedMessage": "Fel e-post eller lösenord."
+    "loginFailedMessage": "Fel e-post eller lösenord.",
+    "loginWithCode": "Logga in med mejlkod →"
+  },
+  "codeLogin": {
+    "title": "Logga in med kod",
+    "subtitle": "Vi mejlar dig en 6-siffrig kod",
+    "emailLabel": "E-post",
+    "sendCode": "Skicka kod",
+    "sentTo": "Vi mejlade en kod till {{email}}",
+    "codeLabel": "Kod från mejlet",
+    "codePlaceholder": "6-siffrig kod",
+    "verify": "Logga in",
+    "resend": "Skicka ny kod",
+    "changeEmail": "Använd en annan e-post",
+    "enterEmail": "Ange din e-post först.",
+    "enterCode": "Ange den 6-siffriga koden från mejlet.",
+    "invalidCode": "Ogiltig eller utgången kod.",
+    "backToLogin": "Tillbaka till lösenordsinloggning"
   },
   "access": {
     "denied": "Åtkomst nekad",
