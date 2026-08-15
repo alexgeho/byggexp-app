@@ -40,17 +40,20 @@ export function FeedbackProvider({ children }) {
     setSuccessPopup(null);
   }, []);
 
-  const showSuccess = useCallback((options) => {
-    if (!options?.message) {
-      return;
-    }
+  const showSuccess = useCallback(
+    (options) => {
+      if (!options?.message) {
+        return;
+      }
 
-    setSuccessPopup({
-      title: options.title || t("common.success"),
-      message: options.message,
-      buttonLabel: options.buttonLabel || t("common.ok"),
-    });
-  }, [t]);
+      setSuccessPopup({
+        title: options.title || t("common.success"),
+        message: options.message,
+        buttonLabel: options.buttonLabel || t("common.ok"),
+      });
+    },
+    [t],
+  );
 
   const value = useMemo(
     () => ({
@@ -61,9 +64,7 @@ export function FeedbackProvider({ children }) {
   );
 
   const isDarkTheme = theme.colors.background === "#121212";
-  const popupBackground = isDarkTheme
-    ? "#1C1C1C"
-    : "#FFFFFF";
+  const popupBackground = isDarkTheme ? "#1C1C1C" : "#FFFFFF";
   const popupBorder = isDarkTheme ? "rgba(255, 255, 255, 0.12)" : "#FFFFFF";
   const popupTextColor = isDarkTheme ? "#FFFFFF" : "#052D50";
   const popupSubtextColor = isDarkTheme
@@ -149,7 +150,7 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     paddingHorizontal: 16,
-    backgroundColor: "rgba(5, 45, 80, 0.18)",
+    backgroundColor: "rgba(5, 45, 80, 0.06)",
     alignItems: "center",
   },
   popupCard: {
