@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     paddingHorizontal: 16,
-    backgroundColor: "transparent",
+    backgroundColor: "rgba(5, 45, 80, 0.6)",
     alignItems: "center",
   },
   popupCard: {
