@@ -15,6 +15,7 @@ import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import AuthContext from "../../contexts/AuthContext";
 import { useTheme } from "../../theme/ThemeContext";
+import { useFeedback } from "../../contexts/FeedbackContext";
 
 // Minimal-friction sign-up: just a name/company + email. The password is chosen
 // later, on the page opened from the confirmation link.
@@ -22,6 +23,7 @@ export default function RegisterScreen({ navigation }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const { registerCompany, isLoading } = useContext(AuthContext);
+  const { showSuccess } = useFeedback();
   const [companyName, setCompanyName] = useState("");
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
@@ -52,10 +54,13 @@ export default function RegisterScreen({ navigation }) {
     }
 
     // We emailed a confirmation link; the account is created once they open it
-    // and choose a password.
-    navigation.navigate("RegisterVerify", {
-      email: result.email || trimmedEmail,
+    // and choose a password. Confirm to the user that the email is on its way.
+    const confirmEmail = result.email || trimmedEmail;
+    showSuccess({
+      title: t("auth.emailSentTitle"),
+      message: t("registerVerify.sentTo", { email: confirmEmail }),
     });
+    navigation.navigate("RegisterVerify", { email: confirmEmail });
   };
 
   return (

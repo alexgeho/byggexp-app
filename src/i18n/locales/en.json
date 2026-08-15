@@ -74,6 +74,7 @@
     "loginFailedTitle": "Login failed",
     "loginFailedMessage": "Invalid email or password.",
     "loginWithCode": "Sign in with an email code →",
+    "emailSentTitle": "Email sent",
     "forgotPassword": "Forgot password? →",
     "confirmPassword": "Confirm password",
     "confirmPasswordPlaceholder": "repeat your password",

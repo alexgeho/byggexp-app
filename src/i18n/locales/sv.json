@@ -74,6 +74,7 @@
     "loginFailedTitle": "Inloggning misslyckades",
     "loginFailedMessage": "Fel e-post eller lösenord.",
     "loginWithCode": "Logga in med mejlkod →",
+    "emailSentTitle": "Mejl skickat",
     "forgotPassword": "Glömt lösenordet? →",
     "confirmPassword": "Bekräfta lösenord",
     "confirmPasswordPlaceholder": "upprepa ditt lösenord",
