@@ -14,6 +14,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { BlurView } from "expo-blur";
 import { useTranslation } from "react-i18next";
 import { SuccessPopupIcon } from "../components/common/SuccessPopupIcon/SuccessPopupIcon";
 import { useTheme } from "../theme/ThemeContext";
@@ -81,6 +82,12 @@ export function FeedbackProvider({ children }) {
         onRequestClose={hideSuccess}
       >
         <View style={styles.overlay}>
+          <BlurView
+            intensity={50}
+            tint="light"
+            style={StyleSheet.absoluteFill}
+            pointerEvents="none"
+          />
           <Pressable style={StyleSheet.absoluteFill} onPress={hideSuccess} />
 
           <View
@@ -150,7 +157,7 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     paddingHorizontal: 16,
-    backgroundColor: "rgba(5, 45, 80, 0.6)",
+    backgroundColor: "transparent",
     alignItems: "center",
   },
   popupCard: {
