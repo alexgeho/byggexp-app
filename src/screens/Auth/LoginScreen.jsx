@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   forgotInline: {
-    color: "#3183ff",
+    color: "#052d50",
     fontSize: 12,
     fontWeight: "500",
   },
