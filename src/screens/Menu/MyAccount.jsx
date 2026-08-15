@@ -587,18 +587,6 @@ export const MyAccount = () => {
         </View>
 
         <View style={styles.rowContainer}>
-          <View style={styles.areaCodeContainer}>
-            <View style={styles.inputLabelRow}>
-              <Text style={styles.inputLabel}>{t("myAccount.areaCode")}</Text>
-            </View>
-            <TextInput
-              style={styles.textInput}
-              placeholder="+46"
-              value={form.phoneAreaCode}
-              onChangeText={(value) => handleChange("phoneAreaCode", value)}
-              keyboardType="phone-pad"
-            />
-          </View>
           <View style={styles.phoneContainer}>
             <View style={styles.inputLabelRow}>
               <Text style={styles.inputLabel}>{t("myAccount.phone")}</Text>
