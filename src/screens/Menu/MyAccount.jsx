@@ -593,7 +593,7 @@ export const MyAccount = () => {
             </View>
             <TextInput
               style={styles.textInput}
-              placeholder={t("myAccount.typePlaceholder")}
+              placeholder="+46"
               value={form.phoneAreaCode}
               onChangeText={(value) => handleChange("phoneAreaCode", value)}
               keyboardType="phone-pad"
