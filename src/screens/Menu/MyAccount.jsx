@@ -163,7 +163,7 @@ export const MyAccount = () => {
       email: userData?.email || "",
       phoneAreaCode: userData?.phoneAreaCode
         ? String(userData.phoneAreaCode)
-        : "",
+        : "+46",
       phoneNumber: userData?.phoneNumber ? String(userData.phoneNumber) : "",
     });
   }, []);
