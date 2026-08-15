@@ -26,13 +26,10 @@ export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  // The reset link only surfaces after a failed sign-in — no clutter otherwise.
-  const [showForgot, setShowForgot] = useState(false);
 
   const handleLogin = async () => {
     const success = await login(email, password);
     if (!success) {
-      setShowForgot(true);
       Alert.alert(t("auth.loginFailedTitle"), t("auth.loginFailedMessage"));
     }
   };
@@ -93,7 +90,19 @@ export default function LoginScreen({ navigation }) {
               />
             </View>
 
-            <Text style={styles.label}>{t("auth.password")}</Text>
+            <View style={styles.labelRow}>
+              <Text style={[styles.label, styles.labelInRow]}>
+                {t("auth.password")}
+              </Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("ForgotPassword")}
+                hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+              >
+                <Text style={styles.forgotInline}>
+                  {t("auth.forgotPassword")}
+                </Text>
+              </TouchableOpacity>
+            </View>
             <View style={styles.inputWrapper}>
               <Icon
                 name="lock"
@@ -134,17 +143,6 @@ export default function LoginScreen({ navigation }) {
                 <Text style={styles.buttonText}>{t("auth.logIn")}</Text>
               )}
             </TouchableOpacity>
-
-            {showForgot ? (
-              <TouchableOpacity
-                onPress={() => navigation.navigate("ForgotPassword")}
-                style={styles.footerLink}
-              >
-                <Text style={styles.footerText}>
-                  {t("auth.forgotPassword")}
-                </Text>
-              </TouchableOpacity>
-            ) : null}
 
             <TouchableOpacity
               onPress={() => navigation.navigate("Register")}
@@ -211,6 +209,20 @@ const styles = StyleSheet.create({
     color: "#052d50",
     fontSize: 12,
     marginBottom: 8,
+  },
+  labelRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  labelInRow: {
+    marginBottom: 0,
+  },
+  forgotInline: {
+    color: "#3183ff",
+    fontSize: 12,
+    fontWeight: "500",
   },
   inputWrapper: {
     flexDirection: "row",
