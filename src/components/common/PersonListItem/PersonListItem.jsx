@@ -59,6 +59,10 @@ export const PersonListItem = ({
         ) : null}
       </View>
 
+      {/* Trailing column: status badge on top, selection radio / unread below.
+          Kept in-flow so the body shrinks (long names never run under it); the
+          group is vertically centred by the row, so the radio sits near the
+          middle of the taller card. */}
       <View style={styles.rowRight}>
         {statusBadge ? (
           <Badge
@@ -71,7 +75,7 @@ export const PersonListItem = ({
           <View style={[styles.checkCircle, selected && styles.checkCircleOn]}>
             {selected ? <Icon name="check" size={15} color="#0785F4" /> : null}
           </View>
-        ) : !selectable && unread > 0 ? (
+        ) : unread > 0 ? (
           <View style={styles.unreadBadge}>
             <Text style={styles.unreadBadgeText}>
               {unread > 9 ? "9+" : unread}
@@ -92,9 +96,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: content.surface,
     borderRadius: radius.lg,
-    paddingVertical: spacing.lg - 2,
+    paddingVertical: spacing.xl,
     paddingHorizontal: spacing.lg,
     marginBottom: spacing.sm + 2,
+  },
+  rowRight: {
+    alignItems: "flex-end",
+    justifyContent: "center",
+    gap: spacing.sm,
   },
   rowSelected: {
     backgroundColor: "rgba(12, 119, 253, 0.6)",
@@ -125,10 +134,6 @@ const styles = StyleSheet.create({
   rowTextOnSel: {
     color: content.onAccent,
   },
-  rowRight: {
-    alignItems: "flex-end",
-    gap: spacing.sm,
-  },
   checkCircle: {
     width: 24,
     height: 24,
@@ -138,7 +143,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "transparent",
-    marginRight: spacing.xs,
+    marginRight: spacing.sm,
   },
   checkCircleOn: {
     backgroundColor: content.surface,
@@ -152,7 +157,7 @@ const styles = StyleSheet.create({
     backgroundColor: content.accent,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: spacing.xs,
+    marginRight: spacing.sm,
   },
   unreadBadgeText: {
     color: content.onAccent,

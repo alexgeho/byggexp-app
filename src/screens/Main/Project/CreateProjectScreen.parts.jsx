@@ -14,6 +14,7 @@ import Icon from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { PersonListItem } from "../../../components/common/PersonListItem/PersonListItem";
+import { HeaderCheckButton } from "../../../components/common/ui";
 import { getWorkerStatusBadge } from "../../../utils/workerStatusBadge";
 import { styles } from "./CreateProjectScreen.styles";
 
@@ -109,7 +110,7 @@ export const ToolsListModal = memo(function ToolsListModal({
           <Text style={styles.workersModalTitle}>
             {t("createProject.attachToolsTitle")}
           </Text>
-          <View style={styles.placeholder} />
+          <HeaderCheckButton onPress={onSave} />
         </View>
 
         <View style={styles.workersSearchBar}>
@@ -172,16 +173,6 @@ export const ToolsListModal = memo(function ToolsListModal({
             </View>
           }
         />
-
-        <View style={styles.workersModalFooter}>
-          <TouchableOpacity style={styles.closeButton} onPress={onSave}>
-            <Text style={styles.closeButtonText}>
-              {selectedTools.length > 0
-                ? t("createProject.saveCount", { count: selectedTools.length })
-                : t("common.save")}
-            </Text>
-          </TouchableOpacity>
-        </View>
       </SafeAreaView>
     </Modal>
   );
@@ -219,7 +210,7 @@ export const WorkersListModal = memo(function WorkersListModal({
           <Text style={styles.workersModalTitle}>
             {t("createProject.projectTeamTitle")}
           </Text>
-          <View style={styles.placeholder} />
+          <HeaderCheckButton onPress={onSave} />
         </View>
 
         <View style={styles.workersSearchBar}>
@@ -257,18 +248,6 @@ export const WorkersListModal = memo(function WorkersListModal({
             </View>
           }
         />
-
-        <View style={styles.workersModalFooter}>
-          <TouchableOpacity style={styles.closeButton} onPress={onSave}>
-            <Text style={styles.closeButtonText}>
-              {selectedWorkers.length > 0
-                ? t("createProject.saveCount", {
-                    count: selectedWorkers.length,
-                  })
-                : t("common.save")}
-            </Text>
-          </TouchableOpacity>
-        </View>
       </SafeAreaView>
     </Modal>
   );
