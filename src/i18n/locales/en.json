@@ -299,7 +299,17 @@
     "activationArea": "Activation area",
     "activationAreaHint": "Upon entry, the timer will start",
     "metersShort": "{{meters}} m",
-    "chooseLocation": "Choose project location"
+    "chooseLocation": "Choose project location",
+    "contractSection": "Contract",
+    "contractNumber": "Contract No.",
+    "littera": "Littera / order no.",
+    "economySection": "Economy",
+    "budget": "Total budget (SEK)",
+    "plannedHours": "Planned hours",
+    "plannedMaterials": "Planned materials (SEK)",
+    "spentMaterials": "Spent materials (SEK)",
+    "costRate": "Cost rate / hour (SEK)",
+    "billRate": "Bill rate / hour (SEK)"
   },
   "createTask": {
     "title": "Create task",

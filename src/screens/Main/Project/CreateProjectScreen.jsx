@@ -72,10 +72,22 @@ export default function CreateProjectScreen() {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const { showSuccess } = useFeedback();
-  const { user } = useContext(AuthContext);
+  const { user, hasPermission } = useContext(AuthContext);
   const allowedToCreate = canCreateProjects(user?.role);
+  // Financial fields (budget, rates, materials) are only shown to users who can
+  // manage finance — same capability as the admin panel's Economy section.
+  const canSeeFinance = hasPermission ? hasPermission("finance.manage") : false;
 
   const [projectName, setProjectName] = useState("");
+  // Contract / economy fields (mirrors the admin project form).
+  const [contractNumber, setContractNumber] = useState("");
+  const [littera, setLittera] = useState("");
+  const [budget, setBudget] = useState("");
+  const [plannedHours, setPlannedHours] = useState("");
+  const [plannedMaterialsCost, setPlannedMaterialsCost] = useState("");
+  const [spentMaterialsCost, setSpentMaterialsCost] = useState("");
+  const [costRatePerHour, setCostRatePerHour] = useState("");
+  const [billRatePerHour, setBillRatePerHour] = useState("");
   const [isProjectNameFocused, setIsProjectNameFocused] = useState(false);
   const [useLocationAsName, setUseLocationAsName] = useState(true);
   const [note, setNote] = useState("");
@@ -578,6 +590,29 @@ export default function CreateProjectScreen() {
         projectData.append("description", note);
       }
 
+      if (contractNumber.trim()) {
+        projectData.append("contractNumber", contractNumber.trim());
+      }
+      if (littera.trim()) {
+        projectData.append("littera", littera.trim());
+      }
+
+      // Financial figures — only sent by users allowed to manage finance.
+      if (canSeeFinance) {
+        const appendAmount = (key, raw) => {
+          const parsed = parseFloat(String(raw).replace(",", "."));
+          if (!Number.isNaN(parsed)) {
+            projectData.append(key, String(parsed));
+          }
+        };
+        appendAmount("budget", budget);
+        appendAmount("plannedHours", plannedHours);
+        appendAmount("plannedMaterialsCost", plannedMaterialsCost);
+        appendAmount("spentMaterialsCost", spentMaterialsCost);
+        appendAmount("costRatePerHour", costRatePerHour);
+        appendAmount("billRatePerHour", billRatePerHour);
+      }
+
       if (selectedWorkers.length > 0) {
         projectData.append("workers", JSON.stringify(selectedWorkers));
       }
@@ -740,6 +775,25 @@ export default function CreateProjectScreen() {
       </View>
     );
   }
+
+  const renderFieldInput = (
+    key,
+    label,
+    value,
+    onChangeText,
+    { keyboardType = "default", half = false } = {},
+  ) => (
+    <View key={key} style={half ? styles.fieldItemHalf : styles.fieldItem}>
+      <Text style={styles.fieldLabel}>{label}</Text>
+      <TextInput
+        style={styles.fieldInput}
+        value={value}
+        onChangeText={onChangeText}
+        keyboardType={keyboardType}
+        placeholderTextColor="#A7B3C2"
+      />
+    </View>
+  );
 
   /* RENDER SCREEN */
   return (
@@ -1270,6 +1324,80 @@ export default function CreateProjectScreen() {
               <Icon name="chevron-right" size={18} color="#052D50" />
             </TouchableOpacity>
           </View>
+
+          <View style={styles.fieldCard}>
+            <Text style={styles.fieldSectionTitle}>
+              {t("createProject.contractSection")}
+            </Text>
+            {renderFieldInput(
+              "contractNumber",
+              t("createProject.contractNumber"),
+              contractNumber,
+              setContractNumber,
+            )}
+            {renderFieldInput(
+              "littera",
+              t("createProject.littera"),
+              littera,
+              setLittera,
+            )}
+          </View>
+
+          {canSeeFinance ? (
+            <View style={styles.fieldCard}>
+              <Text style={styles.fieldSectionTitle}>
+                {t("createProject.economySection")}
+              </Text>
+              <View style={styles.fieldRow}>
+                {renderFieldInput(
+                  "budget",
+                  t("createProject.budget"),
+                  budget,
+                  setBudget,
+                  { keyboardType: "numeric", half: true },
+                )}
+                {renderFieldInput(
+                  "plannedHours",
+                  t("createProject.plannedHours"),
+                  plannedHours,
+                  setPlannedHours,
+                  { keyboardType: "numeric", half: true },
+                )}
+              </View>
+              <View style={styles.fieldRow}>
+                {renderFieldInput(
+                  "plannedMaterialsCost",
+                  t("createProject.plannedMaterials"),
+                  plannedMaterialsCost,
+                  setPlannedMaterialsCost,
+                  { keyboardType: "numeric", half: true },
+                )}
+                {renderFieldInput(
+                  "spentMaterialsCost",
+                  t("createProject.spentMaterials"),
+                  spentMaterialsCost,
+                  setSpentMaterialsCost,
+                  { keyboardType: "numeric", half: true },
+                )}
+              </View>
+              <View style={styles.fieldRow}>
+                {renderFieldInput(
+                  "costRatePerHour",
+                  t("createProject.costRate"),
+                  costRatePerHour,
+                  setCostRatePerHour,
+                  { keyboardType: "numeric", half: true },
+                )}
+                {renderFieldInput(
+                  "billRatePerHour",
+                  t("createProject.billRate"),
+                  billRatePerHour,
+                  setBillRatePerHour,
+                  { keyboardType: "numeric", half: true },
+                )}
+              </View>
+            </View>
+          ) : null}
 
           <View style={styles.noteGroup}>
             <TextInput

@@ -299,7 +299,17 @@
     "activationArea": "Aktiveringsområde",
     "activationAreaHint": "Vid inträde startar timern",
     "metersShort": "{{meters}} m",
-    "chooseLocation": "Välj projektplats"
+    "chooseLocation": "Välj projektplats",
+    "contractSection": "Avtal",
+    "contractNumber": "Avtalsnr.",
+    "littera": "Littera / ordernr.",
+    "economySection": "Ekonomi",
+    "budget": "Total budget (SEK)",
+    "plannedHours": "Planerade timmar",
+    "plannedMaterials": "Planerat material (SEK)",
+    "spentMaterials": "Förbrukat material (SEK)",
+    "costRate": "Självkostnad / timme (SEK)",
+    "billRate": "Debiteras / timme (SEK)"
   },
   "createTask": {
     "title": "Skapa uppgift",
