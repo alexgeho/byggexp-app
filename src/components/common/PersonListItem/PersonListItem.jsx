@@ -43,18 +43,18 @@ export const PersonListItem = ({
           numberOfLines={1}
         >
           {person.name || "—"}
-          {timeAgo ? (
-            <Text style={[styles.rowTime, selected && styles.rowTimeOnSel]}>
-              {`  •  ${timeAgo}`}
-            </Text>
-          ) : null}
         </Text>
-        {subtitle ? (
+        {subtitle || timeAgo ? (
           <Text
             style={[styles.rowPreview, selected && styles.rowTextOnSel]}
             numberOfLines={1}
           >
             {subtitle}
+            {timeAgo ? (
+              <Text style={[styles.rowTime, selected && styles.rowTimeOnSel]}>
+                {subtitle ? `  •  ${timeAgo}` : timeAgo}
+              </Text>
+            ) : null}
           </Text>
         ) : null}
       </View>
@@ -97,13 +97,14 @@ const styles = StyleSheet.create({
     borderColor: content.surface,
     borderRadius: radius.lg,
     paddingVertical: spacing.xl,
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.xl,
     marginBottom: spacing.sm + 2,
   },
   rowRight: {
+    alignSelf: "flex-start",
     alignItems: "flex-end",
-    justifyContent: "center",
-    gap: spacing.sm,
+    justifyContent: "flex-start",
+    gap: spacing.lg,
   },
   rowSelected: {
     backgroundColor: "rgba(12, 119, 253, 0.6)",
@@ -111,7 +112,8 @@ const styles = StyleSheet.create({
   },
   rowBody: {
     flex: 1,
-    gap: 2,
+    alignSelf: "flex-start",
+    gap: 10,
   },
   rowName: {
     color: content.textPrimary,
@@ -143,7 +145,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "transparent",
-    marginRight: spacing.sm,
+    marginRight: spacing.xxxl,
   },
   checkCircleOn: {
     backgroundColor: content.surface,
