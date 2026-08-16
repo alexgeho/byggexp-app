@@ -519,8 +519,10 @@ export default function CreateProjectScreen() {
     try {
       const projectData = new FormData();
 
-      if (selectedOwner) {
-        projectData.append("ownerId", selectedOwner);
+      // The Owner field was removed from the form — the creator is the owner.
+      const ownerId = selectedOwner || user?._id || user?.id;
+      if (ownerId) {
+        projectData.append("ownerId", ownerId);
       }
 
       if (selectedManager) {
@@ -897,79 +899,7 @@ export default function CreateProjectScreen() {
               style={[
                 styles.locationField,
                 styles.groupedField,
-                styles.groupRowDivider,
-              ]}
-              onPress={openToolsModal}
-              activeOpacity={0.85}
-            >
-              <View style={styles.locationFieldContent}>
-                <View
-                  style={[
-                    styles.locationFieldIconContainer,
-                    fieldIconBadgeStyle,
-                  ]}
-                >
-                  <FieldIcon name="tool" size={14} color="#FFFFFF" />
-                </View>
-                <Text
-                  numberOfLines={1}
-                  style={[
-                    styles.locationFieldText,
-                    selectedTools.length
-                      ? styles.locationFieldValue
-                      : styles.locationFieldPlaceholder,
-                  ]}
-                >
-                  {selectedToolsLabel || t("createProject.attachInstruments")}
-                </Text>
-              </View>
-              <Icon name="chevron-right" size={18} color="#052D50" />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.locationField,
-                styles.groupedField,
-                styles.groupRowDivider,
-              ]}
-              onPress={() => setShowOwnersModal(true)}
-              activeOpacity={0.85}
-            >
-              <View style={styles.locationFieldContent}>
-                <View
-                  style={[
-                    styles.locationFieldIconContainer,
-                    fieldIconBadgeStyle,
-                  ]}
-                >
-                  <FieldIcon
-                    library="material-community"
-                    name="tie"
-                    size={14}
-                    color="#FFFFFF"
-                  />
-                </View>
-                <Text
-                  numberOfLines={1}
-                  style={[
-                    styles.locationFieldText,
-                    selectedOwner
-                      ? styles.locationFieldValue
-                      : styles.locationFieldPlaceholder,
-                  ]}
-                >
-                  {users.find((u) => u._id === selectedOwner)?.name ||
-                    t("createProject.owner")}
-                </Text>
-              </View>
-              <Icon name="chevron-right" size={18} color="#052D50" />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.locationField,
-                styles.groupedField,
-                styles.groupRowDivider,
+                styles.groupRowLast,
               ]}
               onPress={() => setShowManagersModal(true)}
               activeOpacity={0.85}
@@ -1001,6 +931,39 @@ export default function CreateProjectScreen() {
           </View>
 
           <View style={styles.groupCard}>
+            <TouchableOpacity
+              style={[
+                styles.locationField,
+                styles.groupedField,
+                styles.groupRowDivider,
+              ]}
+              onPress={openToolsModal}
+              activeOpacity={0.85}
+            >
+              <View style={styles.locationFieldContent}>
+                <View
+                  style={[
+                    styles.locationFieldIconContainer,
+                    fieldIconBadgeStyle,
+                  ]}
+                >
+                  <FieldIcon name="tool" size={14} color="#FFFFFF" />
+                </View>
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    styles.locationFieldText,
+                    selectedTools.length
+                      ? styles.locationFieldValue
+                      : styles.locationFieldPlaceholder,
+                  ]}
+                >
+                  {selectedToolsLabel || t("createProject.attachInstruments")}
+                </Text>
+              </View>
+              <Icon name="chevron-right" size={18} color="#052D50" />
+            </TouchableOpacity>
+
             <TouchableOpacity
               style={[
                 styles.locationField,
