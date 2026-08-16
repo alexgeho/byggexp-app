@@ -1325,24 +1325,6 @@ export default function CreateProjectScreen() {
             </TouchableOpacity>
           </View>
 
-          <View style={styles.fieldCard}>
-            <Text style={styles.fieldSectionTitle}>
-              {t("createProject.contractSection")}
-            </Text>
-            {renderFieldInput(
-              "contractNumber",
-              t("createProject.contractNumber"),
-              contractNumber,
-              setContractNumber,
-            )}
-            {renderFieldInput(
-              "littera",
-              t("createProject.littera"),
-              littera,
-              setLittera,
-            )}
-          </View>
-
           {canSeeFinance ? (
             <View style={styles.fieldCard}>
               <Text style={styles.fieldSectionTitle}>
@@ -1407,6 +1389,24 @@ export default function CreateProjectScreen() {
               value={note}
               onChangeText={setNote}
             />
+          </View>
+
+          <View style={styles.fieldCard}>
+            <Text style={styles.fieldSectionTitle}>
+              {t("createProject.contractSection")}
+            </Text>
+            {renderFieldInput(
+              "contractNumber",
+              t("createProject.contractNumber"),
+              contractNumber,
+              setContractNumber,
+            )}
+            {renderFieldInput(
+              "littera",
+              t("createProject.littera"),
+              littera,
+              setLittera,
+            )}
           </View>
         </ScrollView>
       </View>

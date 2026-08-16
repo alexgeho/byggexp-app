@@ -126,6 +126,7 @@ export const styles = StyleSheet.create({
   fieldRow: {
     flexDirection: "row",
     gap: 12,
+    marginBottom: 14,
   },
   fieldLabel: {
     fontSize: 12,
