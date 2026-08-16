@@ -13,6 +13,8 @@ import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
+import { PersonListItem } from "../../../components/common/PersonListItem/PersonListItem";
+import { getWorkerStatusBadge } from "../../../utils/workerStatusBadge";
 import { styles } from "./CreateProjectScreen.styles";
 
 export const getUserInitials = (name = "") => {
@@ -237,43 +239,16 @@ export const WorkersListModal = memo(function WorkersListModal({
           contentContainerStyle={styles.workersListContent}
           keyboardShouldPersistTaps="handled"
           extraData={selectedWorkers}
-          renderItem={({ item }) => {
-            const isSelected = selectedWorkers.includes(item._id);
-
-            return (
-              <TouchableOpacity
-                style={styles.workerCard}
-                onPress={() => toggleSelection(item._id)}
-                activeOpacity={0.85}
-              >
-                <View style={styles.workerAvatarPlaceholder}>
-                  <Text style={styles.workerAvatarInitials}>
-                    {getUserInitials(item.name)}
-                  </Text>
-                </View>
-                <View style={styles.workerCardInfo}>
-                  <Text numberOfLines={1} style={styles.workerCardName}>
-                    {item.name || t("project.unnamedWorker")}
-                  </Text>
-                  <Text numberOfLines={1} style={styles.workerCardProfession}>
-                    {item.profession || t("createProject.professionNotSet")}
-                  </Text>
-                </View>
-                <View
-                  style={[
-                    styles.workerCheckbox,
-                    checkboxStyle,
-                    isSelected && styles.workerCheckboxSelected,
-                    isSelected && checkboxSelectedStyle,
-                  ]}
-                >
-                  {isSelected ? (
-                    <Icon name="check" size={12} color="#FFFFFF" />
-                  ) : null}
-                </View>
-              </TouchableOpacity>
-            );
-          }}
+          renderItem={({ item }) => (
+            <PersonListItem
+              person={item}
+              subtitle={item.profession || t("employees.noProfession")}
+              statusBadge={getWorkerStatusBadge(item, null, t)}
+              selectable
+              selected={selectedWorkers.includes(item._id)}
+              onPress={() => toggleSelection(item._id)}
+            />
+          )}
           ListEmptyComponent={
             <View style={styles.workersEmptyState}>
               <Text style={styles.workersEmptyText}>
@@ -441,43 +416,16 @@ export const SingleUserPickerModal = ({
           data={data}
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.workersListContent}
-          renderItem={({ item }) => {
-            const isSelected = selectedUserId === item._id;
-
-            return (
-              <TouchableOpacity
-                style={styles.workerCard}
-                onPress={() => onSelect(item._id)}
-                activeOpacity={0.85}
-              >
-                <View style={styles.workerAvatarPlaceholder}>
-                  <Text style={styles.workerAvatarInitials}>
-                    {getUserInitials(item.name)}
-                  </Text>
-                </View>
-                <View style={styles.workerCardInfo}>
-                  <Text numberOfLines={1} style={styles.workerCardName}>
-                    {item.name || t("project.unnamedWorker")}
-                  </Text>
-                  <Text numberOfLines={1} style={styles.workerCardProfession}>
-                    {item.profession || t("createProject.professionNotSet")}
-                  </Text>
-                </View>
-                <View
-                  style={[
-                    styles.workerCheckbox,
-                    checkboxStyle,
-                    isSelected && styles.workerCheckboxSelected,
-                    isSelected && checkboxSelectedStyle,
-                  ]}
-                >
-                  {isSelected ? (
-                    <Icon name="check" size={12} color="#FFFFFF" />
-                  ) : null}
-                </View>
-              </TouchableOpacity>
-            );
-          }}
+          renderItem={({ item }) => (
+            <PersonListItem
+              person={item}
+              subtitle={item.profession || t("employees.noProfession")}
+              statusBadge={getWorkerStatusBadge(item, null, t)}
+              selectable
+              selected={selectedUserId === item._id}
+              onPress={() => onSelect(item._id)}
+            />
+          )}
           ListEmptyComponent={
             <View style={styles.workersEmptyState}>
               <Text style={styles.workersEmptyText}>
