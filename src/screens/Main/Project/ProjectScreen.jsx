@@ -21,6 +21,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -40,7 +41,9 @@ import {
   projectService,
   shiftService,
   expenseService,
+  projectFinanceService,
 } from "../../../services";
+import { formatMoney } from "../../../utils/billingTotals";
 import { isPdfDocument } from "../../../utils/documentPreview";
 import { formatShiftDayLabel, resolveUploadUrl } from "../../../utils/shifts";
 import { sortByNewest } from "../../../utils/sortByNewest";
@@ -226,7 +229,7 @@ export const ProjectScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { t } = useTranslation();
-  const { user } = useContext(AuthContext);
+  const { user, hasPermission } = useContext(AuthContext);
   const { showSuccess } = useFeedback();
   const { theme } = useTheme();
   const { id, initialTab, refreshKey } = route.params || {};
@@ -238,6 +241,14 @@ export const ProjectScreen = () => {
   const [photoSections, setPhotoSections] = useState(null);
   const [loadingPhotos, setLoadingPhotos] = useState(false);
   const [previewPhoto, setPreviewPhoto] = useState(null);
+
+  // Economy tab (gated by finance.manage, like the admin Finance tab).
+  const canSeeFinance = hasPermission ? hasPermission("finance.manage") : false;
+  const [economy, setEconomy] = useState(null);
+  const [loadingEconomy, setLoadingEconomy] = useState(false);
+  const [costRateInput, setCostRateInput] = useState("");
+  const [billRateInput, setBillRateInput] = useState("");
+  const [savingRates, setSavingRates] = useState(false);
 
   // The project photo gallery = every shift photo + every scanned receipt for
   // the project, so both a plain site photo and a receipt end up "in the
@@ -307,8 +318,9 @@ export const ProjectScreen = () => {
 
   useEffect(() => {
     setModal(initialTab || "Tasks");
-    // Reset the lazily-loaded Photos tab when switching projects.
+    // Reset the lazily-loaded Photos/Economy tabs when switching projects.
     setPhotoSections(null);
+    setEconomy(null);
   }, [initialTab, id]);
 
   // Lazy-load the project photo gallery when its tab is first opened.
@@ -319,6 +331,69 @@ export const ProjectScreen = () => {
     setLoadingPhotos(true);
     loadProjectPhotos().finally(() => setLoadingPhotos(false));
   }, [modal, photoSections, loadingPhotos, loadProjectPhotos]);
+
+  // Assemble the project economy (mirrors the admin Finance tab) — total hours
+  // from the project's shifts feed the same margin/cost math as the web.
+  const loadEconomy = useCallback(async () => {
+    const shiftsData = await shiftService
+      .list({ projectId: id })
+      .catch(() => ({ days: [] }));
+    const days = shiftsData?.days || [];
+    const totalMs = days.reduce(
+      (sum, day) =>
+        sum +
+        (day.shifts || []).reduce(
+          (daySum, shift) => daySum + (Number(shift.durationMs) || 0),
+          0,
+        ),
+      0,
+    );
+    const hoursWorked = totalMs / (1000 * 60 * 60);
+    const result = await projectFinanceService.getEconomy(id, {
+      project: project || {},
+      hoursWorked,
+    });
+    setEconomy(result);
+    setCostRateInput(
+      project?.costRatePerHour != null ? String(project.costRatePerHour) : "",
+    );
+    setBillRateInput(
+      project?.billRatePerHour != null ? String(project.billRatePerHour) : "",
+    );
+  }, [id, project]);
+
+  // Lazy-load the economy when its tab is first opened (finance users only).
+  useEffect(() => {
+    if (
+      modal !== "Economy" ||
+      !canSeeFinance ||
+      economy !== null ||
+      loadingEconomy
+    ) {
+      return;
+    }
+    setLoadingEconomy(true);
+    loadEconomy().finally(() => setLoadingEconomy(false));
+  }, [modal, canSeeFinance, economy, loadingEconomy, loadEconomy]);
+
+  const handleSaveRates = async () => {
+    try {
+      setSavingRates(true);
+      await projectService.update(id, {
+        costRatePerHour: Number(costRateInput) || 0,
+        billRatePerHour: Number(billRateInput) || 0,
+      });
+      await fetchProject();
+      // Force the economy to recompute against the new rates.
+      setEconomy(null);
+      showSuccess({ title: t("projectEconomy.ratesSaved") });
+    } catch (saveError) {
+      console.error("Failed to save project rates:", saveError);
+      Alert.alert(t("common.error"), t("projectEconomy.ratesSaveError"));
+    } finally {
+      setSavingRates(false);
+    }
+  };
 
   useEffect(() => {
     if (!refreshKey) {
@@ -569,6 +644,25 @@ export const ProjectScreen = () => {
             {t("project.tabs.photos")}
           </Text>
         </TouchableOpacity>
+        {canSeeFinance ? (
+          <TouchableOpacity
+            onPress={() => setModal("Economy")}
+            style={[
+              styles.tabButton,
+              modal === "Economy" && styles.activeTab,
+              modal === "Economy" && activeTabStyle,
+            ]}
+          >
+            <Text
+              style={[
+                styles.tabText,
+                modal === "Economy" && activeTabTextStyle,
+              ]}
+            >
+              {t("project.tabs.economy")}
+            </Text>
+          </TouchableOpacity>
+        ) : null}
       </ScrollView>
 
       <ScrollView
@@ -787,6 +881,192 @@ export const ProjectScreen = () => {
               </Text>
             </View>
           ))}
+
+        {modal === "Economy" &&
+          canSeeFinance &&
+          (loadingEconomy || !economy ? (
+            <View style={styles.tabLoading}>
+              <ActivityIndicator color={theme.colors.primary} />
+            </View>
+          ) : (
+            <View>
+              {/* Hourly rates (editable) */}
+              <View style={styles.ecoCard}>
+                <Text style={styles.ecoCardTitle}>
+                  {t("projectEconomy.hourlyRates")}
+                </Text>
+                <View style={styles.ecoRateRow}>
+                  <View style={styles.ecoRateField}>
+                    <Text style={styles.ecoRateLabel}>
+                      {t("projectEconomy.costRate")}
+                    </Text>
+                    <TextInput
+                      style={styles.ecoRateInput}
+                      value={costRateInput}
+                      onChangeText={setCostRateInput}
+                      keyboardType="numeric"
+                      placeholder="0"
+                      placeholderTextColor="#A7B3C2"
+                    />
+                  </View>
+                  <View style={styles.ecoRateField}>
+                    <Text style={styles.ecoRateLabel}>
+                      {t("projectEconomy.billRate")}
+                    </Text>
+                    <TextInput
+                      style={styles.ecoRateInput}
+                      value={billRateInput}
+                      onChangeText={setBillRateInput}
+                      keyboardType="numeric"
+                      placeholder="0"
+                      placeholderTextColor="#A7B3C2"
+                    />
+                  </View>
+                </View>
+                <View style={styles.ecoRateFoot}>
+                  <Text style={styles.ecoMutedText}>
+                    {t("projectEconomy.marginPerHour")}:{" "}
+                    <Text style={styles.ecoStrong}>
+                      {formatMoney(
+                        (Number(billRateInput) || 0) -
+                          (Number(costRateInput) || 0),
+                      )}
+                    </Text>
+                  </Text>
+                  <TouchableOpacity
+                    style={[
+                      styles.ecoSaveButton,
+                      savingRates && styles.ecoSaveButtonDisabled,
+                    ]}
+                    onPress={handleSaveRates}
+                    disabled={savingRates}
+                  >
+                    {savingRates ? (
+                      <ActivityIndicator color="#FFFFFF" size="small" />
+                    ) : (
+                      <Text style={styles.ecoSaveText}>{t("common.save")}</Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* Labour */}
+              <View style={styles.ecoCard}>
+                <Text style={styles.ecoCardTitle}>
+                  {t("projectEconomy.labour")}
+                </Text>
+                <View style={styles.ecoRow}>
+                  <Text style={styles.ecoRowLabel}>
+                    {t("projectEconomy.hoursWorked")}
+                  </Text>
+                  <Text style={styles.ecoRowValue}>
+                    {economy.hoursWorked} h
+                  </Text>
+                </View>
+                <View style={styles.ecoRow}>
+                  <Text style={styles.ecoRowLabel}>
+                    {t("projectEconomy.labourCost")}
+                  </Text>
+                  <Text style={[styles.ecoRowValue, styles.ecoCostTone]}>
+                    {formatMoney(economy.laborCost)}
+                  </Text>
+                </View>
+                <View style={styles.ecoRow}>
+                  <Text style={styles.ecoRowLabel}>
+                    {t("projectEconomy.labourBilled")}
+                  </Text>
+                  <Text style={[styles.ecoRowValue, styles.ecoBillTone]}>
+                    {formatMoney(economy.laborBilled)}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Cost breakdown */}
+              <View style={styles.ecoCard}>
+                <Text style={styles.ecoCardTitle}>
+                  {t("projectEconomy.costs")}
+                </Text>
+                <View style={styles.ecoRow}>
+                  <Text style={styles.ecoRowLabel}>
+                    {t("projectEconomy.materials")}
+                  </Text>
+                  <Text style={styles.ecoRowValue}>
+                    {formatMoney(economy.materials)}
+                  </Text>
+                </View>
+                <View style={styles.ecoRow}>
+                  <Text style={styles.ecoRowLabel}>
+                    {t("projectEconomy.supplierInvoices")}
+                  </Text>
+                  <Text style={styles.ecoRowValue}>
+                    {formatMoney(economy.supplier)}
+                  </Text>
+                </View>
+                <View style={styles.ecoRow}>
+                  <Text style={styles.ecoRowLabel}>
+                    {t("projectEconomy.expenses")}
+                  </Text>
+                  <Text style={styles.ecoRowValue}>
+                    {formatMoney(economy.expenses)}
+                  </Text>
+                </View>
+                <View style={styles.ecoRow}>
+                  <Text style={styles.ecoRowLabel}>
+                    {t("projectEconomy.labour")}
+                  </Text>
+                  <Text style={styles.ecoRowValue}>
+                    {formatMoney(economy.laborCost)}
+                  </Text>
+                </View>
+                <View style={[styles.ecoRow, styles.ecoRowTotal]}>
+                  <Text style={styles.ecoRowLabelStrong}>
+                    {t("projectEconomy.totalCost")}
+                  </Text>
+                  <Text style={styles.ecoRowValueStrong}>
+                    {formatMoney(economy.totalCost)}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Result */}
+              <View style={styles.ecoCard}>
+                <Text style={styles.ecoCardTitle}>
+                  {t("projectEconomy.result")}
+                </Text>
+                <View style={styles.ecoRow}>
+                  <Text style={styles.ecoRowLabel}>
+                    {t("projectEconomy.invoiced")}
+                  </Text>
+                  <Text style={styles.ecoRowValue}>
+                    {formatMoney(economy.invoiced)}
+                  </Text>
+                </View>
+                <View style={styles.ecoRow}>
+                  <Text style={styles.ecoRowLabel}>
+                    {t("projectEconomy.totalCost")}
+                  </Text>
+                  <Text style={styles.ecoRowValue}>
+                    {formatMoney(economy.totalCost)}
+                  </Text>
+                </View>
+                <View style={[styles.ecoRow, styles.ecoRowTotal]}>
+                  <Text style={styles.ecoRowLabelStrong}>
+                    {t("projectEconomy.margin")} ({economy.marginPct}%)
+                  </Text>
+                  <Text
+                    style={[
+                      styles.ecoRowValueStrong,
+                      economy.margin >= 0
+                        ? styles.ecoBillTone
+                        : styles.ecoOverTone,
+                    ]}
+                  >
+                    {formatMoney(economy.margin)}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          ))}
       </ScrollView>
 
       <BottomBar
@@ -917,6 +1197,121 @@ const styles = StyleSheet.create({
   tabLoading: {
     paddingVertical: 40,
     alignItems: "center",
+  },
+
+  // Economy tab
+  ecoCard: {
+    backgroundColor: "rgba(255, 255, 255, 0.7)",
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    marginBottom: 16,
+  },
+  ecoCardTitle: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#687898",
+    textTransform: "uppercase",
+    letterSpacing: 0.4,
+    marginBottom: 12,
+  },
+  ecoRateRow: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  ecoRateField: {
+    flex: 1,
+  },
+  ecoRateLabel: {
+    fontSize: 12,
+    color: "#687898",
+    marginBottom: 6,
+  },
+  ecoRateInput: {
+    height: 44,
+    borderWidth: 1,
+    borderColor: "#e7ecf0",
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    fontSize: 15,
+    color: "#052d50",
+    backgroundColor: "#FFFFFF",
+  },
+  ecoRateFoot: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 14,
+  },
+  ecoSaveButton: {
+    backgroundColor: "#3183ff",
+    borderRadius: 20,
+    paddingHorizontal: 22,
+    height: 38,
+    alignItems: "center",
+    justifyContent: "center",
+    minWidth: 88,
+  },
+  ecoSaveButtonDisabled: {
+    opacity: 0.7,
+  },
+  ecoSaveText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  ecoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 7,
+  },
+  ecoRowTotal: {
+    borderTopWidth: 1,
+    borderTopColor: "#e9e9e9",
+    marginTop: 4,
+    paddingTop: 11,
+  },
+  ecoRowLabel: {
+    fontSize: 14,
+    color: "#5b6b80",
+    flex: 1,
+  },
+  ecoRowLabelStrong: {
+    fontSize: 14,
+    color: "#052d50",
+    fontWeight: "700",
+    flex: 1,
+  },
+  ecoRowValue: {
+    fontSize: 14,
+    color: "#052d50",
+    fontWeight: "500",
+  },
+  ecoRowValueStrong: {
+    fontSize: 15,
+    color: "#052d50",
+    fontWeight: "700",
+  },
+  ecoCostTone: {
+    color: "#c0392b",
+  },
+  ecoBillTone: {
+    color: "#1e8e4e",
+  },
+  ecoOverTone: {
+    color: "#c0392b",
+  },
+  ecoMutedText: {
+    fontSize: 13,
+    color: "#687898",
+    flex: 1,
+  },
+  ecoStrong: {
+    color: "#052d50",
+    fontWeight: "700",
   },
 
   // Photos grid

@@ -1165,5 +1165,25 @@
     "errorTitle": "Something went wrong",
     "errorMessage": "Please try again.",
     "reportUser": "Report user"
+  },
+  "projectEconomy": {
+    "hourlyRates": "Hourly rates",
+    "costRate": "Cost rate / hour (självkostnad)",
+    "billRate": "Bill rate / hour (debiteras)",
+    "marginPerHour": "Margin / hour",
+    "labour": "Labour",
+    "hoursWorked": "Hours worked",
+    "labourCost": "Cost",
+    "labourBilled": "Billed",
+    "costs": "Costs",
+    "materials": "Materials",
+    "supplierInvoices": "Purchase invoices",
+    "expenses": "Expenses (receipts)",
+    "totalCost": "Total cost",
+    "result": "Result",
+    "invoiced": "Invoiced",
+    "margin": "Margin",
+    "ratesSaved": "Rates saved",
+    "ratesSaveError": "Could not save rates."
   }
 }

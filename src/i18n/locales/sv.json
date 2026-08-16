@@ -1165,5 +1165,25 @@
     "errorTitle": "Något gick fel",
     "errorMessage": "Försök igen.",
     "reportUser": "Anmäl användare"
+  },
+  "projectEconomy": {
+    "hourlyRates": "Timpriser",
+    "costRate": "Självkostnad / timme",
+    "billRate": "Debiteras / timme",
+    "marginPerHour": "Marginal / timme",
+    "labour": "Arbete",
+    "hoursWorked": "Arbetade timmar",
+    "labourCost": "Kostnad",
+    "labourBilled": "Debiterat",
+    "costs": "Kostnader",
+    "materials": "Material",
+    "supplierInvoices": "Inköpsfakturor",
+    "expenses": "Utlägg (kvitton)",
+    "totalCost": "Total kostnad",
+    "result": "Resultat",
+    "invoiced": "Fakturerat",
+    "margin": "Marginal",
+    "ratesSaved": "Priser sparade",
+    "ratesSaveError": "Kunde inte spara priser."
   }
 }
