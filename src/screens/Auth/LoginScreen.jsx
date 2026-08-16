@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   ActivityIndicator,
   KeyboardAvoidingView,
   ScrollView,
@@ -17,6 +16,7 @@ import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import AuthContext from "../../contexts/AuthContext";
 import { useTheme } from "../../theme/ThemeContext";
+import { isValidEmail } from "../../utils/validation";
 import logoByggexp from "../../assets/logo-byggexp.png";
 
 export default function LoginScreen({ navigation }) {
@@ -26,11 +26,30 @@ export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
 
   const handleLogin = async () => {
-    const success = await login(email, password);
+    if (isLoading) {
+      return;
+    }
+
+    const trimmedEmail = email.trim();
+
+    if (!trimmedEmail || !password) {
+      setError(t("auth.fillAllFields"));
+      return;
+    }
+
+    if (!isValidEmail(trimmedEmail)) {
+      setError(t("auth.invalidEmail"));
+      return;
+    }
+
+    setError("");
+
+    const success = await login(trimmedEmail, password);
     if (!success) {
-      Alert.alert(t("auth.loginFailedTitle"), t("auth.loginFailedMessage"));
+      setError(t("auth.loginFailedMessage"));
     }
   };
 
@@ -69,6 +88,8 @@ export default function LoginScreen({ navigation }) {
                 {t("auth.loginSubtitle")}
               </Text>
             </View>
+
+            {error ? <Text style={styles.error}>{error}</Text> : null}
 
             <Text style={styles.label}>{t("auth.emailOrUsername")}</Text>
             <View style={styles.inputWrapper}>
@@ -204,6 +225,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     lineHeight: 32,
     fontWeight: "700",
+  },
+  error: {
+    color: "#c62828",
+    marginBottom: 16,
+    fontSize: 13,
   },
   label: {
     color: "#052d50",

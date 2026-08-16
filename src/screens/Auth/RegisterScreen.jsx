@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import AuthContext from "../../contexts/AuthContext";
 import { useTheme } from "../../theme/ThemeContext";
 import { useFeedback } from "../../contexts/FeedbackContext";
+import { isValidEmail } from "../../utils/validation";
 
 // Minimal-friction sign-up: just a name/company + email. The password is chosen
 // later, on the page opened from the confirmation link.
@@ -38,6 +39,11 @@ export default function RegisterScreen({ navigation }) {
 
     if (!trimmedName || !trimmedEmail) {
       setError(t("auth.fillAllFields"));
+      return;
+    }
+
+    if (!isValidEmail(trimmedEmail)) {
+      setError(t("auth.invalidEmail"));
       return;
     }
 

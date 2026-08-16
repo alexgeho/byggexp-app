@@ -324,8 +324,14 @@ export const MyAccount = () => {
     try {
       setDeletingAccount(true);
       await userService.deleteAccount();
-      // Clears stored token/user and returns to the login screen.
-      await logout();
+      // Confirm to the user before we sign them out — once logout() runs the
+      // screen unmounts and returns to the login flow, so we tie the sign-out
+      // to the alert's OK button to guarantee the message is seen.
+      Alert.alert(
+        t("myAccount.deleteAccountSuccessTitle"),
+        t("myAccount.deleteAccountSuccessMessage"),
+        [{ text: t("common.ok"), onPress: () => logout() }],
+      );
     } catch (error) {
       console.error("Failed to delete account:", error);
       Alert.alert(

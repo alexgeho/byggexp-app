@@ -71,6 +71,7 @@
     "alreadyMember": "Redan medlem? ",
     "loginHere": "Logga in här →",
     "fillAllFields": "Fyll i alla fält.",
+    "invalidEmail": "Ange en giltig e-postadress.",
     "loginFailedTitle": "Inloggning misslyckades",
     "loginFailedMessage": "Fel e-post eller lösenord.",
     "loginWithCode": "Logga in med mejlkod →",
@@ -929,7 +930,9 @@
     "deleteAccountConfirm": "Detta raderar ditt konto permanent och tar bort dig från alla projekt. Det går inte att ångra.",
     "deleteAccountHint": "Radera ditt konto och personuppgifter permanent.",
     "deleteAccountErrorTitle": "Det gick inte att ta bort kontot",
-    "deleteAccountErrorMessage": "Något gick fel. Försök igen."
+    "deleteAccountErrorMessage": "Något gick fel. Försök igen.",
+    "deleteAccountSuccessTitle": "Kontot har raderats",
+    "deleteAccountSuccessMessage": "Ditt konto har raderats. Du loggas nu ut."
   },
   "employeeProfile": {
     "noPhone": "Inget telefonnummer",

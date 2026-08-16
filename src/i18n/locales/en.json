@@ -71,6 +71,7 @@
     "alreadyMember": "Already a member? ",
     "loginHere": "Login here →",
     "fillAllFields": "Please fill in all fields.",
+    "invalidEmail": "Please enter a valid email address.",
     "loginFailedTitle": "Login failed",
     "loginFailedMessage": "Invalid email or password.",
     "loginWithCode": "Sign in with an email code →",
@@ -929,7 +930,9 @@
     "deleteAccountConfirm": "This permanently deletes your account and removes you from all projects. This cannot be undone.",
     "deleteAccountHint": "Permanently delete your account and personal data.",
     "deleteAccountErrorTitle": "Unable to delete account",
-    "deleteAccountErrorMessage": "Something went wrong. Please try again."
+    "deleteAccountErrorMessage": "Something went wrong. Please try again.",
+    "deleteAccountSuccessTitle": "Account deleted",
+    "deleteAccountSuccessMessage": "Your account has been deleted. You will now be signed out."
   },
   "employeeProfile": {
     "noPhone": "No phone",
