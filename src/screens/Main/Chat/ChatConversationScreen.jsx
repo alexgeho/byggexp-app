@@ -24,6 +24,9 @@ import AuthContext from "../../../contexts/AuthContext";
 import { useChatConversation } from "./useChatConversation";
 import { resolveUploadUrl } from "../../../utils/shifts";
 import { pickFromCamera, pickDocuments } from "../../../utils/uploadPicker";
+import { moderationService } from "../../../services/moderation.service";
+
+const REPORT_REASONS = ["spam", "harassment", "inappropriate", "other"];
 
 // Palette for the initials fallback avatar; white text reads well on all of
 // these.
@@ -151,6 +154,75 @@ export default function ChatConversationScreen({ variant }) {
 
   const currentUserId = userId || user?._id || user?.id || null;
 
+  // Report/block controls for user-generated content (App Store Guideline 1.2).
+  const [reportTarget, setReportTarget] = useState(null);
+
+  const openMessageActions = (message) => {
+    if (!message || message.userId === currentUserId) return;
+    const reportedUserId = message.userId;
+    Alert.alert(t("moderation.actionsTitle"), undefined, [
+      {
+        text: t("moderation.reportMessage"),
+        onPress: () => setReportTarget({ message, reportedUserId }),
+      },
+      {
+        text: t("moderation.blockUser"),
+        style: "destructive",
+        onPress: () => confirmBlock(reportedUserId),
+      },
+      { text: t("common.cancel"), style: "cancel" },
+    ]);
+  };
+
+  const submitReport = async (reason) => {
+    const target = reportTarget;
+    setReportTarget(null);
+    if (!target) return;
+    try {
+      await moderationService.reportContent({
+        reportedUserId: target.reportedUserId,
+        chatId,
+        messageId: target.message?._id,
+        reason,
+      });
+      Alert.alert(
+        t("moderation.reportedTitle"),
+        t("moderation.reportedMessage"),
+      );
+    } catch {
+      Alert.alert(t("moderation.errorTitle"), t("moderation.errorMessage"));
+    }
+  };
+
+  const confirmBlock = (reportedUserId) => {
+    Alert.alert(
+      t("moderation.blockConfirmTitle"),
+      t("moderation.blockConfirmMessage"),
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("moderation.blockUser"),
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await moderationService.blockUser(reportedUserId);
+              Alert.alert(
+                t("moderation.blockedTitle"),
+                t("moderation.blockedMessage"),
+                [{ text: t("common.ok"), onPress: () => navigation.goBack() }],
+              );
+            } catch {
+              Alert.alert(
+                t("moderation.errorTitle"),
+                t("moderation.errorMessage"),
+              );
+            }
+          },
+        },
+      ],
+    );
+  };
+
   const headerTitle =
     chat?.title ||
     initialChat?.title ||
@@ -161,6 +233,27 @@ export default function ChatConversationScreen({ variant }) {
     [chat, initialChat, variant, t],
   );
   const participant = (chat || initialChat)?.participant;
+
+  const participantUserId =
+    participant?.id || participant?._id || participant?.userId || null;
+
+  const openParticipantActions = () => {
+    if (variant === "group" || !participantUserId) return;
+    Alert.alert(t("moderation.actionsTitle"), undefined, [
+      {
+        text: t("moderation.reportUser"),
+        onPress: () =>
+          setReportTarget({ message: null, reportedUserId: participantUserId }),
+      },
+      {
+        text: t("moderation.blockUser"),
+        style: "destructive",
+        onPress: () => confirmBlock(participantUserId),
+      },
+      { text: t("common.cancel"), style: "cancel" },
+    ]);
+  };
+
   const avatarUri = participant?.avatarUrl
     ? resolveUploadUrl(participant.avatarUrl)
     : null;
@@ -268,7 +361,13 @@ export default function ChatConversationScreen({ variant }) {
             <Text style={styles.channelStatus}>{headerSubtitle}</Text>
           ) : null}
         </View>
-        <TouchableOpacity style={styles.backAvatar} activeOpacity={0.8}>
+        <TouchableOpacity
+          style={styles.backAvatar}
+          activeOpacity={0.8}
+          onPress={
+            variant === "group" ? undefined : () => openParticipantActions()
+          }
+        >
           {avatarUri ? (
             <Image style={styles.avatarImage} source={{ uri: avatarUri }} />
           ) : (
@@ -368,7 +467,13 @@ export default function ChatConversationScreen({ variant }) {
                     isMyMessage ? styles.myMessageRow : styles.otherMessageRow,
                   ]}
                 >
-                  <View
+                  <Pressable
+                    onLongPress={
+                      isMyMessage
+                        ? undefined
+                        : () => openMessageActions(message)
+                    }
+                    delayLongPress={350}
                     style={[
                       styles.messageBubble,
                       isMyMessage
@@ -474,7 +579,7 @@ export default function ChatConversationScreen({ variant }) {
                         {formatMessageTime(message.timestamp)}
                       </Text>
                     )}
-                  </View>
+                  </Pressable>
                 </View>
               </React.Fragment>
             );
@@ -606,6 +711,49 @@ export default function ChatConversationScreen({ variant }) {
             <Text style={styles.sheetCancelText}>{t("common.cancel")}</Text>
           </TouchableOpacity>
         </Animated.View>
+      </Modal>
+
+      <Modal
+        visible={!!reportTarget}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setReportTarget(null)}
+      >
+        <Pressable
+          style={styles.sheetBackdrop}
+          onPress={() => setReportTarget(null)}
+        />
+        <View style={styles.sheet}>
+          <View style={styles.sheetHandle} />
+          <Text style={styles.sheetTitle}>
+            {t("moderation.reportReasonTitle")}
+          </Text>
+          <View style={styles.sheetCard}>
+            {REPORT_REASONS.map((reason, index) => (
+              <React.Fragment key={reason}>
+                {index > 0 ? <View style={styles.sheetDivider} /> : null}
+                <TouchableOpacity
+                  style={styles.sheetOption}
+                  activeOpacity={0.6}
+                  onPress={() => submitReport(reason)}
+                >
+                  <Text style={styles.sheetOptionText}>
+                    {t(
+                      `moderation.reason${reason.charAt(0).toUpperCase()}${reason.slice(1)}`,
+                    )}
+                  </Text>
+                </TouchableOpacity>
+              </React.Fragment>
+            ))}
+          </View>
+          <TouchableOpacity
+            style={styles.sheetCancel}
+            activeOpacity={0.7}
+            onPress={() => setReportTarget(null)}
+          >
+            <Text style={styles.sheetCancelText}>{t("common.cancel")}</Text>
+          </TouchableOpacity>
+        </View>
       </Modal>
     </KeyboardAvoidingView>
   );

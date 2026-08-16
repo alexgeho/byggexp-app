@@ -1130,5 +1130,28 @@
     "noTasks": "Inga öppna uppgifter",
     "untitled": "Namnlös uppgift",
     "complete": "Markera som klar"
+  },
+  "moderation": {
+    "actionsTitle": "Meddelandealternativ",
+    "reportMessage": "Anmäl meddelande",
+    "blockUser": "Blockera användare",
+    "unblockUser": "Avblockera användare",
+    "reportReasonTitle": "Varför anmäler du detta?",
+    "reasonSpam": "Skräppost",
+    "reasonHarassment": "Trakasserier eller mobbning",
+    "reasonInappropriate": "Olämpligt innehåll",
+    "reasonOther": "Annat",
+    "reportedTitle": "Anmälan skickad",
+    "reportedMessage": "Tack. Vårt team granskar detta inom 24 timmar.",
+    "blockConfirmTitle": "Blockera denna användare?",
+    "blockConfirmMessage": "De kommer inte längre att kunna skicka meddelanden till dig.",
+    "blockedTitle": "Användare blockerad",
+    "blockedMessage": "Du kommer inte längre att få meddelanden från denna användare.",
+    "unblockConfirmTitle": "Avblockera denna användare?",
+    "unblockConfirmMessage": "De kommer att kunna skicka meddelanden till dig igen.",
+    "unblockedTitle": "Användare avblockerad",
+    "errorTitle": "Något gick fel",
+    "errorMessage": "Försök igen.",
+    "reportUser": "Anmäl användare"
   }
 }

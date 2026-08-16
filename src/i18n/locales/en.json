@@ -1130,5 +1130,28 @@
     "noTasks": "No open tasks",
     "untitled": "Untitled task",
     "complete": "Mark as done"
+  },
+  "moderation": {
+    "actionsTitle": "Message options",
+    "reportMessage": "Report message",
+    "blockUser": "Block user",
+    "unblockUser": "Unblock user",
+    "reportReasonTitle": "Why are you reporting this?",
+    "reasonSpam": "Spam",
+    "reasonHarassment": "Harassment or bullying",
+    "reasonInappropriate": "Inappropriate content",
+    "reasonOther": "Other",
+    "reportedTitle": "Report sent",
+    "reportedMessage": "Thanks. Our team will review this within 24 hours.",
+    "blockConfirmTitle": "Block this user?",
+    "blockConfirmMessage": "They will no longer be able to send you messages.",
+    "blockedTitle": "User blocked",
+    "blockedMessage": "You will no longer receive messages from this user.",
+    "unblockConfirmTitle": "Unblock this user?",
+    "unblockConfirmMessage": "They will be able to message you again.",
+    "unblockedTitle": "User unblocked",
+    "errorTitle": "Something went wrong",
+    "errorMessage": "Please try again.",
+    "reportUser": "Report user"
   }
 }
