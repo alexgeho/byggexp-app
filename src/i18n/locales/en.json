@@ -238,7 +238,9 @@
     "addProject": "Add project",
     "selectRole": "Select role",
     "loadingInstruments": "Loading tools...",
-    "selectInstruments": "Select tools"
+    "selectInstruments": "Select tools",
+    "financeAccessLabel": "Access to financial data",
+    "financeAccessHint": "Let this Project Admin see offers, invoices, clients and project economy."
   },
   "createProject": {
     "title": "Create project",

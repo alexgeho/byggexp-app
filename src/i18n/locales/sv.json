@@ -238,7 +238,9 @@
     "addProject": "Lägg till projekt",
     "selectRole": "Välj roll",
     "loadingInstruments": "Laddar verktyg...",
-    "selectInstruments": "Välj verktyg"
+    "selectInstruments": "Välj verktyg",
+    "financeAccessLabel": "Åtkomst till ekonomidata",
+    "financeAccessHint": "Låt denna projektadmin se offerter, fakturor, kunder och projektekonomi."
   },
   "createProject": {
     "title": "Skapa projekt",

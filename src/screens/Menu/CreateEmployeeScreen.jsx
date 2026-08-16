@@ -4,6 +4,7 @@ import {
   Modal,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
@@ -30,6 +31,9 @@ import {
   getCreatableRoleOptions,
   USER_ROLES,
 } from "../../utils/userRoles";
+
+// Backend capability key for financial features (offers, invoices, clients).
+const FINANCE_PERMISSION = "finance.manage";
 
 const getEntityId = (entity) => {
   const id = entity?._id || entity?.id;
@@ -161,6 +165,15 @@ export default function CreateEmployeeScreen() {
   const [selectedProjectIds, setSelectedProjectIds] = useState([]);
   const [selectedRole, setSelectedRole] = useState("");
   const [showRoleModal, setShowRoleModal] = useState(false);
+  // Finance capability delegation for Project Admins (mirrors the admin panel's
+  // Permissions tab: grants `finance.manage`). Only company/super admins can set
+  // it; workers never get it.
+  const [financeAccess, setFinanceAccess] = useState(false);
+  const [initialFinanceAccess, setInitialFinanceAccess] = useState(false);
+  const [permissionOverrides, setPermissionOverrides] = useState({
+    granted: [],
+    revoked: [],
+  });
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [tools, setTools] = useState([]);
   const [selectedToolIds, setSelectedToolIds] = useState([]);
@@ -182,6 +195,10 @@ export default function CreateEmployeeScreen() {
   }, [roleOptions, selectedRole, t]);
 
   const isWorkerRole = selectedRole === USER_ROLES.WORKER;
+  const canGrantFinance =
+    user?.role === USER_ROLES.COMPANY_ADMIN || user?.role === "superadmin";
+  const showFinanceToggle =
+    canGrantFinance && selectedRole === USER_ROLES.PROJECT_ADMIN;
 
   const selectedToolsLabel = useMemo(() => {
     if (selectedToolIds.length === 0) {
@@ -296,6 +313,19 @@ export default function CreateEmployeeScreen() {
             ? data.tools.map((tool) => getEntityId(tool)).filter(Boolean)
             : [],
         );
+        const overrides = data?.capabilities?.overrides || {
+          granted: [],
+          revoked: [],
+        };
+        setPermissionOverrides({
+          granted: Array.isArray(overrides.granted) ? overrides.granted : [],
+          revoked: Array.isArray(overrides.revoked) ? overrides.revoked : [],
+        });
+        const hasFinance = Array.isArray(data?.capabilities?.effective)
+          ? data.capabilities.effective.includes(FINANCE_PERMISSION)
+          : false;
+        setFinanceAccess(hasFinance);
+        setInitialFinanceAccess(hasFinance);
       } catch (error) {
         console.error("Failed to load employee:", error);
         setFormError(getApiErrorMessage(error, t("createEmployee.loadError")));
@@ -384,6 +414,29 @@ export default function CreateEmployeeScreen() {
           workerId,
           selectedRole === USER_ROLES.WORKER ? selectedToolIds : [],
         );
+      }
+
+      // Persist the finance-access toggle only when it changed. Preserve any
+      // other capability overrides the user already has (finance.manage is not
+      // a projectAdmin default, so it lives purely in `granted`).
+      if (
+        workerId &&
+        showFinanceToggle &&
+        financeAccess !== initialFinanceAccess
+      ) {
+        const granted = new Set(permissionOverrides.granted || []);
+        const revoked = new Set(permissionOverrides.revoked || []);
+        if (financeAccess) {
+          granted.add(FINANCE_PERMISSION);
+          revoked.delete(FINANCE_PERMISSION);
+        } else {
+          granted.delete(FINANCE_PERMISSION);
+          revoked.delete(FINANCE_PERMISSION);
+        }
+        await userService.updatePermissions(workerId, {
+          granted: [...granted],
+          revoked: [...revoked],
+        });
       }
 
       showSuccess({
@@ -540,7 +593,7 @@ export default function CreateEmployeeScreen() {
               placeholder={t("createEmployee.selectRole")}
               onPress={() => setShowRoleModal(true)}
               theme={theme}
-              isLast={!isWorkerRole}
+              isLast={!isWorkerRole && !showFinanceToggle}
             />
             {isWorkerRole ? (
               <SelectRow
@@ -556,6 +609,26 @@ export default function CreateEmployeeScreen() {
                 theme={theme}
                 isLast
               />
+            ) : null}
+            {showFinanceToggle ? (
+              <View style={styles.financeRow}>
+                <View style={styles.financeIcon}>
+                  <Icon name="dollar-sign" size={16} color="#0785F4" />
+                </View>
+                <View style={styles.financeCopy}>
+                  <Text style={styles.financeLabel}>
+                    {t("createEmployee.financeAccessLabel")}
+                  </Text>
+                  <Text style={styles.financeHint}>
+                    {t("createEmployee.financeAccessHint")}
+                  </Text>
+                </View>
+                <Switch
+                  value={financeAccess}
+                  onValueChange={setFinanceAccess}
+                  trackColor={{ true: "#0785F4", false: "#D1D9E0" }}
+                />
+              </View>
             ) : null}
           </View>
         </ScrollView>
@@ -796,6 +869,34 @@ const styles = StyleSheet.create({
   },
   groupRowLast: {
     borderBottomWidth: 0,
+  },
+  financeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 4,
+  },
+  financeIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: "#E8F2FE",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  financeCopy: {
+    flex: 1,
+  },
+  financeLabel: {
+    fontSize: 15,
+    color: "#052D50",
+    fontWeight: "500",
+  },
+  financeHint: {
+    fontSize: 12,
+    color: "#8A96A3",
+    marginTop: 2,
   },
   fieldRowContent: {
     flexDirection: "row",

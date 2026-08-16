@@ -92,6 +92,22 @@ export const userService = {
     return data;
   },
 
+  // Capability catalog incl. defaultsByRole — used to compute minimal
+  // granted/revoked overrides when toggling a permission.
+  getPermissionsCatalog: async () => {
+    const { data } = await api.get("/users/permissions/catalog");
+    return data;
+  },
+
+  // Replace a user's permission overrides (companyAdmin/superadmin only).
+  updatePermissions: async (id, { granted = [], revoked = [] }) => {
+    const { data } = await api.put(`/users/permissions/${id}`, {
+      granted,
+      revoked,
+    });
+    return data;
+  },
+
   uploadAvatar: async (id, file) => {
     const formData = new FormData();
     formData.append("avatar", {
