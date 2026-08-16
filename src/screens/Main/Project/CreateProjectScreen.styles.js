@@ -97,51 +97,13 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#FFFFFF",
   },
-  fieldCard: {
-    width: "100%",
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 24,
-    paddingHorizontal: 16,
-    paddingTop: 14,
-    paddingBottom: 4,
+  fieldCardPad: {
     marginBottom: 20,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  fieldSectionTitle: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#687898",
-    marginBottom: 10,
-    marginLeft: 4,
-    textTransform: "uppercase",
-    letterSpacing: 0.4,
-  },
-  fieldItem: {
-    marginBottom: 14,
-  },
-  fieldItemHalf: {
-    flex: 1,
   },
   fieldRow: {
     flexDirection: "row",
     gap: 12,
     marginBottom: 14,
-  },
-  fieldLabel: {
-    fontSize: 12,
-    color: "#687898",
-    marginBottom: 6,
-  },
-  fieldInput: {
-    height: 44,
-    borderWidth: 1,
-    borderColor: "#e7ecf0",
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    fontSize: 14,
-    color: "#052d50",
-    backgroundColor: "#FFFFFF",
   },
   inputsContainer: {
     padding: 18,

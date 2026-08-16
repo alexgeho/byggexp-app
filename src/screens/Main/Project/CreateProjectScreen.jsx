@@ -52,6 +52,7 @@ import {
 import { canCreateProjects } from "../../../utils/userRoles";
 
 import FloatingActionButton from "../../../components/common/FloatingActionButton/FloatingActionButton";
+import { Card, SectionTitle, FieldInput } from "../../../components/common/ui";
 import { styles } from "./CreateProjectScreen.styles";
 import {
   FieldIcon,
@@ -776,25 +777,6 @@ export default function CreateProjectScreen() {
     );
   }
 
-  const renderFieldInput = (
-    key,
-    label,
-    value,
-    onChangeText,
-    { keyboardType = "default", half = false } = {},
-  ) => (
-    <View key={key} style={half ? styles.fieldItemHalf : styles.fieldItem}>
-      <Text style={styles.fieldLabel}>{label}</Text>
-      <TextInput
-        style={styles.fieldInput}
-        value={value}
-        onChangeText={onChangeText}
-        keyboardType={keyboardType}
-        placeholderTextColor="#A7B3C2"
-      />
-    </View>
-  );
-
   /* RENDER SCREEN */
   return (
     <View style={styles.screen}>
@@ -1336,78 +1318,72 @@ export default function CreateProjectScreen() {
           </View>
 
           {canSeeFinance ? (
-            <View style={styles.fieldCard}>
-              <Text style={styles.fieldSectionTitle}>
-                {t("createProject.economySection")}
-              </Text>
+            <Card style={styles.fieldCardPad}>
+              <SectionTitle>{t("createProject.economySection")}</SectionTitle>
               <View style={styles.fieldRow}>
-                {renderFieldInput(
-                  "budget",
-                  t("createProject.budget"),
-                  budget,
-                  setBudget,
-                  { keyboardType: "numeric", half: true },
-                )}
-                {renderFieldInput(
-                  "plannedHours",
-                  t("createProject.plannedHours"),
-                  plannedHours,
-                  setPlannedHours,
-                  { keyboardType: "numeric", half: true },
-                )}
+                <FieldInput
+                  half
+                  keyboardType="numeric"
+                  label={t("createProject.budget")}
+                  value={budget}
+                  onChangeText={setBudget}
+                />
+                <FieldInput
+                  half
+                  keyboardType="numeric"
+                  label={t("createProject.plannedHours")}
+                  value={plannedHours}
+                  onChangeText={setPlannedHours}
+                />
               </View>
               <View style={styles.fieldRow}>
-                {renderFieldInput(
-                  "plannedMaterialsCost",
-                  t("createProject.plannedMaterials"),
-                  plannedMaterialsCost,
-                  setPlannedMaterialsCost,
-                  { keyboardType: "numeric", half: true },
-                )}
-                {renderFieldInput(
-                  "spentMaterialsCost",
-                  t("createProject.spentMaterials"),
-                  spentMaterialsCost,
-                  setSpentMaterialsCost,
-                  { keyboardType: "numeric", half: true },
-                )}
+                <FieldInput
+                  half
+                  keyboardType="numeric"
+                  label={t("createProject.plannedMaterials")}
+                  value={plannedMaterialsCost}
+                  onChangeText={setPlannedMaterialsCost}
+                />
+                <FieldInput
+                  half
+                  keyboardType="numeric"
+                  label={t("createProject.spentMaterials")}
+                  value={spentMaterialsCost}
+                  onChangeText={setSpentMaterialsCost}
+                />
               </View>
               <View style={styles.fieldRow}>
-                {renderFieldInput(
-                  "costRatePerHour",
-                  t("createProject.costRate"),
-                  costRatePerHour,
-                  setCostRatePerHour,
-                  { keyboardType: "numeric", half: true },
-                )}
-                {renderFieldInput(
-                  "billRatePerHour",
-                  t("createProject.billRate"),
-                  billRatePerHour,
-                  setBillRatePerHour,
-                  { keyboardType: "numeric", half: true },
-                )}
+                <FieldInput
+                  half
+                  keyboardType="numeric"
+                  label={t("createProject.costRate")}
+                  value={costRatePerHour}
+                  onChangeText={setCostRatePerHour}
+                />
+                <FieldInput
+                  half
+                  keyboardType="numeric"
+                  label={t("createProject.billRate")}
+                  value={billRatePerHour}
+                  onChangeText={setBillRatePerHour}
+                />
               </View>
-            </View>
+            </Card>
           ) : null}
 
-          <View style={styles.fieldCard}>
-            <Text style={styles.fieldSectionTitle}>
-              {t("createProject.contractSection")}
-            </Text>
-            {renderFieldInput(
-              "contractNumber",
-              t("createProject.contractNumber"),
-              contractNumber,
-              setContractNumber,
-            )}
-            {renderFieldInput(
-              "littera",
-              t("createProject.littera"),
-              littera,
-              setLittera,
-            )}
-          </View>
+          <Card style={styles.fieldCardPad}>
+            <SectionTitle>{t("createProject.contractSection")}</SectionTitle>
+            <FieldInput
+              label={t("createProject.contractNumber")}
+              value={contractNumber}
+              onChangeText={setContractNumber}
+            />
+            <FieldInput
+              label={t("createProject.littera")}
+              value={littera}
+              onChangeText={setLittera}
+            />
+          </Card>
         </ScrollView>
       </View>
 
