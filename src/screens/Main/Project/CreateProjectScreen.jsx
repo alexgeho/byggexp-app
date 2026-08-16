@@ -915,6 +915,16 @@ export default function CreateProjectScreen() {
             </View>
           </View>
 
+          <View style={styles.noteGroup}>
+            <TextInput
+              multiline={true}
+              placeholder={t("createProject.note")}
+              style={styles.noteInput}
+              value={note}
+              onChangeText={setNote}
+            />
+          </View>
+
           <View style={styles.groupCard}>
             <TouchableOpacity
               style={[
@@ -1380,16 +1390,6 @@ export default function CreateProjectScreen() {
               </View>
             </View>
           ) : null}
-
-          <View style={styles.noteGroup}>
-            <TextInput
-              multiline={true}
-              placeholder={t("createProject.note")}
-              style={styles.noteInput}
-              value={note}
-              onChangeText={setNote}
-            />
-          </View>
 
           <View style={styles.fieldCard}>
             <Text style={styles.fieldSectionTitle}>
