@@ -1,6 +1,5 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import Icon from "react-native-vector-icons/Feather";
 import { Badge } from "../ui/Badge";
 import { Avatar } from "../ui/Avatar";
 import { content, radius, spacing, fontSize } from "../../../theme/tokens";
@@ -43,26 +42,24 @@ export const PersonListItem = ({
           numberOfLines={1}
         >
           {person.name || "—"}
+          {timeAgo ? (
+            <Text style={[styles.rowTime, selected && styles.rowTimeOnSel]}>
+              {`  •  ${timeAgo}`}
+            </Text>
+          ) : null}
         </Text>
-        {subtitle || timeAgo ? (
+        {subtitle ? (
           <Text
             style={[styles.rowPreview, selected && styles.rowTextOnSel]}
             numberOfLines={1}
           >
             {subtitle}
-            {timeAgo ? (
-              <Text style={[styles.rowTime, selected && styles.rowTimeOnSel]}>
-                {subtitle ? `  •  ${timeAgo}` : timeAgo}
-              </Text>
-            ) : null}
           </Text>
         ) : null}
       </View>
 
-      {/* Trailing column: status badge on top, selection radio / unread below.
-          Kept in-flow so the body shrinks (long names never run under it); the
-          group is vertically centred by the row, so the radio sits near the
-          middle of the taller card. */}
+      {/* Trailing: status badge on top. Selection is shown by the whole card
+          turning blue (rowSelected) — no radio, matching the Figma design. */}
       <View style={styles.rowRight}>
         {statusBadge ? (
           <Badge
@@ -71,11 +68,7 @@ export const PersonListItem = ({
             color={statusBadge.color}
           />
         ) : null}
-        {selectable ? (
-          <View style={[styles.checkCircle, selected && styles.checkCircleOn]}>
-            {selected ? <Icon name="check" size={15} color="#0785F4" /> : null}
-          </View>
-        ) : unread > 0 ? (
+        {!selectable && unread > 0 ? (
           <View style={styles.unreadBadge}>
             <Text style={styles.unreadBadgeText}>
               {unread > 9 ? "9+" : unread}
@@ -135,21 +128,6 @@ const styles = StyleSheet.create({
   },
   rowTextOnSel: {
     color: content.onAccent,
-  },
-  checkCircle: {
-    width: 24,
-    height: 24,
-    borderRadius: radius.full,
-    borderWidth: 2,
-    borderColor: "#C3D2E0",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "transparent",
-    marginRight: spacing.xxxl,
-  },
-  checkCircleOn: {
-    backgroundColor: content.surface,
-    borderColor: content.surface,
   },
   unreadBadge: {
     minWidth: 20,
