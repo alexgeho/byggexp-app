@@ -3,24 +3,39 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { Badge } from "../ui/Badge";
 import { Avatar } from "../ui/Avatar";
+import { content, radius, spacing, fontSize } from "../../../theme/tokens";
 
-// Unified person row shared by the employee/worker lists — same visual as the
-// chat list (avatar, name, subtitle, optional status badge + selection circle).
+// Unified person row shared by every people list (worker pickers, chat list…).
+// Single source of truth so lists cannot drift apart. Optional props cover the
+// chat-specific extras (time, unread count, long-press, avatar tap).
 export const PersonListItem = ({
   person = {},
   subtitle,
   statusBadge, // { label, backgroundColor, color }
   selectable = false,
   selected = false,
+  timeAgo, // small grey suffix after the name (chat)
+  unread = 0, // blue unread-count badge (chat, when not selecting)
   onPress,
+  onLongPress,
+  onAvatarPress,
 }) => {
+  const avatar = <Avatar name={person.name} uri={person.avatarUrl} size={44} />;
+
   return (
     <TouchableOpacity
       style={[styles.row, selected && styles.rowSelected]}
       activeOpacity={0.85}
       onPress={onPress}
+      onLongPress={onLongPress}
     >
-      <Avatar name={person.name} uri={person.avatarUrl} size={44} />
+      {onAvatarPress ? (
+        <TouchableOpacity activeOpacity={0.85} onPress={onAvatarPress}>
+          {avatar}
+        </TouchableOpacity>
+      ) : (
+        avatar
+      )}
 
       <View style={styles.rowBody}>
         <Text
@@ -28,6 +43,11 @@ export const PersonListItem = ({
           numberOfLines={1}
         >
           {person.name || "—"}
+          {timeAgo ? (
+            <Text style={[styles.rowTime, selected && styles.rowTimeOnSel]}>
+              {`  •  ${timeAgo}`}
+            </Text>
+          ) : null}
         </Text>
         {subtitle ? (
           <Text
@@ -51,6 +71,12 @@ export const PersonListItem = ({
           <View style={[styles.checkCircle, selected && styles.checkCircleOn]}>
             {selected ? <Icon name="check" size={15} color="#0785F4" /> : null}
           </View>
+        ) : !selectable && unread > 0 ? (
+          <View style={styles.unreadBadge}>
+            <Text style={styles.unreadBadgeText}>
+              {unread > 9 ? "9+" : unread}
+            </Text>
+          </View>
         ) : null}
       </View>
     </TouchableOpacity>
@@ -61,14 +87,14 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
-    backgroundColor: "#FFFFFF",
+    gap: spacing.md,
+    backgroundColor: content.surface,
     borderWidth: 1,
-    borderColor: "#FFFFFF",
-    borderRadius: 20,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    marginBottom: 10,
+    borderColor: content.surface,
+    borderRadius: radius.lg,
+    paddingVertical: spacing.lg - 2,
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.sm + 2,
   },
   rowSelected: {
     backgroundColor: "rgba(12, 119, 253, 0.6)",
@@ -79,36 +105,59 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   rowName: {
-    color: "#052D50",
-    fontSize: 17,
+    color: content.textPrimary,
+    fontSize: fontSize.title,
     fontWeight: "500",
   },
+  rowTime: {
+    color: content.textMuted,
+    fontSize: fontSize.footnote,
+    fontWeight: "500",
+  },
+  rowTimeOnSel: {
+    color: "rgba(255, 255, 255, 0.85)",
+  },
   rowPreview: {
-    color: "#667E93",
-    fontSize: 13,
+    color: content.textMuted,
+    fontSize: fontSize.footnote,
     fontWeight: "500",
   },
   rowTextOnSel: {
-    color: "#FFFFFF",
+    color: content.onAccent,
   },
   rowRight: {
     alignItems: "flex-end",
-    gap: 8,
+    gap: spacing.sm,
   },
   checkCircle: {
     width: 24,
     height: 24,
-    borderRadius: 12,
+    borderRadius: radius.full,
     borderWidth: 2,
     borderColor: "#C3D2E0",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "transparent",
-    marginRight: 4,
+    marginRight: spacing.xs,
   },
   checkCircleOn: {
-    backgroundColor: "#FFFFFF",
-    borderColor: "#FFFFFF",
+    backgroundColor: content.surface,
+    borderColor: content.surface,
+  },
+  unreadBadge: {
+    minWidth: 20,
+    height: 20,
+    borderRadius: radius.full,
+    paddingHorizontal: 5,
+    backgroundColor: content.accent,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: spacing.xs,
+  },
+  unreadBadgeText: {
+    color: content.onAccent,
+    fontSize: 11,
+    fontWeight: "700",
   },
 });
 

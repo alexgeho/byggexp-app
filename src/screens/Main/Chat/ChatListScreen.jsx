@@ -2,7 +2,6 @@ import React, { useCallback, useContext, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -19,12 +18,12 @@ import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { ProjectGroupIcon } from "../../../components/common/icons/ProjectGroupIcon";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { ProjectFilterSelector } from "../../../components/common/ProjectFilterSelector/ProjectFilterSelector";
+import { PersonListItem } from "../../../components/common/PersonListItem/PersonListItem";
 import { chatService, projectService, userService } from "../../../services";
 import {
   standardScreenContainer,
   standardScreenHeader,
 } from "../../../styles/screenLayout";
-import { resolveUploadUrl } from "../../../utils/shifts";
 import { cardStyles } from "../../../styles/cards";
 import { getPersonWorkStatus, USER_ROLES } from "../../../utils/userRoles";
 
@@ -34,14 +33,6 @@ const getEntityId = (entity) => {
 };
 
 const getUserId = (person) => person?._id || person?.id;
-
-const getInitials = (name) =>
-  (name || "")
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((word) => word[0]?.toUpperCase() || "")
-    .join("");
 
 // Same ordering as the Employees list: not-yet-confirmed first, then away,
 // then off duty, then those currently at work.
@@ -281,7 +272,7 @@ export default function ChatListScreen() {
     const chat = chatByPersonId[String(personId)];
     const selected = selectedIds.includes(personId);
     const statusKind = getPersonWorkStatus(person, selectedProjectId);
-    const statusBadge = {
+    const badgePreset = {
       waiting: {
         label: t("employees.waitingApproval"),
         style: cardStyles.cardBadgeWarning,
@@ -299,97 +290,36 @@ export default function ChatListScreen() {
         style: cardStyles.cardBadgeAbsent,
       },
     }[statusKind];
+    const statusBadge = badgePreset
+      ? {
+          label: badgePreset.label,
+          backgroundColor: badgePreset.style.backgroundColor,
+          color: badgePreset.style.color,
+        }
+      : null;
     const timeAgo = chat ? formatTimeAgo(chat.lastMessageAt) : "";
     const preview =
       chat?.lastMessageText || person.profession || t("employees.noProfession");
-    const avatarUri = person.avatarUrl
-      ? resolveUploadUrl(person.avatarUrl)
-      : null;
     const unread = Number(chat?.unreadCount) || 0;
 
     return (
-      <TouchableOpacity
+      <PersonListItem
         key={personId}
-        style={[styles.row, selected && styles.rowSelected]}
-        activeOpacity={0.85}
+        person={person}
+        subtitle={preview}
+        timeAgo={timeAgo}
+        statusBadge={statusBadge}
+        unread={unread}
+        selectable={selectMode}
+        selected={selected}
         onPress={() =>
           selectMode ? toggleSelect(personId) : openChatWith(person)
         }
         onLongPress={() => enterSelection(personId)}
-      >
-        <TouchableOpacity
-          activeOpacity={0.85}
-          onPress={() =>
-            selectMode ? toggleSelect(personId) : openPersonProfile(person)
-          }
-        >
-          {avatarUri ? (
-            <Image source={{ uri: avatarUri }} style={styles.avatar} />
-          ) : (
-            <View style={[styles.avatar, styles.avatarFallback]}>
-              <Text style={styles.avatarInitials}>
-                {getInitials(person.name)}
-              </Text>
-            </View>
-          )}
-        </TouchableOpacity>
-
-        <View style={styles.rowBody}>
-          <Text
-            style={[styles.rowName, selected && styles.rowTextOnSel]}
-            numberOfLines={1}
-          >
-            {person.name || t("employees.unnamed")}
-            {timeAgo ? (
-              <Text style={[styles.rowTime, selected && styles.rowTimeOnSel]}>
-                {`  •  ${timeAgo}`}
-              </Text>
-            ) : null}
-          </Text>
-          <Text
-            style={[styles.rowPreview, selected && styles.rowTextOnSel]}
-            numberOfLines={1}
-          >
-            {preview}
-          </Text>
-        </View>
-
-        <View style={styles.rowRight}>
-          {statusBadge ? (
-            <View
-              style={[
-                styles.statusBadge,
-                { backgroundColor: statusBadge.style.backgroundColor },
-              ]}
-            >
-              <Text
-                style={[
-                  styles.statusBadgeText,
-                  { color: statusBadge.style.color },
-                ]}
-              >
-                {statusBadge.label}
-              </Text>
-            </View>
-          ) : null}
-          {selectMode ? (
-            <View
-              style={[styles.checkCircle, selected && styles.checkCircleOn]}
-            >
-              {selected ? (
-                <Icon name="check" size={15} color="#0785F4" />
-              ) : null}
-            </View>
-          ) : null}
-          {!selectMode && unread > 0 ? (
-            <View style={styles.unreadBadge}>
-              <Text style={styles.unreadBadgeText}>
-                {unread > 9 ? "9+" : unread}
-              </Text>
-            </View>
-          ) : null}
-        </View>
-      </TouchableOpacity>
+        onAvatarPress={() =>
+          selectMode ? toggleSelect(personId) : openPersonProfile(person)
+        }
+      />
     );
   };
 
