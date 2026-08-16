@@ -21,7 +21,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -31,6 +30,13 @@ import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { ListCard } from "../../../components/common/ListCard/ListCard";
 import { PersonListItem } from "../../../components/common/PersonListItem/PersonListItem";
+import {
+  Card,
+  SectionTitle,
+  FieldInput,
+  KeyValueRow,
+  Button,
+} from "../../../components/common/ui";
 import { getWorkerStatusBadge } from "../../../utils/workerStatusBadge";
 import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
@@ -942,37 +948,25 @@ export const ProjectScreen = () => {
           ) : (
             <View>
               {/* Hourly rates (editable) */}
-              <View style={styles.ecoCard}>
-                <Text style={styles.ecoCardTitle}>
-                  {t("projectEconomy.hourlyRates")}
-                </Text>
+              <Card style={styles.ecoCardPad}>
+                <SectionTitle>{t("projectEconomy.hourlyRates")}</SectionTitle>
                 <View style={styles.ecoRateRow}>
-                  <View style={styles.ecoRateField}>
-                    <Text style={styles.ecoRateLabel}>
-                      {t("projectEconomy.costRate")}
-                    </Text>
-                    <TextInput
-                      style={styles.ecoRateInput}
-                      value={costRateInput}
-                      onChangeText={setCostRateInput}
-                      keyboardType="numeric"
-                      placeholder="0"
-                      placeholderTextColor="#A7B3C2"
-                    />
-                  </View>
-                  <View style={styles.ecoRateField}>
-                    <Text style={styles.ecoRateLabel}>
-                      {t("projectEconomy.billRate")}
-                    </Text>
-                    <TextInput
-                      style={styles.ecoRateInput}
-                      value={billRateInput}
-                      onChangeText={setBillRateInput}
-                      keyboardType="numeric"
-                      placeholder="0"
-                      placeholderTextColor="#A7B3C2"
-                    />
-                  </View>
+                  <FieldInput
+                    half
+                    keyboardType="numeric"
+                    label={t("projectEconomy.costRate")}
+                    value={costRateInput}
+                    onChangeText={setCostRateInput}
+                    placeholder="0"
+                  />
+                  <FieldInput
+                    half
+                    keyboardType="numeric"
+                    label={t("projectEconomy.billRate")}
+                    value={billRateInput}
+                    onChangeText={setBillRateInput}
+                    placeholder="0"
+                  />
                 </View>
                 <View style={styles.ecoRateFoot}>
                   <Text style={styles.ecoMutedText}>
@@ -984,138 +978,78 @@ export const ProjectScreen = () => {
                       )}
                     </Text>
                   </Text>
-                  <TouchableOpacity
-                    style={[
-                      styles.ecoSaveButton,
-                      savingRates && styles.ecoSaveButtonDisabled,
-                    ]}
+                  <Button
+                    size="sm"
+                    title={t("common.save")}
+                    loading={savingRates}
                     onPress={handleSaveRates}
-                    disabled={savingRates}
-                  >
-                    {savingRates ? (
-                      <ActivityIndicator color="#FFFFFF" size="small" />
-                    ) : (
-                      <Text style={styles.ecoSaveText}>{t("common.save")}</Text>
-                    )}
-                  </TouchableOpacity>
+                  />
                 </View>
-              </View>
+              </Card>
 
               {/* Labour */}
-              <View style={styles.ecoCard}>
-                <Text style={styles.ecoCardTitle}>
-                  {t("projectEconomy.labour")}
-                </Text>
-                <View style={styles.ecoRow}>
-                  <Text style={styles.ecoRowLabel}>
-                    {t("projectEconomy.hoursWorked")}
-                  </Text>
-                  <Text style={styles.ecoRowValue}>
-                    {economy.hoursWorked} h
-                  </Text>
-                </View>
-                <View style={styles.ecoRow}>
-                  <Text style={styles.ecoRowLabel}>
-                    {t("projectEconomy.labourCost")}
-                  </Text>
-                  <Text style={[styles.ecoRowValue, styles.ecoCostTone]}>
-                    {formatMoney(economy.laborCost)}
-                  </Text>
-                </View>
-                <View style={styles.ecoRow}>
-                  <Text style={styles.ecoRowLabel}>
-                    {t("projectEconomy.labourBilled")}
-                  </Text>
-                  <Text style={[styles.ecoRowValue, styles.ecoBillTone]}>
-                    {formatMoney(economy.laborBilled)}
-                  </Text>
-                </View>
-              </View>
+              <Card style={styles.ecoCardPad}>
+                <SectionTitle>{t("projectEconomy.labour")}</SectionTitle>
+                <KeyValueRow
+                  label={t("projectEconomy.hoursWorked")}
+                  value={`${economy.hoursWorked} h`}
+                />
+                <KeyValueRow
+                  tone="cost"
+                  label={t("projectEconomy.labourCost")}
+                  value={formatMoney(economy.laborCost)}
+                />
+                <KeyValueRow
+                  tone="bill"
+                  label={t("projectEconomy.labourBilled")}
+                  value={formatMoney(economy.laborBilled)}
+                />
+              </Card>
 
               {/* Cost breakdown */}
-              <View style={styles.ecoCard}>
-                <Text style={styles.ecoCardTitle}>
-                  {t("projectEconomy.costs")}
-                </Text>
-                <View style={styles.ecoRow}>
-                  <Text style={styles.ecoRowLabel}>
-                    {t("projectEconomy.materials")}
-                  </Text>
-                  <Text style={styles.ecoRowValue}>
-                    {formatMoney(economy.materials)}
-                  </Text>
-                </View>
-                <View style={styles.ecoRow}>
-                  <Text style={styles.ecoRowLabel}>
-                    {t("projectEconomy.supplierInvoices")}
-                  </Text>
-                  <Text style={styles.ecoRowValue}>
-                    {formatMoney(economy.supplier)}
-                  </Text>
-                </View>
-                <View style={styles.ecoRow}>
-                  <Text style={styles.ecoRowLabel}>
-                    {t("projectEconomy.expenses")}
-                  </Text>
-                  <Text style={styles.ecoRowValue}>
-                    {formatMoney(economy.expenses)}
-                  </Text>
-                </View>
-                <View style={styles.ecoRow}>
-                  <Text style={styles.ecoRowLabel}>
-                    {t("projectEconomy.labour")}
-                  </Text>
-                  <Text style={styles.ecoRowValue}>
-                    {formatMoney(economy.laborCost)}
-                  </Text>
-                </View>
-                <View style={[styles.ecoRow, styles.ecoRowTotal]}>
-                  <Text style={styles.ecoRowLabelStrong}>
-                    {t("projectEconomy.totalCost")}
-                  </Text>
-                  <Text style={styles.ecoRowValueStrong}>
-                    {formatMoney(economy.totalCost)}
-                  </Text>
-                </View>
-              </View>
+              <Card style={styles.ecoCardPad}>
+                <SectionTitle>{t("projectEconomy.costs")}</SectionTitle>
+                <KeyValueRow
+                  label={t("projectEconomy.materials")}
+                  value={formatMoney(economy.materials)}
+                />
+                <KeyValueRow
+                  label={t("projectEconomy.supplierInvoices")}
+                  value={formatMoney(economy.supplier)}
+                />
+                <KeyValueRow
+                  label={t("projectEconomy.expenses")}
+                  value={formatMoney(economy.expenses)}
+                />
+                <KeyValueRow
+                  label={t("projectEconomy.labour")}
+                  value={formatMoney(economy.laborCost)}
+                />
+                <KeyValueRow
+                  total
+                  label={t("projectEconomy.totalCost")}
+                  value={formatMoney(economy.totalCost)}
+                />
+              </Card>
 
               {/* Result */}
-              <View style={styles.ecoCard}>
-                <Text style={styles.ecoCardTitle}>
-                  {t("projectEconomy.result")}
-                </Text>
-                <View style={styles.ecoRow}>
-                  <Text style={styles.ecoRowLabel}>
-                    {t("projectEconomy.invoiced")}
-                  </Text>
-                  <Text style={styles.ecoRowValue}>
-                    {formatMoney(economy.invoiced)}
-                  </Text>
-                </View>
-                <View style={styles.ecoRow}>
-                  <Text style={styles.ecoRowLabel}>
-                    {t("projectEconomy.totalCost")}
-                  </Text>
-                  <Text style={styles.ecoRowValue}>
-                    {formatMoney(economy.totalCost)}
-                  </Text>
-                </View>
-                <View style={[styles.ecoRow, styles.ecoRowTotal]}>
-                  <Text style={styles.ecoRowLabelStrong}>
-                    {t("projectEconomy.margin")} ({economy.marginPct}%)
-                  </Text>
-                  <Text
-                    style={[
-                      styles.ecoRowValueStrong,
-                      economy.margin >= 0
-                        ? styles.ecoBillTone
-                        : styles.ecoOverTone,
-                    ]}
-                  >
-                    {formatMoney(economy.margin)}
-                  </Text>
-                </View>
-              </View>
+              <Card style={styles.ecoCardPad}>
+                <SectionTitle>{t("projectEconomy.result")}</SectionTitle>
+                <KeyValueRow
+                  label={t("projectEconomy.invoiced")}
+                  value={formatMoney(economy.invoiced)}
+                />
+                <KeyValueRow
+                  label={t("projectEconomy.totalCost")}
+                  value={formatMoney(economy.totalCost)}
+                />
+                <KeyValueRow
+                  total
+                  tone={economy.margin >= 0 ? "bill" : "cost"}
+                  label={`${t("projectEconomy.margin")} (${economy.marginPct}%)`}
+                  value={formatMoney(economy.margin)}
+                />
+              </Card>
             </View>
           ))}
       </ScrollView>
@@ -1259,109 +1193,18 @@ const styles = StyleSheet.create({
   },
 
   // Economy tab
-  ecoCard: {
-    backgroundColor: "rgba(255, 255, 255, 0.7)",
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+  ecoCardPad: {
     marginBottom: 16,
-  },
-  ecoCardTitle: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: "#687898",
-    textTransform: "uppercase",
-    letterSpacing: 0.4,
-    marginBottom: 12,
   },
   ecoRateRow: {
     flexDirection: "row",
     gap: 12,
-  },
-  ecoRateField: {
-    flex: 1,
-  },
-  ecoRateLabel: {
-    fontSize: 12,
-    color: "#687898",
-    marginBottom: 6,
-  },
-  ecoRateInput: {
-    height: 44,
-    borderWidth: 1,
-    borderColor: "#e7ecf0",
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    fontSize: 15,
-    color: "#052d50",
-    backgroundColor: "#FFFFFF",
   },
   ecoRateFoot: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     marginTop: 14,
-  },
-  ecoSaveButton: {
-    backgroundColor: "#3183ff",
-    borderRadius: 20,
-    paddingHorizontal: 22,
-    height: 38,
-    alignItems: "center",
-    justifyContent: "center",
-    minWidth: 88,
-  },
-  ecoSaveButtonDisabled: {
-    opacity: 0.7,
-  },
-  ecoSaveText: {
-    color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  ecoRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 7,
-  },
-  ecoRowTotal: {
-    borderTopWidth: 1,
-    borderTopColor: "#e9e9e9",
-    marginTop: 4,
-    paddingTop: 11,
-  },
-  ecoRowLabel: {
-    fontSize: 14,
-    color: "#5b6b80",
-    flex: 1,
-  },
-  ecoRowLabelStrong: {
-    fontSize: 14,
-    color: "#052d50",
-    fontWeight: "700",
-    flex: 1,
-  },
-  ecoRowValue: {
-    fontSize: 14,
-    color: "#052d50",
-    fontWeight: "500",
-  },
-  ecoRowValueStrong: {
-    fontSize: 15,
-    color: "#052d50",
-    fontWeight: "700",
-  },
-  ecoCostTone: {
-    color: "#c0392b",
-  },
-  ecoBillTone: {
-    color: "#1e8e4e",
-  },
-  ecoOverTone: {
-    color: "#c0392b",
   },
   ecoMutedText: {
     fontSize: 13,

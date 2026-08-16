@@ -1,17 +1,8 @@
 import React from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
-import { resolveUploadUrl } from "../../../utils/shifts";
-
-const getInitials = (name) => {
-  const words = String(name || "")
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-  if (words.length === 0) return "?";
-  if (words.length === 1) return words[0].charAt(0).toUpperCase();
-  return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
-};
+import { Badge } from "../ui/Badge";
+import { Avatar } from "../ui/Avatar";
 
 // Unified person row shared by the employee/worker lists — same visual as the
 // chat list (avatar, name, subtitle, optional status badge + selection circle).
@@ -23,23 +14,13 @@ export const PersonListItem = ({
   selected = false,
   onPress,
 }) => {
-  const avatarUri = person.avatarUrl
-    ? resolveUploadUrl(person.avatarUrl)
-    : null;
-
   return (
     <TouchableOpacity
       style={[styles.row, selected && styles.rowSelected]}
       activeOpacity={0.85}
       onPress={onPress}
     >
-      {avatarUri ? (
-        <Image source={{ uri: avatarUri }} style={styles.avatar} />
-      ) : (
-        <View style={[styles.avatar, styles.avatarFallback]}>
-          <Text style={styles.avatarInitials}>{getInitials(person.name)}</Text>
-        </View>
-      )}
+      <Avatar name={person.name} uri={person.avatarUrl} size={44} />
 
       <View style={styles.rowBody}>
         <Text
@@ -60,18 +41,11 @@ export const PersonListItem = ({
 
       <View style={styles.rowRight}>
         {statusBadge ? (
-          <View
-            style={[
-              styles.statusBadge,
-              { backgroundColor: statusBadge.backgroundColor },
-            ]}
-          >
-            <Text
-              style={[styles.statusBadgeText, { color: statusBadge.color }]}
-            >
-              {statusBadge.label}
-            </Text>
-          </View>
+          <Badge
+            label={statusBadge.label}
+            backgroundColor={statusBadge.backgroundColor}
+            color={statusBadge.color}
+          />
         ) : null}
         {selectable ? (
           <View style={[styles.checkCircle, selected && styles.checkCircleOn]}>
@@ -100,21 +74,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(12, 119, 253, 0.6)",
     borderColor: "rgba(12, 119, 253, 0.6)",
   },
-  avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: "#D9D9D9",
-  },
-  avatarFallback: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  avatarInitials: {
-    color: "#052D50",
-    fontSize: 15,
-    fontWeight: "700",
-  },
   rowBody: {
     flex: 1,
     gap: 2,
@@ -135,15 +94,6 @@ const styles = StyleSheet.create({
   rowRight: {
     alignItems: "flex-end",
     gap: 8,
-  },
-  statusBadge: {
-    paddingVertical: 3,
-    paddingHorizontal: 10,
-    borderRadius: 8,
-  },
-  statusBadgeText: {
-    fontSize: 12,
-    fontWeight: "600",
   },
   checkCircle: {
     width: 24,
