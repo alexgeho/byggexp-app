@@ -59,7 +59,6 @@ import {
   getDocumentTypeMeta,
   ToolsListModal,
   WorkersListModal,
-  SelectedItem,
   CompaniesListModal,
   SingleUserPickerModal,
 } from "./CreateProjectScreen.parts";
@@ -999,19 +998,6 @@ export default function CreateProjectScreen() {
               </View>
               <Icon name="chevron-right" size={18} color="#052D50" />
             </TouchableOpacity>
-
-            <SelectedItem
-              badgeStyle={fieldIconBadgeStyle}
-              title={t("createProject.clientCompany")}
-              value={
-                companies.find((c) => c._id === selectedClientCompany)?.name ||
-                ""
-              }
-              onPress={() => setShowCompaniesModal(true)}
-              iconName="office-building-outline"
-              iconLibrary="material-community"
-              containerStyle={styles.groupedSelectableRow}
-            />
           </View>
 
           <View style={styles.groupCard}>
