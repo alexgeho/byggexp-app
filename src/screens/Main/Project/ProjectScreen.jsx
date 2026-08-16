@@ -30,6 +30,8 @@ import { useTranslation } from "react-i18next";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { ListCard } from "../../../components/common/ListCard/ListCard";
+import { PersonListItem } from "../../../components/common/PersonListItem/PersonListItem";
+import { getWorkerStatusBadge } from "../../../utils/workerStatusBadge";
 import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import {
@@ -822,46 +824,23 @@ export const ProjectScreen = () => {
 
         {modal === "Workers" &&
           (workers.length > 0 ? (
-            workers.map((worker) => {
-              const showAccountStatus = shouldShowAccountStatus(
-                worker.accountStatus,
-              );
-              const atWork = isWorkerAtWork(worker, id);
-              const badgeLabel = showAccountStatus
-                ? t("employees.waitingApproval")
-                : atWork
-                  ? t("employees.atWork")
-                  : t("employees.notAtWork");
-              const badgeStyle = showAccountStatus
-                ? cardStyles.cardBadgeWarning
-                : atWork
-                  ? cardStyles.cardBadgeAtWork
-                  : cardStyles.cardBadgeAbsent;
-
-              return (
-                <ListCard
-                  key={worker._id || worker.id}
-                  title={worker.name || t("project.unnamedWorker")}
-                  badgeLabel={badgeLabel}
-                  badgeStyle={badgeStyle}
-                  onPress={() =>
-                    navigation.navigate("Employee", {
-                      employeeId: worker._id || worker.id,
-                    })
-                  }
-                >
-                  <Text
-                    style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    {worker.profession ||
-                      worker.email ||
-                      t("project.workerRole")}
-                  </Text>
-                </ListCard>
-              );
-            })
+            workers.map((worker) => (
+              <PersonListItem
+                key={worker._id || worker.id}
+                person={worker}
+                subtitle={
+                  worker.profession ||
+                  worker.email ||
+                  t("employees.noProfession")
+                }
+                statusBadge={getWorkerStatusBadge(worker, id, t)}
+                onPress={() =>
+                  navigation.navigate("Employee", {
+                    employeeId: worker._id || worker.id,
+                  })
+                }
+              />
+            ))
           ) : (
             <View style={styles.emptyState}>
               <Text style={styles.emptyStateTitle}>

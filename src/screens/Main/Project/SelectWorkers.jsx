@@ -2,11 +2,9 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import React, { useContext, useEffect, useState } from "react";
 import {
-  Image,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   ActivityIndicator,
   Alert,
@@ -17,13 +15,14 @@ import { useTheme } from "../../../theme/ThemeContext";
 import { userService, projectService } from "../../../services";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
-import { resolveUploadUrl } from "../../../utils/shifts";
+import { PersonListItem } from "../../../components/common/PersonListItem/PersonListItem";
 import Icon from "react-native-vector-icons/Feather";
 import {
   standardScreenContainer,
   standardScreenHeader,
 } from "../../../styles/screenLayout";
 import { canManageWorkers } from "../../../utils/userRoles";
+import { getWorkerStatusBadge } from "../../../utils/workerStatusBadge";
 
 export const SelectWorkers = () => {
   const navigation = useNavigation();
@@ -38,13 +37,6 @@ export const SelectWorkers = () => {
   const [selectedWorkers, setSelectedWorkers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const themedCheckboxStyle = {
-    borderColor: `${theme.colors.primary}66`,
-  };
-  const themedCheckboxSelectedStyle = {
-    backgroundColor: theme.colors.primary,
-    borderColor: theme.colors.primary,
-  };
 
   const allowedToManageWorkers = canManageWorkers(user?.role);
 
@@ -164,40 +156,23 @@ export const SelectWorkers = () => {
         />
       </View>
 
-      <ScrollView style={{ width: "100%", flex: 1 }}>
+      <ScrollView
+        style={{ width: "100%", flex: 1 }}
+        showsVerticalScrollIndicator={false}
+      >
         {workers.length === 0 ? (
           <Text style={styles.noWorkersText}>{t("workers.notFound")}</Text>
         ) : (
           workers.map((worker) => (
-            <View key={worker._id} style={styles.workerItem}>
-              <Image
-                style={styles.workerAvatar}
-                source={
-                  worker.avatarUrl
-                    ? { uri: resolveUploadUrl(worker.avatarUrl) }
-                    : require("../../../assets/TasksAva.png")
-                }
-              />
-              <View style={styles.workerInfo}>
-                <Text style={styles.workerName}>
-                  {worker.name || t("common.noName")}
-                </Text>
-                <Text style={styles.workerEmail}>{worker.email || ""}</Text>
-              </View>
-              <TouchableOpacity
-                onPress={() => toggleWorkerSelection(worker._id)}
-                style={[
-                  styles.checkbox,
-                  themedCheckboxStyle,
-                  selectedWorkers.includes(worker._id) &&
-                    themedCheckboxSelectedStyle,
-                ]}
-              >
-                {selectedWorkers.includes(worker._id) && (
-                  <Text style={{ color: "#ffffff" }}>✓</Text>
-                )}
-              </TouchableOpacity>
-            </View>
+            <PersonListItem
+              key={worker._id}
+              person={worker}
+              subtitle={worker.profession || t("employees.noProfession")}
+              statusBadge={getWorkerStatusBadge(worker, projectId, t)}
+              selectable
+              selected={selectedWorkers.includes(worker._id)}
+              onPress={() => toggleWorkerSelection(worker._id)}
+            />
           ))
         )}
       </ScrollView>
