@@ -355,15 +355,6 @@ export default function ChatListScreen() {
         </View>
 
         <View style={styles.rowRight}>
-          {selectMode ? (
-            <View
-              style={[styles.checkCircle, selected && styles.checkCircleOn]}
-            >
-              {selected ? (
-                <Icon name="check" size={15} color="#0785F4" />
-              ) : null}
-            </View>
-          ) : null}
           {statusBadge ? (
             <View
               style={[
@@ -379,6 +370,15 @@ export default function ChatListScreen() {
               >
                 {statusBadge.label}
               </Text>
+            </View>
+          ) : null}
+          {selectMode ? (
+            <View
+              style={[styles.checkCircle, selected && styles.checkCircleOn]}
+            >
+              {selected ? (
+                <Icon name="check" size={15} color="#0785F4" />
+              ) : null}
             </View>
           ) : null}
           {!selectMode && unread > 0 ? (
@@ -442,17 +442,6 @@ export default function ChatListScreen() {
           onSelect={setSelectedProjectId}
         />
       </View>
-
-      {selectMode ? (
-        <View style={styles.selectHint}>
-          <Icon name="users" size={16} color="#0785F4" />
-          <Text style={styles.selectHintText}>
-            {selectedIds.length > 0
-              ? t("chat.selectedCount", { count: selectedIds.length })
-              : t("chat.selectPeopleHint")}
-          </Text>
-        </View>
-      ) : null}
 
       {loading ? (
         <View style={styles.loadingContainer}>
@@ -597,7 +586,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#FFFFFF",
     borderRadius: 20,
-    paddingVertical: 11,
+    paddingVertical: 14,
     paddingHorizontal: 16,
   },
   rowSelected: {
@@ -646,7 +635,7 @@ const styles = StyleSheet.create({
   },
   rowRight: {
     alignItems: "flex-end",
-    gap: 6,
+    gap: 8,
   },
   // Multi-select check indicator shown on each row while picking recipients.
   checkCircle: {
@@ -658,6 +647,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "transparent",
+    marginRight: 4,
   },
   checkCircleOn: {
     backgroundColor: "#FFFFFF",

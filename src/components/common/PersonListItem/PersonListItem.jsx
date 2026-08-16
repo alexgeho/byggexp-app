@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#FFFFFF",
     borderRadius: 20,
-    paddingVertical: 11,
+    paddingVertical: 14,
     paddingHorizontal: 16,
     marginBottom: 10,
   },
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
   },
   rowRight: {
     alignItems: "flex-end",
-    gap: 6,
+    gap: 8,
   },
   statusBadge: {
     paddingVertical: 3,
@@ -154,6 +154,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "transparent",
+    marginRight: 4,
   },
   checkCircleOn: {
     backgroundColor: "#FFFFFF",
