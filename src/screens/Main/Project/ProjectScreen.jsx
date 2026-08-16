@@ -42,6 +42,7 @@ import {
   shiftService,
   expenseService,
   projectFinanceService,
+  toolService,
 } from "../../../services";
 import { formatMoney } from "../../../utils/billingTotals";
 import { isPdfDocument } from "../../../utils/documentPreview";
@@ -250,6 +251,10 @@ export const ProjectScreen = () => {
   const [billRateInput, setBillRateInput] = useState("");
   const [savingRates, setSavingRates] = useState(false);
 
+  // Tools tab (tools carry a projectIds[] pointing back at this project).
+  const [projectTools, setProjectTools] = useState(null);
+  const [loadingTools, setLoadingTools] = useState(false);
+
   // The project photo gallery = every shift photo + every scanned receipt for
   // the project, so both a plain site photo and a receipt end up "in the
   // project". Receipts additionally live as expenses (project economy).
@@ -313,15 +318,37 @@ export const ProjectScreen = () => {
   useFocusEffect(
     useCallback(() => {
       fetchProject();
+      // Refresh the tools list on focus (e.g. after attaching tools).
+      setProjectTools(null);
     }, [fetchProject]),
   );
 
   useEffect(() => {
     setModal(initialTab || "Tasks");
-    // Reset the lazily-loaded Photos/Economy tabs when switching projects.
+    // Reset the lazily-loaded Photos/Economy/Tools tabs when switching projects.
     setPhotoSections(null);
     setEconomy(null);
+    setProjectTools(null);
   }, [initialTab, id]);
+
+  // Lazy-load the tools assigned to this project when its tab is first opened.
+  const loadProjectTools = useCallback(async () => {
+    const all = await toolService.getAll().catch(() => []);
+    const mine = (all || []).filter(
+      (tool) =>
+        Array.isArray(tool.projectIds) &&
+        tool.projectIds.map(String).includes(String(id)),
+    );
+    setProjectTools(mine);
+  }, [id]);
+
+  useEffect(() => {
+    if (modal !== "Tools" || projectTools !== null || loadingTools) {
+      return;
+    }
+    setLoadingTools(true);
+    loadProjectTools().finally(() => setLoadingTools(false));
+  }, [modal, projectTools, loadingTools, loadProjectTools]);
 
   // Lazy-load the project photo gallery when its tab is first opened.
   useEffect(() => {
@@ -631,6 +658,20 @@ export const ProjectScreen = () => {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
+          onPress={() => setModal("Tools")}
+          style={[
+            styles.tabButton,
+            modal === "Tools" && styles.activeTab,
+            modal === "Tools" && activeTabStyle,
+          ]}
+        >
+          <Text
+            style={[styles.tabText, modal === "Tools" && activeTabTextStyle]}
+          >
+            {t("project.tabs.tools")}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
           onPress={() => setModal("Photos")}
           style={[
             styles.tabButton,
@@ -828,6 +869,37 @@ export const ProjectScreen = () => {
               </Text>
               <Text style={styles.emptyStateText}>
                 {t("project.noWorkersText")}
+              </Text>
+            </View>
+          ))}
+
+        {modal === "Tools" &&
+          (loadingTools || projectTools === null ? (
+            <View style={styles.tabLoading}>
+              <ActivityIndicator color={theme.colors.primary} />
+            </View>
+          ) : projectTools.length > 0 ? (
+            projectTools.map((tool) => (
+              <ListCard
+                key={tool._id || tool.id}
+                title={tool.name || t("common.noName")}
+              >
+                <Text
+                  style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {tool.location || tool.status || t("project.tabs.tools")}
+                </Text>
+              </ListCard>
+            ))
+          ) : (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateTitle}>
+                {t("project.noToolsTitle")}
+              </Text>
+              <Text style={styles.emptyStateText}>
+                {t("project.noToolsText")}
               </Text>
             </View>
           ))}
@@ -1075,7 +1147,8 @@ export const ProjectScreen = () => {
         showAddButton={
           (modal === "Tasks" && canCreateProjectTasks) ||
           (modal === "Documents" && canUploadDocuments) ||
-          (modal === "Workers" && canEditWorkers)
+          (modal === "Workers" && canEditWorkers) ||
+          (modal === "Tools" && canEditWorkers)
         }
         onAddPress={() => {
           if (modal === "Documents") {
@@ -1085,6 +1158,13 @@ export const ProjectScreen = () => {
 
           if (modal === "Workers") {
             navigation.navigate("SelectWorkers", {
+              projectId: id,
+            });
+            return;
+          }
+
+          if (modal === "Tools") {
+            navigation.navigate("SelectTools", {
               projectId: id,
             });
             return;

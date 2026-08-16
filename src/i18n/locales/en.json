@@ -134,7 +134,8 @@
       "documents": "Documents",
       "workers": "Workers",
       "photos": "Photos",
-      "economy": "Economy"
+      "economy": "Economy",
+      "tools": "Tools"
     },
     "noPhotosTitle": "No photos yet",
     "noPhotosText": "Photos taken on shifts for this project will appear here.",
@@ -174,7 +175,9 @@
     "uploadErrorTitle": "Upload error",
     "uploadErrorMessage": "Unable to upload documents right now.",
     "unknownSize": "Unknown size",
-    "noDate": "No date"
+    "noDate": "No date",
+    "noToolsTitle": "No tools on this project",
+    "noToolsText": "Attach tools with the + button."
   },
   "task": {
     "title": "Tasks",
@@ -551,7 +554,13 @@
       "broken": "Broken",
       "in_repair": "In repair",
       "occupied": "Occupied"
-    }
+    },
+    "selectTitle": "Add tools",
+    "added": "Tools added",
+    "addedMessage": "The tools were attached to the project.",
+    "addFailed": "Could not attach tools.",
+    "loading": "Loading tools...",
+    "noneAvailable": "No more tools available."
   },
   "language": {
     "title": "Language"

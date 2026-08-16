@@ -19,6 +19,7 @@ import GroupChatScreen from "../screens/Main/Chat/GroupChatScreen";
 import DocumentPreviewScreen from "../screens/Main/DocumentPreviewScreen";
 import { ProjectScreen } from "../screens/Main/Project/ProjectScreen";
 import { SelectWorkers } from "../screens/Main/Project/SelectWorkers";
+import { SelectTools } from "../screens/Main/Project/SelectTools";
 import { SelectAdmin } from "../screens/Main/Project/SelectAdmin";
 import SingleChatScreen from "../screens/Main/Chat/SingleChatScreen";
 import ChatProfileScreen from "../screens/Main/Chat/ChatProfileScreen";
@@ -143,6 +144,7 @@ export default function AppNavigator() {
               component={SelectWorkers}
               options={{ gestureEnabled: canManageWorkers }}
             />
+            <Stack.Screen name="SelectTools" component={SelectTools} />
             <Stack.Screen
               name="SelectAdmin"
               component={SelectAdmin}

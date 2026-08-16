@@ -134,7 +134,8 @@
       "documents": "Dokument",
       "workers": "Arbetare",
       "photos": "Foton",
-      "economy": "Ekonomi"
+      "economy": "Ekonomi",
+      "tools": "Verktyg"
     },
     "noPhotosTitle": "Inga foton ännu",
     "noPhotosText": "Foton tagna på arbetspass för detta projekt visas här.",
@@ -174,7 +175,9 @@
     "uploadErrorTitle": "Uppladdningsfel",
     "uploadErrorMessage": "Det går inte att ladda upp dokument just nu.",
     "unknownSize": "Okänd storlek",
-    "noDate": "Inget datum"
+    "noDate": "Inget datum",
+    "noToolsTitle": "Inga verktyg på projektet",
+    "noToolsText": "Koppla verktyg med +-knappen."
   },
   "task": {
     "title": "Uppgifter",
@@ -551,7 +554,13 @@
       "broken": "Trasig",
       "in_repair": "På reparation",
       "occupied": "Upptagen"
-    }
+    },
+    "selectTitle": "Lägg till verktyg",
+    "added": "Verktyg tillagda",
+    "addedMessage": "Verktygen kopplades till projektet.",
+    "addFailed": "Det gick inte att koppla verktyg.",
+    "loading": "Laddar verktyg...",
+    "noneAvailable": "Inga fler verktyg tillgängliga."
   },
   "language": {
     "title": "Språk"
