@@ -667,7 +667,14 @@ export default function CreateProjectScreen() {
     });
   };
 
-  const availableWorkers = users.filter((item) => item.role === "worker");
+  // Any company member can be added to the team (not just role=worker); exclude
+  // the platform superadmin and the current user.
+  const currentUserId = String(user?._id || user?.id || "");
+  const availableWorkers = users.filter(
+    (item) =>
+      item.role !== "superadmin" &&
+      String(item._id || item.id || "") !== currentUserId,
+  );
   const normalizedWorkerSearch = workerSearch.trim().toLowerCase();
   const filteredWorkers = availableWorkers.filter((worker) => {
     if (!normalizedWorkerSearch) {

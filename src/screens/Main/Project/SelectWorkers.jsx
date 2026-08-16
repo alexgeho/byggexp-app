@@ -47,8 +47,10 @@ export const SelectWorkers = () => {
   const fetchWorkers = async () => {
     try {
       setLoading(true);
-      const allWorkers = await userService.getWorkers();
-      setWorkers(allWorkers);
+      // Show every company member (except self) — an admin can add anyone to
+      // the project team, not just role=worker.
+      const colleagues = await userService.getColleagues();
+      setWorkers(colleagues || []);
     } catch (error) {
       console.error("Error fetching workers:", error);
     } finally {
