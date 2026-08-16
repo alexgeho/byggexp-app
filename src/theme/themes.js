@@ -6,6 +6,13 @@ import {
   colorfulColors,
 } from "./colors";
 import { iconBadgeBackground } from "./colorUtils";
+import {
+  spacing as spacingTokens,
+  radius as radiusTokens,
+  fontSize as fontSizeTokens,
+  fontWeight as fontWeightTokens,
+  content as contentTokens,
+} from "./tokens";
 
 function withIconBadgeBackground(colors) {
   return {
@@ -22,11 +29,19 @@ const common = {
     full: 50,
   },
 
+  // Legacy keys kept for back-compat; prefer the 4pt `spacing` scale below.
   spacing: {
     small: 8,
     medium: 16,
     large: 24,
+    ...spacingTokens,
   },
+
+  // New design tokens (single source of truth) — see src/theme/tokens.js.
+  radius: radiusTokens,
+  fontSize: fontSizeTokens,
+  fontWeight: fontWeightTokens,
+  content: contentTokens,
 
   text: {
     fontFamily: {
