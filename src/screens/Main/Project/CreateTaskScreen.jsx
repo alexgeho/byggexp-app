@@ -460,11 +460,23 @@ export default function CreateTaskScreen() {
     );
   };
 
-  const assigneeSummary = assigneeIds
-    .map((id) => users.find((item) => getUserId(item) === id))
-    .filter(Boolean)
-    .map((item) => item.name || item.email)
-    .join(", ");
+  // O(1) id → user lookup so the assignee derivations below don't do an
+  // O(assignees × users) find() scan on every keystroke/render.
+  const usersById = useMemo(() => {
+    const map = new Map();
+    users.forEach((item) => map.set(getUserId(item), item));
+    return map;
+  }, [users]);
+
+  const assigneeSummary = useMemo(
+    () =>
+      assigneeIds
+        .map((id) => usersById.get(id))
+        .filter(Boolean)
+        .map((item) => item.name || item.email)
+        .join(", "),
+    [assigneeIds, usersById],
+  );
 
   const createTask = async () => {
     if (!selectedProjectId && !selectedAssigneeUserId) {
@@ -497,7 +509,7 @@ export default function CreateTaskScreen() {
       // Chosen project members (when creating a project task) become the task's
       // assignee subset; empty keeps the whole-project-team default.
       const chosenAssignees = assigneeIds
-        .map((id) => users.find((item) => getUserId(item) === id))
+        .map((id) => usersById.get(id))
         .filter(Boolean)
         .map((item) => ({
           id: getUserId(item),

@@ -18,7 +18,14 @@ import Slider from "@react-native-community/slider";
 import { useTheme } from "../../../theme/ThemeContext";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Location from "expo-location";
 import Icon from "react-native-vector-icons/Feather";
@@ -670,24 +677,30 @@ export default function CreateProjectScreen() {
   // Any company member can be added to the team (not just role=worker); exclude
   // the platform superadmin and the current user.
   const currentUserId = String(user?._id || user?.id || "");
-  const availableWorkers = users.filter(
-    (item) =>
-      item.role !== "superadmin" &&
-      String(item._id || item.id || "") !== currentUserId,
+  const availableWorkers = useMemo(
+    () =>
+      users.filter(
+        (item) =>
+          item.role !== "superadmin" &&
+          String(item._id || item.id || "") !== currentUserId,
+      ),
+    [users, currentUserId],
   );
   const normalizedWorkerSearch = workerSearch.trim().toLowerCase();
-  const filteredWorkers = availableWorkers.filter((worker) => {
+  const filteredWorkers = useMemo(() => {
     if (!normalizedWorkerSearch) {
-      return true;
+      return availableWorkers;
     }
 
-    const searchableText = [worker.name, worker.profession, worker.email]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
+    return availableWorkers.filter((worker) => {
+      const searchableText = [worker.name, worker.profession, worker.email]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
 
-    return searchableText.includes(normalizedWorkerSearch);
-  });
+      return searchableText.includes(normalizedWorkerSearch);
+    });
+  }, [availableWorkers, normalizedWorkerSearch]);
 
   const selectedWorkersLabel =
     selectedWorkers.length > 0
@@ -695,18 +708,20 @@ export default function CreateProjectScreen() {
       : "";
 
   const normalizedToolSearch = toolSearch.trim().toLowerCase();
-  const filteredTools = tools.filter((tool) => {
+  const filteredTools = useMemo(() => {
     if (!normalizedToolSearch) {
-      return true;
+      return tools;
     }
 
-    const searchableText = [tool.name, tool.notes]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
+    return tools.filter((tool) => {
+      const searchableText = [tool.name, tool.notes]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
 
-    return searchableText.includes(normalizedToolSearch);
-  });
+      return searchableText.includes(normalizedToolSearch);
+    });
+  }, [tools, normalizedToolSearch]);
 
   const selectedToolsLabel =
     selectedTools.length > 0
