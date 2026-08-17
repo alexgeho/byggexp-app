@@ -22,6 +22,7 @@ import {
   Pressable,
   StyleSheet,
 } from "react-native";
+import { Image as ExpoImage } from "expo-image";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTranslation } from "react-i18next";
@@ -1588,11 +1589,12 @@ export default function ShiftsScreen() {
                                     activeOpacity={0.85}
                                     onPress={() => handleOpenShiftPhoto(photo)}
                                   >
-                                    <Image
+                                    <ExpoImage
                                       style={styles.shiftImage}
-                                      source={{
-                                        uri: resolveUploadUrl(photo.url),
-                                      }}
+                                      source={resolveUploadUrl(photo.url)}
+                                      contentFit="cover"
+                                      cachePolicy="memory-disk"
+                                      transition={0}
                                     />
                                   </TouchableOpacity>
                                 ))}

@@ -16,6 +16,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Image as ExpoImage } from "expo-image";
 import Icon from "react-native-vector-icons/Feather";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
@@ -511,9 +512,12 @@ export default function ChatConversationScreen({ variant }) {
                               activeOpacity={0.85}
                               onPress={() => Linking.openURL(url)}
                             >
-                              <Image
+                              <ExpoImage
                                 style={styles.attachmentImage}
-                                source={{ uri: url }}
+                                source={url}
+                                contentFit="cover"
+                                cachePolicy="memory-disk"
+                                transition={0}
                               />
                             </TouchableOpacity>
                           ) : (

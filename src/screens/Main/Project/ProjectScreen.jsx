@@ -24,6 +24,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Image as ExpoImage } from "expo-image";
 import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
@@ -914,9 +915,12 @@ export const ProjectScreen = () => {
                         setPreviewPhoto(resolveUploadUrl(photo.url))
                       }
                     >
-                      <Image
-                        source={{ uri: resolveUploadUrl(photo.url) }}
+                      <ExpoImage
+                        source={resolveUploadUrl(photo.url)}
                         style={styles.photoThumb}
+                        contentFit="cover"
+                        cachePolicy="memory-disk"
+                        transition={0}
                       />
                       {photo.isReceipt ? (
                         <View style={styles.receiptTag}>
