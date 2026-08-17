@@ -75,7 +75,18 @@ api.interceptors.response.use(
       );
     }
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // A 401 from a public /auth/* action (login, code-login, magic-login,
+    // refresh, register…) means bad credentials/code — NOT an expired session.
+    // Reject it straight away so the caller can surface the error (e.g. the
+    // login screen's "Invalid email or password") instead of triggering a
+    // token refresh + logout side-effect.
+    const isAuthRequest = (originalRequest?.url || "").includes("/auth/");
+
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isAuthRequest
+    ) {
       originalRequest._retry = true;
 
       try {
