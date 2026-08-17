@@ -17,7 +17,6 @@ import {
   Dimensions,
   Image,
   Linking,
-  Modal,
   ScrollView,
   StyleSheet,
   Text,
@@ -30,6 +29,7 @@ import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { ListCard } from "../../../components/common/ListCard/ListCard";
 import { PersonListItem } from "../../../components/common/PersonListItem/PersonListItem";
+import { ImagePreviewModal } from "../../../components/common/ImagePreviewModal/ImagePreviewModal";
 import {
   Card,
   SectionTitle,
@@ -1098,26 +1098,10 @@ export const ProjectScreen = () => {
         }
       />
 
-      <Modal
-        visible={!!previewPhoto}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setPreviewPhoto(null)}
-      >
-        <TouchableOpacity
-          style={styles.previewOverlay}
-          activeOpacity={1}
-          onPress={() => setPreviewPhoto(null)}
-        >
-          {previewPhoto ? (
-            <Image
-              source={{ uri: previewPhoto }}
-              style={styles.previewImage}
-              resizeMode="contain"
-            />
-          ) : null}
-        </TouchableOpacity>
-      </Modal>
+      <ImagePreviewModal
+        uri={previewPhoto}
+        onClose={() => setPreviewPhoto(null)}
+      />
     </View>
   );
 };
@@ -1259,17 +1243,6 @@ const styles = StyleSheet.create({
   },
 
   // Full-screen photo preview
-  previewOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.92)",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 16,
-  },
-  previewImage: {
-    width: "100%",
-    height: "100%",
-  },
   scrollContainer: {
     flex: 1,
     width: "100%",

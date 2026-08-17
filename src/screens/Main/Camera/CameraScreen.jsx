@@ -12,7 +12,6 @@ import {
   Image,
   InteractionManager,
   Linking,
-  Modal,
   ScrollView,
   Text,
   TextInput,
@@ -25,6 +24,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
+import { ImagePreviewModal } from "../../../components/common/ImagePreviewModal/ImagePreviewModal";
 import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import { expenseService, shiftService } from "../../../services";
@@ -607,26 +607,10 @@ export default function CameraScreen() {
         }}
       />
 
-      <Modal
-        visible={!!previewPhoto}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setPreviewPhoto(null)}
-      >
-        <TouchableOpacity
-          style={styles.previewOverlay}
-          activeOpacity={1}
-          onPress={() => setPreviewPhoto(null)}
-        >
-          {previewPhoto ? (
-            <Image
-              source={{ uri: previewPhoto }}
-              style={styles.previewImage}
-              resizeMode="contain"
-            />
-          ) : null}
-        </TouchableOpacity>
-      </Modal>
+      <ImagePreviewModal
+        uri={previewPhoto}
+        onClose={() => setPreviewPhoto(null)}
+      />
     </View>
   );
 }

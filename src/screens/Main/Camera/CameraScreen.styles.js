@@ -175,15 +175,4 @@ export const styles = StyleSheet.create({
   },
 
   // Full-screen photo preview
-  previewOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.92)",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 16,
-  },
-  previewImage: {
-    width: "100%",
-    height: "100%",
-  },
 });
