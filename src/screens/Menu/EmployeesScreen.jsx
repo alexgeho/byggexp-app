@@ -128,6 +128,7 @@ export default function EmployeesScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const { user, selectedProject } = useContext(AuthContext);
 
   const [employees, setEmployees] = useState([]);
@@ -329,69 +330,71 @@ export default function EmployeesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    ...standardScreenContainer,
-    paddingBottom: 0,
-    gap: 12,
-  },
-  header: {
-    ...standardScreenHeader,
-  },
-  headerTitle: {
-    flex: 1,
-    fontSize: 18,
-    color: "#052D50",
-    textAlign: "center",
-  },
-  searchContainer: {
-    width: "100%",
-  },
-  loadingContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  scrollContainer: {
-    flex: 1,
-    width: "100%",
-  },
-  listContent: {
-    paddingBottom: 140,
-    gap: 10,
-  },
-  emptyState: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 24,
-    alignItems: "center",
-    gap: 8,
-  },
-  emptyTitle: {
-    fontSize: 16,
-    color: "#151515",
-    fontWeight: "600",
-  },
-  emptySubtitle: {
-    fontSize: 14,
-    color: "#5a6b7d",
-    textAlign: "center",
-  },
-  accessDeniedContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 24,
-    gap: 8,
-  },
-  accessDeniedText: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#151515",
-  },
-  accessDeniedSubtext: {
-    fontSize: 14,
-    color: "#5a6b7d",
-    textAlign: "center",
-  },
-});
+const createStyles = (c) =>
+  StyleSheet.create({
+    container: {
+      ...standardScreenContainer,
+      backgroundColor: c.background,
+      paddingBottom: 0,
+      gap: 12,
+    },
+    header: {
+      ...standardScreenHeader,
+    },
+    headerTitle: {
+      flex: 1,
+      fontSize: 18,
+      color: c.textPrimary,
+      textAlign: "center",
+    },
+    searchContainer: {
+      width: "100%",
+    },
+    loadingContainer: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    scrollContainer: {
+      flex: 1,
+      width: "100%",
+    },
+    listContent: {
+      paddingBottom: 140,
+      gap: 10,
+    },
+    emptyState: {
+      backgroundColor: c.surface,
+      borderRadius: 16,
+      padding: 24,
+      alignItems: "center",
+      gap: 8,
+    },
+    emptyTitle: {
+      fontSize: 16,
+      color: c.textPrimary,
+      fontWeight: "600",
+    },
+    emptySubtitle: {
+      fontSize: 14,
+      color: c.textMuted,
+      textAlign: "center",
+    },
+    accessDeniedContainer: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      paddingHorizontal: 24,
+      gap: 8,
+    },
+    accessDeniedText: {
+      fontSize: 18,
+      fontWeight: "600",
+      color: c.textPrimary,
+    },
+    accessDeniedSubtext: {
+      fontSize: 14,
+      color: c.textMuted,
+      textAlign: "center",
+    },
+  });
