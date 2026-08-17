@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  ScrollView,
+  FlatList,
   StyleSheet,
   Text,
   TextInput,
@@ -354,20 +354,20 @@ export default function ChatListScreen() {
           <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>
       ) : (
-        <ScrollView
+        <FlatList
           style={styles.scrollContainer}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
-        >
-          {visibleColleagues.length === 0 ? (
+          data={visibleColleagues}
+          keyExtractor={(person) => String(getUserId(person))}
+          renderItem={({ item }) => renderRow(item)}
+          ListEmptyComponent={
             <View style={styles.emptyState}>
               <Text style={styles.emptyTitle}>{t("chat.emptyTitle")}</Text>
               <Text style={styles.emptySubtitle}>{t("chat.emptyText")}</Text>
             </View>
-          ) : (
-            visibleColleagues.map(renderRow)
-          )}
-        </ScrollView>
+          }
+        />
       )}
 
       {selectMode ? (

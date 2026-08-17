@@ -8,8 +8,8 @@ import {
   KeyboardAvoidingView,
   Linking,
   Modal,
+  FlatList,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -391,44 +391,53 @@ export default function ChatConversationScreen({ variant }) {
           <Text style={styles.statusText}>{t("chat.loadingMessages")}</Text>
         </View>
       ) : (
-        <ScrollView
+        <FlatList
           style={styles.messagesContainer}
           contentContainerStyle={styles.messagesContent}
           keyboardShouldPersistTaps="handled"
-        >
-          {translationEnabled ? (
-            <TouchableOpacity
-              style={styles.translateToggle}
-              activeOpacity={0.8}
-              onPress={() => setAutoTranslate((value) => !value)}
-            >
-              <Text style={styles.translateToggleText}>
-                {autoTranslate
-                  ? t("chat.autoTranslateOn")
-                  : t("chat.autoTranslateOff")}
-              </Text>
-            </TouchableOpacity>
-          ) : null}
+          data={messages}
+          keyExtractor={(message) => message._id}
+          initialNumToRender={15}
+          windowSize={11}
+          removeClippedSubviews={false}
+          ListHeaderComponent={
+            <>
+              {translationEnabled ? (
+                <TouchableOpacity
+                  style={styles.translateToggle}
+                  activeOpacity={0.8}
+                  onPress={() => setAutoTranslate((value) => !value)}
+                >
+                  <Text style={styles.translateToggleText}>
+                    {autoTranslate
+                      ? t("chat.autoTranslateOn")
+                      : t("chat.autoTranslateOff")}
+                  </Text>
+                </TouchableOpacity>
+              ) : null}
 
-          {error ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyStateTitle}>
-                {t("chat.loadChatErrorTitle")}
-              </Text>
-              <Text style={styles.emptyStateText}>{error}</Text>
-            </View>
-          ) : null}
+              {error ? (
+                <View style={styles.emptyState}>
+                  <Text style={styles.emptyStateTitle}>
+                    {t("chat.loadChatErrorTitle")}
+                  </Text>
+                  <Text style={styles.emptyStateText}>{error}</Text>
+                </View>
+              ) : null}
 
-          {!error && messages.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyStateTitle}>{t("chat.noMessages")}</Text>
-              <Text style={styles.emptyStateText}>
-                {t("chat.startConversation")}
-              </Text>
-            </View>
-          ) : null}
-
-          {messages.map((message, index) => {
+              {!error && messages.length === 0 ? (
+                <View style={styles.emptyState}>
+                  <Text style={styles.emptyStateTitle}>
+                    {t("chat.noMessages")}
+                  </Text>
+                  <Text style={styles.emptyStateText}>
+                    {t("chat.startConversation")}
+                  </Text>
+                </View>
+              ) : null}
+            </>
+          }
+          renderItem={({ item: message, index }) => {
             const isMyMessage = message.userId === currentUserId;
             const hasTranslation =
               autoTranslate && Boolean(message.translatedText);
@@ -583,8 +592,8 @@ export default function ChatConversationScreen({ variant }) {
                 </View>
               </React.Fragment>
             );
-          })}
-        </ScrollView>
+          }}
+        />
       )}
 
       <View style={styles.inputContainer}>
