@@ -1,5 +1,5 @@
 import { shouldShowAccountStatus } from "./userRoles";
-import { cardStyles } from "../styles/cards";
+import { content } from "../theme/tokens";
 
 const normalizeRefId = (value) =>
   String(value?._id || value?.id || value || "");
@@ -11,26 +11,45 @@ export const isWorkerAtWork = (worker, projectId) =>
   (!projectId ||
     normalizeRefId(worker?.workStatusProjectId) === String(projectId));
 
-// Status badge for the shared PersonListItem: waiting-approval / at-work /
-// not-at-work, using the same colours as the chat list and Workers tab.
+// Presence/status → { label, backgroundColor, color } for the shared Badge.
+// Colours come from the Figma design (solid text/dot + 10% tint background).
+export const statusBadgeFor = (statusKind, t) => {
+  switch (statusKind) {
+    case "waiting":
+      return {
+        label: t("employees.waitingApproval"),
+        backgroundColor: content.statusWaitingSoft,
+        color: content.statusWaiting,
+      };
+    case "at_work":
+      return {
+        label: `• ${t("employees.atWork")}`,
+        backgroundColor: content.statusAtWorkSoft,
+        color: content.statusAtWork,
+      };
+    case "off_duty":
+      return {
+        label: `• ${t("employees.offDuty")}`,
+        backgroundColor: content.statusOffDutySoft,
+        color: content.statusOffDuty,
+      };
+    default: // not_at_work
+      return {
+        label: `• ${t("employees.notAtWork")}`,
+        backgroundColor: content.statusNotAtWorkSoft,
+        color: content.statusNotAtWork,
+      };
+  }
+};
+
+// Convenience for the worker pickers: derive the status kind from a user, then
+// map to a badge. (Full presence — waiting / at-work / not-at-work.)
 export const getWorkerStatusBadge = (worker, projectId, t) => {
   if (shouldShowAccountStatus(worker?.accountStatus)) {
-    return {
-      label: t("employees.waitingApproval"),
-      backgroundColor: cardStyles.cardBadgeWarning.backgroundColor,
-      color: cardStyles.cardBadgeWarning.color,
-    };
+    return statusBadgeFor("waiting", t);
   }
-  if (isWorkerAtWork(worker, projectId)) {
-    return {
-      label: t("employees.atWork"),
-      backgroundColor: cardStyles.cardBadgeAtWork.backgroundColor,
-      color: cardStyles.cardBadgeAtWork.color,
-    };
-  }
-  return {
-    label: t("employees.notAtWork"),
-    backgroundColor: cardStyles.cardBadgeAbsent.backgroundColor,
-    color: cardStyles.cardBadgeAbsent.color,
-  };
+  return statusBadgeFor(
+    isWorkerAtWork(worker, projectId) ? "at_work" : "not_at_work",
+    t,
+  );
 };

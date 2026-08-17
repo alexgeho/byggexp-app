@@ -22,12 +22,12 @@ import {
   standardScreenHeader,
   standardScreenHeaderPlaceholder,
 } from "../../styles/screenLayout";
-import { cardStyles } from "../../styles/cards";
 import {
   canManageEmployees,
   getPersonWorkStatus,
   USER_ROLES,
 } from "../../utils/userRoles";
+import { statusBadgeFor } from "../../utils/workerStatusBadge";
 
 const getApiErrorMessage = (error, fallback) => {
   const message = error?.response?.data?.message;
@@ -309,33 +309,13 @@ export default function EmployeesScreen() {
               selectedProjectId,
               workedTodayIds,
             );
-            const label = {
-              waiting: t("employees.waitingApproval"),
-              at_work: t("employees.atWork"),
-              off_duty: t("employees.offDuty"),
-              not_at_work: t("employees.notAtWork"),
-            }[statusKind];
-            const preset = {
-              waiting: cardStyles.cardBadgeWarning,
-              at_work: cardStyles.cardBadgeAtWork,
-              off_duty: cardStyles.cardBadgeNeutral,
-              not_at_work: cardStyles.cardBadgeAbsent,
-            }[statusKind];
 
             return (
               <PersonListItem
                 person={employee}
                 subtitle={employee.profession || t("employees.noProfession")}
                 meta={projectLabel || t("employees.noProjectAssigned")}
-                statusBadge={
-                  label && preset
-                    ? {
-                        label,
-                        backgroundColor: preset.backgroundColor,
-                        color: preset.color,
-                      }
-                    : null
-                }
+                statusBadge={statusBadgeFor(statusKind, t)}
                 onPress={() => navigation.navigate("Employee", { employeeId })}
               />
             );

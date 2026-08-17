@@ -24,8 +24,8 @@ import {
   standardScreenContainer,
   standardScreenHeader,
 } from "../../../styles/screenLayout";
-import { cardStyles } from "../../../styles/cards";
 import { getPersonWorkStatus, USER_ROLES } from "../../../utils/userRoles";
+import { statusBadgeFor } from "../../../utils/workerStatusBadge";
 
 const getEntityId = (entity) => {
   const id = entity?._id || entity?.id;
@@ -272,31 +272,7 @@ export default function ChatListScreen() {
     const chat = chatByPersonId[String(personId)];
     const selected = selectedIds.includes(personId);
     const statusKind = getPersonWorkStatus(person, selectedProjectId);
-    const badgePreset = {
-      waiting: {
-        label: t("employees.waitingApproval"),
-        style: cardStyles.cardBadgeWarning,
-      },
-      at_work: {
-        label: `• ${t("employees.atWork")}`,
-        style: cardStyles.cardBadgeAtWork,
-      },
-      off_duty: {
-        label: t("employees.offDuty"),
-        style: cardStyles.cardBadgeNeutral,
-      },
-      not_at_work: {
-        label: t("employees.notAtWork"),
-        style: cardStyles.cardBadgeAbsent,
-      },
-    }[statusKind];
-    const statusBadge = badgePreset
-      ? {
-          label: badgePreset.label,
-          backgroundColor: badgePreset.style.backgroundColor,
-          color: badgePreset.style.color,
-        }
-      : null;
+    const statusBadge = statusKind ? statusBadgeFor(statusKind, t) : null;
     const timeAgo = chat ? formatTimeAgo(chat.lastMessageAt) : "";
     const preview =
       chat?.lastMessageText || person.profession || t("employees.noProfession");

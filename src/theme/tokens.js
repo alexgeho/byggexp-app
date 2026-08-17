@@ -71,6 +71,16 @@ export const content = {
   successSoft: "#34C75924",
   warning: "#C77700",
   warningSoft: "#FF95001F",
+
+  // Presence/status badge colours (from Figma) — solid text/dot + 10% tint bg.
+  statusAtWork: "#759D3C",
+  statusAtWorkSoft: "#759D3C1A",
+  statusNotAtWork: "#EE6C4D",
+  statusNotAtWorkSoft: "#EE6C4D1A",
+  statusWaiting: "#3A81DB",
+  statusWaitingSoft: "#3A81DB1A",
+  statusOffDuty: "#667E93",
+  statusOffDutySoft: "#667E931A",
 };
 
 export const tokens = { spacing, radius, fontSize, fontWeight, content };
