@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 
-export function createStyles(theme) {
+// `glass` is the light/dark glass palette picked in the component.
+export function createStyles(glass) {
   return StyleSheet.create({
     backButton: {
       width: 44,
@@ -14,13 +15,9 @@ export function createStyles(theme) {
       borderRadius: 22,
 
       borderWidth: 1,
-      // Admin card/button border — visible on light backgrounds where a plain
-      // white border used to disappear.
-      borderColor: "#E7ECF0",
+      borderColor: glass.border,
 
-      backgroundColor: "rgba(255,255,255,0.6)",
-
-      // Admin-style soft shadow (navy base, low opacity) for subtle depth.
+      backgroundColor: glass.bg,
     },
 
     // Clips the glass gradients to the round shape without clipping the
@@ -57,19 +54,19 @@ export function createStyles(theme) {
       borderRadius: 21,
 
       borderWidth: 1,
-      borderColor: "rgba(255,255,255,0.35)",
+      borderColor: glass.ring,
     },
 
     hardLightGlow: {
       ...StyleSheet.absoluteFillObject,
       borderRadius: 22,
-      backgroundColor: "rgba(255,255,255,0.03)",
+      backgroundColor: glass.hardGlow,
     },
 
     backIcon: {
       width: 20,
       height: 20,
-      tintColor: "#20384D",
+      tintColor: glass.icon,
     },
   });
 }

@@ -6,7 +6,7 @@ const homeFilledIcon = require("../../../assets/navigation/home-filled.png");
 const menuOutlineIcon = require("../../../assets/navigation/menu-outline.png");
 const menuFilledIcon = require("../../../assets/navigation/menu-filled.png");
 
-export function FooterHomeIcon({ size = 24, filled = false }) {
+export function FooterHomeIcon({ size = 24, filled = false, color }) {
   return (
     <Image
       source={filled ? homeFilledIcon : homeOutlineIcon}
@@ -14,12 +14,13 @@ export function FooterHomeIcon({ size = 24, filled = false }) {
         width: size,
         height: size,
         resizeMode: "contain",
+        ...(color ? { tintColor: color } : null),
       }}
     />
   );
 }
 
-export function FooterMenuIcon({ size = 24, filled = false }) {
+export function FooterMenuIcon({ size = 24, filled = false, color }) {
   return (
     <Image
       source={filled ? menuFilledIcon : menuOutlineIcon}
@@ -27,6 +28,7 @@ export function FooterMenuIcon({ size = 24, filled = false }) {
         width: size,
         height: size,
         resizeMode: "contain",
+        ...(color ? { tintColor: color } : null),
       }}
     />
   );

@@ -67,22 +67,33 @@ export function BottomBar({
   // around each icon (worst on the solid filled icon). Keeping them as later
   // siblings, above the blur, renders them crisp with no halo.
   const isTransparent = !glass && !showBackground;
+  const dark = theme.content.scheme === "dark";
   // Android has no BlurView (it crashed Fabric), so the fill must carry the
   // whole look — make it much more opaque there than the iOS blur+fill.
   const isAndroid = Platform.OS === "android";
-  const fillColor = isTransparent
-    ? "transparent"
-    : glass
-      ? isAndroid
-        ? "rgba(255,255,255,0.72)"
-        : "rgba(255,255,255,0.20)"
-      : isAndroid
-        ? "rgba(255,255,255,0.8)"
-        : "rgba(255,255,255,0.6)";
+  const lightFill = glass
+    ? isAndroid
+      ? "rgba(255,255,255,0.72)"
+      : "rgba(255,255,255,0.20)"
+    : isAndroid
+      ? "rgba(255,255,255,0.8)"
+      : "rgba(255,255,255,0.6)";
+  const darkFill = glass
+    ? "rgba(30,30,30,0.55)"
+    : isAndroid
+      ? "rgba(35,35,35,0.94)"
+      : "rgba(35,35,35,0.72)";
+  const fillColor = isTransparent ? "transparent" : dark ? darkFill : lightFill;
+  // Icons/text: keep the original (untinted) navy look in light themes; in dark
+  // tint the icons light so they read on the dark pill.
+  const activeIconColor = dark ? "#FFFFFF" : ACTIVE_ICON_COLOR;
+  const iconColorFor = (isActive) =>
+    dark ? (isActive ? "#FFFFFF" : "rgba(255,255,255,0.55)") : undefined;
   const wrapperStyle = [
     styles.menuWrapper,
     isTransparent && styles.menuWrapperTransparent,
     glass && styles.menuWrapperGlass,
+    dark && !isTransparent && styles.menuWrapperDark,
   ];
 
   return (
@@ -92,7 +103,7 @@ export function BottomBar({
           <BlurView
             pointerEvents="none"
             intensity={glass ? 45 : 40}
-            tint="light"
+            tint={dark ? "dark" : "light"}
             // Android needs the native blur method or it renders no blur at all.
             experimentalBlurMethod="dimezisBlurView"
             style={StyleSheet.absoluteFill}
@@ -108,7 +119,11 @@ export function BottomBar({
 
             return (
               <>
-                <FooterHomeIcon size={styles.navIcon.width} filled={isActive} />
+                <FooterHomeIcon
+                  size={styles.navIcon.width}
+                  filled={isActive}
+                  color={iconColorFor(isActive)}
+                />
 
                 {showText && (
                   <Text
@@ -116,7 +131,7 @@ export function BottomBar({
                       styles.navText,
                       {
                         color: isActive
-                          ? ACTIVE_ICON_COLOR
+                          ? activeIconColor
                           : theme.colors.bottomNav,
                       },
                     ]}
@@ -135,7 +150,11 @@ export function BottomBar({
 
             return (
               <>
-                <FooterMenuIcon size={styles.navIcon.width} filled={isActive} />
+                <FooterMenuIcon
+                  size={styles.navIcon.width}
+                  filled={isActive}
+                  color={iconColorFor(isActive)}
+                />
 
                 {showText && (
                   <Text
@@ -143,7 +162,7 @@ export function BottomBar({
                       styles.navText,
                       {
                         color: isActive
-                          ? ACTIVE_ICON_COLOR
+                          ? activeIconColor
                           : theme.colors.bottomNav,
                       },
                     ]}

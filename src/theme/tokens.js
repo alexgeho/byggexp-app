@@ -47,6 +47,7 @@ export const fontWeight = {
 // `darkContent`; each theme picks one (see theme/themes.js) and components read
 // them via `theme.content.*` so they follow the active theme.
 export const lightContent = {
+  scheme: "light", // lets components branch light/dark glass effects
   // Text
   textPrimary: "#052D50", // headings / primary text (navy)
   textSecondary: "#687898", // labels
@@ -93,6 +94,7 @@ export const lightContent = {
 // with the dark palette (background #1C1C1C, card #232323, white text) and the
 // status pills use translucent tints that read on dark surfaces.
 export const darkContent = {
+  scheme: "dark",
   // Text
   textPrimary: "#FFFFFF",
   textSecondary: "#AEB9C6",
