@@ -23,11 +23,11 @@ import {
 
 export const isAppInForeground = () => AppState.currentState === "active";
 
-const announce = async ({ emit, notify, shift }) => {
-  await emit(shift);
+const announce = async ({ emit, notify, shift, meta }) => {
+  await emit(shift, meta);
 
   if (!isAppInForeground()) {
-    await notify(shift);
+    await notify(shift, meta);
   }
 };
 
@@ -52,9 +52,10 @@ export const announceShiftAutoPaused = (shift) =>
     shift,
   });
 
-export const announceShiftAutoCompleted = (shift) =>
+export const announceShiftAutoCompleted = (shift, meta) =>
   announce({
     emit: emitShiftAutoCompleted,
     notify: notifyShiftAutoCompleted,
     shift,
+    meta,
   });

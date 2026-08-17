@@ -34,10 +34,24 @@ export const createShiftGeofenceHandlers = ({
   setCurrentShift,
   start,
 }) => ({
-  onShiftAutoCompleted: () => {
+  onShiftAutoCompleted: (_shift, meta) => {
     InteractionManager.runAfterInteractions(() => {
       setCurrentShift(null);
       reset();
+
+      // A completion triggered by switching project must not read as if the
+      // worker left the site — geofence exits pause the shift, they don't
+      // complete it.
+      if (meta?.reason === "project_switched") {
+        showMessage(
+          "shift-project-switched",
+          "shiftGeofence.projectSwitchedTitle",
+          "shiftGeofence.projectSwitchedBody",
+          "Project switched",
+          "You switched to another project, so your previous shift was closed.",
+        );
+        return;
+      }
 
       showMessage(
         "shift-auto-completed",

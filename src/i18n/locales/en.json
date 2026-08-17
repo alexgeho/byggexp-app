@@ -40,7 +40,9 @@
     "autoPausedTitle": "Shift paused",
     "autoPausedBody": "You left the project area, so time tracking was paused. It resumes automatically when you return.",
     "autoResumedTitle": "Shift resumed",
-    "autoResumedBody": "You are back in the project area, so your shift resumed automatically."
+    "autoResumedBody": "You are back in the project area, so your shift resumed automatically.",
+    "projectSwitchedTitle": "Project switched",
+    "projectSwitchedBody": "You switched to another project, so your previous shift was closed."
   },
   "documentPreview": {
     "fallbackName": "Document",
@@ -720,7 +722,9 @@
     "selectProjectBeforeShift": "Select a project before starting a shift.",
     "saveHoursError": "Unable to save hours right now.",
     "shiftErrorTitle": "Shift error",
-    "shiftErrorMessage": "Unable to update the shift right now."
+    "shiftErrorMessage": "Unable to update the shift right now.",
+    "manualHoursBlockedTitle": "Can't log hours here",
+    "manualHoursBlockedMessage": "You can only log hours while you're at the project location, just like starting a shift."
   },
   "menu": {
     "title": "Menu",

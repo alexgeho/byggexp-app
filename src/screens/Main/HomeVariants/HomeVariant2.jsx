@@ -38,6 +38,7 @@ import { HoursWheelPicker } from "../../../components/common/HoursWheelPicker/Ho
 import shiftService from "../../../services/shift.service";
 import { projectService } from "../../../services";
 import {
+  assertShiftStartAllowed,
   resumeShiftWithGuards,
   startShiftWithLocationGuard,
 } from "../../../utils/shiftLocationGuard";
@@ -434,6 +435,22 @@ export default function HomeVariant2() {
         return false;
       }
 
+      // Logging hours by hand must obey the same on-site rule as starting a
+      // shift: someone who can't clock in away from the project address can't
+      // enter the time manually either.
+      try {
+        await assertShiftStartAllowed({
+          project: selectedProject,
+          fallbackProjectLocation: selectedProject?.location,
+        });
+      } catch (guardError) {
+        showShiftAlert(
+          t("home.manualHoursBlockedTitle"),
+          getApiErrorMessage(guardError, t("home.manualHoursBlockedMessage")),
+        );
+        return false;
+      }
+
       const now = new Date();
       const pad = (value) => String(value).padStart(2, "0");
       const date = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(
@@ -469,13 +486,31 @@ export default function HomeVariant2() {
         return false;
       }
     },
-    [selectedProjectId, user, reset, t],
+    [selectedProjectId, selectedProject, user, reset, t],
   );
 
   // Enter edit mode: seed the wheel from the currently-tracked time so the
   // worker can fine-tune rather than start from zero. Switching to manual
   // entry also stops the live timer right away (the shift is completed).
   async function handleEnterEditHours() {
+    // Block off-site / out-of-schedule workers before opening the editor (and
+    // before stopping their running shift), so manual entry can't sidestep the
+    // on-site requirement that gates starting a shift.
+    if (selectedProjectId) {
+      try {
+        await assertShiftStartAllowed({
+          project: selectedProject,
+          fallbackProjectLocation: selectedProject?.location,
+        });
+      } catch (guardError) {
+        showShiftAlert(
+          t("home.manualHoursBlockedTitle"),
+          getApiErrorMessage(guardError, t("home.manualHoursBlockedMessage")),
+        );
+        return;
+      }
+    }
+
     const totalMs = timeElapsed || 0;
     setEditHours(Math.min(24, Math.floor(totalMs / 3600000)));
     setEditMinutes(Math.floor((totalMs % 3600000) / 60000));

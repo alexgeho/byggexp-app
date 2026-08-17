@@ -12,9 +12,9 @@ export const subscribeToShiftAutoCompleted = (listener) => {
   };
 };
 
-export const emitShiftAutoCompleted = async (shift) => {
+export const emitShiftAutoCompleted = async (shift, meta) => {
   await Promise.allSettled(
-    Array.from(autoCompletedListeners).map((listener) => listener(shift)),
+    Array.from(autoCompletedListeners).map((listener) => listener(shift, meta)),
   );
 };
 

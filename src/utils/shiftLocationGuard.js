@@ -253,6 +253,36 @@ export const assertShiftScheduleAllowsStart = (project) => {
   }
 };
 
+// The single gate for "may this worker begin logging time on this project right
+// now" — schedule window + on-site geofence. Throws with a user-facing message
+// when either check fails. Shared by starting/resuming a shift AND by manual
+// hours entry, so logging by hand can never bypass the on-site requirement.
+export const assertShiftStartAllowed = async ({
+  project,
+  fallbackProjectLocation,
+  skipLocationCheck = false,
+} = {}) => {
+  assertShiftScheduleAllowsStart(project);
+
+  if (skipLocationCheck) {
+    return;
+  }
+
+  const locationCheck = await getShiftLocationCheck({
+    project,
+    fallbackProjectLocation,
+  });
+
+  if (
+    locationCheck.enforced &&
+    locationCheck.distanceMeters > locationCheck.maxDistanceMeters
+  ) {
+    throw new Error(
+      `You are not at the project location. Move within ${locationCheck.maxDistanceMeters} meters of the project to start a shift.`,
+    );
+  }
+};
+
 export const startShiftWithLocationGuard = async ({
   projectId,
   project,
@@ -263,23 +293,11 @@ export const startShiftWithLocationGuard = async ({
     throw new Error("Project is required to start a shift.");
   }
 
-  assertShiftScheduleAllowsStart(project);
-
-  if (!skipLocationCheck) {
-    const locationCheck = await getShiftLocationCheck({
-      project,
-      fallbackProjectLocation,
-    });
-
-    if (
-      locationCheck.enforced &&
-      locationCheck.distanceMeters > locationCheck.maxDistanceMeters
-    ) {
-      throw new Error(
-        `You are not at the project location. Move within ${locationCheck.maxDistanceMeters} meters of the project to start a shift.`,
-      );
-    }
-  }
+  await assertShiftStartAllowed({
+    project,
+    fallbackProjectLocation,
+    skipLocationCheck,
+  });
 
   try {
     return await shiftService.start(projectId);
@@ -316,23 +334,11 @@ export const resumeShiftWithGuards = async ({
     throw new Error("Shift is required to resume.");
   }
 
-  assertShiftScheduleAllowsStart(project);
-
-  if (!skipLocationCheck) {
-    const locationCheck = await getShiftLocationCheck({
-      project,
-      fallbackProjectLocation: project?.location,
-    });
-
-    if (
-      locationCheck.enforced &&
-      locationCheck.distanceMeters > locationCheck.maxDistanceMeters
-    ) {
-      throw new Error(
-        `You are not at the project location. Move within ${locationCheck.maxDistanceMeters} meters of the project to start a shift.`,
-      );
-    }
-  }
+  await assertShiftStartAllowed({
+    project,
+    fallbackProjectLocation: project?.location,
+    skipLocationCheck,
+  });
 
   return shiftService.resume(shiftId);
 };

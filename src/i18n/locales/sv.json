@@ -40,7 +40,9 @@
     "autoPausedTitle": "Pass pausat",
     "autoPausedBody": "Du lämnade projektområdet, så tidtagningen pausades. Den återupptas automatiskt när du kommer tillbaka.",
     "autoResumedTitle": "Pass återupptaget",
-    "autoResumedBody": "Du är tillbaka i projektområdet, så ditt pass återupptogs automatiskt."
+    "autoResumedBody": "Du är tillbaka i projektområdet, så ditt pass återupptogs automatiskt.",
+    "projectSwitchedTitle": "Projekt bytt",
+    "projectSwitchedBody": "Du bytte till ett annat projekt, så ditt tidigare pass avslutades."
   },
   "documentPreview": {
     "fallbackName": "Dokument",
@@ -720,7 +722,9 @@
     "selectProjectBeforeShift": "Välj ett projekt innan du startar ett arbetspass.",
     "saveHoursError": "Det gick inte att spara timmar just nu.",
     "shiftErrorTitle": "Fel på arbetspass",
-    "shiftErrorMessage": "Det gick inte att uppdatera arbetspasset just nu."
+    "shiftErrorMessage": "Det gick inte att uppdatera arbetspasset just nu.",
+    "manualHoursBlockedTitle": "Kan inte logga timmar här",
+    "manualHoursBlockedMessage": "Du kan bara logga timmar när du är på projektets plats, precis som när du startar ett arbetspass."
   },
   "menu": {
     "title": "Meny",

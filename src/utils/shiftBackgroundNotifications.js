@@ -23,17 +23,30 @@ const postLocalNotification = async (title, body, data) => {
 
 const getShiftId = (shift) => shift?.id || shift?._id || null;
 
-export const notifyShiftAutoCompleted = (shift) =>
-  postLocalNotification(
-    i18n.t("shiftGeofence.autoCompletedTitle", {
-      defaultValue: "Shift ended",
-    }),
-    i18n.t("shiftGeofence.autoCompletedBody", {
-      defaultValue:
-        "You left the project area, so your shift was ended automatically.",
-    }),
+export const notifyShiftAutoCompleted = (shift, meta) => {
+  const switched = meta?.reason === "project_switched";
+  return postLocalNotification(
+    i18n.t(
+      switched
+        ? "shiftGeofence.projectSwitchedTitle"
+        : "shiftGeofence.autoCompletedTitle",
+      {
+        defaultValue: switched ? "Project switched" : "Shift ended",
+      },
+    ),
+    i18n.t(
+      switched
+        ? "shiftGeofence.projectSwitchedBody"
+        : "shiftGeofence.autoCompletedBody",
+      {
+        defaultValue: switched
+          ? "You switched to another project, so your previous shift was closed."
+          : "You left the project area, so your shift was ended automatically.",
+      },
+    ),
     { screen: "Shifts", shiftId: getShiftId(shift) },
   );
+};
 
 export const notifyShiftAutoPaused = (shift) =>
   postLocalNotification(

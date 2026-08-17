@@ -150,7 +150,12 @@ const performShiftComplete = async ({ projectId, shiftId } = {}) => {
       notifyUser: false,
     })) || targetShift;
 
-  await announceShiftAutoCompleted(completedShift);
+  // Completing here always means the worker switched project (the geofence-exit
+  // path pauses instead of completing), so the message must say the project was
+  // switched, not that they left the area.
+  await announceShiftAutoCompleted(completedShift, {
+    reason: "project_switched",
+  });
 
   return completedShift;
 };

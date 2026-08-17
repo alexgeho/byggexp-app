@@ -49,7 +49,7 @@ export const useShiftGeofenceSync = ({
     const selectedProjectId = getProjectId(selectedProject);
 
     const unsubscribeAutoCompleted = subscribeToShiftAutoCompleted(
-      async (completedShift) => {
+      async (completedShift, meta) => {
         const completedShiftId = getShiftId(completedShift);
 
         if (!shiftId || shiftId !== completedShiftId) {
@@ -61,7 +61,7 @@ export const useShiftGeofenceSync = ({
         }
 
         handledShiftIdRef.current = completedShiftId;
-        await callbacksRef.current.onShiftAutoCompleted?.(completedShift);
+        await callbacksRef.current.onShiftAutoCompleted?.(completedShift, meta);
       },
     );
 
