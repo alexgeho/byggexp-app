@@ -9,19 +9,7 @@ import { userService } from "../../services";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { createStyles } from "./MenuScreen.styles";
-import { API_BASE_URL } from "../../config/env";
-
-const resolveImageUrl = (value) => {
-  if (!value) {
-    return null;
-  }
-
-  if (value.startsWith("http://") || value.startsWith("https://")) {
-    return value;
-  }
-
-  return `${API_BASE_URL}${value.startsWith("/") ? value : `/${value}`}`;
-};
+import { resolveUploadUrl } from "../../utils/shifts";
 
 export default function MenuScreen() {
   const navigation = useNavigation();
@@ -60,7 +48,7 @@ export default function MenuScreen() {
     }, [profileId]),
   );
 
-  const avatarSource = resolveImageUrl(profileAvatarUrl || user?.avatarUrl);
+  const avatarSource = resolveUploadUrl(profileAvatarUrl || user?.avatarUrl);
   // Economy/invoicing is gated on the finance.manage capability, so a delegated
   // "office" user sees it even without an admin role.
   const canFinance = hasPermission("finance.manage");

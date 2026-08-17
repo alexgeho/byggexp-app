@@ -27,6 +27,7 @@ import { authService, userService, logUserActivity } from "../services";
 import { jwtDecode } from "jwt-decode";
 import { unregisterPushToken } from "../services/notifications.service";
 import { setUnauthorizedHandler } from "../services/api";
+import { getApiErrorMessage } from "../utils/apiError";
 
 const AuthContext = createContext();
 
@@ -130,14 +131,6 @@ export const AuthProvider = ({ children }) => {
     setUserId(decodedToken.sub);
     setUser(userData);
     setIsAuthenticated(true);
-  };
-
-  const getApiErrorMessage = (error, fallback) => {
-    const message = error?.response?.data?.message;
-    if (Array.isArray(message)) {
-      return message.join(", ");
-    }
-    return message || error?.message || fallback;
   };
 
   const login = async (email, password) => {

@@ -31,6 +31,7 @@ import {
   getCreatableRoleOptions,
   USER_ROLES,
 } from "../../utils/userRoles";
+import { getApiErrorMessage } from "../../utils/apiError";
 
 // Backend capability key for financial features (offers, invoices, clients).
 const FINANCE_PERMISSION = "finance.manage";
@@ -58,14 +59,6 @@ const parsePhoneFields = (value) => {
     areaCode: parseInt(digits.slice(0, 2), 10),
     phone: parseInt(digits.slice(2), 10),
   };
-};
-
-const getApiErrorMessage = (error, fallback) => {
-  const message = error?.response?.data?.message;
-  if (Array.isArray(message)) {
-    return message.join(", ");
-  }
-  return message || error?.message || fallback;
 };
 
 const FieldIcon = ({ name, theme }) => (

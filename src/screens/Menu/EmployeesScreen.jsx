@@ -28,14 +28,7 @@ import {
   USER_ROLES,
 } from "../../utils/userRoles";
 import { statusBadgeFor } from "../../utils/workerStatusBadge";
-
-const getApiErrorMessage = (error, fallback) => {
-  const message = error?.response?.data?.message;
-  if (Array.isArray(message)) {
-    return message.join(", ");
-  }
-  return message || error?.message || fallback;
-};
+import { getApiErrorMessage } from "../../utils/apiError";
 
 const getUserId = (employee) => employee?._id || employee?.id;
 

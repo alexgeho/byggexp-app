@@ -24,6 +24,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
+import { getApiErrorMessage } from "../../../utils/apiError";
 
 import AuthContext from "../../../contexts/AuthContext";
 import { useTheme } from "../../../theme/ThemeContext";
@@ -194,13 +195,6 @@ export default function HomeVariant2() {
     sync,
     reset,
   } = useTimer();
-
-  const getErrorMessage = useCallback(function getErrorMessage(
-    error,
-    fallbackMessage,
-  ) {
-    return error?.response?.data?.message || error?.message || fallbackMessage;
-  }, []);
 
   const applyShiftState = useCallback(
     function applyShiftState(shift) {
@@ -570,7 +564,7 @@ export default function HomeVariant2() {
       console.error("Shift action failed:", error);
       showShiftAlert(
         t("home.shiftErrorTitle"),
-        getErrorMessage(error, t("home.shiftErrorMessage")),
+        getApiErrorMessage(error, t("home.shiftErrorMessage")),
       );
     } finally {
       setLoadingShift(false);

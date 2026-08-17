@@ -32,23 +32,11 @@ import {
 } from "../../utils/documentPreview";
 import { pickUploadAssets } from "../../utils/uploadPicker";
 import { userService } from "../../services";
-import { API_BASE_URL } from "../../config/env";
+import { resolveUploadUrl } from "../../utils/shifts";
 
 const parseOptionalNumber = (value) => {
   const normalized = String(value || "").replace(/\D/g, "");
   return normalized ? parseInt(normalized, 10) : undefined;
-};
-
-const resolveImageUrl = (value) => {
-  if (!value) {
-    return null;
-  }
-
-  if (value.startsWith("http://") || value.startsWith("https://")) {
-    return value;
-  }
-
-  return `${API_BASE_URL}${value.startsWith("/") ? value : `/${value}`}`;
 };
 
 const getDocumentName = (value, index) => {
@@ -423,7 +411,7 @@ export const MyAccount = () => {
   };
 
   const handleOpenDocument = async (documentUrl) => {
-    const resolvedUrl = resolveImageUrl(documentUrl);
+    const resolvedUrl = resolveUploadUrl(documentUrl);
     const documentName = getDocumentNameFromUrl(
       resolvedUrl,
       t("documentPreview.fallbackName"),
@@ -462,7 +450,7 @@ export const MyAccount = () => {
     ? profile.additionalDocuments
     : [];
 
-  const avatarSource = resolveImageUrl(profile?.avatarUrl || user?.avatarUrl);
+  const avatarSource = resolveUploadUrl(profile?.avatarUrl || user?.avatarUrl);
 
   if (loading) {
     return (
@@ -625,7 +613,7 @@ export const MyAccount = () => {
               {documents.map((document, index) => {
                 const typeMeta = getDocumentTypeMeta(document);
                 const imageDocument = isImageDocument(document);
-                const documentUri = resolveImageUrl(document);
+                const documentUri = resolveUploadUrl(document);
 
                 return (
                   <TouchableOpacity
