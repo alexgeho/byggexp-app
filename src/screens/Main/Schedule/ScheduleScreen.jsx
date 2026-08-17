@@ -54,7 +54,8 @@ import {
 } from "../../../utils/schedule";
 import { getScheduleDemoData } from "../../../utils/scheduleDemo";
 import { getDateLocale } from "../../../utils/dateLocale";
-import { styles, ROW_HEIGHT } from "./ScheduleScreen.styles";
+import { createStyles, ROW_HEIGHT } from "./ScheduleScreen.styles";
+import { useTheme } from "../../../theme/ThemeContext";
 
 const RANGE_DAYS = 42; // 6 weeks — covers any month with week alignment
 const BASE_DAY_WIDTH = 72;
@@ -119,6 +120,8 @@ const SCHEDULE_DEMO = false;
 
 export default function ScheduleScreen() {
   const navigation = useNavigation();
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const { t } = useTranslation();
   const { user } = useContext(AuthContext);
 
