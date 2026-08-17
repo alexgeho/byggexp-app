@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
-import React, { useContext, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import {
   Image,
   Text,
@@ -23,6 +23,7 @@ export const SelectAdmin = () => {
   const { t } = useTranslation();
   const { user } = useContext(AuthContext);
   const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const [isSelected, setSelection] = useState(false);
   const themedCheckboxStyle = {
     borderColor: `${theme.colors.primary}66`,
@@ -130,192 +131,194 @@ export const SelectAdmin = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    ...standardScreenContainer,
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  header: {
-    ...standardScreenHeader,
-  },
-  backButton: {
-    padding: 16,
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 9999,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  backIcon: {
-    width: 20,
-    height: 20,
-  },
-  projectName: {
-    color: "#052D50",
-    flex: 1,
-    textAlign: "center",
-    fontSize: 17,
-    fontWeight: "500",
-  },
-  tabContainer: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 12,
-  },
-  tabButton: {
-    padding: 4,
-    flex: 1,
-    paddingLeft: 8,
-    paddingRight: 8,
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  activeTab: {
-    borderColor: "#0785F4",
-  },
-  tabText: {
-    color: "#052D50",
-    width: "100%",
-    textAlign: "center",
-  },
-  scrollContainer: {
-    flex: 1,
-    width: "100%",
-  },
-  scrollContent: {
-    paddingBottom: 96,
-    width: "100%",
-  },
-  taskItem: {
-    width: "100%",
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 16,
-    gap: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-    marginBottom: 16,
-  },
-  taskTitle: {
-    color: "#052D50",
-    fontSize: 22,
-  },
-  taskDescription: {
-    color: "#052D5050",
-  },
-  taskFooter: {
-    flexDirection: "row",
-    width: "100%",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  taskAssignee: {
-    flexDirection: "row",
-    gap: 8,
-    alignItems: "center",
-  },
-  assigneeAvatar: {
-    width: 30,
-    height: 30,
-  },
-  assigneeName: {
-    color: "#052D50",
-  },
-  taskDate: {
-    flexDirection: "row",
-    gap: 8,
-    alignItems: "center",
-    padding: 4,
-    paddingLeft: 12,
-    paddingRight: 12,
-    backgroundColor: "#0177DE0D",
-    borderRadius: 999,
-  },
-  dateIcon: {
-    width: 14,
-    height: 14,
-  },
-  dateText: {
-    color: "#0785F4",
-  },
-  documentItem: {
-    width: "100%",
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 16,
-    gap: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-    marginBottom: 16,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  documentImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 12,
-  },
-  documentInfo: {},
-  documentName: {
-    color: "#052D50",
-  },
-  documentMeta: {
-    color: "#052D5050",
-  },
-  workerItem: {
-    width: "100%",
-    padding: 8,
-    borderRadius: 999,
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-    gap: 16,
-    marginBottom: 12,
-  },
-  workerAvatar: {
-    width: 46,
-    height: 46,
-    borderRadius: 9999,
-  },
-  workerName: {
-    flex: 1,
-  },
-  checkbox: {
-    width: 24,
-    height: 24,
-    borderWidth: 1,
-    borderRadius: 7,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderColor: "#FFFFFF",
-    marginRight: 8,
-  },
-  arrowIcon: {
-    width: 16,
-    height: 26,
-    marginRight: 12,
-  },
-  accessDeniedContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 24,
-  },
-  accessDeniedText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#052D50",
-    marginBottom: 12,
-  },
-  accessDeniedSubtext: {
-    fontSize: 16,
-    color: "#698196",
-    textAlign: "center",
-  },
-});
+const createStyles = (c) =>
+  StyleSheet.create({
+    container: {
+      ...standardScreenContainer,
+      backgroundColor: c.background,
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    header: {
+      ...standardScreenHeader,
+    },
+    backButton: {
+      padding: 16,
+      backgroundColor: c.surfaceMuted,
+      borderRadius: 9999,
+      borderWidth: 1,
+      borderColor: c.surface,
+    },
+    backIcon: {
+      width: 20,
+      height: 20,
+    },
+    projectName: {
+      color: c.textPrimary,
+      flex: 1,
+      textAlign: "center",
+      fontSize: 17,
+      fontWeight: "500",
+    },
+    tabContainer: {
+      width: "100%",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      gap: 12,
+    },
+    tabButton: {
+      padding: 4,
+      flex: 1,
+      paddingLeft: 8,
+      paddingRight: 8,
+      backgroundColor: c.surfaceMuted,
+      borderRadius: 999,
+      borderWidth: 1,
+      borderColor: c.surface,
+    },
+    activeTab: {
+      borderColor: "#0785F4",
+    },
+    tabText: {
+      color: c.textPrimary,
+      width: "100%",
+      textAlign: "center",
+    },
+    scrollContainer: {
+      flex: 1,
+      width: "100%",
+    },
+    scrollContent: {
+      paddingBottom: 96,
+      width: "100%",
+    },
+    taskItem: {
+      width: "100%",
+      backgroundColor: c.surfaceMuted,
+      borderRadius: 16,
+      gap: 16,
+      padding: 16,
+      borderWidth: 1,
+      borderColor: c.surface,
+      marginBottom: 16,
+    },
+    taskTitle: {
+      color: c.textPrimary,
+      fontSize: 22,
+    },
+    taskDescription: {
+      color: c.textMuted,
+    },
+    taskFooter: {
+      flexDirection: "row",
+      width: "100%",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    taskAssignee: {
+      flexDirection: "row",
+      gap: 8,
+      alignItems: "center",
+    },
+    assigneeAvatar: {
+      width: 30,
+      height: 30,
+    },
+    assigneeName: {
+      color: c.textPrimary,
+    },
+    taskDate: {
+      flexDirection: "row",
+      gap: 8,
+      alignItems: "center",
+      padding: 4,
+      paddingLeft: 12,
+      paddingRight: 12,
+      backgroundColor: c.inputSurface,
+      borderRadius: 999,
+    },
+    dateIcon: {
+      width: 14,
+      height: 14,
+    },
+    dateText: {
+      color: "#0785F4",
+    },
+    documentItem: {
+      width: "100%",
+      backgroundColor: c.surfaceMuted,
+      borderRadius: 16,
+      gap: 16,
+      padding: 16,
+      borderWidth: 1,
+      borderColor: c.surface,
+      marginBottom: 16,
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    documentImage: {
+      width: 80,
+      height: 80,
+      borderRadius: 12,
+    },
+    documentInfo: {},
+    documentName: {
+      color: c.textPrimary,
+    },
+    documentMeta: {
+      color: c.textMuted,
+    },
+    workerItem: {
+      width: "100%",
+      padding: 8,
+      borderRadius: 999,
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: c.surfaceMuted,
+      borderWidth: 1,
+      borderColor: c.surface,
+      gap: 16,
+      marginBottom: 12,
+    },
+    workerAvatar: {
+      width: 46,
+      height: 46,
+      borderRadius: 9999,
+    },
+    workerName: {
+      flex: 1,
+    },
+    checkbox: {
+      width: 24,
+      height: 24,
+      borderWidth: 1,
+      borderRadius: 7,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: c.surfaceMuted,
+      borderColor: c.surface,
+      marginRight: 8,
+    },
+    arrowIcon: {
+      width: 16,
+      height: 26,
+      marginRight: 12,
+    },
+    accessDeniedContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 24,
+    },
+    accessDeniedText: {
+      fontSize: 24,
+      fontWeight: "bold",
+      color: c.textPrimary,
+      marginBottom: 12,
+    },
+    accessDeniedSubtext: {
+      fontSize: 16,
+      color: c.textMuted,
+      textAlign: "center",
+    },
+  });

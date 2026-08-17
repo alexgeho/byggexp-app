@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
@@ -26,6 +26,7 @@ export default function HelpGuideScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
 
   return (
     <View style={styles.container}>
@@ -107,71 +108,73 @@ export default function HelpGuideScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    ...standardScreenContainer,
-  },
-  header: {
-    ...standardScreenHeader,
-  },
-  headerTitle: {
-    color: "#052D50",
-    fontSize: 17,
-    textAlign: "center",
-  },
-  placeholder: {
-    ...standardScreenHeaderPlaceholder,
-  },
-  scrollContainer: {
-    flex: 1,
-    width: "100%",
-  },
-  scrollContent: {
-    gap: 12,
-    paddingBottom: 120,
-  },
-  heroCard: {
-    width: "100%",
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-    padding: 20,
-  },
-  heroText: {
-    color: "#698196",
-    fontSize: 15,
-    lineHeight: 22,
-  },
-  groupCard: {
-    width: "100%",
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-    padding: 20,
-  },
-  sectionTitle: {
-    color: "#052D50",
-    fontSize: 18,
-    marginBottom: 14,
-  },
-  bulletRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 10,
-    marginBottom: 12,
-  },
-  bullet: {
-    width: 8,
-    height: 8,
-    borderRadius: 999,
-    marginTop: 7,
-  },
-  bulletText: {
-    flex: 1,
-    color: "#052D50",
-    fontSize: 15,
-    lineHeight: 22,
-  },
-});
+const createStyles = (c) =>
+  StyleSheet.create({
+    container: {
+      ...standardScreenContainer,
+      backgroundColor: c.background,
+    },
+    header: {
+      ...standardScreenHeader,
+    },
+    headerTitle: {
+      color: c.textPrimary,
+      fontSize: 17,
+      textAlign: "center",
+    },
+    placeholder: {
+      ...standardScreenHeaderPlaceholder,
+    },
+    scrollContainer: {
+      flex: 1,
+      width: "100%",
+    },
+    scrollContent: {
+      gap: 12,
+      paddingBottom: 120,
+    },
+    heroCard: {
+      width: "100%",
+      backgroundColor: c.surfaceMuted,
+      borderRadius: 24,
+      borderWidth: 1,
+      borderColor: c.surface,
+      padding: 20,
+    },
+    heroText: {
+      color: c.textMuted,
+      fontSize: 15,
+      lineHeight: 22,
+    },
+    groupCard: {
+      width: "100%",
+      backgroundColor: c.surfaceMuted,
+      borderRadius: 24,
+      borderWidth: 1,
+      borderColor: c.surface,
+      padding: 20,
+    },
+    sectionTitle: {
+      color: c.textPrimary,
+      fontSize: 18,
+      marginBottom: 14,
+    },
+    bulletRow: {
+      flexDirection: "row",
+      alignItems: "flex-start",
+      gap: 10,
+      marginBottom: 12,
+    },
+    bullet: {
+      width: 8,
+      height: 8,
+      borderRadius: 999,
+      marginTop: 7,
+    },
+    bulletText: {
+      flex: 1,
+      color: c.textPrimary,
+      fontSize: 15,
+      lineHeight: 22,
+    },
+  });
