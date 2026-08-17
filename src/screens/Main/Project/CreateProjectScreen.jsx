@@ -60,7 +60,7 @@ import { canCreateProjects } from "../../../utils/userRoles";
 
 import FloatingActionButton from "../../../components/common/FloatingActionButton/FloatingActionButton";
 import { Card, SectionTitle, FieldInput } from "../../../components/common/ui";
-import { styles } from "./CreateProjectScreen.styles";
+import { createStyles } from "./CreateProjectScreen.styles";
 import {
   FieldIcon,
   isImageDocument,
@@ -79,6 +79,7 @@ export default function CreateProjectScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const { showSuccess } = useFeedback();
   const { user, hasPermission } = useContext(AuthContext);
   const allowedToCreate = canCreateProjects(user?.role);
@@ -861,7 +862,11 @@ export default function CreateProjectScreen() {
                   {location || t("createProject.location")}
                 </Text>
               </View>
-              <Icon name="chevron-right" size={18} color="#052D50" />
+              <Icon
+                name="chevron-right"
+                size={18}
+                color={theme.content.textPrimary}
+              />
             </TouchableOpacity>
 
             <View
@@ -960,7 +965,11 @@ export default function CreateProjectScreen() {
                   {selectedWorkersLabel || t("createProject.projectTeam")}
                 </Text>
               </View>
-              <Icon name="chevron-right" size={18} color="#052D50" />
+              <Icon
+                name="chevron-right"
+                size={18}
+                color={theme.content.textPrimary}
+              />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -994,7 +1003,11 @@ export default function CreateProjectScreen() {
                     t("createProject.projectManager")}
                 </Text>
               </View>
-              <Icon name="chevron-right" size={18} color="#052D50" />
+              <Icon
+                name="chevron-right"
+                size={18}
+                color={theme.content.textPrimary}
+              />
             </TouchableOpacity>
           </View>
 
@@ -1029,7 +1042,11 @@ export default function CreateProjectScreen() {
                   {selectedToolsLabel || t("createProject.attachInstruments")}
                 </Text>
               </View>
-              <Icon name="chevron-right" size={18} color="#052D50" />
+              <Icon
+                name="chevron-right"
+                size={18}
+                color={theme.content.textPrimary}
+              />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -1066,7 +1083,11 @@ export default function CreateProjectScreen() {
                     : t("project.tabs.documents")}
                 </Text>
               </View>
-              <Icon name="chevron-right" size={18} color="#052D50" />
+              <Icon
+                name="chevron-right"
+                size={18}
+                color={theme.content.textPrimary}
+              />
             </TouchableOpacity>
           </View>
 
@@ -1095,7 +1116,7 @@ export default function CreateProjectScreen() {
                           <Icon
                             name={typeMeta.icon}
                             size={12}
-                            color="#052D50"
+                            color={theme.content.textPrimary}
                           />
                           <Text style={styles.documentMetaText}>
                             {typeMeta.label}
@@ -1170,7 +1191,11 @@ export default function CreateProjectScreen() {
                   </Text>
                 </View>
               </View>
-              <Icon name="chevron-right" size={18} color="#052D50" />
+              <Icon
+                name="chevron-right"
+                size={18}
+                color={theme.content.textPrimary}
+              />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -1201,7 +1226,11 @@ export default function CreateProjectScreen() {
                   </Text>
                 </View>
               </View>
-              <Icon name="chevron-right" size={18} color="#052D50" />
+              <Icon
+                name="chevron-right"
+                size={18}
+                color={theme.content.textPrimary}
+              />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -1240,7 +1269,11 @@ export default function CreateProjectScreen() {
                   </Text>
                 </View>
               </View>
-              <Icon name="chevron-right" size={18} color="#052D50" />
+              <Icon
+                name="chevron-right"
+                size={18}
+                color={theme.content.textPrimary}
+              />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -1279,7 +1312,11 @@ export default function CreateProjectScreen() {
                   </Text>
                 </View>
               </View>
-              <Icon name="chevron-right" size={18} color="#052D50" />
+              <Icon
+                name="chevron-right"
+                size={18}
+                color={theme.content.textPrimary}
+              />
             </TouchableOpacity>
           </View>
 
@@ -1308,7 +1345,11 @@ export default function CreateProjectScreen() {
                   </Text>
                 </View>
               </View>
-              <Icon name="chevron-right" size={18} color="#052D50" />
+              <Icon
+                name="chevron-right"
+                size={18}
+                color={theme.content.textPrimary}
+              />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -1335,7 +1376,11 @@ export default function CreateProjectScreen() {
                   </Text>
                 </View>
               </View>
-              <Icon name="chevron-right" size={18} color="#052D50" />
+              <Icon
+                name="chevron-right"
+                size={18}
+                color={theme.content.textPrimary}
+              />
             </TouchableOpacity>
           </View>
 
@@ -1597,7 +1642,11 @@ export default function CreateProjectScreen() {
                       ]}
                       onPress={() => handleSelectLocationSuggestion(item)}
                     >
-                      <Icon name="map-pin" size={16} color="#052D50" />
+                      <Icon
+                        name="map-pin"
+                        size={16}
+                        color={theme.content.textPrimary}
+                      />
                       <Text style={styles.mapSuggestionText}>{item.label}</Text>
                     </TouchableOpacity>
                   ))

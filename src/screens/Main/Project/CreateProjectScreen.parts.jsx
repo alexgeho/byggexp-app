@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import {
   View,
   Text,
@@ -16,7 +16,13 @@ import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { PersonListItem } from "../../../components/common/PersonListItem/PersonListItem";
 import { HeaderCheckButton } from "../../../components/common/ui";
 import { getWorkerStatusBadge } from "../../../utils/workerStatusBadge";
-import { styles } from "./CreateProjectScreen.styles";
+import { createStyles } from "./CreateProjectScreen.styles";
+import { useTheme } from "../../../theme/ThemeContext";
+
+const useThemedStyles = () => {
+  const { theme } = useTheme();
+  return useMemo(() => createStyles(theme.content), [theme.content]);
+};
 
 export const getUserInitials = (name = "") => {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -91,6 +97,7 @@ export const ToolsListModal = memo(function ToolsListModal({
   checkboxSelectedStyle,
 }) {
   const { t } = useTranslation();
+  const styles = useThemedStyles();
   return (
     <Modal
       animationType="slide"
@@ -191,6 +198,7 @@ export const WorkersListModal = memo(function WorkersListModal({
   checkboxSelectedStyle,
 }) {
   const { t } = useTranslation();
+  const styles = useThemedStyles();
   return (
     <Modal
       animationType="slide"
@@ -264,6 +272,7 @@ export const SelectedItem = ({
   badgeStyle,
 }) => {
   const { t } = useTranslation();
+  const styles = useThemedStyles();
   return (
     <TouchableOpacity
       style={[styles.selectableRow, { borderBottomWidth: 0 }, containerStyle]}
@@ -308,6 +317,7 @@ export const CompaniesListModal = ({
   companies,
 }) => {
   const { t } = useTranslation();
+  const styles = useThemedStyles();
   return (
     <Modal
       animationType="slide"
@@ -360,6 +370,7 @@ export const SingleUserPickerModal = ({
   checkboxSelectedStyle,
 }) => {
   const { t } = useTranslation();
+  const styles = useThemedStyles();
   return (
     <Modal
       animationType="slide"
