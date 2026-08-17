@@ -25,7 +25,8 @@ import {
   addDaysIso,
   emptyLineItem,
 } from "../../../utils/billingTotals";
-import { styles, PRIMARY, INK, PLACEHOLDER } from "./billingForm.styles";
+import { createStyles, PRIMARY, PLACEHOLDER } from "./billingForm.styles";
+import { useTheme } from "../../../theme/ThemeContext";
 import LineItemsEditor from "./LineItemsEditor";
 import ClientPickerModal from "./ClientPickerModal";
 
@@ -33,6 +34,8 @@ const DEFAULT_TERMS_DAYS = 20;
 
 export default function CreateInvoiceScreen() {
   const navigation = useNavigation();
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const { t } = useTranslation();
   const { showSuccess } = useFeedback();
   const insets = useSafeAreaInsets();
@@ -145,7 +148,11 @@ export default function CreateInvoiceScreen() {
           style={styles.headerBtn}
           onPress={() => navigation.goBack()}
         >
-          <Icon name="chevron-left" size={22} color={INK} />
+          <Icon
+            name="chevron-left"
+            size={22}
+            color={theme.content.textPrimary}
+          />
         </TouchableOpacity>
         <Text style={styles.title}>{t("billing.newInvoiceTitle")}</Text>
         <View style={{ width: 44 }} />
@@ -172,13 +179,17 @@ export default function CreateInvoiceScreen() {
             >
               {companyName || t("billing.selectClient")}
             </Text>
-            <Icon name="chevron-down" size={16} color={INK} />
+            <Icon
+              name="chevron-down"
+              size={16}
+              color={theme.content.textPrimary}
+            />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.customerAdd}
             onPress={() => setClientPickerVisible(true)}
           >
-            <Icon name="plus" size={20} color={INK} />
+            <Icon name="plus" size={20} color={theme.content.textPrimary} />
           </TouchableOpacity>
         </View>
 
@@ -192,7 +203,7 @@ export default function CreateInvoiceScreen() {
             <Text style={styles.inputRowText}>
               {formatDisplayDate(dueDate)}
             </Text>
-            <Icon name="calendar" size={18} color={INK} />
+            <Icon name="calendar" size={18} color={theme.content.textPrimary} />
           </TouchableOpacity>
         </View>
 

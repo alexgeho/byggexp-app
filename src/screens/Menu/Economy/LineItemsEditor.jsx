@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
@@ -8,7 +8,8 @@ import {
   formatMoney,
 } from "../../../utils/billingTotals";
 import { getDateLocale } from "../../../utils/dateLocale";
-import { styles, PRIMARY, PLACEHOLDER } from "./billingForm.styles";
+import { createStyles, PRIMARY, PLACEHOLDER } from "./billingForm.styles";
+import { useTheme } from "../../../theme/ThemeContext";
 
 // Editable list of offer/invoice line items. Fully controlled: the parent
 // owns `items` and receives the next array on every change. Matches the Figma
@@ -16,6 +17,8 @@ import { styles, PRIMARY, PLACEHOLDER } from "./billingForm.styles";
 // pill "Add row" button, all 8px apart.
 export default function LineItemsEditor({ items, onChange, label, rowLabel }) {
   const { t } = useTranslation();
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const rowFieldLabel = rowLabel || t("billing.itemTitle");
 
   const update = (index, patch) => {

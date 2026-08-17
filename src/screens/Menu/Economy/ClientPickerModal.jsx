@@ -13,7 +13,8 @@ import {
 import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import { clientService } from "../../../services";
-import { styles, PRIMARY, MUTED } from "./billingForm.styles";
+import { createStyles, PRIMARY, MUTED } from "./billingForm.styles";
+import { useTheme } from "../../../theme/ThemeContext";
 
 const NEW_CLIENT = {
   clientType: "company",
@@ -33,6 +34,8 @@ const NEW_CLIENT = {
 
 export default function ClientPickerModal({ visible, onClose, onSelect }) {
   const { t } = useTranslation();
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
