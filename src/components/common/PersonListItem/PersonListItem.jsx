@@ -10,6 +10,7 @@ import { content, radius, spacing, fontSize } from "../../../theme/tokens";
 export const PersonListItem = ({
   person = {},
   subtitle,
+  meta, // optional second sub-line (e.g. project assignment on the employees list)
   statusBadge, // { label, backgroundColor, color }
   selectable = false,
   selected = false,
@@ -54,6 +55,14 @@ export const PersonListItem = ({
             numberOfLines={1}
           >
             {subtitle}
+          </Text>
+        ) : null}
+        {meta ? (
+          <Text
+            style={[styles.rowMeta, selected && styles.rowTextOnSel]}
+            numberOfLines={1}
+          >
+            {meta}
           </Text>
         ) : null}
       </View>
@@ -125,6 +134,12 @@ const styles = StyleSheet.create({
     color: content.textMuted,
     fontSize: fontSize.footnote,
     fontWeight: "500",
+  },
+  rowMeta: {
+    color: content.placeholder,
+    fontSize: fontSize.caption,
+    fontWeight: "500",
+    marginTop: 1,
   },
   rowTextOnSel: {
     color: content.onAccent,

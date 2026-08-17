@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  ScrollView,
+  FlatList,
   StyleSheet,
   Text,
   View,
@@ -15,7 +15,7 @@ import { useTheme } from "../../theme/ThemeContext";
 import { projectService, shiftService, userService } from "../../services";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
-import { ListCard } from "../../components/common/ListCard/ListCard";
+import { PersonListItem } from "../../components/common/PersonListItem/PersonListItem";
 import { ProjectFilterSelector } from "../../components/common/ProjectFilterSelector/ProjectFilterSelector";
 import {
   standardScreenContainer,
@@ -247,8 +247,6 @@ export default function EmployeesScreen() {
     );
   }
 
-  const themedAccentTextStyle = { color: theme.colors.primary };
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -283,12 +281,13 @@ export default function EmployeesScreen() {
           <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>
       ) : (
-        <ScrollView
+        <FlatList
+          data={filteredEmployees}
+          keyExtractor={(employee) => getUserId(employee)}
           style={styles.scrollContainer}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
-        >
-          {filteredEmployees.length === 0 ? (
+          ListEmptyComponent={
             <View style={styles.emptyState}>
               <Text style={styles.emptyTitle}>{t("employees.emptyTitle")}</Text>
               <Text style={styles.emptySubtitle}>
@@ -297,65 +296,51 @@ export default function EmployeesScreen() {
                   : t("employees.emptyCanCreate")}
               </Text>
             </View>
-          ) : (
-            filteredEmployees.map((employee) => {
-              const employeeId = getUserId(employee);
-              const projectLabel = getEmployeeProjectLabel(
-                employee,
-                projectNameById,
-                projects,
-              );
-              const statusKind = getPersonWorkStatus(
-                employee,
-                selectedProjectId,
-                workedTodayIds,
-              );
+          }
+          renderItem={({ item: employee }) => {
+            const employeeId = getUserId(employee);
+            const projectLabel = getEmployeeProjectLabel(
+              employee,
+              projectNameById,
+              projects,
+            );
+            const statusKind = getPersonWorkStatus(
+              employee,
+              selectedProjectId,
+              workedTodayIds,
+            );
+            const label = {
+              waiting: t("employees.waitingApproval"),
+              at_work: t("employees.atWork"),
+              off_duty: t("employees.offDuty"),
+              not_at_work: t("employees.notAtWork"),
+            }[statusKind];
+            const preset = {
+              waiting: cardStyles.cardBadgeWarning,
+              at_work: cardStyles.cardBadgeAtWork,
+              off_duty: cardStyles.cardBadgeNeutral,
+              not_at_work: cardStyles.cardBadgeAbsent,
+            }[statusKind];
 
-              const badgeLabel = {
-                waiting: t("employees.waitingApproval"),
-                at_work: t("employees.atWork"),
-                off_duty: t("employees.offDuty"),
-                not_at_work: t("employees.notAtWork"),
-              }[statusKind];
-              const badgeStyle = {
-                waiting: cardStyles.cardBadgeWarning,
-                at_work: cardStyles.cardBadgeAtWork,
-                off_duty: cardStyles.cardBadgeNeutral,
-                not_at_work: cardStyles.cardBadgeAbsent,
-              }[statusKind];
-
-              return (
-                <ListCard
-                  key={employeeId}
-                  title={employee.name || t("employees.unnamed")}
-                  badgeLabel={badgeLabel}
-                  badgeStyle={badgeStyle}
-                  onPress={() =>
-                    navigation.navigate("Employee", {
-                      employeeId,
-                    })
-                  }
-                >
-                  <Text
-                    style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    {employee.profession || t("employees.noProfession")}
-                  </Text>
-
-                  <Text
-                    style={cardStyles.cardSecondaryText}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    {projectLabel || t("employees.noProjectAssigned")}
-                  </Text>
-                </ListCard>
-              );
-            })
-          )}
-        </ScrollView>
+            return (
+              <PersonListItem
+                person={employee}
+                subtitle={employee.profession || t("employees.noProfession")}
+                meta={projectLabel || t("employees.noProjectAssigned")}
+                statusBadge={
+                  label && preset
+                    ? {
+                        label,
+                        backgroundColor: preset.backgroundColor,
+                        color: preset.color,
+                      }
+                    : null
+                }
+                onPress={() => navigation.navigate("Employee", { employeeId })}
+              />
+            );
+          }}
+        />
       )}
 
       <BottomBar
