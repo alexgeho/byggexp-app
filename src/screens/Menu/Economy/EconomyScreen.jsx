@@ -17,7 +17,8 @@ import { offerService, invoiceService } from "../../../services";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { getDateLocale } from "../../../utils/dateLocale";
 import { sortByNewest } from "../../../utils/sortByNewest";
-import { styles } from "./EconomyScreen.styles";
+import { createStyles } from "./EconomyScreen.styles";
+import { useTheme } from "../../../theme/ThemeContext";
 
 const OFFER_STATUS_TONE = {
   draft: "draft",
@@ -56,7 +57,7 @@ const formatDate = (value) => {
   });
 };
 
-function Pill({ label, active, onPress }) {
+function Pill({ label, active, onPress, styles }) {
   return (
     <TouchableOpacity
       style={[styles.pill, active && styles.pillOn]}
@@ -74,6 +75,8 @@ export default function EconomyScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
 
   const [mode, setMode] = useState("offers"); // 'offers' | 'invoices'
   const [offers, setOffers] = useState([]);
@@ -290,6 +293,7 @@ export default function EconomyScreen() {
 
             {filterOptions.length > 0 && (
               <Pill
+                styles={styles}
                 label={`${t("economy.filters.all")} (${byCustomer.length})`}
                 active={!statusFilter}
                 onPress={() => setStatusFilter(null)}
@@ -298,6 +302,7 @@ export default function EconomyScreen() {
             {filterOptions.map((status) => (
               <Pill
                 key={status}
+                styles={styles}
                 label={`${t(`economy.${statusNs}.${status}`, status)} (${statusCounts[status]})`}
                 active={statusFilter === status}
                 onPress={() => setStatusFilter(status)}
