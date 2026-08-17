@@ -23,14 +23,9 @@ import AuthContext from "../../contexts/AuthContext";
 import { useTheme } from "../../theme/ThemeContext";
 import { projectService, taskService } from "../../services";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
-import { BackButton } from "../../components/common/BackButton/BackButton";
+import { Screen } from "../../components/common/Screen/Screen";
 import { ListCard } from "../../components/common/ListCard/ListCard";
 import { ProjectFilterSelector } from "../../components/common/ProjectFilterSelector/ProjectFilterSelector";
-import {
-  standardScreenContainer,
-  standardScreenHeader,
-  standardScreenHeaderPlaceholder,
-} from "../../styles/screenLayout";
 import { resolveNewestTimestamp, sortByNewest } from "../../utils/sortByNewest";
 import { cardStyles } from "../../styles/cards";
 import { canCreateTasks } from "../../utils/userRoles";
@@ -63,6 +58,7 @@ export default function TasksScreen() {
   const route = useRoute();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const { user, isLoading: authLoading } = useContext(AuthContext);
   const { refreshKey } = route.params || {};
   const [projects, setProjects] = useState([]);
@@ -228,26 +224,11 @@ export default function TasksScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <BackButton
-          backgroundColor={"rgba(255, 255, 255, 0.6)"}
-          tint="light"
-          borderColor="#FFFFFF50"
-          onPress={() => navigation.goBack()}
-          iconSource={require("../../assets/Arrow-left.png")}
-        />
-        <Text
-          style={[
-            styles.headerTitle,
-            { fontFamily: theme.text.fontFamily["semiBold"] },
-          ]}
-        >
-          {t("task.title")}
-        </Text>
-        <View style={styles.placeholder} />
-      </View>
-
+    <Screen
+      title={t("task.title")}
+      onBack={() => navigation.goBack()}
+      style={styles.screenExtra}
+    >
       <View style={styles.searchContainer}>
         <ProjectFilterSelector
           projects={projects}
@@ -323,73 +304,61 @@ export default function TasksScreen() {
         showAddButton={showCreateTask}
         onAddPress={() => navigation.navigate("CreateTask")}
       />
-    </View>
+    </Screen>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    ...standardScreenContainer,
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: 12,
-  },
-  centeredContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  header: {
-    ...standardScreenHeader,
-  },
-  headerTitle: {
-    color: "#052D50",
-    fontSize: 17,
-    textAlign: "center",
-  },
-  placeholder: {
-    ...standardScreenHeaderPlaceholder,
-  },
-  searchContainer: {
-    width: "100%",
-  },
-  scrollContainer: {
-    flex: 1,
-    width: "100%",
-  },
-  scrollContent: {
-    width: "100%",
-    gap: 12,
-    paddingBottom: 140,
-  },
-  projectGroup: {
-    width: "100%",
-    gap: 12,
-  },
-  projectGroupHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  projectTitle: {
-    color: "#052D50",
-    fontSize: 17,
-    flex: 1,
-    marginRight: 12,
-  },
-  projectCount: {
-    color: "#698196",
-    fontSize: 14,
-  },
+const createStyles = (c) =>
+  StyleSheet.create({
+    screenExtra: {
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    centeredContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    searchContainer: {
+      width: "100%",
+    },
+    scrollContainer: {
+      flex: 1,
+      width: "100%",
+    },
+    scrollContent: {
+      width: "100%",
+      gap: 12,
+      paddingBottom: 140,
+    },
+    projectGroup: {
+      width: "100%",
+      gap: 12,
+    },
+    projectGroupHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    projectTitle: {
+      color: c.textPrimary,
+      fontSize: 17,
+      flex: 1,
+      marginRight: 12,
+    },
+    projectCount: {
+      color: c.textMuted,
+      fontSize: 14,
+    },
 
-  headerDateText: {
-    fontSize: 13,
-    flexShrink: 0,
-  },
-  emptyText: {
-    textAlign: "center",
-    marginTop: 20,
-    color: "#698196",
-    fontSize: 16,
-  },
-});
+    headerDateText: {
+      fontSize: 13,
+      flexShrink: 0,
+    },
+    emptyText: {
+      textAlign: "center",
+      marginTop: 20,
+      color: c.textMuted,
+      fontSize: 16,
+    },
+  });
