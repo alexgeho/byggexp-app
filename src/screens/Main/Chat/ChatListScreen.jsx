@@ -134,6 +134,8 @@ export default function ChatListScreen() {
     const getSortPriority = (person) =>
       STATUS_SORT_PRIORITY[getPersonWorkStatus(person, selectedProjectId)] ??
       99;
+    const getUnreadCount = (person) =>
+      Number(chatByPersonId[String(getUserId(person))]?.unreadCount) || 0;
 
     // Hide only the platform superadmin and the current user. Company admins
     // stay visible so workers can see and message their admin (and reply to
@@ -142,33 +144,55 @@ export default function ChatListScreen() {
 
     const query = searchQuery.trim().toLowerCase();
 
-    return [...colleagues]
-      .filter((person) => !nonStaffRoles.includes(person?.role))
-      .filter((person) => getEntityId(person) !== currentUserId)
-      .filter((person) => {
-        if (!selectedProjectId) {
-          return true;
-        }
-        // Company admins aren't tied to a single project — keep them reachable
-        // whichever project is selected.
-        if (person?.role === USER_ROLES.COMPANY_ADMIN) {
-          return true;
-        }
-        const ids = Array.isArray(person?.projectIds)
-          ? person.projectIds.map((projectId) => getEntityId({ id: projectId }))
-          : [];
-        return ids.includes(String(selectedProjectId));
-      })
-      .filter((person) => {
-        if (!query) {
-          return true;
-        }
-        return (person?.name || person?.email || "")
-          .toLowerCase()
-          .includes(query);
-      })
-      .sort((left, right) => getSortPriority(left) - getSortPriority(right));
-  }, [colleagues, selectedProjectId, searchQuery, user?._id, user?.id]);
+    return (
+      [...colleagues]
+        .filter((person) => !nonStaffRoles.includes(person?.role))
+        // GDPR-erased ("Raderad användare") users are tombstones — never list them.
+        .filter((person) => !person?.erasedAt)
+        .filter((person) => getEntityId(person) !== currentUserId)
+        .filter((person) => {
+          if (!selectedProjectId) {
+            return true;
+          }
+          // Company admins aren't tied to a single project — keep them reachable
+          // whichever project is selected.
+          if (person?.role === USER_ROLES.COMPANY_ADMIN) {
+            return true;
+          }
+          const ids = Array.isArray(person?.projectIds)
+            ? person.projectIds.map((projectId) =>
+                getEntityId({ id: projectId }),
+              )
+            : [];
+          return ids.includes(String(selectedProjectId));
+        })
+        .filter((person) => {
+          if (!query) {
+            return true;
+          }
+          return (person?.name || person?.email || "")
+            .toLowerCase()
+            .includes(query);
+        })
+        .sort((left, right) => {
+          // Unread conversations always float to the top; ties fall back to the
+          // shared work-status ordering.
+          const leftUnread = getUnreadCount(left) > 0 ? 0 : 1;
+          const rightUnread = getUnreadCount(right) > 0 ? 0 : 1;
+          if (leftUnread !== rightUnread) {
+            return leftUnread - rightUnread;
+          }
+          return getSortPriority(left) - getSortPriority(right);
+        })
+    );
+  }, [
+    colleagues,
+    chatByPersonId,
+    selectedProjectId,
+    searchQuery,
+    user?._id,
+    user?.id,
+  ]);
 
   const openReturnedChat = (chat) => {
     navigation.navigate(chat.type === "group" ? "GroupChat" : "SingleChat", {
