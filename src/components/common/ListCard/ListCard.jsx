@@ -24,6 +24,12 @@ export function ListCard({
       {...(onPress ? { onPress, activeOpacity: 0.85 } : {})}
       style={[
         cardStyles.card,
+        // Theme the shared white card so every list card follows dark mode.
+        // Light values match the static ones, so light theme is unchanged.
+        {
+          backgroundColor: theme.content.surface,
+          borderColor: theme.content.surface,
+        },
         selected && cardStyles.cardSelected,
         selected && { borderColor: theme.colors.primary },
         style,
@@ -39,6 +45,7 @@ export function ListCard({
           ellipsizeMode="tail"
           style={[
             cardStyles.cardTitle,
+            { color: theme.content.textPrimary },
             { fontFamily: theme.text.fontFamily.medium },
             titleStyle,
           ]}

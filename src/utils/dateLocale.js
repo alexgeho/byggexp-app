@@ -18,3 +18,15 @@ export const formatDisplayDate = (iso) => {
     year: "numeric",
   });
 };
+
+// Localized date, or null when the value is missing, unparseable, or the Unix
+// epoch fallback (a null/zero date commonly serialises to 1970-01-01). Lets
+// callers hide the row entirely so "Invalid Date" / "1/1/1970" never render.
+export const formatDateOrNull = (value) => {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  // Epoch-ish dates (<= 1970) are almost always a missing value, not real data.
+  if (date.getUTCFullYear() <= 1970) return null;
+  return date.toLocaleDateString(getDateLocale());
+};

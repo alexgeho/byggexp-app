@@ -1,6 +1,6 @@
 /* PROJECTS LIST */
 
-import { getDateLocale } from "../../../utils/dateLocale";
+import { formatDateOrNull } from "../../../utils/dateLocale";
 import {
   useFocusEffect,
   useNavigation,
@@ -325,15 +325,17 @@ export default function ProjectsScreen() {
               )}
               badgeStyle={getProjectStatusBadgeStyle(project.status)}
             >
-              <Text style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}>
-                {t("projects.startLabel", {
-                  date: new Date(project.beginningDate).toLocaleDateString(
-                    getDateLocale(),
-                  ),
-                })}
-              </Text>
+              {formatDateOrNull(project.beginningDate) ? (
+                <Text
+                  style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
+                >
+                  {t("projects.startLabel", {
+                    date: formatDateOrNull(project.beginningDate),
+                  })}
+                </Text>
+              ) : null}
 
-              <Text style={cardStyles.cardSecondaryText}>
+              <Text style={[cardStyles.cardSecondaryText, styles.mutedText]}>
                 {t("projects.locationLabel", {
                   location: project.location,
                 })}
@@ -407,6 +409,10 @@ const createStyles = (c) =>
       marginTop: 20,
       color: c.textMuted,
       fontSize: 16,
+    },
+    // Theme the card's secondary (location) line so it follows dark mode.
+    mutedText: {
+      color: c.textMuted,
     },
     floatingAddButton: {
       position: "absolute",

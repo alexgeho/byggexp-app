@@ -787,7 +787,7 @@ const createStyles = (c) =>
       flexDirection: "row",
     },
     inputLabel: {
-      color: "#00000050",
+      color: c.textMuted,
     },
     requiredAsterisk: {
       color: "#ff0000ff",
@@ -831,7 +831,7 @@ const createStyles = (c) =>
       position: "relative",
     },
     documentsLabel: {
-      color: "#052D5050",
+      color: c.textMuted,
     },
     addButton: {
       width: 48,
