@@ -142,7 +142,7 @@ export function BottomBar({
           pointerEvents="none"
           style={[StyleSheet.absoluteFill, { backgroundColor: fillColor }]}
         />
-        {!isTransparent ? (
+        {!isTransparent && dark ? (
           <>
             <LinearGradient
               colors={pillGlass.base}
