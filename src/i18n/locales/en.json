@@ -712,7 +712,13 @@
     "secondaryHours": "Today's hours",
     "secondaryPlay": "Play",
     "projectStart": "Start",
-    "projectEnd": "End"
+    "projectEnd": "End",
+    "projectRequired": "Project required",
+    "selectProjectBeforeHours": "Select a project before logging hours.",
+    "selectProjectBeforeShift": "Select a project before starting a shift.",
+    "saveHoursError": "Unable to save hours right now.",
+    "shiftErrorTitle": "Shift error",
+    "shiftErrorMessage": "Unable to update the shift right now."
   },
   "menu": {
     "title": "Menu",

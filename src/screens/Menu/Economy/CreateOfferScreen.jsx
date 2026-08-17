@@ -78,7 +78,7 @@ export default function CreateOfferScreen() {
     clarifications: clarifications.trim(),
     validUntil,
     date: toIsoDate(new Date()),
-    items,
+    items: items.map(({ _key, ...item }) => item),
   });
 
   const validate = () => {

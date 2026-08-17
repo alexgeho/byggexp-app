@@ -8,7 +8,13 @@ export const DEFAULT_VAT_RATE = 25;
 export const ROT_RATE = 0.3;
 export const ROT_MAX = 50000;
 
+// Monotonic client-only key so the editor can use a stable React key even as
+// rows are inserted/removed (index keys would misattach input state). Stripped
+// from the payload before saving — see the create screens' buildPayload().
+let lineItemSeq = 0;
+
 export const emptyLineItem = () => ({
+  _key: `li_${(lineItemSeq += 1)}`,
   description: "",
   quantity: 1,
   unit: "st",

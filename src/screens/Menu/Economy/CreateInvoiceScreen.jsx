@@ -95,7 +95,7 @@ export default function CreateInvoiceScreen() {
     reverseVAT: "false",
     rotEnabled,
     rotLaborAmount: Number(String(rotLaborAmount).replace(",", ".")) || 0,
-    items,
+    items: items.map(({ _key, ...item }) => item),
   });
 
   const validate = () => {

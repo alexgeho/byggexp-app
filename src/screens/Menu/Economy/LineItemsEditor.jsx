@@ -45,7 +45,7 @@ export default function LineItemsEditor({ items, onChange, label, rowLabel }) {
       {label ? <Text style={styles.label}>{label}</Text> : null}
 
       {items.map((item, index) => (
-        <View key={index} style={styles.row}>
+        <View key={item._key ?? index} style={styles.row}>
           <View style={styles.rowBlock}>
             <View style={styles.rowLabelLine}>
               <Text style={styles.cellLabel}>{rowFieldLabel}</Text>

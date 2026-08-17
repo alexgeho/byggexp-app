@@ -712,7 +712,13 @@
     "secondaryHours": "Dagens timmar",
     "secondaryPlay": "Spela",
     "projectStart": "Start",
-    "projectEnd": "Slut"
+    "projectEnd": "Slut",
+    "projectRequired": "Projekt krävs",
+    "selectProjectBeforeHours": "Välj ett projekt innan du loggar timmar.",
+    "selectProjectBeforeShift": "Välj ett projekt innan du startar ett arbetspass.",
+    "saveHoursError": "Det gick inte att spara timmar just nu.",
+    "shiftErrorTitle": "Fel på arbetspass",
+    "shiftErrorMessage": "Det gick inte att uppdatera arbetspasset just nu."
   },
   "menu": {
     "title": "Meny",

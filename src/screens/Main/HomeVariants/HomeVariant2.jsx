@@ -23,6 +23,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import Icon from "react-native-vector-icons/Feather";
+import { useTranslation } from "react-i18next";
 
 import AuthContext from "../../../contexts/AuthContext";
 import { useTheme } from "../../../theme/ThemeContext";
@@ -82,6 +83,7 @@ function showShiftAlert(title, message) {
 }
 
 export default function HomeVariant2() {
+  const { t } = useTranslation();
   const { theme, themeName } = useTheme();
   // Light-background home themes share the same "light" treatment
   // (dark timer text, blue play button, white camera, dark footer icons).
@@ -429,8 +431,8 @@ export default function HomeVariant2() {
     async function saveManualHours(durationMs) {
       if (!selectedProjectId) {
         showShiftAlert(
-          "Project required",
-          "Select a project before logging hours.",
+          t("home.projectRequired"),
+          t("home.selectProjectBeforeHours"),
         );
         return false;
       }
@@ -469,11 +471,11 @@ export default function HomeVariant2() {
         return true;
       } catch (error) {
         console.error("Failed to save manual hours:", error);
-        showShiftAlert("Error", "Unable to save hours right now.");
+        showShiftAlert(t("common.error"), t("home.saveHoursError"));
         return false;
       }
     },
-    [selectedProjectId, user, reset],
+    [selectedProjectId, user, reset, t],
   );
 
   // Enter edit mode: seed the wheel from the currently-tracked time so the
@@ -536,8 +538,8 @@ export default function HomeVariant2() {
 
       if (!selectedProjectId) {
         showShiftAlert(
-          "Project required",
-          "Select a project before starting a shift.",
+          t("home.projectRequired"),
+          t("home.selectProjectBeforeShift"),
         );
         return;
       }
@@ -567,8 +569,8 @@ export default function HomeVariant2() {
     } catch (error) {
       console.error("Shift action failed:", error);
       showShiftAlert(
-        "Shift error",
-        getErrorMessage(error, "Unable to update the shift right now."),
+        t("home.shiftErrorTitle"),
+        getErrorMessage(error, t("home.shiftErrorMessage")),
       );
     } finally {
       setLoadingShift(false);
