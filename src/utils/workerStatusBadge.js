@@ -12,44 +12,47 @@ export const isWorkerAtWork = (worker, projectId) =>
     normalizeRefId(worker?.workStatusProjectId) === String(projectId));
 
 // Presence/status → { label, backgroundColor, color } for the shared Badge.
-// Colours come from the Figma design (solid text/dot + 10% tint background).
-export const statusBadgeFor = (statusKind, t) => {
+// Colours come from the Figma design (solid text/dot + tinted background).
+// `c` is the active theme's semantic tokens (theme.content); defaults to the
+// light set so existing callers keep working until they pass the theme.
+export const statusBadgeFor = (statusKind, t, c = content) => {
   switch (statusKind) {
     case "waiting":
       return {
         label: t("employees.waitingApproval"),
-        backgroundColor: content.statusWaitingSoft,
-        color: content.statusWaiting,
+        backgroundColor: c.statusWaitingSoft,
+        color: c.statusWaiting,
       };
     case "at_work":
       return {
         label: `• ${t("employees.atWork")}`,
-        backgroundColor: content.statusAtWorkSoft,
-        color: content.statusAtWork,
+        backgroundColor: c.statusAtWorkSoft,
+        color: c.statusAtWork,
       };
     case "off_duty":
       return {
         label: `• ${t("employees.offDuty")}`,
-        backgroundColor: content.statusOffDutySoft,
-        color: content.statusOffDuty,
+        backgroundColor: c.statusOffDutySoft,
+        color: c.statusOffDuty,
       };
     default: // not_at_work
       return {
         label: `• ${t("employees.notAtWork")}`,
-        backgroundColor: content.statusNotAtWorkSoft,
-        color: content.statusNotAtWork,
+        backgroundColor: c.statusNotAtWorkSoft,
+        color: c.statusNotAtWork,
       };
   }
 };
 
 // Convenience for the worker pickers: derive the status kind from a user, then
 // map to a badge. (Full presence — waiting / at-work / not-at-work.)
-export const getWorkerStatusBadge = (worker, projectId, t) => {
+export const getWorkerStatusBadge = (worker, projectId, t, c = content) => {
   if (shouldShowAccountStatus(worker?.accountStatus)) {
-    return statusBadgeFor("waiting", t);
+    return statusBadgeFor("waiting", t, c);
   }
   return statusBadgeFor(
     isWorkerAtWork(worker, projectId) ? "at_work" : "not_at_work",
     t,
+    c,
   );
 };

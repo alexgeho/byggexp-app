@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Badge } from "../ui/Badge";
 import { Avatar } from "../ui/Avatar";
-import { content, radius, spacing, fontSize } from "../../../theme/tokens";
+import { radius, spacing, fontSize } from "../../../theme/tokens";
+import { useTheme } from "../../../theme/ThemeContext";
 
 // Unified person row shared by every people list (worker pickers, chat list…).
 // Single source of truth so lists cannot drift apart. Optional props cover the
@@ -20,6 +21,8 @@ export const PersonListItem = ({
   onLongPress,
   onAvatarPress,
 }) => {
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const avatar = <Avatar name={person.name} uri={person.avatarUrl} size={44} />;
 
   return (
@@ -89,78 +92,79 @@ export const PersonListItem = ({
   );
 };
 
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.md,
-    backgroundColor: content.surface,
-    borderWidth: 1,
-    borderColor: content.surface,
-    borderRadius: radius.lg,
-    // Figma: card padding 10 all sides, 10px gap between cards.
-    paddingVertical: spacing.sm + 2,
-    paddingHorizontal: spacing.sm + 2,
-    marginBottom: spacing.sm + 2,
-  },
-  rowRight: {
-    alignSelf: "flex-start",
-    alignItems: "flex-end",
-    justifyContent: "flex-start",
-    gap: spacing.lg,
-  },
-  rowSelected: {
-    backgroundColor: "rgba(12, 119, 253, 0.6)",
-    borderColor: "rgba(12, 119, 253, 0.6)",
-  },
-  rowBody: {
-    flex: 1,
-    alignSelf: "flex-start",
-    // Tight line spacing: name stays anchored to the top (aligned with the
-    // badge's top edge); profession + project sit just under it.
-    gap: 4,
-  },
-  rowName: {
-    color: content.textPrimary,
-    fontSize: fontSize.title,
-    fontWeight: "500",
-  },
-  rowTime: {
-    color: content.textMuted,
-    fontSize: fontSize.footnote,
-    fontWeight: "500",
-  },
-  rowTimeOnSel: {
-    color: "rgba(255, 255, 255, 0.85)",
-  },
-  rowPreview: {
-    color: content.textMuted,
-    fontSize: fontSize.footnote,
-    fontWeight: "500",
-  },
-  rowMeta: {
-    color: content.placeholder,
-    fontSize: fontSize.caption,
-    fontWeight: "500",
-  },
-  rowTextOnSel: {
-    color: content.onAccent,
-  },
-  unreadBadge: {
-    minWidth: 20,
-    height: 20,
-    borderRadius: radius.full,
-    paddingHorizontal: 5,
-    backgroundColor: content.accent,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: spacing.sm,
-  },
-  unreadBadgeText: {
-    color: content.onAccent,
-    fontSize: 11,
-    fontWeight: "700",
-  },
-});
+const createStyles = (c) =>
+  StyleSheet.create({
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing.md,
+      backgroundColor: c.surface,
+      borderWidth: 1,
+      borderColor: c.surface,
+      borderRadius: radius.lg,
+      // Figma: card padding 10 all sides, 10px gap between cards.
+      paddingVertical: spacing.sm + 2,
+      paddingHorizontal: spacing.sm + 2,
+      marginBottom: spacing.sm + 2,
+    },
+    rowRight: {
+      alignSelf: "flex-start",
+      alignItems: "flex-end",
+      justifyContent: "flex-start",
+      gap: spacing.lg,
+    },
+    rowSelected: {
+      backgroundColor: "rgba(12, 119, 253, 0.6)",
+      borderColor: "rgba(12, 119, 253, 0.6)",
+    },
+    rowBody: {
+      flex: 1,
+      alignSelf: "flex-start",
+      // Tight line spacing: name stays anchored to the top (aligned with the
+      // badge's top edge); profession + project sit just under it.
+      gap: 4,
+    },
+    rowName: {
+      color: c.textPrimary,
+      fontSize: fontSize.title,
+      fontWeight: "500",
+    },
+    rowTime: {
+      color: c.textMuted,
+      fontSize: fontSize.footnote,
+      fontWeight: "500",
+    },
+    rowTimeOnSel: {
+      color: "rgba(255, 255, 255, 0.85)",
+    },
+    rowPreview: {
+      color: c.textMuted,
+      fontSize: fontSize.footnote,
+      fontWeight: "500",
+    },
+    rowMeta: {
+      color: c.placeholder,
+      fontSize: fontSize.caption,
+      fontWeight: "500",
+    },
+    rowTextOnSel: {
+      color: c.onAccent,
+    },
+    unreadBadge: {
+      minWidth: 20,
+      height: 20,
+      borderRadius: radius.full,
+      paddingHorizontal: 5,
+      backgroundColor: c.accent,
+      alignItems: "center",
+      justifyContent: "center",
+      marginRight: spacing.sm,
+    },
+    unreadBadgeText: {
+      color: c.onAccent,
+      fontSize: 11,
+      fontWeight: "700",
+    },
+  });
 
 export default PersonListItem;

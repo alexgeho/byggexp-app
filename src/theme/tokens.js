@@ -43,7 +43,10 @@ export const fontWeight = {
 
 // Semantic content colours (light theme). Chrome colours (primary, background,
 // card…) stay on the per-palette `theme.colors`.
-export const content = {
+// Light semantic content tokens (default). Dark equivalents live in
+// `darkContent`; each theme picks one (see theme/themes.js) and components read
+// them via `theme.content.*` so they follow the active theme.
+export const lightContent = {
   // Text
   textPrimary: "#052D50", // headings / primary text (navy)
   textSecondary: "#687898", // labels
@@ -84,6 +87,53 @@ export const content = {
   statusOffDuty: "#667E93",
   statusOffDutySoft: "#667E931A",
 };
+
+// Dark semantic content tokens — used by the "black" theme. Values are aligned
+// with the dark palette (background #1C1C1C, card #232323, white text) and the
+// status pills use translucent tints that read on dark surfaces.
+export const darkContent = {
+  // Text
+  textPrimary: "#FFFFFF",
+  textSecondary: "#AEB9C6",
+  textMuted: "#8A97A6",
+  placeholder: "#6B7683",
+  onAccent: "#FFFFFF",
+
+  // Surfaces
+  surface: "#232323",
+  surfaceMuted: "rgba(255,255,255,0.08)",
+  background: "#1C1C1C",
+
+  // Lines
+  divider: "rgba(255,255,255,0.10)",
+  border: "rgba(255,255,255,0.20)",
+
+  // Accent
+  accent: "#3097F7",
+  accentSoft: "rgba(48,151,247,0.20)",
+
+  // States
+  danger: "#FF6B6B",
+  dangerSoft: "rgba(255,69,58,0.22)",
+  success: "#32D74B",
+  successSoft: "rgba(50,215,75,0.20)",
+  warning: "#FFD60A",
+  warningSoft: "rgba(255,214,10,0.18)",
+
+  // Presence/status badges — brighter foregrounds + translucent pills for dark.
+  statusAtWork: "#3DDC84",
+  statusAtWorkSoft: "rgba(4,178,81,0.22)",
+  statusNotAtWork: "#FF6B6B",
+  statusNotAtWorkSoft: "rgba(252,29,44,0.22)",
+  statusWaiting: "#4DA3FF",
+  statusWaitingSoft: "rgba(12,119,253,0.24)",
+  statusOffDuty: "#8A97A6",
+  statusOffDutySoft: "rgba(255,255,255,0.10)",
+};
+
+// Back-compat: existing `import { content }` sites keep the light values until
+// they migrate to `theme.content.*`. New code should read `theme.content`.
+export const content = lightContent;
 
 export const tokens = { spacing, radius, fontSize, fontWeight, content };
 

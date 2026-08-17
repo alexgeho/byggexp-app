@@ -308,7 +308,7 @@ export default function EmployeesScreen() {
                 person={employee}
                 subtitle={employee.profession || t("employees.noProfession")}
                 meta={projectLabel || t("employees.noProjectAssigned")}
-                statusBadge={statusBadgeFor(statusKind, t)}
+                statusBadge={statusBadgeFor(statusKind, t, theme.content)}
                 onPress={() => navigation.navigate("Employee", { employeeId })}
               />
             );

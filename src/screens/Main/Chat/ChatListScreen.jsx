@@ -272,7 +272,9 @@ export default function ChatListScreen() {
     const chat = chatByPersonId[String(personId)];
     const selected = selectedIds.includes(personId);
     const statusKind = getPersonWorkStatus(person, selectedProjectId);
-    const statusBadge = statusKind ? statusBadgeFor(statusKind, t) : null;
+    const statusBadge = statusKind
+      ? statusBadgeFor(statusKind, t, theme.content)
+      : null;
     const timeAgo = chat ? formatTimeAgo(chat.lastMessageAt) : "";
     const preview =
       chat?.lastMessageText || person.profession || t("employees.noProfession");

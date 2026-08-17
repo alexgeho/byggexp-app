@@ -12,6 +12,7 @@ import {
   fontSize as fontSizeTokens,
   fontWeight as fontWeightTokens,
   content as contentTokens,
+  darkContent,
 } from "./tokens";
 
 function withIconBadgeBackground(colors) {
@@ -80,6 +81,8 @@ export const blueTheme = {
 
 export const blackTheme = {
   ...common,
+  // Dark theme: override the default (light) semantic tokens with the dark set.
+  content: darkContent,
   colors: withIconBadgeBackground(blackColors),
 };
 
