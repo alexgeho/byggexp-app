@@ -41,7 +41,7 @@ const PILL_GLASS = {
       "rgba(255,255,255,0.015)",
       "rgba(255,255,255,0)",
     ],
-    ring: "rgba(255,255,255,0.04)",
+    ring: "transparent",
   },
 };
 const MENU_ROUTES = new Set([

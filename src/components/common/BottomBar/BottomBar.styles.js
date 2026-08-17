@@ -70,7 +70,8 @@ export function createStyles(theme) {
     // Dark theme: swap the crisp white pill stroke for a subtle light one so
     // the (dark-filled) pill reads on the dark background.
     menuWrapperDark: {
-      borderColor: "rgba(255,255,255,0.08)",
+      // No visible stroke in dark — a light border reads as a grey outline.
+      borderWidth: 0,
     },
     // Back-button-style glass layers over the pill fill.
     glassBase: {
