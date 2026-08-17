@@ -35,7 +35,7 @@ import {
 } from "../../../utils/taskNotifications";
 import { defaultRepeatIntervalMinutes } from "../../../theme/settings";
 import { canCreateTasks } from "../../../utils/userRoles";
-import { styles } from "./CreateTaskScreen.styles";
+import { createStyles } from "./CreateTaskScreen.styles";
 import {
   FieldIcon,
   isImageDocument,
@@ -58,6 +58,7 @@ export default function CreateTaskScreen() {
   const route = useRoute();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const { showSuccess } = useFeedback();
   const { user } = useContext(AuthContext);
   const isWorkerCreator = user?.role === "worker";

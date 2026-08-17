@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { getDateLocale } from "../../../utils/dateLocale";
 import {
   View,
@@ -12,7 +12,13 @@ import { useTranslation } from "react-i18next";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Icon from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { styles } from "./CreateTaskScreen.styles";
+import { createStyles } from "./CreateTaskScreen.styles";
+import { useTheme } from "../../../theme/ThemeContext";
+
+const useThemedStyles = () => {
+  const { theme } = useTheme();
+  return useMemo(() => createStyles(theme.content), [theme.content]);
+};
 
 const DATETIME_PICKER_DISPLAY = Platform.OS === "ios" ? "inline" : "default";
 const DEFAULT_ALL_DAY_START_TIME = "08:00";
@@ -70,15 +76,19 @@ export const getDocumentTypeMeta = (document) => {
 
 export const SectionLabel = () => null;
 
-export const GroupCard = ({ children }) => (
-  <View style={styles.groupCard}>{children}</View>
-);
+export const GroupCard = ({ children }) => {
+  const styles = useThemedStyles();
+  return <View style={styles.groupCard}>{children}</View>;
+};
 
-export const GroupRow = ({ children, isLast = false }) => (
-  <View style={[styles.groupRow, isLast && styles.groupRowLast]}>
-    {children}
-  </View>
-);
+export const GroupRow = ({ children, isLast = false }) => {
+  const styles = useThemedStyles();
+  return (
+    <View style={[styles.groupRow, isLast && styles.groupRowLast]}>
+      {children}
+    </View>
+  );
+};
 
 const formatScheduleDate = (date) =>
   date.toLocaleDateString(getDateLocale(), {
@@ -162,6 +172,7 @@ export const DateTimeFieldModal = ({
   onClose,
 }) => {
   const { t } = useTranslation();
+  const styles = useThemedStyles();
   const [draftDate, setDraftDate] = useState(value || new Date());
 
   useEffect(() => {
@@ -260,6 +271,7 @@ export const DateTimeFieldModal = ({
 
 export const ScheduleDateRow = ({ label, value, onPress, isLast = false }) => {
   const { t } = useTranslation();
+  const styles = useThemedStyles();
   return (
     <View style={[styles.scheduleRow, isLast && styles.groupRowLast]}>
       <Text style={styles.scheduleLabel}>{label}</Text>
@@ -312,6 +324,7 @@ export const ProjectPickerModal = ({
   onClose,
 }) => {
   const { t } = useTranslation();
+  const styles = useThemedStyles();
   return (
     <Modal
       visible={visible}
@@ -329,7 +342,7 @@ export const ProjectPickerModal = ({
               onPress={onClose}
               style={styles.projectPickerClose}
             >
-              <Icon name="x" size={20} color="#052D50" />
+              <Icon name="x" size={20} color="#8A97A6" />
             </TouchableOpacity>
           </View>
 
@@ -391,6 +404,7 @@ export const UserPickerModal = ({
   selectedUserIds = [],
 }) => {
   const { t } = useTranslation();
+  const styles = useThemedStyles();
   return (
     <Modal
       visible={visible}
@@ -408,7 +422,7 @@ export const UserPickerModal = ({
               onPress={onClose}
               style={styles.projectPickerClose}
             >
-              <Icon name="x" size={20} color="#052D50" />
+              <Icon name="x" size={20} color="#8A97A6" />
             </TouchableOpacity>
           </View>
 
