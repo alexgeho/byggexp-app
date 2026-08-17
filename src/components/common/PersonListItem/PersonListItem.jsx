@@ -116,7 +116,9 @@ const styles = StyleSheet.create({
   rowBody: {
     flex: 1,
     alignSelf: "flex-start",
-    gap: 10,
+    // Tight line spacing: name stays anchored to the top (aligned with the
+    // badge's top edge); profession + project sit just under it.
+    gap: 4,
   },
   rowName: {
     color: content.textPrimary,
@@ -140,7 +142,6 @@ const styles = StyleSheet.create({
     color: content.placeholder,
     fontSize: fontSize.caption,
     fontWeight: "500",
-    marginTop: 1,
   },
   rowTextOnSel: {
     color: content.onAccent,
