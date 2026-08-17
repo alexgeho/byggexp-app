@@ -5,9 +5,11 @@ import {
 } from "../../styles/screenLayout";
 
 export function createStyles(theme) {
+  const c = theme.content;
   return StyleSheet.create({
     container: {
       ...standardScreenContainer,
+      backgroundColor: c.background,
       paddingBottom: 0,
     },
     scrollContainer: {
@@ -24,7 +26,7 @@ export function createStyles(theme) {
     title: {
       fontSize: 18,
       fontWeight: "600",
-      color: "#052D50",
+      color: c.textPrimary,
     },
 
     placeholder: {
@@ -38,7 +40,7 @@ export function createStyles(theme) {
     sectionTitle: {
       fontSize: 16,
       fontWeight: "600",
-      color: "#052D50",
+      color: c.textPrimary,
       marginBottom: 12,
       marginLeft: 4,
     },
@@ -58,7 +60,7 @@ export function createStyles(theme) {
       // Outline the full circle so light/white theme halves stay visible
       // against the screen background (were blending in and looking clipped).
       borderWidth: 1,
-      borderColor: "#C2CCD6",
+      borderColor: c.border,
     },
 
     splitThemePreview: {
@@ -72,11 +74,11 @@ export function createStyles(theme) {
 
     activeThemeButton: {
       borderWidth: 3,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
     },
 
     list: {
-      backgroundColor: "#ffffff",
+      backgroundColor: c.surface,
       borderRadius: 24,
       overflow: "hidden",
       marginBottom: 24,
@@ -92,12 +94,12 @@ export function createStyles(theme) {
 
     itemBorder: {
       borderBottomWidth: 1,
-      borderBottomColor: "#e9e9e9",
+      borderBottomColor: c.divider,
     },
 
     itemText: {
       fontSize: 16,
-      color: "#052D50",
+      color: c.textPrimary,
     },
 
     sectionRowActions: {
@@ -119,7 +121,7 @@ export function createStyles(theme) {
       borderRadius: 7,
       borderWidth: 1.5,
       borderColor: `${theme.colors.primary}33`,
-      backgroundColor: "#FFFFFF",
+      backgroundColor: c.surface,
 
       alignItems: "center",
       justifyContent: "center",
@@ -147,7 +149,7 @@ export function createStyles(theme) {
       gap: 6,
       paddingVertical: 16,
       borderRadius: 16,
-      backgroundColor: "#ffffff",
+      backgroundColor: c.surface,
       borderWidth: 1,
       borderColor: `${theme.colors.primary}26`,
     },
@@ -157,7 +159,7 @@ export function createStyles(theme) {
     },
     secondaryOptionLabel: {
       fontSize: 13,
-      color: "#052d50",
+      color: c.textPrimary,
       fontFamily: theme.text.fontFamily.medium,
     },
     secondaryOptionLabelActive: {

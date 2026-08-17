@@ -6,16 +6,18 @@ import {
 } from "../../styles/screenLayout";
 
 export function createStyles(theme) {
+  const c = theme.content;
   return StyleSheet.create({
     container: {
       ...standardScreenContainer,
+      backgroundColor: c.background,
     },
     header: {
       ...standardScreenHeader,
     },
     backButton: {
       padding: 16,
-      backgroundColor: "#ffffff",
+      backgroundColor: c.surface,
       borderRadius: 9999,
     },
     backIcon: {
@@ -23,7 +25,7 @@ export function createStyles(theme) {
       height: 20,
     },
     headerTitle: {
-      color: "#052D50",
+      color: c.textPrimary,
       fontSize: 17,
       textAlign: "center",
     },
@@ -32,7 +34,7 @@ export function createStyles(theme) {
     },
     sectionTitle: {
       // Matches Figma: DM Sans Medium 17, color #8296A7.
-      color: "#8296A7",
+      color: c.textMuted,
       fontSize: 17,
       fontWeight: "500",
       fontFamily: theme.text.fontFamily.medium,
@@ -51,14 +53,14 @@ export function createStyles(theme) {
     },
     groupCard: {
       width: "100%",
-      backgroundColor: "#FFFFFF",
+      backgroundColor: c.surface,
       borderRadius: 24,
       overflow: "hidden",
     },
     menuItem: {
       flexDirection: "row",
       alignItems: "center",
-      backgroundColor: "#f9f9f9",
+      backgroundColor: c.surfaceMuted,
       borderRadius: 16,
       paddingVertical: 12,
       paddingHorizontal: 16,
@@ -79,18 +81,18 @@ export function createStyles(theme) {
     menuTitle: {
       flex: 1,
       marginLeft: 12,
-      color: "#052D50",
+      color: c.textPrimary,
       fontSize: 16,
     },
     arrowIcon: {
       width: 16,
       height: 16,
-      tintColor: "#698196",
+      tintColor: c.textMuted,
     },
     userInfoContainer: {
       flexDirection: "row",
       alignItems: "center",
-      backgroundColor: "#ffffff",
+      backgroundColor: c.surface,
       borderRadius: 89,
       padding: 12,
       marginBottom: 16,
@@ -106,7 +108,7 @@ export function createStyles(theme) {
     },
     userName: {
       fontSize: 18,
-      color: "#052D50",
+      color: c.textPrimary,
     },
     roleBadge: {
       backgroundColor: theme.colors.primary + "1A",
