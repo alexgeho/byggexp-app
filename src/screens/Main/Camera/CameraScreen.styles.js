@@ -128,6 +128,33 @@ export const createStyles = (c) =>
       // Figma: photo thumbnails use a 6px radius.
       borderRadius: 6,
       backgroundColor: "#E5E9ED",
+      overflow: "hidden",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    // Receipt tile: image fills the thumb, amount sits in a bottom overlay.
+    thumbImage: {
+      ...StyleSheet.absoluteFillObject,
+    },
+    receiptPlaceholderIcon: {
+      width: 26,
+      height: 26,
+      opacity: 0.5,
+    },
+    receiptAmount: {
+      position: "absolute",
+      left: 0,
+      right: 0,
+      bottom: 0,
+      paddingHorizontal: 6,
+      paddingVertical: 4,
+      backgroundColor: "rgba(5, 45, 80, 0.55)",
+    },
+    receiptAmountText: {
+      color: "#FFFFFF",
+      fontSize: 12,
+      fontWeight: "600",
+      textAlign: "center",
     },
 
     // Empty states

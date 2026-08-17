@@ -31,6 +31,8 @@ import { expenseService, shiftService } from "../../../services";
 import ExpenseReviewSheet from "./ExpenseReviewSheet";
 import { useTheme } from "../../../theme/ThemeContext";
 import { formatShiftDayLabel, resolveUploadUrl } from "../../../utils/shifts";
+import { getDateLocale } from "../../../utils/dateLocale";
+import { formatMoney } from "../../../utils/billingTotals";
 import {
   IMAGE_DOCUMENT_TYPES,
   pickUploadAssets,
@@ -59,6 +61,28 @@ const buildPhotoSections = (days) =>
     .filter((section) => section.count > 0)
     .sort((a, b) => (a.date < b.date ? 1 : -1));
 
+// Group saved receipts (utlägg) into date sections, newest first — mirrors
+// buildPhotoSections so the "Receipts" tab reads like the shift-photo gallery.
+const buildReceiptSections = (expenses) => {
+  const groups = new Map();
+  (expenses || []).forEach((expense) => {
+    const stamp = expense?.createdAt || expense?.date || "";
+    const dayKey = String(stamp).slice(0, 10);
+    if (!groups.has(dayKey)) {
+      groups.set(dayKey, []);
+    }
+    groups.get(dayKey).push(expense);
+  });
+  return Array.from(groups.entries())
+    .map(([date, receipts]) => ({
+      date,
+      label: date ? formatShiftDayLabel(date) : "",
+      count: receipts.length,
+      receipts,
+    }))
+    .sort((a, b) => (a.date < b.date ? 1 : -1));
+};
+
 export default function CameraScreen() {
   const navigation = useNavigation();
   const route = useRoute();
@@ -70,6 +94,7 @@ export default function CameraScreen() {
   const currentUserId = user?.id || user?._id || null;
   const [shift, setShift] = useState(null);
   const [photoSections, setPhotoSections] = useState([]);
+  const [receiptSections, setReceiptSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [mode, setMode] = useState("shift"); // 'shift' | 'expense'
@@ -111,12 +136,28 @@ export default function CameraScreen() {
     }
   }, [currentUserId]);
 
+  const refreshReceipts = useCallback(async () => {
+    try {
+      // Same scope as the photo gallery: only the current user's own receipts.
+      // (Admins get the whole company from the API, so we filter client-side.)
+      const list = await expenseService.list();
+      const own = (Array.isArray(list) ? list : []).filter(
+        (expense) =>
+          !currentUserId || String(expense?.userId) === String(currentUserId),
+      );
+      setReceiptSections(buildReceiptSections(own));
+    } catch (error) {
+      console.error("Failed to load receipts:", error);
+    }
+  }, [currentUserId]);
+
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
       const [currentShift] = await Promise.all([
         shiftService.getCurrent().catch(() => null),
         refreshSections(),
+        refreshReceipts(),
       ]);
 
       if (route.params?.shiftId && currentShift?.id !== route.params.shiftId) {
@@ -130,7 +171,7 @@ export default function CameraScreen() {
     } finally {
       setLoading(false);
     }
-  }, [refreshSections, route.params?.shiftId]);
+  }, [refreshSections, refreshReceipts, route.params?.shiftId]);
 
   useEffect(() => {
     loadData();
@@ -395,6 +436,34 @@ export default function CameraScreen() {
       .filter(Boolean);
   }, [photoSections, searchQuery, getPhotoFileName]);
 
+  const getReceiptTitle = useCallback(
+    (receipt) =>
+      receipt?.supplierName?.trim() ||
+      receipt?.category?.trim() ||
+      t("camera.expense.title"),
+    [t],
+  );
+
+  const visibleReceiptSections = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) {
+      return receiptSections;
+    }
+    return receiptSections
+      .map((section) => {
+        if (section.label.toLowerCase().includes(query)) {
+          return section;
+        }
+        const receipts = section.receipts.filter((receipt) =>
+          getReceiptTitle(receipt).toLowerCase().includes(query),
+        );
+        return receipts.length
+          ? { ...section, receipts, count: receipts.length }
+          : null;
+      })
+      .filter(Boolean);
+  }, [receiptSections, searchQuery, getReceiptTitle]);
+
   const renderHeader = () => (
     <View style={styles.header}>
       <BackButton
@@ -563,10 +632,79 @@ export default function CameraScreen() {
                   ? t("camera.noResultsHint")
                   : t("camera.noPhotosHint"),
               )
-          : renderEmpty(
-              t("camera.receiptsEmptyTitle"),
-              t("camera.receiptsEmptyHint"),
-            )}
+          : visibleReceiptSections.length
+            ? visibleReceiptSections.map((section) => (
+                <View key={section.date} style={styles.section}>
+                  <View style={styles.sectionHeader}>
+                    <Text
+                      style={[
+                        styles.sectionDate,
+                        { fontFamily: theme.text.fontFamily.medium },
+                      ]}
+                    >
+                      {section.label}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.sectionCount,
+                        { fontFamily: theme.text.fontFamily.regular },
+                      ]}
+                    >
+                      {formatPhotoCountLabel(section.count)}
+                    </Text>
+                  </View>
+
+                  <View style={styles.grid}>
+                    {section.receipts.map((receipt, index) => {
+                      const receiptUri = receipt.receiptUrl
+                        ? resolveUploadUrl(receipt.receiptUrl)
+                        : null;
+                      return (
+                        <TouchableOpacity
+                          key={`${receipt._id || receipt.id || index}`}
+                          activeOpacity={0.85}
+                          disabled={!receiptUri}
+                          onPress={() =>
+                            receiptUri && setPreviewPhoto(receiptUri)
+                          }
+                        >
+                          <View style={styles.thumb}>
+                            {receiptUri ? (
+                              <Image
+                                source={{ uri: receiptUri }}
+                                style={styles.thumbImage}
+                              />
+                            ) : (
+                              <Image
+                                source={require("../../../assets/Camera-gray.png")}
+                                style={styles.receiptPlaceholderIcon}
+                              />
+                            )}
+                            {receipt.amount ? (
+                              <View style={styles.receiptAmount}>
+                                <Text
+                                  style={styles.receiptAmountText}
+                                  numberOfLines={1}
+                                >
+                                  {formatMoney(receipt.amount, getDateLocale())}
+                                </Text>
+                              </View>
+                            ) : null}
+                          </View>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                </View>
+              ))
+            : renderEmpty(
+                searchQuery
+                  ? t("camera.noResults")
+                  : t("camera.receiptsEmptyTitle"),
+                searchQuery
+                  ? t("camera.noResultsHint")
+                  : t("camera.receiptsEmptyHint"),
+              )}
       </ScrollView>
 
       <BottomBar
@@ -601,6 +739,7 @@ export default function CameraScreen() {
         onClose={() => setReviewData(null)}
         onSaved={() => {
           setReviewData(null);
+          refreshReceipts();
           showSuccess({
             title: t("camera.expenseSaved"),
             message: t("camera.expenseSavedMessage"),
