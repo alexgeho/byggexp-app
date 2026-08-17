@@ -2,12 +2,6 @@ import { API_BASE_URL } from "../services/api";
 import i18n from "../i18n";
 
 const MONTH_YEAR_OPTIONS = { month: "long", year: "numeric" };
-const LONG_DATE_OPTIONS = {
-  weekday: "long",
-  month: "long",
-  day: "numeric",
-  year: "numeric",
-};
 const DAY_DATE_OPTIONS = { month: "long", day: "numeric", year: "numeric" };
 const TIME_OPTIONS = { hour: "2-digit", minute: "2-digit", hour12: false };
 const EXPORT_PICKER_OPTIONS = {
@@ -46,22 +40,6 @@ export const formatDuration = (durationMs = 0) => {
   return `${minutes}m`;
 };
 
-export const formatDurationVerbose = (durationMs = 0) => {
-  const totalMinutes = Math.floor(durationMs / 60000);
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-
-  if (hours && minutes) {
-    return `${hours} hours ${minutes} min`;
-  }
-
-  if (hours) {
-    return `${hours} hours`;
-  }
-
-  return `${minutes} min`;
-};
-
 export const formatDurationShort = (durationMs = 0) => {
   const hours = durationMs / (60 * 60 * 1000);
   if (hours >= 1) {
@@ -86,17 +64,6 @@ export const formatDurationCompact = (durationMs = 0) => {
   }
 
   return `${minutes}m`;
-};
-
-export const formatShiftDate = (dateString) => {
-  if (!dateString) return "—";
-
-  const date = new Date(`${dateString}T12:00:00`);
-  if (Number.isNaN(date.getTime())) {
-    return dateString;
-  }
-
-  return getDateFormatter(LONG_DATE_OPTIONS).format(date);
 };
 
 export const formatShiftDayLabel = (dateString) => {

@@ -227,37 +227,6 @@ export const buildEmployeeItems = (tasks = [], projectMap = {}, employeeId) => {
   });
 };
 
-// Task bars for one project: its tasks, each as a row.
-export const buildProjectItems = (tasks = [], projectMap = {}, projectId) => {
-  if (!projectId) {
-    return [];
-  }
-
-  return tasks.flatMap((task, index) => {
-    if (normalizeId(task.projectId) !== String(projectId)) {
-      return [];
-    }
-
-    const dates = getTaskDates(task);
-    if (!dates) {
-      return [];
-    }
-
-    const project = projectMap[String(projectId)];
-
-    return [
-      {
-        id: `${normalizeId(task) || index}`,
-        title: task.taskTitle || "—",
-        subtitle: project?.name || "",
-        start: dates.start,
-        end: dates.end,
-        color: task.color || colorForKey(normalizeId(task) || index),
-      },
-    ];
-  });
-};
-
 // Approved absence bars (Frånvaro) for one employee.
 export const buildLeaveItems = (leaves = [], employeeId) => {
   if (!employeeId) {

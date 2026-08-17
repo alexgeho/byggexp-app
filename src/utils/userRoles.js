@@ -55,11 +55,6 @@ export function canCreateProjects(role) {
   return hasRole(role, [USER_ROLES.SUPERADMIN, USER_ROLES.COMPANY_ADMIN]);
 }
 
-/** Manage billing (offers & invoices) — backend: SuperAdmin, CompanyAdmin only */
-export function canManageBilling(role) {
-  return hasRole(role, [USER_ROLES.SUPERADMIN, USER_ROLES.COMPANY_ADMIN]);
-}
-
 /** Update projects, workers, project documents — backend includes ProjectAdmin */
 export function canManageProjects(role) {
   return hasRole(role, MANAGEMENT_ROLES);
@@ -114,14 +109,6 @@ export const USER_ACCOUNT_STATUS = {
 
 export function shouldShowAccountStatus(status) {
   return status === USER_ACCOUNT_STATUS.WAITING_FOR_APPROVAL;
-}
-
-export function getAccountStatusLabel(status) {
-  if (status === USER_ACCOUNT_STATUS.WAITING_FOR_APPROVAL) {
-    return "Waiting for approval";
-  }
-
-  return null;
 }
 
 // Shift reasons that mean the worker's shift was auto-paused (went offline or

@@ -81,11 +81,3 @@ export const clearTransitionLogForProject = async (projectId) => {
   delete log[projectId];
   await writeLog(log);
 };
-
-export const clearTransitionLog = async () => {
-  try {
-    await AsyncStorage.removeItem(SHIFT_TRANSITION_LOG_KEY);
-  } catch {
-    // Best-effort.
-  }
-};

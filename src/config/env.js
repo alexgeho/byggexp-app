@@ -3,14 +3,3 @@
 export const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, "") ||
   "https://api.byggexp.se";
-
-// Resolve a possibly-relative asset/avatar path against the API host.
-export const resolveAssetUrl = (value) => {
-  if (!value) {
-    return null;
-  }
-  if (value.startsWith("http://") || value.startsWith("https://")) {
-    return value;
-  }
-  return `${API_BASE_URL}${value.startsWith("/") ? value : `/${value}`}`;
-};

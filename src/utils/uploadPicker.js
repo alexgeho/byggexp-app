@@ -250,4 +250,3 @@ export const isVideoAsset = (asset) => {
 
 export const IMAGE_DOCUMENT_TYPES = ["image/*"];
 export const IMAGE_AND_VIDEO_DOCUMENT_TYPES = ["image/*", "video/*"];
-export const DEFAULT_UPLOAD_DOCUMENT_TYPES = DEFAULT_DOCUMENT_TYPES;
