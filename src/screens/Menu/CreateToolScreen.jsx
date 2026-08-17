@@ -36,7 +36,7 @@ const getEntityId = (entity) => {
   return id ? String(id) : "";
 };
 
-const FieldIcon = ({ name, theme }) => (
+const FieldIcon = ({ name, theme, styles }) => (
   <View
     style={[
       styles.fieldIconBadge,
@@ -54,6 +54,8 @@ const PlainFormRow = ({
   placeholder,
   isLast = false,
   multiline = false,
+  theme,
+  styles,
 }) => (
   <View
     style={[
@@ -69,7 +71,7 @@ const PlainFormRow = ({
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor="rgba(5, 45, 80, 0.35)"
+        placeholderTextColor={theme.content.placeholder}
         multiline={multiline}
         textAlignVertical={multiline ? "top" : "auto"}
       />
@@ -84,6 +86,7 @@ const SelectRow = ({
   placeholder,
   onPress,
   theme,
+  styles,
   isLast = false,
 }) => (
   <TouchableOpacity
@@ -96,7 +99,7 @@ const SelectRow = ({
     activeOpacity={0.85}
   >
     <View style={styles.fieldRowContent}>
-      <FieldIcon name={icon} theme={theme} />
+      <FieldIcon name={icon} theme={theme} styles={styles} />
       <View style={styles.fieldInputWrap}>
         <Text style={styles.fieldLabel}>{label}</Text>
         <Text
@@ -107,7 +110,7 @@ const SelectRow = ({
         </Text>
       </View>
     </View>
-    <Icon name="chevron-right" size={18} color="#052D50" />
+    <Icon name="chevron-right" size={18} color={theme.content.textPrimary} />
   </TouchableOpacity>
 );
 
@@ -115,6 +118,7 @@ export default function CreateToolScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const { user } = useContext(AuthContext);
   const { showSuccess } = useFeedback();
 
@@ -346,6 +350,8 @@ export default function CreateToolScreen() {
 
           <View style={styles.groupCard}>
             <PlainFormRow
+              styles={styles}
+              theme={theme}
               label={t("tools.nameLabel")}
               value={name}
               onChangeText={setName}
@@ -385,6 +391,7 @@ export default function CreateToolScreen() {
 
           <View style={styles.groupCard}>
             <SelectRow
+              styles={styles}
               icon="users"
               label={t("tools.attachWorkers")}
               value={selectedWorkersLabel}
@@ -395,6 +402,7 @@ export default function CreateToolScreen() {
               theme={theme}
             />
             <SelectRow
+              styles={styles}
               icon="briefcase"
               label={t("tools.attachProjects")}
               value={selectedProjectsLabel}
@@ -409,6 +417,8 @@ export default function CreateToolScreen() {
 
           <View style={styles.groupCard}>
             <PlainFormRow
+              styles={styles}
+              theme={theme}
               label={t("tools.notesLabel")}
               value={notes}
               onChangeText={setNotes}
@@ -555,159 +565,161 @@ export default function CreateToolScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: "#f2f1f6",
-  },
-  pageContainer: {
-    ...standardScreenContainer,
-    paddingBottom: 0,
-  },
-  header: {
-    ...standardScreenHeader,
-  },
-  headerTitle: {
-    color: "#052D50",
-    fontSize: 17,
-    textAlign: "center",
-    flex: 1,
-  },
-  contentScroll: {
-    flex: 1,
-    width: "100%",
-  },
-  contentScrollContent: {
-    paddingBottom: 140,
-    gap: 20,
-  },
-  groupCard: {
-    width: "100%",
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 24,
-    overflow: "hidden",
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  groupedField: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  groupRowDivider: {
-    borderBottomWidth: 1,
-    borderBottomColor: "#e9e9e9",
-  },
-  groupRowLast: {
-    borderBottomWidth: 0,
-  },
-  fieldRowContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    flex: 1,
-  },
-  fieldIconBadge: {
-    width: 27,
-    height: 27,
-    borderRadius: 5,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  fieldInputWrap: {
-    flex: 1,
-    gap: 2,
-  },
-  fieldLabel: {
-    fontSize: 12,
-    color: "rgba(5, 45, 80, 0.55)",
-  },
-  fieldInput: {
-    fontSize: 16,
-    color: "#052D50",
-    paddingVertical: 0,
-  },
-  fieldInputMultiline: {
-    minHeight: 96,
-    paddingTop: 4,
-  },
-  selectRow: {
-    minHeight: 56,
-    paddingHorizontal: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  selectValue: {
-    fontSize: 16,
-    color: "#052D50",
-  },
-  selectPlaceholder: {
-    color: "rgba(5, 45, 80, 0.35)",
-  },
-  photoPreview: {
-    width: 40,
-    height: 40,
-    borderRadius: 8,
-  },
-  formError: {
-    color: "#c62828",
-    fontSize: 14,
-    marginBottom: 8,
-    paddingHorizontal: 8,
-  },
-  accessDeniedContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  accessDeniedText: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#151515",
-  },
-  pickerModalContainer: {
-    flex: 1,
-    backgroundColor: "#f2f1f6",
-    paddingHorizontal: 12,
-    paddingTop: 12,
-  },
-  pickerModalHeader: {
-    ...standardScreenHeader,
-    marginBottom: 12,
-  },
-  pickerModalTitle: {
-    flex: 1,
-    textAlign: "center",
-    fontSize: 17,
-    color: "#052D50",
-  },
-  pickerListContent: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-    overflow: "hidden",
-  },
-  pickerOptionRow: {
-    minHeight: 56,
-    paddingHorizontal: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  pickerOptionLabel: {
-    fontSize: 16,
-    color: "#052D50",
-    flex: 1,
-    paddingRight: 12,
-  },
-  pickerEmptyState: {
-    minHeight: 56,
-    paddingHorizontal: 16,
-    justifyContent: "center",
-  },
-  pickerEmptyStateText: {
-    fontSize: 16,
-    color: "rgba(5, 45, 80, 0.55)",
-  },
-});
+const createStyles = (c) =>
+  StyleSheet.create({
+    screen: {
+      flex: 1,
+      backgroundColor: c.background,
+    },
+    pageContainer: {
+      ...standardScreenContainer,
+      backgroundColor: c.background,
+      paddingBottom: 0,
+    },
+    header: {
+      ...standardScreenHeader,
+    },
+    headerTitle: {
+      color: c.textPrimary,
+      fontSize: 17,
+      textAlign: "center",
+      flex: 1,
+    },
+    contentScroll: {
+      flex: 1,
+      width: "100%",
+    },
+    contentScrollContent: {
+      paddingBottom: 140,
+      gap: 20,
+    },
+    groupCard: {
+      width: "100%",
+      backgroundColor: "rgba(255, 255, 255, 0.6)",
+      borderRadius: 24,
+      overflow: "hidden",
+      borderWidth: 1,
+      borderColor: "#FFFFFF",
+    },
+    groupedField: {
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+    },
+    groupRowDivider: {
+      borderBottomWidth: 1,
+      borderBottomColor: "#e9e9e9",
+    },
+    groupRowLast: {
+      borderBottomWidth: 0,
+    },
+    fieldRowContent: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+      flex: 1,
+    },
+    fieldIconBadge: {
+      width: 27,
+      height: 27,
+      borderRadius: 5,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    fieldInputWrap: {
+      flex: 1,
+      gap: 2,
+    },
+    fieldLabel: {
+      fontSize: 12,
+      color: "rgba(5, 45, 80, 0.55)",
+    },
+    fieldInput: {
+      fontSize: 16,
+      color: c.textPrimary,
+      paddingVertical: 0,
+    },
+    fieldInputMultiline: {
+      minHeight: 96,
+      paddingTop: 4,
+    },
+    selectRow: {
+      minHeight: 56,
+      paddingHorizontal: 16,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    selectValue: {
+      fontSize: 16,
+      color: c.textPrimary,
+    },
+    selectPlaceholder: {
+      color: "rgba(5, 45, 80, 0.35)",
+    },
+    photoPreview: {
+      width: 40,
+      height: 40,
+      borderRadius: 8,
+    },
+    formError: {
+      color: "#c62828",
+      fontSize: 14,
+      marginBottom: 8,
+      paddingHorizontal: 8,
+    },
+    accessDeniedContainer: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    accessDeniedText: {
+      fontSize: 18,
+      fontWeight: "600",
+      color: "#151515",
+    },
+    pickerModalContainer: {
+      flex: 1,
+      backgroundColor: c.background,
+      paddingHorizontal: 12,
+      paddingTop: 12,
+    },
+    pickerModalHeader: {
+      ...standardScreenHeader,
+      marginBottom: 12,
+    },
+    pickerModalTitle: {
+      flex: 1,
+      textAlign: "center",
+      fontSize: 17,
+      color: c.textPrimary,
+    },
+    pickerListContent: {
+      backgroundColor: "rgba(255, 255, 255, 0.6)",
+      borderRadius: 24,
+      borderWidth: 1,
+      borderColor: "#FFFFFF",
+      overflow: "hidden",
+    },
+    pickerOptionRow: {
+      minHeight: 56,
+      paddingHorizontal: 16,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    pickerOptionLabel: {
+      fontSize: 16,
+      color: c.textPrimary,
+      flex: 1,
+      paddingRight: 12,
+    },
+    pickerEmptyState: {
+      minHeight: 56,
+      paddingHorizontal: 16,
+      justifyContent: "center",
+    },
+    pickerEmptyStateText: {
+      fontSize: 16,
+      color: "rgba(5, 45, 80, 0.55)",
+    },
+  });
