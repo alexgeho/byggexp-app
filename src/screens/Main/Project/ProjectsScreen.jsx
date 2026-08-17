@@ -28,14 +28,9 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../theme/ThemeContext";
 import AuthContext from "../../../contexts/AuthContext";
 import { projectService } from "../../../services";
-import { BackButton } from "../../../components/common/BackButton/BackButton";
+import { Screen } from "../../../components/common/Screen/Screen";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { ListCard } from "../../../components/common/ListCard/ListCard";
-import {
-  standardScreenContainer,
-  standardScreenHeader,
-  standardScreenHeaderPlaceholder,
-} from "../../../styles/screenLayout";
 import { sortByNewest } from "../../../utils/sortByNewest";
 import { resolveLocalProjectSelection } from "../../../utils/localProjectSelection";
 import { cardStyles } from "../../../styles/cards";
@@ -69,6 +64,7 @@ export default function ProjectsScreen() {
   const route = useRoute();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const {
     userId,
     isLoading: authLoading,
@@ -267,37 +263,22 @@ export default function ProjectsScreen() {
   const themedAccentTextStyle = { color: theme.colors.primary };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <BackButton
-          backgroundColor={"rgba(255, 255, 255, 0.6)"}
-          tint="light"
-          borderColor="#FFFFFF50"
-          onPress={goBackSafely}
-          iconSource={require("../../../assets/Arrow-left.png")}
-        />
-        <Text
-          style={[
-            styles.headerTitle,
-            { fontFamily: theme.text.fontFamily["semiBold"] },
-          ]}
-        >
-          {t("projects.myProjects")}
-        </Text>
-        <View style={styles.placeholder} />
-      </View>
-
+    <Screen
+      title={t("projects.myProjects")}
+      onBack={goBackSafely}
+      style={styles.screenExtra}
+    >
       <View style={styles.searchContainer}>
         <View style={styles.searchInputWrapper}>
           <TextInput
             style={styles.searchInput}
             placeholder={t("common.search")}
-            placeholderTextColor="rgba(5, 45, 80, 0.45)"
+            placeholderTextColor={theme.content.textMuted}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
           <View style={styles.searchIconWrapper} pointerEvents="none">
-            <Icon name="search" size={18} color="rgba(5, 45, 80, 0.5)" />
+            <Icon name="search" size={18} color={theme.content.textMuted} />
           </View>
         </View>
       </View>
@@ -368,87 +349,75 @@ export default function ProjectsScreen() {
         showAddButton={showCreateProject}
         onAddPress={() => navigateSafely("CreateProject")}
       />
-    </View>
+    </Screen>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    ...standardScreenContainer,
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: 12,
-  },
-  inlineLoader: {
-    minHeight: 240,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 8,
-  },
-  header: {
-    ...standardScreenHeader,
-  },
-  headerTitle: {
-    color: "#052D50",
-    fontSize: 17,
-    textAlign: "center",
-  },
-  placeholder: {
-    ...standardScreenHeaderPlaceholder,
-  },
-  searchContainer: {
-    width: "100%",
-  },
-  searchInputWrapper: {
-    width: "100%",
-    height: 48,
-    backgroundColor: "#052D500D",
-    borderRadius: 20,
-    paddingLeft: 16,
-    paddingRight: 14,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  searchInput: {
-    flex: 1,
-    height: "100%",
-    color: "#052D50",
-    fontSize: 16,
-    paddingVertical: 0,
-    paddingRight: 12,
-  },
-  searchIconWrapper: {
-    width: 20,
-    height: 20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  scrollContainer: {
-    flex: 1,
-    width: "100%",
-  },
-  scrollContent: {
-    width: "100%",
-    gap: 12,
-    paddingBottom: 140,
-  },
+const createStyles = (c) =>
+  StyleSheet.create({
+    screenExtra: {
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    inlineLoader: {
+      minHeight: 240,
+      justifyContent: "center",
+      alignItems: "center",
+      gap: 8,
+    },
+    searchContainer: {
+      width: "100%",
+    },
+    searchInputWrapper: {
+      width: "100%",
+      height: 48,
+      backgroundColor: c.inputSurface,
+      borderRadius: 20,
+      paddingLeft: 16,
+      paddingRight: 14,
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    searchInput: {
+      flex: 1,
+      height: "100%",
+      color: c.textPrimary,
+      fontSize: 16,
+      paddingVertical: 0,
+      paddingRight: 12,
+    },
+    searchIconWrapper: {
+      width: 20,
+      height: 20,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    scrollContainer: {
+      flex: 1,
+      width: "100%",
+    },
+    scrollContent: {
+      width: "100%",
+      gap: 12,
+      paddingBottom: 140,
+    },
 
-  noProjectsText: {
-    textAlign: "center",
-    marginTop: 20,
-    color: "#698196",
-    fontSize: 16,
-  },
-  floatingAddButton: {
-    position: "absolute",
-    right: 16,
-    bottom: 45,
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: "#0091FF",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 20,
-  },
-});
+    noProjectsText: {
+      textAlign: "center",
+      marginTop: 20,
+      color: c.textMuted,
+      fontSize: 16,
+    },
+    floatingAddButton: {
+      position: "absolute",
+      right: 16,
+      bottom: 45,
+      width: 70,
+      height: 70,
+      borderRadius: 35,
+      backgroundColor: "#0091FF",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 20,
+    },
+  });

@@ -16,14 +16,10 @@ import { useTheme } from "../../../theme/ThemeContext";
 import AuthContext from "../../../contexts/AuthContext";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { ProjectGroupIcon } from "../../../components/common/icons/ProjectGroupIcon";
-import { BackButton } from "../../../components/common/BackButton/BackButton";
+import { Screen } from "../../../components/common/Screen/Screen";
 import { ProjectFilterSelector } from "../../../components/common/ProjectFilterSelector/ProjectFilterSelector";
 import { PersonListItem } from "../../../components/common/PersonListItem/PersonListItem";
 import { chatService, projectService, userService } from "../../../services";
-import {
-  standardScreenContainer,
-  standardScreenHeader,
-} from "../../../styles/screenLayout";
 import { getPersonWorkStatus, USER_ROLES } from "../../../utils/userRoles";
 import { statusBadgeFor } from "../../../utils/workerStatusBadge";
 
@@ -47,6 +43,7 @@ export default function ChatListScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const { user } = useContext(AuthContext);
 
   const [colleagues, setColleagues] = useState([]);
@@ -302,32 +299,26 @@ export default function ChatListScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <BackButton
-          onPress={() => navigation.goBack()}
-          iconSource={require("../../../assets/Arrow-left.png")}
-        />
-        <Text
-          style={[
-            styles.headerTitle,
-            { fontFamily: theme.text.fontFamily.semiBold },
-          ]}
-        >
-          {t("chat.title")}
-        </Text>
+    <Screen
+      title={t("chat.title")}
+      onBack={() => navigation.goBack()}
+      right={
         <TouchableOpacity
           style={styles.searchButton}
           onPress={toggleSearch}
           activeOpacity={0.85}
         >
-          <Icon name={searchOpen ? "x" : "search"} size={20} color="#052D50" />
+          <Icon
+            name={searchOpen ? "x" : "search"}
+            size={20}
+            color={theme.content.textPrimary}
+          />
         </TouchableOpacity>
-      </View>
-
+      }
+    >
       {searchOpen ? (
         <View style={styles.searchBar}>
-          <Icon name="search" size={18} color="#698196" />
+          <Icon name="search" size={18} color={theme.content.textMuted} />
           <TextInput
             style={[
               styles.searchInput,
@@ -336,7 +327,7 @@ export default function ChatListScreen() {
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder={t("chat.searchPlaceholder")}
-            placeholderTextColor="#9BB0C1"
+            placeholderTextColor={theme.content.placeholder}
             autoFocus
             returnKeyType="search"
           />
@@ -407,251 +398,239 @@ export default function ChatListScreen() {
           )}
         />
       )}
-    </View>
+    </Screen>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    ...standardScreenContainer,
-    backgroundColor: "#f2f1f6",
-  },
-  header: {
-    ...standardScreenHeader,
-  },
-  headerTitle: {
-    color: "#052D50",
-    fontSize: 17,
-    textAlign: "center",
-    flex: 1,
-  },
-  searchButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-  },
-  searchBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    height: 48,
-    marginBottom: 12,
-    paddingHorizontal: 14,
-    borderRadius: 16,
-    backgroundColor: "#052D500D",
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 15,
-    color: "#052D50",
-    padding: 0,
-  },
-  searchContainer: {
-    width: "100%",
-    marginBottom: 12,
-  },
-  loadingContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  scrollContainer: {
-    flex: 1,
-    width: "100%",
-  },
-  listContent: {
-    paddingBottom: 190,
-    gap: 10,
-  },
-  emptyState: {
-    paddingVertical: 48,
-    paddingHorizontal: 24,
-    alignItems: "center",
-  },
-  emptyTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#052D50",
-    marginBottom: 8,
-  },
-  emptySubtitle: {
-    fontSize: 14,
-    color: "rgba(5, 45, 80, 0.55)",
-    textAlign: "center",
-  },
+const createStyles = (c) =>
+  StyleSheet.create({
+    searchButton: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: c.surface,
+      borderWidth: 1,
+      borderColor: c.surface,
+    },
+    searchBar: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+      height: 48,
+      marginBottom: 12,
+      paddingHorizontal: 14,
+      borderRadius: 16,
+      backgroundColor: c.inputSurface,
+    },
+    searchInput: {
+      flex: 1,
+      fontSize: 15,
+      color: c.textPrimary,
+      padding: 0,
+    },
+    searchContainer: {
+      width: "100%",
+      marginBottom: 12,
+    },
+    loadingContainer: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    scrollContainer: {
+      flex: 1,
+      width: "100%",
+    },
+    listContent: {
+      paddingBottom: 190,
+      gap: 10,
+    },
+    emptyState: {
+      paddingVertical: 48,
+      paddingHorizontal: 24,
+      alignItems: "center",
+    },
+    emptyTitle: {
+      fontSize: 18,
+      fontWeight: "600",
+      color: c.textPrimary,
+      marginBottom: 8,
+    },
+    emptySubtitle: {
+      fontSize: 14,
+      color: c.textMuted,
+      textAlign: "center",
+    },
 
-  // Conversation row
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-    borderRadius: 20,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-  },
-  rowSelected: {
-    backgroundColor: "rgba(12, 119, 253, 0.6)",
-    borderColor: "rgba(12, 119, 253, 0.6)",
-  },
-  avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: "#D9D9D9",
-  },
-  avatarFallback: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  avatarInitials: {
-    color: "#052D50",
-    fontSize: 15,
-    fontWeight: "700",
-  },
-  rowBody: {
-    flex: 1,
-    gap: 2,
-  },
-  rowName: {
-    color: "#052D50",
-    fontSize: 17,
-    fontWeight: "500",
-  },
-  rowTime: {
-    color: "#667E93",
-    fontSize: 13,
-    fontWeight: "500",
-  },
-  rowPreview: {
-    color: "#667E93",
-    fontSize: 13,
-    fontWeight: "500",
-  },
-  rowTextOnSel: {
-    color: "#FFFFFF",
-  },
-  rowTimeOnSel: {
-    color: "rgba(255, 255, 255, 0.85)",
-  },
-  rowRight: {
-    alignItems: "flex-end",
-    gap: 8,
-  },
-  // Multi-select check indicator shown on each row while picking recipients.
-  checkCircle: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: "#C3D2E0",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "transparent",
-    marginRight: 4,
-  },
-  checkCircleOn: {
-    backgroundColor: "#FFFFFF",
-    borderColor: "#FFFFFF",
-  },
-  // "Select people" hint / live count shown above the list in select mode.
-  selectHint: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    marginBottom: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 16,
-    backgroundColor: "rgba(7, 133, 244, 0.10)",
-  },
-  selectHintText: {
-    color: "#0785F4",
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  statusBadge: {
-    paddingVertical: 3,
-    paddingHorizontal: 10,
-    borderRadius: 8,
-  },
-  statusBadgeText: {
-    fontSize: 12,
-    fontWeight: "600",
-  },
-  unreadBadge: {
-    minWidth: 20,
-    height: 20,
-    borderRadius: 10,
-    paddingHorizontal: 5,
-    backgroundColor: "#0785F4",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  unreadBadgeText: {
-    color: "#FFFFFF",
-    fontSize: 11,
-    fontWeight: "700",
-  },
-  projectGroupButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    backgroundColor: "#0785F4",
-    borderRadius: 23,
-    height: 46,
-    marginBottom: 12,
-  },
-  projectGroupText: {
-    color: "#FFFFFF",
-    fontSize: 15,
-    fontWeight: "700",
-  },
+    // Conversation row
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+      backgroundColor: "#FFFFFF",
+      borderWidth: 1,
+      borderColor: "#FFFFFF",
+      borderRadius: 20,
+      paddingVertical: 14,
+      paddingHorizontal: 16,
+    },
+    rowSelected: {
+      backgroundColor: "rgba(12, 119, 253, 0.6)",
+      borderColor: "rgba(12, 119, 253, 0.6)",
+    },
+    avatar: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      backgroundColor: "#D9D9D9",
+    },
+    avatarFallback: {
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    avatarInitials: {
+      color: "#052D50",
+      fontSize: 15,
+      fontWeight: "700",
+    },
+    rowBody: {
+      flex: 1,
+      gap: 2,
+    },
+    rowName: {
+      color: "#052D50",
+      fontSize: 17,
+      fontWeight: "500",
+    },
+    rowTime: {
+      color: "#667E93",
+      fontSize: 13,
+      fontWeight: "500",
+    },
+    rowPreview: {
+      color: "#667E93",
+      fontSize: 13,
+      fontWeight: "500",
+    },
+    rowTextOnSel: {
+      color: "#FFFFFF",
+    },
+    rowTimeOnSel: {
+      color: "rgba(255, 255, 255, 0.85)",
+    },
+    rowRight: {
+      alignItems: "flex-end",
+      gap: 8,
+    },
+    // Multi-select check indicator shown on each row while picking recipients.
+    checkCircle: {
+      width: 24,
+      height: 24,
+      borderRadius: 12,
+      borderWidth: 2,
+      borderColor: "#C3D2E0",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "transparent",
+      marginRight: 4,
+    },
+    checkCircleOn: {
+      backgroundColor: "#FFFFFF",
+      borderColor: "#FFFFFF",
+    },
+    // "Select people" hint / live count shown above the list in select mode.
+    selectHint: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+      marginBottom: 12,
+      paddingVertical: 10,
+      paddingHorizontal: 14,
+      borderRadius: 16,
+      backgroundColor: "rgba(7, 133, 244, 0.10)",
+    },
+    selectHintText: {
+      color: "#0785F4",
+      fontSize: 14,
+      fontWeight: "600",
+    },
+    statusBadge: {
+      paddingVertical: 3,
+      paddingHorizontal: 10,
+      borderRadius: 8,
+    },
+    statusBadgeText: {
+      fontSize: 12,
+      fontWeight: "600",
+    },
+    unreadBadge: {
+      minWidth: 20,
+      height: 20,
+      borderRadius: 10,
+      paddingHorizontal: 5,
+      backgroundColor: "#0785F4",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    unreadBadgeText: {
+      color: "#FFFFFF",
+      fontSize: 11,
+      fontWeight: "700",
+    },
+    projectGroupButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+      backgroundColor: "#0785F4",
+      borderRadius: 23,
+      height: 46,
+      marginBottom: 12,
+    },
+    projectGroupText: {
+      color: "#FFFFFF",
+      fontSize: 15,
+      fontWeight: "700",
+    },
 
-  // Group-selection bottom bar
-  selectionBar: {
-    position: "absolute",
-    left: 16,
-    right: 16,
-    bottom: 34,
-    flexDirection: "row",
-    gap: 12,
-  },
-  cancelButton: {
-    flex: 1,
-    height: 54,
-    borderRadius: 27,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#FFFFFF",
-  },
-  cancelButtonText: {
-    color: "#052D50",
-    fontSize: 16,
-    fontWeight: "700",
-  },
-  groupButton: {
-    flex: 1,
-    height: 54,
-    borderRadius: 27,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#0785F4",
-  },
-  groupButtonDisabled: {
-    backgroundColor: "#9DB7D8",
-  },
-  groupButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "700",
-  },
-});
+    // Group-selection bottom bar
+    selectionBar: {
+      position: "absolute",
+      left: 16,
+      right: 16,
+      bottom: 34,
+      flexDirection: "row",
+      gap: 12,
+    },
+    cancelButton: {
+      flex: 1,
+      height: 54,
+      borderRadius: 27,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "#FFFFFF",
+    },
+    cancelButtonText: {
+      color: "#052D50",
+      fontSize: 16,
+      fontWeight: "700",
+    },
+    groupButton: {
+      flex: 1,
+      height: 54,
+      borderRadius: 27,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "#0785F4",
+    },
+    groupButtonDisabled: {
+      backgroundColor: "#9DB7D8",
+    },
+    groupButtonText: {
+      color: "#FFFFFF",
+      fontSize: 16,
+      fontWeight: "700",
+    },
+  });
