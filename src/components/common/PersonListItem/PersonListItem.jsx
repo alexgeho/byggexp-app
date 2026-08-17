@@ -98,8 +98,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: content.surface,
     borderRadius: radius.lg,
-    paddingVertical: spacing.xl,
-    paddingHorizontal: spacing.xl,
+    // Figma: card padding 10 all sides, 10px gap between cards.
+    paddingVertical: spacing.sm + 2,
+    paddingHorizontal: spacing.sm + 2,
     marginBottom: spacing.sm + 2,
   },
   rowRight: {

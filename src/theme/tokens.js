@@ -54,7 +54,7 @@ export const content = {
   // Surfaces
   surface: "#FFFFFF",
   surfaceMuted: "rgba(255,255,255,0.6)", // frosted cards
-  background: "#F2F1F6",
+  background: "#EEEEEE", // app screen background (Figma)
 
   // Lines
   divider: "#E9E9E9",

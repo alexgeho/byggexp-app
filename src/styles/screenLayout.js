@@ -12,8 +12,8 @@ const screenPaddingTop =
 
 export const standardScreenContainer = {
   flex: 1,
-  backgroundColor: "#f2f1f6",
-  paddingHorizontal: 12,
+  backgroundColor: "#EEEEEE", // Figma screen background
+  paddingHorizontal: 16, // Figma: 16px side gutters (361 content in 393 frame)
   paddingTop: screenPaddingTop,
   paddingBottom: 48,
   gap: standardScreenContentGap,

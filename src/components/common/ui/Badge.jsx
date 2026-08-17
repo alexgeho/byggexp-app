@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { content, radius, spacing, fontSize } from "../../../theme/tokens";
+import { content, spacing, fontSize } from "../../../theme/tokens";
 
 // Status pill. `tone` picks a semantic colour pair; or pass explicit
 // backgroundColor/color to override (e.g. from getWorkerStatusBadge).
@@ -31,18 +31,19 @@ export const Badge = ({ label, tone = "neutral", backgroundColor, color }) => {
 };
 
 const styles = StyleSheet.create({
+  // Figma status pill: radius 6, padding 8×3, 12px/600 text.
   badge: {
     paddingVertical: 3,
-    paddingHorizontal: spacing.md - 2,
-    borderRadius: radius.sm,
+    paddingHorizontal: spacing.sm,
+    borderRadius: 6,
     overflow: "hidden",
   },
   base: {
     backgroundColor: content.surface,
-    borderRadius: radius.sm,
+    borderRadius: 6,
   },
   tint: {
-    borderRadius: radius.sm,
+    borderRadius: 6,
   },
   text: {
     fontSize: fontSize.caption,
