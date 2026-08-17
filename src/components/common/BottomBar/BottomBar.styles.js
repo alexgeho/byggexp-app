@@ -70,7 +70,7 @@ export function createStyles(theme) {
     // Dark theme: swap the crisp white pill stroke for a subtle light one so
     // the (dark-filled) pill reads on the dark background.
     menuWrapperDark: {
-      borderColor: "rgba(255,255,255,0.14)",
+      borderColor: "rgba(255,255,255,0.08)",
     },
     // Frosted-glass pill for the home screen. A denser white fill + crisp
     // stroke so the pill reads as a solid frosted surface over the light home

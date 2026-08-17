@@ -78,11 +78,13 @@ export function BottomBar({
     : isAndroid
       ? "rgba(255,255,255,0.8)"
       : "rgba(255,255,255,0.6)";
+  // Match the card surface tone (#2C2C2E) so the pill sits at the same
+  // elevation as the cards above the near-black background.
   const darkFill = glass
-    ? "rgba(30,30,30,0.55)"
+    ? "rgba(44,44,46,0.55)"
     : isAndroid
-      ? "rgba(35,35,35,0.94)"
-      : "rgba(35,35,35,0.72)";
+      ? "rgba(44,44,46,0.96)"
+      : "rgba(44,44,46,0.78)";
   const fillColor = isTransparent ? "transparent" : dark ? darkFill : lightFill;
   // Icons/text: keep the original (untinted) navy look in light themes; in dark
   // tint the icons light so they read on the dark pill.
