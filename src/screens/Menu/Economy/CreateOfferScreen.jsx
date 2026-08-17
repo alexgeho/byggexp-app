@@ -18,7 +18,7 @@ import { offerService } from "../../../services";
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import { downloadAndShareDocument } from "../../../utils/documentPreview";
 import { API_BASE_URL } from "../../../config/env";
-import { getDateLocale } from "../../../utils/dateLocale";
+import { getDateLocale, formatDisplayDate } from "../../../utils/dateLocale";
 import {
   computeTotals,
   formatMoney,
@@ -29,17 +29,6 @@ import {
 import { styles, PRIMARY, INK, PLACEHOLDER } from "./billingForm.styles";
 import LineItemsEditor from "./LineItemsEditor";
 import ClientPickerModal from "./ClientPickerModal";
-
-const formatDisplayDate = (iso) => {
-  if (!iso) return "";
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return iso;
-  return date.toLocaleDateString(getDateLocale(), {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-};
 
 export default function CreateOfferScreen() {
   const navigation = useNavigation();

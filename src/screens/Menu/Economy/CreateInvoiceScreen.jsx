@@ -16,7 +16,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { invoiceService } from "../../../services";
 import { useFeedback } from "../../../contexts/FeedbackContext";
-import { getDateLocale } from "../../../utils/dateLocale";
+import { getDateLocale, formatDisplayDate } from "../../../utils/dateLocale";
 import {
   computeTotals,
   deriveSettlement,
@@ -30,17 +30,6 @@ import LineItemsEditor from "./LineItemsEditor";
 import ClientPickerModal from "./ClientPickerModal";
 
 const DEFAULT_TERMS_DAYS = 20;
-
-const formatDisplayDate = (iso) => {
-  if (!iso) return "";
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return iso;
-  return date.toLocaleDateString(getDateLocale(), {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-};
 
 export default function CreateInvoiceScreen() {
   const navigation = useNavigation();
