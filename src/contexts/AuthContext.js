@@ -198,7 +198,11 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(true);
       const data = await authService.registerCompany({ companyName, email });
       setIsLoading(false);
-      return { success: true, email: data?.email || email };
+      return {
+        success: true,
+        email: data?.email || email,
+        alreadyPending: !!data?.alreadyPending,
+      };
     } catch (error) {
       console.error("AuthContext: Registration failed:", error);
       setIsLoading(false);

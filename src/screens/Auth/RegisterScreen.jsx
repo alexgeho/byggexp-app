@@ -60,11 +60,16 @@ export default function RegisterScreen({ navigation }) {
     }
 
     // We emailed a confirmation link; the account is created once they open it
-    // and choose a password. Confirm to the user that the email is on its way.
+    // and choose a password. If the email was already awaiting confirmation,
+    // tell the user we re-sent the link rather than looking like a fresh sign-up.
     const confirmEmail = result.email || trimmedEmail;
     showSuccess({
-      title: t("auth.emailSentTitle"),
-      message: t("registerVerify.sentTo", { email: confirmEmail }),
+      title: result.alreadyPending
+        ? t("auth.alreadyPendingTitle")
+        : t("auth.emailSentTitle"),
+      message: result.alreadyPending
+        ? t("auth.alreadyPendingMessage", { email: confirmEmail })
+        : t("registerVerify.sentTo", { email: confirmEmail }),
     });
     navigation.navigate("RegisterVerify", { email: confirmEmail });
   };

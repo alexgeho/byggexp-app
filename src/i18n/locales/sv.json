@@ -76,6 +76,8 @@
     "loginFailedMessage": "Fel e-post eller lösenord.",
     "loginWithCode": "Logga in med mejlkod →",
     "emailSentTitle": "Mejl skickat",
+    "alreadyPendingTitle": "Kontot väntar redan på bekräftelse",
+    "alreadyPendingMessage": "Den här e-postadressen är redan registrerad och väntar på bekräftelse. Vi har skickat länken igen till {{email}} — kolla din inkorg.",
     "forgotPassword": "Glömt lösenordet? →",
     "confirmPassword": "Bekräfta lösenord",
     "confirmPasswordPlaceholder": "upprepa ditt lösenord",

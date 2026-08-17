@@ -76,6 +76,8 @@
     "loginFailedMessage": "Invalid email or password.",
     "loginWithCode": "Sign in with an email code →",
     "emailSentTitle": "Email sent",
+    "alreadyPendingTitle": "Account already awaiting confirmation",
+    "alreadyPendingMessage": "This email is already registered and waiting for confirmation. We've re-sent the link to {{email}} — check your inbox.",
     "forgotPassword": "Forgot password? →",
     "confirmPassword": "Confirm password",
     "confirmPasswordPlaceholder": "repeat your password",
