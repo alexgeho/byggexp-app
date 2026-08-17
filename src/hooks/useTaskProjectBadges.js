@@ -49,34 +49,43 @@ const truncate = (text, max = 16) => {
   return value.length > max ? `${value.slice(0, max - 1)}…` : value;
 };
 
-// Up to two task deadlines for the home tile, prioritising overdue:
-// two overdue if available, otherwise 1 overdue + 1 upcoming, otherwise
-// the two soonest upcoming. Each item is { label, overdue } where the
-// label is "<date> · <short task title>".
+// Up to two task deadlines for the home tile. Overdue work is surfaced first,
+// but the tile always keeps room for one upcoming task when one exists, so it
+// shows more than just overdue items. "Upcoming" means the soonest future
+// deadline, then open tasks with no due date at all. Each item is
+// { label, overdue }; the label is "<date> · <short task title>" (or just the
+// title when the task has no date).
 const buildTaskDeadlines = (tasks) => {
   const today = startOfToday();
-  const dated = tasks
-    .map((task) => ({
-      title: task?.taskTitle || task?.title || task?.name || "",
-      time: new Date(task?.dueDate).getTime(),
-    }))
-    .filter((item) => Number.isFinite(item.time));
+  const normalized = tasks.map((task) => ({
+    title: task?.taskTitle || task?.title || task?.name || "",
+    time: new Date(task?.dueDate).getTime(),
+  }));
 
-  const overdue = dated
-    .filter((item) => item.time < today)
+  const overdue = normalized
+    .filter((item) => Number.isFinite(item.time) && item.time < today)
     .sort((a, b) => a.time - b.time);
-  const upcoming = dated
-    .filter((item) => item.time >= today)
+  const upcomingDated = normalized
+    .filter((item) => Number.isFinite(item.time) && item.time >= today)
     .sort((a, b) => a.time - b.time);
+  const undated = normalized.filter((item) => !Number.isFinite(item.time));
+  // A future deadline is the strongest "upcoming" signal; an open task with no
+  // date still counts so the tile can surface something beyond overdue work.
+  const upcoming = [...upcomingDated, ...undated];
 
   const toItem = (item, overdueFlag) => ({
-    label: [formatDeadline(item.time), truncate(item.title, 10)]
+    label: [
+      Number.isFinite(item.time) ? formatDeadline(item.time) : null,
+      truncate(item.title, 10),
+    ]
       .filter(Boolean)
       .join(" · "),
     overdue: overdueFlag,
   });
 
-  const picks = overdue.slice(0, 2).map((item) => toItem(item, true));
+  // Reserve one of the two slots for an upcoming task whenever one exists.
+  const maxOverdue = upcoming.length ? 1 : 2;
+  const picks = overdue.slice(0, maxOverdue).map((item) => toItem(item, true));
   for (const item of upcoming) {
     if (picks.length >= 2) break;
     picks.push(toItem(item, false));
@@ -121,9 +130,9 @@ export function useTaskProjectBadges({ projectId } = {}) {
           return Number.isFinite(due) && due < today;
         }).length,
       );
-      setTaskDeadlines(
-        buildTaskDeadlines(openTasks.filter((task) => task.dueDate)),
-      );
+      // Pass every open task (dated or not) so an upcoming task without a due
+      // date can still fill the tile's second slot alongside overdue work.
+      setTaskDeadlines(buildTaskDeadlines(openTasks));
 
       const scopedProjects = (Array.isArray(projects) ? projects : []).filter(
         (project) => !projectId || normalizeId(project) === String(projectId),
