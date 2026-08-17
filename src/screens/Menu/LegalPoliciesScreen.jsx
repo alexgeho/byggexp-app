@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -19,7 +19,7 @@ import {
 } from "../../styles/screenLayout";
 import { useTheme } from "../../theme/ThemeContext";
 
-function BulletSection({ title, items, theme }) {
+function BulletSection({ title, items, theme, styles }) {
   const bulletItems = Array.isArray(items) ? items : [];
   return (
     <View style={styles.groupCard}>
@@ -55,6 +55,7 @@ export default function LegalPoliciesScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const { appInformationRows, loadingInfo } = useAppInformation();
 
   return (
@@ -115,30 +116,35 @@ export default function LegalPoliciesScreen() {
         </View>
 
         <BulletSection
+          styles={styles}
           title={t("legal.collectedTitle")}
           items={t("legal.collected", { returnObjects: true })}
           theme={theme}
         />
 
         <BulletSection
+          styles={styles}
           title={t("legal.usageTitle")}
           items={t("legal.usage", { returnObjects: true })}
           theme={theme}
         />
 
         <BulletSection
+          styles={styles}
           title={t("legal.protectionTitle")}
           items={t("legal.protection", { returnObjects: true })}
           theme={theme}
         />
 
         <BulletSection
+          styles={styles}
           title={t("legal.rightsTitle")}
           items={t("legal.rights", { returnObjects: true })}
           theme={theme}
         />
 
         <BulletSection
+          styles={styles}
           title={t("legal.noticeTitle")}
           items={t("legal.notice", { returnObjects: true })}
           theme={theme}
@@ -220,121 +226,123 @@ export default function LegalPoliciesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    ...standardScreenContainer,
-  },
-  header: {
-    ...standardScreenHeader,
-  },
-  headerTitle: {
-    color: "#052D50",
-    fontSize: 17,
-    textAlign: "center",
-  },
-  placeholder: {
-    ...standardScreenHeaderPlaceholder,
-  },
-  scrollContainer: {
-    flex: 1,
-    width: "100%",
-  },
-  scrollContent: {
-    gap: 12,
-    paddingBottom: 120,
-  },
-  heroCard: {
-    width: "100%",
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-    padding: 20,
-    alignItems: "center",
-  },
-  heroIconWrap: {
-    width: 72,
-    height: 72,
-    borderRadius: 24,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 16,
-  },
-  heroIcon: {
-    width: 32,
-    height: 32,
-  },
-  heroTitle: {
-    color: "#052D50",
-    fontSize: 24,
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  heroText: {
-    color: "#698196",
-    fontSize: 15,
-    lineHeight: 22,
-    textAlign: "center",
-  },
-  groupCard: {
-    width: "100%",
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
-    padding: 20,
-  },
-  sectionTitle: {
-    color: "#052D50",
-    fontSize: 18,
-    marginBottom: 14,
-  },
-  bulletRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 10,
-    marginBottom: 12,
-  },
-  bullet: {
-    width: 8,
-    height: 8,
-    borderRadius: 999,
-    marginTop: 7,
-  },
-  bulletText: {
-    flex: 1,
-    color: "#052D50",
-    fontSize: 15,
-    lineHeight: 22,
-  },
-  paragraph: {
-    color: "#052D50",
-    fontSize: 15,
-    lineHeight: 22,
-    marginBottom: 14,
-  },
-  paragraphLast: {
-    marginBottom: 0,
-  },
-  infoRow: {
-    paddingVertical: 12,
-  },
-  infoRowDivider: {
-    borderBottomWidth: 1,
-    borderBottomColor: "#e9e9e9",
-  },
-  infoLabel: {
-    color: "#698196",
-    fontSize: 13,
-    marginBottom: 4,
-  },
-  infoValue: {
-    color: "#052D50",
-    fontSize: 15,
-    lineHeight: 22,
-  },
-  loadingRow: {
-    paddingTop: 12,
-    alignItems: "flex-start",
-  },
-});
+const createStyles = (c) =>
+  StyleSheet.create({
+    container: {
+      ...standardScreenContainer,
+      backgroundColor: c.background,
+    },
+    header: {
+      ...standardScreenHeader,
+    },
+    headerTitle: {
+      color: c.textPrimary,
+      fontSize: 17,
+      textAlign: "center",
+    },
+    placeholder: {
+      ...standardScreenHeaderPlaceholder,
+    },
+    scrollContainer: {
+      flex: 1,
+      width: "100%",
+    },
+    scrollContent: {
+      gap: 12,
+      paddingBottom: 120,
+    },
+    heroCard: {
+      width: "100%",
+      backgroundColor: "rgba(255, 255, 255, 0.6)",
+      borderRadius: 24,
+      borderWidth: 1,
+      borderColor: "#FFFFFF",
+      padding: 20,
+      alignItems: "center",
+    },
+    heroIconWrap: {
+      width: 72,
+      height: 72,
+      borderRadius: 24,
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: 16,
+    },
+    heroIcon: {
+      width: 32,
+      height: 32,
+    },
+    heroTitle: {
+      color: c.textPrimary,
+      fontSize: 24,
+      marginBottom: 8,
+      textAlign: "center",
+    },
+    heroText: {
+      color: c.textMuted,
+      fontSize: 15,
+      lineHeight: 22,
+      textAlign: "center",
+    },
+    groupCard: {
+      width: "100%",
+      backgroundColor: "rgba(255, 255, 255, 0.6)",
+      borderRadius: 24,
+      borderWidth: 1,
+      borderColor: "#FFFFFF",
+      padding: 20,
+    },
+    sectionTitle: {
+      color: c.textPrimary,
+      fontSize: 18,
+      marginBottom: 14,
+    },
+    bulletRow: {
+      flexDirection: "row",
+      alignItems: "flex-start",
+      gap: 10,
+      marginBottom: 12,
+    },
+    bullet: {
+      width: 8,
+      height: 8,
+      borderRadius: 999,
+      marginTop: 7,
+    },
+    bulletText: {
+      flex: 1,
+      color: c.textPrimary,
+      fontSize: 15,
+      lineHeight: 22,
+    },
+    paragraph: {
+      color: c.textPrimary,
+      fontSize: 15,
+      lineHeight: 22,
+      marginBottom: 14,
+    },
+    paragraphLast: {
+      marginBottom: 0,
+    },
+    infoRow: {
+      paddingVertical: 12,
+    },
+    infoRowDivider: {
+      borderBottomWidth: 1,
+      borderBottomColor: c.divider,
+    },
+    infoLabel: {
+      color: c.textMuted,
+      fontSize: 13,
+      marginBottom: 4,
+    },
+    infoValue: {
+      color: c.textPrimary,
+      fontSize: 15,
+      lineHeight: 22,
+    },
+    loadingRow: {
+      paddingTop: 12,
+      alignItems: "flex-start",
+    },
+  });
