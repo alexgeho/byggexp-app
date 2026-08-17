@@ -18,7 +18,7 @@ import {
   View,
   Text,
   TextInput,
-  ScrollView,
+  FlatList,
   StyleSheet,
   ActivityIndicator,
   InteractionManager,
@@ -302,18 +302,19 @@ export default function ProjectsScreen() {
         </View>
       </View>
 
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        style={styles.scrollContainer}
-      >
-        {authLoading || (loading && projects.length === 0) ? (
-          <View style={styles.inlineLoader}>
-            <ActivityIndicator size="large" color={theme.colors.primary} />
-            <Text>{t("common.loading")}</Text>
-          </View>
-        ) : (
-          <>
-            {allowAllProjectsOption ? (
+      {authLoading || (loading && projects.length === 0) ? (
+        <View style={styles.inlineLoader}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+          <Text>{t("common.loading")}</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={filteredProjects}
+          keyExtractor={(project) => getProjectId(project)}
+          contentContainerStyle={styles.scrollContent}
+          style={styles.scrollContainer}
+          ListHeaderComponent={
+            allowAllProjectsOption ? (
               <ListCard
                 onPress={() => {
                   if (!beginLeaving()) {
@@ -327,46 +328,39 @@ export default function ProjectsScreen() {
                 selected={!selectedProjectId}
                 title={t("projects.all")}
               />
-            ) : null}
-
-            {filteredProjects.length === 0 ? (
-              <Text style={styles.noProjectsText}>
-                {t("projects.notFound")}
+            ) : null
+          }
+          ListEmptyComponent={
+            <Text style={styles.noProjectsText}>{t("projects.notFound")}</Text>
+          }
+          renderItem={({ item: project }) => (
+            <ListCard
+              onPress={() => handleProjectPress(project)}
+              selected={selectedProjectId === getProjectId(project)}
+              title={project.name}
+              badgeLabel={t(
+                `projects.status.${project.status}`,
+                formatProjectStatus(project.status),
+              )}
+              badgeStyle={getProjectStatusBadgeStyle(project.status)}
+            >
+              <Text style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}>
+                {t("projects.startLabel", {
+                  date: new Date(project.beginningDate).toLocaleDateString(
+                    getDateLocale(),
+                  ),
+                })}
               </Text>
-            ) : (
-              filteredProjects.map((project) => (
-                <ListCard
-                  key={getProjectId(project)}
-                  onPress={() => handleProjectPress(project)}
-                  selected={selectedProjectId === getProjectId(project)}
-                  title={project.name}
-                  badgeLabel={t(
-                    `projects.status.${project.status}`,
-                    formatProjectStatus(project.status),
-                  )}
-                  badgeStyle={getProjectStatusBadgeStyle(project.status)}
-                >
-                  <Text
-                    style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
-                  >
-                    {t("projects.startLabel", {
-                      date: new Date(project.beginningDate).toLocaleDateString(
-                        getDateLocale(),
-                      ),
-                    })}
-                  </Text>
 
-                  <Text style={cardStyles.cardSecondaryText}>
-                    {t("projects.locationLabel", {
-                      location: project.location,
-                    })}
-                  </Text>
-                </ListCard>
-              ))
-            )}
-          </>
-        )}
-      </ScrollView>
+              <Text style={cardStyles.cardSecondaryText}>
+                {t("projects.locationLabel", {
+                  location: project.location,
+                })}
+              </Text>
+            </ListCard>
+          )}
+        />
+      )}
 
       <BottomBar
         onLeftPress={() => navigateSafely("Main")}
