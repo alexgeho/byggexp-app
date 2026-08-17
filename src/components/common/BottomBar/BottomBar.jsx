@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { BlurView } from "expo-blur";
+import { LinearGradient } from "expo-linear-gradient";
 import { useNavigationState } from "@react-navigation/native";
 
 import { useTheme } from "../../../theme/ThemeContext";
@@ -18,6 +19,29 @@ import { createStyles } from "./BottomBar.styles";
 import { FooterHomeIcon, FooterMenuIcon } from "./BottomBarIcons";
 
 const ACTIVE_ICON_COLOR = "#052D50";
+
+// Glass pill layers matching the round back button: a base sheen, a top
+// highlight and a thin inner ring, in light and dark palettes.
+const PILL_GLASS = {
+  light: {
+    base: ["rgba(255,255,255,0.55)", "rgba(255,255,255,0.10)"],
+    highlight: [
+      "rgba(255,255,255,0.85)",
+      "rgba(255,255,255,0.12)",
+      "rgba(255,255,255,0)",
+    ],
+    ring: "rgba(255,255,255,0.35)",
+  },
+  dark: {
+    base: ["rgba(255,255,255,0.12)", "rgba(255,255,255,0.03)"],
+    highlight: [
+      "rgba(255,255,255,0.16)",
+      "rgba(255,255,255,0.05)",
+      "rgba(255,255,255,0)",
+    ],
+    ring: "rgba(255,255,255,0.12)",
+  },
+};
 const MENU_ROUTES = new Set([
   "Menu",
   "MyAccount",
@@ -91,6 +115,7 @@ export function BottomBar({
   const activeIconColor = dark ? "#FFFFFF" : ACTIVE_ICON_COLOR;
   const iconColorFor = (isActive) =>
     dark ? (isActive ? "#FFFFFF" : "rgba(255,255,255,0.55)") : undefined;
+  const pillGlass = dark ? PILL_GLASS.dark : PILL_GLASS.light;
   const wrapperStyle = [
     styles.menuWrapper,
     isTransparent && styles.menuWrapperTransparent,
@@ -115,6 +140,28 @@ export function BottomBar({
           pointerEvents="none"
           style={[StyleSheet.absoluteFill, { backgroundColor: fillColor }]}
         />
+        {!isTransparent ? (
+          <>
+            <LinearGradient
+              colors={pillGlass.base}
+              start={{ x: 0.1, y: 0 }}
+              end={{ x: 0.9, y: 1 }}
+              pointerEvents="none"
+              style={styles.glassBase}
+            />
+            <LinearGradient
+              colors={pillGlass.highlight}
+              start={{ x: 0.2, y: 0 }}
+              end={{ x: 0.8, y: 0.9 }}
+              pointerEvents="none"
+              style={styles.glassHighlight}
+            />
+            <View
+              pointerEvents="none"
+              style={[styles.glassRing, { borderColor: pillGlass.ring }]}
+            />
+          </>
+        ) : null}
         <Pressable style={styles.navButton} onPress={onLeftPress}>
           {({ hovered, pressed }) => {
             const isActive = isHomeActive || hovered || pressed;

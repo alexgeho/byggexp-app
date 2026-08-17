@@ -72,6 +72,26 @@ export function createStyles(theme) {
     menuWrapperDark: {
       borderColor: "rgba(255,255,255,0.08)",
     },
+    // Back-button-style glass layers over the pill fill.
+    glassBase: {
+      ...StyleSheet.absoluteFillObject,
+    },
+    glassHighlight: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      height: 34,
+    },
+    glassRing: {
+      position: "absolute",
+      top: 1,
+      left: 1,
+      right: 1,
+      bottom: 1,
+      borderRadius: 88,
+      borderWidth: 1,
+    },
     // Frosted-glass pill for the home screen. A denser white fill + crisp
     // stroke so the pill reads as a solid frosted surface over the light home
     // background instead of a washed-out blob showing the content behind it.
