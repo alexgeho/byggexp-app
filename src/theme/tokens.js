@@ -102,11 +102,11 @@ export const darkContent = {
   placeholder: "#6B7683",
   onAccent: "#FFFFFF",
 
-  // Surfaces
-  surface: "#232323",
-  surfaceMuted: "rgba(255,255,255,0.08)",
-  inputSurface: "rgba(255,255,255,0.06)",
-  background: "#1C1C1C",
+  // Surfaces — card sits a step above the near-black background for separation.
+  surface: "#2C2C2E",
+  surfaceMuted: "rgba(255,255,255,0.10)",
+  inputSurface: "rgba(255,255,255,0.08)",
+  background: "#141414",
 
   // Lines
   divider: "rgba(255,255,255,0.10)",
