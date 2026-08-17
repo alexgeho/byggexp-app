@@ -35,7 +35,7 @@ import {
   IMAGE_DOCUMENT_TYPES,
   pickUploadAssets,
 } from "../../../utils/uploadPicker";
-import { styles } from "./CameraScreen.styles";
+import { createStyles } from "./CameraScreen.styles";
 
 const CAMERA_TABS = [
   { key: "shift", labelKey: "camera.modeShift" },
@@ -64,6 +64,7 @@ export default function CameraScreen() {
   const route = useRoute();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const { showSuccess } = useFeedback();
   const { user } = useContext(AuthContext);
   const currentUserId = user?.id || user?._id || null;
