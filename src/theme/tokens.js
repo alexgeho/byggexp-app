@@ -57,6 +57,7 @@ export const lightContent = {
   // Surfaces
   surface: "#FFFFFF",
   surfaceMuted: "rgba(255,255,255,0.6)", // frosted cards
+  inputSurface: "#052D500D", // muted field / filter pill background
   background: "#EEEEEE", // app screen background (Figma)
 
   // Lines
@@ -102,6 +103,7 @@ export const darkContent = {
   // Surfaces
   surface: "#232323",
   surfaceMuted: "rgba(255,255,255,0.08)",
+  inputSurface: "rgba(255,255,255,0.06)",
   background: "#1C1C1C",
 
   // Lines

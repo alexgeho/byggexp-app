@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
 import { setLocalProjectSelectionHandler } from "../../../utils/localProjectSelection";
-import { styles } from "./ProjectFilterSelector.styles";
+import { useTheme } from "../../../theme/ThemeContext";
+import { createStyles } from "./ProjectFilterSelector.styles";
 
 const getProjectId = (project) => project?._id || project?.id;
 
@@ -15,6 +16,8 @@ export function ProjectFilterSelector({
 }) {
   const navigation = useNavigation();
   const { t } = useTranslation();
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
 
   const selectedProject = projects.find(
     (project) => getProjectId(project) === selectedProjectId,
@@ -47,7 +50,7 @@ export function ProjectFilterSelector({
         >
           {selectedProject?.name || t("projects.all")}
         </Text>
-        <Icon name="chevron-down" size={18} color="rgba(5, 45, 80, 0.5)" />
+        <Icon name="chevron-down" size={18} color={theme.content.textMuted} />
       </TouchableOpacity>
     </View>
   );
