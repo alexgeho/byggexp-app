@@ -72,13 +72,15 @@ export const content = {
   warning: "#C77700",
   warningSoft: "#FF95001F",
 
-  // Presence/status badge colours (from Figma) — solid text/dot + 10% tint bg.
-  statusAtWork: "#759D3C",
-  statusAtWorkSoft: "#759D3C1A",
-  statusNotAtWork: "#EE6C4D",
-  statusNotAtWorkSoft: "#EE6C4D1A",
-  statusWaiting: "#3A81DB",
-  statusWaitingSoft: "#3A81DB1A",
+  // Presence/status badge colours — exact values from the Figma design
+  // (solid text + dot, opaque tinted pill background).
+  statusAtWork: "#04B251",
+  statusAtWorkSoft: "#E5F7EA",
+  statusNotAtWork: "#FC1D2C",
+  statusNotAtWorkSoft: "#FFDCDE",
+  statusWaiting: "#0C77FD",
+  statusWaitingSoft: "#EBF4FE",
+  // Off-duty has no Figma reference — neutral slate, matching the muted meta text.
   statusOffDuty: "#667E93",
   statusOffDutySoft: "#667E931A",
 };
