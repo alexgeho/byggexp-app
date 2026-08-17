@@ -1,6 +1,16 @@
-import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { getDateLocale } from "../../utils/dateLocale";
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   View,
   Text,
@@ -53,7 +63,7 @@ export default function TasksScreen() {
   const route = useRoute();
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const { user, userId, isLoading: authLoading } = useContext(AuthContext);
+  const { user, isLoading: authLoading } = useContext(AuthContext);
   const { refreshKey } = route.params || {};
   const [projects, setProjects] = useState([]);
   const [personalTasks, setPersonalTasks] = useState([]);
@@ -65,23 +75,14 @@ export default function TasksScreen() {
     try {
       setLoading(true);
 
-      let baseProjects = [];
-      if (user?.role === "superadmin") {
-        baseProjects = await projectService.getAll();
-      } else {
-        baseProjects = await projectService.getMyProjects();
-      }
-
+      // One request for every accessible project (populated incl. tasks),
+      // instead of getMyProjects + a getPopulatedById per project (N+1).
       const [populatedProjects, accessibleTasks] = await Promise.all([
-        Promise.all(
-          baseProjects.map((project) =>
-            projectService.getPopulatedById(project._id),
-          ),
-        ),
+        projectService.getMyPopulated(),
         taskService.getAll(),
       ]);
 
-      setProjects(populatedProjects);
+      setProjects(Array.isArray(populatedProjects) ? populatedProjects : []);
       setPersonalTasks(
         Array.isArray(accessibleTasks)
           ? accessibleTasks.filter((task) => !task?.projectId)
@@ -94,7 +95,7 @@ export default function TasksScreen() {
     } finally {
       setLoading(false);
     }
-  }, [user?.role]);
+  }, []);
 
   const visiblePersonalTasks = useMemo(() => {
     // Personal tasks have no project, so only show them under "All projects".
@@ -115,7 +116,7 @@ export default function TasksScreen() {
       if (!authLoading && user?.role) {
         fetchProjectsWithTasks();
       }
-    }, [authLoading, fetchProjectsWithTasks, user?.role, userId]),
+    }, [authLoading, fetchProjectsWithTasks, user?.role]),
   );
 
   useEffect(() => {

@@ -287,22 +287,15 @@ export default function DocumentsScreen() {
     try {
       setLoading(true);
 
-      const [profileData, baseProjects] = await Promise.all([
+      // Backend scopes + populates (incl. tasks) in one request, replacing the
+      // per-project getPopulatedById loop (N+1).
+      const [profileData, populatedProjects] = await Promise.all([
         userService.getInfo(userId),
-        user?.role === "superadmin"
-          ? projectService.getAll()
-          : projectService.getMyProjects(),
+        projectService.getMyPopulated(),
       ]);
 
-      // Backend already scopes projects by role.
-      const populatedProjects = await Promise.all(
-        (Array.isArray(baseProjects) ? baseProjects : []).map((project) =>
-          projectService.getPopulatedById(getEntityId(project)),
-        ),
-      );
-
       setProfile(profileData);
-      setProjects(populatedProjects);
+      setProjects(Array.isArray(populatedProjects) ? populatedProjects : []);
     } catch (error) {
       console.error("Failed to load documents:", error);
       Alert.alert(
@@ -314,7 +307,7 @@ export default function DocumentsScreen() {
     } finally {
       setLoading(false);
     }
-  }, [user?.role, userId, t]);
+  }, [userId, t]);
 
   useEffect(() => {
     if (!authLoading && userId) {

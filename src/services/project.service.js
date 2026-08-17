@@ -1,4 +1,4 @@
-import api from './api';
+import api from "./api";
 
 const getProjectSortTimestamp = (project) => {
   const value =
@@ -19,15 +19,17 @@ const sortProjects = (projects, sort) => {
 
   const sorted = [...projects];
 
-  if (sort === 'newest') {
+  if (sort === "newest") {
     return sorted.sort(
-      (left, right) => getProjectSortTimestamp(right) - getProjectSortTimestamp(left),
+      (left, right) =>
+        getProjectSortTimestamp(right) - getProjectSortTimestamp(left),
     );
   }
 
-  if (sort === 'oldest') {
+  if (sort === "oldest") {
     return sorted.sort(
-      (left, right) => getProjectSortTimestamp(left) - getProjectSortTimestamp(right),
+      (left, right) =>
+        getProjectSortTimestamp(left) - getProjectSortTimestamp(right),
     );
   }
 
@@ -36,12 +38,12 @@ const sortProjects = (projects, sort) => {
 
 export const projectService = {
   getAll: async (options = {}) => {
-    const { data } = await api.get('/projects');
+    const { data } = await api.get("/projects");
     return sortProjects(data, options.sort);
   },
 
   getMyProjects: async (options = {}) => {
-    const { data } = await api.get('/projects/my');
+    const { data } = await api.get("/projects/my");
     return sortProjects(data, options.sort);
   },
 
@@ -51,7 +53,15 @@ export const projectService = {
   },
 
   getPopulated: async () => {
-    const { data } = await api.get('/projects/populated');
+    const { data } = await api.get("/projects/populated");
+    return data;
+  },
+
+  // Every project the caller can access, each populated (incl. tasks) in a
+  // single request — replaces looping getPopulatedById per project. Works for
+  // all roles (unlike admin-only /projects/populated).
+  getMyPopulated: async () => {
+    const { data } = await api.get("/projects/my/populated");
     return data;
   },
 
@@ -71,7 +81,7 @@ export const projectService = {
   },
 
   searchAddressSuggestions: async (query, limit = 8) => {
-    const { data } = await api.get('/projects/geocode/search', {
+    const { data } = await api.get("/projects/geocode/search", {
       params: {
         query,
         limit,
@@ -81,7 +91,7 @@ export const projectService = {
   },
 
   reverseGeocode: async (latitude, longitude) => {
-    const { data } = await api.get('/projects/geocode/reverse', {
+    const { data } = await api.get("/projects/geocode/reverse", {
       params: {
         lat: latitude,
         lon: longitude,
@@ -91,19 +101,24 @@ export const projectService = {
   },
 
   create: async (projectData) => {
-    const isFormData = typeof FormData !== 'undefined' && projectData instanceof FormData;
-    const { data } = await api.post('/projects', projectData, isFormData
-      ? {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      : undefined);
+    const isFormData =
+      typeof FormData !== "undefined" && projectData instanceof FormData;
+    const { data } = await api.post(
+      "/projects",
+      projectData,
+      isFormData
+        ? {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        : undefined,
+    );
     return data;
   },
 
   getByIds: async (ids) => {
-    const { data } = await api.post('/projects/by-ids', { ids });
+    const { data } = await api.post("/projects/by-ids", { ids });
     return data;
   },
 
@@ -122,21 +137,22 @@ export const projectService = {
   uploadDocuments: async (id, projectData) => {
     const { data } = await api.post(`/projects/${id}/documents`, projectData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     });
     return data;
   },
 
   update: async (id, projectData) => {
-    const isFormData = typeof FormData !== 'undefined' && projectData instanceof FormData;
+    const isFormData =
+      typeof FormData !== "undefined" && projectData instanceof FormData;
     const { data } = await api.put(
       `/projects/${id}`,
       projectData,
       isFormData
         ? {
             headers: {
-              'Content-Type': 'multipart/form-data',
+              "Content-Type": "multipart/form-data",
             },
           }
         : undefined,
