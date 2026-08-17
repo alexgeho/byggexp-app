@@ -60,7 +60,7 @@ import {
   isImageDocument,
   isPdfDocument,
 } from "../../../utils/documentPreview";
-import { styles } from "./ShiftsScreen.styles";
+import { createStyles } from "./ShiftsScreen.styles";
 
 const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const EXPORT_PERIOD_TABS = ["Month", "Custom"];
@@ -68,28 +68,29 @@ const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "spinner" : "default";
 
 // Plain-Modal bottom sheet — replaces @gorhom/bottom-sheet, which hangs the JS
 // thread on Android under the New Architecture (reanimated 4 / RN 0.81).
-const sheetStyles = StyleSheet.create({
-  backdrop: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.4)",
-  },
-  container: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "#FFFFFF",
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingTop: 10,
-    paddingBottom: 28,
-    maxHeight: "90%",
-  },
-});
+const createSheetStyles = (c) =>
+  StyleSheet.create({
+    backdrop: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: "rgba(0,0,0,0.4)",
+    },
+    container: {
+      position: "absolute",
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: c.surface,
+      borderTopLeftRadius: 24,
+      borderTopRightRadius: 24,
+      paddingTop: 10,
+      paddingBottom: 28,
+      maxHeight: "90%",
+    },
+  });
 
 // Which hours to show/bill by. GPS is the tracked timer duration (durationMs);
 // planned (contract, from the hours module) and manual (worker-entered) are
@@ -107,6 +108,11 @@ export default function ShiftsScreen() {
   const handledHoursEntryRef = useRef(false);
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
+  const sheetStyles = useMemo(
+    () => createSheetStyles(theme.content),
+    [theme.content],
+  );
   const { user, selectedProject } = useContext(AuthContext);
   const isAdmin = ["companyAdmin", "superadmin", "projectAdmin"].includes(
     user?.role,
