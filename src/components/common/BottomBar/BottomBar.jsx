@@ -33,13 +33,15 @@ const PILL_GLASS = {
     ring: "rgba(255,255,255,0.35)",
   },
   dark: {
-    base: ["rgba(255,255,255,0.12)", "rgba(255,255,255,0.03)"],
+    // Very subtle on the wide pill — a strong highlight/ring reads as grey
+    // stripes across the top and sides, so keep only a faint top sheen.
+    base: ["rgba(255,255,255,0.05)", "rgba(255,255,255,0.015)"],
     highlight: [
-      "rgba(255,255,255,0.16)",
       "rgba(255,255,255,0.05)",
+      "rgba(255,255,255,0.015)",
       "rgba(255,255,255,0)",
     ],
-    ring: "rgba(255,255,255,0.12)",
+    ring: "rgba(255,255,255,0.04)",
   },
 };
 const MENU_ROUTES = new Set([
