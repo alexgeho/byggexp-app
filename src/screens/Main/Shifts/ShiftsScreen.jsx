@@ -21,16 +21,13 @@ import {
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../theme/ThemeContext";
-import {
-  useFocusEffect,
-  useNavigation,
-  useRoute,
-} from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { ProjectFilterSelector } from "../../../components/common/ProjectFilterSelector/ProjectFilterSelector";
 import AuthContext from "../../../contexts/AuthContext";
 import { projectService, shiftService, userService } from "../../../services";
+import { useShiftHistory } from "../../../hooks/useShiftHistory";
 import Icon from "react-native-vector-icons/Feather";
 import {
   buildExportMonthOptions,
@@ -117,13 +114,6 @@ export default function ShiftsScreen() {
   const weekdayLabels = t("shifts.weekdays", { returnObjects: true });
   const [exportSheetOpen, setExportSheetOpen] = useState(false);
   const [periodSheetOpen, setPeriodSheetOpen] = useState(false);
-  const [availableMonths, setAvailableMonths] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState(null);
-  const [selectedDates, setSelectedDates] = useState([]);
-  const [days, setDays] = useState([]);
-  const [currentMonthDuration, setCurrentMonthDuration] = useState(0);
-  const [previousMonthDuration, setPreviousMonthDuration] = useState(0);
-  const [loading, setLoading] = useState(true);
   const [selectedExportType, setSelectedExportType] = useState("pdf");
   const [exportPeriodTab, setExportPeriodTab] = useState("Month");
   const [exportFromMonth, setExportFromMonth] = useState("");
@@ -237,57 +227,19 @@ export default function ShiftsScreen() {
   const currentMonthKey = useMemo(() => getCurrentMonthKey(), []);
   const todayDateKey = useMemo(() => getTodayDateKey(), []);
 
-  const loadMonths = useCallback(async () => {
-    const months = await shiftService.getMonths();
-    setAvailableMonths(months);
-    return months;
-  }, []);
-
-  const loadHistory = useCallback(
-    async (month) => {
-      const data = await shiftService.getHistory({
-        ...(month ? { month } : {}),
-        ...(filterProjectId ? { projectId: filterProjectId } : {}),
-        ...(workerIdsParam ? { workerIds: workerIdsParam } : {}),
-      });
-      setAvailableMonths(data.availableMonths || []);
-      setCurrentMonthDuration(data.monthTotalDurationMs || 0);
-      setPreviousMonthDuration(data.previousMonthTotalDurationMs || 0);
-      setDays(data.days || []);
-      setSelectedMonth(data.month);
-      setSelectedDates((previousDates) =>
-        previousDates.filter((date) =>
-          (data.days || []).some((day) => day.date === date),
-        ),
-      );
-    },
-    [filterProjectId, workerIdsParam],
-  );
-
-  const refreshHistory = useCallback(
-    async (preferredMonth) => {
-      try {
-        setLoading(true);
-        await loadMonths();
-        const nextMonth = preferredMonth || getCurrentMonthKey();
-        await loadHistory(nextMonth);
-      } catch (error) {
-        console.error("Failed to load shifts history:", error);
-        setDays([]);
-        setAvailableMonths([]);
-        setSelectedDates([]);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [loadHistory, loadMonths],
-  );
-
-  useFocusEffect(
-    useCallback(() => {
-      refreshHistory(selectedMonth);
-    }, [refreshHistory, selectedMonth]),
-  );
+  const {
+    loading,
+    days,
+    availableMonths,
+    currentMonthDuration,
+    previousMonthDuration,
+    selectedMonth,
+    setSelectedMonth,
+    selectedDates,
+    setSelectedDates,
+    refreshHistory,
+    loadHistory,
+  } = useShiftHistory({ filterProjectId, workerIdsParam });
 
   // Load projects for everyone (admins filter the export by project; workers
   // pick one when logging manual hours) and colleagues for admins' people filter.
@@ -312,12 +264,6 @@ export default function ShiftsScreen() {
       active = false;
     };
   }, [isAdmin, user?.role]);
-
-  // Re-pull the calendar when the admin filters change.
-  useEffect(() => {
-    refreshHistory(selectedMonth);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterProjectId, workerIdsParam]);
 
   const dayMap = useMemo(() => {
     const map = new Map();
@@ -393,21 +339,24 @@ export default function ShiftsScreen() {
     selectedMonth,
   ]);
 
-  const toggleDateGroup = useCallback((dates) => {
-    if (!dates.length) {
-      return;
-    }
-
-    setSelectedDates((previousDates) => {
-      const allSelected = dates.every((date) => previousDates.includes(date));
-
-      if (allSelected) {
-        return previousDates.filter((date) => !dates.includes(date));
+  const toggleDateGroup = useCallback(
+    (dates) => {
+      if (!dates.length) {
+        return;
       }
 
-      return Array.from(new Set([...previousDates, ...dates])).sort();
-    });
-  }, []);
+      setSelectedDates((previousDates) => {
+        const allSelected = dates.every((date) => previousDates.includes(date));
+
+        if (allSelected) {
+          return previousDates.filter((date) => !dates.includes(date));
+        }
+
+        return Array.from(new Set([...previousDates, ...dates])).sort();
+      });
+    },
+    [setSelectedDates],
+  );
 
   const toggleSelectedDate = useCallback(
     (dateStr) => {
@@ -418,7 +367,7 @@ export default function ShiftsScreen() {
 
   const clearSelectedDates = useCallback(() => {
     setSelectedDates([]);
-  }, []);
+  }, [setSelectedDates]);
 
   // Begin typing hours straight into a day's calendar cell (Manuell tab). Seed
   // from a pending edit if present, else from what's already saved.
@@ -847,6 +796,8 @@ export default function ShiftsScreen() {
     exportToMonth,
     getPeriodExportRange,
     refreshHistory,
+    setSelectedDates,
+    setSelectedMonth,
     t,
   ]);
 
