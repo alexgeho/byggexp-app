@@ -59,7 +59,6 @@ import { createStyles } from "./CreateProjectScreen.styles";
 import {
   FieldIcon,
   isImageDocument,
-  getDocumentTypeMeta,
   ToolsListModal,
   WorkersListModal,
   CompaniesListModal,
@@ -70,6 +69,7 @@ import {
   EconomySection,
   ContractSection,
 } from "./CreateProjectScreen.parts";
+import { getDocumentTypeMeta } from "../../../utils/documentPreview";
 
 const REVERSE_GEOCODE_MIN_INTERVAL_MS = 1200;
 

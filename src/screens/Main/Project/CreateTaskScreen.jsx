@@ -39,7 +39,6 @@ import { createStyles } from "./CreateTaskScreen.styles";
 import {
   FieldIcon,
   isImageDocument,
-  getDocumentTypeMeta,
   SectionLabel,
   GroupCard,
   GroupRow,
@@ -52,6 +51,7 @@ import {
   ProjectPickerModal,
   UserPickerModal,
 } from "./CreateTaskScreen.parts";
+import { getDocumentTypeMeta } from "../../../utils/documentPreview";
 
 export default function CreateTaskScreen() {
   const navigation = useNavigation();

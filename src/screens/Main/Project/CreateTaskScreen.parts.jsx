@@ -51,28 +51,7 @@ export const isImageDocument = (document) => {
   );
 };
 
-export const getDocumentTypeMeta = (document) => {
-  const extension = getFileExtension(document?.name || "");
-  const mimeType = document?.mimeType || "";
-
-  if (isImageDocument(document)) {
-    return { icon: "image", label: extension || "IMAGE" };
-  }
-
-  if (mimeType.includes("pdf") || extension === "PDF") {
-    return { icon: "file-text", label: "PDF" };
-  }
-
-  if (["DOC", "DOCX", "TXT", "RTF"].includes(extension)) {
-    return { icon: "file-text", label: extension || "DOC" };
-  }
-
-  if (["XLS", "XLSX", "CSV"].includes(extension)) {
-    return { icon: "grid", label: extension || "XLS" };
-  }
-
-  return { icon: "file", label: extension || "FILE" };
-};
+// getDocumentTypeMeta now lives in utils/documentPreview (shared, DRY).
 
 export const SectionLabel = () => null;
 
