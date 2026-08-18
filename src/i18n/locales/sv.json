@@ -411,7 +411,7 @@
     "dayCount_one": "{{count}} dag",
     "dayCount_other": "{{count}} dagar",
     "selectDatesHint": "Välj datum för att se arbetspass.",
-    "selectDays": "Välj",
+    "selectDays": "Välj dagar",
     "selectDone": "Klar",
     "selectDaysHint": "Tryck på dagar för att markera dem för export.",
     "noShiftsSelected": "Inga arbetspass på valda datum.",

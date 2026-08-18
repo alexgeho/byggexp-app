@@ -1072,14 +1072,17 @@ export default function ShiftsScreen() {
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
-            style={styles.headerSelectButton}
+            style={[
+              styles.headerSelectButton,
+              selectMode && styles.headerSelectButtonActive,
+            ]}
             onPress={() => setSelectMode((mode) => !mode)}
-            activeOpacity={0.7}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            activeOpacity={0.85}
           >
             <Text
               style={[
                 styles.headerSelectText,
+                selectMode && styles.headerSelectTextActive,
                 { fontFamily: theme.text.fontFamily["semiBold"] },
               ]}
             >

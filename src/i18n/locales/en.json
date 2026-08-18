@@ -411,7 +411,7 @@
     "dayCount_one": "{{count}} day",
     "dayCount_other": "{{count}} days",
     "selectDatesHint": "Select dates to see shifts.",
-    "selectDays": "Select",
+    "selectDays": "Select Days",
     "selectDone": "Done",
     "selectDaysHint": "Tap days to mark them for export.",
     "noShiftsSelected": "No shifts on selected dates.",

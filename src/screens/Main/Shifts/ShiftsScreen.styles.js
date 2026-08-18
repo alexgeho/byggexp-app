@@ -131,16 +131,25 @@ export const createStyles = (c) =>
       width: "100%",
       marginBottom: 10,
     },
-    /* "Select" toggle in the header (multi-select for export, iOS-style) */
+    /* "Select" toggle in the header — solid pill, matches the Tools "Scan" button */
     headerSelectButton: {
-      minWidth: 36,
-      paddingVertical: 6,
-      paddingLeft: 12,
-      alignItems: "flex-end",
+      height: 44,
+      minWidth: 72,
+      paddingHorizontal: 16,
+      borderRadius: 999,
+      alignItems: "center",
       justifyContent: "center",
+      backgroundColor: "#0785F4",
+    },
+    headerSelectButtonActive: {
+      backgroundColor: "#E8F1FB",
     },
     headerSelectText: {
-      fontSize: 15,
+      fontSize: 14,
+      fontWeight: "700",
+      color: "#FFFFFF",
+    },
+    headerSelectTextActive: {
       color: "#0785F4",
     },
     /* Hint shown above the calendar while in select mode */
