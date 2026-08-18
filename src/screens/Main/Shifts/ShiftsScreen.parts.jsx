@@ -1,60 +1,9 @@
 import React from "react";
-import {
-  Modal,
-  Platform,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
-
-import { parseDateKey } from "../../../utils/shifts";
+import { Modal, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 // Presentational sub-components split out of ShiftsScreen to keep that file
 // smaller. Each is self-contained: it receives the themed `styles` object and
 // `t` from the parent, so it does no data-fetching or theming of its own.
-
-const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "spinner" : "default";
-
-// Custom export range: the native date picker for the "from" / "to" bound.
-export function ExportDatePickerModal({
-  target,
-  fromDate,
-  toDate,
-  onChange,
-  onClose,
-  styles,
-  t,
-}) {
-  return (
-    <Modal
-      visible={Boolean(target)}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
-      <View style={styles.datePickerOverlay}>
-        <View style={styles.datePickerCard}>
-          <Text style={styles.datePickerTitle}>
-            {target === "from"
-              ? t("shiftHistory.fromDate")
-              : t("shiftHistory.toDate")}
-          </Text>
-          <DateTimePicker
-            value={parseDateKey(target === "from" ? fromDate : toDate)}
-            mode="date"
-            display={DATE_PICKER_DISPLAY}
-            onChange={onChange}
-          />
-          <TouchableOpacity style={styles.datePickerButton} onPress={onClose}>
-            <Text style={styles.datePickerButtonText}>{t("common.done")}</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Modal>
-  );
-}
 
 // Admin filter: pick which employees the calendar/export is scoped to.
 export function EmployeePickerModal({

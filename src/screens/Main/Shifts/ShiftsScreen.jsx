@@ -23,6 +23,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../theme/ThemeContext";
 import {
@@ -50,6 +51,7 @@ import {
   getCurrentMonthKey,
   getMonthDateRange,
   getTodayDateKey,
+  parseDateKey,
   resolveUploadUrl,
 } from "../../../utils/shifts";
 import { buildCalendarLayout } from "../../../utils/shiftsCalendar";
@@ -59,13 +61,11 @@ import {
   isPdfDocument,
 } from "../../../utils/documentPreview";
 import { createStyles } from "./ShiftsScreen.styles";
-import {
-  EmployeePickerModal,
-  ExportDatePickerModal,
-} from "./ShiftsScreen.parts";
+import { EmployeePickerModal } from "./ShiftsScreen.parts";
 
 const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const EXPORT_PERIOD_TABS = ["Month", "Custom"];
+const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "spinner" : "default";
 
 // Plain-Modal bottom sheet — replaces @gorhom/bottom-sheet, which hangs the JS
 // thread on Android under the New Architecture (reanimated 4 / RN 0.81).
@@ -1863,6 +1863,32 @@ export default function ShiftsScreen() {
                     </View>
                   </View>
                 )}
+
+                {/* Inline picker — rendered INSIDE this sheet (not as a second
+                    Modal), because a Modal stacked on the sheet Modal swallows
+                    the wheel's touches on iOS, so the date couldn't be set. */}
+                {exportPeriodTab === "Custom" && datePickerTarget ? (
+                  <View style={styles.inlineDatePicker}>
+                    <DateTimePicker
+                      value={parseDateKey(
+                        datePickerTarget === "from"
+                          ? exportFromDate
+                          : exportToDate,
+                      )}
+                      mode="date"
+                      display={DATE_PICKER_DISPLAY}
+                      onChange={handleCustomDateChange}
+                    />
+                    <TouchableOpacity
+                      style={styles.datePickerButton}
+                      onPress={() => setDatePickerTarget(null)}
+                    >
+                      <Text style={styles.datePickerButtonText}>
+                        {t("common.done")}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                ) : null}
               </View>
             </View>
 
@@ -1878,16 +1904,6 @@ export default function ShiftsScreen() {
           </View>
         </View>
       </Modal>
-
-      <ExportDatePickerModal
-        target={datePickerTarget}
-        fromDate={exportFromDate}
-        toDate={exportToDate}
-        onChange={handleCustomDateChange}
-        onClose={() => setDatePickerTarget(null)}
-        styles={styles}
-        t={t}
-      />
 
       <EmployeePickerModal
         visible={employeePickerOpen}

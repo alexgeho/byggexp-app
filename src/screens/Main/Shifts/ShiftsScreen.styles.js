@@ -733,6 +733,12 @@ export const createStyles = (c) =>
       fontWeight: "700",
       marginBottom: 12,
     },
+    // Inline (non-modal) date picker shown inside the Period sheet on the
+    // Custom tab, so its wheel gets touches (a stacked Modal would not).
+    inlineDatePicker: {
+      alignItems: "center",
+      marginTop: 8,
+    },
     datePickerButton: {
       alignSelf: "flex-end",
       marginTop: 12,
