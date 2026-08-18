@@ -1,11 +1,4 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -21,16 +14,12 @@ import {
 import Icon from "react-native-vector-icons/Feather";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTranslation } from "react-i18next";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import AuthContext from "../../../contexts/AuthContext";
-import {
-  taskService,
-  projectService,
-  userService,
-  leaveService,
-} from "../../../services";
+import { taskService } from "../../../services";
+import { useScheduleData } from "../../../hooks/useScheduleData";
 import {
   addDays,
   addMonths,
@@ -52,7 +41,6 @@ import {
   startOfMonth,
   startOfWeek,
 } from "../../../utils/schedule";
-import { getScheduleDemoData } from "../../../utils/scheduleDemo";
 import { getDateLocale } from "../../../utils/dateLocale";
 import { createStyles, ROW_HEIGHT } from "./ScheduleScreen.styles";
 import { useTheme } from "../../../theme/ThemeContext";
@@ -137,11 +125,14 @@ export default function ScheduleScreen() {
   const [timelineViewportWidth, setTimelineViewportWidth] = useState(0);
   const [dayWidth, setDayWidth] = useState(BASE_DAY_WIDTH);
   const [bodyHeight, setBodyHeight] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [tasks, setTasks] = useState([]);
-  const [projects, setProjects] = useState([]);
-  const [workers, setWorkers] = useState([]);
-  const [leaves, setLeaves] = useState([]);
+  const {
+    loading,
+    tasks,
+    projects,
+    workers,
+    leaves,
+    reload: loadData,
+  } = useScheduleData(user, SCHEDULE_DEMO);
   const [monthPickerOpen, setMonthPickerOpen] = useState(false);
   const [selectedProjectIds, setSelectedProjectIds] = useState([]);
   const [selectedStatuses, setSelectedStatuses] = useState([]);
@@ -156,63 +147,6 @@ export default function ScheduleScreen() {
   const sidebarScrollRef = useRef(null);
   const bodyHScrollRef = useRef(null);
   const bodyVScrollRef = useRef(null);
-
-  const loadData = useCallback(async () => {
-    if (__DEV__ && SCHEDULE_DEMO) {
-      const demo = getScheduleDemoData();
-      setTasks(demo.tasks);
-      setProjects(demo.projects);
-      setWorkers(demo.workers);
-      setLeaves(demo.leaves || []);
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const role = user?.role;
-      const companyId = user?.companyId;
-
-      const projectRequest =
-        role === "superadmin"
-          ? projectService.getAll()
-          : role === "companyAdmin" && companyId
-            ? projectService.getByCompany(companyId)
-            : projectService.getMyProjects();
-
-      // Company users (with names) so worker rows resolve to real names.
-      const userRequest =
-        role === "superadmin"
-          ? userService.getAll()
-          : userService.getMyCompanyUsers();
-
-      const [taskData, projectData, workerData, leaveData] = await Promise.all([
-        taskService.getAll().catch(() => []),
-        projectRequest.catch(() => []),
-        userRequest.catch(() => []),
-        leaveService.getAll().catch(() => []),
-      ]);
-
-      setTasks(Array.isArray(taskData) ? taskData : []);
-      setProjects(Array.isArray(projectData) ? projectData : []);
-      setWorkers(Array.isArray(workerData) ? workerData : []);
-      setLeaves(Array.isArray(leaveData) ? leaveData : []);
-    } catch (error) {
-      console.error("Failed to load schedule data:", error);
-      setTasks([]);
-      setProjects([]);
-      setWorkers([]);
-      setLeaves([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
-
-  useFocusEffect(
-    useCallback(() => {
-      loadData();
-    }, [loadData]),
-  );
 
   const projectMap = useMemo(() => buildProjectMap(projects), [projects]);
 
