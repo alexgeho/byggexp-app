@@ -39,6 +39,17 @@ export const isImageDocument = ({
   );
 };
 
+// Display name for a document that may be a raw URL string or a { name, url }
+// object — shared across the document lists. Falls back to "Document <n>".
+export const getDocumentName = (document, index = 0) => {
+  if (typeof document === "string") {
+    const parts = document.split("/");
+    return parts[parts.length - 1] || `Document ${index + 1}`;
+  }
+
+  return document?.name || `Document ${index + 1}`;
+};
+
 // Icon + short label for a document ({ name, mimeType }) — shared across the
 // document lists (was duplicated verbatim in several screens). The label is the
 // uppercased file extension (or a type word), matching the Figma chips.

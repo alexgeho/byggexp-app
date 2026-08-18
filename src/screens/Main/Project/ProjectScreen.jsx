@@ -52,6 +52,7 @@ import {
 } from "../../../services";
 import { formatMoney } from "../../../utils/billingTotals";
 import {
+  getDocumentName,
   getDocumentTypeMeta,
   isPdfDocument,
 } from "../../../utils/documentPreview";
@@ -179,15 +180,6 @@ const resolveDocumentUrl = (url) => {
   if (!url) return null;
   if (url.startsWith("http://") || url.startsWith("https://")) return url;
   return `${API_BASE_URL}${url.startsWith("/") ? url : `/${url}`}`;
-};
-
-const getDocumentName = (document, index) => {
-  if (typeof document === "string") {
-    const parts = document.split("/");
-    return parts[parts.length - 1] || `Document ${index + 1}`;
-  }
-
-  return document?.name || `Document ${index + 1}`;
 };
 
 const getFileExtension = (fileName = "") => {

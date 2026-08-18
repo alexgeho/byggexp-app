@@ -20,6 +20,7 @@ import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import { taskService } from "../../../services";
 import {
+  getDocumentName,
   getDocumentTypeMeta,
   isPdfDocument,
 } from "../../../utils/documentPreview";
@@ -86,15 +87,6 @@ const resolveDocumentUrl = (url) => {
   }
 
   return resolveUploadUrl(url);
-};
-
-const getDocumentName = (document, index) => {
-  if (typeof document === "string") {
-    const parts = document.split("/");
-    return parts[parts.length - 1] || `Document ${index + 1}`;
-  }
-
-  return document?.name || `Document ${index + 1}`;
 };
 
 const getFileExtension = (fileName = "") => {
