@@ -16,6 +16,7 @@ import Icon from "react-native-vector-icons/Feather";
 
 import {
   formatDurationCompact,
+  formatDurationShort,
   formatExportPickerDate,
   formatMonthLabel,
   parseDateKey,
@@ -646,6 +647,241 @@ export function SelectionSummary({
           <Icon name="x" size={18} color="#698196" />
         </TouchableOpacity>
       ) : null}
+    </View>
+  );
+}
+
+const CALENDAR_WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+// The month calendar: prev/next month bar, weekday header and the day grid.
+// The grid rows are memoized on the same deps the screen used, so extracting
+// this doesn't lose the memoization. Refs (rowYRef for keyboard scrolling,
+// inlineValueRef for the in-cell input) are threaded in as props.
+export function ShiftCalendar({
+  styles,
+  t,
+  calendarYRef,
+  canGoBackMonth,
+  canGoForwardMonth,
+  onPrevMonth,
+  onNextMonth,
+  selectedMonth,
+  semiBoldFontFamily,
+  weekdayLabels,
+  onToggleColumn,
+  calendarLayout,
+  dayMap,
+  selectedDates,
+  todayDateKey,
+  onDayPress,
+  onToggleWeekRow,
+  daySourceMs,
+  sourceColor,
+  hoursSource,
+  inlineManualDate,
+  inlineManualSeed,
+  inlineValueRef,
+  onStashInput,
+  pendingManual,
+  rowYRef,
+}) {
+  const rows = React.useMemo(() => {
+    return calendarLayout.rows.map((row) => (
+      <View
+        key={`row-${row.rowIndex}`}
+        style={styles.calendarRow}
+        onLayout={(e) => {
+          const { y } = e.nativeEvent.layout;
+          row.cells.forEach((cellDate) => {
+            if (cellDate) {
+              rowYRef.current[cellDate] = y;
+            }
+          });
+        }}
+      >
+        <TouchableOpacity
+          style={styles.calendarWeekNumberCell}
+          onPress={() => onToggleWeekRow(row.rowIndex)}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.calendarWeekNumberText}>{row.weekNumber}</Text>
+        </TouchableOpacity>
+        <View style={styles.calendarDaysRow}>
+          {row.cells.map((dateStr, columnIndex) => {
+            if (!dateStr) {
+              return (
+                <View
+                  key={`empty-${row.rowIndex}-${columnIndex}`}
+                  style={styles.calendarCellEmpty}
+                />
+              );
+            }
+
+            const day = Number(dateStr.split("-")[2]);
+            const shiftDay = dayMap.get(dateStr);
+            const savedMs = daySourceMs(shiftDay);
+            const pendingHours = pendingManual[dateStr];
+            const hasPending = hoursSource === "manual" && pendingHours != null;
+            const displayMs = hasPending
+              ? Math.round(pendingHours * 3600000)
+              : savedMs;
+            const isSelected = selectedDates.includes(dateStr);
+            const isToday = dateStr === todayDateKey;
+
+            const isInlineEditing =
+              hoursSource === "manual" && inlineManualDate === dateStr;
+
+            return (
+              <TouchableOpacity
+                key={dateStr}
+                style={[
+                  styles.calendarCell,
+                  displayMs > 0 &&
+                    !isSelected && {
+                      backgroundColor: `${sourceColor}1A`,
+                    },
+                  isToday && !isSelected && styles.calendarCellToday,
+                  isSelected && styles.calendarCellSelected,
+                ]}
+                onPress={() => onDayPress(dateStr)}
+                activeOpacity={0.85}
+              >
+                {hasPending ? <View style={styles.pendingDot} /> : null}
+                <Text
+                  style={[
+                    styles.calendarDay,
+                    isToday && !isSelected && styles.calendarDayToday,
+                    isSelected && styles.calendarDaySelected,
+                  ]}
+                >
+                  {day}
+                </Text>
+                {isInlineEditing ? (
+                  <TextInput
+                    style={styles.calendarHoursInput}
+                    defaultValue={inlineManualSeed}
+                    onChangeText={(text) => {
+                      inlineValueRef.current = text
+                        .replace(/[^0-9.,]/g, "")
+                        .slice(0, 5);
+                    }}
+                    keyboardType="decimal-pad"
+                    autoFocus
+                    selectTextOnFocus
+                    returnKeyType="done"
+                    placeholder="0"
+                    placeholderTextColor="#9BB0C1"
+                    onSubmitEditing={onStashInput}
+                  />
+                ) : displayMs > 0 ? (
+                  <Text
+                    style={[
+                      styles.calendarHours,
+                      !isSelected && { color: sourceColor },
+                    ]}
+                  >
+                    {formatDurationShort(displayMs)}
+                  </Text>
+                ) : hoursSource === "manual" ? (
+                  <Text
+                    style={[
+                      styles.calendarPlus,
+                      isSelected && styles.calendarPlusSelected,
+                    ]}
+                  >
+                    +
+                  </Text>
+                ) : null}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </View>
+    ));
+  }, [
+    calendarLayout.rows,
+    dayMap,
+    selectedDates,
+    todayDateKey,
+    onDayPress,
+    onToggleWeekRow,
+    daySourceMs,
+    sourceColor,
+    hoursSource,
+    inlineManualDate,
+    inlineManualSeed,
+    pendingManual,
+    onStashInput,
+    styles,
+    rowYRef,
+    inlineValueRef,
+  ]);
+
+  return (
+    <View
+      style={styles.calendarContainer}
+      onLayout={(e) => {
+        calendarYRef.current = e.nativeEvent.layout.y;
+      }}
+    >
+      <View style={styles.calendarMonthBar}>
+        <View style={styles.calendarNav}>
+          <TouchableOpacity
+            style={[
+              styles.calendarNavButton,
+              !canGoBackMonth && styles.calendarNavButtonDisabled,
+            ]}
+            onPress={onPrevMonth}
+            disabled={!canGoBackMonth}
+            activeOpacity={0.85}
+          >
+            <Icon name="chevron-left" size={16} color="#0177DE" />
+          </TouchableOpacity>
+          <Text
+            style={[
+              styles.calendarNavLabel,
+              { fontFamily: semiBoldFontFamily },
+            ]}
+          >
+            {selectedMonth ? formatMonthLabel(selectedMonth) : ""}
+          </Text>
+          <TouchableOpacity
+            style={[
+              styles.calendarNavButton,
+              !canGoForwardMonth && styles.calendarNavButtonDisabled,
+            ]}
+            onPress={onNextMonth}
+            disabled={!canGoForwardMonth}
+            activeOpacity={0.85}
+          >
+            <Icon name="chevron-right" size={16} color="#0177DE" />
+          </TouchableOpacity>
+        </View>
+      </View>
+      <View style={styles.calendarHeader}>
+        <View style={styles.calendarWeekHeaderCell} />
+        <View style={styles.calendarDaysHeader}>
+          {CALENDAR_WEEKDAYS.map((label, columnIndex) => (
+            <TouchableOpacity
+              key={label}
+              style={styles.calendarHeaderDayButton}
+              onPress={() => onToggleColumn(columnIndex)}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.calendarHeaderDay}>
+                {(Array.isArray(weekdayLabels)
+                  ? weekdayLabels[columnIndex]
+                  : null) || label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+      {rows.length ? (
+        rows
+      ) : (
+        <Text style={styles.emptyMonthText}>{t("shifts.emptyMonth")}</Text>
+      )}
     </View>
   );
 }
