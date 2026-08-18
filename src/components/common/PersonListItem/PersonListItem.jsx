@@ -45,11 +45,7 @@ export const PersonListItem = ({
 
       <View style={styles.rowBody}>
         <Text
-          style={[
-            styles.rowName,
-            selected && styles.rowTextOnSel,
-            isUnread && styles.rowNameUnread,
-          ]}
+          style={[styles.rowName, selected && styles.rowTextOnSel]}
           numberOfLines={1}
         >
           {person.name || "—"}
@@ -152,10 +148,8 @@ const createStyles = (c) =>
       fontSize: fontSize.footnote,
       fontWeight: "500",
     },
-    // Unread chat row (Figma): darker, bolder name + preview, plus a dot.
-    rowNameUnread: {
-      fontWeight: "700",
-    },
+    // Unread chat row (Figma): the preview turns navy and a dot follows it.
+    // Weight stays 500 — Figma marks unread by colour + dot, not by bolding.
     previewRow: {
       flexDirection: "row",
       alignItems: "center",
@@ -166,7 +160,6 @@ const createStyles = (c) =>
     },
     rowPreviewUnread: {
       color: c.textPrimary,
-      fontWeight: "600",
     },
     unreadDot: {
       width: 6,
