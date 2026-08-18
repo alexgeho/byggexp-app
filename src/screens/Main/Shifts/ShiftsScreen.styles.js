@@ -627,6 +627,12 @@ export const createStyles = (c) =>
       height: 44,
       justifyContent: "center",
       alignItems: "center",
+      borderWidth: 2,
+      borderColor: "transparent",
+    },
+    // The From/To field the inline wheel is currently editing.
+    dateValueCardActive: {
+      borderColor: "#0091FF",
     },
     dateValueText: {
       fontSize: 15,

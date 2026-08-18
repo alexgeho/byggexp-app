@@ -1008,12 +1008,15 @@ export default function ShiftsScreen() {
 
   const handleCustomDateChange = useCallback(
     (_event, date) => {
-      if (!datePickerTarget || !date) {
+      if (!date) {
         return;
       }
 
+      // The wheel is always live on the Custom tab; when no field has been
+      // tapped yet it edits "From" by default.
+      const target = datePickerTarget || "from";
       const formattedDate = formatDateKey(date);
-      if (datePickerTarget === "from") {
+      if (target === "from") {
         setExportFromDate(formattedDate);
       } else {
         setExportToDate(formattedDate);
@@ -1828,7 +1831,11 @@ export default function ShiftsScreen() {
                         {t("shiftHistory.from")}
                       </Text>
                       <TouchableOpacity
-                        style={styles.dateValueCard}
+                        style={[
+                          styles.dateValueCard,
+                          (datePickerTarget || "from") === "from" &&
+                            styles.dateValueCardActive,
+                        ]}
                         onPress={() => setDatePickerTarget("from")}
                         activeOpacity={0.85}
                       >
@@ -1847,7 +1854,11 @@ export default function ShiftsScreen() {
                         {t("shiftHistory.to")}
                       </Text>
                       <TouchableOpacity
-                        style={styles.dateValueCard}
+                        style={[
+                          styles.dateValueCard,
+                          datePickerTarget === "to" &&
+                            styles.dateValueCardActive,
+                        ]}
                         onPress={() => setDatePickerTarget("to")}
                         activeOpacity={0.85}
                       >
@@ -1866,12 +1877,14 @@ export default function ShiftsScreen() {
 
                 {/* Inline picker — rendered INSIDE this sheet (not as a second
                     Modal), because a Modal stacked on the sheet Modal swallows
-                    the wheel's touches on iOS, so the date couldn't be set. */}
-                {exportPeriodTab === "Custom" && datePickerTarget ? (
+                    the wheel's touches on iOS. Always shown on the Custom tab;
+                    it edits whichever of From/To is active (From by default),
+                    and Apply confirms — so there's no separate "Done". */}
+                {exportPeriodTab === "Custom" ? (
                   <View style={styles.inlineDatePicker}>
                     <DateTimePicker
                       value={parseDateKey(
-                        datePickerTarget === "from"
+                        (datePickerTarget || "from") === "from"
                           ? exportFromDate
                           : exportToDate,
                       )}
@@ -1879,14 +1892,6 @@ export default function ShiftsScreen() {
                       display={DATE_PICKER_DISPLAY}
                       onChange={handleCustomDateChange}
                     />
-                    <TouchableOpacity
-                      style={styles.datePickerButton}
-                      onPress={() => setDatePickerTarget(null)}
-                    >
-                      <Text style={styles.datePickerButtonText}>
-                        {t("common.done")}
-                      </Text>
-                    </TouchableOpacity>
                   </View>
                 ) : null}
               </View>
