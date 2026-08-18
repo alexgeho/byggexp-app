@@ -24,6 +24,9 @@ export const PersonListItem = ({
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const avatar = <Avatar name={person.name} uri={person.avatarUrl} size={44} />;
+  // Unread chat: Figma marks it with a darker, bolder preview + a small dot
+  // after the text — not a numbered badge.
+  const isUnread = !selectable && !selected && unread > 0;
 
   return (
     <TouchableOpacity
@@ -42,7 +45,11 @@ export const PersonListItem = ({
 
       <View style={styles.rowBody}>
         <Text
-          style={[styles.rowName, selected && styles.rowTextOnSel]}
+          style={[
+            styles.rowName,
+            selected && styles.rowTextOnSel,
+            isUnread && styles.rowNameUnread,
+          ]}
           numberOfLines={1}
         >
           {person.name || "—"}
@@ -53,12 +60,20 @@ export const PersonListItem = ({
           ) : null}
         </Text>
         {subtitle ? (
-          <Text
-            style={[styles.rowPreview, selected && styles.rowTextOnSel]}
-            numberOfLines={1}
-          >
-            {subtitle}
-          </Text>
+          <View style={styles.previewRow}>
+            <Text
+              style={[
+                styles.rowPreview,
+                styles.previewText,
+                selected && styles.rowTextOnSel,
+                isUnread && styles.rowPreviewUnread,
+              ]}
+              numberOfLines={1}
+            >
+              {subtitle}
+            </Text>
+            {isUnread ? <View style={styles.unreadDot} /> : null}
+          </View>
         ) : null}
         {meta ? (
           <Text
@@ -71,7 +86,8 @@ export const PersonListItem = ({
       </View>
 
       {/* Trailing: status badge on top. Selection is shown by the whole card
-          turning blue (rowSelected) — no radio, matching the Figma design. */}
+          turning blue (rowSelected) — no radio, matching the Figma design.
+          Unread is shown by the dot after the preview, not a numbered badge. */}
       <View style={styles.rowRight}>
         {statusBadge ? (
           <Badge
@@ -79,13 +95,6 @@ export const PersonListItem = ({
             backgroundColor={statusBadge.backgroundColor}
             color={statusBadge.color}
           />
-        ) : null}
-        {!selectable && unread > 0 ? (
-          <View style={styles.unreadBadge}>
-            <Text style={styles.unreadBadgeText}>
-              {unread > 9 ? "9+" : unread}
-            </Text>
-          </View>
         ) : null}
       </View>
     </TouchableOpacity>
@@ -97,7 +106,8 @@ const createStyles = (c) =>
     row: {
       flexDirection: "row",
       alignItems: "center",
-      gap: spacing.md,
+      // Figma: 16px between the avatar and the text column.
+      gap: spacing.lg,
       backgroundColor: c.surface,
       borderWidth: 1,
       borderColor: c.surface,
@@ -142,6 +152,28 @@ const createStyles = (c) =>
       fontSize: fontSize.footnote,
       fontWeight: "500",
     },
+    // Unread chat row (Figma): darker, bolder name + preview, plus a dot.
+    rowNameUnread: {
+      fontWeight: "700",
+    },
+    previewRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+    },
+    previewText: {
+      flexShrink: 1,
+    },
+    rowPreviewUnread: {
+      color: c.textPrimary,
+      fontWeight: "600",
+    },
+    unreadDot: {
+      width: 6,
+      height: 6,
+      borderRadius: 3,
+      backgroundColor: c.textPrimary,
+    },
     rowMeta: {
       color: c.placeholder,
       fontSize: fontSize.caption,
@@ -149,21 +181,6 @@ const createStyles = (c) =>
     },
     rowTextOnSel: {
       color: c.onAccent,
-    },
-    unreadBadge: {
-      minWidth: 20,
-      height: 20,
-      borderRadius: radius.full,
-      paddingHorizontal: 5,
-      backgroundColor: c.accent,
-      alignItems: "center",
-      justifyContent: "center",
-      marginRight: spacing.sm,
-    },
-    unreadBadgeText: {
-      color: c.onAccent,
-      fontSize: 11,
-      fontWeight: "700",
     },
   });
 
