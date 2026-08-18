@@ -104,7 +104,8 @@ const createStyles = (c) =>
       alignItems: "center",
       // Figma: 16px between the avatar and the text column.
       gap: spacing.lg,
-      backgroundColor: c.surface,
+      // Figma card: #F8F8F8 fill with a white border (dark theme keeps surface).
+      backgroundColor: c.card,
       borderWidth: 1,
       borderColor: c.surface,
       borderRadius: radius.lg,

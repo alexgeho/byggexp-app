@@ -361,7 +361,7 @@ const createStyles = (c) =>
     },
     listContent: {
       paddingBottom: 140,
-      gap: 10,
+      // 10px card spacing comes from PersonListItem's marginBottom (Figma).
     },
     emptyState: {
       backgroundColor: c.surface,

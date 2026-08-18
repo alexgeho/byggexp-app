@@ -57,6 +57,7 @@ export const lightContent = {
 
   // Surfaces
   surface: "#FFFFFF",
+  card: "#F8F8F8", // list-card fill (Figma) — white border sits on top
   surfaceMuted: "rgba(255,255,255,0.6)", // frosted cards
   inputSurface: "#052D500D", // muted field / filter pill background
   background: "#EEEEEE", // app screen background (Figma)
@@ -104,6 +105,7 @@ export const darkContent = {
 
   // Surfaces — card sits a step above the near-black background for separation.
   surface: "#2C2C2E",
+  card: "#2C2C2E", // dark: keep the card == surface (light uses #F8F8F8)
   surfaceMuted: "rgba(255,255,255,0.10)",
   inputSurface: "rgba(255,255,255,0.08)",
   background: "#141414",

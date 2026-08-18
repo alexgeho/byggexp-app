@@ -35,7 +35,8 @@ export const Avatar = ({ name, uri, size = 44 }) => {
 
 const styles = StyleSheet.create({
   base: {
-    backgroundColor: "#D9D9D9",
+    // No-photo placeholder blends with the screen background (Figma #EEEEEE).
+    backgroundColor: content.background,
   },
   fallback: {
     alignItems: "center",

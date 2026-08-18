@@ -471,7 +471,8 @@ const createStyles = (c) =>
     },
     listContent: {
       paddingBottom: 190,
-      gap: 10,
+      // Card spacing (10px, Figma) comes from PersonListItem's marginBottom;
+      // no extra gap here or the rows would be 20px apart.
     },
     emptyState: {
       paddingVertical: 48,
