@@ -23,6 +23,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { createStyles } from "./ProjectScreen.styles";
+import { ProjectTabBar } from "./ProjectScreen.parts";
 import { useTranslation } from "react-i18next";
 import { Screen } from "../../../components/common/Screen/Screen";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
@@ -583,8 +584,6 @@ export const ProjectScreen = () => {
     );
   }
 
-  const activeTabStyle = { borderColor: theme.colors.primary };
-  const activeTabTextStyle = { color: theme.colors.primary };
   const themedAccentTextStyle = { color: theme.colors.primary };
 
   return (
@@ -593,105 +592,14 @@ export const ProjectScreen = () => {
       onBack={() => navigation.goBack()}
       style={styles.screenExtra}
     >
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.tabScroll}
-        contentContainerStyle={styles.tabContainer}
-      >
-        <TouchableOpacity
-          onPress={() => setModal("Tasks")}
-          style={[
-            styles.tabButton,
-            modal === "Tasks" && styles.activeTab,
-            modal === "Tasks" && activeTabStyle,
-          ]}
-        >
-          <Text
-            style={[styles.tabText, modal === "Tasks" && activeTabTextStyle]}
-          >
-            {t("project.tabs.tasks")}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => setModal("Documents")}
-          style={[
-            styles.tabButton,
-            modal === "Documents" && styles.activeTab,
-            modal === "Documents" && activeTabStyle,
-          ]}
-        >
-          <Text
-            style={[
-              styles.tabText,
-              modal === "Documents" && activeTabTextStyle,
-            ]}
-          >
-            {t("project.tabs.documents")}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => setModal("Workers")}
-          style={[
-            styles.tabButton,
-            modal === "Workers" && styles.activeTab,
-            modal === "Workers" && activeTabStyle,
-          ]}
-        >
-          <Text
-            style={[styles.tabText, modal === "Workers" && activeTabTextStyle]}
-          >
-            {t("project.tabs.workers")}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => setModal("Tools")}
-          style={[
-            styles.tabButton,
-            modal === "Tools" && styles.activeTab,
-            modal === "Tools" && activeTabStyle,
-          ]}
-        >
-          <Text
-            style={[styles.tabText, modal === "Tools" && activeTabTextStyle]}
-          >
-            {t("project.tabs.tools")}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => setModal("Photos")}
-          style={[
-            styles.tabButton,
-            modal === "Photos" && styles.activeTab,
-            modal === "Photos" && activeTabStyle,
-          ]}
-        >
-          <Text
-            style={[styles.tabText, modal === "Photos" && activeTabTextStyle]}
-          >
-            {t("project.tabs.photos")}
-          </Text>
-        </TouchableOpacity>
-        {canSeeFinance ? (
-          <TouchableOpacity
-            onPress={() => setModal("Economy")}
-            style={[
-              styles.tabButton,
-              modal === "Economy" && styles.activeTab,
-              modal === "Economy" && activeTabStyle,
-            ]}
-          >
-            <Text
-              style={[
-                styles.tabText,
-                modal === "Economy" && activeTabTextStyle,
-              ]}
-            >
-              {t("project.tabs.economy")}
-            </Text>
-          </TouchableOpacity>
-        ) : null}
-      </ScrollView>
+      <ProjectTabBar
+        active={modal}
+        onSelect={setModal}
+        canSeeFinance={canSeeFinance}
+        styles={styles}
+        activeColor={theme.colors.primary}
+        t={t}
+      />
 
       <ScrollView
         style={styles.scrollContainer}
