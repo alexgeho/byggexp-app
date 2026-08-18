@@ -1,4 +1,11 @@
-import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { getDateLocale } from "../../../utils/dateLocale";
 import {
   ActivityIndicator,
@@ -122,6 +129,149 @@ const getChatSubtitle = (chat, variant, t) => {
   );
 };
 
+// One chat bubble. Memoized so unrelated state changes (typing in the input,
+// the attach sheet opening) don't re-render every message in the list — only a
+// row whose own props change (e.g. its translation is toggled) re-renders.
+const MessageRow = React.memo(function MessageRow({
+  message,
+  isMyMessage,
+  variant,
+  autoTranslate,
+  showingOriginal,
+  showDaySeparator,
+  styles,
+  t,
+  onLongPress,
+  onToggleOriginal,
+}) {
+  const hasTranslation = autoTranslate && Boolean(message.translatedText);
+  const bodyText =
+    hasTranslation && !showingOriginal ? message.translatedText : message.text;
+
+  const attachments = message.attachments || [];
+  // Image-only messages render as the bare photo (rounded corners, timestamp
+  // overlaid) instead of inside the colored chat bubble.
+  const isImageOnly =
+    attachments.length > 0 &&
+    attachments.every((att) => att.kind === "image") &&
+    !bodyText &&
+    !hasTranslation;
+
+  return (
+    <>
+      {showDaySeparator ? (
+        <View style={styles.daySeparator}>
+          <Text style={styles.daySeparatorText}>
+            {formatDaySeparator(message.timestamp, t)}
+          </Text>
+        </View>
+      ) : null}
+      <View
+        style={[
+          styles.messageRow,
+          isMyMessage ? styles.myMessageRow : styles.otherMessageRow,
+        ]}
+      >
+        <Pressable
+          onLongPress={isMyMessage ? undefined : () => onLongPress(message)}
+          delayLongPress={350}
+          style={[
+            styles.messageBubble,
+            isMyMessage ? styles.myMessageBubble : styles.otherMessageBubble,
+            isImageOnly && styles.mediaBubble,
+          ]}
+        >
+          {!isMyMessage && variant === "group" ? (
+            <Text style={styles.senderName}>{message.senderName}</Text>
+          ) : null}
+          {message.attachments?.length ? (
+            <View
+              style={[
+                styles.attachments,
+                isImageOnly && styles.attachmentsMedia,
+              ]}
+            >
+              {message.attachments.map((att, attIndex) => {
+                const url = resolveUploadUrl(att.url);
+                return att.kind === "image" ? (
+                  <TouchableOpacity
+                    key={`${message._id}-att-${attIndex}`}
+                    activeOpacity={0.85}
+                    onPress={() => Linking.openURL(url)}
+                  >
+                    <Image
+                      style={styles.attachmentImage}
+                      source={{ uri: url }}
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    key={`${message._id}-att-${attIndex}`}
+                    style={styles.attachmentFile}
+                    activeOpacity={0.85}
+                    onPress={() => Linking.openURL(url)}
+                  >
+                    <Text style={styles.attachmentFileName} numberOfLines={1}>
+                      📎 {att.name}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          ) : null}
+          {bodyText ? (
+            <Text
+              style={
+                isMyMessage ? styles.myMessageText : styles.otherMessageText
+              }
+            >
+              {bodyText}
+            </Text>
+          ) : null}
+          {hasTranslation ? (
+            <TouchableOpacity
+              onPress={() => onToggleOriginal(message._id)}
+              activeOpacity={0.7}
+            >
+              <Text
+                style={[
+                  styles.translatedHint,
+                  isMyMessage
+                    ? styles.myTranslatedHint
+                    : styles.otherTranslatedHint,
+                ]}
+              >
+                {showingOriginal
+                  ? t("chat.showTranslation")
+                  : message.sourceLang
+                    ? t("chat.translatedFromShowOriginal", {
+                        lang: message.sourceLang,
+                      })
+                    : t("chat.translatedShowOriginal")}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
+          {isImageOnly ? (
+            <View style={styles.mediaTimeOverlay} pointerEvents="none">
+              <Text style={styles.mediaTimeText}>
+                {formatMessageTime(message.timestamp)}
+              </Text>
+            </View>
+          ) : (
+            <Text
+              style={
+                isMyMessage ? styles.myMessageDate : styles.otherMessageDate
+              }
+            >
+              {formatMessageTime(message.timestamp)}
+            </Text>
+          )}
+        </Pressable>
+      </View>
+    </>
+  );
+});
+
 export default function ChatConversationScreen({ variant }) {
   const route = useRoute();
   const navigation = useNavigation();
@@ -147,35 +297,80 @@ export default function ChatConversationScreen({ variant }) {
   const [showOriginalIds, setShowOriginalIds] = useState(() => new Set());
   const [uploading, setUploading] = useState(false);
 
-  const toggleOriginal = (id) =>
-    setShowOriginalIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
+  // Stable so the memoized MessageRow doesn't re-render on every keystroke.
+  const toggleOriginal = useCallback(
+    (id) =>
+      setShowOriginalIds((prev) => {
+        const next = new Set(prev);
+        if (next.has(id)) next.delete(id);
+        else next.add(id);
+        return next;
+      }),
+    [],
+  );
 
   const currentUserId = userId || user?._id || user?.id || null;
 
   // Report/block controls for user-generated content (App Store Guideline 1.2).
   const [reportTarget, setReportTarget] = useState(null);
 
-  const openMessageActions = (message) => {
-    if (!message || message.userId === currentUserId) return;
-    const reportedUserId = message.userId;
-    Alert.alert(t("moderation.actionsTitle"), undefined, [
-      {
-        text: t("moderation.reportMessage"),
-        onPress: () => setReportTarget({ message, reportedUserId }),
-      },
-      {
-        text: t("moderation.blockUser"),
-        style: "destructive",
-        onPress: () => confirmBlock(reportedUserId),
-      },
-      { text: t("common.cancel"), style: "cancel" },
-    ]);
-  };
+  const confirmBlock = useCallback(
+    (reportedUserId) => {
+      Alert.alert(
+        t("moderation.blockConfirmTitle"),
+        t("moderation.blockConfirmMessage"),
+        [
+          { text: t("common.cancel"), style: "cancel" },
+          {
+            text: t("moderation.blockUser"),
+            style: "destructive",
+            onPress: async () => {
+              try {
+                await moderationService.blockUser(reportedUserId);
+                Alert.alert(
+                  t("moderation.blockedTitle"),
+                  t("moderation.blockedMessage"),
+                  [
+                    {
+                      text: t("common.ok"),
+                      onPress: () => navigation.goBack(),
+                    },
+                  ],
+                );
+              } catch {
+                Alert.alert(
+                  t("moderation.errorTitle"),
+                  t("moderation.errorMessage"),
+                );
+              }
+            },
+          },
+        ],
+      );
+    },
+    [t, navigation],
+  );
+
+  // Stable so the memoized MessageRow keeps its identity across re-renders.
+  const openMessageActions = useCallback(
+    (message) => {
+      if (!message || message.userId === currentUserId) return;
+      const reportedUserId = message.userId;
+      Alert.alert(t("moderation.actionsTitle"), undefined, [
+        {
+          text: t("moderation.reportMessage"),
+          onPress: () => setReportTarget({ message, reportedUserId }),
+        },
+        {
+          text: t("moderation.blockUser"),
+          style: "destructive",
+          onPress: () => confirmBlock(reportedUserId),
+        },
+        { text: t("common.cancel"), style: "cancel" },
+      ]);
+    },
+    [t, currentUserId, confirmBlock],
+  );
 
   const submitReport = async (reason) => {
     const target = reportTarget;
@@ -195,35 +390,6 @@ export default function ChatConversationScreen({ variant }) {
     } catch {
       Alert.alert(t("moderation.errorTitle"), t("moderation.errorMessage"));
     }
-  };
-
-  const confirmBlock = (reportedUserId) => {
-    Alert.alert(
-      t("moderation.blockConfirmTitle"),
-      t("moderation.blockConfirmMessage"),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("moderation.blockUser"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await moderationService.blockUser(reportedUserId);
-              Alert.alert(
-                t("moderation.blockedTitle"),
-                t("moderation.blockedMessage"),
-                [{ text: t("common.ok"), onPress: () => navigation.goBack() }],
-              );
-            } catch {
-              Alert.alert(
-                t("moderation.errorTitle"),
-                t("moderation.errorMessage"),
-              );
-            }
-          },
-        },
-      ],
-    );
   };
 
   const headerTitle =
@@ -441,159 +607,23 @@ export default function ChatConversationScreen({ variant }) {
             </>
           }
           renderItem={({ item: message, index }) => {
-            const isMyMessage = message.userId === currentUserId;
-            const hasTranslation =
-              autoTranslate && Boolean(message.translatedText);
-            const showingOriginal = showOriginalIds.has(message._id);
-            const bodyText =
-              hasTranslation && !showingOriginal
-                ? message.translatedText
-                : message.text;
-
-            const attachments = message.attachments || [];
-            // Image-only messages render as the bare photo (rounded corners,
-            // timestamp overlaid) instead of inside the colored chat bubble, so
-            // there's no blue frame around the picture.
-            const isImageOnly =
-              attachments.length > 0 &&
-              attachments.every((att) => att.kind === "image") &&
-              !bodyText &&
-              !hasTranslation;
-
             const previous = index > 0 ? messages[index - 1] : null;
             const showDaySeparator =
               !previous || !isSameDay(previous.timestamp, message.timestamp);
 
             return (
-              <React.Fragment key={message._id}>
-                {showDaySeparator ? (
-                  <View style={styles.daySeparator}>
-                    <Text style={styles.daySeparatorText}>
-                      {formatDaySeparator(message.timestamp, t)}
-                    </Text>
-                  </View>
-                ) : null}
-                <View
-                  style={[
-                    styles.messageRow,
-                    isMyMessage ? styles.myMessageRow : styles.otherMessageRow,
-                  ]}
-                >
-                  <Pressable
-                    onLongPress={
-                      isMyMessage
-                        ? undefined
-                        : () => openMessageActions(message)
-                    }
-                    delayLongPress={350}
-                    style={[
-                      styles.messageBubble,
-                      isMyMessage
-                        ? styles.myMessageBubble
-                        : styles.otherMessageBubble,
-                      isImageOnly && styles.mediaBubble,
-                    ]}
-                  >
-                    {!isMyMessage && variant === "group" ? (
-                      <Text style={styles.senderName}>
-                        {message.senderName}
-                      </Text>
-                    ) : null}
-                    {message.attachments?.length ? (
-                      <View
-                        style={[
-                          styles.attachments,
-                          isImageOnly && styles.attachmentsMedia,
-                        ]}
-                      >
-                        {message.attachments.map((att, attIndex) => {
-                          const url = resolveUploadUrl(att.url);
-                          return att.kind === "image" ? (
-                            <TouchableOpacity
-                              key={`${message._id}-att-${attIndex}`}
-                              activeOpacity={0.85}
-                              onPress={() => Linking.openURL(url)}
-                            >
-                              <Image
-                                style={styles.attachmentImage}
-                                source={{ uri: url }}
-                              />
-                            </TouchableOpacity>
-                          ) : (
-                            <TouchableOpacity
-                              key={`${message._id}-att-${attIndex}`}
-                              style={styles.attachmentFile}
-                              activeOpacity={0.85}
-                              onPress={() => Linking.openURL(url)}
-                            >
-                              <Text
-                                style={styles.attachmentFileName}
-                                numberOfLines={1}
-                              >
-                                📎 {att.name}
-                              </Text>
-                            </TouchableOpacity>
-                          );
-                        })}
-                      </View>
-                    ) : null}
-                    {bodyText ? (
-                      <Text
-                        style={
-                          isMyMessage
-                            ? styles.myMessageText
-                            : styles.otherMessageText
-                        }
-                      >
-                        {bodyText}
-                      </Text>
-                    ) : null}
-                    {hasTranslation ? (
-                      <TouchableOpacity
-                        onPress={() => toggleOriginal(message._id)}
-                        activeOpacity={0.7}
-                      >
-                        <Text
-                          style={[
-                            styles.translatedHint,
-                            isMyMessage
-                              ? styles.myTranslatedHint
-                              : styles.otherTranslatedHint,
-                          ]}
-                        >
-                          {showingOriginal
-                            ? t("chat.showTranslation")
-                            : message.sourceLang
-                              ? t("chat.translatedFromShowOriginal", {
-                                  lang: message.sourceLang,
-                                })
-                              : t("chat.translatedShowOriginal")}
-                        </Text>
-                      </TouchableOpacity>
-                    ) : null}
-                    {isImageOnly ? (
-                      <View
-                        style={styles.mediaTimeOverlay}
-                        pointerEvents="none"
-                      >
-                        <Text style={styles.mediaTimeText}>
-                          {formatMessageTime(message.timestamp)}
-                        </Text>
-                      </View>
-                    ) : (
-                      <Text
-                        style={
-                          isMyMessage
-                            ? styles.myMessageDate
-                            : styles.otherMessageDate
-                        }
-                      >
-                        {formatMessageTime(message.timestamp)}
-                      </Text>
-                    )}
-                  </Pressable>
-                </View>
-              </React.Fragment>
+              <MessageRow
+                message={message}
+                isMyMessage={message.userId === currentUserId}
+                variant={variant}
+                autoTranslate={autoTranslate}
+                showingOriginal={showOriginalIds.has(message._id)}
+                showDaySeparator={showDaySeparator}
+                styles={styles}
+                t={t}
+                onLongPress={openMessageActions}
+                onToggleOriginal={toggleOriginal}
+              />
             );
           }}
         />
