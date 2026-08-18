@@ -176,16 +176,13 @@ export default function ShiftsScreen() {
 
   const currentUserId = user?.id || user?._id || null;
 
-  // Project a manual-hours entry attaches to when no explicit picker is used:
-  // the app-wide selected project, else the first of the user's projects.
+  // Manual hours attach ONLY to the explicitly selected project (app-wide
+  // selectedProject) — never a silent projects[0] fallback, which let hours be
+  // logged to a project the worker never chose. Null here means "no project
+  // chosen", and callers must tell the worker to pick one first.
   const resolveManualProjectId = useCallback(
-    () =>
-      selectedProject?._id ||
-      selectedProject?.id ||
-      projects[0]?._id ||
-      projects[0]?.id ||
-      null,
-    [projects, selectedProject],
+    () => selectedProject?._id || selectedProject?.id || null,
+    [selectedProject],
   );
 
   // Track the keyboard height so we can park the edited day just above it and

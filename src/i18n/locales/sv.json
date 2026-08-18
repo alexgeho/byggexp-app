@@ -430,7 +430,7 @@
     "manualHoursTooLong": "Timmar kan inte överstiga 24h.",
     "manualHoursClear": "Rensa",
     "manualAddForDate": "Lägg till manuella timmar",
-    "manualHoursNoProject": "Välj ett projekt för dessa timmar.",
+    "manualHoursNoProject": "Välj ett projekt innan du loggar timmar.",
     "manualTapHint": "Tryck på en dag för att ange timmar",
     "unitHour": "h",
     "unitMinute": "min",
