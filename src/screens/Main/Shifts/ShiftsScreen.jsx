@@ -37,7 +37,6 @@ import {
   buildExportMonthOptions,
   formatDateKey,
   formatDuration,
-  formatDurationCompact,
   formatDurationShort,
   formatExportPickerDate,
   formatMonthLabel,
@@ -59,8 +58,10 @@ import { createStyles } from "./ShiftsScreen.styles";
 import {
   EmployeePickerModal,
   ExportSheet,
+  HoursSourceToggle,
   ManualHoursModal,
   PeriodSheet,
+  SelectionSummary,
 } from "./ShiftsScreen.parts";
 
 const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -1242,32 +1243,14 @@ export default function ShiftsScreen() {
           }}
         >
           {/* Planned / GPS / Manual — the source that drives numbers & colours */}
-          <View style={styles.sourceToggle}>
-            {HOURS_SOURCES.map((s) => {
-              const on = s.key === hoursSource;
-              return (
-                <TouchableOpacity
-                  key={s.key}
-                  style={[styles.sourceBtn, on && styles.sourceBtnOn]}
-                  onPress={() => setHoursSource(s.key)}
-                  activeOpacity={0.85}
-                >
-                  <Text
-                    style={[
-                      styles.sourceBtnText,
-                      { fontFamily: theme.text.fontFamily.medium },
-                      on && { color: s.color },
-                    ]}
-                  >
-                    {t(
-                      `shifts.hoursSource${s.key.charAt(0).toUpperCase()}${s.key.slice(1)}`,
-                      { defaultValue: s.label },
-                    )}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
+          <HoursSourceToggle
+            sources={HOURS_SOURCES}
+            hoursSource={hoursSource}
+            setHoursSource={setHoursSource}
+            styles={styles}
+            mediumFontFamily={theme.text.fontFamily.medium}
+            t={t}
+          />
 
           <View style={styles.exportSelector}>
             <TouchableOpacity
@@ -1328,55 +1311,16 @@ export default function ShiftsScreen() {
           ) : null}
 
           {/* Single minimalist summary, coloured by the active source */}
-          <View style={styles.selectionSummaryCard}>
-            <View style={styles.selectionSummaryStat}>
-              <Text
-                style={[
-                  styles.selectionSummaryValue,
-                  { fontFamily: theme.text.fontFamily["regular"] },
-                ]}
-              >
-                {formatDurationCompact(heroValueMs)}
-              </Text>
-              <Text style={styles.selectionSummaryLabel}>
-                {selectedDates.length
-                  ? t("shifts.selected")
-                  : t("shifts.currentMonth")}
-              </Text>
-            </View>
-
-            <View style={styles.selectionSummaryDivider} />
-
-            <View style={styles.selectionSummaryStat}>
-              <Text
-                style={[
-                  styles.selectionSummaryValue,
-                  { fontFamily: theme.text.fontFamily["regular"] },
-                ]}
-              >
-                {selectedDates.length
-                  ? t("shifts.dayCount", {
-                      count: selectionSummary?.dayCount || 0,
-                    })
-                  : formatDurationCompact(previousMonthDuration)}
-              </Text>
-              <Text style={styles.selectionSummaryLabel}>
-                {selectedDates.length
-                  ? t("shifts.selected")
-                  : t("shifts.previousMonth")}
-              </Text>
-            </View>
-
-            {selectedDates.length ? (
-              <TouchableOpacity
-                style={styles.clearSelectionButton}
-                onPress={clearSelectedDates}
-                activeOpacity={0.85}
-              >
-                <Icon name="x" size={18} color="#698196" />
-              </TouchableOpacity>
-            ) : null}
-          </View>
+          <SelectionSummary
+            heroValueMs={heroValueMs}
+            previousMonthDuration={previousMonthDuration}
+            selectedDates={selectedDates}
+            selectionSummary={selectionSummary}
+            onClearSelection={clearSelectedDates}
+            styles={styles}
+            regularFontFamily={theme.text.fontFamily["regular"]}
+            t={t}
+          />
 
           <View
             style={styles.calendarContainer}

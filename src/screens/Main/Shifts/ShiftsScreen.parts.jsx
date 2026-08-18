@@ -12,8 +12,10 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import Icon from "react-native-vector-icons/Feather";
 
 import {
+  formatDurationCompact,
   formatExportPickerDate,
   formatMonthLabel,
   parseDateKey,
@@ -544,5 +546,106 @@ export function PeriodSheet({
         </View>
       </View>
     </Modal>
+  );
+}
+
+// Planned / Manual / GPS segmented toggle — picks which hours source drives
+// the numbers and their colour.
+export function HoursSourceToggle({
+  sources,
+  hoursSource,
+  setHoursSource,
+  styles,
+  mediumFontFamily,
+  t,
+}) {
+  return (
+    <View style={styles.sourceToggle}>
+      {sources.map((s) => {
+        const on = s.key === hoursSource;
+        return (
+          <TouchableOpacity
+            key={s.key}
+            style={[styles.sourceBtn, on && styles.sourceBtnOn]}
+            onPress={() => setHoursSource(s.key)}
+            activeOpacity={0.85}
+          >
+            <Text
+              style={[
+                styles.sourceBtnText,
+                { fontFamily: mediumFontFamily },
+                on && { color: s.color },
+              ]}
+            >
+              {t(
+                `shifts.hoursSource${s.key.charAt(0).toUpperCase()}${s.key.slice(1)}`,
+                { defaultValue: s.label },
+              )}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+}
+
+// Two-stat summary card: current-month (or selected) total on the left, the
+// previous month (or selected-day count) on the right, with a clear button
+// while a day selection is active.
+export function SelectionSummary({
+  heroValueMs,
+  previousMonthDuration,
+  selectedDates,
+  selectionSummary,
+  onClearSelection,
+  styles,
+  regularFontFamily,
+  t,
+}) {
+  const hasSelection = selectedDates.length > 0;
+  return (
+    <View style={styles.selectionSummaryCard}>
+      <View style={styles.selectionSummaryStat}>
+        <Text
+          style={[
+            styles.selectionSummaryValue,
+            { fontFamily: regularFontFamily },
+          ]}
+        >
+          {formatDurationCompact(heroValueMs)}
+        </Text>
+        <Text style={styles.selectionSummaryLabel}>
+          {hasSelection ? t("shifts.selected") : t("shifts.currentMonth")}
+        </Text>
+      </View>
+
+      <View style={styles.selectionSummaryDivider} />
+
+      <View style={styles.selectionSummaryStat}>
+        <Text
+          style={[
+            styles.selectionSummaryValue,
+            { fontFamily: regularFontFamily },
+          ]}
+        >
+          {hasSelection
+            ? t("shifts.dayCount", { count: selectionSummary?.dayCount || 0 })
+            : formatDurationCompact(previousMonthDuration)}
+        </Text>
+        <Text style={styles.selectionSummaryLabel}>
+          {hasSelection ? t("shifts.selected") : t("shifts.previousMonth")}
+        </Text>
+      </View>
+
+      {hasSelection ? (
+        <TouchableOpacity
+          style={styles.clearSelectionButton}
+          onPress={onClearSelection}
+          activeOpacity={0.85}
+        >
+          <Icon name="x" size={18} color="#698196" />
+        </TouchableOpacity>
+      ) : null}
+    </View>
   );
 }
