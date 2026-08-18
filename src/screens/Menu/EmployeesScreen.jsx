@@ -18,14 +18,10 @@ import {
   USER_ROLES,
 } from "../../utils/userRoles";
 import { statusBadgeFor } from "../../utils/workerStatusBadge";
+import { getEntityId } from "../../utils/entityId";
 import { getApiErrorMessage } from "../../utils/apiError";
 
 const getUserId = (employee) => employee?._id || employee?.id;
-
-const getEntityId = (entity) => {
-  const id = entity?._id || entity?.id;
-  return id ? String(id) : "";
-};
 
 const buildProjectNameById = (projects) => {
   const map = new Map();

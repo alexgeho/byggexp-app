@@ -58,6 +58,7 @@ import {
   isPdfDocument,
 } from "../../../utils/documentPreview";
 import { sortByNewest } from "../../../utils/sortByNewest";
+import { normalizeRefId } from "../../../utils/entityId";
 import { getTaskDisplayStatus } from "../../../utils/taskStatus";
 import { cardStyles } from "../../../styles/cards";
 import { pickUploadAssets } from "../../../utils/uploadPicker";
@@ -113,9 +114,6 @@ const taskBadgeStyles = {
   overdue: cardStyles.cardBadgeOverdue,
   completed: cardStyles.cardBadgeCompleted,
 };
-
-const normalizeRefId = (value) =>
-  String(value?._id || value?.id || value || "");
 
 // A worker counts as "at work" when their live status is working on this
 // project.

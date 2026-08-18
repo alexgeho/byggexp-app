@@ -22,6 +22,7 @@ import { ProjectFilterSelector } from "../../components/common/ProjectFilterSele
 import { createStyles } from "./ToolsScreen.styles";
 import { cardStyles } from "../../styles/cards";
 import { canManageTools } from "../../utils/userRoles";
+import { getEntityId } from "../../utils/entityId";
 import {
   TOOL_STATUS_OPTIONS,
   getToolStatusMeta,
@@ -45,11 +46,6 @@ const getEffectiveToolStatus = (tool) => {
     (Array.isArray(tool?.workerIds) && tool.workerIds.length > 0) ||
     Boolean(tool?.currentHolderId);
   return inUse ? "occupied" : "available";
-};
-
-const getEntityId = (entity) => {
-  const id = entity?._id || entity?.id;
-  return id ? String(id) : "";
 };
 
 const getRefId = (ref) => {

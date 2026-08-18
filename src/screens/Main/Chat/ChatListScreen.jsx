@@ -21,12 +21,8 @@ import { ProjectFilterSelector } from "../../../components/common/ProjectFilterS
 import { PersonListItem } from "../../../components/common/PersonListItem/PersonListItem";
 import { chatService, projectService, userService } from "../../../services";
 import { getPersonWorkStatus, USER_ROLES } from "../../../utils/userRoles";
+import { getEntityId } from "../../../utils/entityId";
 import { statusBadgeFor } from "../../../utils/workerStatusBadge";
-
-const getEntityId = (entity) => {
-  const id = entity?._id || entity?.id;
-  return id ? String(id) : "";
-};
 
 const getUserId = (person) => person?._id || person?.id;
 

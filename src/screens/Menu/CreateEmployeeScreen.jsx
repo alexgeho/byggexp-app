@@ -28,14 +28,10 @@ import {
   USER_ROLES,
 } from "../../utils/userRoles";
 import { getApiErrorMessage } from "../../utils/apiError";
+import { getEntityId } from "../../utils/entityId";
 
 // Backend capability key for financial features (offers, invoices, clients).
 const FINANCE_PERMISSION = "finance.manage";
-
-const getEntityId = (entity) => {
-  const id = entity?._id || entity?.id;
-  return id ? String(id) : "";
-};
 
 const parsePhoneFields = (value) => {
   const digits = String(value || "").replace(/\D/g, "");

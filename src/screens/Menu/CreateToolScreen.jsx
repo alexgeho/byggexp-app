@@ -24,13 +24,9 @@ import FloatingActionButton from "../../components/common/FloatingActionButton/F
 import { standardScreenHeaderPlaceholder } from "../../styles/screenLayout";
 import { createStyles } from "./CreateToolScreen.styles";
 import { pickUploadAssets } from "../../utils/uploadPicker";
+import { getEntityId } from "../../utils/entityId";
 import { canManageTools } from "../../utils/userRoles";
 import { DEFAULT_TOOL_STATUS } from "../../constants/toolStatus";
-
-const getEntityId = (entity) => {
-  const id = entity?._id || entity?.id;
-  return id ? String(id) : "";
-};
 
 const FieldIcon = ({ name, theme, styles }) => (
   <View

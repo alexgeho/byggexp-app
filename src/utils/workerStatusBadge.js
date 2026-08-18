@@ -1,8 +1,6 @@
 import { shouldShowAccountStatus } from "./userRoles";
+import { normalizeRefId } from "./entityId";
 import { content } from "../theme/tokens";
-
-const normalizeRefId = (value) =>
-  String(value?._id || value?.id || value || "");
 
 // A worker counts as "at work" when their live status is working on this
 // project (or on any project when no projectId is given).
