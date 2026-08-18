@@ -2,7 +2,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  ScrollView,
+  FlatList,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -121,12 +121,18 @@ export const SelectTools = () => {
         <View style={{ width: 40 }} />
       </View>
 
-      <ScrollView style={{ width: "100%", flex: 1 }}>
-        {tools.length === 0 ? (
+      <FlatList
+        style={{ width: "100%", flex: 1 }}
+        data={tools}
+        keyExtractor={(tool) => String(tool._id || tool.id)}
+        ListEmptyComponent={
           <Text style={styles.noToolsText}>{t("tools.noneAvailable")}</Text>
-        ) : (
-          tools.map((tool) => (
-            <View key={tool._id || tool.id} style={styles.toolItem}>
+        }
+        renderItem={({ item: tool }) => {
+          const toolId = tool._id || tool.id;
+          const isSelected = selectedTools.includes(toolId);
+          return (
+            <View style={styles.toolItem}>
               <View style={styles.toolIcon}>
                 <Icon name="tool" size={20} color="#0785F4" />
               </View>
@@ -139,22 +145,19 @@ export const SelectTools = () => {
                 ) : null}
               </View>
               <TouchableOpacity
-                onPress={() => toggleToolSelection(tool._id || tool.id)}
+                onPress={() => toggleToolSelection(toolId)}
                 style={[
                   styles.checkbox,
                   themedCheckboxStyle,
-                  selectedTools.includes(tool._id || tool.id) &&
-                    themedCheckboxSelectedStyle,
+                  isSelected && themedCheckboxSelectedStyle,
                 ]}
               >
-                {selectedTools.includes(tool._id || tool.id) && (
-                  <Text style={{ color: "#ffffff" }}>✓</Text>
-                )}
+                {isSelected && <Text style={{ color: "#ffffff" }}>✓</Text>}
               </TouchableOpacity>
             </View>
-          ))
-        )}
-      </ScrollView>
+          );
+        }}
+      />
 
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}

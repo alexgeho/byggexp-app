@@ -2,7 +2,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import {
-  ScrollView,
+  FlatList,
   StyleSheet,
   Text,
   View,
@@ -159,26 +159,25 @@ export const SelectWorkers = () => {
         />
       </View>
 
-      <ScrollView
+      <FlatList
         style={{ width: "100%", flex: 1 }}
         showsVerticalScrollIndicator={false}
-      >
-        {workers.length === 0 ? (
+        data={workers}
+        keyExtractor={(worker) => worker._id}
+        ListEmptyComponent={
           <Text style={styles.noWorkersText}>{t("workers.notFound")}</Text>
-        ) : (
-          workers.map((worker) => (
-            <PersonListItem
-              key={worker._id}
-              person={worker}
-              subtitle={worker.profession || t("employees.noProfession")}
-              statusBadge={getWorkerStatusBadge(worker, projectId, t)}
-              selectable
-              selected={selectedWorkers.includes(worker._id)}
-              onPress={() => toggleWorkerSelection(worker._id)}
-            />
-          ))
+        }
+        renderItem={({ item: worker }) => (
+          <PersonListItem
+            person={worker}
+            subtitle={worker.profession || t("employees.noProfession")}
+            statusBadge={getWorkerStatusBadge(worker, projectId, t)}
+            selectable
+            selected={selectedWorkers.includes(worker._id)}
+            onPress={() => toggleWorkerSelection(worker._id)}
+          />
         )}
-      </ScrollView>
+      />
 
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
