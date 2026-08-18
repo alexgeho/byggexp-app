@@ -27,12 +27,42 @@ export const isPdfDocument = ({ mimeType = "", name = "", url = "" } = {}) => {
   return mimeType.includes("pdf") || extension === "pdf";
 };
 
-export const isImageDocument = ({ mimeType = "", name = "", url = "" } = {}) => {
+export const isImageDocument = ({
+  mimeType = "",
+  name = "",
+  url = "",
+} = {}) => {
   const extension = getFileExtension(name || getDocumentNameFromUrl(url));
   return (
     mimeType.startsWith("image/") ||
     ["png", "jpg", "jpeg", "webp", "gif", "bmp", "heic"].includes(extension)
   );
+};
+
+// Icon + short label for a document ({ name, mimeType }) — shared across the
+// document lists (was duplicated verbatim in several screens). The label is the
+// uppercased file extension (or a type word), matching the Figma chips.
+export const getDocumentTypeMeta = (document) => {
+  const extension = getFileExtension(document?.name || "").toUpperCase();
+  const mimeType = document?.mimeType || "";
+
+  if (isImageDocument(document)) {
+    return { icon: "image", label: extension || "IMAGE" };
+  }
+
+  if (mimeType.includes("pdf") || extension === "PDF") {
+    return { icon: "file-text", label: "PDF" };
+  }
+
+  if (["DOC", "DOCX", "TXT", "RTF"].includes(extension)) {
+    return { icon: "file-text", label: extension || "DOC" };
+  }
+
+  if (["XLS", "XLSX", "CSV"].includes(extension)) {
+    return { icon: "grid", label: extension || "XLS" };
+  }
+
+  return { icon: "file", label: extension || "FILE" };
 };
 
 export const buildPdfPreviewUrl = (url) => {
@@ -59,7 +89,8 @@ export const downloadAndShareDocument = async ({ url, fileName }) => {
     throw new Error("Document url is missing.");
   }
 
-  const baseDirectory = FileSystem.cacheDirectory || FileSystem.documentDirectory;
+  const baseDirectory =
+    FileSystem.cacheDirectory || FileSystem.documentDirectory;
   if (!baseDirectory) {
     throw new Error("Local file storage is unavailable on this device.");
   }

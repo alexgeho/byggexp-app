@@ -19,7 +19,10 @@ import { useTheme } from "../../../theme/ThemeContext";
 import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import { taskService } from "../../../services";
-import { isPdfDocument } from "../../../utils/documentPreview";
+import {
+  getDocumentTypeMeta,
+  isPdfDocument,
+} from "../../../utils/documentPreview";
 import { createStyles } from "./TaskScreen.styles";
 import { resolveUploadUrl } from "../../../utils/shifts";
 import { sortByNewest } from "../../../utils/sortByNewest";
@@ -106,29 +109,6 @@ const isImageDocument = (document) => {
     mimeType.startsWith("image/") ||
     ["png", "jpg", "jpeg", "webp", "gif", "bmp", "heic"].includes(extension)
   );
-};
-
-const getDocumentTypeMeta = (document) => {
-  const extension = getFileExtension(document?.name || "");
-  const mimeType = document?.mimeType || "";
-
-  if (isImageDocument(document)) {
-    return { icon: "image", label: extension || "IMAGE" };
-  }
-
-  if (mimeType.includes("pdf") || extension === "PDF") {
-    return { icon: "file-text", label: "PDF" };
-  }
-
-  if (["DOC", "DOCX", "TXT", "RTF"].includes(extension)) {
-    return { icon: "file-text", label: extension || "DOC" };
-  }
-
-  if (["XLS", "XLSX", "CSV"].includes(extension)) {
-    return { icon: "grid", label: extension || "XLS" };
-  }
-
-  return { icon: "file", label: extension || "FILE" };
 };
 
 const getTaskDisplayStatus = (task) => {
