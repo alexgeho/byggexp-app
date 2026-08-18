@@ -58,7 +58,6 @@ import FloatingActionButton from "../../../components/common/FloatingActionButto
 import { createStyles } from "./CreateProjectScreen.styles";
 import {
   FieldIcon,
-  isImageDocument,
   ToolsListModal,
   WorkersListModal,
   CompaniesListModal,
@@ -69,7 +68,10 @@ import {
   EconomySection,
   ContractSection,
 } from "./CreateProjectScreen.parts";
-import { getDocumentTypeMeta } from "../../../utils/documentPreview";
+import {
+  getDocumentTypeMeta,
+  isImageDocument,
+} from "../../../utils/documentPreview";
 
 const REVERSE_GEOCODE_MIN_INTERVAL_MS = 1200;
 

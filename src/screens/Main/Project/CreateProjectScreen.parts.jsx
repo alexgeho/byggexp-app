@@ -174,21 +174,8 @@ export const FieldIcon = ({
   return <Icon name={name} size={size} color={color} />;
 };
 
-const getFileExtension = (fileName = "") => {
-  const parts = fileName.split(".");
-  return parts.length > 1 ? parts.pop().toUpperCase() : "";
-};
-
-export const isImageDocument = (document) => {
-  const mimeType = document?.mimeType || "";
-  const extension = getFileExtension(document?.name || "").toLowerCase();
-  return (
-    mimeType.startsWith("image/") ||
-    ["png", "jpg", "jpeg", "webp", "gif", "bmp", "heic"].includes(extension)
-  );
-};
-
-// getDocumentTypeMeta now lives in utils/documentPreview (shared, DRY).
+// isImageDocument / getDocumentTypeMeta now live in utils/documentPreview
+// (shared, DRY).
 
 export const ToolsListModal = memo(function ToolsListModal({
   visible,
