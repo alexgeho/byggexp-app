@@ -23,12 +23,15 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { createStyles } from "./ProjectScreen.styles";
-import { ProjectPhotosTab, ProjectTabBar } from "./ProjectScreen.parts";
+import {
+  ProjectPhotosTab,
+  ProjectTabBar,
+  ProjectWorkersTab,
+} from "./ProjectScreen.parts";
 import { useTranslation } from "react-i18next";
 import { Screen } from "../../../components/common/Screen/Screen";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { ListCard } from "../../../components/common/ListCard/ListCard";
-import { PersonListItem } from "../../../components/common/PersonListItem/PersonListItem";
 import { ImagePreviewModal } from "../../../components/common/ImagePreviewModal/ImagePreviewModal";
 import {
   Card,
@@ -37,7 +40,6 @@ import {
   KeyValueRow,
   Button,
 } from "../../../components/common/ui";
-import { getWorkerStatusBadge } from "../../../utils/workerStatusBadge";
 import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import { useTheme } from "../../../theme/ThemeContext";
@@ -714,35 +716,17 @@ export const ProjectScreen = () => {
             </View>
           ))}
 
-        {modal === "Workers" &&
-          (workers.length > 0 ? (
-            workers.map((worker) => (
-              <PersonListItem
-                key={worker._id || worker.id}
-                person={worker}
-                subtitle={
-                  worker.profession ||
-                  worker.email ||
-                  t("employees.noProfession")
-                }
-                statusBadge={getWorkerStatusBadge(worker, id, t)}
-                onPress={() =>
-                  navigation.navigate("Employee", {
-                    employeeId: worker._id || worker.id,
-                  })
-                }
-              />
-            ))
-          ) : (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyStateTitle}>
-                {t("project.noWorkersTitle")}
-              </Text>
-              <Text style={styles.emptyStateText}>
-                {t("project.noWorkersText")}
-              </Text>
-            </View>
-          ))}
+        {modal === "Workers" ? (
+          <ProjectWorkersTab
+            workers={workers}
+            projectId={id}
+            onOpenWorker={(employeeId) =>
+              navigation.navigate("Employee", { employeeId })
+            }
+            styles={styles}
+            t={t}
+          />
+        ) : null}
 
         {modal === "Tools" &&
           (loadingTools || projectTools === null ? (

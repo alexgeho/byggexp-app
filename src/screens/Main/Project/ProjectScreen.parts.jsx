@@ -9,6 +9,8 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { formatShiftDayLabel, resolveUploadUrl } from "../../../utils/shifts";
+import { PersonListItem } from "../../../components/common/PersonListItem/PersonListItem";
+import { getWorkerStatusBadge } from "../../../utils/workerStatusBadge";
 
 // The project detail tabs. Data-driven so the six near-identical TouchableOpacity
 // blocks become one map; the Economy tab is finance-gated. Behaviour and order
@@ -120,5 +122,37 @@ export function ProjectPhotosTab({
         ))}
       </View>
     </View>
+  ));
+}
+
+// Workers tab: the project's team as tappable person rows.
+export function ProjectWorkersTab({
+  workers,
+  projectId,
+  onOpenWorker,
+  styles,
+  t,
+}) {
+  if (!workers.length) {
+    return (
+      <View style={styles.emptyState}>
+        <Text style={styles.emptyStateTitle}>
+          {t("project.noWorkersTitle")}
+        </Text>
+        <Text style={styles.emptyStateText}>{t("project.noWorkersText")}</Text>
+      </View>
+    );
+  }
+
+  return workers.map((worker) => (
+    <PersonListItem
+      key={worker._id || worker.id}
+      person={worker}
+      subtitle={
+        worker.profession || worker.email || t("employees.noProfession")
+      }
+      statusBadge={getWorkerStatusBadge(worker, projectId, t)}
+      onPress={() => onOpenWorker(worker._id || worker.id)}
+    />
   ));
 }
