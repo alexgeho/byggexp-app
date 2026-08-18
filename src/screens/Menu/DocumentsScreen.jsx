@@ -23,7 +23,7 @@ import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import AuthContext from "../../contexts/AuthContext";
 import { projectService, userService } from "../../services";
-import { API_BASE_URL } from "../../services/api";
+import { resolveUploadUrl } from "../../utils/shifts";
 import { createStyles } from "./DocumentsScreen.styles";
 import { useTheme } from "../../theme/ThemeContext";
 import {
@@ -32,18 +32,6 @@ import {
   isPdfDocument,
 } from "../../utils/documentPreview";
 import { sortByNewest } from "../../utils/sortByNewest";
-
-const resolveDocumentUrl = (url) => {
-  if (!url) {
-    return null;
-  }
-
-  if (/^https?:\/\//i.test(url)) {
-    return url;
-  }
-
-  return `${API_BASE_URL}${url.startsWith("/") ? url : `/${url}`}`;
-};
 
 const getEntityId = (value) => value?._id || value?.id || null;
 
@@ -90,7 +78,7 @@ const normalizeDocuments = ({
   return documents
     .map((document, index) => {
       const rawUrl = typeof document === "string" ? document : document?.url;
-      const url = resolveDocumentUrl(rawUrl);
+      const url = resolveUploadUrl(rawUrl);
 
       if (!url) {
         return null;

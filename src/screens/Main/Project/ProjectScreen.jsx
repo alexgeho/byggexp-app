@@ -54,6 +54,7 @@ import { formatMoney } from "../../../utils/billingTotals";
 import {
   getDocumentName,
   getDocumentTypeMeta,
+  isImageDocument,
   isPdfDocument,
 } from "../../../utils/documentPreview";
 import { sortByNewest } from "../../../utils/sortByNewest";
@@ -65,7 +66,7 @@ import {
   canManageWorkers,
   shouldShowAccountStatus,
 } from "../../../utils/userRoles";
-import { API_BASE_URL } from "../../../config/env";
+import { resolveUploadUrl } from "../../../utils/shifts";
 
 // Group project photo items ({ url, date, isReceipt }) by day, newest first.
 const groupPhotoItemsByDate = (items) => {
@@ -174,26 +175,6 @@ const formatFileSize = (value, t = null) => {
   }
 
   return `${(size / (1024 * 1024 * 1024)).toFixed(1)} GB`;
-};
-
-const resolveDocumentUrl = (url) => {
-  if (!url) return null;
-  if (url.startsWith("http://") || url.startsWith("https://")) return url;
-  return `${API_BASE_URL}${url.startsWith("/") ? url : `/${url}`}`;
-};
-
-const getFileExtension = (fileName = "") => {
-  const parts = fileName.split(".");
-  return parts.length > 1 ? parts.pop().toUpperCase() : "";
-};
-
-const isImageDocument = (document) => {
-  const mimeType = document?.mimeType || "";
-  const extension = getFileExtension(document?.name || "").toLowerCase();
-  return (
-    mimeType.startsWith("image/") ||
-    ["png", "jpg", "jpeg", "webp", "gif", "bmp", "heic"].includes(extension)
-  );
 };
 
 export const ProjectScreen = () => {
@@ -424,7 +405,7 @@ export const ProjectScreen = () => {
             project.documents.map((document, index) => ({
               id: document?._id || document?.url || `${index}`,
               name: getDocumentName(document, index),
-              url: resolveDocumentUrl(
+              url: resolveUploadUrl(
                 typeof document === "string" ? document : document?.url,
               ),
               mimeType:

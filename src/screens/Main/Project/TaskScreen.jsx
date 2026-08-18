@@ -22,6 +22,7 @@ import { taskService } from "../../../services";
 import {
   getDocumentName,
   getDocumentTypeMeta,
+  isImageDocument,
   isPdfDocument,
 } from "../../../utils/documentPreview";
 import { createStyles } from "./TaskScreen.styles";
@@ -75,32 +76,6 @@ const formatDateParts = (value) => {
       hour12: false,
     }),
   };
-};
-
-const resolveDocumentUrl = (url) => {
-  if (!url) {
-    return null;
-  }
-
-  if (url.startsWith("http://") || url.startsWith("https://")) {
-    return url;
-  }
-
-  return resolveUploadUrl(url);
-};
-
-const getFileExtension = (fileName = "") => {
-  const parts = fileName.split(".");
-  return parts.length > 1 ? parts.pop().toUpperCase() : "";
-};
-
-const isImageDocument = (document) => {
-  const mimeType = document?.mimeType || "";
-  const extension = getFileExtension(document?.name || "").toLowerCase();
-  return (
-    mimeType.startsWith("image/") ||
-    ["png", "jpg", "jpeg", "webp", "gif", "bmp", "heic"].includes(extension)
-  );
 };
 
 const getTaskDisplayStatus = (task) => {
@@ -194,7 +169,7 @@ export default function TaskScreen() {
             currentTask.documents.map((document, index) => ({
               id: document?._id || document?.url || `${index}`,
               name: getDocumentName(document, index),
-              url: resolveDocumentUrl(
+              url: resolveUploadUrl(
                 typeof document === "string" ? document : document?.url,
               ),
               mimeType:
