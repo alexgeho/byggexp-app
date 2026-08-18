@@ -11,7 +11,6 @@ import {
   ActivityIndicator,
   Animated,
   Switch,
-  Platform,
   Keyboard,
 } from "react-native";
 import Slider from "@react-native-community/slider";
@@ -26,7 +25,6 @@ import {
   useRef,
   useState,
 } from "react";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Location from "expo-location";
 import Icon from "react-native-vector-icons/Feather";
 import AuthContext from "../../../contexts/AuthContext";
@@ -69,10 +67,10 @@ import {
   WorkersListModal,
   CompaniesListModal,
   SingleUserPickerModal,
+  ProjectDatePickerModal,
+  WorkTimePickerModal,
 } from "./CreateProjectScreen.parts";
 
-const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "inline" : "calendar";
-const TIME_PICKER_DISPLAY = Platform.OS === "ios" ? "spinner" : "clock";
 const REVERSE_GEOCODE_MIN_INTERVAL_MS = 1200;
 
 export default function CreateProjectScreen() {
@@ -1454,52 +1452,15 @@ export default function CreateProjectScreen() {
         </ScrollView>
       </View>
 
-      <Modal
-        visible={showStartDatePicker || showEndDatePicker}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={closeDatePickers}
-      >
-        <View style={styles.datePickerOverlay}>
-          <View style={styles.datePickerCard}>
-            <Text style={styles.datePickerTitle}>
-              {showStartDatePicker
-                ? t("createProject.startDate")
-                : t("createProject.endDate")}
-            </Text>
-            <DateTimePicker
-              value={
-                showStartDatePicker
-                  ? beginningDate || new Date()
-                  : endDate || new Date()
-              }
-              mode="date"
-              display={DATE_PICKER_DISPLAY}
-              onChange={(event, date) => {
-                if (!date) {
-                  return;
-                }
-
-                if (showStartDatePicker) {
-                  setBeginningDate(date);
-                } else if (showEndDatePicker) {
-                  setEndDate(date);
-                }
-              }}
-            />
-            <View style={styles.datePickerActions}>
-              <TouchableOpacity
-                style={styles.datePickerSecondaryButton}
-                onPress={closeDatePickers}
-              >
-                <Text style={styles.datePickerSecondaryButtonText}>
-                  {t("common.done")}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <ProjectDatePickerModal
+        showStart={showStartDatePicker}
+        showEnd={showEndDatePicker}
+        beginningDate={beginningDate}
+        endDate={endDate}
+        setBeginningDate={setBeginningDate}
+        setEndDate={setEndDate}
+        onClose={closeDatePickers}
+      />
 
       <SingleUserPickerModal
         checkboxStyle={themedCheckboxStyle}
@@ -1723,46 +1684,15 @@ export default function CreateProjectScreen() {
         </View>
       </Modal>
 
-      <Modal
-        visible={showWorkStartPicker || showWorkEndPicker}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={closeWorkTimePickers}
-      >
-        <View style={styles.datePickerOverlay}>
-          <View style={styles.datePickerCard}>
-            <Text style={styles.datePickerTitle}>
-              {showWorkStartPicker
-                ? t("createProject.workDayStarts")
-                : t("createProject.workDayEnds")}
-            </Text>
-            <DateTimePicker
-              value={showWorkStartPicker ? workDayStartTime : workDayEndTime}
-              mode="time"
-              display={TIME_PICKER_DISPLAY}
-              onChange={(_event, date) => {
-                if (!date) {
-                  return;
-                }
-
-                if (showWorkStartPicker) {
-                  setWorkDayStartTime(date);
-                } else {
-                  setWorkDayEndTime(date);
-                }
-              }}
-            />
-            <TouchableOpacity
-              style={styles.datePickerSecondaryButton}
-              onPress={closeWorkTimePickers}
-            >
-              <Text style={styles.datePickerSecondaryButtonText}>
-                {t("common.done")}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      <WorkTimePickerModal
+        showStart={showWorkStartPicker}
+        showEnd={showWorkEndPicker}
+        startTime={workDayStartTime}
+        endTime={workDayEndTime}
+        setStartTime={setWorkDayStartTime}
+        setEndTime={setWorkDayEndTime}
+        onClose={closeWorkTimePickers}
+      />
 
       {/* Bottom Navigation with Action Button */}
 

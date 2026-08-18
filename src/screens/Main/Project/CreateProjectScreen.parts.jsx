@@ -7,8 +7,10 @@ import {
   TouchableOpacity,
   Modal,
   FlatList,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -22,6 +24,123 @@ import { useTheme } from "../../../theme/ThemeContext";
 const useThemedStyles = () => {
   const { theme } = useTheme();
   return useMemo(() => createStyles(theme.content), [theme.content]);
+};
+
+const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "inline" : "calendar";
+const TIME_PICKER_DISPLAY = Platform.OS === "ios" ? "spinner" : "clock";
+
+// Project start / end date picker (one modal for both bounds).
+export const ProjectDatePickerModal = ({
+  showStart,
+  showEnd,
+  beginningDate,
+  endDate,
+  setBeginningDate,
+  setEndDate,
+  onClose,
+}) => {
+  const styles = useThemedStyles();
+  const { t } = useTranslation();
+  return (
+    <Modal
+      visible={showStart || showEnd}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <View style={styles.datePickerOverlay}>
+        <View style={styles.datePickerCard}>
+          <Text style={styles.datePickerTitle}>
+            {showStart
+              ? t("createProject.startDate")
+              : t("createProject.endDate")}
+          </Text>
+          <DateTimePicker
+            value={
+              showStart ? beginningDate || new Date() : endDate || new Date()
+            }
+            mode="date"
+            display={DATE_PICKER_DISPLAY}
+            onChange={(event, date) => {
+              if (!date) {
+                return;
+              }
+              if (showStart) {
+                setBeginningDate(date);
+              } else if (showEnd) {
+                setEndDate(date);
+              }
+            }}
+          />
+          <View style={styles.datePickerActions}>
+            <TouchableOpacity
+              style={styles.datePickerSecondaryButton}
+              onPress={onClose}
+            >
+              <Text style={styles.datePickerSecondaryButtonText}>
+                {t("common.done")}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
+// Work-day start / end time picker (one modal for both bounds).
+export const WorkTimePickerModal = ({
+  showStart,
+  showEnd,
+  startTime,
+  endTime,
+  setStartTime,
+  setEndTime,
+  onClose,
+}) => {
+  const styles = useThemedStyles();
+  const { t } = useTranslation();
+  return (
+    <Modal
+      visible={showStart || showEnd}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <View style={styles.datePickerOverlay}>
+        <View style={styles.datePickerCard}>
+          <Text style={styles.datePickerTitle}>
+            {showStart
+              ? t("createProject.workDayStarts")
+              : t("createProject.workDayEnds")}
+          </Text>
+          <DateTimePicker
+            value={showStart ? startTime : endTime}
+            mode="time"
+            display={TIME_PICKER_DISPLAY}
+            onChange={(_event, date) => {
+              if (!date) {
+                return;
+              }
+              if (showStart) {
+                setStartTime(date);
+              } else {
+                setEndTime(date);
+              }
+            }}
+          />
+          <TouchableOpacity
+            style={styles.datePickerSecondaryButton}
+            onPress={onClose}
+          >
+            <Text style={styles.datePickerSecondaryButtonText}>
+              {t("common.done")}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
 };
 
 export const getUserInitials = (name = "") => {
