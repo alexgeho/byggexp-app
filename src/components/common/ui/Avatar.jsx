@@ -2,16 +2,7 @@ import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import { content } from "../../../theme/tokens";
 import { resolveUploadUrl } from "../../../utils/shifts";
-
-const getInitials = (name) => {
-  const words = String(name || "")
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-  if (words.length === 0) return "?";
-  if (words.length === 1) return words[0].charAt(0).toUpperCase();
-  return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
-};
+import { getInitials } from "../../../utils/initials";
 
 // Circular avatar: shows the image when available, otherwise the person's
 // initials on a neutral disc. `uri` may be a raw/relative upload path.

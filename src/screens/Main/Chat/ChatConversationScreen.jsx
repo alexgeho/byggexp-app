@@ -31,6 +31,7 @@ import { BackButton } from "../../../components/common/BackButton/BackButton";
 import AuthContext from "../../../contexts/AuthContext";
 import { useChatConversation } from "./useChatConversation";
 import { resolveUploadUrl } from "../../../utils/shifts";
+import { getInitials } from "../../../utils/initials";
 import { pickFromCamera, pickDocuments } from "../../../utils/uploadPicker";
 import { moderationService } from "../../../services/moderation.service";
 
@@ -48,16 +49,6 @@ const AVATAR_COLORS = [
   "#DB2777",
   "#65A30D",
 ];
-
-const getInitials = (name) => {
-  const words = String(name || "")
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-  if (words.length === 0) return "?";
-  if (words.length === 1) return words[0].charAt(0).toUpperCase();
-  return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
-};
 
 // Deterministic color per name, so the same person always gets the same one.
 const getAvatarColor = (name) => {
