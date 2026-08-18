@@ -19,7 +19,12 @@ import Icon from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { PersonListItem } from "../../../components/common/PersonListItem/PersonListItem";
-import { HeaderCheckButton } from "../../../components/common/ui";
+import {
+  Card,
+  FieldInput,
+  HeaderCheckButton,
+  SectionTitle,
+} from "../../../components/common/ui";
 import { getWorkerStatusBadge } from "../../../utils/workerStatusBadge";
 import { createStyles } from "./CreateProjectScreen.styles";
 import { useTheme } from "../../../theme/ThemeContext";
@@ -719,5 +724,104 @@ export const LocationPickerModal = ({
         </ScrollView>
       </View>
     </Modal>
+  );
+};
+
+// Optional economy card: budget / hours / material-cost / rate fields, laid
+// out in three two-up rows.
+export const EconomySection = ({
+  budget,
+  setBudget,
+  plannedHours,
+  setPlannedHours,
+  plannedMaterialsCost,
+  setPlannedMaterialsCost,
+  spentMaterialsCost,
+  setSpentMaterialsCost,
+  costRatePerHour,
+  setCostRatePerHour,
+  billRatePerHour,
+  setBillRatePerHour,
+}) => {
+  const styles = useThemedStyles();
+  const { t } = useTranslation();
+  return (
+    <Card style={styles.fieldCardPad}>
+      <SectionTitle>{t("createProject.economySection")}</SectionTitle>
+      <View style={styles.fieldRow}>
+        <FieldInput
+          half
+          keyboardType="numeric"
+          label={t("createProject.budget")}
+          value={budget}
+          onChangeText={setBudget}
+        />
+        <FieldInput
+          half
+          keyboardType="numeric"
+          label={t("createProject.plannedHours")}
+          value={plannedHours}
+          onChangeText={setPlannedHours}
+        />
+      </View>
+      <View style={styles.fieldRow}>
+        <FieldInput
+          half
+          keyboardType="numeric"
+          label={t("createProject.plannedMaterials")}
+          value={plannedMaterialsCost}
+          onChangeText={setPlannedMaterialsCost}
+        />
+        <FieldInput
+          half
+          keyboardType="numeric"
+          label={t("createProject.spentMaterials")}
+          value={spentMaterialsCost}
+          onChangeText={setSpentMaterialsCost}
+        />
+      </View>
+      <View style={styles.fieldRow}>
+        <FieldInput
+          half
+          keyboardType="numeric"
+          label={t("createProject.costRate")}
+          value={costRatePerHour}
+          onChangeText={setCostRatePerHour}
+        />
+        <FieldInput
+          half
+          keyboardType="numeric"
+          label={t("createProject.billRate")}
+          value={billRatePerHour}
+          onChangeText={setBillRatePerHour}
+        />
+      </View>
+    </Card>
+  );
+};
+
+// Contract card: contract number + littera.
+export const ContractSection = ({
+  contractNumber,
+  setContractNumber,
+  littera,
+  setLittera,
+}) => {
+  const styles = useThemedStyles();
+  const { t } = useTranslation();
+  return (
+    <Card style={styles.fieldCardPad}>
+      <SectionTitle>{t("createProject.contractSection")}</SectionTitle>
+      <FieldInput
+        label={t("createProject.contractNumber")}
+        value={contractNumber}
+        onChangeText={setContractNumber}
+      />
+      <FieldInput
+        label={t("createProject.littera")}
+        value={littera}
+        onChangeText={setLittera}
+      />
+    </Card>
   );
 };

@@ -55,7 +55,6 @@ import {
 import { canCreateProjects } from "../../../utils/userRoles";
 
 import FloatingActionButton from "../../../components/common/FloatingActionButton/FloatingActionButton";
-import { Card, SectionTitle, FieldInput } from "../../../components/common/ui";
 import { createStyles } from "./CreateProjectScreen.styles";
 import {
   FieldIcon,
@@ -68,6 +67,8 @@ import {
   ProjectDatePickerModal,
   WorkTimePickerModal,
   LocationPickerModal,
+  EconomySection,
+  ContractSection,
 } from "./CreateProjectScreen.parts";
 
 const REVERSE_GEOCODE_MIN_INTERVAL_MS = 1200;
@@ -1382,72 +1383,28 @@ export default function CreateProjectScreen() {
           </View>
 
           {canSeeFinance ? (
-            <Card style={styles.fieldCardPad}>
-              <SectionTitle>{t("createProject.economySection")}</SectionTitle>
-              <View style={styles.fieldRow}>
-                <FieldInput
-                  half
-                  keyboardType="numeric"
-                  label={t("createProject.budget")}
-                  value={budget}
-                  onChangeText={setBudget}
-                />
-                <FieldInput
-                  half
-                  keyboardType="numeric"
-                  label={t("createProject.plannedHours")}
-                  value={plannedHours}
-                  onChangeText={setPlannedHours}
-                />
-              </View>
-              <View style={styles.fieldRow}>
-                <FieldInput
-                  half
-                  keyboardType="numeric"
-                  label={t("createProject.plannedMaterials")}
-                  value={plannedMaterialsCost}
-                  onChangeText={setPlannedMaterialsCost}
-                />
-                <FieldInput
-                  half
-                  keyboardType="numeric"
-                  label={t("createProject.spentMaterials")}
-                  value={spentMaterialsCost}
-                  onChangeText={setSpentMaterialsCost}
-                />
-              </View>
-              <View style={styles.fieldRow}>
-                <FieldInput
-                  half
-                  keyboardType="numeric"
-                  label={t("createProject.costRate")}
-                  value={costRatePerHour}
-                  onChangeText={setCostRatePerHour}
-                />
-                <FieldInput
-                  half
-                  keyboardType="numeric"
-                  label={t("createProject.billRate")}
-                  value={billRatePerHour}
-                  onChangeText={setBillRatePerHour}
-                />
-              </View>
-            </Card>
+            <EconomySection
+              budget={budget}
+              setBudget={setBudget}
+              plannedHours={plannedHours}
+              setPlannedHours={setPlannedHours}
+              plannedMaterialsCost={plannedMaterialsCost}
+              setPlannedMaterialsCost={setPlannedMaterialsCost}
+              spentMaterialsCost={spentMaterialsCost}
+              setSpentMaterialsCost={setSpentMaterialsCost}
+              costRatePerHour={costRatePerHour}
+              setCostRatePerHour={setCostRatePerHour}
+              billRatePerHour={billRatePerHour}
+              setBillRatePerHour={setBillRatePerHour}
+            />
           ) : null}
 
-          <Card style={styles.fieldCardPad}>
-            <SectionTitle>{t("createProject.contractSection")}</SectionTitle>
-            <FieldInput
-              label={t("createProject.contractNumber")}
-              value={contractNumber}
-              onChangeText={setContractNumber}
-            />
-            <FieldInput
-              label={t("createProject.littera")}
-              value={littera}
-              onChangeText={setLittera}
-            />
-          </Card>
+          <ContractSection
+            contractNumber={contractNumber}
+            setContractNumber={setContractNumber}
+            littera={littera}
+            setLittera={setLittera}
+          />
         </ScrollView>
       </View>
 
