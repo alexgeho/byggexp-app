@@ -15,6 +15,7 @@ import { styles } from "./LoginScreen.styles";
 import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import AuthContext from "../../contexts/AuthContext";
+import { useFeedback } from "../../contexts/FeedbackContext";
 import { useTheme } from "../../theme/ThemeContext";
 import { isValidEmail } from "../../utils/validation";
 import logoByggexp from "../../assets/logo-byggexp.png";
@@ -23,10 +24,10 @@ export default function LoginScreen({ navigation }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const { login, isLoading } = useContext(AuthContext);
+  const { showError } = useFeedback();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
 
   const handleLogin = async () => {
     if (isLoading) {
@@ -36,20 +37,18 @@ export default function LoginScreen({ navigation }) {
     const trimmedEmail = email.trim();
 
     if (!trimmedEmail || !password) {
-      setError(t("auth.fillAllFields"));
+      showError({ message: t("auth.fillAllFields") });
       return;
     }
 
     if (!isValidEmail(trimmedEmail)) {
-      setError(t("auth.invalidEmail"));
+      showError({ message: t("auth.invalidEmail") });
       return;
     }
 
-    setError("");
-
     const success = await login(trimmedEmail, password);
     if (!success) {
-      setError(t("auth.loginFailedMessage"));
+      showError({ message: t("auth.loginFailedMessage") });
     }
   };
 
@@ -88,8 +87,6 @@ export default function LoginScreen({ navigation }) {
                 {t("auth.loginSubtitle")}
               </Text>
             </View>
-
-            {error ? <Text style={styles.error}>{error}</Text> : null}
 
             <Text style={styles.label}>{t("auth.emailOrUsername")}</Text>
             <View style={styles.inputWrapper}>

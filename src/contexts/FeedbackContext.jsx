@@ -2,7 +2,9 @@ import React, {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import {
@@ -13,6 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Icon from "react-native-vector-icons/Feather";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import { useTranslation } from "react-i18next";
@@ -20,6 +23,10 @@ import { SuccessPopupIcon } from "../components/common/SuccessPopupIcon/SuccessP
 import { useTheme } from "../theme/ThemeContext";
 
 const FeedbackContext = createContext(null);
+
+// How long a popup stays up before dismissing itself. The OK button (and a tap
+// on the backdrop) still close it sooner. Pass autoHideMs: 0 to keep it sticky.
+const DEFAULT_AUTO_HIDE_MS = { success: 3000, error: 4200 };
 
 export function useFeedback() {
   const context = useContext(FeedbackContext);
@@ -35,33 +42,80 @@ export function FeedbackProvider({ children }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const [successPopup, setSuccessPopup] = useState(null);
+  const [popup, setPopup] = useState(null);
+  const hideTimerRef = useRef(null);
 
-  const hideSuccess = useCallback(() => {
-    setSuccessPopup(null);
+  const clearHideTimer = useCallback(() => {
+    if (hideTimerRef.current) {
+      clearTimeout(hideTimerRef.current);
+      hideTimerRef.current = null;
+    }
   }, []);
 
-  const showSuccess = useCallback(
-    (options) => {
+  const hidePopup = useCallback(() => {
+    clearHideTimer();
+    setPopup(null);
+  }, [clearHideTimer]);
+
+  const showPopup = useCallback(
+    (variant, options) => {
       if (!options?.message) {
         return;
       }
 
-      setSuccessPopup({
-        title: options.title || t("common.success"),
+      const autoHideMs =
+        options.autoHideMs != null
+          ? options.autoHideMs
+          : DEFAULT_AUTO_HIDE_MS[variant];
+
+      setPopup({
+        variant,
+        title:
+          options.title ||
+          (variant === "error" ? t("common.error") : t("common.success")),
         message: options.message,
         buttonLabel: options.buttonLabel || t("common.ok"),
+        autoHideMs,
       });
     },
     [t],
   );
 
+  const showSuccess = useCallback(
+    (options) => showPopup("success", options),
+    [showPopup],
+  );
+
+  const showError = useCallback(
+    (options) => showPopup("error", options),
+    [showPopup],
+  );
+
+  // Backwards-compatible alias.
+  const hideSuccess = hidePopup;
+
+  // Auto-dismiss: whenever a popup with a positive autoHideMs is shown, arm a
+  // timer that closes it on its own. Re-runs (and clears) whenever the popup
+  // changes, so a fresh popup always gets a fresh timer.
+  useEffect(() => {
+    clearHideTimer();
+    if (popup && popup.autoHideMs > 0) {
+      hideTimerRef.current = setTimeout(() => {
+        hideTimerRef.current = null;
+        setPopup(null);
+      }, popup.autoHideMs);
+    }
+    return clearHideTimer;
+  }, [popup, clearHideTimer]);
+
   const value = useMemo(
     () => ({
       showSuccess,
+      showError,
       hideSuccess,
+      hidePopup,
     }),
-    [hideSuccess, showSuccess],
+    [showSuccess, showError, hideSuccess, hidePopup],
   );
 
   const isDarkTheme = theme.colors.background === "#121212";
@@ -71,6 +125,7 @@ export function FeedbackProvider({ children }) {
   const popupSubtextColor = isDarkTheme
     ? "rgba(255, 255, 255, 0.72)"
     : "rgba(5, 45, 80, 0.65)";
+  const isError = popup?.variant === "error";
   return (
     <FeedbackContext.Provider value={value}>
       {children}
@@ -78,8 +133,8 @@ export function FeedbackProvider({ children }) {
       <Modal
         animationType="fade"
         transparent={true}
-        visible={Boolean(successPopup)}
-        onRequestClose={hideSuccess}
+        visible={Boolean(popup)}
+        onRequestClose={hidePopup}
       >
         <View style={styles.overlay}>
           <BlurView
@@ -88,7 +143,7 @@ export function FeedbackProvider({ children }) {
             style={StyleSheet.absoluteFill}
             pointerEvents="none"
           />
-          <Pressable style={StyleSheet.absoluteFill} onPress={hideSuccess} />
+          <Pressable style={StyleSheet.absoluteFill} onPress={hidePopup} />
 
           <View
             style={[
@@ -100,18 +155,24 @@ export function FeedbackProvider({ children }) {
               },
             ]}
           >
-            <SuccessPopupIcon />
+            {isError ? (
+              <View style={styles.errorIconWrap}>
+                <Icon name="alert-circle" size={30} color="#E5484D" />
+              </View>
+            ) : (
+              <SuccessPopupIcon />
+            )}
 
             <Text
               style={[
                 styles.title,
                 {
-                  color: popupTextColor,
+                  color: isError ? "#E5484D" : popupTextColor,
                   fontFamily: theme.text.fontFamily.semiBold,
                 },
               ]}
             >
-              {successPopup?.title}
+              {popup?.title}
             </Text>
 
             <Text
@@ -123,12 +184,12 @@ export function FeedbackProvider({ children }) {
                 },
               ]}
             >
-              {successPopup?.message}
+              {popup?.message}
             </Text>
 
             <TouchableOpacity
               activeOpacity={0.9}
-              onPress={hideSuccess}
+              onPress={hidePopup}
               style={[
                 styles.button,
                 {
@@ -143,7 +204,7 @@ export function FeedbackProvider({ children }) {
                   { fontFamily: theme.text.fontFamily.semiBold },
                 ]}
               >
-                {successPopup?.buttonLabel}
+                {popup?.buttonLabel}
               </Text>
             </TouchableOpacity>
           </View>
@@ -167,6 +228,15 @@ const styles = StyleSheet.create({
     padding: 20,
     borderWidth: 1,
     alignItems: "center",
+  },
+  errorIconWrap: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 16,
+    backgroundColor: "rgba(229, 72, 77, 0.12)",
   },
   title: {
     fontSize: 22,
