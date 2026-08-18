@@ -2,6 +2,7 @@ import React from "react";
 import {
   ActivityIndicator,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -9,10 +10,21 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
+
+import {
+  formatExportPickerDate,
+  formatMonthLabel,
+  parseDateKey,
+} from "../../../utils/shifts";
 
 // Presentational sub-components split out of ShiftsScreen to keep that file
 // smaller. Each is self-contained: it receives the themed `styles` object and
 // `t` from the parent, so it does no data-fetching or theming of its own.
+
+const EXPORT_PERIOD_TABS = ["Month", "Custom"];
+const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "spinner" : "default";
 
 // Admin filter: pick which employees the calendar/export is scoped to.
 export function EmployeePickerModal({
@@ -331,6 +343,203 @@ export function ExportSheet({
                 {t("shiftHistory.export")}
               </Text>
             )}
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+// Period bottom sheet: pick a Month range (two month wheels) or a Custom range
+// (From/To with an inline date wheel). Apply confirms. The date picker is
+// rendered inline INSIDE this sheet — a stacked Modal would swallow the wheel's
+// touches on iOS.
+export function PeriodSheet({
+  visible,
+  onClose,
+  exportPeriodTab,
+  setExportPeriodTab,
+  exportFromMonth,
+  setExportFromMonth,
+  exportToMonth,
+  setExportToMonth,
+  exportMonthOptions,
+  exportFromDate,
+  exportToDate,
+  datePickerTarget,
+  setDatePickerTarget,
+  onCustomDateChange,
+  onApply,
+  styles,
+  sheetStyles,
+  titleFontFamily,
+  t,
+}) {
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      statusBarTranslucent
+      onRequestClose={onClose}
+    >
+      <Pressable style={sheetStyles.backdrop} onPress={onClose} />
+      <View style={sheetStyles.container}>
+        <View style={styles.handleIndicator} />
+        <View style={styles.bottomSheetContent}>
+          <View style={styles.exportSheetBody}>
+            <Text
+              style={[styles.exportSheetTitle, { fontFamily: titleFontFamily }]}
+            >
+              {t("shiftHistory.periodLabel")}
+            </Text>
+
+            <View style={styles.periodTabs}>
+              {EXPORT_PERIOD_TABS.map((tab) => (
+                <TouchableOpacity
+                  key={tab}
+                  style={[
+                    styles.periodTab,
+                    exportPeriodTab === tab && styles.periodTabActive,
+                  ]}
+                  onPress={() => setExportPeriodTab(tab)}
+                  activeOpacity={0.85}
+                >
+                  <Text
+                    style={[
+                      styles.periodTabText,
+                      exportPeriodTab === tab && styles.periodTabTextActive,
+                    ]}
+                  >
+                    {t(`shifts.periodTabs.${tab.toLowerCase()}`, tab)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <View style={styles.periodCard}>
+              {exportPeriodTab === "Month" ? (
+                <View style={styles.dateContainer}>
+                  <View style={styles.monthDateField}>
+                    <Text style={styles.monthDateLabel}>
+                      {t("shiftHistory.from")}
+                    </Text>
+                    <View style={styles.monthWheelContainer}>
+                      <Picker
+                        selectedValue={exportFromMonth}
+                        onValueChange={setExportFromMonth}
+                        style={styles.monthWheel}
+                        itemStyle={styles.monthWheelItem}
+                        selectionColor="rgb(245, 245, 245)"
+                      >
+                        {exportMonthOptions.map((month) => (
+                          <Picker.Item
+                            key={`from-${month}`}
+                            label={formatMonthLabel(month)}
+                            value={month}
+                          />
+                        ))}
+                      </Picker>
+                    </View>
+                  </View>
+                  <View style={styles.monthDateField}>
+                    <Text style={styles.monthDateLabel}>
+                      {t("shiftHistory.to")}
+                    </Text>
+                    <View style={styles.monthWheelContainer}>
+                      <Picker
+                        selectedValue={exportToMonth}
+                        onValueChange={setExportToMonth}
+                        style={styles.monthWheel}
+                        itemStyle={styles.monthWheelItem}
+                        selectionColor="rgb(245, 245, 245)"
+                      >
+                        {exportMonthOptions.map((month) => (
+                          <Picker.Item
+                            key={`to-${month}`}
+                            label={formatMonthLabel(month)}
+                            value={month}
+                          />
+                        ))}
+                      </Picker>
+                    </View>
+                  </View>
+                </View>
+              ) : (
+                <View style={styles.dateContainer}>
+                  <View style={styles.monthDateField}>
+                    <Text style={styles.monthDateLabel}>
+                      {t("shiftHistory.from")}
+                    </Text>
+                    <TouchableOpacity
+                      style={[
+                        styles.dateValueCard,
+                        (datePickerTarget || "from") === "from" &&
+                          styles.dateValueCardActive,
+                      ]}
+                      onPress={() => setDatePickerTarget("from")}
+                      activeOpacity={0.85}
+                    >
+                      <Text
+                        style={[
+                          styles.dateValueText,
+                          !exportFromDate && styles.dateValuePlaceholder,
+                        ]}
+                      >
+                        {formatExportPickerDate(exportFromDate)}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View style={styles.monthDateField}>
+                    <Text style={styles.monthDateLabel}>
+                      {t("shiftHistory.to")}
+                    </Text>
+                    <TouchableOpacity
+                      style={[
+                        styles.dateValueCard,
+                        datePickerTarget === "to" && styles.dateValueCardActive,
+                      ]}
+                      onPress={() => setDatePickerTarget("to")}
+                      activeOpacity={0.85}
+                    >
+                      <Text
+                        style={[
+                          styles.dateValueText,
+                          !exportToDate && styles.dateValuePlaceholder,
+                        ]}
+                      >
+                        {formatExportPickerDate(exportToDate)}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+
+              {exportPeriodTab === "Custom" ? (
+                <View style={styles.inlineDatePicker}>
+                  <DateTimePicker
+                    value={parseDateKey(
+                      (datePickerTarget || "from") === "from"
+                        ? exportFromDate
+                        : exportToDate,
+                    )}
+                    mode="date"
+                    display={DATE_PICKER_DISPLAY}
+                    onChange={onCustomDateChange}
+                  />
+                </View>
+              ) : null}
+            </View>
+          </View>
+
+          <TouchableOpacity
+            style={styles.exportMainButton}
+            onPress={onApply}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.exportMainButtonText}>
+              {t("shifts.applyPeriod")}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
