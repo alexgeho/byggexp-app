@@ -4,7 +4,7 @@ import {
   standardScreenHeader,
 } from "../../../styles/screenLayout";
 
-const H_PAD = 12; // matches standardScreenContainer paddingHorizontal
+const H_PAD = 16; // matches standardScreenContainer paddingHorizontal (16px)
 const GAP = 10;
 const COLS = 3;
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
