@@ -24,10 +24,9 @@ export default function RegisterScreen({ navigation }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const { registerCompany, isLoading } = useContext(AuthContext);
-  const { showSuccess } = useFeedback();
+  const { showSuccess, showError } = useFeedback();
   const [companyName, setCompanyName] = useState("");
   const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
 
   const handleSignup = async () => {
     if (isLoading) {
@@ -38,16 +37,14 @@ export default function RegisterScreen({ navigation }) {
     const trimmedEmail = email.trim();
 
     if (!trimmedName || !trimmedEmail) {
-      setError(t("auth.fillAllFields"));
+      showError({ message: t("auth.fillAllFields") });
       return;
     }
 
     if (!isValidEmail(trimmedEmail)) {
-      setError(t("auth.invalidEmail"));
+      showError({ message: t("auth.invalidEmail") });
       return;
     }
-
-    setError("");
 
     const result = await registerCompany({
       companyName: trimmedName,
@@ -55,7 +52,7 @@ export default function RegisterScreen({ navigation }) {
     });
 
     if (!result.success) {
-      setError(result.message);
+      showError({ message: result.message });
       return;
     }
 
@@ -108,8 +105,6 @@ export default function RegisterScreen({ navigation }) {
                 {t("auth.registerSubtitle")}
               </Text>
             </View>
-
-            {error ? <Text style={styles.error}>{error}</Text> : null}
 
             <Text style={styles.label}>{t("auth.nameOrCompany")}</Text>
             <View style={styles.inputWrapper}>

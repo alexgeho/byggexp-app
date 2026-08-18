@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import AuthContext from "../../contexts/AuthContext";
+import { useFeedback } from "../../contexts/FeedbackContext";
 import { useTheme } from "../../theme/ThemeContext";
 
 // After sign-up we email a confirmation link. The user opens it on their phone;
@@ -21,13 +22,17 @@ export default function RegisterVerifyScreen({ navigation, route }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const { resendRegistrationCode } = useContext(AuthContext);
+  const { showSuccess, showError } = useFeedback();
 
   const email = route?.params?.email || "";
-  const [resent, setResent] = useState(false);
 
   const handleResend = async () => {
-    await resendRegistrationCode(email);
-    setResent(true);
+    const ok = await resendRegistrationCode(email);
+    if (ok) {
+      showSuccess({ message: t("registerVerify.resent") });
+    } else {
+      showError({ message: t("common.tryAgain") });
+    }
   };
 
   return (
@@ -62,10 +67,6 @@ export default function RegisterVerifyScreen({ navigation, route }) {
               {t("registerVerify.sentTo", { email })}
             </Text>
             <Text style={styles.hint}>{t("registerVerify.hint")}</Text>
-
-            {resent ? (
-              <Text style={styles.info}>{t("registerVerify.resent")}</Text>
-            ) : null}
 
             <TouchableOpacity
               onPress={handleResend}

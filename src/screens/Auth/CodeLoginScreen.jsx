@@ -14,6 +14,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import AuthContext from "../../contexts/AuthContext";
+import { useFeedback } from "../../contexts/FeedbackContext";
 import { useTheme } from "../../theme/ThemeContext";
 
 export default function CodeLoginScreen({ navigation }) {
@@ -21,21 +22,20 @@ export default function CodeLoginScreen({ navigation }) {
   const { t } = useTranslation();
   const { requestLoginCode, loginWithCode, isLoading } =
     useContext(AuthContext);
+  const { showError } = useFeedback();
 
   // Two steps: enter email -> request code; then enter the 6-digit code.
   const [step, setStep] = useState("email");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
-  const [error, setError] = useState("");
   const [sending, setSending] = useState(false);
 
   const handleSendCode = async () => {
     const trimmedEmail = email.trim();
     if (!trimmedEmail) {
-      setError(t("codeLogin.enterEmail"));
+      showError({ message: t("codeLogin.enterEmail") });
       return;
     }
-    setError("");
     setSending(true);
     await requestLoginCode(trimmedEmail);
     setSending(false);
@@ -45,13 +45,12 @@ export default function CodeLoginScreen({ navigation }) {
   const handleVerify = async () => {
     const trimmedCode = code.trim();
     if (trimmedCode.length < 4) {
-      setError(t("codeLogin.enterCode"));
+      showError({ message: t("codeLogin.enterCode") });
       return;
     }
-    setError("");
     const result = await loginWithCode(email.trim(), trimmedCode);
     if (!result.success) {
-      setError(result.message || t("codeLogin.invalidCode"));
+      showError({ message: result.message || t("codeLogin.invalidCode") });
     }
   };
 
@@ -91,8 +90,6 @@ export default function CodeLoginScreen({ navigation }) {
                   : t("codeLogin.sentTo", { email: email.trim() })}
               </Text>
             </View>
-
-            {error ? <Text style={styles.error}>{error}</Text> : null}
 
             {step === "email" ? (
               <>
@@ -181,7 +178,6 @@ export default function CodeLoginScreen({ navigation }) {
                   onPress={() => {
                     setStep("email");
                     setCode("");
-                    setError("");
                   }}
                   style={styles.footerLink}
                 >

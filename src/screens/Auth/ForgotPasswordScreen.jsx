@@ -14,6 +14,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import AuthContext from "../../contexts/AuthContext";
+import { useFeedback } from "../../contexts/FeedbackContext";
 import { useTheme } from "../../theme/ThemeContext";
 
 // "Forgot password": the user enters their email, we ask the backend to send a
@@ -24,19 +25,18 @@ export default function ForgotPasswordScreen({ navigation }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const { requestPasswordReset } = useContext(AuthContext);
+  const { showError } = useFeedback();
 
   const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
 
   const handleSubmit = async () => {
     const trimmed = email.trim();
     if (!trimmed) {
-      setError(t("auth.fillAllFields"));
+      showError({ message: t("auth.fillAllFields") });
       return;
     }
-    setError("");
     setLoading(true);
     await requestPasswordReset(trimmed);
     setLoading(false);
@@ -111,8 +111,6 @@ export default function ForgotPasswordScreen({ navigation }) {
                   {t("forgotPassword.subtitle")}
                 </Text>
               </View>
-
-              {error ? <Text style={styles.error}>{error}</Text> : null}
 
               <Text style={styles.label}>{t("auth.email")}</Text>
               <View style={styles.inputWrapper}>
