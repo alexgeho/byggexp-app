@@ -131,38 +131,23 @@ export const createStyles = (c) =>
       width: "100%",
       marginBottom: 10,
     },
-    /* "Select" toggle row above the calendar (multi-select for export) */
-    selectModeRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 8,
-      marginBottom: 8,
+    /* "Select" toggle in the header (multi-select for export, iOS-style) */
+    headerSelectButton: {
+      minWidth: 36,
+      paddingVertical: 6,
+      paddingLeft: 12,
+      alignItems: "flex-end",
+      justifyContent: "center",
     },
-    selectModeSpacer: { flex: 1 },
-    selectModeHint: {
-      flex: 1,
-      fontSize: 12,
-      color: c.textMuted,
-    },
-    selectModeButton: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 6,
-      paddingVertical: 7,
-      paddingHorizontal: 12,
-      borderRadius: 999,
-      backgroundColor: "#0785F415",
-    },
-    selectModeButtonActive: {
-      backgroundColor: "#0785F4",
-    },
-    selectModeText: {
-      fontSize: 13,
-      fontWeight: "600",
+    headerSelectText: {
+      fontSize: 15,
       color: "#0785F4",
     },
-    selectModeTextActive: {
-      color: "#FFFFFF",
+    /* Hint shown above the calendar while in select mode */
+    selectModeHint: {
+      fontSize: 12,
+      color: c.textMuted,
+      marginBottom: 8,
     },
     /* Project + Employee side by side to use the horizontal space */
     filtersRow: {
@@ -381,6 +366,24 @@ export const createStyles = (c) =>
       height: 6,
       borderRadius: 3,
       backgroundColor: "#F59E0B",
+    },
+    /* Checkbox shown top-right of each day while in select mode */
+    calendarCheck: {
+      position: "absolute",
+      top: 4,
+      right: 4,
+      width: 16,
+      height: 16,
+      borderRadius: 8,
+      borderWidth: 1.5,
+      borderColor: "#C3CCD6",
+      backgroundColor: c.surface,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    calendarCheckOn: {
+      borderColor: "#0785F4",
+      backgroundColor: "#0785F4",
     },
     shiftDetailsContainer: {
       width: "100%",

@@ -676,6 +676,7 @@ export function ShiftCalendar({
   onDayPress,
   onEditDay,
   canEditDay,
+  selectMode,
   onToggleWeekRow,
   daySourceMs,
   sourceColor,
@@ -749,6 +750,18 @@ export function ShiftCalendar({
                 activeOpacity={0.85}
               >
                 {hasPending ? <View style={styles.pendingDot} /> : null}
+                {selectMode ? (
+                  <View
+                    style={[
+                      styles.calendarCheck,
+                      isSelected && styles.calendarCheckOn,
+                    ]}
+                  >
+                    {isSelected ? (
+                      <Icon name="check" size={10} color="#FFFFFF" />
+                    ) : null}
+                  </View>
+                ) : null}
                 <Text
                   style={[
                     styles.calendarDay,
@@ -831,6 +844,7 @@ export function ShiftCalendar({
     onDayPress,
     onEditDay,
     canEditDay,
+    selectMode,
     onToggleWeekRow,
     daySourceMs,
     sourceColor,

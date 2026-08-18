@@ -1071,7 +1071,21 @@ export default function ShiftsScreen() {
             )}
           </TouchableOpacity>
         ) : (
-          <View style={styles.placeholder} />
+          <TouchableOpacity
+            style={styles.headerSelectButton}
+            onPress={() => setSelectMode((mode) => !mode)}
+            activeOpacity={0.7}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Text
+              style={[
+                styles.headerSelectText,
+                { fontFamily: theme.text.fontFamily["semiBold"] },
+              ]}
+            >
+              {selectMode ? t("shifts.selectDone") : t("shifts.selectDays")}
+            </Text>
+          </TouchableOpacity>
         )}
       </View>
 
@@ -1175,37 +1189,11 @@ export default function ShiftsScreen() {
             t={t}
           />
 
-          <View style={styles.selectModeRow}>
-            {selectMode ? (
-              <Text style={styles.selectModeHint} numberOfLines={1}>
-                {t("shifts.selectDaysHint")}
-              </Text>
-            ) : (
-              <View style={styles.selectModeSpacer} />
-            )}
-            <TouchableOpacity
-              style={[
-                styles.selectModeButton,
-                selectMode && styles.selectModeButtonActive,
-              ]}
-              onPress={() => setSelectMode((mode) => !mode)}
-              activeOpacity={0.8}
-            >
-              <Icon
-                name={selectMode ? "check" : "check-square"}
-                size={15}
-                color={selectMode ? "#FFFFFF" : "#0785F4"}
-              />
-              <Text
-                style={[
-                  styles.selectModeText,
-                  selectMode && styles.selectModeTextActive,
-                ]}
-              >
-                {selectMode ? t("shifts.selectDone") : t("shifts.selectDays")}
-              </Text>
-            </TouchableOpacity>
-          </View>
+          {selectMode ? (
+            <Text style={styles.selectModeHint} numberOfLines={1}>
+              {t("shifts.selectDaysHint")}
+            </Text>
+          ) : null}
 
           <ShiftCalendar
             styles={styles}
@@ -1226,6 +1214,7 @@ export default function ShiftsScreen() {
             onDayPress={handleDayPress}
             onEditDay={handleEditDay}
             canEditDay={canInlineEnter}
+            selectMode={selectMode}
             onToggleWeekRow={toggleWeekRow}
             daySourceMs={daySourceMs}
             sourceColor={sourceMeta.color}
