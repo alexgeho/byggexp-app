@@ -2,8 +2,8 @@ import React, { useCallback, useContext, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  FlatList,
   Image,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -210,12 +210,13 @@ export default function ToolsScreen() {
             <ActivityIndicator size="large" color={theme.colors.primary} />
           </View>
         ) : (
-          <ScrollView
+          <FlatList
             style={styles.scrollContainer}
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
-          >
-            {filteredTools.length === 0 ? (
+            data={filteredTools}
+            keyExtractor={(tool) => getEntityId(tool)}
+            ListEmptyComponent={
               <View style={styles.emptyState}>
                 <Text style={styles.emptyTitle}>{t("tools.emptyTitle")}</Text>
                 <Text style={styles.emptySubtitle}>
@@ -226,64 +227,58 @@ export default function ToolsScreen() {
                       : t("tools.emptyNoneAssigned")}
                 </Text>
               </View>
-            ) : (
-              filteredTools.map((tool) => {
-                const toolId = getEntityId(tool);
-                const photoUrl = resolvePhotoUrl(tool.photoUrl);
-                const statusMeta = getToolStatusMeta(
-                  getEffectiveToolStatus(tool),
-                );
+            }
+            renderItem={({ item: tool }) => {
+              const photoUrl = resolvePhotoUrl(tool.photoUrl);
+              const statusMeta = getToolStatusMeta(
+                getEffectiveToolStatus(tool),
+              );
 
-                return (
-                  <ListCard
-                    key={toolId}
-                    title={tool.name}
-                    onPress={
-                      canEditStatus ? () => handleChangeStatus(tool) : undefined
-                    }
-                    badgeLabel={t(
-                      `tools.status.${statusMeta.value}`,
-                      statusMeta.label,
-                    )}
-                    badgeStyle={TOOL_STATUS_BADGE_STYLES[statusMeta.tone]}
-                    leading={
-                      photoUrl ? (
-                        <Image
-                          source={{ uri: photoUrl }}
-                          style={styles.toolPhoto}
+              return (
+                <ListCard
+                  title={tool.name}
+                  onPress={
+                    canEditStatus ? () => handleChangeStatus(tool) : undefined
+                  }
+                  badgeLabel={t(
+                    `tools.status.${statusMeta.value}`,
+                    statusMeta.label,
+                  )}
+                  badgeStyle={TOOL_STATUS_BADGE_STYLES[statusMeta.tone]}
+                  leading={
+                    photoUrl ? (
+                      <Image
+                        source={{ uri: photoUrl }}
+                        style={styles.toolPhoto}
+                      />
+                    ) : (
+                      <View style={styles.toolPhotoPlaceholder}>
+                        <Icon
+                          name="tool"
+                          size={14}
+                          color="rgba(5, 45, 80, 0.35)"
                         />
-                      ) : (
-                        <View style={styles.toolPhotoPlaceholder}>
-                          <Icon
-                            name="tool"
-                            size={14}
-                            color="rgba(5, 45, 80, 0.35)"
-                          />
-                        </View>
-                      )
-                    }
+                      </View>
+                    )
+                  }
+                >
+                  <Text
+                    style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
                   >
-                    <Text
-                      style={[
-                        cardStyles.cardPrimaryText,
-                        themedAccentTextStyle,
-                      ]}
-                      numberOfLines={1}
-                      ellipsizeMode="tail"
-                    >
-                      {tool.notes || t("tools.noNotes")}
-                    </Text>
-                    <Text style={cardStyles.cardSecondaryText}>
-                      {t("tools.countSummary", {
-                        workers: tool.workerIds?.length || 0,
-                        projects: tool.projectIds?.length || 0,
-                      })}
-                    </Text>
-                  </ListCard>
-                );
-              })
-            )}
-          </ScrollView>
+                    {tool.notes || t("tools.noNotes")}
+                  </Text>
+                  <Text style={cardStyles.cardSecondaryText}>
+                    {t("tools.countSummary", {
+                      workers: tool.workerIds?.length || 0,
+                      projects: tool.projectIds?.length || 0,
+                    })}
+                  </Text>
+                </ListCard>
+              );
+            }}
+          />
         )}
 
         <BottomBar

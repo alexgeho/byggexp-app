@@ -14,7 +14,7 @@ import React, {
 import {
   View,
   Text,
-  ScrollView,
+  SectionList,
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
@@ -166,6 +166,27 @@ export default function TasksScreen() {
       );
   }, [projects, selectedProjectId]);
 
+  // Personal tasks first, then one section per project — the same order the
+  // screen rendered before, now as SectionList data so long lists virtualize.
+  const sections = useMemo(() => {
+    const result = [];
+    if (visiblePersonalTasks.length > 0) {
+      result.push({
+        title: t("task.personal"),
+        project: null,
+        data: visiblePersonalTasks,
+      });
+    }
+    groupedTasks.forEach((project) => {
+      result.push({
+        title: project.name,
+        project,
+        data: project.visibleTasks,
+      });
+    });
+    return result;
+  }, [visiblePersonalTasks, groupedTasks, t]);
+
   const formatTaskDate = (date) => {
     if (!date) return t("task.noDueDate");
     return new Date(date).toLocaleDateString(getDateLocale());
@@ -237,66 +258,42 @@ export default function TasksScreen() {
         />
       </View>
 
-      <ScrollView
+      <SectionList
         style={styles.scrollContainer}
-        contentContainerStyle={styles.scrollContent}
-      >
-        {visiblePersonalTasks.length === 0 && groupedTasks.length === 0 ? (
-          <Text style={styles.emptyText}>{t("task.emptyAll")}</Text>
-        ) : (
-          <>
-            {visiblePersonalTasks.length > 0 ? (
-              <View style={styles.projectGroup}>
-                <View style={styles.projectGroupHeader}>
-                  <Text
-                    style={[
-                      styles.projectTitle,
-                      { fontFamily: theme.text.fontFamily["bold"] },
-                    ]}
-                  >
-                    {t("task.personal")}
-                  </Text>
-                  <Text style={styles.projectCount}>
-                    {t("task.count", { count: visiblePersonalTasks.length })}
-                  </Text>
-                </View>
-
-                {visiblePersonalTasks.map((task, index) =>
-                  renderTaskCard(task, {
-                    project: null,
-                    key: task._id || `personal-${index}`,
-                  }),
-                )}
-              </View>
-            ) : null}
-
-            {groupedTasks.map((project) => (
-              <View key={project._id} style={styles.projectGroup}>
-                <View style={styles.projectGroupHeader}>
-                  <Text
-                    style={[
-                      styles.projectTitle,
-                      { fontFamily: theme.text.fontFamily["bold"] },
-                    ]}
-                  >
-                    {project.name}
-                  </Text>
-                  <Text style={styles.projectCount}>
-                    {t("task.count", { count: project.visibleTasks.length })}
-                  </Text>
-                </View>
-
-                {project.visibleTasks.map((task, index) =>
-                  renderTaskCard(task, {
-                    project,
-                    key: task._id || `${project._id}-${index}`,
-                  }),
-                )}
-              </View>
-            ))}
-          </>
+        contentContainerStyle={styles.listContent}
+        sections={sections}
+        keyExtractor={(item, index) => item._id || `task-${index}`}
+        stickySectionHeadersEnabled={false}
+        showsVerticalScrollIndicator={false}
+        renderSectionHeader={({ section }) => (
+          <View
+            style={[styles.projectGroupHeader, styles.sectionHeaderSpacing]}
+          >
+            <Text
+              style={[
+                styles.projectTitle,
+                { fontFamily: theme.text.fontFamily["bold"] },
+              ]}
+            >
+              {section.title}
+            </Text>
+            <Text style={styles.projectCount}>
+              {t("task.count", { count: section.data.length })}
+            </Text>
+          </View>
         )}
-      </ScrollView>
+        renderItem={({ item, section, index }) => (
+          <View style={styles.taskCardSpacing}>
+            {renderTaskCard(item, {
+              project: section.project,
+              key: item._id || `${section.title}-${index}`,
+            })}
+          </View>
+        )}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>{t("task.emptyAll")}</Text>
+        }
+      />
 
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
@@ -330,6 +327,18 @@ const createStyles = (c) =>
       width: "100%",
       gap: 12,
       paddingBottom: 140,
+    },
+    // SectionList manages its own layout, so spacing is applied per row/header
+    // (12px) instead of via a container `gap`.
+    listContent: {
+      width: "100%",
+      paddingBottom: 140,
+    },
+    sectionHeaderSpacing: {
+      marginBottom: 12,
+    },
+    taskCardSpacing: {
+      marginBottom: 12,
     },
     projectGroup: {
       width: "100%",
