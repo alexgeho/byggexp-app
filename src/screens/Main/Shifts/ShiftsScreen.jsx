@@ -535,27 +535,40 @@ export default function ShiftsScreen() {
     t,
   ]);
 
-  // On the Manuell tab a tap edits the cell inline; otherwise it toggles date
-  // selection. Moving to another day banks the one being typed into (locally).
+  // Inline hour entry writes to the CURRENT user only (workerId: currentUserId),
+  // so it's only meaningful when the day's subject is unambiguously "me": a
+  // worker's own view, or an admin who filtered down to just themselves. For an
+  // admin looking at the whole team a tap must never open self-entry.
+  const canInlineEnter =
+    hoursSource === "manual" &&
+    (!isAdmin ||
+      (filterWorkerIds.length === 1 &&
+        String(filterWorkerIds[0]) === String(currentUserId)));
+
+  // Tapping a day always OPENS it (selects → shifts, photos and project show in
+  // the panel below). No keyboard. Any half-typed cell is banked first.
   const handleDayPress = useCallback(
     (dateStr) => {
-      if (hoursSource === "manual") {
-        if (inlineManualDate === dateStr) {
-          return; // already editing this day — keep the typed value
-        }
+      if (inlineManualDate) {
         stashOpenInput();
-        startInlineManual(dateStr);
-      } else {
-        toggleSelectedDate(dateStr);
+        setInlineManualDate(null);
       }
+      toggleSelectedDate(dateStr);
     },
-    [
-      hoursSource,
-      inlineManualDate,
-      stashOpenInput,
-      startInlineManual,
-      toggleSelectedDate,
-    ],
+    [inlineManualDate, stashOpenInput, toggleSelectedDate],
+  );
+
+  // Entering/editing hours is a separate, explicit tap on the cell's hours/＋
+  // area (only rendered when canInlineEnter). Banks the previously open cell.
+  const handleEditDay = useCallback(
+    (dateStr) => {
+      if (inlineManualDate === dateStr) {
+        return; // already editing this day — keep the typed value
+      }
+      stashOpenInput();
+      startInlineManual(dateStr);
+    },
+    [inlineManualDate, stashOpenInput, startInlineManual],
   );
 
   const hasPendingManual = Object.keys(pendingManual).length > 0;
@@ -1158,6 +1171,8 @@ export default function ShiftsScreen() {
             selectedDates={selectedDates}
             todayDateKey={todayDateKey}
             onDayPress={handleDayPress}
+            onEditDay={handleEditDay}
+            canEditDay={canInlineEnter}
             onToggleWeekRow={toggleWeekRow}
             daySourceMs={daySourceMs}
             sourceColor={sourceMeta.color}

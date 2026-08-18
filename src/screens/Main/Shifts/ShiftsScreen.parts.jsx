@@ -674,6 +674,8 @@ export function ShiftCalendar({
   selectedDates,
   todayDateKey,
   onDayPress,
+  onEditDay,
+  canEditDay,
   onToggleWeekRow,
   daySourceMs,
   sourceColor,
@@ -774,23 +776,46 @@ export function ShiftCalendar({
                     onSubmitEditing={onStashInput}
                   />
                 ) : displayMs > 0 ? (
-                  <Text
-                    style={[
-                      styles.calendarHours,
-                      !isSelected && { color: sourceColor },
-                    ]}
+                  canEditDay ? (
+                    <TouchableOpacity
+                      onPress={() => onEditDay(dateStr)}
+                      hitSlop={{ top: 6, bottom: 8, left: 12, right: 12 }}
+                      activeOpacity={0.6}
+                    >
+                      <Text
+                        style={[
+                          styles.calendarHours,
+                          !isSelected && { color: sourceColor },
+                        ]}
+                      >
+                        {formatDurationShort(displayMs)}
+                      </Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <Text
+                      style={[
+                        styles.calendarHours,
+                        !isSelected && { color: sourceColor },
+                      ]}
+                    >
+                      {formatDurationShort(displayMs)}
+                    </Text>
+                  )
+                ) : canEditDay ? (
+                  <TouchableOpacity
+                    onPress={() => onEditDay(dateStr)}
+                    hitSlop={{ top: 6, bottom: 8, left: 12, right: 12 }}
+                    activeOpacity={0.6}
                   >
-                    {formatDurationShort(displayMs)}
-                  </Text>
-                ) : hoursSource === "manual" ? (
-                  <Text
-                    style={[
-                      styles.calendarPlus,
-                      isSelected && styles.calendarPlusSelected,
-                    ]}
-                  >
-                    +
-                  </Text>
+                    <Text
+                      style={[
+                        styles.calendarPlus,
+                        isSelected && styles.calendarPlusSelected,
+                      ]}
+                    >
+                      +
+                    </Text>
+                  </TouchableOpacity>
                 ) : null}
               </TouchableOpacity>
             );
@@ -804,6 +829,8 @@ export function ShiftCalendar({
     selectedDates,
     todayDateKey,
     onDayPress,
+    onEditDay,
+    canEditDay,
     onToggleWeekRow,
     daySourceMs,
     sourceColor,
