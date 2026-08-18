@@ -5,7 +5,6 @@ import {
   Image,
   Modal,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -22,11 +21,8 @@ import { projectService, toolService, userService } from "../../services";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import FloatingActionButton from "../../components/common/FloatingActionButton/FloatingActionButton";
-import {
-  standardScreenContainer,
-  standardScreenHeader,
-  standardScreenHeaderPlaceholder,
-} from "../../styles/screenLayout";
+import { standardScreenHeaderPlaceholder } from "../../styles/screenLayout";
+import { createStyles } from "./CreateToolScreen.styles";
 import { pickUploadAssets } from "../../utils/uploadPicker";
 import { canManageTools } from "../../utils/userRoles";
 import { DEFAULT_TOOL_STATUS } from "../../constants/toolStatus";
@@ -564,162 +560,3 @@ export default function CreateToolScreen() {
     </View>
   );
 }
-
-const createStyles = (c) =>
-  StyleSheet.create({
-    screen: {
-      flex: 1,
-      backgroundColor: c.background,
-    },
-    pageContainer: {
-      ...standardScreenContainer,
-      backgroundColor: c.background,
-      paddingBottom: 0,
-    },
-    header: {
-      ...standardScreenHeader,
-    },
-    headerTitle: {
-      color: c.textPrimary,
-      fontSize: 17,
-      textAlign: "center",
-      flex: 1,
-    },
-    contentScroll: {
-      flex: 1,
-      width: "100%",
-    },
-    contentScrollContent: {
-      paddingBottom: 140,
-      gap: 20,
-    },
-    groupCard: {
-      width: "100%",
-      backgroundColor: "rgba(255, 255, 255, 0.6)",
-      borderRadius: 24,
-      overflow: "hidden",
-      borderWidth: 1,
-      borderColor: "#FFFFFF",
-    },
-    groupedField: {
-      paddingHorizontal: 16,
-      paddingVertical: 12,
-    },
-    groupRowDivider: {
-      borderBottomWidth: 1,
-      borderBottomColor: "#e9e9e9",
-    },
-    groupRowLast: {
-      borderBottomWidth: 0,
-    },
-    fieldRowContent: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 12,
-      flex: 1,
-    },
-    fieldIconBadge: {
-      width: 27,
-      height: 27,
-      borderRadius: 5,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    fieldInputWrap: {
-      flex: 1,
-      gap: 2,
-    },
-    fieldLabel: {
-      fontSize: 12,
-      color: "rgba(5, 45, 80, 0.55)",
-    },
-    fieldInput: {
-      fontSize: 16,
-      color: c.textPrimary,
-      paddingVertical: 0,
-    },
-    fieldInputMultiline: {
-      minHeight: 96,
-      paddingTop: 4,
-    },
-    selectRow: {
-      minHeight: 56,
-      paddingHorizontal: 16,
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-    },
-    selectValue: {
-      fontSize: 16,
-      color: c.textPrimary,
-    },
-    selectPlaceholder: {
-      color: "rgba(5, 45, 80, 0.35)",
-    },
-    photoPreview: {
-      width: 40,
-      height: 40,
-      borderRadius: 8,
-    },
-    formError: {
-      color: "#c62828",
-      fontSize: 14,
-      marginBottom: 8,
-      paddingHorizontal: 8,
-    },
-    accessDeniedContainer: {
-      flex: 1,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    accessDeniedText: {
-      fontSize: 18,
-      fontWeight: "600",
-      color: "#151515",
-    },
-    pickerModalContainer: {
-      flex: 1,
-      backgroundColor: c.background,
-      paddingHorizontal: 12,
-      paddingTop: 12,
-    },
-    pickerModalHeader: {
-      ...standardScreenHeader,
-      marginBottom: 12,
-    },
-    pickerModalTitle: {
-      flex: 1,
-      textAlign: "center",
-      fontSize: 17,
-      color: c.textPrimary,
-    },
-    pickerListContent: {
-      backgroundColor: "rgba(255, 255, 255, 0.6)",
-      borderRadius: 24,
-      borderWidth: 1,
-      borderColor: "#FFFFFF",
-      overflow: "hidden",
-    },
-    pickerOptionRow: {
-      minHeight: 56,
-      paddingHorizontal: 16,
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-    },
-    pickerOptionLabel: {
-      fontSize: 16,
-      color: c.textPrimary,
-      flex: 1,
-      paddingRight: 12,
-    },
-    pickerEmptyState: {
-      minHeight: 56,
-      paddingHorizontal: 16,
-      justifyContent: "center",
-    },
-    pickerEmptyStateText: {
-      fontSize: 16,
-      color: "rgba(5, 45, 80, 0.55)",
-    },
-  });
