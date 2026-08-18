@@ -61,7 +61,7 @@ import {
   isPdfDocument,
 } from "../../../utils/documentPreview";
 import { createStyles } from "./ShiftsScreen.styles";
-import { EmployeePickerModal } from "./ShiftsScreen.parts";
+import { EmployeePickerModal, ManualHoursModal } from "./ShiftsScreen.parts";
 
 const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const EXPORT_PERIOD_TABS = ["Month", "Custom"];
@@ -1920,144 +1920,23 @@ export default function ShiftsScreen() {
         t={t}
       />
 
-      <Modal
-        visible={Boolean(manualHoursShift) || Boolean(manualDateEntry)}
-        transparent
-        animationType="fade"
-        onRequestClose={closeManualHoursEditor}
-      >
-        <View style={styles.datePickerOverlay}>
-          <View style={styles.datePickerCard}>
-            <Text style={styles.datePickerTitle}>
-              {t("shifts.manualHoursTitle")}
-            </Text>
-            <Text style={styles.manualHoursHint}>
-              {manualDateEntry
-                ? manualDateEntry.date
-                : t("shifts.manualHoursHint")}
-            </Text>
-
-            {manualDateEntry ? (
-              <View style={styles.manualProjectPicker}>
-                <Text style={styles.manualProjectLabel}>
-                  {t("createTask.projectLabel")}
-                </Text>
-                <ScrollView
-                  style={styles.manualProjectList}
-                  nestedScrollEnabled
-                  keyboardShouldPersistTaps="handled"
-                >
-                  {projects.length === 0 ? (
-                    <Text style={styles.manualProjectEmpty}>
-                      {t("shifts.manualHoursNoProject")}
-                    </Text>
-                  ) : (
-                    projects.map((project) => {
-                      const projectId = project._id || project.id;
-                      const active = projectId === manualProjectId;
-                      return (
-                        <TouchableOpacity
-                          key={projectId}
-                          style={[
-                            styles.manualProjectOption,
-                            active && styles.manualProjectOptionActive,
-                          ]}
-                          activeOpacity={0.8}
-                          onPress={() => setManualProjectId(projectId)}
-                        >
-                          <Text
-                            numberOfLines={1}
-                            style={[
-                              styles.manualProjectOptionText,
-                              active && styles.manualProjectOptionTextActive,
-                            ]}
-                          >
-                            {project.name || project.projectName || projectId}
-                          </Text>
-                        </TouchableOpacity>
-                      );
-                    })
-                  )}
-                </ScrollView>
-              </View>
-            ) : null}
-
-            <View style={styles.manualHoursInputs}>
-              <View style={styles.manualHoursField}>
-                <TextInput
-                  style={styles.manualHoursInput}
-                  value={manualHoursH}
-                  onChangeText={(text) =>
-                    setManualHoursH(text.replace(/[^0-9]/g, "").slice(0, 2))
-                  }
-                  keyboardType="number-pad"
-                  placeholder="0"
-                  placeholderTextColor="#9BB0C1"
-                  maxLength={2}
-                />
-                <Text style={styles.manualHoursUnit}>
-                  {t("shifts.unitHour")}
-                </Text>
-              </View>
-              <View style={styles.manualHoursField}>
-                <TextInput
-                  style={styles.manualHoursInput}
-                  value={manualHoursM}
-                  onChangeText={(text) =>
-                    setManualHoursM(text.replace(/[^0-9]/g, "").slice(0, 2))
-                  }
-                  keyboardType="number-pad"
-                  placeholder="0"
-                  placeholderTextColor="#9BB0C1"
-                  maxLength={2}
-                />
-                <Text style={styles.manualHoursUnit}>
-                  {t("shifts.unitMinute")}
-                </Text>
-              </View>
-            </View>
-
-            <TouchableOpacity
-              style={[
-                styles.datePickerButton,
-                savingManualHours && styles.exportMainButtonDisabled,
-              ]}
-              onPress={saveManualHours}
-              disabled={savingManualHours}
-            >
-              {savingManualHours ? (
-                <ActivityIndicator color="#FFFFFF" />
-              ) : (
-                <Text style={styles.datePickerButtonText}>
-                  {t("common.save")}
-                </Text>
-              )}
-            </TouchableOpacity>
-
-            {manualHoursShift?.manualDurationMs != null ? (
-              <TouchableOpacity
-                style={styles.manualHoursClearButton}
-                onPress={() => submitManualHours(null)}
-                disabled={savingManualHours}
-              >
-                <Text style={styles.manualHoursClearText}>
-                  {t("shifts.manualHoursClear")}
-                </Text>
-              </TouchableOpacity>
-            ) : null}
-
-            <TouchableOpacity
-              style={styles.manualHoursCancelButton}
-              onPress={closeManualHoursEditor}
-              disabled={savingManualHours}
-            >
-              <Text style={styles.manualHoursCancelText}>
-                {t("common.cancel")}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      <ManualHoursModal
+        manualHoursShift={manualHoursShift}
+        manualDateEntry={manualDateEntry}
+        onClose={closeManualHoursEditor}
+        projects={projects}
+        manualProjectId={manualProjectId}
+        setManualProjectId={setManualProjectId}
+        manualHoursH={manualHoursH}
+        setManualHoursH={setManualHoursH}
+        manualHoursM={manualHoursM}
+        setManualHoursM={setManualHoursM}
+        savingManualHours={savingManualHours}
+        onSave={saveManualHours}
+        onClear={() => submitManualHours(null)}
+        styles={styles}
+        t={t}
+      />
     </View>
   );
 }
