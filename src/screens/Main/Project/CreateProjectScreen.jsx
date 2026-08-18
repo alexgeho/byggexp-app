@@ -23,7 +23,6 @@ import {
   useRef,
   useState,
 } from "react";
-import * as Location from "expo-location";
 import Icon from "react-native-vector-icons/Feather";
 import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
@@ -36,12 +35,8 @@ import {
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { shiftLocationPolicy } from "../../../config/shiftLocationPolicy";
-import {
-  formatResolvedAddress,
-  getCoordinateCacheKey,
-  reverseGeocodeWithNominatim,
-} from "../../../utils/projectLocationSearch";
 import { useAddressSearch } from "../../../hooks/useAddressSearch";
+import { useReverseGeocode } from "../../../hooks/useReverseGeocode";
 import { pickUploadAssets } from "../../../utils/uploadPicker";
 import {
   SHIFT_GRACE_MINUTE_OPTIONS,
@@ -70,8 +65,6 @@ import {
   getDocumentTypeMeta,
   isImageDocument,
 } from "../../../utils/documentPreview";
-
-const REVERSE_GEOCODE_MIN_INTERVAL_MS = 1200;
 
 export default function CreateProjectScreen() {
   const navigation = useNavigation();
@@ -111,6 +104,7 @@ export default function CreateProjectScreen() {
     loading: isLocationSearchLoading,
     clearSuggestions: clearLocationSuggestions,
   } = useAddressSearch(locationSearch, isLocationPickerVisible);
+  const { resolveAddress, cacheAddress } = useReverseGeocode();
   const [beginningDate, setBeginningDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
@@ -161,8 +155,6 @@ export default function CreateProjectScreen() {
   const projectNameLabelAnim = useRef(new Animated.Value(0)).current;
   const isLocationLoadingRef = useRef(false);
   const locationSearchInputRef = useRef(null);
-  const lastReverseGeocodeAtRef = useRef(0);
-  const reverseGeocodeCacheRef = useRef(new Map());
 
   useEffect(() => {
     fetchUsersAndCompanies();
@@ -370,53 +362,6 @@ export default function CreateProjectScreen() {
     setIsLocationLoading(value);
   };
 
-  const resolveAddressFromCoordinate = async (latitude, longitude) => {
-    const cacheKey = getCoordinateCacheKey(latitude, longitude);
-    const cachedAddress = reverseGeocodeCacheRef.current.get(cacheKey);
-
-    if (cachedAddress) {
-      return cachedAddress;
-    }
-
-    const elapsedSinceLastReverseGeocode =
-      Date.now() - lastReverseGeocodeAtRef.current;
-    if (elapsedSinceLastReverseGeocode < REVERSE_GEOCODE_MIN_INTERVAL_MS) {
-      await new Promise((resolve) =>
-        setTimeout(
-          resolve,
-          REVERSE_GEOCODE_MIN_INTERVAL_MS - elapsedSinceLastReverseGeocode,
-        ),
-      );
-    }
-
-    try {
-      lastReverseGeocodeAtRef.current = Date.now();
-      const [resolvedAddress] = await Location.reverseGeocodeAsync({
-        latitude,
-        longitude,
-      });
-      const formattedAddress = formatResolvedAddress(resolvedAddress);
-
-      if (formattedAddress) {
-        reverseGeocodeCacheRef.current.set(cacheKey, formattedAddress);
-        return formattedAddress;
-      }
-    } catch {}
-
-    try {
-      const nominatimAddress = await reverseGeocodeWithNominatim(
-        latitude,
-        longitude,
-      );
-      if (nominatimAddress) {
-        reverseGeocodeCacheRef.current.set(cacheKey, nominatimAddress);
-        return nominatimAddress;
-      }
-    } catch {}
-
-    return null;
-  };
-
   const applyResolvedLocation = async (
     latitude,
     longitude,
@@ -427,17 +372,11 @@ export default function CreateProjectScreen() {
     if (resolvedAddressText) {
       setLocation(resolvedAddressText);
       setLocationSearch(resolvedAddressText);
-      reverseGeocodeCacheRef.current.set(
-        getCoordinateCacheKey(latitude, longitude),
-        resolvedAddressText,
-      );
+      cacheAddress(latitude, longitude, resolvedAddressText);
       return;
     }
 
-    const resolvedAddress = await resolveAddressFromCoordinate(
-      latitude,
-      longitude,
-    );
+    const resolvedAddress = await resolveAddress(latitude, longitude);
     if (resolvedAddress) {
       setLocation(resolvedAddress);
       setLocationSearch(resolvedAddress);
