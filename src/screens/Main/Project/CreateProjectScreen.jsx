@@ -7,13 +7,11 @@ import {
   TextInput,
   ScrollView,
   Alert,
-  Modal,
   ActivityIndicator,
   Animated,
   Switch,
   Keyboard,
 } from "react-native";
-import Slider from "@react-native-community/slider";
 import { useTheme } from "../../../theme/ThemeContext";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
@@ -69,6 +67,7 @@ import {
   SingleUserPickerModal,
   ProjectDatePickerModal,
   WorkTimePickerModal,
+  LocationPickerModal,
 } from "./CreateProjectScreen.parts";
 
 const REVERSE_GEOCODE_MIN_INTERVAL_MS = 1200;
@@ -1534,155 +1533,24 @@ export default function CreateProjectScreen() {
         checkboxSelectedStyle={themedCheckboxSelectedStyle}
       />
 
-      <Modal
+      <LocationPickerModal
         visible={isLocationPickerVisible}
-        animationType="slide"
-        onRequestClose={closeLocationPicker}
-      >
-        <View style={styles.mapModalScreen}>
-          <View style={styles.mapTopBar}>
-            <BackButton
-              onPress={closeLocationPicker}
-              iconSource={require("../../../assets/Arrow-left.png")}
-            />
-            <Text style={styles.mapModalTitle}>
-              {t("createProject.projectAddress")}
-            </Text>
-            <View style={styles.placeholder} />
-          </View>
-
-          <ScrollView
-            style={styles.mapModalScroll}
-            contentContainerStyle={styles.mapModalScrollContent}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-          >
-            <View style={styles.mapSearchInputCard}>
-              <Icon name="search" size={18} color="rgba(5, 45, 80, 0.55)" />
-              <TextInput
-                ref={locationSearchInputRef}
-                autoFocus={true}
-                value={locationSearch}
-                onChangeText={setLocationSearch}
-                placeholder={t("createProject.searchAddress")}
-                placeholderTextColor="rgba(5, 45, 80, 0.45)"
-                style={styles.mapSearchInput}
-                returnKeyType="search"
-              />
-            </View>
-
-            {showLocationSearchHint ? (
-              <View style={styles.mapSuggestionsEmptyState}>
-                <Text style={styles.mapSuggestionsEmptyText}>
-                  {locationSearchEmptyText}
-                </Text>
-              </View>
-            ) : (
-              <View style={styles.mapSuggestionsCard}>
-                {isLocationLoading || isLocationSearchLoading ? (
-                  <View style={styles.mapSuggestionsLoadingRow}>
-                    <ActivityIndicator
-                      size="small"
-                      color={theme.colors.primary}
-                    />
-                    <Text style={styles.mapSuggestionsLoadingText}>
-                      {isLocationLoading
-                        ? t("createProject.loadingLocation")
-                        : t("createProject.searchingAddresses")}
-                    </Text>
-                  </View>
-                ) : locationSuggestions.length ? (
-                  locationSuggestions.map((item, index) => (
-                    <TouchableOpacity
-                      key={item.id}
-                      activeOpacity={0.85}
-                      style={[
-                        styles.mapSuggestionItem,
-                        index === locationSuggestions.length - 1 &&
-                          styles.mapSuggestionItemLast,
-                      ]}
-                      onPress={() => handleSelectLocationSuggestion(item)}
-                    >
-                      <Icon
-                        name="map-pin"
-                        size={16}
-                        color={theme.content.textPrimary}
-                      />
-                      <Text style={styles.mapSuggestionText}>{item.label}</Text>
-                    </TouchableOpacity>
-                  ))
-                ) : (
-                  <View style={styles.mapSuggestionsEmptyState}>
-                    <Text style={styles.mapSuggestionsEmptyText}>
-                      {locationSearchEmptyText}
-                    </Text>
-                  </View>
-                )}
-              </View>
-            )}
-
-            <View style={styles.mapBottomPanel}>
-              <Text style={styles.mapBottomPanelTitle}>
-                {t("createProject.selectedLocation")}
-              </Text>
-              <Text
-                numberOfLines={2}
-                style={[
-                  styles.mapBottomLocationText,
-                  !location && styles.mapBottomLocationPlaceholder,
-                ]}
-              >
-                {location || t("createProject.chooseLocationHint")}
-              </Text>
-
-              <View style={styles.activationAreaRow}>
-                <View style={styles.activationAreaTextWrap}>
-                  <Text style={styles.activationAreaTitle}>
-                    {t("createProject.activationArea")}
-                  </Text>
-                  <Text style={styles.activationAreaSubtitle}>
-                    {t("createProject.activationAreaHint")}
-                  </Text>
-                </View>
-
-                <View style={styles.activationAreaBadge}>
-                  <Text style={styles.activationAreaBadgeText}>
-                    {t("createProject.metersShort", {
-                      meters: locationRadiusMeters,
-                    })}
-                  </Text>
-                </View>
-              </View>
-
-              <Slider
-                minimumValue={50}
-                maximumValue={1500}
-                step={50}
-                value={locationRadiusMeters}
-                onValueChange={setLocationRadiusMeters}
-                minimumTrackTintColor={theme.colors.primary}
-                maximumTrackTintColor="rgba(5, 45, 80, 0.12)"
-                thumbTintColor={theme.colors.primary}
-                style={styles.activationAreaSlider}
-              />
-
-              <TouchableOpacity
-                style={[
-                  styles.mapChooseLocationButton,
-                  !selectedCoordinate && styles.mapChooseLocationButtonDisabled,
-                ]}
-                activeOpacity={0.85}
-                onPress={confirmLocationPickerSelection}
-                disabled={!selectedCoordinate}
-              >
-                <Text style={styles.mapChooseLocationButtonText}>
-                  {t("createProject.chooseLocation")}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
-        </View>
-      </Modal>
+        onClose={closeLocationPicker}
+        searchInputRef={locationSearchInputRef}
+        locationSearch={locationSearch}
+        setLocationSearch={setLocationSearch}
+        showSearchHint={showLocationSearchHint}
+        searchEmptyText={locationSearchEmptyText}
+        isLocationLoading={isLocationLoading}
+        isSearchLoading={isLocationSearchLoading}
+        suggestions={locationSuggestions}
+        onSelectSuggestion={handleSelectLocationSuggestion}
+        location={location}
+        radiusMeters={locationRadiusMeters}
+        setRadiusMeters={setLocationRadiusMeters}
+        selectedCoordinate={selectedCoordinate}
+        onConfirm={confirmLocationPickerSelection}
+      />
 
       <WorkTimePickerModal
         showStart={showWorkStartPicker}
