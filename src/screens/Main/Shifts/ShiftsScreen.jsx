@@ -129,6 +129,9 @@ export default function ShiftsScreen() {
   const [filterProjectId, setFilterProjectId] = useState(null);
   const [filterWorkerIds, setFilterWorkerIds] = useState([]);
   const [employeePickerOpen, setEmployeePickerOpen] = useState(false);
+  // Multi-select mode for export. Off (default): a tap focuses one day (view).
+  // On: taps accumulate days to export (iOS Photos-style "Select").
+  const [selectMode, setSelectMode] = useState(false);
   const [hoursSource, setHoursSource] = useState("manual");
   // Worker manual-hours editor: the shift being edited, its hh/mm inputs, and
   // the in-flight save flag.
@@ -545,17 +548,31 @@ export default function ShiftsScreen() {
       (filterWorkerIds.length === 1 &&
         String(filterWorkerIds[0]) === String(currentUserId)));
 
-  // Tapping a day always OPENS it (selects → shifts, photos and project show in
-  // the panel below). No keyboard. Any half-typed cell is banked first.
+  // Tapping a day OPENS it (its shifts, photos and project show in the panel
+  // below) — no keyboard, any half-typed cell is banked first. In select mode a
+  // tap instead accumulates days for export; outside it a tap focuses a single
+  // day (tapping the focused day again closes it).
   const handleDayPress = useCallback(
     (dateStr) => {
       if (inlineManualDate) {
         stashOpenInput();
         setInlineManualDate(null);
       }
-      toggleSelectedDate(dateStr);
+      if (selectMode) {
+        toggleSelectedDate(dateStr);
+      } else {
+        setSelectedDates((prev) =>
+          prev.length === 1 && prev[0] === dateStr ? [] : [dateStr],
+        );
+      }
     },
-    [inlineManualDate, stashOpenInput, toggleSelectedDate],
+    [
+      inlineManualDate,
+      stashOpenInput,
+      selectMode,
+      toggleSelectedDate,
+      setSelectedDates,
+    ],
   );
 
   // Entering/editing hours is a separate, explicit tap on the cell's hours/＋
@@ -578,18 +595,22 @@ export default function ShiftsScreen() {
     [selectedMonth],
   );
 
+  // Whole-column / whole-row selection is a multi-select shortcut, so it only
+  // acts in select mode (outside it a tap focuses a single day).
   const toggleWeekdayColumn = useCallback(
     (columnIndex) => {
+      if (!selectMode) return;
       toggleDateGroup(calendarLayout.columnDates[columnIndex] || []);
     },
-    [calendarLayout.columnDates, toggleDateGroup],
+    [selectMode, calendarLayout.columnDates, toggleDateGroup],
   );
 
   const toggleWeekRow = useCallback(
     (rowIndex) => {
+      if (!selectMode) return;
       toggleDateGroup(calendarLayout.rowDates[rowIndex] || []);
     },
-    [calendarLayout.rowDates, toggleDateGroup],
+    [selectMode, calendarLayout.rowDates, toggleDateGroup],
   );
 
   const handleOpenShiftPhoto = useCallback(
@@ -1153,6 +1174,38 @@ export default function ShiftsScreen() {
             regularFontFamily={theme.text.fontFamily["regular"]}
             t={t}
           />
+
+          <View style={styles.selectModeRow}>
+            {selectMode ? (
+              <Text style={styles.selectModeHint} numberOfLines={1}>
+                {t("shifts.selectDaysHint")}
+              </Text>
+            ) : (
+              <View style={styles.selectModeSpacer} />
+            )}
+            <TouchableOpacity
+              style={[
+                styles.selectModeButton,
+                selectMode && styles.selectModeButtonActive,
+              ]}
+              onPress={() => setSelectMode((mode) => !mode)}
+              activeOpacity={0.8}
+            >
+              <Icon
+                name={selectMode ? "check" : "check-square"}
+                size={15}
+                color={selectMode ? "#FFFFFF" : "#0785F4"}
+              />
+              <Text
+                style={[
+                  styles.selectModeText,
+                  selectMode && styles.selectModeTextActive,
+                ]}
+              >
+                {selectMode ? t("shifts.selectDone") : t("shifts.selectDays")}
+              </Text>
+            </TouchableOpacity>
+          </View>
 
           <ShiftCalendar
             styles={styles}
