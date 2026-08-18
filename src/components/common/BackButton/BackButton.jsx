@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { TouchableOpacity, Image, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useTranslation } from "react-i18next";
 
 import { useTheme } from "../../../theme/ThemeContext";
 import { createStyles } from "./BackButton.styles";
@@ -35,8 +36,15 @@ const DARK_GLASS = {
   ],
 };
 
-export function BackButton({ onPress, iconSource, style, iconStyle }) {
+export function BackButton({
+  onPress,
+  iconSource,
+  style,
+  iconStyle,
+  accessibilityLabel,
+}) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const glass = theme.content.scheme === "dark" ? DARK_GLASS : LIGHT_GLASS;
   const styles = useMemo(() => createStyles(glass), [glass]);
 
@@ -45,6 +53,8 @@ export function BackButton({ onPress, iconSource, style, iconStyle }) {
       onPress={onPress}
       activeOpacity={0.8}
       style={[styles.backButton, style]}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel || t("a11y.back")}
     >
       {/* Clipped glass layers (kept in an inner view so the button's own drop
           shadow is not clipped by overflow:hidden). */}

@@ -12,6 +12,7 @@ import Icon from "react-native-vector-icons/Feather";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigationState } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 import { useTheme } from "../../../theme/ThemeContext";
 
@@ -68,8 +69,10 @@ export function BottomBar({
   showBackground = true,
   showText = false,
   glass = false,
+  addAccessibilityLabel,
 }) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const currentRouteName = useNavigationState(
     (state) => state.routes[state.index]?.name,
   );
@@ -164,7 +167,12 @@ export function BottomBar({
             />
           </>
         ) : null}
-        <Pressable style={styles.navButton} onPress={onLeftPress}>
+        <Pressable
+          style={styles.navButton}
+          onPress={onLeftPress}
+          accessibilityRole="button"
+          accessibilityLabel={t("a11y.home")}
+        >
           {({ hovered, pressed }) => {
             const isActive = isHomeActive || hovered || pressed;
 
@@ -195,7 +203,12 @@ export function BottomBar({
           }}
         </Pressable>
 
-        <Pressable style={styles.navButton} onPress={onRightPress}>
+        <Pressable
+          style={styles.navButton}
+          onPress={onRightPress}
+          accessibilityRole="button"
+          accessibilityLabel={t("a11y.menu")}
+        >
           {({ hovered, pressed }) => {
             const isActive = isMenuActive || hovered || pressed;
 
@@ -232,6 +245,8 @@ export function BottomBar({
           style={styles.actionButton}
           onPress={handleActionPress}
           disabled={addDisabled}
+          accessibilityRole="button"
+          accessibilityLabel={addAccessibilityLabel || t("a11y.add")}
         >
           {actionContent ? (
             actionContent()

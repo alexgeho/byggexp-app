@@ -485,8 +485,14 @@ export default function CameraScreen() {
         style={styles.searchButton}
         onPress={toggleSearch}
         activeOpacity={0.85}
+        accessibilityRole="button"
+        accessibilityLabel={t("a11y.search")}
       >
-        <Icon name={searchOpen ? "x" : "search"} size={20} color="#052D50" />
+        <Icon
+          name={searchOpen ? "x" : "search"}
+          size={20}
+          color={theme.content.textPrimary}
+        />
       </TouchableOpacity>
     </View>
   );
@@ -713,6 +719,7 @@ export default function CameraScreen() {
         showAddButton
         onAddPress={handleTakePhoto}
         addDisabled={uploading}
+        addAccessibilityLabel={t("a11y.camera")}
         renderAddContent={() =>
           uploading ? (
             <ActivityIndicator color="#FFFFFF" />

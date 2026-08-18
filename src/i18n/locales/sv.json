@@ -4,6 +4,14 @@
     "message": "Skärmen stötte på ett oväntat fel. Försök igen.",
     "retry": "Försök igen"
   },
+  "a11y": {
+    "back": "Tillbaka",
+    "search": "Sök",
+    "home": "Hem",
+    "menu": "Meny",
+    "camera": "Ta ett foto",
+    "add": "Lägg till"
+  },
   "common": {
     "goBack": "Tillbaka",
     "save": "Spara",

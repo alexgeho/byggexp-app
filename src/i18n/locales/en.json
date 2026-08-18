@@ -4,6 +4,14 @@
     "message": "The screen ran into an unexpected error. Try again.",
     "retry": "Try again"
   },
+  "a11y": {
+    "back": "Go back",
+    "search": "Search",
+    "home": "Home",
+    "menu": "Menu",
+    "camera": "Take a photo",
+    "add": "Add"
+  },
   "common": {
     "goBack": "Go back",
     "save": "Save",

@@ -331,6 +331,8 @@ export default function ChatListScreen() {
           style={styles.searchButton}
           onPress={toggleSearch}
           activeOpacity={0.85}
+          accessibilityRole="button"
+          accessibilityLabel={t("a11y.search")}
         >
           <Icon
             name={searchOpen ? "x" : "search"}
