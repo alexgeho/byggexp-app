@@ -132,6 +132,11 @@ export default function ChatListScreen() {
       99;
     const getUnreadCount = (person) =>
       Number(chatByPersonId[String(getUserId(person))]?.unreadCount) || 0;
+    const getLastMessageAt = (person) => {
+      const at = chatByPersonId[String(getUserId(person))]?.lastMessageAt;
+      const ms = at ? new Date(at).getTime() : 0;
+      return Number.isNaN(ms) ? 0 : ms;
+    };
 
     // Hide only the platform superadmin and the current user. Company admins
     // stay visible so workers can see and message their admin (and reply to
@@ -171,13 +176,27 @@ export default function ChatListScreen() {
             .includes(query);
         })
         .sort((left, right) => {
-          // Unread conversations always float to the top; ties fall back to the
-          // shared work-status ordering.
+          // 1) Unread conversations always float to the very top.
           const leftUnread = getUnreadCount(left) > 0 ? 0 : 1;
           const rightUnread = getUnreadCount(right) > 0 ? 0 : 1;
           if (leftUnread !== rightUnread) {
             return leftUnread - rightUnread;
           }
+
+          // 2) Then conversations that actually have messages, newest first,
+          //    above the ones with no messages yet.
+          const leftAt = getLastMessageAt(left);
+          const rightAt = getLastMessageAt(right);
+          const leftHasMsg = leftAt > 0 ? 0 : 1;
+          const rightHasMsg = rightAt > 0 ? 0 : 1;
+          if (leftHasMsg !== rightHasMsg) {
+            return leftHasMsg - rightHasMsg;
+          }
+          if (leftAt !== rightAt) {
+            return rightAt - leftAt;
+          }
+
+          // 3) No messages on either side — keep the work-status ordering.
           return getSortPriority(left) - getSortPriority(right);
         })
     );
@@ -292,9 +311,12 @@ export default function ChatListScreen() {
     const statusBadge = statusKind
       ? statusBadgeFor(statusKind, t, theme.content)
       : null;
-    const timeAgo = chat ? formatTimeAgo(chat.lastMessageAt) : "";
-    const preview =
-      chat?.lastMessageText || person.profession || t("employees.noProfession");
+    const timeAgo = chat?.lastMessageAt
+      ? formatTimeAgo(chat.lastMessageAt)
+      : "";
+    // It's a chat list, so the secondary line is the conversation — the last
+    // message, or "No messages yet" — never the person's profession.
+    const preview = chat?.lastMessageText || t("chat.noMessages");
     const unread = Number(chat?.unreadCount) || 0;
 
     return (
