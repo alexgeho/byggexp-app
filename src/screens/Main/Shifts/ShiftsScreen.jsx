@@ -23,7 +23,6 @@ import {
   StyleSheet,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../theme/ThemeContext";
 import {
@@ -51,7 +50,6 @@ import {
   getCurrentMonthKey,
   getMonthDateRange,
   getTodayDateKey,
-  parseDateKey,
   resolveUploadUrl,
 } from "../../../utils/shifts";
 import { buildCalendarLayout } from "../../../utils/shiftsCalendar";
@@ -61,10 +59,13 @@ import {
   isPdfDocument,
 } from "../../../utils/documentPreview";
 import { createStyles } from "./ShiftsScreen.styles";
+import {
+  EmployeePickerModal,
+  ExportDatePickerModal,
+} from "./ShiftsScreen.parts";
 
 const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const EXPORT_PERIOD_TABS = ["Month", "Custom"];
-const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "spinner" : "default";
 
 // Plain-Modal bottom sheet — replaces @gorhom/bottom-sheet, which hangs the JS
 // thread on Android under the New Architecture (reanimated 4 / RN 0.81).
@@ -1878,98 +1879,25 @@ export default function ShiftsScreen() {
         </View>
       </Modal>
 
-      <Modal
-        visible={Boolean(datePickerTarget)}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setDatePickerTarget(null)}
-      >
-        <View style={styles.datePickerOverlay}>
-          <View style={styles.datePickerCard}>
-            <Text style={styles.datePickerTitle}>
-              {datePickerTarget === "from"
-                ? t("shiftHistory.fromDate")
-                : t("shiftHistory.toDate")}
-            </Text>
-            <DateTimePicker
-              value={parseDateKey(
-                datePickerTarget === "from" ? exportFromDate : exportToDate,
-              )}
-              mode="date"
-              display={DATE_PICKER_DISPLAY}
-              onChange={handleCustomDateChange}
-            />
-            <TouchableOpacity
-              style={styles.datePickerButton}
-              onPress={() => setDatePickerTarget(null)}
-            >
-              <Text style={styles.datePickerButtonText}>
-                {t("common.done")}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      <ExportDatePickerModal
+        target={datePickerTarget}
+        fromDate={exportFromDate}
+        toDate={exportToDate}
+        onChange={handleCustomDateChange}
+        onClose={() => setDatePickerTarget(null)}
+        styles={styles}
+        t={t}
+      />
 
-      <Modal
+      <EmployeePickerModal
         visible={employeePickerOpen}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setEmployeePickerOpen(false)}
-      >
-        <View style={styles.datePickerOverlay}>
-          <View style={styles.employeePickerCard}>
-            <Text style={styles.datePickerTitle}>
-              {t("shifts.selectEmployees")}
-            </Text>
-            <ScrollView style={styles.employeeList}>
-              <TouchableOpacity
-                style={styles.employeeRow}
-                onPress={() => setFilterWorkerIds([])}
-              >
-                <Text style={styles.employeeName}>
-                  {t("shifts.allEmployees")}
-                </Text>
-                {filterWorkerIds.length === 0 ? (
-                  <Text style={styles.employeeCheck}>✓</Text>
-                ) : null}
-              </TouchableOpacity>
-              {employees.map((emp) => {
-                const id = String(emp._id || emp.id);
-                const selected = filterWorkerIds.includes(id);
-                return (
-                  <TouchableOpacity
-                    key={id}
-                    style={styles.employeeRow}
-                    onPress={() =>
-                      setFilterWorkerIds((prev) =>
-                        prev.includes(id)
-                          ? prev.filter((x) => x !== id)
-                          : [...prev, id],
-                      )
-                    }
-                  >
-                    <Text style={styles.employeeName} numberOfLines={1}>
-                      {emp.name || emp.email}
-                    </Text>
-                    {selected ? (
-                      <Text style={styles.employeeCheck}>✓</Text>
-                    ) : null}
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-            <TouchableOpacity
-              style={styles.datePickerButton}
-              onPress={() => setEmployeePickerOpen(false)}
-            >
-              <Text style={styles.datePickerButtonText}>
-                {t("common.done")}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+        employees={employees}
+        filterWorkerIds={filterWorkerIds}
+        setFilterWorkerIds={setFilterWorkerIds}
+        onClose={() => setEmployeePickerOpen(false)}
+        styles={styles}
+        t={t}
+      />
 
       <Modal
         visible={Boolean(manualHoursShift) || Boolean(manualDateEntry)}
