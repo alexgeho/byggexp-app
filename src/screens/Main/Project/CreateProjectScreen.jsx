@@ -38,12 +38,10 @@ import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { shiftLocationPolicy } from "../../../config/shiftLocationPolicy";
 import {
   formatResolvedAddress,
-  enrichAddressLabelWithQueryHouseNumber,
   getCoordinateCacheKey,
-  normalizeLocationSuggestions,
   reverseGeocodeWithNominatim,
-  searchAddressesWithNominatim,
 } from "../../../utils/projectLocationSearch";
+import { useAddressSearch } from "../../../hooks/useAddressSearch";
 import { pickUploadAssets } from "../../../utils/uploadPicker";
 import {
   SHIFT_GRACE_MINUTE_OPTIONS,
@@ -108,8 +106,11 @@ export default function CreateProjectScreen() {
   const [isLocationPickerVisible, setIsLocationPickerVisible] = useState(false);
   const [locationSearch, setLocationSearch] = useState("");
   const [isLocationLoading, setIsLocationLoading] = useState(false);
-  const [locationSuggestions, setLocationSuggestions] = useState([]);
-  const [isLocationSearchLoading, setIsLocationSearchLoading] = useState(false);
+  const {
+    suggestions: locationSuggestions,
+    loading: isLocationSearchLoading,
+    clearSuggestions: clearLocationSuggestions,
+  } = useAddressSearch(locationSearch, isLocationPickerVisible);
   const [beginningDate, setBeginningDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
@@ -159,7 +160,6 @@ export default function CreateProjectScreen() {
   const [saving, setSaving] = useState(false);
   const projectNameLabelAnim = useRef(new Animated.Value(0)).current;
   const isLocationLoadingRef = useRef(false);
-  const locationSearchRequestIdRef = useRef(0);
   const locationSearchInputRef = useRef(null);
   const lastReverseGeocodeAtRef = useRef(0);
   const reverseGeocodeCacheRef = useRef(new Map());
@@ -186,55 +186,6 @@ export default function CreateProjectScreen() {
     setIsProjectNameFocused(true);
     setUseLocationAsName(false);
   }, []);
-
-  useEffect(() => {
-    if (!isLocationPickerVisible) {
-      return;
-    }
-
-    const normalizedQuery = locationSearch.trim();
-    if (normalizedQuery.length < 2) {
-      locationSearchRequestIdRef.current += 1;
-      setLocationSuggestions([]);
-      setIsLocationSearchLoading(false);
-      return;
-    }
-
-    const debounceId = setTimeout(async () => {
-      const requestId = ++locationSearchRequestIdRef.current;
-      setIsLocationSearchLoading(true);
-
-      try {
-        const matches = await searchAddressesWithNominatim(normalizedQuery, 2);
-        const nextSuggestions = normalizeLocationSuggestions(matches).map(
-          function enrichSuggestion(suggestion) {
-            return {
-              ...suggestion,
-              label: enrichAddressLabelWithQueryHouseNumber(
-                suggestion.label,
-                normalizedQuery,
-              ),
-            };
-          },
-        );
-
-        if (locationSearchRequestIdRef.current === requestId) {
-          setLocationSuggestions(nextSuggestions);
-        }
-      } catch (error) {
-        if (locationSearchRequestIdRef.current === requestId) {
-          setLocationSuggestions([]);
-        }
-        console.error("Failed to search project addresses:", error);
-      } finally {
-        if (locationSearchRequestIdRef.current === requestId) {
-          setIsLocationSearchLoading(false);
-        }
-      }
-    }, 250);
-
-    return () => clearTimeout(debounceId);
-  }, [isLocationPickerVisible, locationSearch]);
 
   const fetchUsersAndCompanies = async () => {
     try {
@@ -379,8 +330,7 @@ export default function CreateProjectScreen() {
   const closeLocationPicker = () => {
     setIsLocationPickerVisible(false);
     setLocationSearch(location);
-    setLocationSuggestions([]);
-    setIsLocationSearchLoading(false);
+    clearLocationSuggestions();
   };
 
   const confirmLocationPickerSelection = () => {
@@ -501,8 +451,7 @@ export default function CreateProjectScreen() {
 
   const openLocationPicker = () => {
     setLocationSearch(location);
-    setLocationSuggestions([]);
-    setIsLocationSearchLoading(false);
+    clearLocationSuggestions();
     setIsLocationPickerVisible(true);
   };
 
