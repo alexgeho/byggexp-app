@@ -23,7 +23,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { createStyles } from "./ProjectScreen.styles";
-import { ProjectTabBar } from "./ProjectScreen.parts";
+import { ProjectPhotosTab, ProjectTabBar } from "./ProjectScreen.parts";
 import { useTranslation } from "react-i18next";
 import { Screen } from "../../../components/common/Screen/Screen";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
@@ -50,7 +50,6 @@ import {
 } from "../../../services";
 import { formatMoney } from "../../../utils/billingTotals";
 import { isPdfDocument } from "../../../utils/documentPreview";
-import { formatShiftDayLabel, resolveUploadUrl } from "../../../utils/shifts";
 import { sortByNewest } from "../../../utils/sortByNewest";
 import { cardStyles } from "../../../styles/cards";
 import { pickUploadAssets } from "../../../utils/uploadPicker";
@@ -776,55 +775,16 @@ export const ProjectScreen = () => {
             </View>
           ))}
 
-        {modal === "Photos" &&
-          (loadingPhotos ? (
-            <View style={styles.tabLoading}>
-              <ActivityIndicator color={theme.colors.primary} />
-            </View>
-          ) : photoSections && photoSections.length ? (
-            photoSections.map((section) => (
-              <View key={section.date} style={styles.photoSection}>
-                <View style={styles.photoSectionHeader}>
-                  <Text style={styles.photoSectionDate}>
-                    {formatShiftDayLabel(section.date)}
-                  </Text>
-                  <Text style={styles.photoSectionCount}>
-                    {t("camera.photoCount", { count: section.count })}
-                  </Text>
-                </View>
-                <View style={styles.photoGrid}>
-                  {section.photos.map((photo, index) => (
-                    <TouchableOpacity
-                      key={`${photo.url}-${index}`}
-                      activeOpacity={0.85}
-                      onPress={() =>
-                        setPreviewPhoto(resolveUploadUrl(photo.url))
-                      }
-                    >
-                      <Image
-                        source={{ uri: resolveUploadUrl(photo.url) }}
-                        style={styles.photoThumb}
-                      />
-                      {photo.isReceipt ? (
-                        <View style={styles.receiptTag}>
-                          <Icon name="file-text" size={12} color="#FFFFFF" />
-                        </View>
-                      ) : null}
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </View>
-            ))
-          ) : (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyStateTitle}>
-                {t("project.noPhotosTitle")}
-              </Text>
-              <Text style={styles.emptyStateText}>
-                {t("project.noPhotosText")}
-              </Text>
-            </View>
-          ))}
+        {modal === "Photos" ? (
+          <ProjectPhotosTab
+            loading={loadingPhotos}
+            photoSections={photoSections}
+            onPreview={setPreviewPhoto}
+            styles={styles}
+            primaryColor={theme.colors.primary}
+            t={t}
+          />
+        ) : null}
 
         {modal === "Economy" &&
           canSeeFinance &&
