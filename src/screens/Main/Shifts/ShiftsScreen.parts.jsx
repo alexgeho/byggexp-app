@@ -2,6 +2,7 @@ import React from "react";
 import {
   ActivityIndicator,
   Modal,
+  Pressable,
   ScrollView,
   Text,
   TextInput,
@@ -234,6 +235,102 @@ export function ManualHoursModal({
             <Text style={styles.manualHoursCancelText}>
               {t("common.cancel")}
             </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+// Export bottom sheet: pick PDF/Excel, then export the selected period.
+export function ExportSheet({
+  visible,
+  onClose,
+  selectedExportType,
+  setSelectedExportType,
+  exporting,
+  onExport,
+  styles,
+  sheetStyles,
+  titleFontFamily,
+  t,
+}) {
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      statusBarTranslucent
+      onRequestClose={onClose}
+    >
+      <Pressable style={sheetStyles.backdrop} onPress={onClose} />
+      <View style={sheetStyles.container}>
+        <View style={styles.handleIndicator} />
+        <View style={styles.bottomSheetContent}>
+          <View style={styles.exportSheetBody}>
+            <Text
+              style={[styles.exportSheetTitle, { fontFamily: titleFontFamily }]}
+            >
+              {t("shifts.exportTitle")}
+            </Text>
+
+            <View style={styles.exportSheetCard}>
+              <View style={styles.exportButtonsContainer}>
+                <TouchableOpacity
+                  style={[
+                    styles.exportButton,
+                    selectedExportType === "pdf" && styles.exportButtonActive,
+                  ]}
+                  onPress={() => setSelectedExportType("pdf")}
+                  activeOpacity={0.85}
+                >
+                  <Text
+                    style={[
+                      styles.exportButtonText,
+                      selectedExportType === "pdf" &&
+                        styles.exportButtonTextActive,
+                    ]}
+                  >
+                    PDF
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.exportButton,
+                    selectedExportType === "excel" && styles.exportButtonActive,
+                  ]}
+                  onPress={() => setSelectedExportType("excel")}
+                  activeOpacity={0.85}
+                >
+                  <Text
+                    style={[
+                      styles.exportButtonText,
+                      selectedExportType === "excel" &&
+                        styles.exportButtonTextActive,
+                    ]}
+                  >
+                    Excel
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+
+          <TouchableOpacity
+            style={[
+              styles.exportMainButton,
+              exporting && styles.exportMainButtonDisabled,
+            ]}
+            onPress={onExport}
+            disabled={exporting}
+          >
+            {exporting ? (
+              <ActivityIndicator color="#FFFFFF" />
+            ) : (
+              <Text style={styles.exportMainButtonText}>
+                {t("shiftHistory.export")}
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
       </View>

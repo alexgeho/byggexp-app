@@ -61,7 +61,11 @@ import {
   isPdfDocument,
 } from "../../../utils/documentPreview";
 import { createStyles } from "./ShiftsScreen.styles";
-import { EmployeePickerModal, ManualHoursModal } from "./ShiftsScreen.parts";
+import {
+  EmployeePickerModal,
+  ExportSheet,
+  ManualHoursModal,
+} from "./ShiftsScreen.parts";
 
 const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const EXPORT_PERIOD_TABS = ["Month", "Custom"];
@@ -1639,92 +1643,18 @@ export default function ShiftsScreen() {
         addButtonStyle={styles.exportFabButton}
       />
 
-      <Modal
+      <ExportSheet
         visible={exportSheetOpen}
-        transparent
-        animationType="slide"
-        statusBarTranslucent
-        onRequestClose={() => setExportSheetOpen(false)}
-      >
-        <Pressable
-          style={sheetStyles.backdrop}
-          onPress={() => setExportSheetOpen(false)}
-        />
-        <View style={sheetStyles.container}>
-          <View style={styles.handleIndicator} />
-          <View style={styles.bottomSheetContent}>
-            <View style={styles.exportSheetBody}>
-              <Text
-                style={[
-                  styles.exportSheetTitle,
-                  { fontFamily: theme.text.fontFamily["semiBold"] },
-                ]}
-              >
-                {t("shifts.exportTitle")}
-              </Text>
-
-              <View style={styles.exportSheetCard}>
-                <View style={styles.exportButtonsContainer}>
-                  <TouchableOpacity
-                    style={[
-                      styles.exportButton,
-                      selectedExportType === "pdf" && styles.exportButtonActive,
-                    ]}
-                    onPress={() => setSelectedExportType("pdf")}
-                    activeOpacity={0.85}
-                  >
-                    <Text
-                      style={[
-                        styles.exportButtonText,
-                        selectedExportType === "pdf" &&
-                          styles.exportButtonTextActive,
-                      ]}
-                    >
-                      PDF
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[
-                      styles.exportButton,
-                      selectedExportType === "excel" &&
-                        styles.exportButtonActive,
-                    ]}
-                    onPress={() => setSelectedExportType("excel")}
-                    activeOpacity={0.85}
-                  >
-                    <Text
-                      style={[
-                        styles.exportButtonText,
-                        selectedExportType === "excel" &&
-                          styles.exportButtonTextActive,
-                      ]}
-                    >
-                      Excel
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-
-            <TouchableOpacity
-              style={[
-                styles.exportMainButton,
-                exporting && styles.exportMainButtonDisabled,
-              ]}
-              onPress={handleExport}
-              disabled={exporting}
-            >
-              {exporting ? (
-                <ActivityIndicator color="#FFFFFF" />
-              ) : (
-                <Text style={styles.exportMainButtonText}>
-                  {t("shiftHistory.export")}
-                </Text>
-              )}
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+        onClose={() => setExportSheetOpen(false)}
+        selectedExportType={selectedExportType}
+        setSelectedExportType={setSelectedExportType}
+        exporting={exporting}
+        onExport={handleExport}
+        styles={styles}
+        sheetStyles={sheetStyles}
+        titleFontFamily={theme.text.fontFamily["semiBold"]}
+        t={t}
+      />
 
       <Modal
         visible={periodSheetOpen}
