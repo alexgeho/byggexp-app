@@ -1,0 +1,78 @@
+import { StyleSheet } from "react-native";
+import {
+  standardScreenContainer,
+  standardScreenHeader,
+  standardScreenHeaderPlaceholder,
+} from "../../styles/screenLayout";
+
+// Extracted from HelpGuideScreen.jsx.
+export const createStyles = (c) =>
+  StyleSheet.create({
+    container: {
+      ...standardScreenContainer,
+      backgroundColor: c.background,
+    },
+    header: {
+      ...standardScreenHeader,
+    },
+    headerTitle: {
+      color: c.textPrimary,
+      fontSize: 17,
+      textAlign: "center",
+    },
+    placeholder: {
+      ...standardScreenHeaderPlaceholder,
+    },
+    scrollContainer: {
+      flex: 1,
+      width: "100%",
+    },
+    scrollContent: {
+      gap: 12,
+      paddingBottom: 120,
+    },
+    heroCard: {
+      width: "100%",
+      backgroundColor: c.surfaceMuted,
+      borderRadius: 24,
+      borderWidth: 1,
+      borderColor: c.surface,
+      padding: 20,
+    },
+    heroText: {
+      color: c.textMuted,
+      fontSize: 15,
+      lineHeight: 22,
+    },
+    groupCard: {
+      width: "100%",
+      backgroundColor: c.surfaceMuted,
+      borderRadius: 24,
+      borderWidth: 1,
+      borderColor: c.surface,
+      padding: 20,
+    },
+    sectionTitle: {
+      color: c.textPrimary,
+      fontSize: 18,
+      marginBottom: 14,
+    },
+    bulletRow: {
+      flexDirection: "row",
+      alignItems: "flex-start",
+      gap: 10,
+      marginBottom: 12,
+    },
+    bullet: {
+      width: 8,
+      height: 8,
+      borderRadius: 999,
+      marginTop: 7,
+    },
+    bulletText: {
+      flex: 1,
+      color: c.textPrimary,
+      fontSize: 15,
+      lineHeight: 22,
+    },
+  });
