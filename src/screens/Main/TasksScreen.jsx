@@ -4,6 +4,7 @@ import {
   useRoute,
 } from "@react-navigation/native";
 import { getDateLocale } from "../../utils/dateLocale";
+import { getTaskDisplayStatus } from "../../utils/taskStatus";
 import React, {
   useCallback,
   useContext,
@@ -24,29 +25,6 @@ import { createStyles } from "./TasksScreen.styles";
 import { resolveNewestTimestamp, sortByNewest } from "../../utils/sortByNewest";
 import { cardStyles } from "../../styles/cards";
 import { canCreateTasks } from "../../utils/userRoles";
-
-const getTaskDisplayStatus = (task) => {
-  if (task?.status === "completed") {
-    return {
-      label: "Completed",
-      tone: "completed",
-    };
-  }
-
-  const dueTime = task?.dueDate ? new Date(task.dueDate).getTime() : null;
-
-  if (dueTime && !Number.isNaN(dueTime) && dueTime < Date.now()) {
-    return {
-      label: "Overdue",
-      tone: "overdue",
-    };
-  }
-
-  return {
-    label: "Open",
-    tone: "open",
-  };
-};
 
 export default function TasksScreen() {
   const navigation = useNavigation();

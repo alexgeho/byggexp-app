@@ -58,6 +58,7 @@ import {
   isPdfDocument,
 } from "../../../utils/documentPreview";
 import { sortByNewest } from "../../../utils/sortByNewest";
+import { getTaskDisplayStatus } from "../../../utils/taskStatus";
 import { cardStyles } from "../../../styles/cards";
 import { pickUploadAssets } from "../../../utils/uploadPicker";
 import {
@@ -105,29 +106,6 @@ const formatDate = (value, withTime = false, t = null) => {
         day: "numeric",
         year: "numeric",
       });
-};
-
-const getTaskDisplayStatus = (task) => {
-  if (task?.status === "completed") {
-    return {
-      label: "Completed",
-      tone: "completed",
-    };
-  }
-
-  const dueTime = task?.dueDate ? new Date(task.dueDate).getTime() : null;
-
-  if (dueTime && !Number.isNaN(dueTime) && dueTime < Date.now()) {
-    return {
-      label: "Overdue",
-      tone: "overdue",
-    };
-  }
-
-  return {
-    label: "Open",
-    tone: "open",
-  };
 };
 
 const taskBadgeStyles = {

@@ -28,6 +28,7 @@ import {
 import { createStyles } from "./TaskScreen.styles";
 import { resolveUploadUrl } from "../../../utils/shifts";
 import { sortByNewest } from "../../../utils/sortByNewest";
+import { getTaskDisplayStatus } from "../../../utils/taskStatus";
 import { pickUploadAssets } from "../../../utils/uploadPicker";
 import {
   canCompleteTasks,
@@ -75,29 +76,6 @@ const formatDateParts = (value) => {
       minute: "2-digit",
       hour12: false,
     }),
-  };
-};
-
-const getTaskDisplayStatus = (task) => {
-  if (task?.status === "completed") {
-    return {
-      label: "Completed",
-      tone: "completed",
-    };
-  }
-
-  const dueTime = task?.dueDate ? new Date(task.dueDate).getTime() : null;
-
-  if (dueTime && !Number.isNaN(dueTime) && dueTime < Date.now()) {
-    return {
-      label: "Overdue",
-      tone: "overdue",
-    };
-  }
-
-  return {
-    label: "Open",
-    tone: "open",
   };
 };
 
