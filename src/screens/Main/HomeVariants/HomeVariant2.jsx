@@ -606,6 +606,69 @@ export default function HomeVariant2() {
     }
   }
 
+  // The home sections (shift-history / tasks / project-files previews) do NOT
+  // depend on the clock, but the timer's 1 Hz `timeElapsed` state re-renders
+  // this whole screen every second. Memoize the section subtree so a tick only
+  // re-renders the clock, not these (data-fetching) preview cards.
+  const sectionElements = useMemo(
+    () =>
+      sectionsOrder.map(function renderSection(sectionId) {
+        if (!enabledSections.includes(sectionId)) {
+          return null;
+        }
+
+        const colorMode = isLightBlueTheme ? "light" : "dark";
+
+        if (sectionId === "shift-history") {
+          return (
+            <ShiftHistoryPreview
+              key={sectionId}
+              colorMode={colorMode}
+              refreshKey={previewRefreshKey}
+              onClose={() => handleHideSection("shift-history")}
+            />
+          );
+        }
+
+        if (sectionId === "tasks-history") {
+          return (
+            <TasksPreview
+              key={sectionId}
+              colorMode={colorMode}
+              refreshKey={previewRefreshKey}
+              onClose={() => handleHideSection("tasks-history")}
+            />
+          );
+        }
+
+        if (sectionId === "project-files") {
+          return (
+            <ProjectFilesSection
+              key={sectionId}
+              project={selectedProject}
+              colorMode={colorMode}
+              refreshKey={previewRefreshKey}
+              onClose={() => handleHideSection("project-files")}
+            />
+          );
+        }
+
+        return null;
+      }),
+    [
+      sectionsOrder,
+      enabledSections,
+      isLightBlueTheme,
+      previewRefreshKey,
+      selectedProject,
+      handleHideSection,
+    ],
+  );
+
+  // Static grid (no props) — memoize the element so the timer tick doesn't
+  // re-render it each second.
+  const mainButtonsGrid = useMemo(() => <MainButtonsGrid />, []);
+
   return (
     <LinearGradient
       colors={gradientColors}
@@ -750,7 +813,7 @@ export default function HomeVariant2() {
                 style={isEditingHours && styles.inactiveDimmed}
                 pointerEvents={isEditingHours ? "none" : "auto"}
               >
-                <MainButtonsGrid />
+                {mainButtonsGrid}
               </View>
             </View>
 
@@ -761,49 +824,7 @@ export default function HomeVariant2() {
               ]}
               pointerEvents={isEditingHours ? "none" : "auto"}
             >
-              {sectionsOrder.map(function renderSection(sectionId) {
-                if (!enabledSections.includes(sectionId)) {
-                  return null;
-                }
-
-                const colorMode = isLightBlueTheme ? "light" : "dark";
-
-                if (sectionId === "shift-history") {
-                  return (
-                    <ShiftHistoryPreview
-                      key={sectionId}
-                      colorMode={colorMode}
-                      refreshKey={previewRefreshKey}
-                      onClose={() => handleHideSection("shift-history")}
-                    />
-                  );
-                }
-
-                if (sectionId === "tasks-history") {
-                  return (
-                    <TasksPreview
-                      key={sectionId}
-                      colorMode={colorMode}
-                      refreshKey={previewRefreshKey}
-                      onClose={() => handleHideSection("tasks-history")}
-                    />
-                  );
-                }
-
-                if (sectionId === "project-files") {
-                  return (
-                    <ProjectFilesSection
-                      key={sectionId}
-                      project={selectedProject}
-                      colorMode={colorMode}
-                      refreshKey={previewRefreshKey}
-                      onClose={() => handleHideSection("project-files")}
-                    />
-                  );
-                }
-
-                return null;
-              })}
+              {sectionElements}
             </View>
           </View>
         </View>
