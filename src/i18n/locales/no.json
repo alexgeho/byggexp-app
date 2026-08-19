@@ -333,12 +333,12 @@
     "contractNumber": "Kontraktsnr.",
     "littera": "Littera / ordrenr.",
     "economySection": "Økonomi",
-    "budget": "Total budsjett (SEK)",
+    "budget": "Total budsjett (NOK)",
     "plannedHours": "Planlagte timer",
-    "plannedMaterials": "Planlagt materiell (SEK)",
-    "spentMaterials": "Forbrukt materiell (SEK)",
-    "costRate": "Selvkost / time (SEK)",
-    "billRate": "Faktureres / time (SEK)"
+    "plannedMaterials": "Planlagt materiell (NOK)",
+    "spentMaterials": "Forbrukt materiell (NOK)",
+    "costRate": "Selvkost / time (NOK)",
+    "billRate": "Faktureres / time (NOK)"
   },
   "createTask": {
     "title": "Opprett oppgave",
@@ -640,8 +640,8 @@
       "title": "Nytt utlegg",
       "supplier": "Leverandør",
       "supplierPlaceholder": "f.eks. Byggmax",
-      "total": "Totalt (SEK)",
-      "vat": "MVA (SEK)",
+      "total": "Totalt (NOK)",
+      "vat": "MVA (NOK)",
       "category": "Kategori",
       "categoryPlaceholder": "f.eks. Materialer",
       "selectProject": "Velg et prosjekt",
