@@ -9,12 +9,16 @@ export const HeaderCheckButton = ({
   onPress,
   loading = false,
   disabled = false,
+  accessibilityLabel,
 }) => (
   <TouchableOpacity
     onPress={onPress}
     disabled={disabled || loading}
     activeOpacity={0.85}
     style={[styles.button, (disabled || loading) && styles.disabled]}
+    accessibilityRole="button"
+    accessibilityLabel={accessibilityLabel}
+    accessibilityState={{ disabled: disabled || loading, busy: loading }}
   >
     {loading ? (
       <ActivityIndicator color={content.onAccent} size="small" />

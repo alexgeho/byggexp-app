@@ -28,6 +28,8 @@ export function ProjectFilterSelector({
       <TouchableOpacity
         style={styles.trigger}
         activeOpacity={0.85}
+        accessibilityRole="button"
+        accessibilityLabel={selectedProject?.name || t("projects.all")}
         onPress={() => {
           // Keep the callback out of navigation params (non-serializable).
           setLocalProjectSelectionHandler((project) =>

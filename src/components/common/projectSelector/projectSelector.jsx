@@ -13,7 +13,12 @@ export default function ProjectSelector2({
   const { t } = useTranslation();
 
   return (
-    <TouchableOpacity style={[styles.projectSelector, style]} onPress={onPress}>
+    <TouchableOpacity
+      style={[styles.projectSelector, style]}
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={value?.name || t("projects.selectOrCreate")}
+    >
       <Text
         numberOfLines={1}
         ellipsizeMode="tail"
