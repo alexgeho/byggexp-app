@@ -370,11 +370,22 @@ export default function CustomizeHomeScreen({
                     toggleButton(button.id);
                   }}
                 >
-                  <Text style={styles.itemText}>
-                    {t(`home.buttons.${button.id}`, button.title)}
-                  </Text>
+                  <View style={styles.itemTopRow}>
+                    <Text style={styles.itemText} numberOfLines={1}>
+                      {t(`home.buttons.${button.id}`, button.title)}
+                    </Text>
 
-                  <View style={styles.sectionRowActions}>
+                    <View
+                      style={[
+                        styles.checkbox,
+                        isEnabled && styles.checkboxActive,
+                      ]}
+                    >
+                      {isEnabled && <Text style={styles.checkmark}>✓</Text>}
+                    </View>
+                  </View>
+
+                  <View style={styles.itemReorderRow}>
                     <TouchableOpacity
                       style={styles.reorderButton}
                       disabled={isFirst}
@@ -404,15 +415,6 @@ export default function CustomizeHomeScreen({
                         color={isLast ? "#c2ccd6" : "#052d50"}
                       />
                     </TouchableOpacity>
-
-                    <View
-                      style={[
-                        styles.checkbox,
-                        isEnabled && styles.checkboxActive,
-                      ]}
-                    >
-                      {isEnabled && <Text style={styles.checkmark}>✓</Text>}
-                    </View>
                   </View>
                 </TouchableOpacity>
               );
@@ -453,11 +455,22 @@ export default function CustomizeHomeScreen({
                     toggleSection(section.id);
                   }}
                 >
-                  <Text style={styles.itemText}>
-                    {t(`home.sections.${section.id}`, section.title)}
-                  </Text>
+                  <View style={styles.itemTopRow}>
+                    <Text style={styles.itemText} numberOfLines={1}>
+                      {t(`home.sections.${section.id}`, section.title)}
+                    </Text>
 
-                  <View style={styles.sectionRowActions}>
+                    <View
+                      style={[
+                        styles.checkbox,
+                        isEnabled && styles.checkboxActive,
+                      ]}
+                    >
+                      {isEnabled && <Text style={styles.checkmark}>✓</Text>}
+                    </View>
+                  </View>
+
+                  <View style={styles.itemReorderRow}>
                     <TouchableOpacity
                       style={styles.reorderButton}
                       disabled={isFirst}
@@ -487,15 +500,6 @@ export default function CustomizeHomeScreen({
                         color={isLast ? "#c2ccd6" : "#052d50"}
                       />
                     </TouchableOpacity>
-
-                    <View
-                      style={[
-                        styles.checkbox,
-                        isEnabled && styles.checkboxActive,
-                      ]}
-                    >
-                      {isEnabled && <Text style={styles.checkmark}>✓</Text>}
-                    </View>
                   </View>
                 </TouchableOpacity>
               );

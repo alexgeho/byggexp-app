@@ -84,12 +84,12 @@ export function createStyles(theme) {
       marginBottom: 24,
     },
 
+    // Narrow (50%) drawer: name + checkbox on the top row, reorder arrows
+    // stacked underneath the name.
     item: {
-      padding: 16,
-
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      gap: 6,
     },
 
     itemBorder: {
@@ -97,9 +97,23 @@ export function createStyles(theme) {
       borderBottomColor: c.divider,
     },
 
+    itemTopRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 8,
+    },
+
     itemText: {
+      flex: 1,
       fontSize: 16,
       color: c.textPrimary,
+    },
+
+    itemReorderRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
     },
 
     sectionRowActions: {
