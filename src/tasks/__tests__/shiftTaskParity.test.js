@@ -60,29 +60,36 @@ const ANDROID_TARGET = {
   radius: 120,
 };
 
+// A state change needs consecutive agreeing readings, so the task is driven
+// with a stateful store rather than a fixed getItem response.
 const mockAndroidStorage = ({ previouslyInside }) => {
-  AsyncStorage.getItem.mockImplementation(async (key) => {
-    if (key === SHIFT_LOCATION_TARGET_KEY) {
-      return JSON.stringify(ANDROID_TARGET);
-    }
+  const store = {
+    [SHIFT_LOCATION_TARGET_KEY]: JSON.stringify(ANDROID_TARGET),
+    [SHIFT_LOCATION_INSIDE_KEY]:
+      previouslyInside === null ? null : previouslyInside ? "1" : "0",
+  };
 
-    if (key === SHIFT_LOCATION_INSIDE_KEY) {
-      if (previouslyInside === null) {
-        return null;
-      }
-
-      return previouslyInside ? "1" : "0";
-    }
-
-    return null;
+  AsyncStorage.getItem.mockImplementation(async (key) => store[key] ?? null);
+  AsyncStorage.setItem.mockImplementation(async (key, value) => {
+    store[key] = value;
   });
 };
 
-const androidLocationEvent = () => ({
+const androidLocationEvent = ({ accuracy = 20 } = {}) => ({
   data: {
-    locations: [{ coords: { latitude: 59.3293, longitude: 18.0686 } }],
+    locations: [
+      { coords: { latitude: 59.3293, longitude: 18.0686, accuracy } },
+    ],
   },
 });
+
+const runAndroidTask = async (times = 1, options) => {
+  const task = getRegisteredTask(SHIFT_LOCATION_TASK);
+
+  for (let index = 0; index < times; index += 1) {
+    await task(androidLocationEvent(options));
+  }
+};
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -119,25 +126,34 @@ describe("iOS region monitoring task", () => {
 });
 
 describe("Android foreground-service location task", () => {
-  it("routes crossing out of the radius to the same exit handler", async () => {
+  it("routes a confirmed departure to the same exit handler", async () => {
     mockAndroidStorage({ previouslyInside: true });
     calculateDistanceMeters.mockReturnValue(900);
 
-    const task = getRegisteredTask(SHIFT_LOCATION_TASK);
-    await task(androidLocationEvent());
+    await runAndroidTask(2);
 
     expect(handleShiftExit).toHaveBeenCalledWith({ projectId: PROJECT_ID });
+    expect(handleShiftExit).toHaveBeenCalledTimes(1);
     expect(handleShiftEnter).not.toHaveBeenCalled();
   });
 
-  it("routes crossing into the radius to the same enter handler", async () => {
+  it("routes a confirmed arrival to the same enter handler", async () => {
     mockAndroidStorage({ previouslyInside: false });
     calculateDistanceMeters.mockReturnValue(10);
 
-    const task = getRegisteredTask(SHIFT_LOCATION_TASK);
-    await task(androidLocationEvent());
+    await runAndroidTask(2);
 
     expect(handleShiftEnter).toHaveBeenCalledWith({ projectId: PROJECT_ID });
+    expect(handleShiftEnter).toHaveBeenCalledTimes(1);
+    expect(handleShiftExit).not.toHaveBeenCalled();
+  });
+
+  it("waits for a second agreeing reading before acting", async () => {
+    mockAndroidStorage({ previouslyInside: true });
+    calculateDistanceMeters.mockReturnValue(900);
+
+    await runAndroidTask(1);
+
     expect(handleShiftExit).not.toHaveBeenCalled();
   });
 
@@ -145,20 +161,35 @@ describe("Android foreground-service location task", () => {
     mockAndroidStorage({ previouslyInside: true });
     calculateDistanceMeters.mockReturnValue(10);
 
-    const task = getRegisteredTask(SHIFT_LOCATION_TASK);
-    await task(androidLocationEvent());
+    await runAndroidTask(3);
 
     expect(handleShiftEnter).not.toHaveBeenCalled();
     expect(handleShiftExit).not.toHaveBeenCalled();
   });
 
-  it("acts on the very first fix so a restart re-syncs the shift", async () => {
+  it("re-syncs after a restart once two fixes agree", async () => {
     mockAndroidStorage({ previouslyInside: null });
     calculateDistanceMeters.mockReturnValue(10);
 
-    const task = getRegisteredTask(SHIFT_LOCATION_TASK);
-    await task(androidLocationEvent());
+    await runAndroidTask(2);
 
     expect(handleShiftEnter).toHaveBeenCalledWith({ projectId: PROJECT_ID });
+  });
+
+  it("does not move the shift when a stationary phone reports coarse fixes", async () => {
+    mockAndroidStorage({ previouslyInside: true });
+    // Distance wanders far outside, but every fix is too imprecise to trust.
+    calculateDistanceMeters
+      .mockReturnValueOnce(60)
+      .mockReturnValueOnce(410)
+      .mockReturnValueOnce(35)
+      .mockReturnValueOnce(520)
+      .mockReturnValueOnce(150)
+      .mockReturnValueOnce(480);
+
+    await runAndroidTask(6, { accuracy: 600 });
+
+    expect(handleShiftExit).not.toHaveBeenCalled();
+    expect(handleShiftEnter).not.toHaveBeenCalled();
   });
 });
