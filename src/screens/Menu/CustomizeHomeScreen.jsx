@@ -396,7 +396,7 @@ export default function CustomizeHomeScreen({
                     >
                       <Icon
                         name="chevron-up"
-                        size={20}
+                        size={28}
                         color={isFirst ? "#c2ccd6" : "#052d50"}
                       />
                     </TouchableOpacity>
@@ -411,7 +411,7 @@ export default function CustomizeHomeScreen({
                     >
                       <Icon
                         name="chevron-down"
-                        size={20}
+                        size={28}
                         color={isLast ? "#c2ccd6" : "#052d50"}
                       />
                     </TouchableOpacity>
@@ -481,7 +481,7 @@ export default function CustomizeHomeScreen({
                     >
                       <Icon
                         name="chevron-up"
-                        size={20}
+                        size={28}
                         color={isFirst ? "#c2ccd6" : "#052d50"}
                       />
                     </TouchableOpacity>
@@ -496,7 +496,7 @@ export default function CustomizeHomeScreen({
                     >
                       <Icon
                         name="chevron-down"
-                        size={20}
+                        size={28}
                         color={isLast ? "#c2ccd6" : "#052d50"}
                       />
                     </TouchableOpacity>

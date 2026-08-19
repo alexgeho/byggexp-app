@@ -110,10 +110,13 @@ export function createStyles(theme) {
       color: c.textPrimary,
     },
 
+    // Reorder arrows centered in the free space under the name, enlarged for
+    // an easier tap target.
     itemReorderRow: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 4,
+      justifyContent: "center",
+      gap: 40,
     },
 
     sectionRowActions: {
@@ -123,8 +126,8 @@ export function createStyles(theme) {
     },
 
     reorderButton: {
-      width: 30,
-      height: 30,
+      width: 48,
+      height: 40,
       alignItems: "center",
       justifyContent: "center",
     },
