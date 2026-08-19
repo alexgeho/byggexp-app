@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
-import { BackButton } from "../../components/common/BackButton/BackButton";
+import { Screen } from "../../components/common/Screen/Screen";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import AuthContext from "../../contexts/AuthContext";
 import { useFeedback } from "../../contexts/FeedbackContext";
@@ -117,26 +117,7 @@ export default function NotificationsSettingsScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <BackButton
-          backgroundColor={"rgba(255, 255, 255, 0.6)"}
-          tint={"light"}
-          borderColor="#FFFFFF"
-          onPress={() => navigation.goBack()}
-          iconSource={require("../../assets/Arrow-left.png")}
-        />
-        <Text
-          style={[
-            styles.headerTitle,
-            { fontFamily: theme.text.fontFamily.semiBold },
-          ]}
-        >
-          {t("notifications.title")}
-        </Text>
-        <View style={styles.placeholder} />
-      </View>
-
+    <Screen title={t("notifications.title")} onBack={() => navigation.goBack()}>
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={styles.scrollContent}
@@ -233,6 +214,6 @@ export default function NotificationsSettingsScreen() {
           )
         }
       />
-    </View>
+    </Screen>
   );
 }
