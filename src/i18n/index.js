@@ -2,8 +2,14 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import en from "./locales/en.json";
-import sv from "./locales/sv.json";
+// Locale bundles behind deferred (function-scoped) requires, so only the
+// active locale's JSON is parsed at boot. English is always loaded (it's the
+// default + fallback); other locales are parsed lazily on first use. Add a
+// locale JSON + a loader here (and a SUPPORTED_LANGUAGES entry) for a new one.
+const localeLoaders = {
+  en: () => require("./locales/en.json"),
+  sv: () => require("./locales/sv.json"),
+};
 
 export const LANGUAGE_STORAGE_KEY = "app-language";
 
@@ -24,17 +30,30 @@ export const FALLBACK_LANGUAGE = "en";
 // user's own choice is persisted and honoured on every later launch.
 export const DEFAULT_LANGUAGE = "en";
 
-const resources = {
-  en: { translation: en },
-  sv: { translation: sv },
-};
-
 export function isSupportedLanguage(code) {
   return SUPPORTED_LANGUAGES.some((language) => language.code === code);
 }
 
+// Parse and register a locale's bundle if it isn't loaded yet. Called before
+// switching to a language so its strings are present. No-op for the already
+// loaded / unknown locale.
+function ensureLanguageLoaded(code) {
+  const loader = localeLoaders[code];
+  if (!loader || i18n.hasResourceBundle(code, "translation")) {
+    return;
+  }
+  try {
+    i18n.addResourceBundle(code, "translation", loader(), true, true);
+  } catch (error) {
+    console.warn(`i18n: failed to load locale "${code}"`, error);
+  }
+}
+
 i18n.use(initReactI18next).init({
-  resources,
+  // Boot with only the default locale; others are added on demand.
+  resources: {
+    [DEFAULT_LANGUAGE]: { translation: localeLoaders[DEFAULT_LANGUAGE]() },
+  },
   lng: DEFAULT_LANGUAGE,
   fallbackLng: FALLBACK_LANGUAGE,
   interpolation: { escapeValue: false },
@@ -47,6 +66,7 @@ export async function loadStoredLanguage() {
   try {
     const stored = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
     if (stored && isSupportedLanguage(stored) && stored !== i18n.language) {
+      ensureLanguageLoaded(stored);
       await i18n.changeLanguage(stored);
     }
   } catch (error) {
@@ -59,6 +79,7 @@ export async function setLanguage(code) {
   if (!isSupportedLanguage(code)) {
     return;
   }
+  ensureLanguageLoaded(code);
   await i18n.changeLanguage(code);
   try {
     await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, code);
