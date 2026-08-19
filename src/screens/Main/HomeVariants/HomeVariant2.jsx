@@ -140,7 +140,7 @@ export default function HomeVariant2() {
      theme / layout changes preview live on the exposed part of the home screen.
      Rendered as an in-tree overlay (not a route) so a theme change is a plain
      re-render of Home, never a native-stack transition (which raced Fabric). */
-  const CUSTOMIZE_WIDTH = Math.round(screenWidth * 0.6);
+  const CUSTOMIZE_WIDTH = Math.round(screenWidth * 0.5);
   const [customizeMounted, setCustomizeMounted] = useState(false);
   const drawerX = useRef(new Animated.Value(-CUSTOMIZE_WIDTH)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;

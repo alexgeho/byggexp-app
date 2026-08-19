@@ -139,13 +139,14 @@ export function createStyles(theme) {
     },
 
     secondaryRow: {
-      flexDirection: "row",
+      flexDirection: "column",
       gap: 10,
     },
     // Pill-shaped selector (fully rounded, icon + label in a row), matching the
     // Finance filter chips: inactive = surface, active = solid primary.
+    // Stacked full-width in a column so they fit the narrow (50%) drawer.
     secondaryOption: {
-      flex: 1,
+      alignSelf: "stretch",
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
