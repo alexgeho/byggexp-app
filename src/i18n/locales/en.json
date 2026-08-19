@@ -16,6 +16,16 @@
     "logHours": "Log hours",
     "close": "Close"
   },
+  "filePicker": {
+    "photoAccessTitle": "Photo access needed",
+    "photoAccessMessage": "Allow access to your photo library to upload images or videos from Photos.",
+    "cameraAccessTitle": "Camera access needed",
+    "cameraAccessMessage": "Allow camera access to take a photo.",
+    "selectSourceTitle": "Select source",
+    "selectSourceMessage": "Choose where you want to pick files from.",
+    "photos": "Photos",
+    "files": "Files"
+  },
   "common": {
     "goBack": "Go back",
     "save": "Save",

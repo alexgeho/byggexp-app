@@ -1,6 +1,7 @@
 import { Alert, Platform } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
+import i18n from "../i18n";
 
 const DEFAULT_DOCUMENT_TYPES = [
   "image/*",
@@ -76,8 +77,8 @@ const ensureMediaLibraryAccess = async () => {
 
   if (!permission.granted) {
     Alert.alert(
-      "Photo access needed",
-      "Allow access to your photo library to upload images or videos from Photos.",
+      i18n.t("filePicker.photoAccessTitle"),
+      i18n.t("filePicker.photoAccessMessage"),
     );
     return false;
   }
@@ -144,19 +145,19 @@ const chooseSource = () =>
     };
 
     Alert.alert(
-      "Select source",
-      "Choose where you want to pick files from.",
+      i18n.t("filePicker.selectSourceTitle"),
+      i18n.t("filePicker.selectSourceMessage"),
       [
         {
-          text: "Photos",
+          text: i18n.t("filePicker.photos"),
           onPress: () => finish("photos"),
         },
         {
-          text: "Files",
+          text: i18n.t("filePicker.files"),
           onPress: () => finish("files"),
         },
         {
-          text: "Cancel",
+          text: i18n.t("common.cancel"),
           style: "cancel",
           onPress: () => finish(null),
         },
@@ -205,7 +206,10 @@ const ensureCameraAccess = async () => {
   }
 
   if (!permission.granted) {
-    Alert.alert("Camera access needed", "Allow camera access to take a photo.");
+    Alert.alert(
+      i18n.t("filePicker.cameraAccessTitle"),
+      i18n.t("filePicker.cameraAccessMessage"),
+    );
     return false;
   }
 

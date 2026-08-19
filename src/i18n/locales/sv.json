@@ -16,6 +16,16 @@
     "logHours": "Registrera timmar",
     "close": "Stäng"
   },
+  "filePicker": {
+    "photoAccessTitle": "Åtkomst till foton krävs",
+    "photoAccessMessage": "Ge åtkomst till ditt fotobibliotek för att ladda upp bilder eller videor från Foton.",
+    "cameraAccessTitle": "Kameraåtkomst krävs",
+    "cameraAccessMessage": "Ge kameraåtkomst för att ta ett foto.",
+    "selectSourceTitle": "Välj källa",
+    "selectSourceMessage": "Välj varifrån du vill hämta filer.",
+    "photos": "Foton",
+    "files": "Filer"
+  },
   "common": {
     "goBack": "Tillbaka",
     "save": "Spara",

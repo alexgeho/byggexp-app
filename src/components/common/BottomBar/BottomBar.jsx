@@ -202,7 +202,7 @@ export function BottomBar({
                       },
                     ]}
                   >
-                    Home
+                    {t("a11y.home")}
                   </Text>
                 )}
               </>
@@ -238,7 +238,7 @@ export function BottomBar({
                       },
                     ]}
                   >
-                    Menu
+                    {t("a11y.menu")}
                   </Text>
                 )}
               </>

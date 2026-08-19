@@ -704,7 +704,7 @@ export default function CreateProjectScreen() {
               { fontFamily: theme.text.fontFamily["semiBold"] },
             ]}
           >
-            Create project
+            {t("createProject.title")}
           </Text>
 
           {/* FloatingActionButton ======================================= */}
