@@ -709,6 +709,7 @@ export default function CreateProjectScreen() {
 
           {/* FloatingActionButton ======================================= */}
           <FloatingActionButton
+            accessibilityLabel={t("common.save")}
             onPress={createProject}
             disabled={saving}
             renderContent={() =>

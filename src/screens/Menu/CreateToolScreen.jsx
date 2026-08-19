@@ -320,6 +320,7 @@ export default function CreateToolScreen() {
             {t("tools.addTitle")}
           </Text>
           <FloatingActionButton
+            accessibilityLabel={t("common.save")}
             onPress={handleCreateTool}
             disabled={saving}
             renderContent={() =>

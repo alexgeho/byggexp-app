@@ -504,6 +504,7 @@ export default function CreateEmployeeScreen() {
               : t("createEmployee.addTitle")}
           </Text>
           <FloatingActionButton
+            accessibilityLabel={t("common.save")}
             onPress={handleSaveEmployee}
             disabled={saving || loadingEmployee}
             renderContent={() =>

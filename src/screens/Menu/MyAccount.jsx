@@ -464,6 +464,7 @@ export const MyAccount = () => {
       onBack={() => navigation.goBack()}
       right={
         <FloatingActionButton
+          accessibilityLabel={t("common.save")}
           onPress={handleSave}
           disabled={saving}
           renderContent={() =>

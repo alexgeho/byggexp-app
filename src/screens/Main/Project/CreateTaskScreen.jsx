@@ -660,6 +660,7 @@ export default function CreateTaskScreen() {
           />
           <Text style={styles.headerTitle}>{t("createTask.title")}</Text>
           <FloatingActionButton
+            accessibilityLabel={t("common.save")}
             onPress={createTask}
             disabled={saving}
             renderContent={() =>
