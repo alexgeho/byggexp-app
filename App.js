@@ -52,20 +52,24 @@ export default function App() {
 
   useEffect(() => {
     async function bootstrap() {
-      // Apply the persisted language before the first render to avoid a flash.
-      await loadStoredLanguage();
       try {
-        await Font.loadAsync({
-          "DMSans-Regular": require("./src/assets/fonts/DMSans-Regular.ttf"),
-          "DMSans-Bold": require("./src/assets/fonts/DMSans-Bold.ttf"),
-          "DMSans-Medium": require("./src/assets/fonts/DMSans-Medium.ttf"),
-          "DMSans-SemiBold": require("./src/assets/fonts/DMSans-Medium.ttf"),
-          "Landasans-Medium": require("./src/assets/fonts/Landasans-Medium.otf"),
-          Oswald_500Medium,
-        });
-        setFontsLoaded(true);
+        // The persisted-language read and the font load are independent — run
+        // them together instead of serially so the first paint isn't gated on
+        // an AsyncStorage round-trip followed by the font decode.
+        await Promise.all([
+          loadStoredLanguage(),
+          Font.loadAsync({
+            "DMSans-Regular": require("./src/assets/fonts/DMSans-Regular.ttf"),
+            "DMSans-Bold": require("./src/assets/fonts/DMSans-Bold.ttf"),
+            "DMSans-Medium": require("./src/assets/fonts/DMSans-Medium.ttf"),
+            "DMSans-SemiBold": require("./src/assets/fonts/DMSans-Medium.ttf"),
+            "Landasans-Medium": require("./src/assets/fonts/Landasans-Medium.otf"),
+            Oswald_500Medium,
+          }),
+        ]);
       } catch (error) {
-        console.error("Error loading fonts:", error);
+        console.error("Error during bootstrap (fonts/language):", error);
+      } finally {
         setFontsLoaded(true);
       }
     }
