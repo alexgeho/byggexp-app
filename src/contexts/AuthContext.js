@@ -23,7 +23,12 @@ import {
   canManageWorkers as checkCanManageWorkers,
   canManageDocuments as checkCanManageDocuments,
 } from "../utils/userRoles";
-import { authService, userService, logUserActivity } from "../services";
+// Import the three services this provider actually uses directly, not via the
+// services/index barrel — AuthProvider mounts at the top of the tree, so the
+// barrel would pull all ~19 service modules (+ axios) into the cold-start graph.
+import { authService } from "../services/auth.service";
+import { userService } from "../services/user.service";
+import { logUserActivity } from "../services/user-activity.service";
 import { jwtDecode } from "jwt-decode";
 import { unregisterPushToken } from "../services/notifications.service";
 import { setUnauthorizedHandler } from "../services/api";
@@ -42,7 +47,13 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const loadTokenAndUser = async () => {
-      const storedUser = await getUser();
+      // Read the stored user and selected project together — they're
+      // independent AsyncStorage entries, and the navigator waits on this whole
+      // step, so serial reads needlessly delayed the first authed screen.
+      const [storedUser, storedProject] = await Promise.all([
+        getUser(),
+        getSelectedProject(),
+      ]);
 
       if (storedUser) {
         setUser(storedUser);
@@ -52,7 +63,6 @@ export const AuthProvider = ({ children }) => {
         }
 
         // Restore the last selected project (an active shift may still override it).
-        const storedProject = await getSelectedProject();
         if (storedProject) {
           setSelectedProject(storedProject);
         }
