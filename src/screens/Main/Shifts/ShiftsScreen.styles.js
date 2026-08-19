@@ -376,14 +376,14 @@ export const createStyles = (c) =>
       borderRadius: 3,
       backgroundColor: "#F59E0B",
     },
-    /* Checkbox shown top-right of each day while in select mode */
+    /* Checkbox pinned to the top-right corner of each day while in select mode */
     calendarCheck: {
       position: "absolute",
-      top: 4,
-      right: 4,
-      width: 16,
-      height: 16,
-      borderRadius: 8,
+      top: 2,
+      right: 2,
+      width: 14,
+      height: 14,
+      borderRadius: 7,
       borderWidth: 1.5,
       borderColor: "#C3CCD6",
       backgroundColor: c.surface,
