@@ -4,6 +4,8 @@ import {
   normalizeRepeatIntervalMinutes,
   normalizeTaskNotificationSettings,
   deriveNotificationReminderFlags,
+  getRepeatLabel,
+  getTaskNotificationSummary,
 } from "../taskNotifications";
 
 jest.mock("../../i18n", () => ({
@@ -84,5 +86,38 @@ describe("deriveNotificationReminderFlags", () => {
     expect(
       deriveNotificationReminderFlags({ customMessage: "" }).customReminder,
     ).toBe(false);
+  });
+});
+
+// The i18n stub returns the key verbatim, so these assert which key/branch
+// is chosen rather than the localized text.
+describe("getRepeatLabel", () => {
+  it("uses the per-minute key for the 'minutes' repeat", () => {
+    expect(getRepeatLabel("minutes", 30)).toBe("taskReminders.everyMinutes");
+  });
+
+  it("uses the per-key label for the other repeats", () => {
+    expect(getRepeatLabel("daily")).toBe("taskReminders.repeat.daily");
+    expect(getRepeatLabel("none")).toBe("taskReminders.repeat.none");
+  });
+});
+
+describe("getTaskNotificationSummary", () => {
+  it("summarizes just the repeat when nothing extra is set", () => {
+    expect(
+      getTaskNotificationSummary({ repeat: "daily", customMessage: "" }),
+    ).toBe("taskReminders.repeat.daily");
+  });
+
+  it("appends custom-message and until-done parts", () => {
+    expect(
+      getTaskNotificationSummary({
+        repeat: "none",
+        customMessage: "Do it",
+        remindUntilDone: true,
+      }),
+    ).toBe(
+      "taskReminders.repeat.none • taskReminders.custom • taskReminders.untilDone",
+    );
   });
 });
