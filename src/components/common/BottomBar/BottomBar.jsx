@@ -70,6 +70,10 @@ export function BottomBar({
   showText = false,
   glass = false,
   addAccessibilityLabel,
+  // Force the dark treatment (dark pill + white icons) regardless of the
+  // content scheme. The home screen passes this for its dark-appearance themes
+  // (blue/black) so the nav icons read white, matching the card icons.
+  darkOverride,
 }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -96,7 +100,10 @@ export function BottomBar({
   // around each icon (worst on the solid filled icon). Keeping them as later
   // siblings, above the blur, renders them crisp with no halo.
   const isTransparent = !glass && !showBackground;
-  const dark = theme.content.scheme === "dark";
+  const dark =
+    typeof darkOverride === "boolean"
+      ? darkOverride
+      : theme.content.scheme === "dark";
   // Android has no BlurView (it crashed Fabric), so the fill must carry the
   // whole look — make it much more opaque there than the iOS blur+fill.
   const isAndroid = Platform.OS === "android";
