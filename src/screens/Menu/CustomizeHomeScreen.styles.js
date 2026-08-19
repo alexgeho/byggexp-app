@@ -21,6 +21,10 @@ export function createStyles(theme) {
 
     header: {
       ...standardScreenHeader,
+      // Left-align with a gap so the title sits clear of the back button
+      // (instead of space-between crowding it against the arrow).
+      justifyContent: "flex-start",
+      gap: 16,
     },
 
     title: {
@@ -116,7 +120,7 @@ export function createStyles(theme) {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
-      gap: 40,
+      gap: 12,
     },
 
     sectionRowActions: {
