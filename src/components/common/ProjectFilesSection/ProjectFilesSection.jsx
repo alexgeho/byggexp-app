@@ -190,7 +190,7 @@ export default function ProjectFilesSection({
   return (
     <View style={styles.section}>
       <View style={styles.header}>
-        <Text style={styles.title}>Project Documents</Text>
+        <Text style={styles.title}>{t("home.projectDocumentsTitle")}</Text>
 
         <View style={styles.headerActions}>
           <TouchableOpacity
@@ -198,7 +198,7 @@ export default function ProjectFilesSection({
             activeOpacity={0.8}
             style={styles.linkButton}
           >
-            <Text style={styles.linkText}>View all</Text>
+            <Text style={styles.linkText}>{t("common.viewAll")}</Text>
             <Icon
               name="arrow-right"
               size={18}
