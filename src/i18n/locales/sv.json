@@ -13,7 +13,8 @@
     "add": "Lägg till",
     "startShift": "Starta pass",
     "pauseShift": "Pausa pass",
-    "logHours": "Registrera timmar"
+    "logHours": "Registrera timmar",
+    "close": "Stäng"
   },
   "common": {
     "goBack": "Tillbaka",

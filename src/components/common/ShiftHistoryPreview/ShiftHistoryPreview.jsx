@@ -143,6 +143,8 @@ export function ShiftHistoryPreview({
             style={styles.closeButton}
             onPress={onClose}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel={t("a11y.close")}
           >
             <Icon name="x" size={18} color={secondaryIconColor} />
           </TouchableOpacity>

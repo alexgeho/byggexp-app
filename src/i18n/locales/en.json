@@ -13,7 +13,8 @@
     "add": "Add",
     "startShift": "Start shift",
     "pauseShift": "Pause shift",
-    "logHours": "Log hours"
+    "logHours": "Log hours",
+    "close": "Close"
   },
   "common": {
     "goBack": "Go back",

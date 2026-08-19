@@ -6,17 +6,13 @@ import React, {
   useState,
 } from "react";
 
-import {
-  Image,
-  ScrollView,
-  View,
-  Text,
-  TouchableOpacity,
-} from "react-native";
+import { Image, ScrollView, View, Text, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Feather";
 
 import { useTheme } from "../../../theme/ThemeContext";
+
+import { useTranslation } from "react-i18next";
 
 import { projectService } from "../../../services";
 import { API_BASE_URL } from "../../../services/api";
@@ -32,18 +28,18 @@ export default function ProjectFilesSection({
 }) {
   const navigation = useNavigation();
   const { theme } = useTheme();
+  const { t } = useTranslation();
 
   const styles = createStyles(theme, colorMode);
   const secondaryIconColor =
-    colorMode === "light"
-      ? `${theme.colors.text}80`
-      : "rgba(255,255,255,0.72)";
+    colorMode === "light" ? `${theme.colors.text}80` : "rgba(255,255,255,0.72)";
 
   const [currentPage, setCurrentPage] = useState(0);
   const [viewportWidth, setViewportWidth] = useState(0);
   const [projectData, setProjectData] = useState(project || null);
   const carouselRef = useRef(null);
-  const projectId = project?._id || project?.id || projectData?._id || projectData?.id;
+  const projectId =
+    project?._id || project?.id || projectData?._id || projectData?.id;
   const files = projectData?.documents || [];
 
   useEffect(() => {
@@ -78,26 +74,18 @@ export default function ProjectFilesSection({
     () =>
       sortByNewest(
         files.map(function normalizeFile(file, index) {
-          const fileUrl =
-            typeof file === "string"
-              ? file
-              : file?.url;
+          const fileUrl = typeof file === "string" ? file : file?.url;
 
           const fileName =
             typeof file === "string"
               ? `Document ${index + 1}`
               : file?.name || `Document ${index + 1}`;
 
-          const mimeType =
-            typeof file === "string"
-              ? ""
-              : file?.mimeType || "";
+          const mimeType = typeof file === "string" ? "" : file?.mimeType || "";
 
           const isImage =
             mimeType.startsWith("image/") ||
-            /\.(png|jpe?g|gif|webp|bmp|heic|heif|svg)$/i.test(
-              fileName,
-            );
+            /\.(png|jpe?g|gif|webp|bmp|heic|heif|svg)$/i.test(fileName);
 
           return {
             id:
@@ -124,9 +112,7 @@ export default function ProjectFilesSection({
     const nextPages = [];
 
     for (let index = 0; index < normalizedFiles.length; index += 3) {
-      nextPages.push(
-        normalizedFiles.slice(index, index + 3),
-      );
+      nextPages.push(normalizedFiles.slice(index, index + 3));
     }
 
     return nextPages;
@@ -136,23 +122,26 @@ export default function ProjectFilesSection({
     setCurrentPage(0);
   }, [projectId, normalizedFiles.length]);
 
-  const scrollToPage = useCallback(function scrollToPage(pageIndex, animated = true) {
-    if (!Number.isFinite(pageIndex)) {
-      return;
-    }
+  const scrollToPage = useCallback(
+    function scrollToPage(pageIndex, animated = true) {
+      if (!Number.isFinite(pageIndex)) {
+        return;
+      }
 
-    const nextPage = Math.max(0, Math.min(pageIndex, pages.length - 1));
-    setCurrentPage(nextPage);
+      const nextPage = Math.max(0, Math.min(pageIndex, pages.length - 1));
+      setCurrentPage(nextPage);
 
-    if (!viewportWidth) {
-      return;
-    }
+      if (!viewportWidth) {
+        return;
+      }
 
-    carouselRef.current?.scrollTo({
-      x: nextPage * viewportWidth,
-      animated,
-    });
-  }, [pages.length, viewportWidth]);
+      carouselRef.current?.scrollTo({
+        x: nextPage * viewportWidth,
+        animated,
+      });
+    },
+    [pages.length, viewportWidth],
+  );
 
   useEffect(() => {
     scrollToPage(0, false);
@@ -163,10 +152,8 @@ export default function ProjectFilesSection({
   }
 
   const canGoBack = currentPage > 0;
-  const canGoForward =
-    currentPage < pages.length - 1;
-  const showCarouselControls =
-    normalizedFiles.length > 3;
+  const canGoForward = currentPage < pages.length - 1;
+  const showCarouselControls = normalizedFiles.length > 3;
 
   function handleCarouselLayout(event) {
     const nextWidth = event.nativeEvent.layout.width;
@@ -186,9 +173,7 @@ export default function ProjectFilesSection({
     const nextPage = Math.round(
       event.nativeEvent.contentOffset.x / viewportWidth,
     );
-    setCurrentPage(
-      Math.max(0, Math.min(nextPage, pages.length - 1)),
-    );
+    setCurrentPage(Math.max(0, Math.min(nextPage, pages.length - 1)));
   }
 
   function handleViewAll() {
@@ -205,9 +190,7 @@ export default function ProjectFilesSection({
   return (
     <View style={styles.section}>
       <View style={styles.header}>
-        <Text style={styles.title}>
-          Project Documents
-        </Text>
+        <Text style={styles.title}>Project Documents</Text>
 
         <View style={styles.headerActions}>
           <TouchableOpacity
@@ -215,9 +198,7 @@ export default function ProjectFilesSection({
             activeOpacity={0.8}
             style={styles.linkButton}
           >
-            <Text style={styles.linkText}>
-              View all
-            </Text>
+            <Text style={styles.linkText}>View all</Text>
             <Icon
               name="arrow-right"
               size={18}
@@ -228,15 +209,14 @@ export default function ProjectFilesSection({
         </View>
       </View>
 
-      <View
-        style={styles.carouselViewport}
-        onLayout={handleCarouselLayout}
-      >
+      <View style={styles.carouselViewport} onLayout={handleCarouselLayout}>
         {onClose ? (
           <TouchableOpacity
             onPress={onClose}
             activeOpacity={0.8}
             style={styles.closeButton}
+            accessibilityRole="button"
+            accessibilityLabel={t("a11y.close")}
           >
             <Icon name="x" size={18} color={secondaryIconColor} />
           </TouchableOpacity>
@@ -252,8 +232,7 @@ export default function ProjectFilesSection({
           contentContainerStyle={styles.carouselPages}
         >
           {pages.map(function renderPage(pageFiles, pageIndex) {
-            const usePeekLayout =
-              pageFiles.length === 3;
+            const usePeekLayout = pageFiles.length === 3;
             const visibleSlotIndexes = pageFiles.map(
               function mapFile(_file, index) {
                 return index;
@@ -274,19 +253,13 @@ export default function ProjectFilesSection({
                   style={
                     usePeekLayout
                       ? styles.peekTrack
-                      : [
-                          styles.carouselRow,
-                          styles.carouselRowRegular,
-                        ]
+                      : [styles.carouselRow, styles.carouselRowRegular]
                   }
                 >
                   {visibleSlotIndexes.map(function renderSlot(slotIndex) {
                     const file = pageFiles[slotIndex];
-                    const isFirstVisible =
-                      slotIndex === 0;
-                    const isLastVisible =
-                      slotIndex ===
-                      pageFiles.length - 1;
+                    const isFirstVisible = slotIndex === 0;
+                    const isLastVisible = slotIndex === pageFiles.length - 1;
 
                     return (
                       <View
@@ -296,12 +269,9 @@ export default function ProjectFilesSection({
                           usePeekLayout
                             ? [
                                 styles.carouselSlotPeek,
-                                slotIndex === 0 &&
-                                  styles.peekLeftSlot,
-                                slotIndex === 1 &&
-                                  styles.peekCenterSlot,
-                                slotIndex === 2 &&
-                                  styles.peekRightSlot,
+                                slotIndex === 0 && styles.peekLeftSlot,
+                                slotIndex === 1 && styles.peekCenterSlot,
+                                slotIndex === 2 && styles.peekRightSlot,
                               ]
                             : styles.carouselSlotRegular,
                         ]}
@@ -316,10 +286,8 @@ export default function ProjectFilesSection({
                               <View
                                 style={[
                                   styles.imageFrame,
-                                  isFirstVisible &&
-                                    styles.imageFirst,
-                                  isLastVisible &&
-                                    styles.imageLast,
+                                  isFirstVisible && styles.imageFirst,
+                                  isLastVisible && styles.imageLast,
                                 ]}
                               >
                                 <Image
@@ -333,10 +301,8 @@ export default function ProjectFilesSection({
                               <View
                                 style={[
                                   styles.fileFallback,
-                                  isFirstVisible &&
-                                    styles.imageFirst,
-                                  isLastVisible &&
-                                    styles.imageLast,
+                                  isFirstVisible && styles.imageFirst,
+                                  isLastVisible && styles.imageLast,
                                 ]}
                               >
                                 <Icon
@@ -372,15 +338,10 @@ export default function ProjectFilesSection({
               style={[
                 styles.navButton,
                 styles.navButtonLeft,
-                !canGoBack &&
-                  styles.navButtonDisabled,
+                !canGoBack && styles.navButtonDisabled,
               ]}
             >
-              <Icon
-                name="chevron-left"
-                size={18}
-                color="#052D50"
-              />
+              <Icon name="chevron-left" size={18} color="#052D50" />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -390,15 +351,10 @@ export default function ProjectFilesSection({
               style={[
                 styles.navButton,
                 styles.navButtonRight,
-                !canGoForward &&
-                  styles.navButtonDisabled,
+                !canGoForward && styles.navButtonDisabled,
               ]}
             >
-              <Icon
-                name="chevron-right"
-                size={18}
-                color="#052D50"
-              />
+              <Icon name="chevron-right" size={18} color="#052D50" />
             </TouchableOpacity>
           </>
         )}
