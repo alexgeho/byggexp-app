@@ -10,10 +10,6 @@ export const MUTED = "#667E93";
 export const INPUT_BG = "#EEEEEE";
 export const PLACEHOLDER = "#9AA6B2";
 
-// Kept for existing imports (date-picker accent etc.)
-export const LINE = "#FFFFFF";
-export const FIELD_BG = "#FFFFFF";
-
 const F_MED = "DMSans-Medium"; // Figma weight 500
 const F_SEMI = "DMSans-SemiBold"; // Figma weight 600
 
@@ -23,8 +19,6 @@ export const createStyles = (c) => {
   const INK = c.textPrimary;
   const MUTED = c.textMuted;
   const INPUT_BG = c.inputSurface;
-  const LINE = c.divider;
-  const FIELD_BG = c.surface;
   return StyleSheet.create({
     container: { flex: 1, backgroundColor: PAGE },
 

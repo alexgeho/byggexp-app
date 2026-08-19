@@ -2,7 +2,6 @@ import { memo, useMemo } from "react";
 import {
   View,
   Text,
-  Image,
   TextInput,
   TouchableOpacity,
   Modal,
@@ -148,16 +147,6 @@ export const WorkTimePickerModal = ({
         </View>
       </View>
     </Modal>
-  );
-};
-
-export const getUserInitials = (name = "") => {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  return (
-    parts
-      .slice(0, 2)
-      .map((part) => part[0]?.toUpperCase() || "")
-      .join("") || "?"
   );
 };
 
@@ -353,54 +342,6 @@ export const WorkersListModal = memo(function WorkersListModal({
     </Modal>
   );
 });
-
-export const SelectedItem = ({
-  title,
-  value,
-  onPress,
-  showArrow = true,
-  iconName = "briefcase",
-  iconLibrary = "feather",
-  containerStyle,
-  badgeStyle,
-}) => {
-  const { t } = useTranslation();
-  const styles = useThemedStyles();
-  return (
-    <TouchableOpacity
-      style={[styles.selectableRow, { borderBottomWidth: 0 }, containerStyle]}
-      onPress={onPress}
-    >
-      <View style={styles.rowCenter}>
-        <View style={[styles.iconContainer, badgeStyle]}>
-          <FieldIcon
-            library={iconLibrary}
-            name={iconName}
-            size={14}
-            color="#FFFFFF"
-          />
-        </View>
-        <View>
-          <Text style={styles.label}>{title}</Text>
-          {value ? (
-            <Text style={styles.selectedValue}>{value}</Text>
-          ) : (
-            <Text style={styles.placeholderText}>
-              {t("createProject.selectPlaceholder")}
-            </Text>
-          )}
-        </View>
-      </View>
-      {showArrow && (
-        <Image
-          style={styles.arrowIcon}
-          source={require("../../../assets/Arrow-right.png")}
-          resizeMode="contain"
-        />
-      )}
-    </TouchableOpacity>
-  );
-};
 
 export const CompaniesListModal = ({
   visible,

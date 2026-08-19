@@ -19,14 +19,6 @@ export const standardScreenContainer = {
   gap: standardScreenContentGap,
 };
 
-/** Scroll screens that place the header inside contentContainerStyle. */
-export const standardScreenScrollContent = {
-  paddingHorizontal: 12,
-  paddingTop: screenPaddingTop,
-  paddingBottom: 140,
-  gap: standardScreenContentGap,
-};
-
 export const standardScreenHeaderSpacing = {
   paddingTop: 20,
   paddingBottom: 10,

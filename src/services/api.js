@@ -120,28 +120,8 @@ api.interceptors.response.use(
   },
 );
 
-export const fetchData = async (endpoint) => {
-  try {
-    const response = await api.get(endpoint);
-    return response.data;
-  } catch (error) {
-    console.error("Failed to fetch data:", error);
-    throw error;
-  }
-};
-
 export default api;
 
 export const setUnauthorizedHandler = (handler) => {
   unauthorizedHandler = handler;
-};
-
-export const setAuthToken = async (token) => {
-  if (token) {
-    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    await saveToken(token);
-  } else {
-    delete api.defaults.headers.common["Authorization"];
-    await clearStoredAuth();
-  }
 };
