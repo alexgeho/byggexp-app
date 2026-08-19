@@ -10,7 +10,10 @@
     "home": "Hem",
     "menu": "Meny",
     "camera": "Ta ett foto",
-    "add": "Lägg till"
+    "add": "Lägg till",
+    "startShift": "Starta pass",
+    "pauseShift": "Pausa pass",
+    "logHours": "Registrera timmar"
   },
   "common": {
     "goBack": "Tillbaka",

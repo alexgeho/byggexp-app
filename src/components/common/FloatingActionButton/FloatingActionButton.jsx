@@ -8,6 +8,7 @@ export default function FloatingActionButton({
   onPress,
   disabled = false,
   renderContent,
+  accessibilityLabel,
 }) {
   const { theme } = useTheme();
 
@@ -21,6 +22,9 @@ export default function FloatingActionButton({
       onPress={onPress}
       disabled={disabled}
       activeOpacity={0.8}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      accessibilityState={{ disabled }}
     >
       {renderContent ? (
         renderContent()

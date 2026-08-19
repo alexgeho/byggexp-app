@@ -10,7 +10,10 @@
     "home": "Home",
     "menu": "Menu",
     "camera": "Take a photo",
-    "add": "Add"
+    "add": "Add",
+    "startShift": "Start shift",
+    "pauseShift": "Pause shift",
+    "logHours": "Log hours"
   },
   "common": {
     "goBack": "Go back",

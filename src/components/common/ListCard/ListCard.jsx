@@ -21,7 +21,14 @@ export function ListCard({
 
   return (
     <Container
-      {...(onPress ? { onPress, activeOpacity: 0.85 } : {})}
+      {...(onPress
+        ? {
+            onPress,
+            activeOpacity: 0.85,
+            accessibilityRole: "button",
+            accessibilityLabel: typeof title === "string" ? title : undefined,
+          }
+        : {})}
       style={[
         cardStyles.card,
         // Theme the shared white card so every list card follows dark mode.

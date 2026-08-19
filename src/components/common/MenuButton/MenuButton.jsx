@@ -13,6 +13,8 @@ export const MenuButton = ({ screen, params, title, icon, isLast = false }) => {
       <TouchableOpacity
         style={[styles.menuItem, !isLast && styles.menuItemDivider]}
         onPress={() => navigation.navigate(screen ? screen : "Menu", params)}
+        accessibilityRole="button"
+        accessibilityLabel={title}
       >
         <View
           style={[

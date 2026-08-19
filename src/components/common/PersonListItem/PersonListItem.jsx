@@ -37,6 +37,9 @@ const PersonListItemComponent = ({
       activeOpacity={0.85}
       onPress={onPress}
       onLongPress={onLongPress}
+      accessibilityRole={onPress ? "button" : undefined}
+      accessibilityLabel={person.name || undefined}
+      accessibilityState={selectable ? { selected } : undefined}
     >
       {onAvatarPress ? (
         <TouchableOpacity activeOpacity={0.85} onPress={onAvatarPress}>

@@ -2,6 +2,7 @@ import React from "react";
 
 import { View, TouchableOpacity, Image, ActivityIndicator } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
+import { useTranslation } from "react-i18next";
 
 import { styles } from "./mainActionButtons.styles";
 
@@ -24,6 +25,10 @@ export function MainActionButtons({
   isEditingHours = false,
   onEnterEditHours,
 }) {
+  const { t } = useTranslation();
+  const playLabel = isRunning
+    ? t("a11y.pauseShift", { defaultValue: "Pause shift" })
+    : t("a11y.startShift", { defaultValue: "Start shift" });
   const actionButtonSize = veryCompact ? 96 : compact ? 108 : 124;
   const iconActionSize = veryCompact ? 32 : compact ? 36 : 40;
   const secondaryButtonSize = veryCompact ? 96 : compact ? 108 : 124;
@@ -48,6 +53,9 @@ export function MainActionButtons({
           ]}
           onPress={onPlayPress}
           disabled={loading}
+          accessibilityRole="button"
+          accessibilityLabel={playLabel}
+          accessibilityState={{ disabled: loading }}
         >
           {loading ? (
             <ActivityIndicator color={actionIconColor || "#2F80ED"} />
@@ -86,6 +94,10 @@ export function MainActionButtons({
             ]}
             activeOpacity={0.8}
             onPress={onEnterEditHours}
+            accessibilityRole="button"
+            accessibilityLabel={t("a11y.logHours", {
+              defaultValue: "Log hours",
+            })}
           >
             <Icon
               name="edit-2"
@@ -103,6 +115,8 @@ export function MainActionButtons({
             styles.actionButtonCameraThemed,
           ]}
           onPress={onPlayPress}
+          accessibilityRole="button"
+          accessibilityLabel={playLabel}
         >
           <Icon
             name={isRunning ? "pause" : "play"}
@@ -120,6 +134,8 @@ export function MainActionButtons({
               styles.actionButtonCameraThemed,
           ]}
           onPress={onCameraPress}
+          accessibilityRole="button"
+          accessibilityLabel={t("a11y.camera", { defaultValue: "Camera" })}
         >
           {cameraIconColor ? (
             <Icon name="camera" size={iconActionSize} color={cameraIconColor} />
