@@ -1,4 +1,10 @@
-import React, { useContext, useMemo, useState, useCallback } from "react";
+import React, {
+  useContext,
+  useMemo,
+  useState,
+  useCallback,
+  useRef,
+} from "react";
 import { View, Text, Image, ScrollView } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
@@ -16,26 +22,49 @@ export default function MenuScreen() {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = createStyles(theme);
-  const { user, logout, hasPermission } = useContext(AuthContext);
+  const { user, logout, hasPermission, updateStoredUser } =
+    useContext(AuthContext);
   // The persisted AuthContext `user` (from login / getInfo) may not carry an
   // avatarUrl, so the header would fall back to the placeholder even when the
   // account has a real photo. Fetch the full profile on focus — like MyAccount —
   // and prefer its avatarUrl, falling back to the context user.
   const profileId = user?._id || user?.id || null;
-  const [profileAvatarUrl, setProfileAvatarUrl] = useState(null);
+  // Seed from the (persisted) user so the real photo shows immediately on
+  // entry instead of flashing the default avatar while the profile loads.
+  const [profileAvatarUrl, setProfileAvatarUrl] = useState(
+    () => user?.avatarUrl ?? null,
+  );
+
+  // Keep the latest user / updater reachable from the focus effect without
+  // widening its deps (which would re-fetch on every unrelated user change).
+  const userRef = useRef(user);
+  userRef.current = user;
+  const updateStoredUserRef = useRef(updateStoredUser);
+  updateStoredUserRef.current = updateStoredUser;
 
   useFocusEffect(
     useCallback(() => {
       if (!profileId) {
-        return;
+        return undefined;
       }
 
       let active = true;
       userService
         .getById(profileId)
         .then((profile) => {
-          if (active) {
-            setProfileAvatarUrl(profile?.avatarUrl ?? null);
+          if (!active) {
+            return;
+          }
+          const nextAvatarUrl = profile?.avatarUrl ?? null;
+          setProfileAvatarUrl(nextAvatarUrl);
+          // Persist the avatar onto the shared user so it's there instantly on
+          // the next entry (and after a cold start) — killing the default-avatar
+          // flash for good, and updating the photo everywhere else too.
+          if (nextAvatarUrl && nextAvatarUrl !== userRef.current?.avatarUrl) {
+            updateStoredUserRef.current?.({
+              ...userRef.current,
+              avatarUrl: nextAvatarUrl,
+            });
           }
         })
         .catch((error) => {
