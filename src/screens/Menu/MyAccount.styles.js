@@ -1,17 +1,9 @@
 import { StyleSheet } from "react-native";
-import {
-  standardScreenContainer,
-  standardScreenHeader,
-} from "../../styles/screenLayout";
 
 // Extracted from MyAccount.jsx — themed style factory (c = theme.content).
+// Container + header now come from the shared <Screen> scaffold.
 export const createStyles = (c) =>
   StyleSheet.create({
-    container: {
-      ...standardScreenContainer,
-      backgroundColor: c.background,
-      gap: 12,
-    },
     centeredContainer: {
       flex: 1,
       justifyContent: "center",
@@ -22,23 +14,6 @@ export const createStyles = (c) =>
     statusText: {
       marginTop: 12,
       color: c.textMuted,
-    },
-    header: {
-      ...standardScreenHeader,
-    },
-    backButton: {
-      padding: 16,
-      backgroundColor: c.surface,
-      borderRadius: 9999,
-    },
-    backIcon: {
-      width: 20,
-      height: 20,
-    },
-    headerTitle: {
-      color: c.textPrimary,
-      fontSize: 17,
-      textAlign: "center",
     },
     scrollContainer: {
       flex: 1,

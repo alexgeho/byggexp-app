@@ -18,7 +18,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/Feather";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
-import { BackButton } from "../../components/common/BackButton/BackButton";
+import { Screen } from "../../components/common/Screen/Screen";
 import FloatingActionButton from "../../components/common/FloatingActionButton/FloatingActionButton";
 import { createStyles } from "./MyAccount.styles";
 import {
@@ -459,20 +459,10 @@ export const MyAccount = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <BackButton
-          onPress={() => navigation.goBack()}
-          iconSource={require("../../assets/Arrow-left.png")}
-        />
-        <Text
-          style={[
-            styles.headerTitle,
-            { fontFamily: theme.text.fontFamily["semiBold"] },
-          ]}
-        >
-          {t("menu.myAccount")}
-        </Text>
+    <Screen
+      title={t("menu.myAccount")}
+      onBack={() => navigation.goBack()}
+      right={
         <FloatingActionButton
           onPress={handleSave}
           disabled={saving}
@@ -484,8 +474,8 @@ export const MyAccount = () => {
             )
           }
         />
-      </View>
-
+      }
+    >
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={styles.scrollContent}
@@ -678,6 +668,6 @@ export const MyAccount = () => {
         onRightPress={() => navigation.navigate("Menu")}
         showAddButton={false}
       />
-    </View>
+    </Screen>
   );
 };
