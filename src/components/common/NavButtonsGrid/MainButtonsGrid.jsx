@@ -25,7 +25,13 @@ import UnreadBadge from "../UnreadBadge/UnreadBadge";
 import { HomeButtonExtraInfo } from "./HomeButtonExtraInfo";
 import { createStyles } from "./MainButtonsGrid.styles";
 
-export default function MainButtonsGrid() {
+// When rendered inside the Home customize drawer, the parent passes live
+// overrides so toggling a button previews instantly; standalone it loads its
+// own config from storage on focus.
+export default function MainButtonsGrid({
+  enabledButtonsOverride,
+  buttonsOrderOverride,
+} = {}) {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const { user, userId, selectedProject } = useContext(AuthContext);
@@ -83,7 +89,12 @@ export default function MainButtonsGrid() {
     }, []),
   );
 
-  const orderedButtons = buttonsOrder
+  // Live overrides (from the customize drawer) win over the storage-loaded
+  // state so toggles/reorders preview instantly.
+  const effectiveEnabled = enabledButtonsOverride ?? enabledButtons;
+  const effectiveOrder = buttonsOrderOverride ?? buttonsOrder;
+
+  const orderedButtons = effectiveOrder
     .map(function toButton(id) {
       return mainButtons.find(function byId(button) {
         return button.id === id;
@@ -109,7 +120,7 @@ export default function MainButtonsGrid() {
     >
       {orderedButtons
         .filter(function filterButtons(button) {
-          return isHomeButtonVisible(button, enabledButtons, user?.role);
+          return isHomeButtonVisible(button, effectiveEnabled, user?.role);
         })
         .map(function renderButton(button) {
           const buttonColor = theme.colors.buttonColors?.[button.id];

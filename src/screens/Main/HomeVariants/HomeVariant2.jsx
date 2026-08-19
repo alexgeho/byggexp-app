@@ -73,6 +73,7 @@ import {
   getEnabledSections,
   saveEnabledSections,
   getSectionsOrder,
+  getButtonsOrder,
   getSecondaryAction,
 } from "../../../utils/homeButtonsStorage";
 import ShiftHistoryPreview from "../../../components/common/ShiftHistoryPreview/ShiftHistoryPreview";
@@ -215,6 +216,9 @@ export default function HomeVariant2() {
   const [sectionsOrder, setSectionsOrder] = useState(
     homeSections.map((section) => section.id),
   );
+  const [buttonsOrder, setButtonsOrder] = useState(() =>
+    mainButtons.map((button) => button.id),
+  );
   const [previewRefreshKey, setPreviewRefreshKey] = useState(0);
   const [scrollViewHeight, setScrollViewHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
@@ -227,6 +231,7 @@ export default function HomeVariant2() {
     if (patch.enabledButtons) setEnabledButtons(patch.enabledButtons);
     if (patch.enabledSections) setEnabledSections(patch.enabledSections);
     if (patch.sectionsOrder) setSectionsOrder(patch.sectionsOrder);
+    if (patch.buttonsOrder) setButtonsOrder(patch.buttonsOrder);
     if (patch.secondaryAction) setSecondaryAction(patch.secondaryAction);
   }, []);
 
@@ -429,11 +434,13 @@ export default function HomeVariant2() {
             savedButtons,
             savedSections,
             savedSectionsOrder,
+            savedButtonsOrder,
             savedSecondary,
           ] = await Promise.all([
             getEnabledButtons(),
             getEnabledSections(),
             getSectionsOrder(),
+            getButtonsOrder(),
             getSecondaryAction(),
           ]);
 
@@ -451,6 +458,10 @@ export default function HomeVariant2() {
 
           if (savedSectionsOrder) {
             setSectionsOrder(savedSectionsOrder);
+          }
+
+          if (savedButtonsOrder) {
+            setButtonsOrder(savedButtonsOrder);
           }
 
           if (savedSecondary) {
@@ -759,7 +770,15 @@ export default function HomeVariant2() {
 
   // Static grid (no props) — memoize the element so the timer tick doesn't
   // re-render it each second.
-  const mainButtonsGrid = useMemo(() => <MainButtonsGrid />, []);
+  const mainButtonsGrid = useMemo(
+    () => (
+      <MainButtonsGrid
+        enabledButtonsOverride={enabledButtons}
+        buttonsOrderOverride={buttonsOrder}
+      />
+    ),
+    [enabledButtons, buttonsOrder],
+  );
 
   return (
     <LinearGradient
