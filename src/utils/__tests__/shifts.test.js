@@ -12,6 +12,9 @@ import {
   formatDuration,
   formatDurationShort,
   formatDurationCompact,
+  formatTimeRange,
+  getCurrentMonthKey,
+  getTodayDateKey,
 } from "../shifts";
 
 const MIN = 60 * 1000;
@@ -161,5 +164,34 @@ describe("formatDurationCompact", () => {
     expect(formatDurationCompact(2 * HOUR + 5 * MIN)).toBe("2h 5m");
     expect(formatDurationCompact(HOUR)).toBe("1h");
     expect(formatDurationCompact(20 * MIN)).toBe("20m");
+  });
+});
+
+describe("formatTimeRange", () => {
+  it("returns a dash when there is no start", () => {
+    expect(formatTimeRange(null, null)).toBe("—");
+    expect(formatTimeRange("not-a-date", null)).toBe("—");
+  });
+
+  it("marks an open (no-end) range with an ellipsis", () => {
+    const result = formatTimeRange("2026-08-19T09:00:00Z", null);
+    expect(result).toMatch(/ - \.\.\.$/);
+  });
+
+  it("shows a start - end range when both are valid", () => {
+    const result = formatTimeRange(
+      "2026-08-19T09:00:00Z",
+      "2026-08-19T17:00:00Z",
+    );
+    expect(result).toContain(" - ");
+    expect(result).not.toContain("...");
+  });
+});
+
+describe("current month/day keys", () => {
+  it("returns keys in the expected shape", () => {
+    expect(getCurrentMonthKey()).toMatch(/^\d{4}-\d{2}$/);
+    expect(getTodayDateKey()).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(getTodayDateKey().startsWith(getCurrentMonthKey())).toBe(true);
   });
 });
