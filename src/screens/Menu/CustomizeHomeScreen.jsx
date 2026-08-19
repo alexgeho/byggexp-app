@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useMemo } from "react";
 
 import { ScrollView, View, Text, TouchableOpacity } from "react-native";
 
@@ -44,7 +44,15 @@ import { isHomeButtonCustomizable } from "../../utils/userRoles";
 // `embedded` renders the panel without its own BottomBar and routes the header
 // button to `onClose` — used by the 70% slide-in drawer over Home, so theme
 // changes preview live on the visible part of the home screen behind it.
-export default function CustomizeHomeScreen({ embedded = false, onClose }) {
+// `onLiveChange(patch)` lets the embedded drawer push config changes straight
+// into the Home screen behind it (enabledButtons / enabledSections /
+// sectionsOrder / secondaryAction), so toggles preview live — not only after
+// the next focus reload from storage.
+export default function CustomizeHomeScreen({
+  embedded = false,
+  onClose,
+  onLiveChange,
+}) {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const handleClose = embedded ? onClose : navigation.goBack;
@@ -53,7 +61,7 @@ export default function CustomizeHomeScreen({ embedded = false, onClose }) {
 
   const { theme, themeName, changeTheme } = useTheme();
 
-  const styles = createStyles(theme);
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   const [enabledButtons, setEnabledButtons] = useState(defaultEnabledButtons);
 
@@ -117,6 +125,7 @@ export default function CustomizeHomeScreen({ embedded = false, onClose }) {
       });
 
       setEnabledButtons(updatedButtons);
+      onLiveChange?.({ enabledButtons: updatedButtons });
 
       await saveEnabledButtons(updatedButtons);
 
@@ -126,12 +135,14 @@ export default function CustomizeHomeScreen({ embedded = false, onClose }) {
     const updatedButtons = [...enabledButtons, buttonId];
 
     setEnabledButtons(updatedButtons);
+    onLiveChange?.({ enabledButtons: updatedButtons });
 
     await saveEnabledButtons(updatedButtons);
   }
 
   async function handlePickSecondary(action) {
     setSecondaryAction(action);
+    onLiveChange?.({ secondaryAction: action });
     await saveSecondaryAction(action);
   }
 
@@ -146,6 +157,7 @@ export default function CustomizeHomeScreen({ embedded = false, onClose }) {
       nextOrder[index],
     ];
     setSectionsOrder(nextOrder);
+    onLiveChange?.({ sectionsOrder: nextOrder });
     saveSectionsOrder(nextOrder);
   }
 
@@ -166,6 +178,7 @@ export default function CustomizeHomeScreen({ embedded = false, onClose }) {
       nextOrder[indexA],
     ];
     setButtonsOrder(nextOrder);
+    onLiveChange?.({ buttonsOrder: nextOrder });
     saveButtonsOrder(nextOrder);
   }
 
@@ -180,6 +193,7 @@ export default function CustomizeHomeScreen({ embedded = false, onClose }) {
       );
 
       setEnabledSections(updatedSections);
+      onLiveChange?.({ enabledSections: updatedSections });
 
       await saveEnabledSections(updatedSections);
 
@@ -189,6 +203,7 @@ export default function CustomizeHomeScreen({ embedded = false, onClose }) {
     const updatedSections = [...enabledSections, sectionId];
 
     setEnabledSections(updatedSections);
+    onLiveChange?.({ enabledSections: updatedSections });
 
     await saveEnabledSections(updatedSections);
 

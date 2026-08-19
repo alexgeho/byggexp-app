@@ -139,7 +139,7 @@ export default function HomeVariant2() {
      theme / layout changes preview live on the exposed part of the home screen.
      Rendered as an in-tree overlay (not a route) so a theme change is a plain
      re-render of Home, never a native-stack transition (which raced Fabric). */
-  const CUSTOMIZE_WIDTH = Math.round(screenWidth * 0.7);
+  const CUSTOMIZE_WIDTH = Math.round(screenWidth * 0.6);
   const [customizeMounted, setCustomizeMounted] = useState(false);
   const drawerX = useRef(new Animated.Value(-CUSTOMIZE_WIDTH)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
@@ -218,6 +218,31 @@ export default function HomeVariant2() {
   const [previewRefreshKey, setPreviewRefreshKey] = useState(0);
   const [scrollViewHeight, setScrollViewHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
+
+  // Live preview: the customize drawer pushes each config change straight into
+  // Home's own state, so toggling a button/section (or the secondary button)
+  // shows/hides it behind the drawer instantly — not only after the next focus
+  // reload from storage.
+  const handleCustomizeLiveChange = useCallback((patch) => {
+    if (patch.enabledButtons) setEnabledButtons(patch.enabledButtons);
+    if (patch.enabledSections) setEnabledSections(patch.enabledSections);
+    if (patch.sectionsOrder) setSectionsOrder(patch.sectionsOrder);
+    if (patch.secondaryAction) setSecondaryAction(patch.secondaryAction);
+  }, []);
+
+  // Memoize the drawer content so unrelated Home re-renders (e.g. the 1 Hz
+  // shift timer) don't re-render the whole customize panel; it still re-renders
+  // on theme change (its own useTheme) and on its own toggles.
+  const customizeContent = useMemo(
+    () => (
+      <CustomizeHomeScreen
+        embedded
+        onClose={closeCustomize}
+        onLiveChange={handleCustomizeLiveChange}
+      />
+    ),
+    [closeCustomize, handleCustomizeLiveChange],
+  );
   const visibleQuickButtons = useMemo(
     () =>
       mainButtons.filter(function filterButton(button) {
@@ -1000,7 +1025,7 @@ export default function HomeVariant2() {
               },
             ]}
           >
-            <CustomizeHomeScreen embedded onClose={closeCustomize} />
+            {customizeContent}
           </Animated.View>
         </View>
       ) : null}
