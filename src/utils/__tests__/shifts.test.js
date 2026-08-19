@@ -9,7 +9,13 @@ import {
   buildExportMonthOptions,
   resolveUploadUrl,
   formatShiftListProjectName,
+  formatDuration,
+  formatDurationShort,
+  formatDurationCompact,
 } from "../shifts";
+
+const MIN = 60 * 1000;
+const HOUR = 60 * MIN;
 
 jest.mock("../../services/api", () => ({ API_BASE_URL: "https://api.test" }));
 jest.mock("../../i18n", () => ({
@@ -122,5 +128,38 @@ describe("formatShiftListProjectName", () => {
     expect(formatShiftListProjectName("")).toBe("—");
     expect(formatShiftListProjectName("   ")).toBe("—");
     expect(formatShiftListProjectName(null)).toBe("—");
+  });
+});
+
+describe("formatDuration", () => {
+  it("combines hours and minutes", () => {
+    expect(formatDuration(HOUR + 30 * MIN)).toBe("1h 30m");
+    expect(formatDuration(2 * HOUR + 5 * MIN)).toBe("2h 5m");
+  });
+
+  it("shows only the non-zero unit", () => {
+    expect(formatDuration(HOUR)).toBe("1h");
+    expect(formatDuration(45 * MIN)).toBe("45m");
+    expect(formatDuration(0)).toBe("0m");
+  });
+});
+
+describe("formatDurationShort", () => {
+  it("rounds to whole hours at or above an hour", () => {
+    expect(formatDurationShort(2 * HOUR)).toBe("2h");
+    expect(formatDurationShort(HOUR + 30 * MIN)).toBe("2h");
+  });
+
+  it("shows at least one minute below an hour", () => {
+    expect(formatDurationShort(45 * MIN)).toBe("45m");
+    expect(formatDurationShort(0)).toBe("1m");
+  });
+});
+
+describe("formatDurationCompact", () => {
+  it("matches the hours/minutes breakdown", () => {
+    expect(formatDurationCompact(2 * HOUR + 5 * MIN)).toBe("2h 5m");
+    expect(formatDurationCompact(HOUR)).toBe("1h");
+    expect(formatDurationCompact(20 * MIN)).toBe("20m");
   });
 });
