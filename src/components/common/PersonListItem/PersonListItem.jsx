@@ -8,7 +8,10 @@ import { useTheme } from "../../../theme/ThemeContext";
 // Unified person row shared by every people list (worker pickers, chat list…).
 // Single source of truth so lists cannot drift apart. Optional props cover the
 // chat-specific extras (time, unread count, long-press, avatar tap).
-export const PersonListItem = ({
+// Memoized: this row is rendered by every people list (employees, chat,
+// worker pickers), so a parent re-render (search keystroke, selection toggle)
+// must not re-render every visible row — only the ones whose props changed.
+const PersonListItemComponent = ({
   person = {},
   subtitle,
   meta, // optional second sub-line (e.g. project assignment on the employees list)
@@ -96,6 +99,8 @@ export const PersonListItem = ({
     </TouchableOpacity>
   );
 };
+
+export const PersonListItem = React.memo(PersonListItemComponent);
 
 const createStyles = (c) =>
   StyleSheet.create({
