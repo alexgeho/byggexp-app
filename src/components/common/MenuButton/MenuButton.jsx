@@ -3,7 +3,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTheme } from "../../../theme/ThemeContext";
 
-export const MenuButton = ({ screen, title, icon, isLast = false }) => {
+export const MenuButton = ({ screen, params, title, icon, isLast = false }) => {
   const navigation = useNavigation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
@@ -12,7 +12,7 @@ export const MenuButton = ({ screen, title, icon, isLast = false }) => {
     <>
       <TouchableOpacity
         style={[styles.menuItem, !isLast && styles.menuItemDivider]}
-        onPress={() => navigation.navigate(screen ? screen : "Menu")}
+        onPress={() => navigation.navigate(screen ? screen : "Menu", params)}
       >
         <View
           style={[

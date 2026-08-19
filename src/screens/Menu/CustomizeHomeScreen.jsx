@@ -41,9 +41,13 @@ import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { createStyles } from "./CustomizeHomeScreen.styles";
 import { isHomeButtonCustomizable } from "../../utils/userRoles";
 
-export default function CustomizeHomeScreen() {
+// `embedded` renders the panel without its own BottomBar and routes the header
+// button to `onClose` — used by the 70% slide-in drawer over Home, so theme
+// changes preview live on the visible part of the home screen behind it.
+export default function CustomizeHomeScreen({ embedded = false, onClose }) {
   const navigation = useNavigation();
   const { t } = useTranslation();
+  const handleClose = embedded ? onClose : navigation.goBack;
 
   const { selectedProject, user } = useContext(AuthContext);
 
@@ -206,7 +210,7 @@ export default function CustomizeHomeScreen() {
           backgroundColor="#ffffff"
           tint="light"
           borderColor="#FFFFFF50"
-          onPress={navigation.goBack}
+          onPress={handleClose}
           iconSource={require("../../assets/Arrow-left.png")}
         />
 
@@ -484,11 +488,13 @@ export default function CustomizeHomeScreen() {
         </View>
       </ScrollView>
 
-      <BottomBar
-        onLeftPress={() => navigation.navigate("Main")}
-        onRightPress={() => navigation.navigate("Menu")}
-        showAddButton={false}
-      />
+      {embedded ? null : (
+        <BottomBar
+          onLeftPress={() => navigation.navigate("Main")}
+          onRightPress={() => navigation.navigate("Menu")}
+          showAddButton={false}
+        />
+      )}
     </View>
   );
 }

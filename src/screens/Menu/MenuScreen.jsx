@@ -57,7 +57,10 @@ export default function MenuScreen() {
     const baseItems = [
       {
         id: "customizeHome",
-        screen: "CustomizeHomeScreen",
+        // Open Home and slide the customize drawer in over it, so theme /
+        // layout changes preview live on the visible part of the home screen.
+        screen: "Main",
+        params: { openCustomize: true },
         title: t("menu.customizeHome"),
         icon: require("../../assets/Home.png"),
         color: theme.colors.primary,
@@ -428,6 +431,7 @@ export default function MenuScreen() {
                 <MenuButton
                   key={item.id}
                   screen={item.screen ? item.screen : "Menu"}
+                  params={item.params}
                   title={item.title}
                   color={item.color}
                   icon={item.icon}

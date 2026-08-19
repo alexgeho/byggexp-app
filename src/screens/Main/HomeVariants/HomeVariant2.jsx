@@ -15,11 +15,18 @@ import {
   Platform,
   useWindowDimensions,
   InteractionManager,
+  Animated,
+  Pressable,
+  StyleSheet,
 } from "react-native";
 
 import { LinearGradient } from "expo-linear-gradient";
 
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import Icon from "react-native-vector-icons/Feather";
@@ -54,6 +61,7 @@ import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 
 import ProjectFilesSection from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
 import MainButtonsGrid from "../../../components/common/NavButtonsGrid/MainButtonsGrid";
+import CustomizeHomeScreen from "../../Menu/CustomizeHomeScreen";
 import {
   mainButtons,
   defaultEnabledButtons,
@@ -108,7 +116,7 @@ export default function HomeVariant2() {
       })[themeName] || ["#5BC8FF", "#0D5DB8"],
     [themeName],
   );
-  const { height: screenHeight } = useWindowDimensions();
+  const { height: screenHeight, width: screenWidth } = useWindowDimensions();
   const isVeryCompact = screenHeight <= 700;
   const isCompact = screenHeight <= 780;
   // Fixed height for the clock line so swapping the clock for the hours wheel
@@ -124,7 +132,66 @@ export default function HomeVariant2() {
 
   /* NAVIGATION */
   const navigation = useNavigation();
+  const route = useRoute();
   const insets = useSafeAreaInsets();
+
+  /* CUSTOMIZE DRAWER — the customize panel slides in over Home at 70% width so
+     theme / layout changes preview live on the exposed part of the home screen.
+     Rendered as an in-tree overlay (not a route) so a theme change is a plain
+     re-render of Home, never a native-stack transition (which raced Fabric). */
+  const CUSTOMIZE_WIDTH = Math.round(screenWidth * 0.7);
+  const [customizeMounted, setCustomizeMounted] = useState(false);
+  const drawerX = useRef(new Animated.Value(-CUSTOMIZE_WIDTH)).current;
+  const backdropOpacity = useRef(new Animated.Value(0)).current;
+
+  const openCustomize = useCallback(() => {
+    setCustomizeMounted(true);
+    drawerX.setValue(-CUSTOMIZE_WIDTH);
+    requestAnimationFrame(() => {
+      Animated.parallel([
+        Animated.timing(drawerX, {
+          toValue: 0,
+          duration: 280,
+          useNativeDriver: true,
+        }),
+        Animated.timing(backdropOpacity, {
+          // Light scrim: dims the exposed 30% enough to read as an overlay
+          // while keeping the live home preview clearly visible behind it.
+          toValue: 0.45,
+          duration: 280,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    });
+  }, [CUSTOMIZE_WIDTH, drawerX, backdropOpacity]);
+
+  const closeCustomize = useCallback(() => {
+    Animated.parallel([
+      Animated.timing(drawerX, {
+        toValue: -CUSTOMIZE_WIDTH,
+        duration: 240,
+        useNativeDriver: true,
+      }),
+      Animated.timing(backdropOpacity, {
+        toValue: 0,
+        duration: 240,
+        useNativeDriver: true,
+      }),
+    ]).start(({ finished }) => {
+      if (finished) {
+        setCustomizeMounted(false);
+      }
+    });
+  }, [CUSTOMIZE_WIDTH, drawerX, backdropOpacity]);
+
+  // Deep-link from the Menu's "Customize home" item: open the drawer, then
+  // clear the one-shot param so it doesn't re-open on the next focus.
+  useEffect(() => {
+    if (route.params?.openCustomize) {
+      openCustomize();
+      navigation.setParams({ openCustomize: undefined });
+    }
+  }, [route.params?.openCustomize, openCustomize, navigation]);
 
   /* LOADING STATE */
   const [loadingShift, setLoadingShift] = useState(false);
@@ -906,6 +973,35 @@ export default function HomeVariant2() {
               </TouchableOpacity>
             </View>
           </View>
+        </View>
+      ) : null}
+
+      {/* CUSTOMIZE DRAWER — 70% slide-in over Home. The backdrop dims the
+          exposed 30% just enough to read as a scrim while keeping the live
+          home preview visible; tapping it (or the header button) closes. */}
+      {customizeMounted ? (
+        <View style={StyleSheet.absoluteFill}>
+          <Animated.View
+            style={[
+              StyleSheet.absoluteFill,
+              { backgroundColor: "#000", opacity: backdropOpacity },
+            ]}
+          >
+            <Pressable style={styles.flexFill} onPress={closeCustomize} />
+          </Animated.View>
+
+          <Animated.View
+            style={[
+              styles.customizeDrawer,
+              {
+                width: CUSTOMIZE_WIDTH,
+                backgroundColor: theme.content.background,
+                transform: [{ translateX: drawerX }],
+              },
+            ]}
+          >
+            <CustomizeHomeScreen embedded onClose={closeCustomize} />
+          </Animated.View>
         </View>
       ) : null}
     </LinearGradient>

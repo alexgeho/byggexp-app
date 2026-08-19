@@ -180,5 +180,24 @@ export function createStyles({
     footerIconLightBlue: {
       tintColor: textColor,
     },
+    flexFill: {
+      flex: 1,
+    },
+    // 70% slide-in customize panel over Home.
+    customizeDrawer: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      bottom: 0,
+      zIndex: 30,
+      borderTopRightRadius: 24,
+      borderBottomRightRadius: 24,
+      overflow: "hidden",
+      shadowColor: "#000",
+      shadowOffset: { width: 4, height: 0 },
+      shadowOpacity: 0.25,
+      shadowRadius: 24,
+      elevation: 16,
+    },
   });
 }
