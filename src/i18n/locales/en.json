@@ -1215,8 +1215,8 @@
   },
   "projectEconomy": {
     "hourlyRates": "Hourly rates",
-    "costRate": "Cost rate / hour (självkostnad)",
-    "billRate": "Bill rate / hour (debiteras)",
+    "costRate": "Cost rate / hour",
+    "billRate": "Bill rate / hour",
     "marginPerHour": "Margin / hour",
     "labour": "Labour",
     "hoursWorked": "Hours worked",
