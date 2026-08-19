@@ -22,6 +22,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Image as ExpoImage } from "expo-image";
 import Icon from "react-native-vector-icons/Feather";
 import { createStyles } from "./ChatConversationScreen.styles";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -190,9 +191,12 @@ const MessageRow = React.memo(function MessageRow({
                     activeOpacity={0.85}
                     onPress={() => Linking.openURL(url)}
                   >
-                    <Image
+                    <ExpoImage
                       style={styles.attachmentImage}
-                      source={{ uri: url }}
+                      source={url}
+                      contentFit="cover"
+                      cachePolicy="memory-disk"
+                      transition={0}
                     />
                   </TouchableOpacity>
                 ) : (

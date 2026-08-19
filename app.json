@@ -3,7 +3,7 @@
     "name": "ByggExp",
     "slug": "byggexp",
     "scheme": "byggexp",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./src/assets/icon.png",
     "userInterfaceStyle": "light",
@@ -67,7 +67,7 @@
         "projectId": "e64be0f7-ffc0-440c-8c72-5cffe89943b7"
       }
     },
-    "runtimeVersion": "1.0.0",
+    "runtimeVersion": "1.1.0",
     "updates": {
       "url": "https://u.expo.dev/e64be0f7-ffc0-440c-8c72-5cffe89943b7",
       "enabled": true,

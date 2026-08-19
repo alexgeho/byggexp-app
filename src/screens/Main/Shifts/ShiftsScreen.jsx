@@ -19,6 +19,7 @@ import {
   Keyboard,
   StyleSheet,
 } from "react-native";
+import { Image as ExpoImage } from "expo-image";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../theme/ThemeContext";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -1377,11 +1378,12 @@ export default function ShiftsScreen() {
                                     activeOpacity={0.85}
                                     onPress={() => handleOpenShiftPhoto(photo)}
                                   >
-                                    <Image
+                                    <ExpoImage
                                       style={styles.shiftImage}
-                                      source={{
-                                        uri: resolveUploadUrl(photo.url),
-                                      }}
+                                      source={resolveUploadUrl(photo.url)}
+                                      contentFit="cover"
+                                      cachePolicy="memory-disk"
+                                      transition={0}
                                     />
                                   </TouchableOpacity>
                                 ))}

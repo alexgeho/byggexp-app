@@ -1,12 +1,12 @@
 import React from "react";
 import {
   ActivityIndicator,
-  Image,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { Image as ExpoImage } from "expo-image";
 import Icon from "react-native-vector-icons/Feather";
 import { formatShiftDayLabel, resolveUploadUrl } from "../../../utils/shifts";
 import { PersonListItem } from "../../../components/common/PersonListItem/PersonListItem";
@@ -109,9 +109,12 @@ export function ProjectPhotosTab({
             activeOpacity={0.85}
             onPress={() => onPreview(resolveUploadUrl(photo.url))}
           >
-            <Image
-              source={{ uri: resolveUploadUrl(photo.url) }}
+            <ExpoImage
+              source={resolveUploadUrl(photo.url)}
               style={styles.photoThumb}
+              contentFit="cover"
+              cachePolicy="memory-disk"
+              transition={0}
             />
             {photo.isReceipt ? (
               <View style={styles.receiptTag}>
