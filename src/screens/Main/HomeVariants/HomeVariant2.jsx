@@ -949,9 +949,9 @@ export default function HomeVariant2() {
       >
         <BottomBar
           glass
-          // Dark-appearance home themes (blue/black) use white card icons —
-          // force the nav icons white to match, instead of the default navy.
-          darkOverride={!isLightBlueTheme}
+          // Only the black theme gets the dark pill + white nav icons. The blue
+          // theme keeps its original light frosted pill (navy icons).
+          darkOverride={themeName === "black"}
           onLeftPress={() => navigation.navigate("Main")}
           onRightPress={() => navigation.navigate("Menu")}
           showAddButton={false}
