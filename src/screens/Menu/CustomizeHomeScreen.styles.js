@@ -74,7 +74,7 @@ export function createStyles(theme) {
 
     activeThemeButton: {
       borderWidth: 3,
-      borderColor: c.border,
+      borderColor: theme.colors.primary,
     },
 
     list: {
@@ -142,13 +142,17 @@ export function createStyles(theme) {
       flexDirection: "row",
       gap: 10,
     },
+    // Pill-shaped selector (fully rounded, icon + label in a row), matching the
+    // Finance filter chips: inactive = surface, active = solid primary.
     secondaryOption: {
       flex: 1,
+      flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
       gap: 6,
-      paddingVertical: 16,
-      borderRadius: 16,
+      paddingVertical: 12,
+      paddingHorizontal: 10,
+      borderRadius: 999,
       backgroundColor: c.surface,
       borderWidth: 1,
       borderColor: `${theme.colors.primary}26`,

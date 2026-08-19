@@ -308,7 +308,7 @@ export default function CustomizeHomeScreen() {
                 >
                   <Icon
                     name={option.icon}
-                    size={22}
+                    size={18}
                     color={active ? "#FFFFFF" : "#052d50"}
                   />
                   <Text
