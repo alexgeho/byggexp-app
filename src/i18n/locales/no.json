@@ -923,7 +923,7 @@
   },
   "about": {
     "title": "Om appen",
-    "intro": "Bygg App er en modern løsning for styring av byggeprosjekter og registrering av arbeidstimer på byggeplasser.",
+    "intro": "Bygg App er en moderne løsning for styring av byggeprosjekter og registrering av arbeidstimer på byggeplasser.",
     "featuresTitle": "Med appen kan du",
     "features": [
       "Registrere arbeidstid både manuelt og automatisk med GPS",
@@ -1125,7 +1125,7 @@
     "phone": "Telefon",
     "address": "Adresse",
     "postalCode": "Postnummer",
-    "city": "Sted",
+    "city": "Poststed",
     "saveClient": "Lagre kunde",
     "searchClient": "Søk kunder",
     "noClients": "Ingen kunder ennå",
@@ -1215,8 +1215,8 @@
   },
   "projectEconomy": {
     "hourlyRates": "Timepriser",
-    "costRate": "Selvkost / time (självkostnad)",
-    "billRate": "Faktureres / time (debiteras)",
+    "costRate": "Selvkost / time",
+    "billRate": "Faktureres / time",
     "marginPerHour": "Margin / time",
     "labour": "Arbeid",
     "hoursWorked": "Arbeidede timer",
