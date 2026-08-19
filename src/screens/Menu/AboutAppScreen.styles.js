@@ -1,28 +1,9 @@
 import { StyleSheet } from "react-native";
-import {
-  standardScreenContainer,
-  standardScreenHeader,
-  standardScreenHeaderPlaceholder,
-} from "../../styles/screenLayout";
 
 // Extracted from AboutAppScreen.jsx — themed style factory (c = theme.content).
+// Container + header now come from the shared <Screen> scaffold.
 export const createStyles = (c) =>
   StyleSheet.create({
-    container: {
-      ...standardScreenContainer,
-      backgroundColor: c.background,
-    },
-    header: {
-      ...standardScreenHeader,
-    },
-    headerTitle: {
-      color: c.textPrimary,
-      fontSize: 17,
-      textAlign: "center",
-    },
-    placeholder: {
-      ...standardScreenHeaderPlaceholder,
-    },
     scrollContainer: {
       flex: 1,
       width: "100%",

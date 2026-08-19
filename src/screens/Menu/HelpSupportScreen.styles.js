@@ -1,28 +1,8 @@
 import { StyleSheet } from "react-native";
-import {
-  standardScreenContainer,
-  standardScreenHeader,
-  standardScreenHeaderPlaceholder,
-} from "../../styles/screenLayout";
 
 // Extracted from HelpSupportScreen.jsx.
 export const createStyles = (c) =>
   StyleSheet.create({
-    container: {
-      ...standardScreenContainer,
-      backgroundColor: c.background,
-    },
-    header: {
-      ...standardScreenHeader,
-    },
-    headerTitle: {
-      color: c.textPrimary,
-      fontSize: 17,
-      textAlign: "center",
-    },
-    placeholder: {
-      ...standardScreenHeaderPlaceholder,
-    },
     scrollContainer: {
       flex: 1,
       width: "100%",

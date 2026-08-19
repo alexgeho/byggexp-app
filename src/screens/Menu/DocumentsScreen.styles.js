@@ -1,17 +1,9 @@
 import { StyleSheet } from "react-native";
-import {
-  standardScreenContainer,
-  standardScreenHeader,
-  standardScreenHeaderPlaceholder,
-} from "../../styles/screenLayout";
+import { standardScreenContainer } from "../../styles/screenLayout";
 
 // Extracted from DocumentsScreen.jsx — themed style factory (c = theme.content).
 export const createStyles = (c) =>
   StyleSheet.create({
-    container: {
-      ...standardScreenContainer,
-      backgroundColor: c.background,
-    },
     centeredContainer: {
       ...standardScreenContainer,
       backgroundColor: c.background,
@@ -22,17 +14,6 @@ export const createStyles = (c) =>
       marginTop: 12,
       fontSize: 15,
       color: "#4D6376",
-    },
-    header: {
-      ...standardScreenHeader,
-    },
-    headerTitle: {
-      color: c.textPrimary,
-      fontSize: 17,
-      textAlign: "center",
-    },
-    placeholder: {
-      ...standardScreenHeaderPlaceholder,
     },
     scrollContainer: {
       flex: 1,
