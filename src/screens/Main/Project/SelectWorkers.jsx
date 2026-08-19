@@ -1,6 +1,12 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { FlatList, Text, View, ActivityIndicator, Alert } from "react-native";
 import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
@@ -49,7 +55,7 @@ export const SelectWorkers = () => {
     }
   };
 
-  const toggleWorkerSelection = (workerId) => {
+  const toggleWorkerSelection = useCallback((workerId) => {
     setSelectedWorkers((prev) => {
       if (prev.includes(workerId)) {
         return prev.filter((id) => id !== workerId);
@@ -57,7 +63,23 @@ export const SelectWorkers = () => {
         return [...prev, workerId];
       }
     });
-  };
+  }, []);
+
+  const keyExtractor = useCallback((worker) => worker._id, []);
+
+  const renderWorker = useCallback(
+    ({ item: worker }) => (
+      <PersonListItem
+        person={worker}
+        subtitle={worker.profession || t("employees.noProfession")}
+        statusBadge={getWorkerStatusBadge(worker, projectId, t)}
+        selectable
+        selected={selectedWorkers.includes(worker._id)}
+        onPress={() => toggleWorkerSelection(worker._id)}
+      />
+    ),
+    [selectedWorkers, projectId, t, toggleWorkerSelection],
+  );
 
   const handleSaveWorkers = async () => {
     if (!projectId || selectedWorkers.length === 0) return;
@@ -153,20 +175,12 @@ export const SelectWorkers = () => {
         style={{ width: "100%", flex: 1 }}
         showsVerticalScrollIndicator={false}
         data={workers}
-        keyExtractor={(worker) => worker._id}
+        keyExtractor={keyExtractor}
+        extraData={selectedWorkers}
         ListEmptyComponent={
           <Text style={styles.noWorkersText}>{t("workers.notFound")}</Text>
         }
-        renderItem={({ item: worker }) => (
-          <PersonListItem
-            person={worker}
-            subtitle={worker.profession || t("employees.noProfession")}
-            statusBadge={getWorkerStatusBadge(worker, projectId, t)}
-            selectable
-            selected={selectedWorkers.includes(worker._id)}
-            onPress={() => toggleWorkerSelection(worker._id)}
-          />
-        )}
+        renderItem={renderWorker}
       />
 
       <BottomBar

@@ -196,6 +196,46 @@ export default function EmployeesScreen() {
     }, [loadEmployees, user?.role]),
   );
 
+  // Stable keyExtractor/renderItem so FlatList doesn't re-run every cell when
+  // the screen re-renders without the row data changing (pairs with the
+  // memoized PersonListItem).
+  const keyExtractor = useCallback((employee) => getUserId(employee), []);
+
+  const renderEmployee = useCallback(
+    ({ item: employee }) => {
+      const employeeId = getUserId(employee);
+      const projectLabel = getEmployeeProjectLabel(
+        employee,
+        projectNameById,
+        projects,
+      );
+      const statusKind = getPersonWorkStatus(
+        employee,
+        selectedProjectId,
+        workedTodayIds,
+      );
+
+      return (
+        <PersonListItem
+          person={employee}
+          subtitle={employee.profession || t("employees.noProfession")}
+          meta={projectLabel || t("employees.noProjectAssigned")}
+          statusBadge={statusBadgeFor(statusKind, t, theme.content)}
+          onPress={() => navigation.navigate("Employee", { employeeId })}
+        />
+      );
+    },
+    [
+      projectNameById,
+      projects,
+      selectedProjectId,
+      workedTodayIds,
+      t,
+      theme.content,
+      navigation,
+    ],
+  );
+
   if (!canManageEmployees(user?.role)) {
     return (
       <View style={styles.container}>
@@ -263,7 +303,7 @@ export default function EmployeesScreen() {
       ) : (
         <FlatList
           data={filteredEmployees}
-          keyExtractor={(employee) => getUserId(employee)}
+          keyExtractor={keyExtractor}
           style={styles.scrollContainer}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
@@ -277,29 +317,7 @@ export default function EmployeesScreen() {
               </Text>
             </View>
           }
-          renderItem={({ item: employee }) => {
-            const employeeId = getUserId(employee);
-            const projectLabel = getEmployeeProjectLabel(
-              employee,
-              projectNameById,
-              projects,
-            );
-            const statusKind = getPersonWorkStatus(
-              employee,
-              selectedProjectId,
-              workedTodayIds,
-            );
-
-            return (
-              <PersonListItem
-                person={employee}
-                subtitle={employee.profession || t("employees.noProfession")}
-                meta={projectLabel || t("employees.noProjectAssigned")}
-                statusBadge={statusBadgeFor(statusKind, t, theme.content)}
-                onPress={() => navigation.navigate("Employee", { employeeId })}
-              />
-            );
-          }}
+          renderItem={renderEmployee}
         />
       )}
 
