@@ -9,6 +9,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const localeLoaders = {
   en: () => require("./locales/en.json"),
   sv: () => require("./locales/sv.json"),
+  no: () => require("./locales/no.json"),
 };
 
 export const LANGUAGE_STORAGE_KEY = "app-language";
@@ -18,6 +19,7 @@ export const LANGUAGE_STORAGE_KEY = "app-language";
 export const SUPPORTED_LANGUAGES = [
   { code: "en", label: "English" },
   { code: "sv", label: "Svenska" },
+  { code: "no", label: "Norsk" },
 ];
 
 // Fallback for text and for devices whose language we don't support.
