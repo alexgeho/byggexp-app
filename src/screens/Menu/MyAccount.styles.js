@@ -218,4 +218,10 @@ export const createStyles = (c) =>
       textAlign: "center",
       marginTop: 8,
     },
+    buildInfoText: {
+      color: c.textMuted,
+      fontSize: 11,
+      textAlign: "center",
+      marginTop: 4,
+    },
   });

@@ -16,6 +16,7 @@ import {
   View,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import * as Updates from "expo-updates";
 import Icon from "react-native-vector-icons/Feather";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { Screen } from "../../components/common/Screen/Screen";
@@ -662,6 +663,15 @@ export const MyAccount = () => {
             {t("myAccount.deleteAccountHint")}
           </Text>
         </View>
+
+        <Text style={styles.buildInfoText}>
+          {`Update: ${Updates.updateId || "embedded"}`}
+        </Text>
+        <Text style={styles.buildInfoText}>
+          {`Runtime ${Updates.runtimeVersion || "?"} · ${
+            Updates.channel || "—"
+          }`}
+        </Text>
       </ScrollView>
 
       <BottomBar
