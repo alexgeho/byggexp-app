@@ -32,6 +32,7 @@ import { useTranslation } from "react-i18next";
 import { Screen } from "../../../components/common/Screen/Screen";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { ListCard } from "../../../components/common/ListCard/ListCard";
+import { ToolListCard } from "../../../components/common/ToolListCard/ToolListCard";
 import { ImagePreviewModal } from "../../../components/common/ImagePreviewModal/ImagePreviewModal";
 import {
   Card,
@@ -664,18 +665,7 @@ export const ProjectScreen = () => {
             </View>
           ) : projectTools.length > 0 ? (
             projectTools.map((tool) => (
-              <ListCard
-                key={tool._id || tool.id}
-                title={tool.name || t("common.noName")}
-              >
-                <Text
-                  style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                >
-                  {tool.location || tool.status || t("project.tabs.tools")}
-                </Text>
-              </ListCard>
+              <ToolListCard key={tool._id || tool.id} tool={tool} />
             ))
           ) : (
             <View style={styles.emptyState}>

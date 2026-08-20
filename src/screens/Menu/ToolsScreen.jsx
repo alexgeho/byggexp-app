@@ -3,66 +3,30 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
-  Image,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
-import Icon from "react-native-vector-icons/Feather";
 import AuthContext from "../../contexts/AuthContext";
 import { useTheme } from "../../theme/ThemeContext";
 import { projectService, toolService } from "../../services";
-import { API_BASE_URL } from "../../services/api";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
-import { ListCard } from "../../components/common/ListCard/ListCard";
+import {
+  ToolListCard,
+  getEffectiveToolStatus,
+} from "../../components/common/ToolListCard/ToolListCard";
 import { ProjectFilterSelector } from "../../components/common/ProjectFilterSelector/ProjectFilterSelector";
 import { createStyles } from "./ToolsScreen.styles";
-import { cardStyles } from "../../styles/cards";
 import { canManageTools } from "../../utils/userRoles";
 import { getEntityId } from "../../utils/entityId";
-import {
-  TOOL_STATUS_OPTIONS,
-  getToolStatusMeta,
-} from "../../constants/toolStatus";
-
-const TOOL_STATUS_BADGE_STYLES = {
-  available: cardStyles.cardBadgeAvailable,
-  broken: cardStyles.cardBadgeBroken,
-  in_repair: cardStyles.cardBadgeInRepair,
-  occupied: cardStyles.cardBadgeOccupied,
-};
-
-// Maintenance states (broken / in repair) are set manually and take priority.
-// Otherwise a tool that has an assigned worker or a current holder counts as
-// occupied ("in use"), and everything else is available.
-const getEffectiveToolStatus = (tool) => {
-  if (tool?.status === "broken" || tool?.status === "in_repair") {
-    return tool.status;
-  }
-  const inUse =
-    (Array.isArray(tool?.workerIds) && tool.workerIds.length > 0) ||
-    Boolean(tool?.currentHolderId);
-  return inUse ? "occupied" : "available";
-};
+import { TOOL_STATUS_OPTIONS } from "../../constants/toolStatus";
 
 const getRefId = (ref) => {
   const id = typeof ref === "string" ? ref : ref?._id || ref?.id;
   return id ? String(id) : "";
-};
-
-const resolvePhotoUrl = (value) => {
-  if (!value) {
-    return null;
-  }
-
-  if (value.startsWith("http://") || value.startsWith("https://")) {
-    return value;
-  }
-
-  return `${API_BASE_URL}${value.startsWith("/") ? value : `/${value}`}`;
 };
 
 export default function ToolsScreen() {
@@ -163,8 +127,6 @@ export default function ToolsScreen() {
     ]);
   };
 
-  const themedAccentTextStyle = { color: theme.colors.primary };
-
   return (
     <View style={styles.screen}>
       <View style={styles.pageContainer}>
@@ -220,56 +182,14 @@ export default function ToolsScreen() {
                 </Text>
               </View>
             }
-            renderItem={({ item: tool }) => {
-              const photoUrl = resolvePhotoUrl(tool.photoUrl);
-              const statusMeta = getToolStatusMeta(
-                getEffectiveToolStatus(tool),
-              );
-
-              return (
-                <ListCard
-                  title={tool.name}
-                  onPress={
-                    canEditStatus ? () => handleChangeStatus(tool) : undefined
-                  }
-                  badgeLabel={t(
-                    `tools.status.${statusMeta.value}`,
-                    statusMeta.label,
-                  )}
-                  badgeStyle={TOOL_STATUS_BADGE_STYLES[statusMeta.tone]}
-                  leading={
-                    photoUrl ? (
-                      <Image
-                        source={{ uri: photoUrl }}
-                        style={styles.toolPhoto}
-                      />
-                    ) : (
-                      <View style={styles.toolPhotoPlaceholder}>
-                        <Icon
-                          name="tool"
-                          size={14}
-                          color="rgba(5, 45, 80, 0.35)"
-                        />
-                      </View>
-                    )
-                  }
-                >
-                  <Text
-                    style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    {tool.notes || t("tools.noNotes")}
-                  </Text>
-                  <Text style={cardStyles.cardSecondaryText}>
-                    {t("tools.countSummary", {
-                      workers: tool.workerIds?.length || 0,
-                      projects: tool.projectIds?.length || 0,
-                    })}
-                  </Text>
-                </ListCard>
-              );
-            }}
+            renderItem={({ item: tool }) => (
+              <ToolListCard
+                tool={tool}
+                onPress={
+                  canEditStatus ? () => handleChangeStatus(tool) : undefined
+                }
+              />
+            )}
           />
         )}
 
