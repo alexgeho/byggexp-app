@@ -9,7 +9,6 @@ import {
   Alert,
   Image,
   Linking,
-  Platform,
   ScrollView,
   Text,
   TextInput,
@@ -17,7 +16,6 @@ import {
   View,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import * as Device from "expo-device";
 import * as Updates from "expo-updates";
 import Icon from "react-native-vector-icons/Feather";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
@@ -666,11 +664,6 @@ export const MyAccount = () => {
           </Text>
         </View>
 
-        <Text style={styles.buildInfoText}>
-          {`${Device.modelName || "Unknown device"} — ${
-            Platform.OS === "ios" ? "iOS" : "Android"
-          } ${Platform.Version}`}
-        </Text>
         <Text style={styles.buildInfoText}>
           {`Update: ${Updates.updateId || "embedded"}`}
         </Text>
