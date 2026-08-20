@@ -3,6 +3,14 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   timer: {
     alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+  },
+
+  row: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "center",
   },
 
   timerText: {
