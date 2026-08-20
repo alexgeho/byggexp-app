@@ -58,6 +58,10 @@ export const createStyles = (c) =>
     ecoCardPad: {
       marginBottom: 16,
     },
+    // Left-align the section headers with the card's rows (drop the default indent).
+    ecoSectionTitle: {
+      marginLeft: 0,
+    },
     ecoRateRow: {
       flexDirection: "row",
       gap: 12,

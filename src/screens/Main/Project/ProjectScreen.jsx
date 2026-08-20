@@ -709,7 +709,9 @@ export const ProjectScreen = () => {
             <View>
               {/* Hourly rates (editable) */}
               <Card style={styles.ecoCardPad}>
-                <SectionTitle>{t("projectEconomy.hourlyRates")}</SectionTitle>
+                <SectionTitle style={styles.ecoSectionTitle}>
+                  {t("projectEconomy.hourlyRates")}
+                </SectionTitle>
                 <View style={styles.ecoRateRow}>
                   <FieldInput
                     half
@@ -749,7 +751,9 @@ export const ProjectScreen = () => {
 
               {/* Labour */}
               <Card style={styles.ecoCardPad}>
-                <SectionTitle>{t("projectEconomy.labour")}</SectionTitle>
+                <SectionTitle style={styles.ecoSectionTitle}>
+                  {t("projectEconomy.labour")}
+                </SectionTitle>
                 <KeyValueRow
                   label={t("projectEconomy.hoursWorked")}
                   value={`${economy.hoursWorked} h`}
@@ -768,11 +772,9 @@ export const ProjectScreen = () => {
 
               {/* Cost breakdown */}
               <Card style={styles.ecoCardPad}>
-                <SectionTitle>{t("projectEconomy.costs")}</SectionTitle>
-                <KeyValueRow
-                  label={t("projectEconomy.materials")}
-                  value={formatMoney(economy.materials)}
-                />
+                <SectionTitle style={styles.ecoSectionTitle}>
+                  {t("projectEconomy.costs")}
+                </SectionTitle>
                 <KeyValueRow
                   label={t("projectEconomy.supplierInvoices")}
                   value={formatMoney(economy.supplier)}
@@ -794,7 +796,9 @@ export const ProjectScreen = () => {
 
               {/* Result */}
               <Card style={styles.ecoCardPad}>
-                <SectionTitle>{t("projectEconomy.result")}</SectionTitle>
+                <SectionTitle style={styles.ecoSectionTitle}>
+                  {t("projectEconomy.result")}
+                </SectionTitle>
                 <KeyValueRow
                   label={t("projectEconomy.invoiced")}
                   value={formatMoney(economy.invoiced)}
