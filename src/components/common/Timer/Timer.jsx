@@ -11,6 +11,8 @@ import { styles } from "./Timer.styles";
 // the design's spacing without the colon glyph).
 const GROUP_GAP_RATIO = 0.18;
 
+const DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+
 export function Timer({
   hours,
   minutes,
@@ -20,22 +22,28 @@ export function Timer({
   secondsStyle,
 }) {
   const [containerWidth, setContainerWidth] = useState(0);
-  // Width of the widest 2-digit group ("00") measured at the max font size.
-  const [groupWidth, setGroupWidth] = useState(0);
+  // Rendered width of every digit at the max font size. A group cell is sized
+  // to the widest digit so any two-digit value fits — the custom font's "0" is
+  // NOT the widest glyph, so sizing cells to "00" clipped values like "58".
+  const [digitWidths, setDigitWidths] = useState({});
 
   // The design font size (140 by default, or whatever the caller overrides via
   // textStyle — e.g. the compact home layout). Everything scales relative to it.
   const flat = StyleSheet.flatten([styles.timerText, textStyle]) || {};
   const maxFontSize = flat.fontSize || 140;
 
-  // Each group sits in a fixed-width cell (as wide as "00"), so the layout is
-  // identical no matter which digits show — the clock never resizes or shifts
-  // as it ticks. The font size is derived once from the container width so the
-  // whole row fits; it depends only on fixed measurements, not on the current
-  // time, so it stays constant every second. (The old adjustsFontSizeToFit
-  // re-fit each tick and jumped because the custom font's digits differ in
-  // width and it doesn't honour tabular-nums.)
-  const groupRatio = groupWidth > 0 ? groupWidth / maxFontSize : 1.2;
+  const measured = DIGITS.every((d) => digitWidths[d] > 0);
+  const maxDigitWidth = measured
+    ? Math.max(...DIGITS.map((d) => digitWidths[d]))
+    : 0;
+
+  // Each group sits in a fixed-width cell wide enough for the two widest digits,
+  // so the layout is identical no matter which digits show — the clock never
+  // resizes or shifts as it ticks. The font size is derived once from the
+  // container width so the whole row fits; it depends only on fixed
+  // measurements, not on the current time, so it stays constant every second.
+  const groupRatio =
+    maxDigitWidth > 0 ? (2 * maxDigitWidth) / maxFontSize : 1.2;
   const widthUnits = 3 * groupRatio + 2 * GROUP_GAP_RATIO;
   const fontSize =
     containerWidth > 0
@@ -59,14 +67,25 @@ export function Timer({
       style={[styles.timer, containerStyle]}
       onLayout={(event) => setContainerWidth(event.nativeEvent.layout.width)}
     >
-      {/* Invisible probe: measures the widest group at the max size once. */}
-      <Text
-        style={[styles.timerText, textStyle, styles.measure]}
-        numberOfLines={1}
-        onLayout={(event) => setGroupWidth(event.nativeEvent.layout.width)}
-      >
-        00
-      </Text>
+      {/* Invisible probes: measure each digit's width at the max size once. */}
+      <View style={styles.measure} pointerEvents="none">
+        {DIGITS.map((d) => (
+          <Text
+            key={d}
+            style={[styles.timerText, textStyle]}
+            numberOfLines={1}
+            onLayout={(event) =>
+              setDigitWidths((prev) =>
+                prev[d] === event.nativeEvent.layout.width
+                  ? prev
+                  : { ...prev, [d]: event.nativeEvent.layout.width },
+              )
+            }
+          >
+            {d}
+          </Text>
+        ))}
+      </View>
 
       <View style={styles.row}>
         <Text style={[styles.timerText, textStyle, cell]} numberOfLines={1}>
