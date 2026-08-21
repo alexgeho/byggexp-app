@@ -13,6 +13,12 @@ export const styles = StyleSheet.create({
     opacity: 0,
   },
 
+  row: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "center",
+  },
+
   timerText: {
     fontSize: 140,
     lineHeight: 132,
