@@ -3,6 +3,14 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   timer: {
     alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+  },
+
+  // Probe text used only for measuring; kept out of flow and invisible.
+  measure: {
+    position: "absolute",
+    opacity: 0,
   },
 
   timerText: {
