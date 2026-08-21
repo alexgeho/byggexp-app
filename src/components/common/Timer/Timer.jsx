@@ -6,10 +6,7 @@ import { styles } from "./Timer.styles";
 
 // Gap between the HH / MM / SS groups, as a fraction of the font size. Both
 // gaps use this exact value, so the three groups are always evenly spaced.
-// Figma separates the groups with a colon: the empty space either side of it
-// is ~0.09em, so the colon-less gap that reads the same is ~0.18em (matching
-// the design's spacing without the colon glyph).
-const GROUP_GAP_RATIO = 0.18;
+const GROUP_GAP_RATIO = 0.3;
 
 const DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
