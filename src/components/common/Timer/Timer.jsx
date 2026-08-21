@@ -65,7 +65,10 @@ export function Timer({
   return (
     <View
       style={[styles.timer, containerStyle]}
-      onLayout={(event) => setContainerWidth(event.nativeEvent.layout.width)}
+      onLayout={(event) => {
+        const w = event.nativeEvent.layout.width;
+        setContainerWidth((prev) => (Math.abs(prev - w) < 0.5 ? prev : w));
+      }}
     >
       {/* Invisible probes: measure each digit's width at the max size once. */}
       <View style={styles.measure} pointerEvents="none">
@@ -74,13 +77,15 @@ export function Timer({
             key={d}
             style={[styles.timerText, textStyle]}
             numberOfLines={1}
-            onLayout={(event) =>
+            onLayout={(event) => {
+              const w = event.nativeEvent.layout.width;
+              // Measure each digit exactly once. Never updating an
+              // already-measured digit avoids a re-render loop from onLayout's
+              // sub-pixel jitter ("Maximum update depth exceeded").
               setDigitWidths((prev) =>
-                prev[d] === event.nativeEvent.layout.width
-                  ? prev
-                  : { ...prev, [d]: event.nativeEvent.layout.width },
-              )
-            }
+                prev[d] != null || !w ? prev : { ...prev, [d]: w },
+              );
+            }}
           >
             {d}
           </Text>
