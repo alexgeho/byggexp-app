@@ -336,7 +336,9 @@ export default function CustomizeHomeScreen({
                   <Icon
                     name={option.icon}
                     size={18}
-                    color={active ? "#FFFFFF" : "#052d50"}
+                    // Inactive icon: white on the dark theme so it doesn't
+                    // vanish into the dark pill (navy on the light themes).
+                    color={active ? "#FFFFFF" : chevronActiveColor}
                   />
                   <Text
                     style={[
