@@ -63,6 +63,14 @@ export default function CustomizeHomeScreen({
 
   const styles = useMemo(() => createStyles(theme), [theme]);
 
+  // Reorder chevrons: white on the dark (black) theme so they don't vanish
+  // against the dark drawer; the original navy on the light themes.
+  const isDarkScheme = theme?.content?.scheme === "dark";
+  const chevronActiveColor = isDarkScheme ? "#FFFFFF" : "#052d50";
+  const chevronDisabledColor = isDarkScheme
+    ? "rgba(255,255,255,0.3)"
+    : "#c2ccd6";
+
   const [enabledButtons, setEnabledButtons] = useState(defaultEnabledButtons);
 
   const [enabledSections, setEnabledSections] = useState(
@@ -397,7 +405,9 @@ export default function CustomizeHomeScreen({
                       <Icon
                         name="chevron-up"
                         size={28}
-                        color={isFirst ? "#c2ccd6" : "#052d50"}
+                        color={
+                          isFirst ? chevronDisabledColor : chevronActiveColor
+                        }
                       />
                     </TouchableOpacity>
 
@@ -412,7 +422,9 @@ export default function CustomizeHomeScreen({
                       <Icon
                         name="chevron-down"
                         size={28}
-                        color={isLast ? "#c2ccd6" : "#052d50"}
+                        color={
+                          isLast ? chevronDisabledColor : chevronActiveColor
+                        }
                       />
                     </TouchableOpacity>
                   </View>
@@ -482,7 +494,9 @@ export default function CustomizeHomeScreen({
                       <Icon
                         name="chevron-up"
                         size={28}
-                        color={isFirst ? "#c2ccd6" : "#052d50"}
+                        color={
+                          isFirst ? chevronDisabledColor : chevronActiveColor
+                        }
                       />
                     </TouchableOpacity>
 
@@ -497,7 +511,9 @@ export default function CustomizeHomeScreen({
                       <Icon
                         name="chevron-down"
                         size={28}
-                        color={isLast ? "#c2ccd6" : "#052d50"}
+                        color={
+                          isLast ? chevronDisabledColor : chevronActiveColor
+                        }
                       />
                     </TouchableOpacity>
                   </View>

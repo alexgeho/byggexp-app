@@ -195,6 +195,14 @@ export function createStyles({
       borderTopRightRadius: 24,
       borderBottomRightRadius: 24,
       overflow: "hidden",
+      // Visible edge between the drawer and the home behind it. The black drop
+      // shadow disappears on the dark (black) theme, so add a hairline right
+      // border — light on dark themes, dark on light themes.
+      borderRightWidth: 1,
+      borderRightColor:
+        theme?.content?.scheme === "dark"
+          ? "rgba(255,255,255,0.18)"
+          : "rgba(0,0,0,0.12)",
       shadowColor: "#000",
       shadowOffset: { width: 4, height: 0 },
       shadowOpacity: 0.25,
