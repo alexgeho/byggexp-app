@@ -6,7 +6,9 @@ import { styles } from "./Timer.styles";
 
 // Gap between the HH / MM / SS groups, as a fraction of the font size. Both
 // gaps use this exact value, so the three groups are always evenly spaced.
-const GROUP_GAP_RATIO = 0.3;
+// Measured from the current Figma frame (iPhone 14 & 15 Pro): the space
+// between groups is 28px at the 140px design size = 0.20em.
+const GROUP_GAP_RATIO = 0.2;
 
 const DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
