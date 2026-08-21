@@ -141,7 +141,12 @@ export function createStyles(theme) {
       height: 24,
       borderRadius: 7,
       borderWidth: 1.5,
-      borderColor: `${theme.colors.primary}33`,
+      // The faint primary-tinted border vanishes on the dark (black) theme, so
+      // use a visible white border there (matching the reorder chevrons).
+      borderColor:
+        theme?.content?.scheme === "dark"
+          ? "rgba(255,255,255,0.6)"
+          : `${theme.colors.primary}33`,
       backgroundColor: c.surface,
 
       alignItems: "center",
