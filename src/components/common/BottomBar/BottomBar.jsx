@@ -15,6 +15,7 @@ import { useNavigationState } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 
 import { useTheme } from "../../../theme/ThemeContext";
+import { hexToRgba } from "../../../theme/colorUtils";
 
 import { createStyles } from "./BottomBar.styles";
 import { FooterHomeIcon, FooterMenuIcon } from "./BottomBarIcons";
@@ -74,6 +75,11 @@ export function BottomBar({
   // content scheme. The home screen passes this for its dark-appearance themes
   // (blue/black) so the nav icons read white, matching the card icons.
   darkOverride,
+  // Explicit tint for the nav icons, independent of the pill's light/dark look.
+  // The home screen passes the same colour it uses for its card icons so the
+  // nav icons match them (e.g. white over the blue gradient, while the pill
+  // stays a light frosted glass). Inactive icons use it at reduced opacity.
+  iconColor,
 }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -124,9 +130,13 @@ export function BottomBar({
   const fillColor = isTransparent ? "transparent" : dark ? darkFill : lightFill;
   // Icons/text: keep the original (untinted) navy look in light themes; in dark
   // tint the icons light so they read on the dark pill.
-  const activeIconColor = dark ? "#FFFFFF" : ACTIVE_ICON_COLOR;
-  const iconColorFor = (isActive) =>
-    dark ? (isActive ? "#FFFFFF" : "rgba(255,255,255,0.55)") : undefined;
+  const activeIconColor = iconColor ?? (dark ? "#FFFFFF" : ACTIVE_ICON_COLOR);
+  const iconColorFor = (isActive) => {
+    if (iconColor) {
+      return isActive ? iconColor : hexToRgba(iconColor, 0.55);
+    }
+    return dark ? (isActive ? "#FFFFFF" : "rgba(255,255,255,0.55)") : undefined;
+  };
   const pillGlass = dark ? PILL_GLASS.dark : PILL_GLASS.light;
   const wrapperStyle = [
     styles.menuWrapper,

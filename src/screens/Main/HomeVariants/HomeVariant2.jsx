@@ -949,9 +949,13 @@ export default function HomeVariant2() {
       >
         <BottomBar
           glass
-          // Only the black theme gets the dark pill + white nav icons. The blue
-          // theme keeps its original light frosted pill (navy icons).
+          // Only the black theme gets the dark pill. The blue theme keeps its
+          // light frosted pill.
           darkOverride={themeName === "black"}
+          // Tint the nav icons to match the home card icons: white over the
+          // blue/black dark-appearance backgrounds, the theme text colour over
+          // the light-blue themes.
+          iconColor={isLightBlueTheme ? theme.colors.text : "#FFFFFF"}
           onLeftPress={() => navigation.navigate("Main")}
           onRightPress={() => navigation.navigate("Menu")}
           showAddButton={false}
