@@ -4,9 +4,10 @@ import { View, Text, StyleSheet } from "react-native";
 
 import { styles } from "./Timer.styles";
 
-// Gap between the HH / MM / SS groups, as a fraction of the font size. Both
-// gaps use this exact value, so the three groups are always evenly spaced.
-const GROUP_GAP_RATIO = 0.3;
+// Empty gap around each glyph, as a fraction of the font size. Figma spaces
+// every symbol (digit-digit and digit-colon) by ~0.08em, so groups are held
+// apart by the colon glyph rather than by a big empty gap.
+const GROUP_GAP_RATIO = 0.08;
 
 const DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
@@ -41,7 +42,10 @@ export function Timer({
   // measurements, not on the current time, so it stays constant every second.
   const groupRatio =
     maxDigitWidth > 0 ? (2 * maxDigitWidth) / maxFontSize : 1.2;
-  const widthUnits = 3 * groupRatio + 2 * GROUP_GAP_RATIO;
+  // Layout: 3 digit groups + 2 colons + 4 gaps (one each side of each colon).
+  // COLON_RATIO slightly over-estimates the colon width so the row always fits.
+  const COLON_RATIO = 0.16;
+  const widthUnits = 3 * groupRatio + 2 * COLON_RATIO + 4 * GROUP_GAP_RATIO;
   const fontSize =
     containerWidth > 0
       ? Math.min(maxFontSize, containerWidth / widthUnits)
@@ -58,6 +62,8 @@ export function Timer({
     width: cellWidth,
     textAlign: "center",
   };
+  // Colon separator: same size, natural (content) width.
+  const colon = { fontSize, lineHeight: fontSize };
 
   return (
     <View
@@ -94,8 +100,16 @@ export function Timer({
           {hours}
         </Text>
         <View style={{ width: gapWidth }} />
+        <Text style={[styles.timerText, textStyle, colon]} numberOfLines={1}>
+          :
+        </Text>
+        <View style={{ width: gapWidth }} />
         <Text style={[styles.timerText, textStyle, cell]} numberOfLines={1}>
           {minutes}
+        </Text>
+        <View style={{ width: gapWidth }} />
+        <Text style={[styles.timerText, textStyle, colon]} numberOfLines={1}>
+          :
         </Text>
         <View style={{ width: gapWidth }} />
         <Text
