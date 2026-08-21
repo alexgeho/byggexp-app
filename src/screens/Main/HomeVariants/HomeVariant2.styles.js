@@ -12,7 +12,6 @@ export function createStyles({
   const topPadding = veryCompact ? 34 : compact ? 44 : 60;
   const horizontalPadding = compact ? 16 : 20;
   const sectionGap = veryCompact ? 14 : compact ? 18 : 24;
-  const timerBottomCompensation = veryCompact ? 8 : compact ? 12 : 16;
   const textColor = theme?.colors?.text || "#FFFFFF";
 
   return StyleSheet.create({
@@ -66,8 +65,11 @@ export function createStyles({
       flex: 1,
       justifyContent: "space-between",
     },
+    // Equal to actionsToQuickActionsSpacer: the clock now hugs its digits
+    // (no phantom line-height padding), so the gap above the buttons matches
+    // the gap below them without any compensation.
     timerToActionsSpacer: {
-      height: Math.max(sectionGap - timerBottomCompensation, 0),
+      height: sectionGap,
     },
     actionsToQuickActionsSpacer: {
       height: sectionGap,
