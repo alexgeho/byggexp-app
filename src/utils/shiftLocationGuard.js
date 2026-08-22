@@ -7,8 +7,10 @@ import { shiftLocationPolicy } from "../config/shiftLocationPolicy";
 import {
   findExistingShiftForProject,
   isShiftAlreadyExistsError,
+  isShiftNotPausedError,
   reportUnrecoverableShiftConflict,
 } from "./shiftConflict";
+import { runExclusive } from "./shiftTransitionQueue";
 import {
   getShiftScheduleWindow,
   getStartWindowErrorMessage,
@@ -300,7 +302,9 @@ export const startShiftWithLocationGuard = async ({
   });
 
   try {
-    return await shiftService.start(projectId);
+    // Serialized with the automatic transitions so a manual Play cannot
+    // interleave with a geofence enter/exit that is already in flight.
+    return await runExclusive(() => shiftService.start(projectId));
   } catch (error) {
     if (!isShiftAlreadyExistsError(error)) {
       throw error;
@@ -340,5 +344,24 @@ export const resumeShiftWithGuards = async ({
     skipLocationCheck,
   });
 
-  return shiftService.resume(shiftId);
+  try {
+    return await runExclusive(() => shiftService.resume(shiftId));
+  } catch (error) {
+    if (!isShiftNotPausedError(error)) {
+      throw error;
+    }
+
+    // The shift stopped being paused between the screen reading its state and
+    // this call — the geofence monitor resumes a shift on its own as soon as
+    // the worker is back inside the area. Pressing Play wanted it running, and
+    // it is, so reconcile with the server instead of reporting a state error.
+    const projectId = project?._id || project?.id;
+    const currentShift = await findExistingShiftForProject(projectId);
+
+    if (currentShift?.status === "active") {
+      return currentShift;
+    }
+
+    throw error;
+  }
 };

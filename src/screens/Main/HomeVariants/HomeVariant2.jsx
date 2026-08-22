@@ -51,6 +51,7 @@ import {
 } from "../../../utils/shiftLocationGuard";
 import { createShiftGeofenceHandlers } from "../../../utils/shiftGeofenceHandlers";
 import { handleProjectSwitch } from "../../../tasks/shiftAutoTransition";
+import { runExclusive } from "../../../utils/shiftTransitionQueue";
 
 import { createStyles } from "./HomeVariant2.styles";
 
@@ -661,7 +662,11 @@ export default function HomeVariant2() {
           throw new Error("Active shift is missing.");
         }
 
-        const pausedShift = await shiftService.pause(currentShift.id);
+        // Serialized with the automatic transitions so a manual Pause cannot
+        // interleave with a geofence enter/exit that is already in flight.
+        const pausedShift = await runExclusive(() =>
+          shiftService.pause(currentShift.id),
+        );
 
         setCurrentShift(pausedShift);
         pause(pausedShift);

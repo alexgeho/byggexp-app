@@ -18,6 +18,22 @@ export const isShiftAlreadyExistsError = (error) => {
   return /already exists/i.test(message) || /resume it instead/i.test(message);
 };
 
+// `POST /shifts/:id/resume` is rejected when the shift is no longer paused —
+// typically because the geofence monitor already resumed it a moment earlier.
+// Recognising it lets the app reconcile instead of showing a state error the
+// user can do nothing about.
+export const isShiftNotPausedError = (error) => {
+  const message = String(
+    error?.response?.data?.message || error?.message || "",
+  );
+
+  return (
+    /only.*paused/i.test(message) ||
+    /paused.*can be resumed/i.test(message) ||
+    /not paused/i.test(message)
+  );
+};
+
 const getShiftId = (shift) => shift?.id || shift?._id || null;
 
 // Locate the shift the backend refused to duplicate.
