@@ -7,6 +7,7 @@ import { shiftLocationPolicy } from "../config/shiftLocationPolicy";
 import {
   findExistingShiftForProject,
   isShiftAlreadyExistsError,
+  isShiftNotActiveError,
   isShiftNotPausedError,
   reportUnrecoverableShiftConflict,
 } from "./shiftConflict";
@@ -301,32 +302,35 @@ export const startShiftWithLocationGuard = async ({
     skipLocationCheck,
   });
 
-  try {
-    // Serialized with the automatic transitions so a manual Play cannot
-    // interleave with a geofence enter/exit that is already in flight.
-    return await runExclusive(() => shiftService.start(projectId));
-  } catch (error) {
-    if (!isShiftAlreadyExistsError(error)) {
-      throw error;
+  // The start and its conflict recovery run as one queued operation, so an
+  // automatic transition cannot slip between them and leave the recovery acting
+  // on a shift state it never observed.
+  return runExclusive(async () => {
+    try {
+      return await shiftService.start(projectId);
+    } catch (error) {
+      if (!isShiftAlreadyExistsError(error)) {
+        throw error;
+      }
+
+      // Today's shift for this project already exists. The location and
+      // schedule checks above have already passed, so resume it instead of
+      // showing the backend's "Resume it instead" message as an error.
+      const existingShift = await findExistingShiftForProject(projectId);
+      const existingShiftId = existingShift?.id || existingShift?._id;
+
+      if (!existingShiftId) {
+        reportUnrecoverableShiftConflict(projectId, error);
+        throw error;
+      }
+
+      if (existingShift.status === "active") {
+        return existingShift;
+      }
+
+      return shiftService.resume(existingShiftId);
     }
-
-    // Today's shift for this project already exists. The location and schedule
-    // checks above have already passed, so resume it instead of showing the
-    // backend's "Resume it instead" message as an error.
-    const existingShift = await findExistingShiftForProject(projectId);
-    const existingShiftId = existingShift?.id || existingShift?._id;
-
-    if (!existingShiftId) {
-      reportUnrecoverableShiftConflict(projectId, error);
-      throw error;
-    }
-
-    if (existingShift.status === "active") {
-      return existingShift;
-    }
-
-    return shiftService.resume(existingShiftId);
-  }
+  });
 };
 
 export const resumeShiftWithGuards = async ({
@@ -344,24 +348,66 @@ export const resumeShiftWithGuards = async ({
     skipLocationCheck,
   });
 
-  try {
-    return await runExclusive(() => shiftService.resume(shiftId));
-  } catch (error) {
-    if (!isShiftNotPausedError(error)) {
+  return runExclusive(async () => {
+    try {
+      return await shiftService.resume(shiftId);
+    } catch (error) {
+      if (!isShiftNotPausedError(error)) {
+        throw error;
+      }
+
+      // The shift stopped being paused between the screen reading its state
+      // and this call — the geofence monitor resumes a shift on its own as soon
+      // as the worker is back inside the area. Pressing Play wanted it running,
+      // and it is, so reconcile with the server instead of reporting a state
+      // error the worker can do nothing about.
+      const currentShift = await findExistingShiftForProject(
+        project?._id || project?.id,
+      );
+
+      if (currentShift?.status === "active") {
+        return currentShift;
+      }
+
       throw error;
     }
+  });
+};
 
-    // The shift stopped being paused between the screen reading its state and
-    // this call — the geofence monitor resumes a shift on its own as soon as
-    // the worker is back inside the area. Pressing Play wanted it running, and
-    // it is, so reconcile with the server instead of reporting a state error.
-    const projectId = project?._id || project?.id;
-    const currentShift = await findExistingShiftForProject(projectId);
-
-    if (currentShift?.status === "active") {
-      return currentShift;
-    }
-
-    throw error;
+// Manual Pause, serialized and reconciled the same way as Play. The geofence
+// monitor pauses a shift on its own when the worker leaves the area, so a tap
+// that started from a "running" screen can reach the backend after the shift is
+// already paused.
+export const pauseShiftSerialized = ({ shiftId, projectId }) => {
+  if (!shiftId) {
+    throw new Error("Shift is required to pause.");
   }
+
+  return runExclusive(async () => {
+    try {
+      return await shiftService.pause(shiftId);
+    } catch (error) {
+      if (!isShiftNotActiveError(error)) {
+        throw error;
+      }
+
+      const currentShift = await findExistingShiftForProject(projectId);
+
+      if (currentShift?.status === "paused") {
+        return currentShift;
+      }
+
+      throw error;
+    }
+  });
+};
+
+// Completing a shift outside the queue could overlap a geofence pause that is
+// still in flight, so manual stops go through the same slot.
+export const completeShiftSerialized = (shiftId, payload) => {
+  if (!shiftId) {
+    throw new Error("Shift is required to complete.");
+  }
+
+  return runExclusive(() => shiftService.complete(shiftId, payload));
 };

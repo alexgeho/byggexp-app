@@ -46,12 +46,13 @@ import shiftService from "../../../services/shift.service";
 import { projectService } from "../../../services";
 import {
   assertShiftStartAllowed,
+  completeShiftSerialized,
+  pauseShiftSerialized,
   resumeShiftWithGuards,
   startShiftWithLocationGuard,
 } from "../../../utils/shiftLocationGuard";
 import { createShiftGeofenceHandlers } from "../../../utils/shiftGeofenceHandlers";
 import { handleProjectSwitch } from "../../../tasks/shiftAutoTransition";
-import { runExclusive } from "../../../utils/shiftTransitionQueue";
 
 import { createStyles } from "./HomeVariant2.styles";
 
@@ -565,7 +566,7 @@ export default function HomeVariant2() {
         const activeShift = currentShiftRef.current;
         if (activeShift?.id && activeShift.status === "active") {
           try {
-            await shiftService.complete(activeShift.id);
+            await completeShiftSerialized(activeShift.id);
           } catch (stopError) {
             console.error(
               "Failed to stop running shift before logging hours:",
@@ -623,7 +624,7 @@ export default function HomeVariant2() {
     const activeShift = currentShiftRef.current;
     if (activeShift?.id && activeShift.status === "active") {
       try {
-        await shiftService.complete(activeShift.id);
+        await completeShiftSerialized(activeShift.id);
       } catch (error) {
         console.error("Failed to stop running shift on manual edit:", error);
       }
@@ -662,11 +663,10 @@ export default function HomeVariant2() {
           throw new Error("Active shift is missing.");
         }
 
-        // Serialized with the automatic transitions so a manual Pause cannot
-        // interleave with a geofence enter/exit that is already in flight.
-        const pausedShift = await runExclusive(() =>
-          shiftService.pause(currentShift.id),
-        );
+        const pausedShift = await pauseShiftSerialized({
+          shiftId: currentShift.id,
+          projectId: currentShift.projectId || selectedProjectId,
+        });
 
         setCurrentShift(pausedShift);
         pause(pausedShift);

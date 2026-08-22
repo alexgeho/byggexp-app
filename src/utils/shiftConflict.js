@@ -34,6 +34,20 @@ export const isShiftNotPausedError = (error) => {
   );
 };
 
+// Mirror of isShiftNotPausedError for the opposite transition: pausing a shift
+// the geofence monitor already paused when the worker left the area.
+export const isShiftNotActiveError = (error) => {
+  const message = String(
+    error?.response?.data?.message || error?.message || "",
+  );
+
+  return (
+    /only.*active/i.test(message) ||
+    /active.*can be paused/i.test(message) ||
+    /not active/i.test(message)
+  );
+};
+
 const getShiftId = (shift) => shift?.id || shift?._id || null;
 
 // Locate the shift the backend refused to duplicate.
