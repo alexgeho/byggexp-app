@@ -24,6 +24,17 @@ import {
 const MONITORED_SHIFT_STATUSES = new Set(["active", "paused"]);
 
 const getProjectId = (project) => project?._id || project?.id;
+
+// Identifies the area a project currently resolves to. Any change to it means
+// the registered geofence is stale and has to be re-registered.
+const getGeofenceSignature = (project, fallbackProjectLocation) =>
+  [
+    getProjectId(project) || "",
+    project?.locationLatitude ?? "",
+    project?.locationLongitude ?? "",
+    project?.locationRadiusMeters ?? "",
+    project?.location ?? fallbackProjectLocation ?? "",
+  ].join("|");
 const getShiftId = (shift) => shift?.id || shift?._id;
 
 export default function ShiftLocationMonitor() {
@@ -39,7 +50,7 @@ export default function ShiftLocationMonitor() {
   // the app is closed, so the foreground timer must NOT also fire (that would
   // double check-in/out). These refs track what we've registered with the OS.
   const backgroundActiveRef = useRef(false);
-  const geofencedProjectIdRef = useRef(null);
+  const geofenceSignatureRef = useRef(null);
 
   useEffect(() => {
     selectedProjectRef.current = selectedProject;
@@ -58,14 +69,17 @@ export default function ShiftLocationMonitor() {
 
       if (!(await hasLocationTaskPermission())) {
         backgroundActiveRef.current = false;
-        geofencedProjectIdRef.current = null;
+        geofenceSignatureRef.current = null;
         return false;
       }
 
-      const projectId = getProjectId(project) || null;
+      // Keyed on the area, not just the project: editing a project's address,
+      // coordinates or radius moves its geofence, and skipping the refresh on
+      // a matching id alone left the monitor watching the previous location.
+      const signature = getGeofenceSignature(project, fallbackProjectLocation);
       if (
         backgroundActiveRef.current &&
-        geofencedProjectIdRef.current === projectId
+        geofenceSignatureRef.current === signature
       ) {
         return true;
       }
@@ -76,7 +90,7 @@ export default function ShiftLocationMonitor() {
       }).catch(() => false);
 
       backgroundActiveRef.current = active;
-      geofencedProjectIdRef.current = active ? projectId : null;
+      geofenceSignatureRef.current = active ? signature : null;
       return active;
     },
     [],
@@ -323,7 +337,7 @@ export default function ShiftLocationMonitor() {
       // Signed out or disabled: tear down any OS geofence so the background
       // task can't fire shift calls without a valid session.
       backgroundActiveRef.current = false;
-      geofencedProjectIdRef.current = null;
+      geofenceSignatureRef.current = null;
       void stopShiftGeofencing();
       return undefined;
     }

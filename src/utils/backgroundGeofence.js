@@ -146,10 +146,19 @@ const syncAndroidLocationUpdates = async (region) => {
       () => null,
     );
     const existing = raw ? JSON.parse(raw) : null;
-    if (existing?.projectId === target.projectId) {
+    // Compare the whole region, not just the project id: editing a project's
+    // address or radius moves the geofence, and the running task would
+    // otherwise keep measuring against the coordinates it was started with.
+    if (
+      existing?.projectId === target.projectId &&
+      existing?.latitude === target.latitude &&
+      existing?.longitude === target.longitude &&
+      existing?.radius === target.radius
+    ) {
       return true;
     }
-    // Switched to a different project: stop and re-register with fresh state.
+    // Different project, or the same project's area moved: stop and
+    // re-register with fresh state.
     await Location.stopLocationUpdatesAsync(SHIFT_LOCATION_TASK).catch(
       () => {},
     );
