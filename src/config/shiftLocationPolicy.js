@@ -12,4 +12,8 @@ export const shiftLocationPolicy = {
   // iOS region monitoring is unreliable below ~100 m; clamp small radii up so
   // the OS actually reports enter/exit events.
   minBackgroundRadiusMeters: 120,
+  // Prints one line per location fix (distance, accuracy, verdict, resulting
+  // transition) so on-device behaviour can be followed with `adb logcat`.
+  // Geofence problems are impossible to diagnose from a bug report alone.
+  debugLoggingEnabled: true,
 };

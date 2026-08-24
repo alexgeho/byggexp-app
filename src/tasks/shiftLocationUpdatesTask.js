@@ -10,6 +10,7 @@ import {
   reduceGeofenceState,
   serializeGeofenceState,
 } from "../utils/geofenceEvaluation";
+import { logGeofenceFix } from "../utils/shiftGeofenceDebug";
 import {
   SHIFT_ENTER,
   SHIFT_EXIT,
@@ -87,6 +88,15 @@ TaskManager.defineTask(SHIFT_LOCATION_TASK, async ({ data, error }) => {
     storedState,
     verdict,
   );
+
+  logGeofenceFix({
+    distanceMeters,
+    accuracyMeters: latest.coords.accuracy,
+    radiusMeters: target.radius,
+    verdict,
+    previousState: storedState,
+    transition,
+  });
 
   // Persist before dispatching: if the transition throws, the state must still
   // reflect what was observed so the next fix does not replay it.

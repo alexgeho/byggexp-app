@@ -11,6 +11,7 @@ import {
   SHIFT_LOCATION_INSIDE_KEY,
 } from "../tasks/shiftLocationUpdatesTask";
 import { resolveProjectGeofenceRegion } from "./shiftLocationGuard";
+import { logGeofenceTarget } from "./shiftGeofenceDebug";
 
 // AsyncStorage key: timestamp of when we last showed the consent priming
 // screen, so it is offered at most once automatically.
@@ -166,6 +167,7 @@ const syncAndroidLocationUpdates = async (region) => {
 
   await AsyncStorage.removeItem(SHIFT_LOCATION_INSIDE_KEY).catch(() => {});
   await AsyncStorage.setItem(SHIFT_LOCATION_TARGET_KEY, JSON.stringify(target));
+  logGeofenceTarget(target);
 
   await Location.startLocationUpdatesAsync(SHIFT_LOCATION_TASK, {
     accuracy: Location.Accuracy.High,
