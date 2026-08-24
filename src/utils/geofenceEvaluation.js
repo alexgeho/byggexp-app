@@ -75,6 +75,10 @@ export const createInitialGeofenceState = () => ({
   inside: null,
   pendingVerdict: null,
   pendingCount: 0,
+  // When the background task last managed to evaluate a fix. Used to notice
+  // that the monitor has gone quiet (Doze, killed service) so the foreground
+  // check can take over instead of trusting a service that reports nothing.
+  lastFixAt: null,
 });
 
 // Folds one verdict into the stored state.
@@ -132,7 +136,12 @@ export const parseGeofenceState = (raw) => {
   }
 
   if (raw === "1" || raw === "0") {
-    return { inside: raw === "1", pendingVerdict: null, pendingCount: 0 };
+    return {
+      inside: raw === "1",
+      pendingVerdict: null,
+      pendingCount: 0,
+      lastFixAt: null,
+    };
   }
 
   try {
@@ -142,6 +151,7 @@ export const parseGeofenceState = (raw) => {
       inside: typeof parsed?.inside === "boolean" ? parsed.inside : null,
       pendingVerdict: parsed?.pendingVerdict ?? null,
       pendingCount: Number(parsed?.pendingCount) || 0,
+      lastFixAt: Number(parsed?.lastFixAt) || null,
     };
   } catch {
     return createInitialGeofenceState();

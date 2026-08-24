@@ -12,6 +12,7 @@ import {
 } from "../tasks/shiftLocationUpdatesTask";
 import { resolveProjectGeofenceRegion } from "./shiftLocationGuard";
 import { logGeofenceTarget } from "./shiftGeofenceDebug";
+import { parseGeofenceState } from "./geofenceEvaluation";
 
 // AsyncStorage key: timestamp of when we last showed the consent priming
 // screen, so it is offered at most once automatically.
@@ -124,6 +125,33 @@ const stopIfRunning = async () => {
 
 export const stopShiftGeofencing = async () => {
   await stopIfRunning();
+};
+
+// A registered background monitor is only worth deferring to while it is
+// actually producing readings. Doze, battery optimisation or an OEM task killer
+// can silence the Android foreground service without unregistering it, and the
+// foreground check used to stand down anyway — leaving a shift running with the
+// app open and a perfectly good GPS fix available.
+//
+// iOS is exempt: region monitoring is event-driven, so it reports nothing while
+// the worker stays put and silence there is expected.
+export const BACKGROUND_MONITOR_MAX_SILENCE_MS = 3 * 60 * 1000;
+
+export const isBackgroundMonitorStale = async () => {
+  if (!isAndroid) {
+    return false;
+  }
+
+  const raw = await AsyncStorage.getItem(SHIFT_LOCATION_INSIDE_KEY).catch(
+    () => null,
+  );
+  const { lastFixAt } = parseGeofenceState(raw);
+
+  if (!lastFixAt) {
+    return true;
+  }
+
+  return Date.now() - lastFixAt > BACKGROUND_MONITOR_MAX_SILENCE_MS;
 };
 
 // Android: start (or keep) a foreground-service location stream for the given

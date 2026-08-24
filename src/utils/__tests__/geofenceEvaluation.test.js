@@ -213,8 +213,18 @@ describe("parseGeofenceState", () => {
   });
 
   it("round-trips the current format", () => {
-    const state = { inside: false, pendingVerdict: "inside", pendingCount: 1 };
+    const state = {
+      inside: false,
+      pendingVerdict: "inside",
+      pendingCount: 1,
+      lastFixAt: 1_700_000_000_000,
+    };
 
     expect(parseGeofenceState(JSON.stringify(state))).toEqual(state);
+  });
+
+  it("keeps the last-fix timestamp so a silent monitor can be detected", () => {
+    expect(parseGeofenceState('{"inside":true}').lastFixAt).toBeNull();
+    expect(parseGeofenceState("1").lastFixAt).toBeNull();
   });
 });

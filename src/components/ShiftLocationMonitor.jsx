@@ -17,6 +17,7 @@ import {
 import {
   hasLocationTaskPermission,
   isBackgroundGeofencingSupported,
+  isBackgroundMonitorStale,
   stopShiftGeofencing,
   syncShiftGeofenceForProject,
 } from "../utils/backgroundGeofence";
@@ -294,7 +295,11 @@ export default function ShiftLocationMonitor() {
           shiftProject,
           currentShift.location,
         );
-        if (backgroundActive) {
+        // Only stand down while the background monitor is actually reporting.
+        // A silenced service (Doze, battery optimisation, OEM task killer) stays
+        // registered, and deferring to it left the shift running even with the
+        // app open and a usable fix available.
+        if (backgroundActive && !(await isBackgroundMonitorStale())) {
           return;
         }
 
@@ -313,7 +318,7 @@ export default function ShiftLocationMonitor() {
       const backgroundActive = await syncBackgroundGeofence(
         selectedProjectForGeofence,
       );
-      if (backgroundActive) {
+      if (backgroundActive && !(await isBackgroundMonitorStale())) {
         return;
       }
 

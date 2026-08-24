@@ -102,7 +102,7 @@ TaskManager.defineTask(SHIFT_LOCATION_TASK, async ({ data, error }) => {
   // reflect what was observed so the next fix does not replay it.
   await AsyncStorage.setItem(
     SHIFT_LOCATION_INSIDE_KEY,
-    serializeGeofenceState(nextState),
+    serializeGeofenceState({ ...nextState, lastFixAt: Date.now() }),
   ).catch(() => {});
 
   if (!transition) {
