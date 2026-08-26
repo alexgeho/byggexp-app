@@ -151,8 +151,8 @@ describe("the backend call fails", () => {
     await arriveInside();
     handleShiftExit.mockRejectedValue(new Error("network down"));
 
-    await observe(outsideFix, T0 + 10_000);
-    await observe(outsideFix, T0 + 11_000);
+    await observe(outsideFix, T0 + 40_000);
+    await observe(outsideFix, T0 + 41_000);
 
     const state = await readGeofenceState();
 
@@ -162,7 +162,7 @@ describe("the backend call fails", () => {
       attempts: 1,
     });
     expect(state.pendingTransition.nextAttemptAt).toBe(
-      T0 + 11_000 + TRANSITION_RETRY_BACKOFF_MS[0],
+      T0 + 41_000 + TRANSITION_RETRY_BACKOFF_MS[0],
     );
   });
 
@@ -170,10 +170,10 @@ describe("the backend call fails", () => {
     await arriveInside();
     handleShiftExit.mockRejectedValueOnce(new Error("network down"));
 
-    await observe(outsideFix, T0 + 10_000);
-    await observe(outsideFix, T0 + 11_000);
+    await observe(outsideFix, T0 + 40_000);
+    await observe(outsideFix, T0 + 41_000);
 
-    const dueAt = T0 + 11_000 + TRANSITION_RETRY_BACKOFF_MS[0];
+    const dueAt = T0 + 41_000 + TRANSITION_RETRY_BACKOFF_MS[0];
     await observe(coarseFix, dueAt);
 
     const state = await readGeofenceState();
@@ -187,11 +187,11 @@ describe("the backend call fails", () => {
     await arriveInside();
     handleShiftExit.mockRejectedValue(new Error("network down"));
 
-    await observe(outsideFix, T0 + 10_000);
-    await observe(outsideFix, T0 + 11_000);
+    await observe(outsideFix, T0 + 40_000);
+    await observe(outsideFix, T0 + 41_000);
     jest.clearAllMocks();
 
-    await observe(coarseFix, T0 + 12_000);
+    await observe(coarseFix, T0 + 42_000);
 
     expect(handleShiftExit).not.toHaveBeenCalled();
   });
@@ -200,12 +200,12 @@ describe("the backend call fails", () => {
     await arriveInside();
     handleShiftExit.mockRejectedValue(new Error("network down"));
 
-    await observe(outsideFix, T0 + 10_000);
-    await observe(outsideFix, T0 + 11_000);
+    await observe(outsideFix, T0 + 40_000);
+    await observe(outsideFix, T0 + 41_000);
     jest.clearAllMocks();
 
     // The worker walked back in before the queued "left the area" went through.
-    await observe(insideFix, T0 + 11_000 + TRANSITION_RETRY_BACKOFF_MS[0]);
+    await observe(insideFix, T0 + 41_000 + TRANSITION_RETRY_BACKOFF_MS[0]);
 
     expect(handleShiftExit).not.toHaveBeenCalled();
     expect((await readGeofenceState()).inside).toBe(true);
@@ -215,8 +215,8 @@ describe("the backend call fails", () => {
     await arriveInside();
     handleShiftExit.mockRejectedValue(new Error("network down"));
 
-    await observe(outsideFix, T0 + 10_000);
-    let now = T0 + 11_000;
+    await observe(outsideFix, T0 + 40_000);
+    let now = T0 + 41_000;
     await observe(outsideFix, now);
 
     for (let attempt = 0; attempt < MAX_TRANSITION_ATTEMPTS; attempt += 1) {
@@ -241,11 +241,11 @@ describe("the backend call fails", () => {
     await arriveInside();
     handleShiftExit.mockRejectedValue(new Error("network down"));
 
-    await observe(outsideFix, T0 + 10_000);
-    await observe(outsideFix, T0 + 11_000);
+    await observe(outsideFix, T0 + 40_000);
+    await observe(outsideFix, T0 + 41_000);
     expect((await readGeofenceState()).pendingTransition).not.toBeNull();
 
-    await observe(insideFix, T0 + 12_000);
+    await observe(insideFix, T0 + 70_000);
 
     const state = await readGeofenceState();
 
@@ -267,8 +267,8 @@ describe("state shared between the two monitors", () => {
 
   it("stays put while readings disagree", async () => {
     await observe(insideFix, T0);
-    await observe(outsideFix, T0 + 1000);
-    await observe(insideFix, T0 + 2000);
+    await observe(outsideFix, T0 + 40_000);
+    await observe(insideFix, T0 + 80_000);
 
     expect(handleShiftEnter).not.toHaveBeenCalled();
     expect(handleShiftExit).not.toHaveBeenCalled();
@@ -359,14 +359,14 @@ describe("concurrent observations", () => {
     await observeFor(insideFix, T0, "project-a");
     await observeFor(insideFix, T0 + 1000, "project-a");
     handleShiftExit.mockRejectedValue(new Error("network down"));
-    await observeFor(outsideFix, T0 + 2000, "project-a");
-    await observeFor(outsideFix, T0 + 3000, "project-a");
+    await observeFor(outsideFix, T0 + 40_000, "project-a");
+    await observeFor(outsideFix, T0 + 41_000, "project-a");
     expect((await readGeofenceState()).pendingTransition).not.toBeNull();
     jest.clearAllMocks();
 
     await observeFor(
       coarseFix,
-      T0 + 3000 + TRANSITION_RETRY_BACKOFF_MS[0],
+      T0 + 41_000 + TRANSITION_RETRY_BACKOFF_MS[0],
       "project-b",
     );
 

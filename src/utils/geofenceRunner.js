@@ -9,6 +9,7 @@ import {
   evaluateGeofencePosition,
   failGeofenceTransition,
   getDueTransition,
+  isImplausibleJump,
   markGeofenceCallback,
   parseGeofenceState,
   reduceGeofenceState,
@@ -119,18 +120,36 @@ export const runGeofenceObservation = ({
     // Evaluate first. The freshest reading decides whether a queued retry is
     // still meaningful — replaying a stale "you left" after the worker walked
     // back in would pause a shift that should be running.
-    const verdict = evaluateGeofencePosition({
+    const rawVerdict = evaluateGeofencePosition({
       distanceMeters,
       accuracyMeters,
       radiusMeters,
     });
 
-    const observedState = markGeofenceCallback(
-      storedState,
-      nowMs,
-      verdict !== GEOFENCE_UNKNOWN,
-      source,
-    );
+    // Discard "teleports": a fix implying impossibly fast travel from the last
+    // trusted position is indoor Wi-Fi noise, not the worker leaving. Measured
+    // against the last trusted position, so a run of bad fixes is dropped too.
+    const verdict =
+      rawVerdict !== GEOFENCE_UNKNOWN &&
+      isImplausibleJump({
+        distanceMeters,
+        lastDistanceMeters: storedState.lastTrustedDistanceMeters,
+        lastFixAt: storedState.lastTrustedAt,
+        nowMs,
+      })
+        ? GEOFENCE_UNKNOWN
+        : rawVerdict;
+
+    const usable = verdict !== GEOFENCE_UNKNOWN;
+    const observedState = {
+      ...markGeofenceCallback(storedState, nowMs, usable, source),
+      // Advance the trusted position only on a fix we accepted, so the next
+      // jump is always measured from the last position we believed.
+      lastTrustedDistanceMeters: usable
+        ? distanceMeters
+        : storedState.lastTrustedDistanceMeters,
+      lastTrustedAt: usable ? nowMs : storedState.lastTrustedAt,
+    };
     const { state: reducedState, transition } = reduceGeofenceState(
       observedState,
       verdict,

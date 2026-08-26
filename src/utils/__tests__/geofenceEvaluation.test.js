@@ -12,6 +12,7 @@ import {
   evaluateGeofencePosition,
   failGeofenceTransition,
   getDueTransition,
+  isImplausibleJump,
   markGeofenceCallback,
   parseGeofenceState,
   reduceGeofenceState,
@@ -253,6 +254,8 @@ describe("parseGeofenceState", () => {
         nextAttemptAt: 1_700_000_060_000,
         projectId: "project-a",
       },
+      lastTrustedDistanceMeters: 42,
+      lastTrustedAt: 1_699_999_500_000,
     };
 
     expect(parseGeofenceState(JSON.stringify(state))).toEqual(state);
@@ -375,5 +378,66 @@ describe("transition lifecycle", () => {
       GEOFENCE_OUTSIDE,
     );
     expect(getDueTransition(createInitialGeofenceState(), NOW)).toBeNull();
+  });
+});
+
+describe("isImplausibleJump", () => {
+  const T0 = 1_700_000_000_000;
+
+  it("rejects a fix that teleports far in a short time", () => {
+    // 57 m -> 3000 m in 4 s = ~735 m/s.
+    expect(
+      isImplausibleJump({
+        distanceMeters: 3000,
+        lastDistanceMeters: 57,
+        lastFixAt: T0,
+        nowMs: T0 + 4_000,
+      }),
+    ).toBe(true);
+  });
+
+  it("accepts a gradual move that stays under the speed cap", () => {
+    // 400 m -> 700 m in 15 s = 20 m/s (~72 km/h).
+    expect(
+      isImplausibleJump({
+        distanceMeters: 700,
+        lastDistanceMeters: 400,
+        lastFixAt: T0,
+        nowMs: T0 + 15_000,
+      }),
+    ).toBe(false);
+  });
+
+  it("ignores small jumps regardless of dt (ordinary jitter)", () => {
+    expect(
+      isImplausibleJump({
+        distanceMeters: 257,
+        lastDistanceMeters: 57,
+        lastFixAt: T0,
+        nowMs: T0 + 1_000,
+      }),
+    ).toBe(false);
+  });
+
+  it("does not screen when there is no prior trusted position", () => {
+    expect(
+      isImplausibleJump({
+        distanceMeters: 5000,
+        lastDistanceMeters: null,
+        lastFixAt: null,
+        nowMs: T0,
+      }),
+    ).toBe(false);
+  });
+
+  it("does not divide by a non-positive dt", () => {
+    expect(
+      isImplausibleJump({
+        distanceMeters: 3000,
+        lastDistanceMeters: 57,
+        lastFixAt: T0,
+        nowMs: T0,
+      }),
+    ).toBe(false);
   });
 });

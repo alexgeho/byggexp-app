@@ -37,6 +37,20 @@ export const EXIT_HYSTERESIS_METERS = 60;
 // Consecutive agreeing readings needed before the state actually changes.
 export const CONFIRMATIONS_REQUIRED = 2;
 
+// A fix that implies travelling faster than this from the last trusted position
+// is a GPS "teleport" (indoor Wi-Fi mis-association snapping to a far-away
+// access point), not the worker actually moving. 40 m/s is ~144 km/h — above
+// any plausible drive to a site. Such a fix is ignored so it cannot pause a
+// shift while the phone sits still. Because the speed is always measured
+// against the last GOOD position, a run of consecutive bad fixes is rejected
+// too, not just the first.
+export const MAX_PLAUSIBLE_SPEED_MPS = 40;
+
+// Only large jumps are screened for speed; ordinary GPS jitter (tens to ~200 m
+// between fixes) is normal and must not be treated as teleporting. A jump has
+// to be at least this far before the speed check can reject it.
+export const MIN_TELEPORT_JUMP_METERS = 250;
+
 // Delay before each retry of a transition the backend refused or never
 // received. The last entry repeats once the list runs out.
 export const TRANSITION_RETRY_BACKOFF_MS = [30_000, 60_000, 120_000, 300_000];
@@ -84,6 +98,40 @@ export const evaluateGeofencePosition = ({
   return GEOFENCE_UNKNOWN;
 };
 
+// True when a fix is too far from the last trusted position to be real travel —
+// i.e. it implies a speed above MAX_PLAUSIBLE_SPEED_MPS. Only jumps of at least
+// MIN_TELEPORT_JUMP_METERS are considered, so normal jitter is never screened.
+// The distance-to-target delta is a lower bound on the true displacement, so if
+// even that is too fast the real move is at least as fast — no false positives
+// from moving sideways at the same radius.
+export const isImplausibleJump = ({
+  distanceMeters,
+  lastDistanceMeters,
+  lastFixAt,
+  nowMs,
+} = {}) => {
+  if (
+    !isUsableNumber(distanceMeters) ||
+    !isUsableNumber(lastDistanceMeters) ||
+    !isUsableNumber(lastFixAt) ||
+    !isUsableNumber(nowMs)
+  ) {
+    return false;
+  }
+
+  const jump = Math.abs(distanceMeters - lastDistanceMeters);
+  if (jump < MIN_TELEPORT_JUMP_METERS) {
+    return false;
+  }
+
+  const dtSeconds = (nowMs - lastFixAt) / 1000;
+  if (dtSeconds <= 0) {
+    return false;
+  }
+
+  return jump / dtSeconds > MAX_PLAUSIBLE_SPEED_MPS;
+};
+
 export const createInitialGeofenceState = (projectId = null) => ({
   // The project this state describes. Monitoring one project must never inherit
   // the inside/outside history of another, and an in-flight call for the old
@@ -106,6 +154,11 @@ export const createInitialGeofenceState = (projectId = null) => ({
   // { direction, attempts, nextAttemptAt } while a confirmed transition has not
   // been accepted by the backend yet.
   pendingTransition: null,
+  // Distance-to-target and time of the last fix we trusted (any source, usable
+  // and not a teleport). The next fix is screened against this pair so an
+  // impossible jump can't drive a transition (see isImplausibleJump).
+  lastTrustedDistanceMeters: null,
+  lastTrustedAt: null,
 });
 
 export const GEOFENCE_SOURCE_BACKGROUND = "background";
@@ -301,6 +354,12 @@ export const parseGeofenceState = (raw) => {
             projectId: pending.projectId ?? parsed?.projectId ?? null,
           }
         : null,
+      lastTrustedDistanceMeters: Number.isFinite(
+        Number(parsed?.lastTrustedDistanceMeters),
+      )
+        ? Number(parsed.lastTrustedDistanceMeters)
+        : null,
+      lastTrustedAt: Number(parsed?.lastTrustedAt) || null,
     };
   } catch {
     return createInitialGeofenceState();
