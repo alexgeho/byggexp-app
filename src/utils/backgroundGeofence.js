@@ -202,16 +202,28 @@ export const isBackgroundMonitorStale = async () => {
   // that keeps firing every 15 s while Doze leaves it with cell-tower accuracy
   // is running but blind: it decides nothing, and treating it as alive kept the
   // foreground check standing down for the whole shift.
-  const { lastUsableFixAt, lastCallbackAt } = parseGeofenceState(raw);
+  // Background marks only. The in-app monitor writes to the same state, and
+  // counting its readings here would make the foreground takeover prove the
+  // background service healthy and switch itself back off.
+  const { lastBackgroundUsableFixAt, lastBackgroundCallbackAt } =
+    parseGeofenceState(raw);
   const nowMs = Date.now();
-  const usableFixAgeMs = lastUsableFixAt ? nowMs - lastUsableFixAt : null;
-  const callbackAgeMs = lastCallbackAt ? nowMs - lastCallbackAt : null;
+  const usableFixAgeMs = lastBackgroundUsableFixAt
+    ? nowMs - lastBackgroundUsableFixAt
+    : null;
+  const callbackAgeMs = lastBackgroundCallbackAt
+    ? nowMs - lastBackgroundCallbackAt
+    : null;
 
   if (
     usableFixAgeMs === null ||
     usableFixAgeMs > BACKGROUND_MONITOR_MAX_SILENCE_MS
   ) {
-    reportBackgroundMonitorStale({ callbackAgeMs, usableFixAgeMs });
+    reportBackgroundMonitorStale({
+      callbackAgeMs,
+      usableFixAgeMs,
+      silenceThresholdMs: BACKGROUND_MONITOR_MAX_SILENCE_MS,
+    });
     return true;
   }
 

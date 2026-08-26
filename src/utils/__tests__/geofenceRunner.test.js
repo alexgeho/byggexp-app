@@ -8,6 +8,7 @@ import {
 import {
   GEOFENCE_INSIDE,
   GEOFENCE_OUTSIDE,
+  GEOFENCE_SOURCE_BACKGROUND,
   GEOFENCE_UNKNOWN,
   MAX_TRANSITION_ATTEMPTS,
   TRANSITION_RETRY_BACKOFF_MS,
@@ -86,24 +87,33 @@ beforeEach(() => {
 });
 
 describe("a fix too coarse to judge", () => {
+  const observeInBackground = (fix, nowMs) =>
+    runGeofenceObservation({
+      ...fix,
+      radiusMeters: RADIUS,
+      projectId: PROJECT_ID,
+      source: GEOFENCE_SOURCE_BACKGROUND,
+      nowMs,
+    });
+
   it("does not mark the monitor as having produced a usable fix", async () => {
-    const { verdict } = await observe(coarseFix, T0);
+    const { verdict } = await observeInBackground(coarseFix, T0);
     const state = await readGeofenceState();
 
     expect(verdict).toBe(GEOFENCE_UNKNOWN);
-    expect(state.lastCallbackAt).toBe(T0);
-    expect(state.lastUsableFixAt).toBeNull();
+    expect(state.lastBackgroundCallbackAt).toBe(T0);
+    expect(state.lastBackgroundUsableFixAt).toBeNull();
   });
 
   it("records the callback so a dead service is distinguishable from a blind one", async () => {
-    await observe(insideFix, T0);
-    await observe(insideFix, T0 + 1000);
-    await observe(coarseFix, T0 + 2000);
+    await observeInBackground(insideFix, T0);
+    await observeInBackground(insideFix, T0 + 1000);
+    await observeInBackground(coarseFix, T0 + 2000);
 
     const state = await readGeofenceState();
 
-    expect(state.lastCallbackAt).toBe(T0 + 2000);
-    expect(state.lastUsableFixAt).toBe(T0 + 1000);
+    expect(state.lastBackgroundCallbackAt).toBe(T0 + 2000);
+    expect(state.lastBackgroundUsableFixAt).toBe(T0 + 1000);
   });
 });
 

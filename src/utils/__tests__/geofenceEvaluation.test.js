@@ -3,6 +3,7 @@ import {
   EXIT_HYSTERESIS_METERS,
   GEOFENCE_INSIDE,
   GEOFENCE_OUTSIDE,
+  GEOFENCE_SOURCE_BACKGROUND,
   GEOFENCE_UNKNOWN,
   MAX_TRANSITION_ATTEMPTS,
   TRANSITION_RETRY_BACKOFF_MS,
@@ -244,8 +245,8 @@ describe("parseGeofenceState", () => {
       inside: false,
       pendingVerdict: "inside",
       pendingCount: 1,
-      lastCallbackAt: 1_700_000_000_000,
-      lastUsableFixAt: 1_699_999_000_000,
+      lastBackgroundCallbackAt: 1_700_000_000_000,
+      lastBackgroundUsableFixAt: 1_699_999_000_000,
       pendingTransition: {
         direction: "outside",
         attempts: 2,
@@ -257,38 +258,67 @@ describe("parseGeofenceState", () => {
     expect(parseGeofenceState(JSON.stringify(state))).toEqual(state);
   });
 
-  it("migrates the pre-split lastFixAt into both timestamps", () => {
+  it("refuses to migrate the pre-split timestamps", () => {
+    // Earlier builds wrote them from both monitors, so they say nothing about
+    // the background service and must not start the app off trusting it.
     const migrated = parseGeofenceState(
-      JSON.stringify({ inside: true, lastFixAt: 1_700_000_000_000 }),
+      JSON.stringify({
+        inside: true,
+        lastFixAt: 1_700_000_000_000,
+        lastCallbackAt: 1_700_000_000_000,
+        lastUsableFixAt: 1_700_000_000_000,
+      }),
     );
 
-    expect(migrated.lastCallbackAt).toBe(1_700_000_000_000);
-    expect(migrated.lastUsableFixAt).toBe(1_700_000_000_000);
+    expect(migrated.lastBackgroundCallbackAt).toBeNull();
+    expect(migrated.lastBackgroundUsableFixAt).toBeNull();
   });
 
   it("starts with no timestamps at all when nothing was stored", () => {
-    expect(parseGeofenceState('{"inside":true}').lastUsableFixAt).toBeNull();
-    expect(parseGeofenceState("1").lastUsableFixAt).toBeNull();
+    expect(
+      parseGeofenceState('{"inside":true}').lastBackgroundUsableFixAt,
+    ).toBeNull();
+    expect(parseGeofenceState("1").lastBackgroundUsableFixAt).toBeNull();
   });
 });
 
 describe("markGeofenceCallback", () => {
   const NOW = 1_700_000_000_000;
 
-  it("records every callback but only a usable fix advances the usable stamp", () => {
+  it("records every background callback but only a usable fix advances the usable stamp", () => {
     const afterCoarse = markGeofenceCallback(
       createInitialGeofenceState(),
       NOW,
       false,
+      GEOFENCE_SOURCE_BACKGROUND,
     );
 
-    expect(afterCoarse.lastCallbackAt).toBe(NOW);
-    expect(afterCoarse.lastUsableFixAt).toBeNull();
+    expect(afterCoarse.lastBackgroundCallbackAt).toBe(NOW);
+    expect(afterCoarse.lastBackgroundUsableFixAt).toBeNull();
 
-    const afterUsable = markGeofenceCallback(afterCoarse, NOW + 1000, true);
+    const afterUsable = markGeofenceCallback(
+      afterCoarse,
+      NOW + 1000,
+      true,
+      GEOFENCE_SOURCE_BACKGROUND,
+    );
 
-    expect(afterUsable.lastCallbackAt).toBe(NOW + 1000);
-    expect(afterUsable.lastUsableFixAt).toBe(NOW + 1000);
+    expect(afterUsable.lastBackgroundCallbackAt).toBe(NOW + 1000);
+    expect(afterUsable.lastBackgroundUsableFixAt).toBe(NOW + 1000);
+  });
+
+  it("leaves the health marks untouched for a foreground reading", () => {
+    const seeded = markGeofenceCallback(
+      createInitialGeofenceState(),
+      NOW,
+      true,
+      GEOFENCE_SOURCE_BACKGROUND,
+    );
+
+    const afterForeground = markGeofenceCallback(seeded, NOW + 60_000, true);
+
+    expect(afterForeground.lastBackgroundCallbackAt).toBe(NOW);
+    expect(afterForeground.lastBackgroundUsableFixAt).toBe(NOW);
   });
 });
 

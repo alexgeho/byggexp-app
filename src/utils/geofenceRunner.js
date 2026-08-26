@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {
   GEOFENCE_INSIDE,
+  GEOFENCE_SOURCE_FOREGROUND,
   GEOFENCE_UNKNOWN,
   commitGeofenceTransition,
   createInitialGeofenceState,
@@ -107,6 +108,9 @@ export const runGeofenceObservation = ({
   accuracyMeters,
   radiusMeters,
   projectId,
+  // Defaults to foreground: only shiftLocationUpdatesTask may claim its
+  // readings prove the background service is alive.
+  source = GEOFENCE_SOURCE_FOREGROUND,
   nowMs = Date.now(),
 }) =>
   runObservationExclusive(async () => {
@@ -125,6 +129,7 @@ export const runGeofenceObservation = ({
       storedState,
       nowMs,
       verdict !== GEOFENCE_UNKNOWN,
+      source,
     );
     const { state: reducedState, transition } = reduceGeofenceState(
       observedState,

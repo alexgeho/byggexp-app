@@ -8,6 +8,7 @@ import {
   SHIFT_LOCATION_TARGET_KEY,
   runGeofenceObservation,
 } from "../utils/geofenceRunner";
+import { GEOFENCE_SOURCE_BACKGROUND } from "../utils/geofenceEvaluation";
 
 // Android-only background location monitor. Strict Android builds reject
 // Play-Services geofencing ("registration not permitted"), so instead of
@@ -66,6 +67,8 @@ TaskManager.defineTask(SHIFT_LOCATION_TASK, async ({ data, error }) => {
     accuracyMeters: latest.coords.accuracy,
     radiusMeters: target.radius,
     projectId: target.projectId,
+    // Only this call site may vouch for the background service's health.
+    source: GEOFENCE_SOURCE_BACKGROUND,
   });
 
   if (transitionError) {

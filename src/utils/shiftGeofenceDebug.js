@@ -123,6 +123,7 @@ export const resetStaleReporting = () => {
 export const reportBackgroundMonitorStale = ({
   callbackAgeMs,
   usableFixAgeMs,
+  silenceThresholdMs,
 }) => {
   if (shiftLocationPolicy.debugLoggingEnabled) {
     console.log(
@@ -134,13 +135,17 @@ export const reportBackgroundMonitorStale = ({
     );
   }
 
+  // Classified against the health threshold, never against the Sentry rate
+  // limit: a service killed at minute three would otherwise be filed as merely
+  // imprecise until minute five.
+  const threshold = silenceThresholdMs ?? 0;
   const data = {
     lastCallback: bucketSeconds(callbackAgeMs),
     lastUsableFix: bucketSeconds(usableFixAgeMs),
-    // No callbacks at all points at a killed service; callbacks without usable
-    // fixes point at Doze-grade accuracy.
+    // No callbacks at all points at a killed service; callbacks arriving but
+    // never usable point at Doze-grade accuracy.
     likely:
-      callbackAgeMs === null || callbackAgeMs > STALE_REPORT_INTERVAL_MS
+      callbackAgeMs === null || callbackAgeMs > threshold
         ? "service_not_running"
         : "fixes_too_coarse",
   };

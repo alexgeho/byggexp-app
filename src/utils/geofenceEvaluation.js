@@ -92,26 +92,48 @@ export const createInitialGeofenceState = (projectId = null) => ({
   inside: null,
   pendingVerdict: null,
   pendingCount: 0,
-  // Any callback from the OS, usable or not. Only useful for diagnosing whether
-  // the service is running at all.
-  lastCallbackAt: null,
-  // The last callback that actually produced a verdict. Staleness is measured
+  // Health of the *background* service only. The in-app monitor writes to the
+  // same state, and letting its readings land here would be circular: the
+  // foreground takeover would supply the very evidence that the background
+  // service is alive, stand down, and only look again three minutes later.
+  //
+  // Any background callback, usable or not — tells whether the service runs at all.
+  lastBackgroundCallbackAt: null,
+  // The last background callback that produced a verdict. Staleness is measured
   // against this: a service that keeps delivering fixes too coarse to judge is
   // running but blind, and the foreground check has to take over just the same.
-  lastUsableFixAt: null,
+  lastBackgroundUsableFixAt: null,
   // { direction, attempts, nextAttemptAt } while a confirmed transition has not
   // been accepted by the backend yet.
   pendingTransition: null,
 });
 
+export const GEOFENCE_SOURCE_BACKGROUND = "background";
+export const GEOFENCE_SOURCE_FOREGROUND = "foreground";
+
 // Records that a callback arrived. `usable` marks whether it produced a verdict.
-export const markGeofenceCallback = (state, nowMs, usable) => {
+//
+// Only the background service moves the health marks. A foreground reading is
+// still evaluated and can still drive a transition — it just cannot be used as
+// evidence that the background service is working.
+export const markGeofenceCallback = (
+  state,
+  nowMs,
+  usable,
+  source = GEOFENCE_SOURCE_FOREGROUND,
+) => {
   const current = state || createInitialGeofenceState();
+
+  if (source !== GEOFENCE_SOURCE_BACKGROUND) {
+    return current;
+  }
 
   return {
     ...current,
-    lastCallbackAt: nowMs,
-    lastUsableFixAt: usable ? nowMs : current.lastUsableFixAt,
+    lastBackgroundCallbackAt: nowMs,
+    lastBackgroundUsableFixAt: usable
+      ? nowMs
+      : current.lastBackgroundUsableFixAt,
   };
 };
 
@@ -262,12 +284,15 @@ export const parseGeofenceState = (raw) => {
       inside: typeof parsed?.inside === "boolean" ? parsed.inside : null,
       pendingVerdict: parsed?.pendingVerdict ?? null,
       pendingCount: Number(parsed?.pendingCount) || 0,
-      // `lastFixAt` is the pre-split field name; treat it as a usable fix so an
-      // in-place update does not immediately look stale.
-      lastCallbackAt:
-        Number(parsed?.lastCallbackAt) || Number(parsed?.lastFixAt) || null,
-      lastUsableFixAt:
-        Number(parsed?.lastUsableFixAt) || Number(parsed?.lastFixAt) || null,
+      // Earlier builds stored `lastFixAt`, then `lastCallbackAt`/`lastUsableFixAt`
+      // written by both monitors. Neither says anything about the background
+      // service specifically, so they are dropped rather than migrated: an
+      // updated app starts by assuming the service is unproven, which makes the
+      // foreground check take over until a real background fix arrives.
+      lastBackgroundCallbackAt:
+        Number(parsed?.lastBackgroundCallbackAt) || null,
+      lastBackgroundUsableFixAt:
+        Number(parsed?.lastBackgroundUsableFixAt) || null,
       pendingTransition: pending?.direction
         ? {
             direction: pending.direction,
