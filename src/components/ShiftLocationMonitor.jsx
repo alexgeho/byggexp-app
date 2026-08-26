@@ -1,19 +1,15 @@
 import { useCallback, useContext, useEffect, useRef } from "react";
 import { AppState } from "react-native";
 import * as Device from "expo-device";
+import * as Location from "expo-location";
 
 import AuthContext from "../contexts/AuthContext";
 import { projectService, shiftService } from "../services";
 import { shiftLocationPolicy } from "../config/shiftLocationPolicy";
-import {
-  getShiftLocationCheck,
-  isWithinProjectLocation,
-} from "../utils/shiftLocationGuard";
+import { getShiftLocationCheck } from "../utils/shiftLocationGuard";
 import { emitShiftLocationCheckError } from "../utils/shiftExitAutoCompleteEvents";
-import {
-  handleShiftEnter,
-  handleShiftExit,
-} from "../tasks/shiftAutoTransition";
+import { runGeofenceObservation } from "../utils/geofenceRunner";
+import { GEOFENCE_INSIDE, GEOFENCE_OUTSIDE } from "../utils/geofenceEvaluation";
 import {
   hasLocationTaskPermission,
   isBackgroundGeofencingSupported,
@@ -146,60 +142,44 @@ export default function ShiftLocationMonitor() {
     return loadedProject;
   }, []);
 
-  // Leaving the area pauses the shift instead of completing it, so returning
-  // the same day resumes the very same shift with its accumulated time. The
-  // actual transition lives in shiftAutoTransition, shared with the background
-  // tasks, so foreground and background behave identically.
-  const pauseShiftOutsideArea = useCallback(async (currentShift) => {
-    const shiftId = getShiftId(currentShift);
-
-    if (pausedShiftIdRef.current === shiftId) {
-      return;
-    }
-
-    await handleShiftExit({ projectId: currentShift.projectId });
-
-    pausedShiftIdRef.current = shiftId;
-    startedProjectIdRef.current = null;
-  }, []);
-
+  // Same evaluation the background task runs, against the same persisted state:
+  // one accuracy band, one hysteresis margin, one confirmation counter. A
+  // high-accuracy fix is requested here because this path only runs when the
+  // app is open, and a Balanced reading is too coarse for the strict band.
   const verifyOpenShiftGeofence = useCallback(
     async (currentShift) => {
       const project = await getShiftProject(currentShift).catch(() => null);
-      const isWithinBounds = await isWithinProjectLocation({
+      const locationCheck = await getShiftLocationCheck({
         project,
         fallbackProjectLocation: currentShift.location,
+        accuracy: Location.Accuracy.High,
       });
 
-      if (!isWithinBounds) {
-        if (
-          shiftLocationPolicy.autoCheckOutEnabled &&
-          currentShift.status === "active"
-        ) {
-          await pauseShiftOutsideArea(currentShift);
-        }
-
-        shiftGeofenceInsideRef.current = false;
+      if (!locationCheck.enforced) {
         return;
       }
 
-      shiftGeofenceInsideRef.current = true;
-      pausedShiftIdRef.current = null;
+      const { verdict } = await runGeofenceObservation({
+        distanceMeters: locationCheck.distanceMeters,
+        accuracyMeters: locationCheck.accuracyMeters,
+        radiusMeters: locationCheck.maxDistanceMeters,
+        projectId: currentShift.projectId,
+      });
 
-      // Back inside with a shift that was paused on the way out: resume it.
-      if (
-        shiftLocationPolicy.autoCheckInEnabled &&
-        currentShift.status === "paused" &&
-        currentShift.projectId
-      ) {
-        await handleShiftEnter({
-          projectId: currentShift.projectId,
-          project,
-        });
+      if (verdict === GEOFENCE_OUTSIDE) {
+        shiftGeofenceInsideRef.current = false;
+        pausedShiftIdRef.current = getShiftId(currentShift);
+        startedProjectIdRef.current = null;
+        return;
+      }
+
+      if (verdict === GEOFENCE_INSIDE) {
+        shiftGeofenceInsideRef.current = true;
+        pausedShiftIdRef.current = null;
         startedProjectIdRef.current = currentShift.projectId;
       }
     },
-    [getShiftProject, pauseShiftOutsideArea],
+    [getShiftProject],
   );
 
   const verifySelectedProjectCheckIn = useCallback(async () => {
@@ -227,6 +207,7 @@ export default function ShiftLocationMonitor() {
       locationCheck = await getShiftLocationCheck({
         project,
         fallbackProjectLocation: project?.location,
+        accuracy: Location.Accuracy.High,
       });
     } catch {
       // Can't verify the location (e.g. the address won't geocode) — never
@@ -236,37 +217,33 @@ export default function ShiftLocationMonitor() {
       return;
     }
 
-    // Only auto check-in when the project has a real geofence AND we're inside
-    // it. A project without saved coordinates/address must NOT auto-start a
+    // Only auto check-in when the project has a real geofence. A project
+    // without saved coordinates or a resolvable address must NOT auto-start a
     // shift (previously "no geofence" was treated as "always inside").
-    const isWithinBounds =
-      locationCheck.enforced &&
-      locationCheck.distanceMeters <= locationCheck.maxDistanceMeters;
-
-    if (!isWithinBounds) {
+    if (!locationCheck.enforced) {
       selectedGeofenceInsideRef.current = false;
       startedProjectIdRef.current = null;
       return;
     }
 
-    const enteredProjectArea = selectedGeofenceInsideRef.current !== true;
-    selectedGeofenceInsideRef.current = true;
+    const { verdict } = await runGeofenceObservation({
+      distanceMeters: locationCheck.distanceMeters,
+      accuracyMeters: locationCheck.accuracyMeters,
+      radiusMeters: locationCheck.maxDistanceMeters,
+      projectId,
+    });
 
-    if (!enteredProjectArea || startedProjectIdRef.current === projectId) {
-      return;
-    }
-
-    try {
-      // Shared with the background tasks: resumes today's shift for this
-      // project when one exists, starts a new one otherwise, and recovers on
-      // its own if the backend reports that today's shift already exists.
-      await handleShiftEnter({ projectId, project });
-
+    if (verdict === GEOFENCE_INSIDE) {
+      selectedGeofenceInsideRef.current = true;
       startedProjectIdRef.current = projectId;
       pausedShiftIdRef.current = null;
       shiftGeofenceInsideRef.current = true;
-    } catch (error) {
-      await emitShiftLocationCheckError(error);
+      return;
+    }
+
+    if (verdict === GEOFENCE_OUTSIDE) {
+      selectedGeofenceInsideRef.current = false;
+      startedProjectIdRef.current = null;
     }
   }, [getSelectedProject]);
 

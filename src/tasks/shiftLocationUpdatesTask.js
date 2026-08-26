@@ -4,20 +4,10 @@ import * as TaskManager from "expo-task-manager";
 import { calculateDistanceMeters } from "../utils/shiftLocationGuard";
 import { emitShiftLocationCheckError } from "../utils/shiftExitAutoCompleteEvents";
 import {
-  GEOFENCE_INSIDE,
-  evaluateGeofencePosition,
-  parseGeofenceState,
-  reduceGeofenceState,
-  serializeGeofenceState,
-} from "../utils/geofenceEvaluation";
-import { logGeofenceFix } from "../utils/shiftGeofenceDebug";
-import {
-  SHIFT_ENTER,
-  SHIFT_EXIT,
-  handleShiftEnter,
-  handleShiftExit,
-  isDuplicateTransition,
-} from "./shiftAutoTransition";
+  SHIFT_LOCATION_INSIDE_KEY,
+  SHIFT_LOCATION_TARGET_KEY,
+  runGeofenceObservation,
+} from "../utils/geofenceRunner";
 
 // Android-only background location monitor. Strict Android builds reject
 // Play-Services geofencing ("registration not permitted"), so instead of
@@ -26,19 +16,15 @@ import {
 // or the phone is asleep because the foreground service keeps the process
 // alive. iOS keeps native region monitoring (shiftGeofenceTask).
 //
-// Whether a fix counts as inside or outside is decided in geofenceEvaluation:
-// it weighs the reported accuracy, applies hysteresis and requires consecutive
-// agreeing readings, so a stationary phone with coarse indoor fixes can no
-// longer toggle the shift by itself.
+// The decision itself lives in geofenceRunner, shared with the in-app monitor,
+// so both apply the same accuracy band, hysteresis and confirmation count
+// against the same persisted state.
 //
 // Name is referenced from backgroundGeofence.js. Keep it stable.
 export const SHIFT_LOCATION_TASK = "byggexp-shift-location";
 
-// The monitored project's geofence (written by backgroundGeofence.js) and the
-// last evaluated inside/outside state, so this headless task knows the target
-// and can detect edge transitions across separate location callbacks.
-export const SHIFT_LOCATION_TARGET_KEY = "shiftLocationTarget";
-export const SHIFT_LOCATION_INSIDE_KEY = "shiftLocationInside";
+// Re-exported for the modules that have always imported them from here.
+export { SHIFT_LOCATION_TARGET_KEY, SHIFT_LOCATION_INSIDE_KEY };
 
 TaskManager.defineTask(SHIFT_LOCATION_TASK, async ({ data, error }) => {
   if (error) {
@@ -75,57 +61,14 @@ TaskManager.defineTask(SHIFT_LOCATION_TASK, async ({ data, error }) => {
     target.longitude,
   );
 
-  const verdict = evaluateGeofencePosition({
+  const { error: transitionError } = await runGeofenceObservation({
     distanceMeters,
     accuracyMeters: latest.coords.accuracy,
     radiusMeters: target.radius,
+    projectId: target.projectId,
   });
 
-  const storedState = parseGeofenceState(
-    await AsyncStorage.getItem(SHIFT_LOCATION_INSIDE_KEY).catch(() => null),
-  );
-  const { state: nextState, transition } = reduceGeofenceState(
-    storedState,
-    verdict,
-  );
-
-  logGeofenceFix({
-    distanceMeters,
-    accuracyMeters: latest.coords.accuracy,
-    radiusMeters: target.radius,
-    verdict,
-    previousState: storedState,
-    transition,
-  });
-
-  // Persist before dispatching: if the transition throws, the state must still
-  // reflect what was observed so the next fix does not replay it.
-  await AsyncStorage.setItem(
-    SHIFT_LOCATION_INSIDE_KEY,
-    serializeGeofenceState({ ...nextState, lastFixAt: Date.now() }),
-  ).catch(() => {});
-
-  if (!transition) {
-    return;
-  }
-
-  // Date.now is available at runtime on-device (not in workflow scripts).
-  const nowMs = Date.now();
-
-  try {
-    if (transition === GEOFENCE_INSIDE) {
-      if (
-        !(await isDuplicateTransition(SHIFT_ENTER, target.projectId, nowMs))
-      ) {
-        await handleShiftEnter({ projectId: target.projectId });
-      }
-      return;
-    }
-
-    if (!(await isDuplicateTransition(SHIFT_EXIT, target.projectId, nowMs))) {
-      await handleShiftExit({ projectId: target.projectId });
-    }
-  } catch (taskError) {
-    await emitShiftLocationCheckError(taskError);
+  if (transitionError) {
+    await emitShiftLocationCheckError(transitionError);
   }
 });

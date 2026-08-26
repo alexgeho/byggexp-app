@@ -42,6 +42,8 @@ jest.mock("../shiftLocationGuard", () => ({
 jest.mock("../shiftGeofenceDebug", () => ({
   logGeofenceTarget: jest.fn(),
   logGeofenceFix: jest.fn(),
+  reportBackgroundMonitorStale: jest.fn(),
+  reportTransitionExhausted: jest.fn(),
 }));
 
 jest.mock("../../tasks/shiftGeofenceTask", () => ({
@@ -80,7 +82,7 @@ it("treats a monitor that never reported as stale", async () => {
 });
 
 it("treats a recent reading as fresh", async () => {
-  storeState({ inside: true, lastFixAt: Date.now() - 10_000 });
+  storeState({ inside: true, lastUsableFixAt: Date.now() - 10_000 });
 
   await expect(isBackgroundMonitorStale()).resolves.toBe(false);
 });
@@ -88,7 +90,7 @@ it("treats a recent reading as fresh", async () => {
 it("treats a long silence as stale so the foreground check takes over", async () => {
   storeState({
     inside: true,
-    lastFixAt: Date.now() - BACKGROUND_MONITOR_MAX_SILENCE_MS - 1000,
+    lastUsableFixAt: Date.now() - BACKGROUND_MONITOR_MAX_SILENCE_MS - 1000,
   });
 
   await expect(isBackgroundMonitorStale()).resolves.toBe(true);
@@ -98,6 +100,18 @@ it("migrates the old 1/0 state as stale rather than assuming it is live", async 
   AsyncStorage.getItem.mockImplementation(async (key) =>
     key === SHIFT_LOCATION_INSIDE_KEY ? "1" : null,
   );
+
+  await expect(isBackgroundMonitorStale()).resolves.toBe(true);
+});
+
+it("treats a service that only delivers unusable fixes as silent", async () => {
+  // Alive and firing every 15 s, but Doze leaves it with cell-tower accuracy:
+  // it decides nothing, so the foreground check has to take over regardless.
+  storeState({
+    inside: true,
+    lastCallbackAt: Date.now(),
+    lastUsableFixAt: Date.now() - BACKGROUND_MONITOR_MAX_SILENCE_MS - 1000,
+  });
 
   await expect(isBackgroundMonitorStale()).resolves.toBe(true);
 });

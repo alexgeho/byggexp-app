@@ -37,21 +37,24 @@ const ensureLocationPermission = async () => {
   }
 };
 
-const getCurrentShiftCoordinate = async () => {
+const getCurrentShiftCoordinate = async (accuracy) => {
   if (!Device.isDevice) {
-    return DEFAULT_EMULATOR_COORDINATE;
+    return { ...DEFAULT_EMULATOR_COORDINATE, accuracyMeters: null };
   }
 
   await ensureLocationPermission();
 
   const currentPosition = await Location.getCurrentPositionAsync({
-    accuracy: Location.Accuracy.Balanced,
+    accuracy: accuracy ?? Location.Accuracy.Balanced,
     timeout: 15000,
   });
 
   return {
     latitude: currentPosition.coords.latitude,
     longitude: currentPosition.coords.longitude,
+    // Carried through so automatic decisions can weigh the fix the same way the
+    // background task does. The manual guard ignores it on purpose.
+    accuracyMeters: currentPosition.coords.accuracy ?? null,
   };
 };
 
@@ -173,6 +176,7 @@ const resolveProjectCoordinate = async ({
 export const getShiftLocationCheck = async ({
   project,
   fallbackProjectLocation,
+  accuracy,
 }) => {
   const maxDistanceMeters = getProjectMaxDistanceMeters(project);
   const resolvedProjectCoordinate = await resolveProjectCoordinate({
@@ -185,10 +189,11 @@ export const getShiftLocationCheck = async ({
       enforced: false,
       distanceMeters: 0,
       maxDistanceMeters,
+      accuracyMeters: null,
     };
   }
 
-  const currentCoordinate = await getCurrentShiftCoordinate();
+  const currentCoordinate = await getCurrentShiftCoordinate(accuracy);
   const distanceMeters = calculateDistanceMeters(
     currentCoordinate.latitude,
     currentCoordinate.longitude,
@@ -198,6 +203,7 @@ export const getShiftLocationCheck = async ({
 
   return {
     enforced: true,
+    accuracyMeters: currentCoordinate.accuracyMeters,
     distanceMeters,
     maxDistanceMeters,
   };

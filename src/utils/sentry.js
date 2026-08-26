@@ -34,4 +34,23 @@ export const captureException = (error, context) => {
   Sentry.captureException(error, context ? { extra: context } : undefined);
 };
 
+// Report a handled condition that is not an Error. No-op without a DSN.
+export const captureMessage = (message, context) => {
+  if (!isSentryEnabled) {
+    return;
+  }
+
+  Sentry.captureMessage(message, context ? { extra: context } : undefined);
+};
+
+// Trail attached to whatever is reported next. Callers must keep the payload
+// free of anything that could identify a location or a person.
+export const addBreadcrumb = (breadcrumb) => {
+  if (!isSentryEnabled) {
+    return;
+  }
+
+  Sentry.addBreadcrumb(breadcrumb);
+};
+
 export { Sentry };

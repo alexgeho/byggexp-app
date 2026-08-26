@@ -4,8 +4,14 @@ import {
   GEOFENCE_INSIDE,
   GEOFENCE_OUTSIDE,
   GEOFENCE_UNKNOWN,
+  MAX_TRANSITION_ATTEMPTS,
+  TRANSITION_RETRY_BACKOFF_MS,
+  commitGeofenceTransition,
   createInitialGeofenceState,
   evaluateGeofencePosition,
+  failGeofenceTransition,
+  getDueTransition,
+  markGeofenceCallback,
   parseGeofenceState,
   reduceGeofenceState,
 } from "../geofenceEvaluation";
@@ -72,6 +78,8 @@ describe("evaluateGeofencePosition", () => {
 });
 
 describe("reduceGeofenceState", () => {
+  // `inside` only moves once the backend accepted the change, so a realistic
+  // feed commits every transition the reducer hands back.
   const feed = (verdicts, initial = createInitialGeofenceState()) => {
     let state = initial;
     const transitions = [];
@@ -81,6 +89,7 @@ describe("reduceGeofenceState", () => {
       state = result.state;
       if (result.transition) {
         transitions.push(result.transition);
+        state = commitGeofenceTransition(state, result.transition);
       }
     });
 
@@ -94,6 +103,23 @@ describe("reduceGeofenceState", () => {
     const confirmed = feed(Array(CONFIRMATIONS_REQUIRED).fill(GEOFENCE_INSIDE));
     expect(confirmed.transitions).toEqual([GEOFENCE_INSIDE]);
     expect(confirmed.state.inside).toBe(true);
+  });
+
+  it("does not move inside until the transition is committed", () => {
+    let state = createInitialGeofenceState();
+    let result;
+
+    for (let i = 0; i < CONFIRMATIONS_REQUIRED; i += 1) {
+      result = reduceGeofenceState(state, GEOFENCE_INSIDE);
+      state = result.state;
+    }
+
+    expect(result.transition).toBe(GEOFENCE_INSIDE);
+    expect(state.inside).toBeNull();
+    expect(state.pendingTransition).toMatchObject({
+      direction: GEOFENCE_INSIDE,
+      attempts: 0,
+    });
   });
 
   it("does not re-emit while the state is unchanged", () => {
@@ -217,14 +243,105 @@ describe("parseGeofenceState", () => {
       inside: false,
       pendingVerdict: "inside",
       pendingCount: 1,
-      lastFixAt: 1_700_000_000_000,
+      lastCallbackAt: 1_700_000_000_000,
+      lastUsableFixAt: 1_699_999_000_000,
+      pendingTransition: {
+        direction: "outside",
+        attempts: 2,
+        nextAttemptAt: 1_700_000_060_000,
+      },
     };
 
     expect(parseGeofenceState(JSON.stringify(state))).toEqual(state);
   });
 
-  it("keeps the last-fix timestamp so a silent monitor can be detected", () => {
-    expect(parseGeofenceState('{"inside":true}').lastFixAt).toBeNull();
-    expect(parseGeofenceState("1").lastFixAt).toBeNull();
+  it("migrates the pre-split lastFixAt into both timestamps", () => {
+    const migrated = parseGeofenceState(
+      JSON.stringify({ inside: true, lastFixAt: 1_700_000_000_000 }),
+    );
+
+    expect(migrated.lastCallbackAt).toBe(1_700_000_000_000);
+    expect(migrated.lastUsableFixAt).toBe(1_700_000_000_000);
+  });
+
+  it("starts with no timestamps at all when nothing was stored", () => {
+    expect(parseGeofenceState('{"inside":true}').lastUsableFixAt).toBeNull();
+    expect(parseGeofenceState("1").lastUsableFixAt).toBeNull();
+  });
+});
+
+describe("markGeofenceCallback", () => {
+  const NOW = 1_700_000_000_000;
+
+  it("records every callback but only a usable fix advances the usable stamp", () => {
+    const afterCoarse = markGeofenceCallback(
+      createInitialGeofenceState(),
+      NOW,
+      false,
+    );
+
+    expect(afterCoarse.lastCallbackAt).toBe(NOW);
+    expect(afterCoarse.lastUsableFixAt).toBeNull();
+
+    const afterUsable = markGeofenceCallback(afterCoarse, NOW + 1000, true);
+
+    expect(afterUsable.lastCallbackAt).toBe(NOW + 1000);
+    expect(afterUsable.lastUsableFixAt).toBe(NOW + 1000);
+  });
+});
+
+describe("transition lifecycle", () => {
+  const NOW = 1_700_000_000_000;
+
+  const pending = () => ({
+    ...createInitialGeofenceState(),
+    pendingTransition: {
+      direction: GEOFENCE_OUTSIDE,
+      attempts: 0,
+      nextAttemptAt: 0,
+    },
+  });
+
+  it("commits inside and clears the pending transition on success", () => {
+    const committed = commitGeofenceTransition(pending(), GEOFENCE_OUTSIDE);
+
+    expect(committed.inside).toBe(false);
+    expect(committed.pendingTransition).toBeNull();
+  });
+
+  it("schedules a growing backoff on failure", () => {
+    let state = pending();
+
+    TRANSITION_RETRY_BACKOFF_MS.forEach((backoff, index) => {
+      const result = failGeofenceTransition(state, GEOFENCE_OUTSIDE, NOW);
+      state = result.state;
+
+      expect(result.exhausted).toBe(false);
+      expect(state.pendingTransition.attempts).toBe(index + 1);
+      expect(state.pendingTransition.nextAttemptAt).toBe(NOW + backoff);
+    });
+  });
+
+  it("gives up after the attempt limit", () => {
+    let state = pending();
+    let result;
+
+    for (let i = 0; i < MAX_TRANSITION_ATTEMPTS; i += 1) {
+      result = failGeofenceTransition(state, GEOFENCE_OUTSIDE, NOW);
+      state = result.state;
+    }
+
+    expect(result.exhausted).toBe(true);
+    expect(state.pendingTransition).toBeNull();
+  });
+
+  it("reports a retry as due only once its backoff has elapsed", () => {
+    const { state } = failGeofenceTransition(pending(), GEOFENCE_OUTSIDE, NOW);
+
+    expect(getDueTransition(state, NOW)).toBeNull();
+    expect(getDueTransition(state, NOW + TRANSITION_RETRY_BACKOFF_MS[0])).toBe(
+      GEOFENCE_OUTSIDE,
+    );
+    expect(getDueTransition(createInitialGeofenceState(), NOW)).toBeNull();
   });
 });

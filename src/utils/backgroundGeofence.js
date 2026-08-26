@@ -11,7 +11,10 @@ import {
   SHIFT_LOCATION_INSIDE_KEY,
 } from "../tasks/shiftLocationUpdatesTask";
 import { resolveProjectGeofenceRegion } from "./shiftLocationGuard";
-import { logGeofenceTarget } from "./shiftGeofenceDebug";
+import {
+  logGeofenceTarget,
+  reportBackgroundMonitorStale,
+} from "./shiftGeofenceDebug";
 import { parseGeofenceState } from "./geofenceEvaluation";
 
 // AsyncStorage key: timestamp of when we last showed the consent priming
@@ -145,13 +148,24 @@ export const isBackgroundMonitorStale = async () => {
   const raw = await AsyncStorage.getItem(SHIFT_LOCATION_INSIDE_KEY).catch(
     () => null,
   );
-  const { lastFixAt } = parseGeofenceState(raw);
+  // Measured against the last *usable* fix, not against any callback. A service
+  // that keeps firing every 15 s while Doze leaves it with cell-tower accuracy
+  // is running but blind: it decides nothing, and treating it as alive kept the
+  // foreground check standing down for the whole shift.
+  const { lastUsableFixAt } = parseGeofenceState(raw);
 
-  if (!lastFixAt) {
+  if (!lastUsableFixAt) {
+    reportBackgroundMonitorStale({ silentForMs: null });
     return true;
   }
 
-  return Date.now() - lastFixAt > BACKGROUND_MONITOR_MAX_SILENCE_MS;
+  const silentForMs = Date.now() - lastUsableFixAt;
+  if (silentForMs > BACKGROUND_MONITOR_MAX_SILENCE_MS) {
+    reportBackgroundMonitorStale({ silentForMs });
+    return true;
+  }
+
+  return false;
 };
 
 // Android: start (or keep) a foreground-service location stream for the given
