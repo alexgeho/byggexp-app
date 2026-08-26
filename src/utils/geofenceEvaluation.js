@@ -84,7 +84,11 @@ export const evaluateGeofencePosition = ({
   return GEOFENCE_UNKNOWN;
 };
 
-export const createInitialGeofenceState = () => ({
+export const createInitialGeofenceState = (projectId = null) => ({
+  // The project this state describes. Monitoring one project must never inherit
+  // the inside/outside history of another, and an in-flight call for the old
+  // project must not be able to write its result back after a switch.
+  projectId,
   inside: null,
   pendingVerdict: null,
   pendingCount: 0,
@@ -169,7 +173,12 @@ export const reduceGeofenceState = (
       ...current,
       pendingVerdict: null,
       pendingCount: 0,
-      pendingTransition: { direction: verdict, attempts: 0, nextAttemptAt: 0 },
+      pendingTransition: {
+        direction: verdict,
+        attempts: 0,
+        nextAttemptAt: 0,
+        projectId: current.projectId ?? null,
+      },
     },
     transition: verdict,
   };
@@ -214,6 +223,7 @@ export const failGeofenceTransition = (state, direction, nowMs) => {
         direction,
         attempts,
         nextAttemptAt: nowMs + backoff,
+        projectId: current.projectId ?? null,
       },
     },
     exhausted: false,
@@ -248,6 +258,7 @@ export const parseGeofenceState = (raw) => {
     const pending = parsed?.pendingTransition;
 
     return {
+      projectId: parsed?.projectId ?? null,
       inside: typeof parsed?.inside === "boolean" ? parsed.inside : null,
       pendingVerdict: parsed?.pendingVerdict ?? null,
       pendingCount: Number(parsed?.pendingCount) || 0,
@@ -262,6 +273,7 @@ export const parseGeofenceState = (raw) => {
             direction: pending.direction,
             attempts: Number(pending.attempts) || 0,
             nextAttemptAt: Number(pending.nextAttemptAt) || 0,
+            projectId: pending.projectId ?? parsed?.projectId ?? null,
           }
         : null,
     };

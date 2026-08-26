@@ -15,9 +15,9 @@ import {
 import {
   handleShiftEnter,
   handleShiftExit,
-  isDuplicateTransition,
 } from "../../tasks/shiftAutoTransition";
 import { reportTransitionExhausted } from "../shiftGeofenceDebug";
+import { resetObservationQueue } from "../observationQueue";
 
 // End-to-end for one location reading: evaluation, transaction, retry.
 //
@@ -76,7 +76,11 @@ const observe = (fix, nowMs) =>
 beforeEach(() => {
   AsyncStorage.__reset();
   jest.clearAllMocks();
-  isDuplicateTransition.mockResolvedValue(false);
+  resetObservationQueue();
+  // mockReset, not mockClear: clearAllMocks leaves unconsumed *Once queues in
+  // place, so a rejection staged by one test would fire inside the next.
+  handleShiftEnter.mockReset();
+  handleShiftExit.mockReset();
   handleShiftEnter.mockResolvedValue(null);
   handleShiftExit.mockResolvedValue(null);
 });
@@ -182,17 +186,19 @@ describe("the backend call fails", () => {
     expect(handleShiftExit).not.toHaveBeenCalled();
   });
 
-  it("bypasses the de-dupe guard on a retry", async () => {
+  it("does not replay a retry that a fresh opposite reading contradicts", async () => {
     await arriveInside();
-    handleShiftExit.mockRejectedValueOnce(new Error("network down"));
+    handleShiftExit.mockRejectedValue(new Error("network down"));
+
     await observe(outsideFix, T0 + 10_000);
     await observe(outsideFix, T0 + 11_000);
+    jest.clearAllMocks();
 
-    // The guard would otherwise swallow the retry inside its own window.
-    isDuplicateTransition.mockResolvedValue(true);
-    await observe(coarseFix, T0 + 11_000 + TRANSITION_RETRY_BACKOFF_MS[0]);
+    // The worker walked back in before the queued "left the area" went through.
+    await observe(insideFix, T0 + 11_000 + TRANSITION_RETRY_BACKOFF_MS[0]);
 
-    expect((await readGeofenceState()).inside).toBe(false);
+    expect(handleShiftExit).not.toHaveBeenCalled();
+    expect((await readGeofenceState()).inside).toBe(true);
   });
 
   it("gives up after the attempt limit and reports it", async () => {
@@ -257,6 +263,123 @@ describe("state shared between the two monitors", () => {
     expect(handleShiftEnter).not.toHaveBeenCalled();
     expect(handleShiftExit).not.toHaveBeenCalled();
     expect((await readGeofenceState()).inside).toBeNull();
+  });
+});
+
+describe("concurrent observations", () => {
+  // Two writers share the state: the foreground-service task and the in-app
+  // monitor. Without the observation queue the read-modify-write straddles the
+  // network call and both could act on the same confirmation count.
+  const observeFor = (fix, nowMs, projectId) =>
+    runGeofenceObservation({
+      ...fix,
+      radiusMeters: RADIUS,
+      projectId,
+      nowMs,
+    });
+
+  it("two simultaneous identical readings produce one transition", async () => {
+    await observe(insideFix, T0);
+
+    await Promise.all([
+      observe(insideFix, T0 + 1000),
+      observe(insideFix, T0 + 1000),
+    ]);
+
+    expect(handleShiftEnter).toHaveBeenCalledTimes(1);
+    expect((await readGeofenceState()).inside).toBe(true);
+  });
+
+  it("a parallel success and failure leave no false pending transition", async () => {
+    await observe(insideFix, T0);
+    // The second dispatch would fail — but it must never happen, because the
+    // serialized second observation sees the first one's committed state.
+    handleShiftEnter
+      .mockResolvedValueOnce(null)
+      .mockRejectedValueOnce(new Error("network down"));
+
+    await Promise.all([
+      observe(insideFix, T0 + 1000),
+      observe(insideFix, T0 + 1000),
+    ]);
+
+    const state = await readGeofenceState();
+
+    expect(handleShiftEnter).toHaveBeenCalledTimes(1);
+    expect(state.inside).toBe(true);
+    expect(state.pendingTransition).toBeNull();
+  });
+
+  it("a failure followed by a successful retry clears the pending transition", async () => {
+    await observe(insideFix, T0);
+    handleShiftEnter.mockRejectedValueOnce(new Error("network down"));
+
+    await observe(insideFix, T0 + 1000);
+    expect((await readGeofenceState()).pendingTransition).not.toBeNull();
+
+    handleShiftEnter.mockResolvedValue(null);
+    await observe(coarseFix, T0 + 1000 + TRANSITION_RETRY_BACKOFF_MS[0]);
+
+    const state = await readGeofenceState();
+
+    expect(state.inside).toBe(true);
+    expect(state.pendingTransition).toBeNull();
+  });
+
+  it("keeps project A's state from being applied to project B", async () => {
+    await observeFor(insideFix, T0, "project-a");
+    await observeFor(insideFix, T0 + 1000, "project-a");
+    expect((await readGeofenceState()).inside).toBe(true);
+    jest.clearAllMocks();
+
+    // Switching project must not inherit "already inside" from the old area.
+    await observeFor(insideFix, T0 + 2000, "project-b");
+    const afterFirst = await readGeofenceState();
+
+    expect(afterFirst.projectId).toBe("project-b");
+    expect(afterFirst.inside).toBeNull();
+    expect(handleShiftEnter).not.toHaveBeenCalled();
+
+    await observeFor(insideFix, T0 + 3000, "project-b");
+
+    expect(handleShiftEnter).toHaveBeenCalledWith({ projectId: "project-b" });
+  });
+
+  it("drops a retry left over from another project", async () => {
+    await observeFor(insideFix, T0, "project-a");
+    await observeFor(insideFix, T0 + 1000, "project-a");
+    handleShiftExit.mockRejectedValue(new Error("network down"));
+    await observeFor(outsideFix, T0 + 2000, "project-a");
+    await observeFor(outsideFix, T0 + 3000, "project-a");
+    expect((await readGeofenceState()).pendingTransition).not.toBeNull();
+    jest.clearAllMocks();
+
+    await observeFor(
+      coarseFix,
+      T0 + 3000 + TRANSITION_RETRY_BACKOFF_MS[0],
+      "project-b",
+    );
+
+    expect(handleShiftExit).not.toHaveBeenCalled();
+    expect((await readGeofenceState()).pendingTransition).toBeNull();
+  });
+
+  it("keeps serving observations after one of them rejects", async () => {
+    // A thrown error inside the queue must not poison the chain for the next
+    // reading — that would silence the monitor permanently.
+    handleShiftEnter.mockRejectedValueOnce(new Error("network down"));
+
+    await observe(insideFix, T0);
+    await observe(insideFix, T0 + 1000);
+
+    handleShiftEnter.mockResolvedValue(null);
+    const { verdict } = await observe(
+      insideFix,
+      T0 + 1000 + TRANSITION_RETRY_BACKOFF_MS[0],
+    );
+
+    expect(verdict).toBe(GEOFENCE_INSIDE);
+    expect((await readGeofenceState()).inside).toBe(true);
   });
 });
 

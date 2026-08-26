@@ -13,9 +13,11 @@ import {
 import { resolveProjectGeofenceRegion } from "./shiftLocationGuard";
 import {
   logGeofenceTarget,
+  noteBackgroundMonitorHealthy,
   reportBackgroundMonitorStale,
 } from "./shiftGeofenceDebug";
 import { parseGeofenceState } from "./geofenceEvaluation";
+import { clearGeofenceState } from "./geofenceRunner";
 
 // AsyncStorage key: timestamp of when we last showed the consent priming
 // screen, so it is offered at most once automatically.
@@ -146,7 +148,9 @@ const clampRadius = (radius) => {
 const clearAndroidState = async () => {
   androidForegroundServiceStarted = false;
   await AsyncStorage.removeItem(SHIFT_LOCATION_TARGET_KEY).catch(() => {});
-  await AsyncStorage.removeItem(SHIFT_LOCATION_INSIDE_KEY).catch(() => {});
+  // Queued: an observation in flight would otherwise write its result back
+  // after the reset and resurrect the state we just dropped.
+  await clearGeofenceState();
 };
 
 // Stop whichever background monitor is running on this platform.
@@ -198,19 +202,20 @@ export const isBackgroundMonitorStale = async () => {
   // that keeps firing every 15 s while Doze leaves it with cell-tower accuracy
   // is running but blind: it decides nothing, and treating it as alive kept the
   // foreground check standing down for the whole shift.
-  const { lastUsableFixAt } = parseGeofenceState(raw);
+  const { lastUsableFixAt, lastCallbackAt } = parseGeofenceState(raw);
+  const nowMs = Date.now();
+  const usableFixAgeMs = lastUsableFixAt ? nowMs - lastUsableFixAt : null;
+  const callbackAgeMs = lastCallbackAt ? nowMs - lastCallbackAt : null;
 
-  if (!lastUsableFixAt) {
-    reportBackgroundMonitorStale({ silentForMs: null });
+  if (
+    usableFixAgeMs === null ||
+    usableFixAgeMs > BACKGROUND_MONITOR_MAX_SILENCE_MS
+  ) {
+    reportBackgroundMonitorStale({ callbackAgeMs, usableFixAgeMs });
     return true;
   }
 
-  const silentForMs = Date.now() - lastUsableFixAt;
-  if (silentForMs > BACKGROUND_MONITOR_MAX_SILENCE_MS) {
-    reportBackgroundMonitorStale({ silentForMs });
-    return true;
-  }
-
+  noteBackgroundMonitorHealthy();
   return false;
 };
 
@@ -273,7 +278,7 @@ const syncAndroidLocationUpdates = async (region) => {
     );
   }
 
-  await AsyncStorage.removeItem(SHIFT_LOCATION_INSIDE_KEY).catch(() => {});
+  await clearGeofenceState();
   await AsyncStorage.setItem(SHIFT_LOCATION_TARGET_KEY, JSON.stringify(target));
   logGeofenceTarget(target);
 

@@ -44,6 +44,13 @@ jest.mock("../shiftGeofenceDebug", () => ({
   logGeofenceFix: jest.fn(),
   reportBackgroundMonitorStale: jest.fn(),
   reportTransitionExhausted: jest.fn(),
+  noteBackgroundMonitorHealthy: jest.fn(),
+}));
+
+jest.mock("../geofenceRunner", () => ({
+  SHIFT_LOCATION_TARGET_KEY: "shiftLocationTarget",
+  SHIFT_LOCATION_INSIDE_KEY: "shiftLocationInside",
+  clearGeofenceState: jest.fn().mockResolvedValue(undefined),
 }));
 
 jest.mock("../../tasks/shiftGeofenceTask", () => ({

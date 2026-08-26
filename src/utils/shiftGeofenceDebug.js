@@ -88,24 +88,90 @@ export const logGeofenceTarget = (target) => {
   });
 };
 
-// The foreground check took over because the background monitor stopped
-// producing usable fixes. Worth seeing: it means Doze or an OEM task killer is
+const bucketSeconds = (value) => {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    return "never";
+  }
+
+  const seconds = Math.round(value / 1000);
+  const thresholds = [60, 300, 900, 3600];
+  const match = thresholds.find((limit) => seconds <= limit);
+
+  return match ? `<=${match}s` : ">1h";
+};
+
+// The staleness check runs every 15 s, so an episode of silence would otherwise
+// emit a breadcrumb four times a minute and push everything else out of the
+// window Sentry keeps.
+const STALE_REPORT_INTERVAL_MS = 5 * 60 * 1000;
+let staleEpisodeActive = false;
+let lastStaleReportAt = 0;
+
+export const resetStaleReporting = () => {
+  staleEpisodeActive = false;
+  lastStaleReportAt = 0;
+};
+
+// The background monitor stopped producing usable fixes and the foreground
+// check took over. Doze, battery optimisation or an OEM task killer is
 // interfering on that device.
-export const reportBackgroundMonitorStale = ({ silentForMs }) => {
+//
+// The two ages are reported separately on purpose: a service that was killed
+// stops calling back at all, while a service that is alive but blind keeps
+// calling back with fixes too coarse to judge. Only the second one can be fixed
+// in the app.
+export const reportBackgroundMonitorStale = ({
+  callbackAgeMs,
+  usableFixAgeMs,
+}) => {
   if (shiftLocationPolicy.debugLoggingEnabled) {
     console.log(
-      `${SHIFT_GEOFENCE_LOG_TAG} background monitor silent for ${round(
-        silentForMs,
-      )}ms, foreground check taking over`,
+      `${SHIFT_GEOFENCE_LOG_TAG} stale: last callback ${round(
+        callbackAgeMs,
+      )}ms ago, last usable fix ${round(
+        usableFixAgeMs,
+      )}ms ago -> foreground takeover`,
     );
   }
+
+  const data = {
+    lastCallback: bucketSeconds(callbackAgeMs),
+    lastUsableFix: bucketSeconds(usableFixAgeMs),
+    // No callbacks at all points at a killed service; callbacks without usable
+    // fixes point at Doze-grade accuracy.
+    likely:
+      callbackAgeMs === null || callbackAgeMs > STALE_REPORT_INTERVAL_MS
+        ? "service_not_running"
+        : "fixes_too_coarse",
+  };
 
   addBreadcrumb({
     category: "geofence",
     message: "background monitor stale, foreground takeover",
     level: "warning",
-    data: { silentFor: bucketMeters(silentForMs / 1000) },
+    data,
   });
+
+  // Breadcrumbs only travel attached to an event, and this path throws nothing.
+  // Without an explicit message the whole episode would be invisible in Sentry —
+  // exactly how the previous build ended up with no geofence telemetry at all.
+  const nowMs = Date.now();
+  const isNewEpisode = !staleEpisodeActive;
+  const intervalElapsed = nowMs - lastStaleReportAt > STALE_REPORT_INTERVAL_MS;
+
+  if (isNewEpisode || intervalElapsed) {
+    staleEpisodeActive = true;
+    lastStaleReportAt = nowMs;
+    captureMessage("geofence background monitor stale", {
+      reason: "geofence_monitor_stale",
+      ...data,
+    });
+  }
+};
+
+// A usable fix arrived: the episode is over, so the next silence reports again.
+export const noteBackgroundMonitorHealthy = () => {
+  staleEpisodeActive = false;
 };
 
 // A transition the backend never accepted, after every retry. The shift is now

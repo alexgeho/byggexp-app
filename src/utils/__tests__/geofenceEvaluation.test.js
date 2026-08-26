@@ -240,6 +240,7 @@ describe("parseGeofenceState", () => {
 
   it("round-trips the current format", () => {
     const state = {
+      projectId: "project-a",
       inside: false,
       pendingVerdict: "inside",
       pendingCount: 1,
@@ -249,6 +250,7 @@ describe("parseGeofenceState", () => {
         direction: "outside",
         attempts: 2,
         nextAttemptAt: 1_700_000_060_000,
+        projectId: "project-a",
       },
     };
 
