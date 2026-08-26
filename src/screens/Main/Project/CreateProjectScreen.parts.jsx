@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import { memo, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -487,6 +487,10 @@ export const LocationPickerModal = ({
   const styles = useThemedStyles();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  // While the radius slider is being dragged, freeze the ScrollView. On Android
+  // the vertical ScrollView otherwise intercepts the slider's horizontal drag,
+  // so the thumb never moves. Released on slide complete.
+  const [isSlidingRadius, setIsSlidingRadius] = useState(false);
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
       <View style={styles.mapModalScreen}>
@@ -506,6 +510,7 @@ export const LocationPickerModal = ({
           contentContainerStyle={styles.mapModalScrollContent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
+          scrollEnabled={!isSlidingRadius}
         >
           <View style={styles.mapSearchInputCard}>
             <Icon name="search" size={18} color="rgba(5, 45, 80, 0.55)" />
@@ -608,6 +613,8 @@ export const LocationPickerModal = ({
               step={50}
               value={radiusMeters}
               onValueChange={setRadiusMeters}
+              onSlidingStart={() => setIsSlidingRadius(true)}
+              onSlidingComplete={() => setIsSlidingRadius(false)}
               minimumTrackTintColor={theme.colors.primary}
               maximumTrackTintColor="rgba(5, 45, 80, 0.12)"
               thumbTintColor={theme.colors.primary}
