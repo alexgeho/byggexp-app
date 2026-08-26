@@ -48,6 +48,15 @@ jest.mock("../shiftLocationGuard", () => ({
 jest.mock("../shiftGeofenceDebug", () => ({
   logGeofenceTarget: jest.fn(),
   reportBackgroundMonitorStale: jest.fn(),
+  noteBackgroundMonitorHealthy: jest.fn(),
+}));
+
+// Resetting the geofence state now goes through the observation queue, so
+// backgroundGeofence imports geofenceRunner. Left unmocked that pulls in the
+// shift services and fails on the native ExpoSharing module — a test isolation
+// problem only; nothing in the app touches Sharing on this path.
+jest.mock("../geofenceRunner", () => ({
+  clearGeofenceState: jest.fn().mockResolvedValue(undefined),
 }));
 
 jest.mock("../../config/shiftLocationPolicy", () => ({
