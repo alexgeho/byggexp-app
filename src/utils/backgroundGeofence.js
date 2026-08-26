@@ -1,4 +1,4 @@
-import { Platform } from "react-native";
+import { AppState, Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Device from "expo-device";
 import * as Location from "expo-location";
@@ -22,6 +22,51 @@ import { parseGeofenceState } from "./geofenceEvaluation";
 export const LOCATION_CONSENT_PROMPTED_KEY = "shiftGeofenceConsentPromptedAt";
 
 const isAndroid = Platform.OS === "android";
+
+// Whether the Android location stream has been (re)started while the app was
+// foregrounded in THIS process — i.e. whether its foreground service is up.
+//
+// expo-location only starts the foreground service when startLocationUpdatesAsync
+// runs with the app in the foreground (LocationTaskConsumer.maybeStartForegroundService
+// bails in the background). But task registrations persist across process death,
+// so after the OS restarts the app in the background (overnight, low memory,
+// reboot) the persisted task re-registers WITHOUT a foreground service and
+// location is delivered via JobScheduler instead — which Doze freezes, so the
+// shift never auto-pauses while the phone is asleep. We track this so the next
+// foreground sync can re-register and promote the stream back to a foreground
+// service. Module scope resets on process restart, which is exactly the signal
+// we want (a fresh process has no foreground service yet).
+let androidForegroundServiceStarted = false;
+
+const ANDROID_LOCATION_STREAM_OPTIONS = {
+  accuracy: Location.Accuracy.High,
+  // Fixed cadence, no distance gate, and no deferral so Doze/battery
+  // optimisation can't batch updates until the screen wakes — otherwise the
+  // enter/exit only fires when the app is reopened.
+  timeInterval: 15000,
+  distanceInterval: 0,
+  deferredUpdatesInterval: 0,
+  deferredUpdatesDistance: 0,
+  pausesUpdatesAutomatically: false,
+  showsBackgroundLocationIndicator: false,
+  foregroundService: {
+    notificationTitle: "Shift location active",
+    notificationBody:
+      "ByggExp checks you in and out as you arrive at and leave the project site.",
+    notificationColor: "#052D50",
+    killServiceOnDestroy: false,
+  },
+};
+
+// Start the location stream and remember whether its foreground service could
+// have started (only possible while foregrounded, see above).
+const startAndroidLocationStream = async () => {
+  await Location.startLocationUpdatesAsync(
+    SHIFT_LOCATION_TASK,
+    ANDROID_LOCATION_STREAM_OPTIONS,
+  );
+  androidForegroundServiceStarted = AppState.currentState === "active";
+};
 
 // Background auto start/stop is supported on both platforms, but via different
 // mechanisms: iOS uses OS-level region monitoring (startGeofencingAsync);
@@ -99,6 +144,7 @@ const clampRadius = (radius) => {
 };
 
 const clearAndroidState = async () => {
+  androidForegroundServiceStarted = false;
   await AsyncStorage.removeItem(SHIFT_LOCATION_TARGET_KEY).catch(() => {});
   await AsyncStorage.removeItem(SHIFT_LOCATION_INSIDE_KEY).catch(() => {});
 };
@@ -198,6 +244,26 @@ const syncAndroidLocationUpdates = async (region) => {
       existing?.longitude === target.longitude &&
       existing?.radius === target.radius
     ) {
+      // Region unchanged. If we started the stream in the foreground this
+      // process its foreground service is up — nothing to do. Otherwise the
+      // stream is running without one (persisted task revived in the
+      // background), so re-register now while foregrounded to promote it to a
+      // foreground service. Preserve the inside/outside state so the transition
+      // detector isn't reset while the target is unchanged.
+      if (
+        androidForegroundServiceStarted ||
+        AppState.currentState !== "active"
+      ) {
+        return true;
+      }
+      await Location.stopLocationUpdatesAsync(SHIFT_LOCATION_TASK).catch(
+        () => {},
+      );
+      await AsyncStorage.setItem(
+        SHIFT_LOCATION_TARGET_KEY,
+        JSON.stringify(target),
+      );
+      await startAndroidLocationStream();
       return true;
     }
     // Different project, or the same project's area moved: stop and
@@ -211,25 +277,7 @@ const syncAndroidLocationUpdates = async (region) => {
   await AsyncStorage.setItem(SHIFT_LOCATION_TARGET_KEY, JSON.stringify(target));
   logGeofenceTarget(target);
 
-  await Location.startLocationUpdatesAsync(SHIFT_LOCATION_TASK, {
-    accuracy: Location.Accuracy.High,
-    // Fixed cadence, no distance gate, and no deferral so Doze/battery
-    // optimisation can't batch updates until the screen wakes — otherwise the
-    // enter/exit only fires when the app is reopened.
-    timeInterval: 15000,
-    distanceInterval: 0,
-    deferredUpdatesInterval: 0,
-    deferredUpdatesDistance: 0,
-    pausesUpdatesAutomatically: false,
-    showsBackgroundLocationIndicator: false,
-    foregroundService: {
-      notificationTitle: "Shift location active",
-      notificationBody:
-        "ByggExp checks you in and out as you arrive at and leave the project site.",
-      notificationColor: "#052D50",
-      killServiceOnDestroy: false,
-    },
-  });
+  await startAndroidLocationStream();
 
   return true;
 };
