@@ -237,25 +237,10 @@ export default function LocationConsentScreen() {
               ]}
             >
               {t("locationConsent.enable", {
-                defaultValue: "Enable automatic shifts",
+                defaultValue: "Continue",
               })}
             </Text>
           )}
-        </Pressable>
-
-        <Pressable
-          style={styles.secondaryButton}
-          onPress={() => navigation.goBack()}
-          disabled={requesting}
-        >
-          <Text
-            style={[
-              styles.secondaryButtonText,
-              { fontFamily: theme.text.fontFamily.medium },
-            ]}
-          >
-            {t("locationConsent.notNow", { defaultValue: "Not now" })}
-          </Text>
         </Pressable>
       </View>
     </Screen>

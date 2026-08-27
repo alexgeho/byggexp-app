@@ -48,8 +48,7 @@
     "bulletStop": "Ends your shift automatically when you leave — even if the app is closed or your phone is locked.",
     "bulletControl": "You can turn this off any time in your phone's location settings.",
     "disclaimer": "Your location is used only to detect arrival at and departure from your project sites. It is never shared for advertising.",
-    "enable": "Enable automatic shifts",
-    "notNow": "Not now",
+    "enable": "Continue",
     "deniedTitle": "Background location is off",
     "deniedBody": "To enable automatic shifts, allow location access \"Always\" for ByggExp in your phone settings.",
     "openSettings": "Open settings"

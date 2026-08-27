@@ -659,12 +659,7 @@ export default function ChatConversationScreen({ variant }) {
                 source={require("../../../assets/Send.png")}
               />
             </TouchableOpacity>
-          ) : (
-            <Image
-              style={styles.voiceIcon}
-              source={require("../../../assets/VoiceBlack.png")}
-            />
-          )}
+          ) : null}
         </View>
       </View>
 

@@ -48,8 +48,7 @@
     "bulletStop": "Avslutar ditt pass automatiskt när du lämnar — även om appen är stängd eller telefonen är låst.",
     "bulletControl": "Du kan stänga av detta när som helst i telefonens platsinställningar.",
     "disclaimer": "Din plats används endast för att upptäcka när du kommer till och lämnar dina projektplatser. Den delas aldrig för annonsering.",
-    "enable": "Aktivera automatiska pass",
-    "notNow": "Inte nu",
+    "enable": "Fortsätt",
     "deniedTitle": "Bakgrundsplats är avstängd",
     "deniedBody": "För att aktivera automatiska pass, tillåt platsåtkomst \"Alltid\" för ByggExp i telefonens inställningar.",
     "openSettings": "Öppna inställningar"

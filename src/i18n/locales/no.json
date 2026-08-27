@@ -48,8 +48,7 @@
     "bulletStop": "Avslutter skiftet ditt automatisk når du drar — selv om appen er lukket eller telefonen er låst.",
     "bulletControl": "Du kan slå dette av når som helst i posisjonsinnstillingene på telefonen.",
     "disclaimer": "Posisjonen din brukes bare til å oppdage når du ankommer og forlater prosjektstedene dine. Den deles aldri for annonsering.",
-    "enable": "Aktiver automatiske skift",
-    "notNow": "Ikke nå",
+    "enable": "Fortsett",
     "deniedTitle": "Bakgrunnsposisjon er avslått",
     "deniedBody": "For å aktivere automatiske skift, tillat posisjonstilgang \"Alltid\" for ByggExp i telefoninnstillingene.",
     "openSettings": "Åpne innstillinger"
