@@ -792,6 +792,7 @@ export function ShiftCalendar({
                     placeholder="0"
                     placeholderTextColor="#9BB0C1"
                     onSubmitEditing={onStashInput}
+                    onBlur={onStashInput}
                   />
                 ) : displayMs > 0 ? (
                   canEditDay ? (

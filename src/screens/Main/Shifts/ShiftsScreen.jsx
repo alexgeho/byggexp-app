@@ -149,6 +149,10 @@ export default function ShiftsScreen() {
   const [inlineManualDate, setInlineManualDate] = useState(null);
   const [inlineManualSeed, setInlineManualSeed] = useState("");
   const inlineValueRef = useRef("");
+  // True while saveAllManual is committing, so the input's onBlur (fired by the
+  // Keyboard.dismiss inside the save) doesn't double-stash and resurrect a
+  // just-saved day as pending.
+  const batchSavingRef = useRef(false);
   // Unsaved manual hours keyed by date (hours as a number). Fill several days,
   // then the header check saves them all in one go.
   const [pendingManual, setPendingManual] = useState({});
@@ -445,7 +449,7 @@ export default function ShiftsScreen() {
   // against the saved value so unchanged days don't count as unsaved.
   const stashOpenInput = useCallback(() => {
     const dateStr = inlineManualDate;
-    if (!dateStr) {
+    if (!dateStr || batchSavingRef.current) {
       return;
     }
     const raw = String(inlineValueRef.current || "")
@@ -482,6 +486,7 @@ export default function ShiftsScreen() {
   // The blue header check saves every pending day in one go (including the one
   // still open in the input).
   const saveAllManual = useCallback(async () => {
+    batchSavingRef.current = true;
     Keyboard.dismiss();
 
     // Merge the currently-open cell into a local copy so we don't race the
@@ -510,6 +515,7 @@ export default function ShiftsScreen() {
     const entries = Object.entries(merged);
     if (entries.length === 0) {
       setPendingManual({});
+      batchSavingRef.current = false;
       return;
     }
 
@@ -519,6 +525,7 @@ export default function ShiftsScreen() {
         t("shifts.manualHoursError"),
         t("shifts.manualHoursNoProject"),
       );
+      batchSavingRef.current = false;
       return;
     }
 
@@ -543,6 +550,7 @@ export default function ShiftsScreen() {
       Alert.alert(t("shifts.manualHoursError"), message);
     } finally {
       setSavingBatch(false);
+      batchSavingRef.current = false;
     }
   }, [
     pendingManual,
