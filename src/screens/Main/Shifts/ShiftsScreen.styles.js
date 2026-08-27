@@ -596,6 +596,7 @@ export const createStyles = (c) =>
     exportSheetTitle: {
       color: c.textPrimary,
       fontSize: 22,
+      textAlign: "center",
     },
     exportPeriodLabel: {
       color: c.textPrimary,
