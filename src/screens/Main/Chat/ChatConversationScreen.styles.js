@@ -292,10 +292,6 @@ export const createStyles = (c) =>
       width: 24,
       height: 24,
     },
-    voiceIcon: {
-      width: 24,
-      height: 24,
-    },
     sheetBackdrop: {
       ...StyleSheet.absoluteFillObject,
       backgroundColor: "rgba(0, 0, 0, 0.35)",
