@@ -26,6 +26,7 @@ import {
 } from "../../../components/common/ui";
 import { getWorkerStatusBadge } from "../../../utils/workerStatusBadge";
 import { createStyles } from "./CreateProjectScreen.styles";
+import { LocationMapPicker } from "./LocationMapPicker";
 import { useTheme } from "../../../theme/ThemeContext";
 
 const useThemedStyles = () => {
@@ -482,6 +483,7 @@ export const LocationPickerModal = ({
   radiusMeters,
   setRadiusMeters,
   selectedCoordinate,
+  onPickCoordinate,
   onConfirm,
 }) => {
   const styles = useThemedStyles();
@@ -491,6 +493,9 @@ export const LocationPickerModal = ({
   // the vertical ScrollView otherwise intercepts the slider's horizontal drag,
   // so the thumb never moves. Released on slide complete.
   const [isSlidingRadius, setIsSlidingRadius] = useState(false);
+  // Same freeze while panning the map or dragging the pin, so the outer
+  // ScrollView doesn't steal the gesture.
+  const [isMapInteracting, setIsMapInteracting] = useState(false);
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
       <View style={styles.mapModalScreen}>
@@ -510,7 +515,7 @@ export const LocationPickerModal = ({
           contentContainerStyle={styles.mapModalScrollContent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
-          scrollEnabled={!isSlidingRadius}
+          scrollEnabled={!isSlidingRadius && !isMapInteracting}
         >
           <View style={styles.mapSearchInputCard}>
             <Icon name="search" size={18} color="rgba(5, 45, 80, 0.55)" />
@@ -588,6 +593,17 @@ export const LocationPickerModal = ({
               ]}
             >
               {location || t("createProject.chooseLocationHint")}
+            </Text>
+
+            <LocationMapPicker
+              latitude={selectedCoordinate?.latitude}
+              longitude={selectedCoordinate?.longitude}
+              radiusMeters={radiusMeters}
+              onPickCoordinate={onPickCoordinate}
+              onInteractionChange={setIsMapInteracting}
+            />
+            <Text style={styles.mapDragHint}>
+              {t("createProject.mapDragHint")}
             </Text>
 
             <View style={styles.activationAreaRow}>

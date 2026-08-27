@@ -322,6 +322,7 @@
     "searchingAddresses": "Searching addresses...",
     "selectedLocation": "Selected location",
     "chooseLocationHint": "Search and choose a project location.",
+    "mapDragHint": "Drag the pin or tap the map to set the exact spot.",
     "searchHint": "Start typing to search for a project address.",
     "noAddresses": "No addresses found. Try a more specific search.",
     "activationArea": "Activation area",

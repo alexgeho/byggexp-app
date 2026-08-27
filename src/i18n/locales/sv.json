@@ -322,6 +322,7 @@
     "searchingAddresses": "Söker adresser...",
     "selectedLocation": "Vald plats",
     "chooseLocationHint": "Sök och välj en projektplats.",
+    "mapDragHint": "Dra nålen eller tryck på kartan för att sätta exakt plats.",
     "searchHint": "Börja skriva för att söka efter en projektadress.",
     "noAddresses": "Inga adresser hittades. Försök med en mer specifik sökning.",
     "activationArea": "Aktiveringsområde",

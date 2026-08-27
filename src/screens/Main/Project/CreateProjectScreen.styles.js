@@ -676,6 +676,12 @@ export const createStyles = (c) =>
     mapBottomLocationPlaceholder: {
       color: "rgba(5, 45, 80, 0.5)",
     },
+    mapDragHint: {
+      color: c.textMuted,
+      fontSize: 12,
+      lineHeight: 16,
+      marginTop: -4,
+    },
     activationAreaRow: {
       flexDirection: "row",
       alignItems: "center",

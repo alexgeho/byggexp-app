@@ -388,6 +388,13 @@ export default function CreateProjectScreen() {
     setLocationSearch(fallbackAddress);
   };
 
+  // Dragging the map pin (or tapping the map) sets the coordinate directly and
+  // reverse-geocodes it into the address text. No full-screen loading state —
+  // the reverse geocoder is throttled and the pin stays responsive.
+  const handlePickMapCoordinate = async (latitude, longitude) => {
+    await applyResolvedLocation(latitude, longitude);
+  };
+
   const openLocationPicker = () => {
     setLocationSearch(location);
     clearLocationSuggestions();
@@ -1397,6 +1404,7 @@ export default function CreateProjectScreen() {
         radiusMeters={locationRadiusMeters}
         setRadiusMeters={setLocationRadiusMeters}
         selectedCoordinate={selectedCoordinate}
+        onPickCoordinate={handlePickMapCoordinate}
         onConfirm={confirmLocationPickerSelection}
       />
 
