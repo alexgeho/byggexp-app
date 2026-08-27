@@ -847,14 +847,11 @@ export default function ShiftsScreen() {
   );
 
   const openExportSheet = useCallback(() => {
-    if (!selectedDates.length && !exportPeriodApplied) {
-      Alert.alert(t("shifts.noDatesTitle"), t("shifts.noDatesMessage"));
-      return;
-    }
-
+    // No date selection required: with nothing selected we export the current
+    // month by default (see handleExport).
     setSelectedExportType("pdf");
     setExportSheetOpen(true);
-  }, [exportPeriodApplied, selectedDates]);
+  }, []);
 
   const handleCustomDateChange = useCallback(
     (_event, date) => {
@@ -892,10 +889,11 @@ export default function ShiftsScreen() {
       return;
     }
 
-    if (!usePeriod && !selectedDates.length) {
-      Alert.alert(t("shifts.noDatesTitle"), t("shifts.noDatesMessage"));
-      return;
-    }
+    // Nothing selected and no applied period → default to the current month.
+    const useCurrentMonth = !usePeriod && !selectedDates.length;
+    const monthRange = useCurrentMonth
+      ? getMonthDateRange(selectedMonth || currentMonthKey)
+      : null;
 
     const sortedDates = [...selectedDates].sort();
 
@@ -906,7 +904,9 @@ export default function ShiftsScreen() {
         hoursSource,
         ...(usePeriod
           ? { from: range.from, to: range.to }
-          : { dates: sortedDates.join(",") }),
+          : useCurrentMonth
+            ? { from: monthRange.from, to: monthRange.to }
+            : { dates: sortedDates.join(",") }),
         ...(filterProjectId ? { projectId: filterProjectId } : {}),
         ...(workerIdsParam ? { workerIds: workerIdsParam } : {}),
       });
@@ -922,12 +922,14 @@ export default function ShiftsScreen() {
     }
   }, [
     closeExportSheet,
+    currentMonthKey,
     exportPeriodApplied,
     exporting,
     getPeriodExportRange,
     hoursSource,
     selectedDates,
     selectedExportType,
+    selectedMonth,
   ]);
 
   const openManualHoursEditor = useCallback((shift) => {
