@@ -957,10 +957,16 @@ export default function HomeVariant2() {
           // Only the black theme gets the dark pill. The blue theme keeps its
           // light frosted pill.
           darkOverride={themeName === "black"}
-          // Tint the nav icons to match the home card icons: white over the
-          // blue/black dark-appearance backgrounds, the theme text colour over
-          // the light-blue themes.
-          iconColor={isLightBlueTheme ? theme.colors.text : "#FFFFFF"}
+          // Tint the nav icons: white only on the black theme (dark pill); the
+          // blue theme keeps the original dark-navy icons over its light frosted
+          // pill; light themes use their own text colour.
+          iconColor={
+            themeName === "black"
+              ? "#FFFFFF"
+              : isLightBlueTheme
+                ? theme.colors.text
+                : "#052D50"
+          }
           onLeftPress={() => navigation.navigate("Main")}
           onRightPress={() => navigation.navigate("Menu")}
           showAddButton={false}
