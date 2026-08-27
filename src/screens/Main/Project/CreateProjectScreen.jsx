@@ -570,17 +570,11 @@ export default function CreateProjectScreen() {
     });
   };
 
-  // Any company member can be added to the team (not just role=worker); exclude
-  // the platform superadmin and the current user.
-  const currentUserId = String(user?._id || user?.id || "");
+  // Only role=worker can be added to a project team — the backend rejects any
+  // other role. Managers/admins are assigned through the admin panel.
   const availableWorkers = useMemo(
-    () =>
-      users.filter(
-        (item) =>
-          item.role !== "superadmin" &&
-          String(item._id || item.id || "") !== currentUserId,
-      ),
-    [users, currentUserId],
+    () => users.filter((item) => item.role === "worker"),
+    [users],
   );
   const normalizedWorkerSearch = workerSearch.trim().toLowerCase();
   const filteredWorkers = useMemo(() => {

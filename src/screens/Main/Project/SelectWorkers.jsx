@@ -44,10 +44,11 @@ export const SelectWorkers = () => {
   const fetchWorkers = async () => {
     try {
       setLoading(true);
-      // Show every company member (except self) — an admin can add anyone to
-      // the project team, not just role=worker.
-      const colleagues = await userService.getColleagues();
-      setWorkers(colleagues || []);
+      // Only role=worker can be added to a project team: the backend's
+      // addWorkers endpoint rejects any other role with 403. Managers/admins
+      // are assigned through the admin panel, not here.
+      const allWorkers = await userService.getWorkers();
+      setWorkers(allWorkers || []);
     } catch (error) {
       console.error("Error fetching workers:", error);
     } finally {
