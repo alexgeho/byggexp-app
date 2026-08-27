@@ -420,6 +420,8 @@
     "chooseValidPeriod": "Choose a valid export period.",
     "noDatesTitle": "No dates selected",
     "noDatesMessage": "Select dates in the calendar to export.",
+    "exportSelected": "Export selected",
+    "exportThisMonth": "Export this month",
     "emptyMonth": "No shifts for this period yet.",
     "selected": "Selected",
     "dayCount_one": "{{count}} day",

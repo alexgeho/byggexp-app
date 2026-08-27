@@ -420,6 +420,8 @@
     "chooseValidPeriod": "Velg en gyldig eksportperiode.",
     "noDatesTitle": "Ingen datoer valgt",
     "noDatesMessage": "Velg datoer i kalenderen for å eksportere.",
+    "exportSelected": "Eksporter valgte",
+    "exportThisMonth": "Eksporter denne måneden",
     "emptyMonth": "Ingen skift for denne perioden ennå.",
     "selected": "Valgt",
     "dayCount_one": "{{count}} dag",

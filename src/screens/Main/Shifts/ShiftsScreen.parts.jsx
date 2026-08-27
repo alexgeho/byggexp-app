@@ -265,6 +265,7 @@ export function ExportSheet({
   setSelectedExportType,
   exporting,
   onExport,
+  hasSelection,
   styles,
   sheetStyles,
   titleFontFamily,
@@ -343,7 +344,11 @@ export function ExportSheet({
               <ActivityIndicator color="#FFFFFF" />
             ) : (
               <Text style={styles.exportMainButtonText}>
-                {t("shiftHistory.export")}
+                {t(
+                  hasSelection
+                    ? "shifts.exportSelected"
+                    : "shifts.exportThisMonth",
+                )}
               </Text>
             )}
           </TouchableOpacity>

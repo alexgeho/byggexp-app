@@ -420,6 +420,8 @@
     "chooseValidPeriod": "Välj en giltig exportperiod.",
     "noDatesTitle": "Inga datum valda",
     "noDatesMessage": "Välj datum i kalendern för att exportera.",
+    "exportSelected": "Exportera valda",
+    "exportThisMonth": "Exportera denna månad",
     "emptyMonth": "Inga arbetspass för denna period än.",
     "selected": "Vald",
     "dayCount_one": "{{count}} dag",

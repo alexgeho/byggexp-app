@@ -373,6 +373,22 @@ export default function ShiftsScreen() {
     setSelectedDates([]);
   }, [setSelectedDates]);
 
+  // Switching the hours source (Planned/Manual/GPS) must reset any day
+  // selection: the selected days/hours belong to one source and carrying them
+  // into another shows the wrong totals.
+  const handleChangeHoursSource = useCallback(
+    (key) => {
+      if (key === hoursSource) {
+        return;
+      }
+      setHoursSource(key);
+      setSelectedDates([]);
+      setSelectMode(false);
+      setExportPeriodApplied(false);
+    },
+    [hoursSource, setSelectedDates],
+  );
+
   // Begin typing hours straight into a day's calendar cell (Manuell tab). Seed
   // from a pending edit if present, else from what's already saved.
   const startInlineManual = useCallback(
@@ -1119,7 +1135,7 @@ export default function ShiftsScreen() {
           <HoursSourceToggle
             sources={HOURS_SOURCES}
             hoursSource={hoursSource}
-            setHoursSource={setHoursSource}
+            setHoursSource={handleChangeHoursSource}
             styles={styles}
             mediumFontFamily={theme.text.fontFamily.medium}
             t={t}
@@ -1432,6 +1448,7 @@ export default function ShiftsScreen() {
         setSelectedExportType={setSelectedExportType}
         exporting={exporting}
         onExport={handleExport}
+        hasSelection={selectedDates.length > 0 || exportPeriodApplied}
         styles={styles}
         sheetStyles={sheetStyles}
         titleFontFamily={theme.text.fontFamily["semiBold"]}

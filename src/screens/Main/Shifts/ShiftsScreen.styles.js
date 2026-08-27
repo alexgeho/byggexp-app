@@ -578,6 +578,7 @@ export const createStyles = (c) =>
       borderTopRightRadius: 28,
     },
     handleIndicator: {
+      alignSelf: "center",
       backgroundColor: "#CCCCCC",
       width: 40,
       height: 4,
