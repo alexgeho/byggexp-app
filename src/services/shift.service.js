@@ -64,13 +64,13 @@ export const shiftService = {
     return data;
   },
 
-  pause: async (shiftId) => {
-    const { data } = await api.post(`/shifts/${shiftId}/pause`);
+  pause: async (shiftId, payload = {}) => {
+    const { data } = await api.post(`/shifts/${shiftId}/pause`, payload);
     return data;
   },
 
-  resume: async (shiftId) => {
-    const { data } = await api.post(`/shifts/${shiftId}/resume`);
+  resume: async (shiftId, payload = {}) => {
+    const { data } = await api.post(`/shifts/${shiftId}/resume`, payload);
     return data;
   },
 

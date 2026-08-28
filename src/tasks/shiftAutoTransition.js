@@ -44,7 +44,11 @@ const resumeExisting = async (shift) => {
     return null;
   }
 
-  const resumedShift = (await shiftService.resume(shiftId)) || shift;
+  // Every caller of resumeExisting is a geofence return (the worker re-entered
+  // the project area), so tag it so the audit log labels it "returned to area"
+  // instead of a manual resume.
+  const resumedShift =
+    (await shiftService.resume(shiftId, { source: "gps" })) || shift;
   await announceShiftAutoResumed(resumedShift);
 
   return resumedShift;
@@ -140,8 +144,13 @@ const performShiftExit = async ({ projectId } = {}) => {
     return null;
   }
 
+  // A geofence exit — the worker left the project area. Tag it so the audit log
+  // labels it "left project area" instead of a manual pause.
   const pausedShift =
-    (await shiftService.pause(currentShiftId)) || currentShift;
+    (await shiftService.pause(currentShiftId, {
+      reason: "outside_project_area",
+      source: "gps",
+    })) || currentShift;
 
   console.log(
     `[shift] exit paused ${currentShiftId} (project ${currentShift.projectId})`,
