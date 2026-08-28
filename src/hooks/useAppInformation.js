@@ -1,8 +1,22 @@
 import { useContext, useEffect, useMemo, useState } from "react";
+import Constants from "expo-constants";
+import * as Updates from "expo-updates";
 import AuthContext from "../contexts/AuthContext";
 import { companyService, projectService } from "../services";
 
 export const NOT_AVAILABLE = "N/A";
+
+// App version comes from the native binary (app.json version), the OTA line
+// identifies the JS bundle actually running: its channel plus a short update id
+// ("embedded" when running the bundle shipped inside the build, i.e. no OTA
+// applied). This is how you tell a phone picked up an `eas update` vs still
+// running the build's original code.
+const APP_VERSION =
+  Constants.expoConfig?.version || Constants.manifest?.version || "—";
+const OTA_CHANNEL = Updates.channel || "—";
+const OTA_UPDATE_ID = Updates.updateId
+  ? Updates.updateId.slice(0, 8)
+  : "embedded";
 
 const getFirstDefinedValue = (...values) =>
   values.find((value) => typeof value === "string" && value.trim()) || "";
@@ -88,7 +102,9 @@ export function useAppInformation() {
 
         if (!relevantProject || !companyId) {
           const projects = await projectService.getMyProjects();
-          const fallbackProject = Array.isArray(projects) ? projects[0] || null : null;
+          const fallbackProject = Array.isArray(projects)
+            ? projects[0] || null
+            : null;
 
           if (fallbackProject) {
             relevantProject = fallbackProject;
@@ -106,7 +122,9 @@ export function useAppInformation() {
           return;
         }
 
-        const company = companyId ? await companyService.getById(companyId) : null;
+        const company = companyId
+          ? await companyService.getById(companyId)
+          : null;
         const developer = getFirstDefinedValue(
           company?.name,
           company?.companyName,
@@ -145,7 +163,12 @@ export function useAppInformation() {
 
   const appInformationRows = useMemo(
     () => [
-      { key: "version", label: "Version", value: "1.0" },
+      { key: "version", label: "Version", value: APP_VERSION },
+      {
+        key: "build",
+        label: "Build",
+        value: `${OTA_CHANNEL} · ${OTA_UPDATE_ID}`,
+      },
       { key: "developer", label: "Developer", value: appInfo.developer },
       { key: "contact", label: "Contact", value: appInfo.contact },
     ],
