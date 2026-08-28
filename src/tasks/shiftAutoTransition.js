@@ -118,11 +118,34 @@ const performShiftExit = async ({ projectId } = {}) => {
   // Only an actively running shift has a clock to stop. A paused shift is
   // already where an exit would leave it.
   if (!currentShiftId || currentShift.status !== "active") {
+    // Diagnostic: an exit that finds no active shift for the monitored project
+    // is usually a stale geofence target — the worker is clocked into another
+    // project and the monitor has not re-synced the target yet. Log the
+    // worker's actual current shift so a genuine "nothing to pause" can be told
+    // apart from a target/shift project mismatch.
+    let workerStatus = "-";
+    let workerProject = "-";
+    try {
+      const workerShift = await shiftService.getCurrent();
+      workerStatus = workerShift?.status ?? "none";
+      workerProject = workerShift?.projectId ?? "-";
+    } catch {
+      workerStatus = "err";
+    }
+    console.log(
+      `[shift] exit no-op target=${projectId ?? "-"} ` +
+        `found=${currentShiftId ?? "none"}/${currentShift?.status ?? "-"} ` +
+        `workerCurrent=${workerStatus}@${workerProject}`,
+    );
     return null;
   }
 
   const pausedShift =
     (await shiftService.pause(currentShiftId)) || currentShift;
+
+  console.log(
+    `[shift] exit paused ${currentShiftId} (project ${currentShift.projectId})`,
+  );
 
   await announceShiftAutoPaused(pausedShift);
 
