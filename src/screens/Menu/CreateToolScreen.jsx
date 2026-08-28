@@ -356,7 +356,7 @@ export default function CreateToolScreen() {
               activeOpacity={0.85}
             >
               <View style={styles.fieldRowContent}>
-                <FieldIcon name="camera" theme={theme} />
+                <FieldIcon name="camera" theme={theme} styles={styles} />
                 <View style={styles.fieldInputWrap}>
                   <Text style={styles.fieldLabel}>{t("tools.addPhoto")}</Text>
                   <Text
