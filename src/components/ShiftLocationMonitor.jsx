@@ -7,10 +7,7 @@ import AuthContext from "../contexts/AuthContext";
 import { projectService, shiftService } from "../services";
 import { shiftLocationPolicy } from "../config/shiftLocationPolicy";
 import { getShiftLocationCheck } from "../utils/shiftLocationGuard";
-import {
-  emitShiftLocationCheckError,
-  subscribeToGeofenceResyncRequest,
-} from "../utils/shiftExitAutoCompleteEvents";
+import { emitShiftLocationCheckError } from "../utils/shiftExitAutoCompleteEvents";
 import { runGeofenceObservation } from "../utils/geofenceRunner";
 import { GEOFENCE_INSIDE, GEOFENCE_OUTSIDE } from "../utils/geofenceEvaluation";
 import {
@@ -340,18 +337,9 @@ export default function ShiftLocationMonitor() {
       }
     });
 
-    // Re-point the geofence at the new shift's project the moment a shift is
-    // started or resumed, instead of waiting for the next interval tick — closes
-    // the race where a worker starts a shift on a new project and leaves before
-    // the persisted target has caught up (which left the old shift running).
-    const unsubscribeResync = subscribeToGeofenceResyncRequest(() => {
-      verifyGeofence();
-    });
-
     return () => {
       clearInterval(intervalId);
       subscription.remove();
-      unsubscribeResync();
     };
   }, [isAuthenticated, verifyGeofence]);
 

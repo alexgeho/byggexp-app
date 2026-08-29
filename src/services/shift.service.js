@@ -1,7 +1,6 @@
 import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
 import { getToken } from "../utils/storage";
-import { emitGeofenceResyncRequest } from "../utils/shiftExitAutoCompleteEvents";
 import api, { API_BASE_URL } from "./api";
 
 const getMultipartConfig = (payload) =>
@@ -62,10 +61,6 @@ const buildExportFileName = ({
 export const shiftService = {
   start: async (projectId) => {
     const { data } = await api.post("/shifts/start", { projectId });
-    // Re-point the geofence at this shift's project right away (no-op in the
-    // background where the monitor isn't mounted) so leaving is measured against
-    // the project the worker actually clocked into.
-    void emitGeofenceResyncRequest();
     return data;
   },
 
@@ -76,7 +71,6 @@ export const shiftService = {
 
   resume: async (shiftId, payload = {}) => {
     const { data } = await api.post(`/shifts/${shiftId}/resume`, payload);
-    void emitGeofenceResyncRequest();
     return data;
   },
 
