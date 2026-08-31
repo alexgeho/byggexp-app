@@ -48,7 +48,7 @@
         {
           "locationWhenInUsePermission": "Allow ByggExp to access your location while creating a project (to pre-fill the address) and when starting a work shift (to confirm you are at the project site).",
           "locationAlwaysAndWhenInUsePermission": "Allow ByggExp to use your location in the background so it can automatically start your shift when you arrive at the project site and end it when you leave — even when the app is closed or your phone is locked.",
-          "isIosBackgroundLocationEnabled": true,
+          "isIosBackgroundLocationEnabled": false,
           "isAndroidBackgroundLocationEnabled": true,
           "isAndroidForegroundServiceEnabled": true
         }
