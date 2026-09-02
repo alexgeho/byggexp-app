@@ -38,7 +38,7 @@ export default function RegisterVerifyScreen({ navigation, route }) {
   return (
     <KeyboardAvoidingView
       style={styles.flex}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <LinearGradient
         colors={["#eaf2fb", "#dce9f6"]}
