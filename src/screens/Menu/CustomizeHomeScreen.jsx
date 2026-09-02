@@ -71,6 +71,16 @@ export default function CustomizeHomeScreen({
     ? "rgba(255,255,255,0.3)"
     : "#c2ccd6";
 
+  // Reorder-chevron colour on a pill. On an enabled (primary) pill the arrows
+  // are white; on a disabled (surface) pill they follow the theme chevron
+  // colours. An arrow at the list edge is greyed out.
+  function reorderColor(isEdge, onEnabledPill) {
+    if (onEnabledPill) {
+      return isEdge ? "rgba(255,255,255,0.4)" : "#FFFFFF";
+    }
+    return isEdge ? chevronDisabledColor : chevronActiveColor;
+  }
+
   const [enabledButtons, setEnabledButtons] = useState(defaultEnabledButtons);
 
   const [enabledSections, setEnabledSections] = useState(
@@ -375,25 +385,20 @@ export default function CustomizeHomeScreen({
               return (
                 <TouchableOpacity
                   key={button.id}
-                  style={[styles.item, !isLast && styles.itemBorder]}
+                  style={[styles.item, isEnabled && styles.itemActive]}
                   onPress={function handlePress() {
                     toggleButton(button.id);
                   }}
                 >
-                  <View style={styles.itemTopRow}>
-                    <Text style={styles.itemText} numberOfLines={1}>
-                      {t(`home.buttons.${button.id}`, button.title)}
-                    </Text>
-
-                    <View
-                      style={[
-                        styles.checkbox,
-                        isEnabled && styles.checkboxActive,
-                      ]}
-                    >
-                      {isEnabled && <Text style={styles.checkmark}>✓</Text>}
-                    </View>
-                  </View>
+                  <Text
+                    style={[
+                      styles.itemText,
+                      isEnabled && styles.itemTextActive,
+                    ]}
+                    numberOfLines={1}
+                  >
+                    {t(`home.buttons.${button.id}`, button.title)}
+                  </Text>
 
                   <View style={styles.itemReorderRow}>
                     <TouchableOpacity
@@ -402,14 +407,12 @@ export default function CustomizeHomeScreen({
                       onPress={function moveUp() {
                         moveButton(index, -1, visibleButtons);
                       }}
-                      hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
+                      hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
                     >
                       <Icon
                         name="chevron-up"
-                        size={28}
-                        color={
-                          isFirst ? chevronDisabledColor : chevronActiveColor
-                        }
+                        size={24}
+                        color={reorderColor(isFirst, isEnabled)}
                       />
                     </TouchableOpacity>
 
@@ -419,14 +422,12 @@ export default function CustomizeHomeScreen({
                       onPress={function moveDown() {
                         moveButton(index, 1, visibleButtons);
                       }}
-                      hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
+                      hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
                     >
                       <Icon
                         name="chevron-down"
-                        size={28}
-                        color={
-                          isLast ? chevronDisabledColor : chevronActiveColor
-                        }
+                        size={24}
+                        color={reorderColor(isLast, isEnabled)}
                       />
                     </TouchableOpacity>
                   </View>
@@ -460,7 +461,7 @@ export default function CustomizeHomeScreen({
                   disabled={isDisabled}
                   style={[
                     styles.item,
-                    !isLast && styles.itemBorder,
+                    isEnabled && styles.itemActive,
                     {
                       opacity: isDisabled ? 0.4 : 1,
                     },
@@ -469,20 +470,15 @@ export default function CustomizeHomeScreen({
                     toggleSection(section.id);
                   }}
                 >
-                  <View style={styles.itemTopRow}>
-                    <Text style={styles.itemText} numberOfLines={1}>
-                      {t(`home.sections.${section.id}`, section.title)}
-                    </Text>
-
-                    <View
-                      style={[
-                        styles.checkbox,
-                        isEnabled && styles.checkboxActive,
-                      ]}
-                    >
-                      {isEnabled && <Text style={styles.checkmark}>✓</Text>}
-                    </View>
-                  </View>
+                  <Text
+                    style={[
+                      styles.itemText,
+                      isEnabled && styles.itemTextActive,
+                    ]}
+                    numberOfLines={1}
+                  >
+                    {t(`home.sections.${section.id}`, section.title)}
+                  </Text>
 
                   <View style={styles.itemReorderRow}>
                     <TouchableOpacity
@@ -491,14 +487,12 @@ export default function CustomizeHomeScreen({
                       onPress={function moveUp() {
                         moveSection(index, -1);
                       }}
-                      hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
+                      hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
                     >
                       <Icon
                         name="chevron-up"
-                        size={28}
-                        color={
-                          isFirst ? chevronDisabledColor : chevronActiveColor
-                        }
+                        size={24}
+                        color={reorderColor(isFirst, isEnabled)}
                       />
                     </TouchableOpacity>
 
@@ -508,14 +502,12 @@ export default function CustomizeHomeScreen({
                       onPress={function moveDown() {
                         moveSection(index, 1);
                       }}
-                      hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
+                      hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
                     >
                       <Icon
                         name="chevron-down"
-                        size={28}
-                        color={
-                          isLast ? chevronDisabledColor : chevronActiveColor
-                        }
+                        size={24}
+                        color={reorderColor(isLast, isEnabled)}
                       />
                     </TouchableOpacity>
                   </View>

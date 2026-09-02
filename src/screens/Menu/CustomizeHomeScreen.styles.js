@@ -28,8 +28,9 @@ export function createStyles(theme) {
     },
 
     title: {
-      fontSize: 18,
-      fontWeight: "600",
+      // Figma: DM Sans 600, 17px.
+      fontSize: 17,
+      fontFamily: theme.text.fontFamily.semiBold,
       color: c.textPrimary,
     },
 
@@ -42,23 +43,25 @@ export function createStyles(theme) {
     },
 
     sectionTitle: {
-      fontSize: 16,
-      fontWeight: "600",
+      // Figma: DM Sans 500 (medium), 17px, white.
+      fontSize: 17,
+      fontFamily: theme.text.fontFamily.medium,
       color: c.textPrimary,
-      marginBottom: 12,
+      marginBottom: 14,
       marginLeft: 4,
     },
 
     themeRow: {
       flexDirection: "row",
       flexWrap: "wrap",
-      gap: 12,
-      rowGap: 12,
+      gap: 14,
+      rowGap: 14,
     },
 
     themeButton: {
-      width: 42,
-      height: 42,
+      // Figma: 44×44 ellipses.
+      width: 44,
+      height: 44,
       borderRadius: 999,
       overflow: "hidden",
       // Outline the full circle so light/white theme halves stay visible
@@ -81,115 +84,82 @@ export function createStyles(theme) {
       borderColor: theme.colors.primary,
     },
 
+    // Figma: standalone pills with 14px gaps — no card wrapper.
     list: {
-      backgroundColor: c.surface,
-      borderRadius: 24,
-      overflow: "hidden",
+      gap: 14,
       marginBottom: 24,
     },
 
-    // Narrow (50%) drawer: name + checkbox on the top row, reorder arrows
-    // stacked underneath the name.
+    // Figma pill: enabled = solid primary, disabled = surface. Label left,
+    // reorder chevrons on the right. Fully rounded, 52 tall.
     item: {
-      paddingVertical: 12,
-      paddingHorizontal: 16,
-      gap: 6,
-    },
-
-    itemBorder: {
-      borderBottomWidth: 1,
-      borderBottomColor: c.divider,
-    },
-
-    itemTopRow: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
       gap: 8,
+      paddingVertical: 15,
+      paddingLeft: 18,
+      paddingRight: 8,
+      borderRadius: 999,
+      backgroundColor: c.surface,
+    },
+
+    itemActive: {
+      backgroundColor: theme.colors.primary,
     },
 
     itemText: {
       flex: 1,
-      fontSize: 16,
+      // Figma label: DM Sans medium, 15px.
+      fontSize: 15,
+      fontFamily: theme.text.fontFamily.medium,
       color: c.textPrimary,
     },
 
-    // Reorder arrows centered in the free space under the name, enlarged for
-    // an easier tap target.
+    itemTextActive: {
+      color: "#ffffff",
+    },
+
+    // Reorder chevrons sit inline on the pill's right edge.
     itemReorderRow: {
       flexDirection: "row",
       alignItems: "center",
-      justifyContent: "center",
-      gap: 12,
-    },
-
-    sectionRowActions: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 8,
     },
 
     reorderButton: {
-      width: 48,
-      height: 40,
+      width: 32,
+      height: 34,
       alignItems: "center",
       justifyContent: "center",
-    },
-
-    checkbox: {
-      width: 24,
-      height: 24,
-      borderRadius: 7,
-      borderWidth: 1.5,
-      // The faint primary-tinted border vanishes on the dark (black) theme, so
-      // use a visible white border there (matching the reorder chevrons).
-      borderColor:
-        theme?.content?.scheme === "dark"
-          ? "rgba(255,255,255,0.6)"
-          : `${theme.colors.primary}33`,
-      backgroundColor: c.surface,
-
-      alignItems: "center",
-      justifyContent: "center",
-    },
-
-    checkboxActive: {
-      backgroundColor: theme.colors.primary,
-      borderColor: theme.colors.primary,
-    },
-
-    checkmark: {
-      color: "#ffffff",
-      fontSize: 16,
-      fontWeight: "700",
     },
 
     secondaryRow: {
       flexDirection: "column",
-      gap: 10,
+      // Figma: 14px between pills.
+      gap: 14,
     },
-    // Pill-shaped selector (fully rounded, icon + label in a row), matching the
-    // Finance filter chips: inactive = surface, active = solid primary.
-    // Stacked full-width in a column so they fit the narrow (50%) drawer.
+    // Pill-shaped selector matching Figma "Second round button": fully rounded,
+    // icon + label left-aligned in a row, no border. Inactive = surface,
+    // active = solid primary. Stacked full-width for the narrow (50%) drawer.
     secondaryOption: {
       alignSelf: "stretch",
       flexDirection: "row",
       alignItems: "center",
-      justifyContent: "center",
-      gap: 6,
-      paddingVertical: 12,
-      paddingHorizontal: 10,
+      justifyContent: "flex-start",
+      // Figma: icon → label gap 12.
+      gap: 12,
+      // Figma pill: 52 tall, 14 padding, fully rounded.
+      paddingVertical: 15,
+      paddingHorizontal: 14,
       borderRadius: 999,
       backgroundColor: c.surface,
-      borderWidth: 1,
-      borderColor: `${theme.colors.primary}26`,
     },
     secondaryOptionActive: {
       backgroundColor: theme.colors.primary,
-      borderColor: theme.colors.primary,
     },
     secondaryOptionLabel: {
-      fontSize: 13,
+      // Figma label: DM Sans medium, white on the pill.
+      fontSize: 15,
       color: c.textPrimary,
       fontFamily: theme.text.fontFamily.medium,
     },
