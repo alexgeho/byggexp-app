@@ -39,6 +39,7 @@ import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 
 import { createStyles } from "./CustomizeHomeScreen.styles";
+import { DraggablePillList } from "./DraggablePillList";
 import { isHomeButtonCustomizable } from "../../utils/userRoles";
 
 // `embedded` renders the panel without its own BottomBar and routes the header
@@ -63,23 +64,10 @@ export default function CustomizeHomeScreen({
 
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  // Reorder chevrons: white on the dark (black) theme so they don't vanish
-  // against the dark drawer; the original navy on the light themes.
+  // Drag-handle / secondary-icon colour: white on the dark (black) theme so it
+  // doesn't vanish against the dark drawer; navy on the light themes.
   const isDarkScheme = theme?.content?.scheme === "dark";
   const chevronActiveColor = isDarkScheme ? "#FFFFFF" : "#052d50";
-  const chevronDisabledColor = isDarkScheme
-    ? "rgba(255,255,255,0.3)"
-    : "#c2ccd6";
-
-  // Reorder-chevron colour on a pill. On an enabled (primary) pill the arrows
-  // are white; on a disabled (surface) pill they follow the theme chevron
-  // colours. An arrow at the list edge is greyed out.
-  function reorderColor(isEdge, onEnabledPill) {
-    if (onEnabledPill) {
-      return isEdge ? "rgba(255,255,255,0.4)" : "#FFFFFF";
-    }
-    return isEdge ? chevronDisabledColor : chevronActiveColor;
-  }
 
   const [enabledButtons, setEnabledButtons] = useState(defaultEnabledButtons);
 
@@ -164,37 +152,29 @@ export default function CustomizeHomeScreen({
     await saveSecondaryAction(action);
   }
 
-  function moveSection(index, direction) {
-    const target = index + direction;
-    if (target < 0 || target >= sectionsOrder.length) {
-      return;
-    }
-    const nextOrder = [...sectionsOrder];
-    [nextOrder[index], nextOrder[target]] = [
-      nextOrder[target],
-      nextOrder[index],
-    ];
+  // The section list shows every section, so the dragged order is the full
+  // order — persist it as-is.
+  function commitSectionsOrder(nextOrder) {
     setSectionsOrder(nextOrder);
     onLiveChange?.({ sectionsOrder: nextOrder });
     saveSectionsOrder(nextOrder);
   }
 
-  // Reorder within the visible (role-filtered) button list, persisting the
-  // swap into the full buttons order.
-  function moveButton(visibleIndex, direction, visibleList) {
-    const target = visibleIndex + direction;
-    if (target < 0 || target >= visibleList.length) {
-      return;
-    }
-    const idA = visibleList[visibleIndex].id;
-    const idB = visibleList[target].id;
+  // The button list is role-filtered, so only visible ids are dragged. Drop the
+  // reordered visible ids back into the slots the visible buttons occupy in the
+  // full order, leaving hidden buttons where they are.
+  function commitButtonsOrder(nextVisibleIds) {
+    const visible = new Set(nextVisibleIds);
+    const slots = [];
+    buttonsOrder.forEach(function collectSlot(id, index) {
+      if (visible.has(id)) {
+        slots.push(index);
+      }
+    });
     const nextOrder = [...buttonsOrder];
-    const indexA = nextOrder.indexOf(idA);
-    const indexB = nextOrder.indexOf(idB);
-    [nextOrder[indexA], nextOrder[indexB]] = [
-      nextOrder[indexB],
-      nextOrder[indexA],
-    ];
+    slots.forEach(function place(slot, k) {
+      nextOrder[slot] = nextVisibleIds[k];
+    });
     setButtonsOrder(nextOrder);
     onLiveChange?.({ buttonsOrder: nextOrder });
     saveButtonsOrder(nextOrder);
@@ -365,9 +345,9 @@ export default function CustomizeHomeScreen({
           </View>
         </View>
 
-        {/* BUTTON LIST */}
-        <View style={styles.list}>
-          {buttonsOrder
+        {/* BUTTON LIST — drag the handle to reorder (Figma) */}
+        <DraggablePillList
+          items={buttonsOrder
             .map(function toButton(id) {
               return mainButtons.find(function byId(button) {
                 return button.id === id;
@@ -377,145 +357,42 @@ export default function CustomizeHomeScreen({
             .filter(function filterButton(button) {
               return isHomeButtonCustomizable(button, user?.role);
             })
-            .map(function renderButton(button, index, visibleButtons) {
-              const isEnabled = enabledButtons.includes(button.id);
-
-              const isFirst = index === 0;
-              const isLast = index === visibleButtons.length - 1;
-
-              return (
-                <TouchableOpacity
-                  key={button.id}
-                  style={[styles.item, isEnabled && styles.itemActive]}
-                  onPress={function handlePress() {
-                    toggleButton(button.id);
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.itemText,
-                      isEnabled && styles.itemTextActive,
-                    ]}
-                    numberOfLines={1}
-                  >
-                    {t(`home.buttons.${button.id}`, button.title)}
-                  </Text>
-
-                  <View style={styles.itemReorderRow}>
-                    <TouchableOpacity
-                      style={styles.reorderButton}
-                      disabled={isFirst}
-                      onPress={function moveUp() {
-                        moveButton(index, -1, visibleButtons);
-                      }}
-                      hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
-                    >
-                      <Icon
-                        name="chevron-up"
-                        size={24}
-                        color={reorderColor(isFirst, isEnabled)}
-                      />
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      style={styles.reorderButton}
-                      disabled={isLast}
-                      onPress={function moveDown() {
-                        moveButton(index, 1, visibleButtons);
-                      }}
-                      hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
-                    >
-                      <Icon
-                        name="chevron-down"
-                        size={24}
-                        color={reorderColor(isLast, isEnabled)}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </TouchableOpacity>
-              );
+            .map(function toItem(button) {
+              return {
+                id: button.id,
+                label: t(`home.buttons.${button.id}`, button.title),
+                enabled: enabledButtons.includes(button.id),
+                disabled: false,
+              };
             })}
-        </View>
+          onToggle={toggleButton}
+          onReorderCommit={commitButtonsOrder}
+          styles={styles}
+          handleColor={chevronActiveColor}
+        />
 
-        {/* SECTION LIST */}
-        <View style={styles.list}>
-          {sectionsOrder
+        {/* SECTION LIST — drag the handle to reorder */}
+        <DraggablePillList
+          items={sectionsOrder
             .map(function toSection(id) {
               return homeSections.find(function byId(section) {
                 return section.id === id;
               });
             })
             .filter(Boolean)
-            .map(function renderSection(section, index, orderedSections) {
-              const isEnabled = enabledSections.includes(section.id);
-
-              const isProjectFiles = section.id === "project-files";
-
-              const isDisabled = isProjectFiles && !selectedProject;
-
-              const isFirst = index === 0;
-              const isLast = index === orderedSections.length - 1;
-
-              return (
-                <TouchableOpacity
-                  key={section.id}
-                  disabled={isDisabled}
-                  style={[
-                    styles.item,
-                    isEnabled && styles.itemActive,
-                    {
-                      opacity: isDisabled ? 0.4 : 1,
-                    },
-                  ]}
-                  onPress={function handlePress() {
-                    toggleSection(section.id);
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.itemText,
-                      isEnabled && styles.itemTextActive,
-                    ]}
-                    numberOfLines={1}
-                  >
-                    {t(`home.sections.${section.id}`, section.title)}
-                  </Text>
-
-                  <View style={styles.itemReorderRow}>
-                    <TouchableOpacity
-                      style={styles.reorderButton}
-                      disabled={isFirst}
-                      onPress={function moveUp() {
-                        moveSection(index, -1);
-                      }}
-                      hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
-                    >
-                      <Icon
-                        name="chevron-up"
-                        size={24}
-                        color={reorderColor(isFirst, isEnabled)}
-                      />
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      style={styles.reorderButton}
-                      disabled={isLast}
-                      onPress={function moveDown() {
-                        moveSection(index, 1);
-                      }}
-                      hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
-                    >
-                      <Icon
-                        name="chevron-down"
-                        size={24}
-                        color={reorderColor(isLast, isEnabled)}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </TouchableOpacity>
-              );
+            .map(function toItem(section) {
+              return {
+                id: section.id,
+                label: t(`home.sections.${section.id}`, section.title),
+                enabled: enabledSections.includes(section.id),
+                disabled: section.id === "project-files" && !selectedProject,
+              };
             })}
-        </View>
+          onToggle={toggleSection}
+          onReorderCommit={commitSectionsOrder}
+          styles={styles}
+          handleColor={chevronActiveColor}
+        />
       </ScrollView>
 
       {embedded ? null : (

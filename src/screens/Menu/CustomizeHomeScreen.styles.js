@@ -96,24 +96,33 @@ export function createStyles(theme) {
       borderColor: accent,
     },
 
-    // Figma: standalone pills with 14px gaps — no card wrapper.
-    list: {
-      gap: 14,
+    // Drag-reorder list: rows are absolutely positioned (translateY animated),
+    // so the container needs an explicit height (set inline). Standalone pills,
+    // 14px gaps, no card wrapper.
+    dragList: {
+      position: "relative",
       marginBottom: 24,
+    },
+
+    // One absolutely-positioned pill slot, 52 tall (Figma).
+    dragRow: {
+      position: "absolute",
+      left: 0,
+      right: 0,
+      height: 52,
     },
 
     // Figma pill: 52 tall, radius 84 (fully rounded), 14 padding. Enabled =
     // #3A73F0 (no border); disabled = #484848 @40% + #595959 1px stroke.
-    // Label left, reorder chevrons on the right.
+    // Label left, 6-dot drag handle on the right.
     item: {
+      flex: 1,
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
       gap: 8,
-      // Figma pad 14; trimmed on the right for the reorder chevrons.
-      paddingVertical: 14,
       paddingLeft: 14,
-      paddingRight: 6,
+      paddingRight: 8,
       borderRadius: 999,
       backgroundColor: pillOffBg,
       borderWidth: 1,
@@ -125,8 +134,14 @@ export function createStyles(theme) {
       borderColor: accent,
     },
 
-    itemText: {
+    // Tappable label region (fills the pill left of the handle).
+    itemLabelTap: {
       flex: 1,
+      height: "100%",
+      justifyContent: "center",
+    },
+
+    itemText: {
       // Figma label: DM Sans 500, 17px, white.
       fontSize: 17,
       fontFamily: theme.text.fontFamily.medium,
@@ -137,15 +152,10 @@ export function createStyles(theme) {
       color: "#FFFFFF",
     },
 
-    // Reorder chevrons sit inline on the pill's right edge.
-    itemReorderRow: {
-      flexDirection: "row",
-      alignItems: "center",
-    },
-
-    reorderButton: {
-      width: 30,
-      height: 34,
+    // 6-dot drag handle on the pill's right edge (Figma).
+    dragHandle: {
+      width: 36,
+      height: "100%",
       alignItems: "center",
       justifyContent: "center",
     },
