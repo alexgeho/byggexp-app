@@ -13,7 +13,7 @@ export const createStyles = (c) =>
     statusText: {
       marginTop: 12,
       fontSize: 15,
-      color: "#4D6376",
+      color: c.textMuted,
     },
     scrollContainer: {
       flex: 1,
@@ -25,10 +25,10 @@ export const createStyles = (c) =>
     },
     heroCard: {
       width: "100%",
-      backgroundColor: "rgba(255, 255, 255, 0.6)",
+      backgroundColor: c.surfaceMuted,
       borderRadius: 24,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
       padding: 20,
     },
     heroIconWrap: {
@@ -45,7 +45,7 @@ export const createStyles = (c) =>
       marginBottom: 8,
     },
     heroText: {
-      color: "#4D6376",
+      color: c.textMuted,
       fontSize: 15,
       lineHeight: 22,
     },
@@ -90,7 +90,7 @@ export const createStyles = (c) =>
       minWidth: 28,
       height: 28,
       borderRadius: 14,
-      backgroundColor: "rgba(5, 45, 80, 0.08)",
+      backgroundColor: c.inputSurface,
       alignItems: "center",
       justifyContent: "center",
       paddingHorizontal: 8,
@@ -101,10 +101,10 @@ export const createStyles = (c) =>
     },
     groupCard: {
       width: "100%",
-      backgroundColor: "rgba(255,255,255,0.6)",
+      backgroundColor: c.surfaceMuted,
       borderRadius: 24,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
       overflow: "hidden",
     },
     documentRow: {
@@ -116,13 +116,13 @@ export const createStyles = (c) =>
     },
     documentRowDivider: {
       borderBottomWidth: 1,
-      borderBottomColor: "#e9e9e9",
+      borderBottomColor: c.divider,
     },
     documentIconWrap: {
       width: 42,
       height: 42,
       borderRadius: 14,
-      backgroundColor: "rgba(5, 45, 80, 0.08)",
+      backgroundColor: c.inputSurface,
       alignItems: "center",
       justifyContent: "center",
     },
@@ -135,7 +135,7 @@ export const createStyles = (c) =>
       fontSize: 15,
     },
     documentMeta: {
-      color: "#4D6376",
+      color: c.textMuted,
       fontSize: 13,
     },
     documentSubMeta: {
@@ -151,7 +151,7 @@ export const createStyles = (c) =>
       height: 24,
       borderRadius: 12,
       paddingHorizontal: 8,
-      backgroundColor: "rgba(5, 45, 80, 0.08)",
+      backgroundColor: c.inputSurface,
       alignItems: "center",
       justifyContent: "center",
     },
