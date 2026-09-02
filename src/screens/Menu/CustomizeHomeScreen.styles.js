@@ -162,7 +162,8 @@ export function createStyles(theme) {
       alignSelf: "stretch",
       flexDirection: "row",
       alignItems: "center",
-      justifyContent: "flex-start",
+      // Figma: icon + label centred as a group in the pill.
+      justifyContent: "center",
       // Figma: icon → label gap 12.
       gap: 12,
       // Figma pill: 52 tall, 14 padding, fully rounded.
