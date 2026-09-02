@@ -13,11 +13,7 @@ import {
   getDismissedSections,
   saveDismissedSections,
 } from "../homeButtonsStorage";
-import {
-  defaultEnabledSections,
-  homeSections,
-  mainButtons,
-} from "../../constants/mainButtons";
+import { homeSections, mainButtons } from "../../constants/mainButtons";
 
 jest.mock("@react-native-async-storage/async-storage", () =>
   require("@react-native-async-storage/async-storage/jest/async-storage-mock"),
@@ -56,8 +52,8 @@ describe("enabled buttons", () => {
 });
 
 describe("enabled sections", () => {
-  it("defaults when nothing is stored", async () => {
-    expect(await getEnabledSections()).toEqual(defaultEnabledSections);
+  it("returns null when nothing is stored (caller applies role default)", async () => {
+    expect(await getEnabledSections()).toBeNull();
   });
 
   it("round-trips a saved list", async () => {

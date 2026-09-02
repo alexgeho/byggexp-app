@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../theme/ThemeContext";
 import {
   mainButtons,
-  defaultEnabledButtons,
+  getDefaultEnabledButtons,
 } from "../../../constants/mainButtons";
 import {
   getEnabledButtons,
@@ -54,7 +54,9 @@ export default function MainButtonsGrid({
     loadEmployeeStats: showEmployeeStats,
   });
 
-  const [enabledButtons, setEnabledButtons] = useState(defaultEnabledButtons);
+  const [enabledButtons, setEnabledButtons] = useState(() =>
+    getDefaultEnabledButtons(user?.role),
+  );
   const [buttonsOrder, setButtonsOrder] = useState(() =>
     mainButtons.map((button) => button.id),
   );
@@ -73,20 +75,23 @@ export default function MainButtonsGrid({
       : theme.homeButton.width;
 
   useFocusEffect(
-    React.useCallback(function loadButtons() {
-      async function fetchButtons() {
-        const savedButtons = await getEnabledButtons();
-        const savedOrder = await getButtonsOrder();
+    React.useCallback(
+      function loadButtons() {
+        async function fetchButtons() {
+          const savedButtons = await getEnabledButtons();
+          const savedOrder = await getButtonsOrder();
 
-        if (savedButtons) {
-          setEnabledButtons(savedButtons);
+          setEnabledButtons(
+            savedButtons ?? getDefaultEnabledButtons(user?.role),
+          );
+
+          setButtonsOrder(savedOrder);
         }
 
-        setButtonsOrder(savedOrder);
-      }
-
-      fetchButtons();
-    }, []),
+        fetchButtons();
+      },
+      [user?.role],
+    ),
   );
 
   // Live overrides (from the customize drawer) win over the storage-loaded

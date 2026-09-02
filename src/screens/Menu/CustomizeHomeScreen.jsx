@@ -15,8 +15,8 @@ import AuthContext from "../../contexts/AuthContext";
 import {
   mainButtons,
   homeSections,
-  defaultEnabledButtons,
-  defaultEnabledSections,
+  getDefaultEnabledButtons,
+  getDefaultEnabledSections,
 } from "../../constants/mainButtons";
 
 import {
@@ -69,10 +69,12 @@ export default function CustomizeHomeScreen({
   const isDarkScheme = theme?.content?.scheme === "dark";
   const chevronActiveColor = isDarkScheme ? "#FFFFFF" : "#052d50";
 
-  const [enabledButtons, setEnabledButtons] = useState(defaultEnabledButtons);
+  const [enabledButtons, setEnabledButtons] = useState(() =>
+    getDefaultEnabledButtons(user?.role),
+  );
 
-  const [enabledSections, setEnabledSections] = useState(
-    defaultEnabledSections,
+  const [enabledSections, setEnabledSections] = useState(() =>
+    getDefaultEnabledSections(user?.role),
   );
 
   const [dismissedSections, setDismissedSections] = useState([]);
@@ -88,38 +90,41 @@ export default function CustomizeHomeScreen({
   const [secondaryAction, setSecondaryAction] = useState("camera");
 
   useFocusEffect(
-    React.useCallback(function loadSettings() {
-      async function fetchSettings() {
-        const savedButtons = await getEnabledButtons();
+    React.useCallback(
+      function loadSettings() {
+        async function fetchSettings() {
+          const savedButtons = await getEnabledButtons();
 
-        const savedSections = await getEnabledSections();
+          const savedSections = await getEnabledSections();
 
-        const savedDismissedSections = await getDismissedSections();
+          const savedDismissedSections = await getDismissedSections();
 
-        const savedSectionsOrder = await getSectionsOrder();
+          const savedSectionsOrder = await getSectionsOrder();
 
-        const savedButtonsOrder = await getButtonsOrder();
+          const savedButtonsOrder = await getButtonsOrder();
 
-        const savedSecondary = await getSecondaryAction();
-        setSecondaryAction(savedSecondary);
+          const savedSecondary = await getSecondaryAction();
+          setSecondaryAction(savedSecondary);
 
-        if (savedButtons) {
-          setEnabledButtons(savedButtons);
+          setEnabledButtons(
+            savedButtons ?? getDefaultEnabledButtons(user?.role),
+          );
+
+          setEnabledSections(
+            savedSections ?? getDefaultEnabledSections(user?.role),
+          );
+
+          setDismissedSections(savedDismissedSections);
+
+          setSectionsOrder(savedSectionsOrder);
+
+          setButtonsOrder(savedButtonsOrder);
         }
 
-        if (savedSections) {
-          setEnabledSections(savedSections);
-        }
-
-        setDismissedSections(savedDismissedSections);
-
-        setSectionsOrder(savedSectionsOrder);
-
-        setButtonsOrder(savedButtonsOrder);
-      }
-
-      fetchSettings();
-    }, []),
+        fetchSettings();
+      },
+      [user?.role],
+    ),
   );
 
   async function toggleButton(buttonId) {

@@ -2,7 +2,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {
   defaultEnabledButtons,
-  defaultEnabledSections,
   homeSections,
   mainButtons,
 } from "../constants/mainButtons";
@@ -86,11 +85,13 @@ export async function getEnabledButtons() {
   return migratedButtons;
 }
 
+// Returns null when the user has never customised sections, so the caller can
+// apply the role-aware default (see getDefaultEnabledSections).
 export async function getEnabledSections() {
   const savedSections = await AsyncStorage.getItem(ENABLED_SECTIONS_KEY);
 
   if (!savedSections) {
-    return defaultEnabledSections;
+    return null;
   }
 
   return JSON.parse(savedSections);

@@ -66,8 +66,8 @@ import MainButtonsGrid from "../../../components/common/NavButtonsGrid/MainButto
 import CustomizeHomeScreen from "../../Menu/CustomizeHomeScreen";
 import {
   mainButtons,
-  defaultEnabledButtons,
-  defaultEnabledSections,
+  getDefaultEnabledButtons,
+  getDefaultEnabledSections,
   homeSections,
 } from "../../../constants/mainButtons";
 import {
@@ -205,15 +205,17 @@ export default function HomeVariant2() {
   currentShiftRef.current = currentShift;
   const focusFetchIdRef = useRef(0);
   const projectsNavigationPendingRef = useRef(false);
-  const [enabledButtons, setEnabledButtons] = useState(defaultEnabledButtons);
+  const [enabledButtons, setEnabledButtons] = useState(() =>
+    getDefaultEnabledButtons(user?.role),
+  );
   const [secondaryAction, setSecondaryAction] = useState("camera");
   // Manual-hours edit mode (hours secondary button): the top clock turns into
   // an hours/minutes wheel and the pencil becomes a save checkmark.
   const [isEditingHours, setIsEditingHours] = useState(false);
   const [editHours, setEditHours] = useState(0);
   const [editMinutes, setEditMinutes] = useState(0);
-  const [enabledSections, setEnabledSections] = useState(
-    defaultEnabledSections,
+  const [enabledSections, setEnabledSections] = useState(() =>
+    getDefaultEnabledSections(user?.role),
   );
   const [sectionsOrder, setSectionsOrder] = useState(
     homeSections.map((section) => section.id),
@@ -450,13 +452,13 @@ export default function HomeVariant2() {
             return;
           }
 
-          if (savedButtons) {
-            setEnabledButtons(savedButtons);
-          }
+          setEnabledButtons(
+            savedButtons ?? getDefaultEnabledButtons(user?.role),
+          );
 
-          if (savedSections) {
-            setEnabledSections(savedSections);
-          }
+          setEnabledSections(
+            savedSections ?? getDefaultEnabledSections(user?.role),
+          );
 
           if (savedSectionsOrder) {
             setSectionsOrder(savedSectionsOrder);
@@ -495,7 +497,7 @@ export default function HomeVariant2() {
           focusFetchIdRef.current++;
         };
       },
-      [loadCurrentShift, refreshSelectedProject],
+      [loadCurrentShift, refreshSelectedProject, user?.role],
     ),
   );
 
