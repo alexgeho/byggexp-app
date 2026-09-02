@@ -37,7 +37,7 @@ export const createStyles = (c) => {
     /* Segmented Offers / Invoices — navy @5% track, white active pill (Figma) */
     segmented: {
       flexDirection: "row",
-      backgroundColor: "rgba(5,45,80,0.05)",
+      backgroundColor: c.inputSurface,
       borderRadius: 10,
       padding: 4,
       height: 44,

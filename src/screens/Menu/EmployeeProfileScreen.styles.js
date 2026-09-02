@@ -39,9 +39,9 @@ export const createStyles = (c) =>
       gap: 16,
     },
     heroCard: {
-      backgroundColor: "rgba(255, 255, 255, 0.7)",
+      backgroundColor: c.surfaceMuted,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
       borderRadius: 24,
       padding: 20,
       alignItems: "center",
@@ -84,8 +84,8 @@ export const createStyles = (c) =>
       borderWidth: 1,
     },
     actionButtonPrimary: {
-      backgroundColor: "rgba(255, 255, 255, 0.7)",
-      borderColor: "#FFFFFF",
+      backgroundColor: c.surfaceMuted,
+      borderColor: c.border,
     },
     actionButtonDanger: {
       backgroundColor: "rgba(198, 40, 40, 0.08)",
@@ -104,9 +104,9 @@ export const createStyles = (c) =>
       color: "#C62828",
     },
     groupCard: {
-      backgroundColor: "rgba(255, 255, 255, 0.7)",
+      backgroundColor: c.surfaceMuted,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
       borderRadius: 24,
       overflow: "hidden",
     },
@@ -121,7 +121,7 @@ export const createStyles = (c) =>
     },
     infoLabel: {
       fontSize: 12,
-      color: "rgba(5, 45, 80, 0.55)",
+      color: c.textMuted,
     },
     infoValue: {
       fontSize: 16,
@@ -143,10 +143,10 @@ export const createStyles = (c) =>
       fontSize: 13,
     },
     emptySection: {
-      backgroundColor: "rgba(255, 255, 255, 0.5)",
+      backgroundColor: c.surfaceMuted,
       borderRadius: 20,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
       padding: 16,
     },
     emptySectionText: {
@@ -154,9 +154,9 @@ export const createStyles = (c) =>
       textAlign: "center",
     },
     noteComposer: {
-      backgroundColor: "rgba(255, 255, 255, 0.7)",
+      backgroundColor: c.surfaceMuted,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
       borderRadius: 24,
       padding: 16,
       gap: 12,
@@ -177,9 +177,9 @@ export const createStyles = (c) =>
       backgroundColor: "#0091FF",
     },
     noteCard: {
-      backgroundColor: "rgba(255, 255, 255, 0.7)",
+      backgroundColor: c.surfaceMuted,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
       borderRadius: 24,
       padding: 16,
       gap: 10,
@@ -234,6 +234,6 @@ export const createStyles = (c) =>
       borderRadius: 12,
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: "#EFF3F8",
+      backgroundColor: c.inputSurface,
     },
   });

@@ -68,7 +68,7 @@ export const createStyles = (c) =>
       height: 28,
       borderRadius: 8,
       marginRight: 12,
-      backgroundColor: "rgba(5, 45, 80, 0.06)",
+      backgroundColor: c.inputSurface,
       alignItems: "center",
       justifyContent: "center",
     },
@@ -85,7 +85,7 @@ export const createStyles = (c) =>
     },
     emptySubtitle: {
       fontSize: 14,
-      color: "rgba(5, 45, 80, 0.55)",
+      color: c.textMuted,
       textAlign: "center",
     },
   });

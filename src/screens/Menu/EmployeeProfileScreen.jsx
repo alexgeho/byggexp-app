@@ -590,7 +590,7 @@ export default function EmployeeProfileScreen() {
                         <Icon
                           name="tool"
                           size={14}
-                          color="rgba(5, 45, 80, 0.35)"
+                          color={theme.content.placeholder}
                         />
                       </View>
                     )
@@ -622,7 +622,7 @@ export default function EmployeeProfileScreen() {
                 value={newNote}
                 onChangeText={setNewNote}
                 placeholder={t("employeeProfile.commentPlaceholder")}
-                placeholderTextColor="rgba(5, 45, 80, 0.35)"
+                placeholderTextColor={theme.content.placeholder}
                 multiline
                 style={styles.noteInput}
               />
