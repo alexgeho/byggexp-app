@@ -27,10 +27,10 @@ export const SUPPORTED_LANGUAGES = [
 export const FALLBACK_LANGUAGE = "en";
 
 // Language shown on the very first launch, before the user has picked one.
-// Always English by design: the device language is intentionally ignored so
-// first-time users (and App Store reviewers) always start in English; the
+// Always Swedish by design: the device language is intentionally ignored so
+// first-time users (and App Store reviewers) always start in Swedish; the
 // user's own choice is persisted and honoured on every later launch.
-export const DEFAULT_LANGUAGE = "en";
+export const DEFAULT_LANGUAGE = "sv";
 
 export function isSupportedLanguage(code) {
   return SUPPORTED_LANGUAGES.some((language) => language.code === code);
