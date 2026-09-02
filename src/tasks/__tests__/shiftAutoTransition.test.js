@@ -88,7 +88,10 @@ describe("leaving the project area", () => {
 
     const result = await handleShiftExit({ projectId: PROJECT_A });
 
-    expect(shiftService.pause).toHaveBeenCalledWith("shift-a");
+    expect(shiftService.pause).toHaveBeenCalledWith("shift-a", {
+      reason: "outside_project_area",
+      source: "gps",
+    });
     expect(shiftService.complete).not.toHaveBeenCalled();
     expect(result.status).toBe("paused");
     expect(result.storedDurationMs).toBe(ACCUMULATED_MS);
@@ -120,7 +123,9 @@ describe("returning to the project area", () => {
 
     const result = await handleShiftEnter({ projectId: PROJECT_A });
 
-    expect(shiftService.resume).toHaveBeenCalledWith("shift-a");
+    expect(shiftService.resume).toHaveBeenCalledWith("shift-a", {
+      source: "gps",
+    });
     expect(shiftService.start).not.toHaveBeenCalled();
     expect(result.id).toBe("shift-a");
     expect(result.storedDurationMs).toBe(ACCUMULATED_MS);
@@ -158,7 +163,9 @@ describe("returning to the project area", () => {
 
     const result = await handleShiftEnter({ projectId: PROJECT_A });
 
-    expect(shiftService.resume).toHaveBeenCalledWith("shift-a");
+    expect(shiftService.resume).toHaveBeenCalledWith("shift-a", {
+      source: "gps",
+    });
     expect(result.status).toBe("active");
     expect(announceShiftAutoResumed).toHaveBeenCalledTimes(1);
   });
@@ -173,7 +180,9 @@ describe("returning to the project area", () => {
 
     const result = await handleShiftEnter({ projectId: PROJECT_A });
 
-    expect(shiftService.resume).toHaveBeenCalledWith("shift-a");
+    expect(shiftService.resume).toHaveBeenCalledWith("shift-a", {
+      source: "gps",
+    });
     expect(result.status).toBe("active");
   });
 
@@ -317,7 +326,9 @@ describe("switching from project A to project B", () => {
       isWithinTargetArea: true,
     });
 
-    expect(shiftService.resume).toHaveBeenCalledWith("shift-b");
+    expect(shiftService.resume).toHaveBeenCalledWith("shift-b", {
+      source: "gps",
+    });
     expect(shiftService.start).not.toHaveBeenCalled();
   });
 
