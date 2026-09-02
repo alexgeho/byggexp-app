@@ -13,8 +13,8 @@ export const createStyles = (c) =>
     groupCard: {
       borderRadius: 28,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
-      backgroundColor: "rgba(255, 255, 255, 0.6)",
+      borderColor: c.border,
+      backgroundColor: c.surfaceMuted,
       overflow: "hidden",
     },
     languageRow: {
@@ -40,7 +40,7 @@ export const createStyles = (c) =>
       borderRadius: 7,
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: "rgba(255, 255, 255, 0.6)",
+      backgroundColor: c.inputSurface,
     },
     checkmark: {
       color: "#FFFFFF",
