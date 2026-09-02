@@ -910,9 +910,19 @@ export default function HomeVariant2() {
                 compact={isCompact}
                 veryCompact={isVeryCompact}
                 actionButtonColor={
-                  isLightBlueTheme ? theme.colors.primary : undefined
+                  isLightBlueTheme || themeName === "black"
+                    ? theme.colors.primary
+                    : undefined
                 }
-                actionIconColor={isLightBlueTheme ? "#FFFFFF" : undefined}
+                actionIconColor={
+                  isLightBlueTheme || themeName === "black"
+                    ? "#FFFFFF"
+                    : undefined
+                }
+                // Figma dark home: soft blue halo behind the play button.
+                actionButtonGlow={
+                  themeName === "black" ? theme.colors.glow : undefined
+                }
                 cameraButtonColor={
                   isLightBlueTheme ? "#FFFFFF" : "rgba(255,255,255,0.20)"
                 }

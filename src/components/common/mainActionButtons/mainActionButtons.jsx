@@ -16,6 +16,8 @@ export function MainActionButtons({
   veryCompact = false,
   actionButtonColor,
   actionIconColor,
+  // Optional coloured halo behind the play button (Figma dark home).
+  actionButtonGlow,
   cameraButtonColor,
   cameraIconColor,
   // Secondary round action: "camera" | "hours" | "play".
@@ -48,6 +50,14 @@ export function MainActionButtons({
             },
             actionButtonColor && {
               backgroundColor: actionButtonColor,
+            },
+            actionButtonGlow && {
+              // Figma: drop-shadow 0 0 50px rgba(58,129,219,0.65).
+              shadowColor: actionButtonGlow,
+              shadowOffset: { width: 0, height: 0 },
+              shadowOpacity: 0.65,
+              shadowRadius: 25,
+              elevation: 16,
             },
             isPaused && styles.actionButtonPaused,
           ]}

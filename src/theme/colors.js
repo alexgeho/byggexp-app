@@ -115,21 +115,27 @@ export const blueColors = {
 export const blackColors = {
   ...blueColors,
   background: "#1C1C1C",
-  primary: "#3097F7",
-  glow: "#2C9CFF",
+  // Figma "Home / Blue" blue: #3A81DB drives the play button, hour blocks and
+  // the soft glow. (Was #3097F7 / #2C9CFF — a hair too bright/cyan.)
+  primary: "#3A81DB",
+  glow: "#3A81DB",
   text: "#FFFFFF",
+  hourBlockFilled: "#3A81DB",
+  hourBlockEmpty: "rgba(58,129,219,0.3)",
   card: "#232323",
   border: "rgba(255,255,255,0.2)",
   selectorBackground: "transparent",
-  selectorBorder: "rgba(255,255,255,0.2)",
+  // Figma selector stroke is white @ 30%.
+  selectorBorder: "rgba(255,255,255,0.3)",
   selectorArrow: "#FFFFFF",
   icon: "#FFFFFF",
   bottomNav: "#FFFFFF",
   homeButtonBackground: "#232323",
-  homeButtonBorder: "rgba(255,255,255,0.2)",
+  // Figma cards are a flat #232323 fill with no visible stroke.
+  homeButtonBorder: "transparent",
   // Figma dark home: clean cards, no diagonal lines, soft blue corner glow.
   hideButtonLines: true,
-  cardGlow: "#2C9CFF",
+  cardGlow: "#3A81DB",
 };
 
 export const lightBlueColors = {
