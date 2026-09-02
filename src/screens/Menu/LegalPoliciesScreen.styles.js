@@ -14,10 +14,10 @@ export const createStyles = (c) =>
     },
     heroCard: {
       width: "100%",
-      backgroundColor: "rgba(255, 255, 255, 0.6)",
+      backgroundColor: c.surfaceMuted,
       borderRadius: 24,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
       padding: 20,
       alignItems: "center",
     },
@@ -47,10 +47,10 @@ export const createStyles = (c) =>
     },
     groupCard: {
       width: "100%",
-      backgroundColor: "rgba(255, 255, 255, 0.6)",
+      backgroundColor: c.surfaceMuted,
       borderRadius: 24,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
       padding: 20,
     },
     sectionTitle: {

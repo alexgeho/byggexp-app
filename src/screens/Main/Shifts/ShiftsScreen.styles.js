@@ -19,10 +19,10 @@ export const createStyles = (c) =>
     },
     backButton: {
       padding: 16,
-      backgroundColor: "rgba(255, 255, 255, 0.6)",
+      backgroundColor: c.surfaceMuted,
       borderRadius: 9999,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
     },
     backIcon: {
       width: 20,
@@ -280,7 +280,7 @@ export const createStyles = (c) =>
       borderRadius: 6,
       backgroundColor: "rgba(255, 255, 255, 0.4)",
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
     },
     calendarCellToday: {
       backgroundColor: c.surface,
@@ -288,7 +288,7 @@ export const createStyles = (c) =>
     calendarCellSelected: {
       backgroundColor: "rgba(7, 133, 244, 0.6)",
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
     },
     calendarCellEmpty: {
       width: 42,
@@ -427,7 +427,7 @@ export const createStyles = (c) =>
     selectionSummaryDivider: {
       width: 1,
       height: 32,
-      backgroundColor: "rgba(5, 45, 80, 0.08)",
+      backgroundColor: c.inputSurface,
     },
     clearSelectionButton: {
       position: "absolute",
@@ -439,11 +439,11 @@ export const createStyles = (c) =>
       justifyContent: "center",
     },
     shiftCard: {
-      backgroundColor: "rgba(255, 255, 255, 0.6)",
+      backgroundColor: c.surfaceMuted,
       borderRadius: 12,
       padding: 12,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
     },
     shiftTimeRow: {
       flexDirection: "row",
@@ -570,7 +570,7 @@ export const createStyles = (c) =>
       borderRadius: 16,
       paddingVertical: 8,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
     },
     bottomSheetBackground: {
       backgroundColor: c.background,
@@ -613,9 +613,9 @@ export const createStyles = (c) =>
       alignItems: "center",
       justifyContent: "center",
       borderRadius: 20,
-      backgroundColor: "rgba(255, 255, 255, 0.6)",
+      backgroundColor: c.surfaceMuted,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
     },
     periodTabActive: {
       backgroundColor: "#0785F4",
@@ -634,7 +634,7 @@ export const createStyles = (c) =>
       borderRadius: 20,
       padding: 16,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
     },
     dateContainer: {
       flexDirection: "row",
@@ -690,28 +690,28 @@ export const createStyles = (c) =>
       color: c.textMuted,
     },
     exportSheetCard: {
-      backgroundColor: "rgba(255, 255, 255, 0.6)",
+      backgroundColor: c.surfaceMuted,
       borderRadius: 20,
       padding: 0,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
     },
     exportButtonsContainer: {
       flexDirection: "row",
-      backgroundColor: "rgba(255, 255, 255, 0.6)",
+      backgroundColor: c.surfaceMuted,
       borderRadius: 20,
       padding: 0,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
     },
     exportButton: {
       flex: 1,
-      backgroundColor: "rgba(255, 255, 255, 0.6)",
+      backgroundColor: c.surfaceMuted,
       borderRadius: 20,
       paddingVertical: 12,
       alignItems: "center",
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
     },
     exportButtonActive: {
       borderWidth: 2,
@@ -743,7 +743,7 @@ export const createStyles = (c) =>
       borderRadius: 20,
       padding: 16,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
     },
     employeePickerCard: {
       backgroundColor: c.surface,

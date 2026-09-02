@@ -80,12 +80,12 @@ export const createStyles = (c) =>
       fontWeight: "600",
     },
     groupCard: {
-      backgroundColor: "rgba(255, 255, 255, 0.6)",
+      backgroundColor: c.surfaceMuted,
       borderRadius: 24,
       overflow: "hidden",
       marginBottom: 20,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
     },
     groupRow: {
       minHeight: 60,
@@ -220,7 +220,7 @@ export const createStyles = (c) =>
       borderRadius: 24,
       padding: 16,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
     },
     projectPickerHeader: {
       flexDirection: "row",
@@ -314,7 +314,7 @@ export const createStyles = (c) =>
       borderRadius: 24,
       padding: 16,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
     },
     datePickerTitle: {
       color: c.textPrimary,
@@ -445,7 +445,7 @@ export const createStyles = (c) =>
       borderRadius: 22,
       overflow: "hidden",
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
     },
     notificationRow: {
       minHeight: 68,
@@ -468,7 +468,7 @@ export const createStyles = (c) =>
       gap: 10,
       marginTop: 10,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
     },
     sheetSearchInput: {
       flex: 1,
@@ -505,7 +505,7 @@ export const createStyles = (c) =>
       alignItems: "center",
       gap: 12,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
     },
     workerAvatarPlaceholder: {
       width: 42,
@@ -553,7 +553,7 @@ export const createStyles = (c) =>
       padding: 16,
       marginTop: 10,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
     },
     notificationMessageInput: {
       minHeight: 44,
@@ -569,7 +569,7 @@ export const createStyles = (c) =>
       borderRadius: 22,
       overflow: "hidden",
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
     },
     repeatOptionRow: {
       paddingHorizontal: 16,
@@ -624,7 +624,7 @@ export const createStyles = (c) =>
       padding: 16,
       marginTop: 10,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: c.border,
       gap: 8,
     },
     intervalInput: {

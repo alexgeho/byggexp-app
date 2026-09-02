@@ -35,7 +35,7 @@ export const createStyles = (c) =>
       borderRadius: 22,
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: "rgba(255, 255, 255, 0.6)",
+      backgroundColor: c.surfaceMuted,
       borderWidth: 1,
       borderColor: "#FFFFFF50",
     },

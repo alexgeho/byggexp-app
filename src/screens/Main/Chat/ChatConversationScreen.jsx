@@ -513,7 +513,7 @@ export default function ChatConversationScreen({ variant }) {
 
       <View style={styles.header}>
         <BackButton
-          backgroundColor={"rgba(255, 255, 255, 0.6)"}
+          backgroundColor={theme.content.surfaceMuted}
           tint={"light"}
           borderColor="#FFFFFF50"
           onPress={() => navigation.goBack()}

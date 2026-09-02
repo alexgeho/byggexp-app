@@ -13,8 +13,8 @@ export const createStyles = (c) =>
     introCard: {
       borderRadius: 28,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
-      backgroundColor: "rgba(255, 255, 255, 0.6)",
+      borderColor: c.border,
+      backgroundColor: c.surfaceMuted,
       paddingHorizontal: 18,
       paddingVertical: 20,
     },
@@ -31,8 +31,8 @@ export const createStyles = (c) =>
     groupCard: {
       borderRadius: 28,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
-      backgroundColor: "rgba(255, 255, 255, 0.6)",
+      borderColor: c.border,
+      backgroundColor: c.surfaceMuted,
       overflow: "hidden",
     },
     settingRow: {

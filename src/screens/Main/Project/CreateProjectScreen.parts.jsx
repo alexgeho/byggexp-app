@@ -181,6 +181,7 @@ export const ToolsListModal = memo(function ToolsListModal({
 }) {
   const { t } = useTranslation();
   const styles = useThemedStyles();
+  const { theme } = useTheme();
   return (
     <Modal
       animationType="slide"
@@ -191,7 +192,7 @@ export const ToolsListModal = memo(function ToolsListModal({
       <SafeAreaView style={styles.workersModalContainer}>
         <View style={styles.workersModalHeader}>
           <BackButton
-            backgroundColor={"rgba(255, 255, 255, 0.6)"}
+            backgroundColor={theme.content.surfaceMuted}
             tint={"light"}
             borderColor="#FFFFFF50"
             onPress={onClose}
@@ -282,6 +283,7 @@ export const WorkersListModal = memo(function WorkersListModal({
 }) {
   const { t } = useTranslation();
   const styles = useThemedStyles();
+  const { theme } = useTheme();
   return (
     <Modal
       animationType="slide"
@@ -292,7 +294,7 @@ export const WorkersListModal = memo(function WorkersListModal({
       <SafeAreaView style={styles.workersModalContainer}>
         <View style={styles.workersModalHeader}>
           <BackButton
-            backgroundColor={"rgba(255, 255, 255, 0.6)"}
+            backgroundColor={theme.content.surfaceMuted}
             tint={"light"}
             borderColor="#FFFFFF50"
             onPress={onClose}
@@ -406,6 +408,7 @@ export const SingleUserPickerModal = ({
 }) => {
   const { t } = useTranslation();
   const styles = useThemedStyles();
+  const { theme } = useTheme();
   return (
     <Modal
       animationType="slide"
@@ -416,7 +419,7 @@ export const SingleUserPickerModal = ({
       <SafeAreaView style={styles.workersModalContainer}>
         <View style={styles.workersModalHeader}>
           <BackButton
-            backgroundColor={"rgba(255, 255, 255, 0.6)"}
+            backgroundColor={theme.content.surfaceMuted}
             tint={"light"}
             borderColor="#FFFFFF50"
             onPress={onClose}

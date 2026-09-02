@@ -649,7 +649,7 @@ export default function CreateEmployeeScreen() {
         <SafeAreaView style={styles.pickerModalContainer}>
           <View style={styles.pickerModalHeader}>
             <BackButton
-              backgroundColor="rgba(255, 255, 255, 0.6)"
+              backgroundColor={theme.content.surfaceMuted}
               tint="light"
               borderColor="#FFFFFF50"
               onPress={() => setShowRoleModal(false)}
@@ -703,7 +703,7 @@ export default function CreateEmployeeScreen() {
         <SafeAreaView style={styles.pickerModalContainer}>
           <View style={styles.pickerModalHeader}>
             <BackButton
-              backgroundColor="rgba(255, 255, 255, 0.6)"
+              backgroundColor={theme.content.surfaceMuted}
               tint="light"
               borderColor="#FFFFFF50"
               onPress={() => setShowProjectModal(false)}
@@ -767,7 +767,7 @@ export default function CreateEmployeeScreen() {
         <SafeAreaView style={styles.pickerModalContainer}>
           <View style={styles.pickerModalHeader}>
             <BackButton
-              backgroundColor="rgba(255, 255, 255, 0.6)"
+              backgroundColor={theme.content.surfaceMuted}
               tint="light"
               borderColor="#FFFFFF50"
               onPress={() => setShowToolModal(false)}

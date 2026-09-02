@@ -33,7 +33,7 @@ export const createStyles = (c) =>
       width: 44,
       height: 44,
       borderRadius: 22,
-      backgroundColor: "rgba(255, 255, 255, 0.6)",
+      backgroundColor: c.surfaceMuted,
       borderWidth: 1,
       borderColor: "#FFFFFF50",
       alignItems: "center",
