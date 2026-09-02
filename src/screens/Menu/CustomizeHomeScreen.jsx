@@ -345,7 +345,8 @@ export default function CustomizeHomeScreen({
                 >
                   <Icon
                     name={option.icon}
-                    size={18}
+                    // Figma: 20px icon, white.
+                    size={20}
                     // Inactive icon: white on the dark theme so it doesn't
                     // vanish into the dark pill (navy on the light themes).
                     color={active ? "#FFFFFF" : chevronActiveColor}

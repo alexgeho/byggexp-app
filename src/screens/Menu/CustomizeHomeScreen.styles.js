@@ -6,6 +6,17 @@ import {
 
 export function createStyles(theme) {
   const c = theme.content;
+  const isDark = c.scheme === "dark";
+
+  // Exact Figma values for the dark (black) drawer. On light themes there is no
+  // Figma reference, so fall back to theme tokens.
+  // Active pill / theme ring: #3A73F0. Inactive pill: #484848 @40% + #595959
+  // 1px stroke. Pill label: white on dark (both states).
+  const accent = isDark ? "#3A73F0" : theme.colors.primary;
+  const pillOffBg = isDark ? "rgba(72,72,72,0.40)" : c.surface;
+  const pillOffBorder = isDark ? "#595959" : "transparent";
+  const pillOffLabel = isDark ? "#FFFFFF" : c.textPrimary;
+
   return StyleSheet.create({
     container: {
       ...standardScreenContainer,
@@ -80,8 +91,9 @@ export function createStyles(theme) {
     },
 
     activeThemeButton: {
+      // Figma: active dot has a 3px #3A73F0 ring.
       borderWidth: 3,
-      borderColor: theme.colors.primary,
+      borderColor: accent,
     },
 
     // Figma: standalone pills with 14px gaps — no card wrapper.
@@ -90,34 +102,39 @@ export function createStyles(theme) {
       marginBottom: 24,
     },
 
-    // Figma pill: enabled = solid primary, disabled = surface. Label left,
-    // reorder chevrons on the right. Fully rounded, 52 tall.
+    // Figma pill: 52 tall, radius 84 (fully rounded), 14 padding. Enabled =
+    // #3A73F0 (no border); disabled = #484848 @40% + #595959 1px stroke.
+    // Label left, reorder chevrons on the right.
     item: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
       gap: 8,
-      paddingVertical: 15,
-      paddingLeft: 18,
-      paddingRight: 8,
+      // Figma pad 14; trimmed on the right for the reorder chevrons.
+      paddingVertical: 14,
+      paddingLeft: 14,
+      paddingRight: 6,
       borderRadius: 999,
-      backgroundColor: c.surface,
+      backgroundColor: pillOffBg,
+      borderWidth: 1,
+      borderColor: pillOffBorder,
     },
 
     itemActive: {
-      backgroundColor: theme.colors.primary,
+      backgroundColor: accent,
+      borderColor: accent,
     },
 
     itemText: {
       flex: 1,
-      // Figma label: DM Sans medium, 15px.
-      fontSize: 15,
+      // Figma label: DM Sans 500, 17px, white.
+      fontSize: 17,
       fontFamily: theme.text.fontFamily.medium,
-      color: c.textPrimary,
+      color: pillOffLabel,
     },
 
     itemTextActive: {
-      color: "#ffffff",
+      color: "#FFFFFF",
     },
 
     // Reorder chevrons sit inline on the pill's right edge.
@@ -127,7 +144,7 @@ export function createStyles(theme) {
     },
 
     reorderButton: {
-      width: 32,
+      width: 30,
       height: 34,
       alignItems: "center",
       justifyContent: "center",
@@ -138,9 +155,9 @@ export function createStyles(theme) {
       // Figma: 14px between pills.
       gap: 14,
     },
-    // Pill-shaped selector matching Figma "Second round button": fully rounded,
-    // icon + label left-aligned in a row, no border. Inactive = surface,
-    // active = solid primary. Stacked full-width for the narrow (50%) drawer.
+    // Pill-shaped selector matching Figma "Second round button": 52 tall,
+    // radius 84, 14 padding, icon → label gap 12, left-aligned. Inactive =
+    // #484848 @40% + #595959 stroke, active = #3A73F0.
     secondaryOption: {
       alignSelf: "stretch",
       flexDirection: "row",
@@ -149,22 +166,25 @@ export function createStyles(theme) {
       // Figma: icon → label gap 12.
       gap: 12,
       // Figma pill: 52 tall, 14 padding, fully rounded.
-      paddingVertical: 15,
+      paddingVertical: 14,
       paddingHorizontal: 14,
       borderRadius: 999,
-      backgroundColor: c.surface,
+      backgroundColor: pillOffBg,
+      borderWidth: 1,
+      borderColor: pillOffBorder,
     },
     secondaryOptionActive: {
-      backgroundColor: theme.colors.primary,
+      backgroundColor: accent,
+      borderColor: accent,
     },
     secondaryOptionLabel: {
-      // Figma label: DM Sans medium, white on the pill.
-      fontSize: 15,
-      color: c.textPrimary,
+      // Figma label: DM Sans 500, 17px, white on the pill.
+      fontSize: 17,
+      color: pillOffLabel,
       fontFamily: theme.text.fontFamily.medium,
     },
     secondaryOptionLabelActive: {
-      color: "#ffffff",
+      color: "#FFFFFF",
     },
   });
 }
