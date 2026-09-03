@@ -294,7 +294,7 @@ export default function CustomizeHomeScreen({
         {/* SECONDARY ROUND BUTTON */}
         <View style={styles.themeContainer}>
           <Text style={styles.sectionTitle}>
-            {t("home.secondaryButton", "Second round button")}
+            {t("home.secondaryButton", "Round buttons")}
           </Text>
 
           <View style={styles.secondaryRow}>
