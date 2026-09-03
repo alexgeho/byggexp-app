@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.anonymous.totbygghubmobileapp",
-      "buildNumber": "176",
+      "buildNumber": "177",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
