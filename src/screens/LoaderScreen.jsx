@@ -3,7 +3,7 @@ import { Animated, View, StyleSheet } from "react-native";
 import AuthContext from "../contexts/AuthContext";
 import { baseColors } from "../theme/colors";
 import { useTheme } from "../theme/ThemeContext";
-import logoByggexp from "../assets/logo-byggexp.png";
+import { ByggExpWordmark } from "../components/common/ByggExpWordmark/ByggExpWordmark";
 
 export default function LoaderScreen() {
   const { setIsAuthenticated } = useContext(AuthContext);
@@ -43,11 +43,9 @@ export default function LoaderScreen() {
 
   return (
     <View style={styles.container}>
-      <Animated.Image
-        source={logoByggexp}
-        resizeMode="contain"
-        style={[styles.logoImage, { opacity: logoOpacity }]}
-      />
+      <Animated.View style={[styles.logoWrap, { opacity: logoOpacity }]}>
+        <ByggExpWordmark size={40} />
+      </Animated.View>
       <Animated.Text
         style={[
           styles.subtitle,
@@ -70,9 +68,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
   },
-  logoImage: {
-    width: 220,
-    height: 30,
+  logoWrap: {
     marginBottom: 10,
   },
   subtitle: {

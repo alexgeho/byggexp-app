@@ -8,7 +8,6 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
-  Image,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { styles } from "./LoginScreen.styles";
@@ -18,7 +17,7 @@ import AuthContext from "../../contexts/AuthContext";
 import { useFeedback } from "../../contexts/FeedbackContext";
 import { useTheme } from "../../theme/ThemeContext";
 import { isValidEmail } from "../../utils/validation";
-import logoByggexp from "../../assets/logo-byggexp.png";
+import { ByggExpWordmark } from "../../components/common/ByggExpWordmark/ByggExpWordmark";
 
 export default function LoginScreen({ navigation }) {
   const { theme } = useTheme();
@@ -178,11 +177,7 @@ export default function LoginScreen({ navigation }) {
       </KeyboardAvoidingView>
 
       <View style={styles.brandRow} pointerEvents="none">
-        <Image
-          source={logoByggexp}
-          style={styles.brandLogo}
-          resizeMode="contain"
-        />
+        <ByggExpWordmark size={22} />
       </View>
     </LinearGradient>
   );
