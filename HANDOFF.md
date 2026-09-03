@@ -49,8 +49,15 @@ eas update --branch production --message "что изменил"
 ### Логотип, онбординг, полировка (всё в OTA)
 
 - **Лого** больше не пикселит: `logo-byggexp.png` (2 КБ) заменён на текст-вордмарк `src/components/common/ByggExpWordmark/` — BYGGEXP, DM Sans Bold, `#0785F4` (бренд из Figma = BYGGEXP; Framer-лендинг BYGGHUB — отдельная история). На LoaderScreen + LoginScreen.
-- **Онбординг «Kom igång»** — чек-лист на Home для админа: `HomeOnboarding` + `useOnboardingProgress` + `onboardingStorage`. Шаги create project → invite team → start shift, авто-галочки по данным (projectService/userService/shiftService), прогресс, dismiss, прячется когда done. i18n `onboarding.*`.
+- **Онбординг «Kom igång» — роль-зависимый чек-лист** на Home: `HomeOnboarding` + `useOnboardingProgress({role})` + `onboardingStorage`.
+  - **admin**: create project → invite team → start shift (данные projectService/userService/shiftService).
+  - **worker**: Tillåt plats → Starta pass → Slå på notiser (expo-location/notifications permissions + shiftService).
+  - Авто-галочки, прогресс, dismiss, прячется когда done. i18n `onboarding.*`.
+- **Welcome-слайды** — `src/components/common/WelcomeSlides/`, 3 брендовых слайда при 1-м запуске, флаг в AsyncStorage, смонтирован в App.js поверх навигатора.
+- **Priming разрешений** — уже было: `LocationConsentBootstrap` + `NotificationBootstrap` в App.js (проактивно); worker-чеклист ещё и линкует на `LocationConsent`/`NotificationsSettings`.
+- **Пустое состояние смен** — `ShiftHistoryPreview`: иконка + «Visa arbetspass →» CTA вместо голого текста.
 - **Обрезка длинных подписей** в Customize пофикшена (`adjustsFontSizeToFit` + `minimumFontScale` в DraggablePillList/secondary).
+- ⚠️ НЕ делали: floating-тултип на кнопке Play (избыточно — действие подсвечено чеклистом+слайдом+CTA; coachmark хрупкий). Можно инлайн-хинт по запросу.
 
 ## 📋 Фидбек Натальи — статус (все dev-пункты закрыты)
 
@@ -73,7 +80,7 @@ eas update --branch production --message "что изменил"
 
 ### 3. Онбординг — доработки (по желанию)
 
-Сейчас mobile-чек-лист только для админа (3 шага). Можно: онбординг для worker (напр. «Starta ditt första pass»), приветственные слайды при самом первом запуске. Проверить визуально на СВЕЖЕМ пустом админ-аккаунте (у test5 все шаги done → карточка скрыта).
+Mobile-онбординг сделан для обеих ролей (worker + admin чек-листы) + welcome-слайды + пустые состояния — всё в OTA. Остаётся по желанию: floating-тултип на Play (пока не делали), больше пустых состояний (tasks/projects), приветствие до логина. Проверить визуально на СВЕЖЕМ пустом аккаунте (у test5/существующих все шаги done → карточка скрыта).
 
 **Десктоп-онбординг УЖЕ ЕСТЬ** (репо `byggexp-admin`): `src/features/dashboard/OnboardingChecklist.jsx` (309 строк) на дашборде, показывается новым компаниям по умолчанию (`view='open'`), шаги company/team/project + fieldwork/billing, deep-link `?create=1`, collapse/resume-бар. Закоммичено+запушено, auto-deploy `.github/workflows/deploy.yml`. Наталья просила «перенести чеклист в онбординг на десктопе» — **уже сделано**; если не видит — старый деплой/свёрнуто. Дублировать НЕ нужно; при желании только проверить, что live-админка на последней версии.
 
