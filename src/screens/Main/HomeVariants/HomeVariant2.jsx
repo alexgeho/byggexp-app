@@ -138,6 +138,12 @@ export default function HomeVariant2() {
   const route = useRoute();
   const insets = useSafeAreaInsets();
 
+  // Space the floating BottomBar occupies (its bottom offset + pill height +
+  // a gap), so the scroll content clears it and the last blocks never hide
+  // behind the menu when many buttons/sections are enabled.
+  const bottomBarClearance =
+    (Platform.OS === "android" ? insets.bottom + 12 : 30) + 97;
+
   /* CUSTOMIZE DRAWER — the customize panel slides in over Home at 70% width so
      theme / layout changes preview live on the exposed part of the home screen.
      Rendered as an in-tree overlay (not a route) so a theme change is a plain
@@ -810,11 +816,12 @@ export default function HomeVariant2() {
         contentContainerStyle={[
           styles.main,
           shouldDistributeBlocksEvenly && styles.mainEvenlyDistributed,
-          shouldDistributeBlocksEvenly &&
-            scrollViewHeight > 0 && {
-              minHeight: scrollViewHeight,
-            },
-          themeName === "colorful" && { paddingBottom: 136 },
+          shouldDistributeBlocksEvenly && scrollViewHeight > 0
+            ? // Distributed (short) layout: fit within the space above the bar
+              // so the last block isn't covered.
+              { minHeight: Math.max(0, scrollViewHeight - bottomBarClearance) }
+            : // Scrolling (tall) layout: pad the bottom so content clears the bar.
+              { paddingBottom: bottomBarClearance },
         ]}
         onLayout={function handleScrollViewLayout(event) {
           setScrollViewHeight(event.nativeEvent.layout.height);
