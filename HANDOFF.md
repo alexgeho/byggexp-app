@@ -1,85 +1,84 @@
 # Рабочий лог — сессия 2026-09-02/03
 
-Состояние работы над мобильным приложением ByggExp. Всё закоммичено и запушено в `main`. Изменения **чисто JS** → раздаются через OTA.
+Мобильное приложение ByggExp (Expo/React Native). Всё закоммичено в `main`, если не помечено WIP. Правки **чисто JS** → раздаются через **OTA** (см. ниже).
 
-## ✅ Что сделано (13 коммитов, все в `main`)
+## 🚀 OTA — как раздавать изменения (ГЛАВНОЕ)
 
-### Дефолты для нового пользователя (первый запуск)
-
-| Что                 | Значение                                                                   | Где в коде                                                                                     |
-| ------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| **Язык**            | Шведский (`sv`)                                                            | `src/i18n/index.js` → `DEFAULT_LANGUAGE = "sv"`                                                |
-| **Тема**            | Синяя (`blue`)                                                             | `src/theme/ThemeContext.jsx` → `useState("blue")` (уже было)                                   |
-| **Кнопки — worker** | Play + Camera (круглые), Shifts + Tasks (квадратные), Project Files (блок) | `src/constants/mainButtons.js` → `workerDefaultEnabledButtons`, `workerDefaultEnabledSections` |
-| **Кнопки — admin**  | Всё включено (полный набор)                                                | `src/constants/mainButtons.js` → `defaultEnabledButtons` (не-worker)                           |
-
-Роле-зависимые дефолты через `getDefaultEnabledButtons(role)` / `getDefaultEnabledSections(role)`; применяются в `HomeVariant2.jsx`, `MainButtonsGrid.jsx`, `CustomizeHomeScreen.jsx`. `getEnabledSections()` теперь возвращает `null` при отсутствии сохранённого — UI подставляет роль-дефолт. **Меняется только первый запуск, сохранённые настройки не трогаются.**
-
-### Customize-экран (drawer) — приведён к Figma 1:1 (тёмная тема)
-
-- Пилюли: активная `#3A73F0`, неактивная `#484848 @40%` + бордер `#595959`, текст белый 17px, иконка 20px, высота 52, gap 14.
-- Кружки тем 44px, активное кольцо `#3A73F0` 3px. Secondary-пилюли (Camera/Play) — иконка+текст **по центру**.
-- **Drag-to-reorder** с 6-точечным хэндлом ⣿ (Figma) вместо стрелок ↑↓ — новый компонент `src/screens/Menu/DraggablePillList.jsx` (на `react-native-gesture-handler` + `Animated`, без reanimated, OTA-safe).
-- Figma-нода: file `5DUxYAIucudqDuxoRDoWrC`, drawer node `1957:4822`.
-
-### Тёмная тема — свип по всему приложению (~30 экранов)
-
-Захардкоженные светлые цвета → токены `theme.content.*` (`surfaceMuted` / `border` / `divider` / `inputSurface` / `textMuted`). На светлой теме вид не меняется, тёмная — чинится.
-
-- 1-й свип (26 экранов): Shifts, Schedule, Chats, Projects, Camera, create-формы, About/Legal/Help/ReportBug/Notifications, Employees, Documents, Language.
-- 2-й свип: EmployeeProfile, ChatList, Tools, Economy.
-- **Намеренно НЕ трогали:** белый текст/иконки/спиннеры на цветных элементах, тема-зависимые тернарники (`colorMode === "light" ? …`), «стекло» в `BackButton`/`BottomBar`, белый кружок-галочка и cancel-кнопка в ChatList.
-
-### Android
-
-- **Фикс клавиатуры:** на Register/Forgot/CodeLogin/RegisterVerify `KeyboardAvoidingView` имел `behavior=undefined` на Android → клавиатура перекрывала поля. Поставили `"height"` (как в рабочем LoginScreen).
-- **Локальная сборка Android невозможна** на этом маке — нет полного Android SDK (только `adb` из homebrew). Сборка только через облако EAS.
-
-### Тесты
-
-- `shiftAutoTransition.test.js` — обновлены ожидания под метаданные аудита (`pause/resume` с `{ reason, source }`). **326/326 зелёные.**
-
-## ⏳ Следующие шаги (что осталось)
-
-### 1. Раздать изменения — OTA (быстро, без ревью)
-
-Все правки — JS, долетят до **живых** сборок (iOS build 173 / Android build 18, обе runtime `1.1.0`, channel `production`).
+Залогинен в EAS как `alexgeho` (сессия сохранена в `~/.expo`). Публикация:
 
 ```
-eas login                 # интерактивно, в своём терминале (через ! не работает — stdin)
-eas update --branch production --message "customize Figma + dark theme + role defaults + sv default"
+eas update --branch production --message "что изменил"
 ```
 
-Аккаунт Expo: username `alexgeho`, email `alexander.gerhard@outlook.com`.
-На телефоне после OTA: закрыть приложение полностью и открыть заново (иногда со 2-го раза).
+- Канал `production` → долетает до **всех живых сборок** (iOS build 173, Android 18/19), runtime `1.1.0`. Отдельно «только мне» на этом канале нельзя.
+- На телефоне: **полностью закрыть приложение и открыть 2 раза** (1-й — качает в фоне, 2-й — применяет).
+- Уже опубликовано несколько OTA за сессию (Customize, тёмная тема, дефолты, фиксы баров).
 
-### 2. Новые нативные билды (нужны, только чтобы шведский был с ПЕРВОГО открытия у свежих скачиваний)
+## 🔢 Версии сборок — ВАЖНО (было сломано, починено)
 
-```
-eas build -p ios --profile production        # → .ipa, App Store
-eas build -p android --profile production     # → .aab, Google Play
-# или обе: eas build -p all --profile production
-```
+`appVersionSource` переключён с `remote` на **`local`** (`eas.json`), т.к. remote пинил iOS на 1.0.0 (App Store закрыл этот поезд) и игнорил app.json. Теперь версия из `app.json`:
 
-Отправка в сторы:
+- `version: 1.1.0`, `ios.buildNumber: 177`, `android.versionCode: 20` (выше живых 173/19).
+- `eas build -p ios --profile production` → выйдет **1.1.0 (177+)**, свежий поезд, `eas submit -p ios --latest` пройдёт. **Старые .ipa 1.0.0 не заливать** (Transporter будет падать 409).
+- `autoIncrement` в профилях сам поднимает номера.
 
-```
-eas submit -p ios --latest
-eas submit -p android --latest
-```
+## ✅ Что сделано (коммиты в main)
 
-- `appVersionSource: remote` + `autoIncrement` → номера поднимутся сами (iOS ~174, Android ~19).
-- Пройдут review (iOS ~день, Android быстрее). Правки JS → рисков отказа нет.
-- Билды идут в облаке EAS — локальный Android SDK не нужен.
+### Дефолты нового пользователя (первый запуск)
 
-### 3. Мелочи на потом
+- **Язык** шведский (`src/i18n/index.js`), **тема** синяя (`ThemeContext.jsx`, уже было).
+- **Роль-дефолты кнопок** (`src/constants/mainButtons.js` → `getDefaultEnabledButtons/Sections(role)`): **worker** = Play+Camera, Shifts+Tasks, Project Files; **admin** = всё. Применяется в HomeVariant2 / MainButtonsGrid / CustomizeHomeScreen. Меняется только первый запуск.
 
-- Пара экранов имеет захардкоженные светлые цвета в **других** паттернах (module-констан­ты типа `billingForm.styles.js` `CARD`/`MUTED`) — требуют рефактора с прокидыванием темы. Низкий приоритет.
-- OTA (`eas update`) ещё **НЕ запускалось** — ждёт входа в EAS.
+### Customize-drawer (тёмная тема, под Figma)
+
+- Пилюли `#3A73F0` / `#484848@40%`+бордер `#595959`, белый текст 17px, иконки 20px, кружки тем 44px.
+- **Drag-to-reorder** 6-точечным хэндлом ⣿ — компонент `src/screens/Menu/DraggablePillList.jsx` (gesture-handler+Animated, без reanimated).
+- **Заголовки-разделители типов:** `Runda knappar` (селектор круглой) → `Knappar` (сетка) → `Block` (карточки). Лейбл hours одним словом: **Timmar** (`home.secondaryHours`).
+
+### Тёмная тема — свип ~30 экранов
+
+Захардкоженные светлые цвета → токены `theme.content.*` (`surfaceMuted`/`border`/`divider`/`inputSurface`/`textMuted`). Экраны: Shifts, Schedule, Chats, Projects, Camera, create-формы, About/Legal/Help/ReportBug/Notifications, Employees, Documents, Language, EmployeeProfile, ChatList, Tools, Economy. Белый текст/иконки на цветном, тема-тернарники, BackButton/BottomBar-«стекло» — намеренно не трогали.
+
+### Android + баг-фиксы
+
+- Клавиатура больше не перекрывает поля (Register/Forgot/CodeLogin/RegisterVerify → `behavior="height"`).
+- **Нижний бар над системным навбаром** Android (`BottomBar.jsx`, `insets.bottom+12`; iOS без изменений).
+- **Контент не уходит под плавающий бар** на Home (`HomeVariant2.jsx`, `bottomBarClearance`) — фидбек Натальи «меню налазит на tasks».
+- Тест `shiftAutoTransition.test.js` под метаданные аудита → **326/326 зелёные**.
+
+## 📋 Фидбек Натальи — статус
+
+| Пункт                                                     | Статус                                      |
+| --------------------------------------------------------- | ------------------------------------------- |
+| Нижнее меню налазит на кнопки/tasks                       | ✅ Готово, в OTA                            |
+| Splash-лого пикселит → SVG                                | ⏳ WIP (см. ниже)                           |
+| После подтверждения почты не возвращает в апп (deep-link) | ⏳ не начато (нужен бэкенд + app scheme)    |
+| Онбординг по шагам                                        | 🔵 на пользователе (видео + отдельно в апп) |
+
+## ⏳ Следующие шаги
+
+### 1. SVG-логотип (пикселит) — WIP, ЗАБЛОКИРОВАН вопросом бренда
+
+- Пикселит **`src/assets/logo-byggexp.png` (2 КБ)** — вордмарк на `LoaderScreen.jsx` и `LoginScreen.jsx` (не native splash; splash = `icon.png` 1024² норм).
+- Начато: `src/assets/byggexpWordmark.js` (WIP, **не закоммичен**) — SVG-вордмарк из `byggexp-admin/src/assets/byggexp-logo.svg`. **Он БЕЛЫЙ** (`fill="white"`) → для светлых экранов перекрасить в нави (заменить `fill="white"`→`#052D50`), рендерить через `SvgXml` из `react-native-svg` (есть, v15), заменить `<Image>` в обоих экранах. Это JS → OTA-able.
+- ❗ **БЛОКЕР: бренд BYGGEXP или BYGGHUB?** Framer-лендинг = **BYGGHUB** (webbyrå), приложение/админка = **BYGGEXP**. Пока не решено — какой логотип ставить. Уточнить у пользователя перед доделкой.
+
+### 2. Email deep-link после верификации почты
+
+Нужен бэкенд (ссылка `se.byggexp.app://…` в письме) + обработка scheme в приложении. Не начато.
+
+### 3. Косметика Customize
+
+Длинные шведские подписи обрезаются в узком drawer («Arbetspa…», «Dagsrap…», «Projektfil…»). Варианты: шрифт пилюль 17→15, шире drawer, или короче слова. Не решено.
+
+### 4. Новые нативные билды (если нужно в сторы)
+
+`eas build -p ios/android --profile production` → `eas submit`. Нужны только чтобы шведский был с первого открытия у свежих скачиваний; текущим юзерам всё раздаётся по OTA.
 
 ## 🔑 Ключевой контекст
 
-- Runtime всех живых сборок = `1.1.0` → OTA до них долетает.
-- Локальный запуск iOS-симулятора: проектный `yarn ios` требует iOS 18.2 (нет). Использовали `npx expo run:ios --device <udid>` на созданном iPhone 16 / iOS 18.5.
-- Проверка перед коммитом: `yarn lint && yarn compile && yarn jest` (compile = `scripts/check-compile.js`).
-- НИКОГДА не запускать `expo prebuild` (уничтожит кастомную нативку).
+- Все живые сборки runtime `1.1.0` → OTA долетает.
+- Локальный iOS-запуск: `yarn ios` требует iOS 18.2 (нет) → `npx expo run:ios --device <udid>` на созданном iPhone 16 / iOS 18.5. Локального Android SDK на маке нет (только homebrew adb) — Android только через облако EAS.
+- Проверка перед коммитом: `yarn lint && yarn compile && yarn test:i18n && yarn jest`.
+- НИКОГДА `expo prebuild` (уничтожит кастомную нативку).
+- Android-тест на телефоне: internal test track в Play Console (build 19). adb: `/opt/homebrew/bin/adb`.
