@@ -741,7 +741,7 @@
     "themes": "Teman",
     "secondaryButton": "Andra runda knappen",
     "secondaryCamera": "Kamera",
-    "secondaryHours": "Dagens timmar",
+    "secondaryHours": "Timmar",
     "secondaryPlay": "Spela",
     "projectStart": "Start",
     "projectEnd": "Slut",
@@ -752,7 +752,9 @@
     "shiftErrorTitle": "Fel på arbetspass",
     "shiftErrorMessage": "Det gick inte att uppdatera arbetspasset just nu.",
     "manualHoursBlockedTitle": "Kan inte logga timmar här",
-    "manualHoursBlockedMessage": "Du kan bara logga timmar när du är på projektets plats, precis som när du startar ett arbetspass."
+    "manualHoursBlockedMessage": "Du kan bara logga timmar när du är på projektets plats, precis som när du startar ett arbetspass.",
+    "buttonsListTitle": "Knappar",
+    "sectionsListTitle": "Block"
   },
   "menu": {
     "title": "Meny",

@@ -741,7 +741,7 @@
     "themes": "Themes",
     "secondaryButton": "Second round button",
     "secondaryCamera": "Camera",
-    "secondaryHours": "Today's hours",
+    "secondaryHours": "Hours",
     "secondaryPlay": "Play",
     "projectStart": "Start",
     "projectEnd": "End",
@@ -752,7 +752,9 @@
     "shiftErrorTitle": "Shift error",
     "shiftErrorMessage": "Unable to update the shift right now.",
     "manualHoursBlockedTitle": "Can't log hours here",
-    "manualHoursBlockedMessage": "You can only log hours while you're at the project location, just like starting a shift."
+    "manualHoursBlockedMessage": "You can only log hours while you're at the project location, just like starting a shift.",
+    "buttonsListTitle": "Buttons",
+    "sectionsListTitle": "Blocks"
   },
   "menu": {
     "title": "Menu",

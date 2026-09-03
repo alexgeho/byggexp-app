@@ -741,7 +741,7 @@
     "themes": "Temaer",
     "secondaryButton": "Andre runde knapp",
     "secondaryCamera": "Kamera",
-    "secondaryHours": "Dagens timer",
+    "secondaryHours": "Timer",
     "secondaryPlay": "Spill av",
     "projectStart": "Start",
     "projectEnd": "Slutt",
@@ -752,7 +752,9 @@
     "shiftErrorTitle": "Skiftfeil",
     "shiftErrorMessage": "Kan ikke oppdatere skiftet akkurat nå.",
     "manualHoursBlockedTitle": "Kan ikke registrere timer her",
-    "manualHoursBlockedMessage": "Du kan bare registrere timer når du er på prosjektstedet, akkurat som når du starter et skift."
+    "manualHoursBlockedMessage": "Du kan bare registrere timer når du er på prosjektstedet, akkurat som når du starter et skift.",
+    "buttonsListTitle": "Knapper",
+    "sectionsListTitle": "Blokker"
   },
   "menu": {
     "title": "Meny",

@@ -307,7 +307,7 @@ export default function CustomizeHomeScreen({
               {
                 id: "hours",
                 icon: "edit-2",
-                label: t("home.secondaryHours", "Today's hours"),
+                label: t("home.secondaryHours", "Hours"),
               },
               {
                 id: "play",
@@ -350,7 +350,10 @@ export default function CustomizeHomeScreen({
           </View>
         </View>
 
-        {/* BUTTON LIST — drag the handle to reorder (Figma) */}
+        {/* BUTTON LIST — the square grid buttons (drag to reorder) */}
+        <Text style={styles.sectionTitle}>
+          {t("home.buttonsListTitle", "Buttons")}
+        </Text>
         <DraggablePillList
           items={buttonsOrder
             .map(function toButton(id) {
@@ -376,7 +379,10 @@ export default function CustomizeHomeScreen({
           handleColor={chevronActiveColor}
         />
 
-        {/* SECTION LIST — drag the handle to reorder */}
+        {/* SECTION LIST — the full-width info blocks (drag to reorder) */}
+        <Text style={styles.sectionTitle}>
+          {t("home.sectionsListTitle", "Blocks")}
+        </Text>
         <DraggablePillList
           items={sectionsOrder
             .map(function toSection(id) {
