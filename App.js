@@ -13,6 +13,7 @@ import NotificationBootstrap from "./src/components/NotificationBootstrap";
 import ShiftLocationMonitor from "./src/components/ShiftLocationMonitor";
 import LocationConsentBootstrap from "./src/components/LocationConsentBootstrap";
 import MagicLinkHandler from "./src/components/MagicLinkHandler";
+import { WelcomeSlides } from "./src/components/common/WelcomeSlides/WelcomeSlides";
 // Side-effect imports: register the background location tasks via
 // TaskManager.defineTask at module load, before the OS can invoke them
 // headless. iOS uses the native geofence task; Android uses the
@@ -94,6 +95,7 @@ export default function App() {
                 <LocationConsentBootstrap />
                 <MagicLinkHandler />
                 <AppNavigator />
+                <WelcomeSlides />
               </FeedbackProvider>
             </SafeAreaProvider>
           </AuthProvider>

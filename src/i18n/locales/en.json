@@ -1248,5 +1248,24 @@
       "location": "Allow location",
       "notifications": "Turn on notifications"
     }
+  },
+  "welcome": {
+    "skip": "Skip",
+    "next": "Next",
+    "start": "Get started",
+    "slide": {
+      "1": {
+        "title": "Welcome to ByggExp",
+        "text": "Projects, time and team — all in one place."
+      },
+      "2": {
+        "title": "Stay on top of time",
+        "text": "Start a shift with one tap and check in automatically on site."
+      },
+      "3": {
+        "title": "Everything about your jobs",
+        "text": "Photos, tasks and daily reports for every project."
+      }
+    }
   }
 }

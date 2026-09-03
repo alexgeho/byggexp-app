@@ -1248,5 +1248,24 @@
       "location": "Tillat plassering",
       "notifications": "Slå på varsler"
     }
+  },
+  "welcome": {
+    "skip": "Hopp over",
+    "next": "Neste",
+    "start": "Kom i gang",
+    "slide": {
+      "1": {
+        "title": "Velkommen til ByggExp",
+        "text": "Prosjekter, tid og team — samlet på ett sted."
+      },
+      "2": {
+        "title": "Hold styr på tiden",
+        "text": "Start skift med ett trykk og sjekk inn automatisk på stedet."
+      },
+      "3": {
+        "title": "Alt om jobbene dine",
+        "text": "Bilder, oppgaver og dagsrapporter for hvert prosjekt."
+      }
+    }
   }
 }
