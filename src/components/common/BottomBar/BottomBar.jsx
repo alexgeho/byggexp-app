@@ -12,6 +12,7 @@ import Icon from "react-native-vector-icons/Feather";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigationState } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
 import { useTheme } from "../../../theme/ThemeContext";
@@ -88,6 +89,11 @@ export function BottomBar({
   );
 
   const styles = createStyles(theme);
+  const insets = useSafeAreaInsets();
+  // Lift the pill above the Android system navigation bar. A 3-button nav bar
+  // (insets.bottom ~48) otherwise collides with the pill; gesture nav has a
+  // small inset. iOS is left at its original 30 (unchanged).
+  const bottomOffset = Platform.OS === "android" ? insets.bottom + 12 : 30;
   const isMenuActive = MENU_ROUTES.has(currentRouteName);
   const isHomeActive = !isMenuActive;
 
@@ -146,7 +152,7 @@ export function BottomBar({
   ];
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { bottom: bottomOffset }]}>
       <View style={wrapperStyle}>
         {!isTransparent && Platform.OS !== "android" ? (
           <BlurView
