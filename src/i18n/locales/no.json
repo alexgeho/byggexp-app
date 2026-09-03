@@ -483,7 +483,8 @@
     "export": "Eksport",
     "fromDate": "Fra-dato",
     "toDate": "Til-dato",
-    "noShiftsYet": "Ingen skift ennå."
+    "noShiftsYet": "Ingen skift ennå.",
+    "emptyCta": "Vis skift"
   },
   "projects": {
     "loading": "Laster prosjekter...",

@@ -483,7 +483,8 @@
     "export": "Export",
     "fromDate": "From date",
     "toDate": "To date",
-    "noShiftsYet": "No shifts yet."
+    "noShiftsYet": "No shifts yet.",
+    "emptyCta": "View shifts"
   },
   "projects": {
     "loading": "Loading projects...",

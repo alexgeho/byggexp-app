@@ -91,12 +91,25 @@ export function createStyles(theme, colorMode = "dark") {
     },
     emptyState: {
       flex: 1,
+      alignItems: "center",
       justifyContent: "center",
+      gap: 8,
     },
     emptyText: {
       color: secondaryTextColor,
       fontSize: 14,
       fontFamily: theme.text.fontFamily.regular,
+      textAlign: "center",
+    },
+    emptyCta: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+    },
+    emptyCtaText: {
+      color: theme.colors.primary,
+      fontSize: 14,
+      fontFamily: theme.text.fontFamily.medium,
     },
     scrollArea: {
       flex: 1,

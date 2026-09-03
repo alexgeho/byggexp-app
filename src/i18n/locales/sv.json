@@ -483,7 +483,8 @@
     "export": "Export",
     "fromDate": "Från-datum",
     "toDate": "Till-datum",
-    "noShiftsYet": "Inga arbetspass än."
+    "noShiftsYet": "Inga arbetspass än.",
+    "emptyCta": "Visa arbetspass"
   },
   "projects": {
     "loading": "Laddar projekt...",
