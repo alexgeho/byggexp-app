@@ -1236,5 +1236,15 @@
     "margin": "Marginal",
     "ratesSaved": "Priser sparade",
     "ratesSaveError": "Kunde inte spara priser."
+  },
+  "onboarding": {
+    "title": "Kom igång",
+    "progress": "{{done}} av {{total}} klara",
+    "dismiss": "Dölj",
+    "step": {
+      "project": "Skapa ditt första projekt",
+      "team": "Bjud in ditt team",
+      "shift": "Starta ditt första pass"
+    }
   }
 }

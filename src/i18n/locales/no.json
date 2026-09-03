@@ -1236,5 +1236,15 @@
     "margin": "Margin",
     "ratesSaved": "Priser lagret",
     "ratesSaveError": "Kunne ikke lagre priser."
+  },
+  "onboarding": {
+    "title": "Kom i gang",
+    "progress": "{{done}} av {{total}} fullført",
+    "dismiss": "Skjul",
+    "step": {
+      "project": "Opprett ditt første prosjekt",
+      "team": "Inviter teamet ditt",
+      "shift": "Start ditt første skift"
+    }
   }
 }

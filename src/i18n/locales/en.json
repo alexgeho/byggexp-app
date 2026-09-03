@@ -1236,5 +1236,15 @@
     "margin": "Margin",
     "ratesSaved": "Rates saved",
     "ratesSaveError": "Could not save rates."
+  },
+  "onboarding": {
+    "title": "Get started",
+    "progress": "{{done}} of {{total}} done",
+    "dismiss": "Dismiss",
+    "step": {
+      "project": "Create your first project",
+      "team": "Invite your team",
+      "shift": "Start your first shift"
+    }
   }
 }

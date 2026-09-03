@@ -80,7 +80,13 @@ import {
 } from "../../../utils/homeButtonsStorage";
 import ShiftHistoryPreview from "../../../components/common/ShiftHistoryPreview/ShiftHistoryPreview";
 import TasksPreview from "../../../components/common/TasksPreview/TasksPreview";
-import { isHomeButtonVisible } from "../../../utils/userRoles";
+import {
+  isHomeButtonVisible,
+  canManageEmployees,
+} from "../../../utils/userRoles";
+import { HomeOnboarding } from "../../../components/common/HomeOnboarding/HomeOnboarding";
+import { useOnboardingProgress } from "../../../hooks/useOnboardingProgress";
+import { setOnboardingDismissed } from "../../../utils/onboardingStorage";
 
 // react-native-web's Alert.alert is a no-op, so on web the shift-guard messages
 // (e.g. "You are not at the project location…") never reach the user and the
@@ -143,6 +149,16 @@ export default function HomeVariant2() {
   // behind the menu when many buttons/sections are enabled.
   const bottomBarClearance =
     (Platform.OS === "android" ? insets.bottom + 12 : 30) + 97;
+
+  // "Kom igång" first-run checklist — admins only, until done or dismissed.
+  const [onboardingHidden, setOnboardingHidden] = useState(false);
+  const onboarding = useOnboardingProgress({
+    enabled: canManageEmployees(user?.role),
+  });
+  function dismissOnboarding() {
+    setOnboardingHidden(true);
+    setOnboardingDismissed();
+  }
 
   /* CUSTOMIZE DRAWER — the customize panel slides in over Home at 70% width so
      theme / layout changes preview live on the exposed part of the home screen.
@@ -831,6 +847,15 @@ export default function HomeVariant2() {
         }}
         showsVerticalScrollIndicator={false}
       >
+        {onboarding.visible && !onboardingHidden ? (
+          <HomeOnboarding
+            steps={onboarding.steps}
+            completed={onboarding.completed}
+            total={onboarding.total}
+            onDismiss={dismissOnboarding}
+          />
+        ) : null}
+
         {/* PROJECT SELECTOR — dimmed & inactive while editing hours */}
         <View
           style={isEditingHours && styles.inactiveDimmed}
