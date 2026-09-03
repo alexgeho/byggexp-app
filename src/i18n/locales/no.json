@@ -1244,7 +1244,9 @@
     "step": {
       "project": "Opprett ditt første prosjekt",
       "team": "Inviter teamet ditt",
-      "shift": "Start ditt første skift"
+      "shift": "Start ditt første skift",
+      "location": "Tillat plassering",
+      "notifications": "Slå på varsler"
     }
   }
 }

@@ -1244,7 +1244,9 @@
     "step": {
       "project": "Skapa ditt första projekt",
       "team": "Bjud in ditt team",
-      "shift": "Starta ditt första pass"
+      "shift": "Starta ditt första pass",
+      "location": "Tillåt plats",
+      "notifications": "Slå på notiser"
     }
   }
 }

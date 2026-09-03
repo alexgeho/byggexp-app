@@ -1244,7 +1244,9 @@
     "step": {
       "project": "Create your first project",
       "team": "Invite your team",
-      "shift": "Start your first shift"
+      "shift": "Start your first shift",
+      "location": "Allow location",
+      "notifications": "Turn on notifications"
     }
   }
 }

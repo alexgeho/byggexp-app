@@ -11,7 +11,13 @@ import { createStyles } from "./HomeOnboarding.styles";
 // "Kom igång" first-run checklist. Renders on Home for admins until every step
 // is done (or the card is dismissed). Steps auto-tick from real data via
 // useOnboardingProgress; tapping a step routes to the matching screen.
-const STEP_ICON = { project: "folder", team: "user-plus", shift: "clock" };
+const STEP_ICON = {
+  project: "folder",
+  team: "user-plus",
+  shift: "clock",
+  location: "map-pin",
+  notifications: "bell",
+};
 
 export function HomeOnboarding({ steps, completed, total, onDismiss }) {
   const navigation = useNavigation();

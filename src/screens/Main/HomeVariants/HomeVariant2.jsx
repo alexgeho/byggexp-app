@@ -80,10 +80,7 @@ import {
 } from "../../../utils/homeButtonsStorage";
 import ShiftHistoryPreview from "../../../components/common/ShiftHistoryPreview/ShiftHistoryPreview";
 import TasksPreview from "../../../components/common/TasksPreview/TasksPreview";
-import {
-  isHomeButtonVisible,
-  canManageEmployees,
-} from "../../../utils/userRoles";
+import { isHomeButtonVisible } from "../../../utils/userRoles";
 import { HomeOnboarding } from "../../../components/common/HomeOnboarding/HomeOnboarding";
 import { useOnboardingProgress } from "../../../hooks/useOnboardingProgress";
 import { setOnboardingDismissed } from "../../../utils/onboardingStorage";
@@ -150,11 +147,10 @@ export default function HomeVariant2() {
   const bottomBarClearance =
     (Platform.OS === "android" ? insets.bottom + 12 : 30) + 97;
 
-  // "Kom igång" first-run checklist — admins only, until done or dismissed.
+  // "Kom igång" first-run checklist — role-aware (worker vs admin steps),
+  // shows until done or dismissed.
   const [onboardingHidden, setOnboardingHidden] = useState(false);
-  const onboarding = useOnboardingProgress({
-    enabled: canManageEmployees(user?.role),
-  });
+  const onboarding = useOnboardingProgress({ role: user?.role });
   function dismissOnboarding() {
     setOnboardingHidden(true);
     setOnboardingDismissed();
