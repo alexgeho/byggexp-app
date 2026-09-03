@@ -46,30 +46,34 @@ eas update --branch production --message "что изменил"
 - **Контент не уходит под плавающий бар** на Home (`HomeVariant2.jsx`, `bottomBarClearance`) — фидбек Натальи «меню налазит на tasks».
 - Тест `shiftAutoTransition.test.js` под метаданные аудита → **326/326 зелёные**.
 
-## 📋 Фидбек Натальи — статус
+### Логотип, онбординг, полировка (всё в OTA)
 
-| Пункт                                                     | Статус                                      |
-| --------------------------------------------------------- | ------------------------------------------- |
-| Нижнее меню налазит на кнопки/tasks                       | ✅ Готово, в OTA                            |
-| Splash-лого пикселит → SVG                                | ⏳ WIP (см. ниже)                           |
-| После подтверждения почты не возвращает в апп (deep-link) | ⏳ не начато (нужен бэкенд + app scheme)    |
-| Онбординг по шагам                                        | 🔵 на пользователе (видео + отдельно в апп) |
+- **Лого** больше не пикселит: `logo-byggexp.png` (2 КБ) заменён на текст-вордмарк `src/components/common/ByggExpWordmark/` — BYGGEXP, DM Sans Bold, `#0785F4` (бренд из Figma = BYGGEXP; Framer-лендинг BYGGHUB — отдельная история). На LoaderScreen + LoginScreen.
+- **Онбординг «Kom igång»** — чек-лист на Home для админа: `HomeOnboarding` + `useOnboardingProgress` + `onboardingStorage`. Шаги create project → invite team → start shift, авто-галочки по данным (projectService/userService/shiftService), прогресс, dismiss, прячется когда done. i18n `onboarding.*`.
+- **Обрезка длинных подписей** в Customize пофикшена (`adjustsFontSizeToFit` + `minimumFontScale` в DraggablePillList/secondary).
+
+## 📋 Фидбек Натальи — статус (все dev-пункты закрыты)
+
+| Пункт                                         | Статус                                                             |
+| --------------------------------------------- | ------------------------------------------------------------------ |
+| Нижнее меню налазит на кнопки/tasks           | ✅ Готово, в OTA                                                   |
+| Splash/лого пикселит                          | ✅ Готово (текст-вордмарк), в OTA                                  |
+| После подтверждения почты не возвращает в апп | ✅ Улучшено (бэкенд, см. ниже); полный авто = Universal Links      |
+| Онбординг по шагам                            | ✅ In-app чек-лист «Kom igång» (в OTA) + пользователь делает видео |
 
 ## ⏳ Следующие шаги
 
-### 1. SVG-логотип (пикселит) — WIP, ЗАБЛОКИРОВАН вопросом бренда
+### 1. Universal Links / App Links — для ПОЛНОГО авто-возврата из письма
 
-- Пикселит **`src/assets/logo-byggexp.png` (2 КБ)** — вордмарк на `LoaderScreen.jsx` и `LoginScreen.jsx` (не native splash; splash = `icon.png` 1024² норм).
-- Начато: `src/assets/byggexpWordmark.js` (WIP, **не закоммичен**) — SVG-вордмарк из `byggexp-admin/src/assets/byggexp-logo.svg`. **Он БЕЛЫЙ** (`fill="white"`) → для светлых экранов перекрасить в нави (заменить `fill="white"`→`#052D50`), рендерить через `SvgXml` из `react-native-svg` (есть, v15), заменить `<Image>` в обоих экранах. Это JS → OTA-able.
-- ❗ **БЛОКЕР: бренд BYGGEXP или BYGGHUB?** Framer-лендинг = **BYGGHUB** (webbyrå), приложение/админка = **BYGGEXP**. Пока не решено — какой логотип ставить. Уточнить у пользователя перед доделкой.
+Сейчас email-подтверждение открывает `byggexp://auth/magic?code=…`, но мобильные браузеры блокируют авто-открытие кастомной схемы без тапа. **Уже улучшено** (бэкенд `ByggExp-BackEnd/src/auth/auth.controller.ts` → `magicRedirectHtml`: крупная кнопка «Öppna ByggExp», шведский, отложенный auto-open; задеплоено). Клиент уже ловит ссылку (`src/components/MagicLinkHandler.jsx`, смонтирован в App.js). Для «автоматом без тапа» нужны **Universal Links (iOS)** + **App Links (Android)**: `apple-app-site-association` + `assetlinks.json` на хостинге + associatedDomains/intent-filter в app.json + **новый нативный билд**. Не начато.
 
-### 2. Email deep-link после верификации почты
+### 2. Спрятать системный навбар Android (immersive)
 
-Нужен бэкенд (ссылка `se.byggexp.app://…` в письме) + обработка scheme в приложении. Не начато.
+Пользователь откладывал. Возможно через `expo-navigation-bar` (`setVisibilityAsync("hidden")`) — но не рекомендуется по UX; наш бар уже поднят над системным. Не начато.
 
-### 3. Косметика Customize
+### 3. Онбординг — доработки (по желанию)
 
-Длинные шведские подписи обрезаются в узком drawer («Arbetspa…», «Dagsrap…», «Projektfil…»). Варианты: шрифт пилюль 17→15, шире drawer, или короче слова. Не решено.
+Сейчас чек-лист только для админа (3 шага). Можно: онбординг для worker (напр. «Starta ditt första pass»), приветственные слайды при самом первом запуске. Проверить визуально на СВЕЖЕМ пустом админ-аккаунте (у test5 все шаги done → карточка скрыта).
 
 ### 4. Новые нативные билды (если нужно в сторы)
 
