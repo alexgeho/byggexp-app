@@ -341,6 +341,9 @@ export default function CustomizeHomeScreen({
                       styles.secondaryOptionLabel,
                       active && styles.secondaryOptionLabelActive,
                     ]}
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                    minimumFontScale={0.75}
                   >
                     {option.label}
                   </Text>

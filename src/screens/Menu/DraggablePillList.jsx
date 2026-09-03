@@ -194,6 +194,8 @@ export function DraggablePillList({
                     item.enabled && styles.itemTextActive,
                   ]}
                   numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.75}
                 >
                   {item.label}
                 </Text>
