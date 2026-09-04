@@ -104,6 +104,9 @@ export const MyAccount = () => {
 
   const profileId = userId || user?._id || user?.id || null;
   const activeRole = profile?.role || user?.role;
+  // Workers don't see their own role label ("Arbetare") — the rank can feel
+  // demeaning and adds nothing for them. Admins still see roles.
+  const isWorker = activeRole === "worker";
 
   const getRoleInfo = () => {
     switch (activeRole) {
@@ -507,17 +510,19 @@ export const MyAccount = () => {
               )}
             </TouchableOpacity>
           </View>
-          <View
-            style={[
-              styles.roleBadgeLarge,
-              { backgroundColor: roleInfo.color + "26" },
-            ]}
-          >
-            <Image style={styles.roleBadgeIcon} source={roleInfo.icon} />
-            <Text style={[styles.roleBadgeText, { color: roleInfo.color }]}>
-              {roleInfo.title}
-            </Text>
-          </View>
+          {!isWorker && (
+            <View
+              style={[
+                styles.roleBadgeLarge,
+                { backgroundColor: roleInfo.color + "26" },
+              ]}
+            >
+              <Image style={styles.roleBadgeIcon} source={roleInfo.icon} />
+              <Text style={[styles.roleBadgeText, { color: roleInfo.color }]}>
+                {roleInfo.title}
+              </Text>
+            </View>
+          )}
         </View>
 
         <View style={styles.inputContainer}>
@@ -533,16 +538,18 @@ export const MyAccount = () => {
           />
         </View>
 
-        <View style={styles.inputContainer}>
-          <View style={styles.inputLabelRow}>
-            <Text style={styles.inputLabel}>{t("myAccount.roleLabel")}</Text>
+        {!isWorker && (
+          <View style={styles.inputContainer}>
+            <View style={styles.inputLabelRow}>
+              <Text style={styles.inputLabel}>{t("myAccount.roleLabel")}</Text>
+            </View>
+            <TextInput
+              style={[styles.textInput, styles.readOnlyInput]}
+              value={roleInfo.title}
+              editable={false}
+            />
           </View>
-          <TextInput
-            style={[styles.textInput, styles.readOnlyInput]}
-            value={roleInfo.title}
-            editable={false}
-          />
-        </View>
+        )}
 
         <View style={styles.inputContainer}>
           <View style={styles.inputLabelRow}>

@@ -3,10 +3,12 @@ import { StyleSheet } from "react-native";
 export function createStyles(theme) {
   const c = theme.content;
   return StyleSheet.create({
-    // Solid surface (not the frosted surfaceMuted) so the card reads clearly on
-    // the Home blue gradient — the previous translucent fill was light-on-light.
+    // ~90% opaque surface (10% transparent) so the card blends slightly into the
+    // Home glass aesthetic while still reading clearly — a solid fill popped too
+    // hard, the old frosted surfaceMuted was light-on-light.
     card: {
-      backgroundColor: c.surface,
+      backgroundColor:
+        c.scheme === "dark" ? "rgba(44,44,46,0.90)" : "rgba(255,255,255,0.90)",
       borderWidth: 1,
       borderColor: c.border,
       borderRadius: 20,
