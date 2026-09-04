@@ -116,7 +116,7 @@ export function WelcomeSlides() {
       <StatusBar barStyle="light-content" />
 
       <View style={styles.topBar}>
-        <ByggExpWordmark size={22} color="#FFFFFF" />
+        <ByggExpWordmark width={120} color="#FFFFFF" />
         <TouchableOpacity
           onPress={() => finish("skipped")}
           hitSlop={styles.hitSlop}

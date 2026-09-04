@@ -1249,6 +1249,16 @@
       "shift": "Start your first shift",
       "location": "Allow location",
       "notifications": "Turn on notifications"
+    },
+    "startHere": "Start here",
+    "done": "Done",
+    "billingCta": "Create an offer or invoice",
+    "stepDesc": {
+      "project": "Projects tie together shifts, tasks, photos and costs.",
+      "team": "They sign in to the app with their email to log time.",
+      "shift": "Clock in on site — time is tracked automatically.",
+      "location": "Needed to clock in and out automatically on site.",
+      "notifications": "Get reminders about shifts, tasks and messages."
     }
   },
   "welcome": {

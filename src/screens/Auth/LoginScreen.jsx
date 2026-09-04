@@ -177,7 +177,7 @@ export default function LoginScreen({ navigation }) {
       </KeyboardAvoidingView>
 
       <View style={styles.brandRow} pointerEvents="none">
-        <ByggExpWordmark size={34} />
+        <ByggExpWordmark width={168} />
       </View>
     </LinearGradient>
   );

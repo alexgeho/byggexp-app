@@ -1249,6 +1249,16 @@
       "shift": "Starta ditt första pass",
       "location": "Tillåt plats",
       "notifications": "Slå på notiser"
+    },
+    "startHere": "Börja här",
+    "done": "Klar",
+    "billingCta": "Skapa offert eller faktura",
+    "stepDesc": {
+      "project": "Projekt samlar pass, uppgifter, foton och kostnader.",
+      "team": "De loggar in i appen med sin e-post för att stämpla tid.",
+      "shift": "Stämpla in på plats — tiden räknas automatiskt.",
+      "location": "Behövs för att stämpla in och ut automatiskt på arbetsplatsen.",
+      "notifications": "Få påminnelser om pass, uppgifter och meddelanden."
     }
   },
   "welcome": {

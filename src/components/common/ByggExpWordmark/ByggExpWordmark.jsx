@@ -1,32 +1,25 @@
 import React from "react";
 
-import { Text } from "react-native";
+import { SvgXml } from "react-native-svg";
 
-import { useTheme } from "../../../theme/ThemeContext";
+import { buildLogoSvg } from "./logoSvg";
 
-// Crisp text wordmark to replace the old low-res logo-byggexp.png (2 KB raster
-// that pixelated when upscaled). Figma brand mark: "BYGGEXP", Montserrat
-// SemiBold, colour #0785F4. Rendered here in the app's bundled bold font so it
-// stays sharp at any size and ships over OTA (no new font/asset needed).
+// Crisp vector BYGGEXP wordmark (the real Figma logo, a single path in a
+// 94×12 viewBox) — replaces the old low-res logo-byggexp.png that pixelated when
+// upscaled. `width` drives the size; height derives from the logo's aspect ratio.
+// `color` recolours the mark so the same component works on light (blue) and
+// dark/coloured (white) backgrounds. Sharp at any size; ships over OTA.
 export const BYGGEXP_BLUE = "#0785F4";
 
-export function ByggExpWordmark({ size = 34, color = BYGGEXP_BLUE, style }) {
-  const { theme } = useTheme();
+const ASPECT = 12 / 94; // viewBox height / width
 
+export function ByggExpWordmark({ width = 150, color = BYGGEXP_BLUE, style }) {
   return (
-    <Text
-      allowFontScaling={false}
-      style={[
-        {
-          fontFamily: theme.text.fontFamily.bold,
-          fontSize: size,
-          letterSpacing: -0.5,
-          color,
-        },
-        style,
-      ]}
-    >
-      BYGGEXP
-    </Text>
+    <SvgXml
+      xml={buildLogoSvg(color)}
+      width={width}
+      height={width * ASPECT}
+      style={style}
+    />
   );
 }

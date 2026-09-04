@@ -878,6 +878,7 @@ export default function HomeVariant2() {
       >
         {onboarding.visible && !onboardingHidden ? (
           <HomeOnboarding
+            role={user?.role}
             steps={onboarding.steps}
             completed={onboarding.completed}
             total={onboarding.total}

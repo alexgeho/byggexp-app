@@ -1249,6 +1249,16 @@
       "shift": "Start ditt første skift",
       "location": "Tillat plassering",
       "notifications": "Slå på varsler"
+    },
+    "startHere": "Begynn her",
+    "done": "Ferdig",
+    "billingCta": "Lag tilbud eller faktura",
+    "stepDesc": {
+      "project": "Prosjekter samler skift, oppgaver, bilder og kostnader.",
+      "team": "De logger inn i appen med e-posten sin for å registrere tid.",
+      "shift": "Stemple inn på stedet — tiden telles automatisk.",
+      "location": "Nødvendig for å stemple inn og ut automatisk på stedet.",
+      "notifications": "Få påminnelser om skift, oppgaver og meldinger."
     }
   },
   "welcome": {
