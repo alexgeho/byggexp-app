@@ -120,9 +120,9 @@ export const createStyles = (c) =>
     input: {
       paddingBottom: 12,
       paddingTop: 12,
-      color: "#052D5050",
+      color: c.textMuted,
       borderBottomWidth: 1,
-      borderBottomColor: "#052D5050",
+      borderBottomColor: c.border,
     },
     projectNameField: {
       width: "100%",
@@ -204,10 +204,10 @@ export const createStyles = (c) =>
       fontSize: 16,
     },
     locationFieldPlaceholder: {
-      color: "rgba(5, 45, 80, 0.5)",
+      color: c.placeholder,
     },
     locationFieldValue: {
-      color: "rgba(5, 45, 80, 1)",
+      color: c.textPrimary,
     },
     spacingAfterSwitch: {
       marginTop: 24,
@@ -260,7 +260,7 @@ export const createStyles = (c) =>
     },
     firstInput: {
       borderBottomWidth: 1,
-      borderColor: "#052D5050",
+      borderColor: c.border,
     },
     selectableRow: {
       width: "100%",
@@ -299,7 +299,7 @@ export const createStyles = (c) =>
       fontSize: 16,
     },
     placeholderText: {
-      color: "#052D5050",
+      color: c.textMuted,
       fontSize: 14,
     },
     arrowIcon: {
@@ -454,7 +454,7 @@ export const createStyles = (c) =>
       marginBottom: 2,
     },
     workerCardProfession: {
-      color: "rgba(5, 45, 80, 0.65)",
+      color: c.textMuted,
       fontSize: 14,
     },
     workerCheckbox: {
@@ -528,7 +528,7 @@ export const createStyles = (c) =>
     },
     userEmail: {
       fontSize: 14,
-      color: "#666",
+      color: c.textMuted,
     },
     closeButton: {
       marginTop: 16,
@@ -674,7 +674,7 @@ export const createStyles = (c) =>
       lineHeight: 20,
     },
     mapBottomLocationPlaceholder: {
-      color: "rgba(5, 45, 80, 0.5)",
+      color: c.placeholder,
     },
     mapDragHint: {
       color: c.textMuted,

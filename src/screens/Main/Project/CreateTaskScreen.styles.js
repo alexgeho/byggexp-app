@@ -129,7 +129,7 @@ export const createStyles = (c) =>
       fontSize: 16,
     },
     rowPlaceholder: {
-      color: "rgba(5, 45, 80, 0.45)",
+      color: c.textMuted,
     },
     rowHint: {
       color: c.textMuted,
@@ -378,7 +378,7 @@ export const createStyles = (c) =>
       fontFamily: "DMSans-Regular",
     },
     dateChipPlaceholder: {
-      color: "rgba(5, 45, 80, 0.45)",
+      color: c.textMuted,
     },
     sheetOverlay: {
       flex: 1,
@@ -587,7 +587,7 @@ export const createStyles = (c) =>
       marginBottom: 4,
     },
     repeatOptionTitleDisabled: {
-      color: "rgba(5, 45, 80, 0.45)",
+      color: c.textMuted,
     },
     repeatOptionHint: {
       color: c.textMuted,
