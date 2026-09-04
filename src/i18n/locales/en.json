@@ -1285,8 +1285,11 @@
     "worker": {
       "slide": {
         "1": {
-          "title": "Your time, no hassle",
-          "text": "Clock in with one tap — or enter hours manually. No more paper slips."
+          "title": "Everything you need on the job",
+          "f1": "Time logged automatically or manually — no more timesheets or texts.",
+          "f2": "Tasks with reminders — you never miss anything important.",
+          "f3": "All project documents in one place — no more hunting for drawings.",
+          "f4": "Job and receipt photos attach to the project automatically — snap it and forget it."
         }
       }
     },

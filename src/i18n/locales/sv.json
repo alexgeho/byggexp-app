@@ -1285,8 +1285,11 @@
     "worker": {
       "slide": {
         "1": {
-          "title": "Din tid, utan krångel",
-          "text": "Stämpla in med ett tryck — eller fyll i timmar manuellt. Aldrig mer papperslappar."
+          "title": "Allt du behöver på jobbet",
+          "f1": "Tid registreras automatiskt eller manuellt — inga fler tidrapporter eller sms.",
+          "f2": "Uppgifter med påminnelser — du missar aldrig något viktigt.",
+          "f3": "Alla projektdokument på ett ställe — slut på jakten efter ritningar.",
+          "f4": "Foton på jobb och kvitton fästs automatiskt på projektet — ta bilden och glöm."
         }
       }
     },
