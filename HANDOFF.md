@@ -70,9 +70,20 @@ eas update --branch production --message "что изменил"
 
 ## ⏳ Следующие шаги
 
-### 1. Universal Links / App Links — для ПОЛНОГО авто-возврата из письма
+### 1. Universal Links / App Links — КОД ГОТОВ, нужна активация
 
-Сейчас email-подтверждение открывает `byggexp://auth/magic?code=…`, но мобильные браузеры блокируют авто-открытие кастомной схемы без тапа. **Уже улучшено** (бэкенд `ByggExp-BackEnd/src/auth/auth.controller.ts` → `magicRedirectHtml`: крупная кнопка «Öppna ByggExp», шведский, отложенный auto-open; задеплоено). Клиент уже ловит ссылку (`src/components/MagicLinkHandler.jsx`, смонтирован в App.js). Для «автоматом без тапа» нужны **Universal Links (iOS)** + **App Links (Android)**: `apple-app-site-association` + `assetlinks.json` на хостинге + associatedDomains/intent-filter в app.json + **новый нативный билд**. Не начато.
+Реализовано (app + backend), домен **api.byggexp.se**, путь **/app/magic?code=**:
+
+- **App** (закоммичено): `app.json` → `ios.associatedDomains: ["applinks:api.byggexp.se"]` + `android.intentFilters` (host api.byggexp.se, pathPrefix /app/magic, autoVerify). `MagicLinkHandler.jsx` ловит и https app-link, и `byggexp://`.
+- **Backend** (закоммичено, авто-деплой): `app.controller.ts` отдаёт `/.well-known/apple-app-site-association` + `/.well-known/assetlinks.json` из ENV. `auth.controller.ts` → кнопка подтверждения = universal link `/app/magic?code=`; `GET /app/magic` = install/open fallback.
+
+**ЧТОБЫ ЗАРАБОТАЛО (осталось):**
+
+1. **ENV на сервере** api.byggexp.se: `APPLE_TEAM_ID` (10 симв., Apple Developer → Membership) и `ANDROID_SHA256` (Play Console → App integrity → App signing key → SHA-256; можно несколько через запятую). После — pm2 restart.
+2. **Новый нативный билд + submit** (associatedDomains/intentFilters — нативные): `eas build -p all --profile production` → `eas submit`.
+3. Проверить: `curl https://api.byggexp.se/.well-known/apple-app-site-association` (должен вернуть JSON с реальным Team ID), и что nginx не перехватывает `/.well-known/` (ACME использует только `/.well-known/acme-challenge/`, наши пути другие).
+
+Заметка: до нового билда у текущих (старых) юзеров кнопка ведёт на `/app/magic` fallback (лишний тап «Öppna appen») — не регресс, но seamless-open только после билда.
 
 ### 2. Спрятать системный навбар Android (immersive)
 
