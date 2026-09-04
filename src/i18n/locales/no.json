@@ -1252,7 +1252,11 @@
       "selectProject": "Velg et prosjekt",
       "timeReport": "Registrer tiden din",
       "profile": "Fyll inn profilen din",
-      "customize": "Tilpass startskjermen"
+      "customize": "Tilpass startskjermen",
+      "task": "Tildel en oppgave",
+      "tools": "Legg til verktøy",
+      "companyDetails": "Fyll inn firmaopplysninger",
+      "billing": "Lag tilbud eller faktura"
     },
     "startHere": "Begynn her",
     "done": "Ferdig",
@@ -1266,7 +1270,11 @@
       "selectProject": "Velg prosjektet du skal jobbe på.",
       "timeReport": "Automatisk på stedet eller manuelt — du velger.",
       "profile": "Legg til yrkesrolle, telefon og sertifikater.",
-      "customize": "Velg hvilke knapper du vil se — enkelt eller fullt."
+      "customize": "Velg hvilke knapper du vil se — enkelt eller fullt.",
+      "task": "Gi noen en oppgave med forfallsdato — de får påminnelser.",
+      "tools": "Hold styr på utstyr og koble det til prosjekter.",
+      "companyDetails": "Org.nummer og adresse — brukes på tilbud og faktura.",
+      "billing": "Gjør jobb til penger — kunde og artikler legges til underveis."
     },
     "timeSheet": {
       "title": "Registrer tiden din",
@@ -1276,6 +1284,13 @@
       "manualDesc": "Angi antall timer direkte.",
       "shifts": "I Arbeidsøkter",
       "shiftsDesc": "Skriv inn eller juster tid i øktene dine."
+    },
+    "focus": {
+      "question": "Hva er viktigst nå?",
+      "fieldwork": "Håndter prosjekter og team",
+      "billing": "Send tilbud eller faktura",
+      "skip": "Hopp over",
+      "change": "Bytt fokus"
     }
   },
   "welcome": {

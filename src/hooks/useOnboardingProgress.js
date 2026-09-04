@@ -2,7 +2,16 @@ import { useCallback, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import * as Location from "expo-location";
 
-import { projectService, shiftService, userService } from "../services";
+import {
+  projectService,
+  shiftService,
+  userService,
+  taskService,
+  toolService,
+} from "../services";
+import { companyService } from "../services/company.service";
+import { offerService } from "../services/offer.service";
+import { invoiceService } from "../services/invoice.service";
 import {
   getOnboardingDismissed,
   getOnboardingCustomizeOpened,
@@ -10,6 +19,7 @@ import {
 } from "../utils/onboardingStorage";
 
 const asArray = (value) => (Array.isArray(value) ? value : []);
+const countOf = (v) => asArray(v).length;
 
 const permGranted = async (getter) => {
   try {
@@ -21,13 +31,18 @@ const permGranted = async (getter) => {
 };
 
 // Role-aware "Kom igång" home checklist progress.
-// - Workers: pick a project -> report time (auto/manual) -> fill in profile ->
-//   customise the home screen.
-// - Admins:  create project -> invite team -> start a shift.
-// Every step's done-state comes from real signals (permissions / API data /
-// local flags), so it ticks automatically. Fully defensive — a failed check
-// just leaves the step un-done.
-export function useOnboardingProgress({ role, userId, selectedProjectId }) {
+// - Workers: pick a project -> report time -> fill in profile -> customise.
+// - Admins:  a two-direction focus (mirrors the web) — "fieldwork" (project,
+//   team, task, tools) or "billing" (company details, offer/invoice). Until the
+//   focus question is answered, all steps are shown.
+// Every step's done-state comes from real signals; a failed check just leaves
+// the step un-done.
+export function useOnboardingProgress({
+  role,
+  userId,
+  selectedProjectId,
+  focus,
+}) {
   const isWorker = role === "worker";
   const enabled = Boolean(role);
 
@@ -40,6 +55,10 @@ export function useOnboardingProgress({ role, userId, selectedProjectId }) {
     hasShift: false,
     hasProfile: false,
     hasCustomized: false,
+    hasTask: false,
+    hasTools: false,
+    hasCompanyDetails: false,
+    hasBilling: false,
   });
 
   useFocusEffect(
@@ -70,9 +89,6 @@ export function useOnboardingProgress({ role, userId, selectedProjectId }) {
           const shiftsP = shiftService.getHistory().catch(() => []);
 
           if (isWorker) {
-            // Location permission decides how the time step routes its "GPS"
-            // option (granted → auto clock-in; denied → location settings).
-            // hasShift covers a real shift and manual hours (both write history).
             const [location, shifts, profile, customized, profileSaved] =
               await Promise.all([
                 permGranted(Location.getForegroundPermissionsAsync),
@@ -84,44 +100,44 @@ export function useOnboardingProgress({ role, userId, selectedProjectId }) {
                 getOnboardingProfileSaved(),
               ]);
             if (!active) return;
-            setState({
+            setState((prev) => ({
+              ...prev,
               loading: false,
               dismissed: false,
               hasLocation: location,
-              // "Choose a project" is done only when one is actually SELECTED —
-              // the app blocks logging time until then. Company having projects
-              // isn't enough (the worker must pick the one they're on).
               hasProject: Boolean(selectedProjectId),
-              hasTeam: false,
-              hasShift: asArray(shifts).length > 0,
-              // "Profile filled in" = they saved the account (touched it) or have
-              // a professional role / phone on file.
+              hasShift: countOf(shifts) > 0,
               hasProfile: Boolean(
                 profileSaved || profile?.profession || profile?.phoneNumber,
               ),
               hasCustomized: customized,
-            });
+            }));
             return;
           }
 
-          const [projects, team, shifts] = await Promise.all([
-            projectService.getMyProjects().catch(() => []),
-            userService.getMyCompanyUsers().catch(() => []),
-            shiftsP,
-          ]);
+          // Admin — all signals for the two-direction checklist.
+          const [projects, team, tasks, tools, company, offers, invoices] =
+            await Promise.all([
+              projectService.getMyProjects().catch(() => []),
+              userService.getMyCompanyUsers().catch(() => []),
+              taskService.getAll().catch(() => []),
+              toolService.getAll().catch(() => []),
+              companyService.getMyCompany().catch(() => null),
+              offerService.getAll().catch(() => []),
+              invoiceService.getAll().catch(() => []),
+            ]);
           if (!active) return;
-          setState({
+          setState((prev) => ({
+            ...prev,
             loading: false,
             dismissed: false,
-            hasLocation: false,
-            hasProject: asArray(projects).length > 0,
-            // "Invite team" is done once the company has more than just the
-            // admin themselves.
-            hasTeam: asArray(team).length > 1,
-            hasShift: asArray(shifts).length > 0,
-            hasProfile: false,
-            hasCustomized: false,
-          });
+            hasProject: countOf(projects) > 0,
+            hasTeam: countOf(team) > 1,
+            hasTask: countOf(tasks) > 0,
+            hasTools: countOf(tools) > 0,
+            hasCompanyDetails: Boolean(company?.orgNumber),
+            hasBilling: countOf(offers) + countOf(invoices) > 0,
+          }));
         }
 
         fetchAll();
@@ -134,29 +150,57 @@ export function useOnboardingProgress({ role, userId, selectedProjectId }) {
     ),
   );
 
-  const steps = isWorker
-    ? [
-        // Pick a project → report time (opens a chooser: GPS / manual) →
-        // fill in profile (optional) → customise the home screen (optional).
-        {
-          key: "selectProject",
-          done: state.hasProject,
-          action: "selectProject",
-        },
-        {
-          key: "timeReport",
-          done: state.hasShift,
-          action: "time",
-          mode: state.hasLocation ? "auto" : "manual",
-        },
-        { key: "profile", done: state.hasProfile, screen: "MyAccount" },
-        { key: "customize", done: state.hasCustomized, action: "customize" },
-      ]
-    : [
-        { key: "project", done: state.hasProject, screen: "CreateProject" },
-        { key: "team", done: state.hasTeam, screen: "CreateEmployee" },
-        { key: "shift", done: state.hasShift, screen: "Shifts" },
-      ];
+  // Worker: single fixed 4-step flow.
+  if (isWorker) {
+    const steps = [
+      { key: "selectProject", done: state.hasProject, action: "selectProject" },
+      {
+        key: "timeReport",
+        done: state.hasShift,
+        action: "time",
+        mode: state.hasLocation ? "auto" : "manual",
+      },
+      { key: "profile", done: state.hasProfile, screen: "MyAccount" },
+      { key: "customize", done: state.hasCustomized, action: "customize" },
+    ];
+    const completed = steps.filter((s) => s.done).length;
+    const allDone = completed === steps.length;
+    return {
+      loading: state.loading,
+      dismissed: state.dismissed,
+      steps,
+      completed,
+      total: steps.length,
+      allDone,
+      needsFocus: false,
+      visible: enabled && !state.loading && !state.dismissed && !allDone,
+    };
+  }
+
+  // Admin: two-direction focus (fieldwork / billing).
+  const fieldwork = [
+    { key: "project", done: state.hasProject, screen: "CreateProject" },
+    { key: "team", done: state.hasTeam, screen: "CreateEmployee" },
+    { key: "task", done: state.hasTask, screen: "CreateTask" },
+    { key: "tools", done: state.hasTools, screen: "Tools" },
+  ];
+  const billing = [
+    {
+      key: "companyDetails",
+      done: state.hasCompanyDetails,
+      screen: "CompanyDetails",
+    },
+    { key: "billing", done: state.hasBilling, screen: "Economy" },
+  ];
+
+  let steps;
+  let needsFocus = false;
+  if (focus === "fieldwork") steps = fieldwork;
+  else if (focus === "billing") steps = billing;
+  else {
+    steps = [...fieldwork, ...billing];
+    needsFocus = focus == null; // null = question not answered ("skip" shows all)
+  }
 
   const completed = steps.filter((s) => s.done).length;
   const allDone = completed === steps.length;
@@ -168,6 +212,7 @@ export function useOnboardingProgress({ role, userId, selectedProjectId }) {
     completed,
     total: steps.length,
     allDone,
+    needsFocus,
     visible: enabled && !state.loading && !state.dismissed && !allDone,
   };
 }

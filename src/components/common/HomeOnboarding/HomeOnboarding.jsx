@@ -9,18 +9,18 @@ import { useTheme } from "../../../theme/ThemeContext";
 import { track } from "../../../utils/analytics";
 import { createStyles } from "./HomeOnboarding.styles";
 
-// "Kom igång" first-run checklist. Mirrors the admin dashboard's onboarding
-// principle (Linear/Stripe style): a short list of setup steps, each with a
-// title + one-line description and a single highlighted "do this next" step.
-//
-// Admin steps deep-link to the screen that finishes them. Worker steps act in
-// place on Home (select project, log time, customise) via callbacks, since those
-// live inline on Home rather than on separate screens. The "report time" step
-// opens a chooser sheet: automatic (GPS) or two manual ways.
+// "Kom igång" first-run checklist.
+// - Worker: fixed 4-step flow; the time step opens a chooser sheet.
+// - Admin: a two-direction focus (fieldwork / billing) mirroring the web —
+//   a routing question, a focused step list, and a switch to the other focus.
 const STEP_ICON = {
   project: "folder",
   team: "user-plus",
   shift: "clock",
+  task: "check-square",
+  tools: "tool",
+  companyDetails: "briefcase",
+  billing: "file-text",
   selectProject: "folder",
   timeReport: "clock",
   profile: "user",
@@ -40,6 +40,11 @@ export function HomeOnboarding({
   onLogHours,
   onSelectProject,
   onCustomize,
+  // Admin focus routing
+  needsFocus = false,
+  focus = null,
+  onChooseFocus,
+  onChangeFocus,
 }) {
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -50,10 +55,9 @@ export function HomeOnboarding({
   const progress = total > 0 ? completed / total : 0;
   const isWorker = role === "worker";
   const single = total === 1;
+  const showProgress = !single && !needsFocus;
 
-  // The "report time" chooser sheet — remembers the tapped step's GPS mode so
-  // the automatic option knows whether to clock in or route to location setup.
-  const [timeSheet, setTimeSheet] = useState(null); // null | { mode }
+  const [timeSheet, setTimeSheet] = useState(null);
 
   const activeKey = steps.find((s) => !s.done)?.key || null;
 
@@ -79,8 +83,6 @@ export function HomeOnboarding({
     setTimeSheet(null);
     track("onboarding_time_method", { method, mode });
     if (method === "gps") {
-      // GPS configured (location granted) → start the live timer; otherwise
-      // send them to set location up first.
       if (mode === "auto") onStartShift?.();
       else navigation.navigate("LocationConsent");
     } else if (method === "manual") {
@@ -90,48 +92,28 @@ export function HomeOnboarding({
     }
   };
 
-  const goToBilling = () => {
-    track("onboarding_billing_clicked", { role });
-    navigation.navigate("Economy");
-  };
+  // Subtitle: routing question when unanswered, else progress / a "change focus".
+  const subtitle = needsFocus
+    ? t("onboarding.focus.question", "Vad är viktigast just nu?")
+    : t("onboarding.progress", "{{done}} av {{total}} klara", {
+        done: completed,
+        total,
+      });
 
-  const TimeOption = ({ icon, title, desc, onPress }) => (
-    <TouchableOpacity
-      style={styles.sheetRow}
-      activeOpacity={0.7}
-      onPress={onPress}
-    >
-      <View
-        style={[
-          styles.iconCircle,
-          { borderColor: accent, backgroundColor: theme.content.accentSoft },
-        ]}
-      >
-        <Icon name={icon} size={16} color={accent} />
-      </View>
-      <View style={styles.rowBody}>
-        <Text style={styles.rowTitle}>{title}</Text>
-        <Text style={styles.rowDesc} numberOfLines={2}>
-          {desc}
-        </Text>
-      </View>
-      <Icon name="chevron-right" size={20} color={theme.content.textMuted} />
-    </TouchableOpacity>
-  );
+  // The other focus, to switch to (only shown once a focus is picked).
+  const otherFocus =
+    focus === "fieldwork"
+      ? "billing"
+      : focus === "billing"
+        ? "fieldwork"
+        : null;
 
   return (
     <View style={styles.card}>
       <View style={styles.header}>
         <View style={styles.headerText}>
           <Text style={styles.title}>{t("onboarding.title", "Kom igång")}</Text>
-          {!single ? (
-            <Text style={styles.subtitle}>
-              {t("onboarding.progress", "{{done}} av {{total}} klara", {
-                done: completed,
-                total,
-              })}
-            </Text>
-          ) : null}
+          {!single ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
         </View>
 
         <TouchableOpacity
@@ -143,7 +125,7 @@ export function HomeOnboarding({
         </TouchableOpacity>
       </View>
 
-      {!single ? (
+      {showProgress ? (
         <View style={styles.progressTrack}>
           <View
             style={[
@@ -154,6 +136,40 @@ export function HomeOnboarding({
               },
             ]}
           />
+        </View>
+      ) : null}
+
+      {/* Admin routing question (mirrors web): pick a direction. */}
+      {needsFocus ? (
+        <View style={styles.focusChoices}>
+          <TouchableOpacity
+            style={styles.focusBtn}
+            activeOpacity={0.85}
+            onPress={() => onChooseFocus?.("fieldwork")}
+          >
+            <Icon name="folder" size={16} color={accent} />
+            <Text style={[styles.focusBtnText, { color: accent }]}>
+              {t("onboarding.focus.fieldwork", "Hantera projekt och team")}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.focusBtn}
+            activeOpacity={0.85}
+            onPress={() => onChooseFocus?.("billing")}
+          >
+            <Icon name="file-text" size={16} color={accent} />
+            <Text style={[styles.focusBtnText, { color: accent }]}>
+              {t("onboarding.focus.billing", "Skicka offert eller faktura")}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => onChooseFocus?.("skip")}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Text style={styles.focusSkip}>
+              {t("onboarding.focus.skip", "Hoppa över")}
+            </Text>
+          </TouchableOpacity>
         </View>
       ) : null}
 
@@ -227,21 +243,40 @@ export function HomeOnboarding({
         })}
       </View>
 
-      {!isWorker ? (
+      {/* Switch to the other focus (once one is picked). */}
+      {otherFocus ? (
         <TouchableOpacity
           style={styles.footerCta}
           activeOpacity={0.85}
-          onPress={goToBilling}
+          onPress={() => onChooseFocus?.(otherFocus)}
         >
-          <Icon name="file-text" size={16} color={accent} />
+          <Icon
+            name={otherFocus === "billing" ? "file-text" : "folder"}
+            size={16}
+            color={accent}
+          />
           <Text style={[styles.footerCtaText, { color: accent }]}>
-            {t("onboarding.billingCta", "Skapa offert eller faktura")}
+            {otherFocus === "billing"
+              ? t("onboarding.focus.billing", "Skicka offert eller faktura")
+              : t("onboarding.focus.fieldwork", "Hantera projekt och team")}
           </Text>
           <Icon name="chevron-right" size={18} color={accent} />
         </TouchableOpacity>
       ) : null}
 
-      {/* Report-time chooser: automatic (GPS) or two manual ways. */}
+      {/* Change focus (re-open the routing question). */}
+      {!isWorker && !needsFocus && focus && focus !== "skip" ? (
+        <TouchableOpacity
+          onPress={() => onChangeFocus?.()}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Text style={styles.changeFocus}>
+            {t("onboarding.focus.change", "Byt fokus")}
+          </Text>
+        </TouchableOpacity>
+      ) : null}
+
+      {/* Worker report-time chooser sheet. */}
       <Modal
         visible={timeSheet !== null}
         transparent
@@ -259,6 +294,9 @@ export function HomeOnboarding({
             </Text>
 
             <TimeOption
+              styles={styles}
+              accent={accent}
+              theme={theme}
               icon="map-pin"
               title={t("onboarding.timeSheet.gps", "Automatiskt (GPS)")}
               desc={t(
@@ -268,6 +306,9 @@ export function HomeOnboarding({
               onPress={() => chooseTime("gps")}
             />
             <TimeOption
+              styles={styles}
+              accent={accent}
+              theme={theme}
               icon="edit-3"
               title={t("onboarding.timeSheet.manual", "Fyll i timmar")}
               desc={t(
@@ -277,6 +318,9 @@ export function HomeOnboarding({
               onPress={() => chooseTime("manual")}
             />
             <TimeOption
+              styles={styles}
+              accent={accent}
+              theme={theme}
               icon="list"
               title={t("onboarding.timeSheet.shifts", "I Arbetspass")}
               desc={t(
@@ -289,5 +333,31 @@ export function HomeOnboarding({
         </Pressable>
       </Modal>
     </View>
+  );
+}
+
+function TimeOption({ styles, accent, theme, icon, title, desc, onPress }) {
+  return (
+    <TouchableOpacity
+      style={styles.sheetRow}
+      activeOpacity={0.7}
+      onPress={onPress}
+    >
+      <View
+        style={[
+          styles.iconCircle,
+          { borderColor: accent, backgroundColor: theme.content.accentSoft },
+        ]}
+      >
+        <Icon name={icon} size={16} color={accent} />
+      </View>
+      <View style={styles.rowBody}>
+        <Text style={styles.rowTitle}>{title}</Text>
+        <Text style={styles.rowDesc} numberOfLines={2}>
+          {desc}
+        </Text>
+      </View>
+      <Icon name="chevron-right" size={20} color={theme.content.textMuted} />
+    </TouchableOpacity>
   );
 }

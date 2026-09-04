@@ -120,6 +120,40 @@ export function createStyles(theme) {
       fontSize: 15,
       fontFamily: theme.text.fontFamily.semiBold,
     },
+    // Admin focus routing
+    focusChoices: {
+      gap: 10,
+      alignItems: "stretch",
+    },
+    focusBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+      paddingVertical: 13,
+      borderRadius: 14,
+      borderWidth: 1.5,
+      borderColor: c.accentSoft,
+      backgroundColor: c.accentSoft,
+    },
+    focusBtnText: {
+      fontSize: 15,
+      fontFamily: theme.text.fontFamily.semiBold,
+    },
+    focusSkip: {
+      textAlign: "center",
+      color: c.textMuted,
+      fontSize: 14,
+      fontFamily: theme.text.fontFamily.medium,
+      paddingVertical: 4,
+    },
+    changeFocus: {
+      textAlign: "center",
+      color: c.textMuted,
+      fontSize: 13,
+      fontFamily: theme.text.fontFamily.medium,
+      marginTop: 2,
+    },
     // Report-time chooser sheet
     sheetBackdrop: {
       flex: 1,

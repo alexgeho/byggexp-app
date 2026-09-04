@@ -86,6 +86,8 @@ import { useOnboardingProgress } from "../../../hooks/useOnboardingProgress";
 import {
   setOnboardingDismissed,
   setOnboardingCustomizeOpened,
+  getOnboardingFocus,
+  setOnboardingFocus,
 } from "../../../utils/onboardingStorage";
 import { track, trackOnce } from "../../../utils/analytics";
 
@@ -154,10 +156,25 @@ export default function HomeVariant2() {
   // "Kom igång" first-run checklist — role-aware (worker vs admin steps),
   // shows until done or dismissed.
   const [onboardingHidden, setOnboardingHidden] = useState(false);
+  // Admin onboarding focus (fieldwork/billing/skip/null) — persisted per install.
+  const [onboardingFocus, setOnboardingFocusState] = useState(null);
+  useEffect(() => {
+    getOnboardingFocus().then(setOnboardingFocusState);
+  }, []);
+  const chooseFocus = useCallback((value) => {
+    setOnboardingFocusState(value);
+    setOnboardingFocus(value);
+    track("onboarding_focus_chosen", { focus: value });
+  }, []);
+  const changeFocus = useCallback(() => {
+    setOnboardingFocusState(null);
+    setOnboardingFocus(null);
+  }, []);
   const onboarding = useOnboardingProgress({
     role: user?.role,
     userId: user?._id || user?.id,
     selectedProjectId,
+    focus: onboardingFocus,
   });
   function dismissOnboarding() {
     setOnboardingHidden(true);
@@ -897,6 +914,10 @@ export default function HomeVariant2() {
             onLogHours={handleEnterEditHours}
             onSelectProject={openProjects}
             onCustomize={openCustomize}
+            needsFocus={onboarding.needsFocus}
+            focus={onboardingFocus}
+            onChooseFocus={chooseFocus}
+            onChangeFocus={changeFocus}
           />
         ) : null}
 

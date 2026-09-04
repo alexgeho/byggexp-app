@@ -1252,7 +1252,11 @@
       "selectProject": "Välj ett projekt",
       "timeReport": "Rapportera din tid",
       "profile": "Fyll i din profil",
-      "customize": "Anpassa startsidan"
+      "customize": "Anpassa startsidan",
+      "task": "Tilldela en uppgift",
+      "tools": "Lägg till verktyg",
+      "companyDetails": "Fyll i företagsuppgifter",
+      "billing": "Skapa offert eller faktura"
     },
     "startHere": "Börja här",
     "done": "Klar",
@@ -1266,7 +1270,11 @@
       "selectProject": "Välj projektet du ska jobba på.",
       "timeReport": "Automatiskt på plats eller manuellt — du väljer.",
       "profile": "Lägg till yrkesroll, telefon och certifikat.",
-      "customize": "Välj vilka knappar du vill se — enkelt eller fullt."
+      "customize": "Välj vilka knappar du vill se — enkelt eller fullt.",
+      "task": "Ge någon en uppgift med förfallodatum — de får påminnelser.",
+      "tools": "Håll koll på utrustning och koppla den till projekt.",
+      "companyDetails": "Org.nummer och adress — används på offert och faktura.",
+      "billing": "Gör jobb till pengar — kund och artiklar läggs till på vägen."
     },
     "timeSheet": {
       "title": "Rapportera din tid",
@@ -1276,6 +1284,13 @@
       "manualDesc": "Ange antal timmar direkt.",
       "shifts": "I Arbetspass",
       "shiftsDesc": "Skriv in eller justera tid i dina pass."
+    },
+    "focus": {
+      "question": "Vad är viktigast just nu?",
+      "fieldwork": "Hantera projekt och team",
+      "billing": "Skicka offert eller faktura",
+      "skip": "Hoppa över",
+      "change": "Byt fokus"
     }
   },
   "welcome": {

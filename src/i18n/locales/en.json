@@ -1252,7 +1252,11 @@
       "selectProject": "Choose a project",
       "timeReport": "Report your time",
       "profile": "Fill in your profile",
-      "customize": "Customise your home screen"
+      "customize": "Customise your home screen",
+      "task": "Assign a task",
+      "tools": "Add your tools",
+      "companyDetails": "Fill in company details",
+      "billing": "Create an offer or invoice"
     },
     "startHere": "Start here",
     "done": "Done",
@@ -1266,7 +1270,11 @@
       "selectProject": "Pick the project you'll work on.",
       "timeReport": "Automatically on site or manually — your choice.",
       "profile": "Add your professional role, phone and certificates.",
-      "customize": "Pick which buttons you want — lean or full."
+      "customize": "Pick which buttons you want — lean or full.",
+      "task": "Give someone a to-do with a due date — they get reminders.",
+      "tools": "Track equipment and assign it to projects.",
+      "companyDetails": "Org. number and address — used on offers and invoices.",
+      "billing": "Turn work into money — add client and articles along the way."
     },
     "timeSheet": {
       "title": "Report your time",
@@ -1276,6 +1284,13 @@
       "manualDesc": "Type the number of hours directly.",
       "shifts": "In Shifts",
       "shiftsDesc": "Enter or adjust time in your shifts."
+    },
+    "focus": {
+      "question": "What matters most right now?",
+      "fieldwork": "Manage projects or crews",
+      "billing": "Send an invoice or offer",
+      "skip": "Skip",
+      "change": "Change focus"
     }
   },
   "welcome": {

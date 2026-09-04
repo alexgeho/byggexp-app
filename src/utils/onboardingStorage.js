@@ -59,3 +59,25 @@ export async function setOnboardingProfileSaved() {
     // ignore
   }
 }
+
+// Admin onboarding focus (mirrors the web): which direction the checklist shows
+// first — "fieldwork" (crews & jobs), "billing" (offers & invoices), or "skip".
+// null = the routing question hasn't been answered yet.
+const FOCUS_KEY = "home-onboarding-focus";
+
+export async function getOnboardingFocus() {
+  try {
+    return (await AsyncStorage.getItem(FOCUS_KEY)) || null;
+  } catch {
+    return null;
+  }
+}
+
+export async function setOnboardingFocus(value) {
+  try {
+    if (value) await AsyncStorage.setItem(FOCUS_KEY, value);
+    else await AsyncStorage.removeItem(FOCUS_KEY);
+  } catch {
+    // ignore
+  }
+}
