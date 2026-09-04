@@ -59,8 +59,46 @@ const ADMIN_ECONOMY = `<svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/
 <path d="M182 68 V53 M176 59 L182 53 L188 59" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
 
+// Tasks & reminders: a checklist card (one item done) with a blue bell badge.
+const TASKS = `<svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" fill="none">
+<circle cx="130" cy="100" r="92" fill="#FFFFFF" opacity="0.12"/>
+<circle cx="130" cy="100" r="66" fill="#FFFFFF" opacity="0.10"/>
+<rect x="72" y="48" width="116" height="104" rx="16" fill="#FFFFFF"/>
+<rect x="86" y="66" width="18" height="18" rx="5" fill="#34C759"/>
+<path d="M90 75 l4 4 l7 -8" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="112" y="71" width="58" height="6" rx="3" fill="#DCEBFF"/>
+<rect x="86" y="95" width="18" height="18" rx="5" fill="#EAF3FF" stroke="#BBD9FF" stroke-width="2"/>
+<rect x="112" y="100" width="64" height="6" rx="3" fill="#EAF3FF"/>
+<rect x="86" y="124" width="18" height="18" rx="5" fill="#EAF3FF" stroke="#BBD9FF" stroke-width="2"/>
+<rect x="112" y="129" width="46" height="6" rx="3" fill="#EAF3FF"/>
+<circle cx="180" cy="56" r="16" fill="#0785F4"/>
+<path d="M180 49 c-4 0 -7 3 -7 7 v4 l-2 2 h18 l-2 -2 v-4 c0 -4 -3 -7 -7 -7 z" fill="#FFFFFF"/>
+<path d="M177 65 a3 3 0 0 0 6 0" fill="#FFFFFF"/>
+</svg>`;
+
+// Photos & receipts: a photo card plus a receipt with a green scan line and a
+// done check — snapped photos and scanned receipts flow into the project.
+const PHOTOS = `<svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" fill="none">
+<circle cx="130" cy="100" r="92" fill="#FFFFFF" opacity="0.12"/>
+<circle cx="130" cy="100" r="66" fill="#FFFFFF" opacity="0.10"/>
+<rect x="56" y="54" width="100" height="86" rx="14" fill="#FFFFFF"/>
+<rect x="66" y="64" width="80" height="52" rx="8" fill="#EAF3FF"/>
+<circle cx="88" cy="82" r="7" fill="#3A73F0"/>
+<path d="M70 112 L92 88 L106 102 L122 86 L142 112 Z" fill="#BBD9FF"/>
+<rect x="66" y="124" width="46" height="6" rx="3" fill="#DCEBFF"/>
+<path d="M150 84 h46 v70 l-5.75 -4 l-5.75 4 l-5.75 -4 l-5.75 4 l-5.75 -4 l-5.75 4 l-5.75 -4 z" fill="#FFFFFF"/>
+<rect x="158" y="98" width="30" height="5" rx="2.5" fill="#EAF3FF"/>
+<rect x="158" y="109" width="24" height="5" rx="2.5" fill="#EAF3FF"/>
+<rect x="158" y="120" width="28" height="5" rx="2.5" fill="#EAF3FF"/>
+<rect x="150" y="131" width="46" height="4" rx="2" fill="#34C759"/>
+<circle cx="196" cy="90" r="14" fill="#34C759"/>
+<path d="M190 90 l4 4 l8 -9" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+
 const BY_KEY = {
   worker: WORKER,
+  tasks: TASKS,
+  photos: PHOTOS,
   adminTeam: ADMIN_TEAM,
   adminEconomy: ADMIN_ECONOMY,
 };

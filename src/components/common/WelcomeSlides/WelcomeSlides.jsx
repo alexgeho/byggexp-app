@@ -37,8 +37,16 @@ const { width } = Dimensions.get("window");
 // (title + text, or title + f1..fN when `features` is set). `illustration` picks
 // the vector art in valueIllustrations.js.
 const SLIDES_BY_ROLE = {
-  worker: [{ key: "1", illustration: "worker", features: 4 }],
-  admin: [{ key: "1", illustration: "adminEconomy", features: 4 }],
+  worker: [
+    { key: "1", illustration: "worker", features: 1 },
+    { key: "2", illustration: "tasks", features: 2 },
+    { key: "3", illustration: "photos", features: 2 },
+  ],
+  admin: [
+    { key: "1", illustration: "adminTeam", features: 2 },
+    { key: "2", illustration: "tasks", features: 2 },
+    { key: "3", illustration: "adminEconomy", features: 4 },
+  ],
 };
 
 export function WelcomeSlides() {
@@ -126,6 +134,7 @@ export function WelcomeSlides() {
 
       <FlatList
         ref={listRef}
+        style={styles.list}
         data={slides}
         keyExtractor={(item) => item.key}
         horizontal
@@ -136,8 +145,8 @@ export function WelcomeSlides() {
           <View style={[styles.slide, { width }]}>
             <SvgXml
               xml={valueIllustration(item.illustration)}
-              width={240}
-              height={180}
+              width={210}
+              height={158}
               style={styles.illustration}
             />
             <Text style={styles.title}>

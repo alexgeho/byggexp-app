@@ -1285,22 +1285,39 @@
     "worker": {
       "slide": {
         "1": {
-          "title": "Alt du trenger på jobben",
-          "f1": "Tid registreres automatisk eller manuelt — ingen flere timelister eller sms.",
-          "f2": "Oppgaver med påminnelser — lar deg aldri glemme noe viktig.",
-          "f3": "Alle prosjektdokumenter på ett sted — slutt på leting etter tegninger.",
-          "f4": "Bilder av arbeid og kvitteringer festes automatisk til prosjektet — ta bildet og glem det."
+          "title": "Tidsføring uten styr",
+          "f1": "Automatisk eller manuell tidsregistrering — ingen flere timelister eller sms."
+        },
+        "2": {
+          "title": "Gå glipp av ingenting",
+          "f1": "Oppgaver med påminnelser — lar deg aldri glemme noe viktig.",
+          "f2": "Alle prosjektdokumenter på ett sted — slutt på leting etter tegninger."
+        },
+        "3": {
+          "title": "Bilder som ordner seg selv",
+          "f1": "Bilder av arbeid og kvitteringer festes automatisk til prosjektet — ta bildet og glem det.",
+          "f2": "Kvitteringer skannes og regnes automatisk inn i prosjektets økonomi."
         }
       }
     },
     "admin": {
       "slide": {
         "1": {
-          "title": "Hele firmaet i lomma",
-          "f1": "Alle prosjekter, tid og team på ett sted — ingenting spredt i chatter og Excel.",
-          "f2": "GPS-oppmøte i sanntid — se hvem som er på stedet, uten å ringe.",
-          "f3": "Tilbud og fakturaer fra mobilen — gjør jobb til penger uten PC.",
-          "f4": "Kostnader og resultat per prosjekt — se med en gang hvor du tjener."
+          "title": "Kom i gang med teamet",
+          "f1": "Opprett prosjekter og legg til ansatte — de får straks e-post med innlogging og app-nedlasting.",
+          "f2": "Oversikt i sanntid — se hvem som har startet skift, hvem som er borte og hvor."
+        },
+        "2": {
+          "title": "Styr arbeidet",
+          "f1": "Oppgaver med påminnelser — tildel alle, utvalgte eller én; påminnelser til den er ferdig.",
+          "f2": "Bilder av arbeid og kvitteringer festes automatisk til prosjektet."
+        },
+        "3": {
+          "title": "Penger & økonomi",
+          "f1": "Kvitteringer skannes og regnes inn i prosjektets økonomi automatisk.",
+          "f2": "Prosjektets økonomi live — rett fra mobilen.",
+          "f3": "Eksporter arbeidstid til Excel eller rett til faktura/lønn på et par klikk.",
+          "f4": "…og mye mer."
         }
       }
     }

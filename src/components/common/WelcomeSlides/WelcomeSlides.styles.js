@@ -26,11 +26,15 @@ export function createStyles() {
       fontSize: 15,
       fontWeight: "600",
     },
+    list: {
+      flex: 1,
+    },
     slide: {
+      flex: 1,
       alignItems: "center",
       justifyContent: "center",
       paddingHorizontal: 32,
-      gap: 18,
+      gap: 16,
     },
     illustration: {
       marginBottom: 12,

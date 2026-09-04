@@ -1285,22 +1285,39 @@
     "worker": {
       "slide": {
         "1": {
-          "title": "Allt du behöver på jobbet",
-          "f1": "Tid registreras automatiskt eller manuellt — inga fler tidrapporter eller sms.",
-          "f2": "Uppgifter med påminnelser — låter dig aldrig glömma något viktigt.",
-          "f3": "Alla projektdokument på ett ställe — slut på jakten efter ritningar.",
-          "f4": "Foton på jobb och kvitton fästs automatiskt på projektet — ta bilden och glöm."
+          "title": "Tidrapportering utan krångel",
+          "f1": "Automatisk eller manuell tidregistrering — inga fler tidrapporter eller sms."
+        },
+        "2": {
+          "title": "Missa inget, hitta allt",
+          "f1": "Uppgifter med påminnelser — låter dig aldrig glömma något viktigt.",
+          "f2": "Alla projektdokument på ett ställe — slut på jakten efter ritningar."
+        },
+        "3": {
+          "title": "Foton som sköter sig själva",
+          "f1": "Foton på jobb och kvitton fästs automatiskt på projektet — ta bilden och glöm.",
+          "f2": "Kvitton skannas och räknas automatiskt in i projektets ekonomi."
         }
       }
     },
     "admin": {
       "slide": {
         "1": {
-          "title": "Hela företaget i fickan",
-          "f1": "Alla projekt, tid och team på ett ställe — inget spritt i chattar och Excel.",
-          "f2": "GPS-närvaro i realtid — se vem som är på plats, utan att ringa.",
-          "f3": "Offerter och fakturor från mobilen — gör jobb till pengar utan datorn.",
-          "f4": "Kostnader och resultat per projekt — se direkt var du tjänar pengar."
+          "title": "Kom igång med teamet",
+          "f1": "Skapa projekt och lägg till anställda — de får direkt mejl med inlogg och app-nedladdning.",
+          "f2": "Koll i realtid — se vem som startat pass, vem som är frånvarande och var."
+        },
+        "2": {
+          "title": "Styr arbetet",
+          "f1": "Uppgifter med påminnelser — tilldela alla, valda eller en person; påminnelser tills den är klar.",
+          "f2": "Foton på jobb och kvitton fästs automatiskt på projektet."
+        },
+        "3": {
+          "title": "Pengar & ekonomi",
+          "f1": "Kvitton skannas och räknas in i projektets ekonomi automatiskt.",
+          "f2": "Projektets ekonomi live — direkt från mobilen.",
+          "f3": "Exportera arbetstid till Excel eller direkt till faktura/lön på ett par klick.",
+          "f4": "…och mycket mer."
         }
       }
     }
