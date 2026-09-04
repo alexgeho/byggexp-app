@@ -1293,8 +1293,18 @@
     "admin": {
       "slide": {
         "1": {
-          "title": "Your whole company in your pocket",
-          "text": "Run projects and team, assign tasks, send offers and invoices, and see project economy — straight from your phone."
+          "title": "Run projects & team",
+          "f1": "Create projects — gather shifts, tasks and photos",
+          "f2": "Invite your team in minutes",
+          "f3": "Assign tasks and track status",
+          "f4": "GPS attendance in real time — see who works where"
+        },
+        "2": {
+          "title": "Finance & invoicing",
+          "f1": "Create offers and send invoices",
+          "f2": "Track costs and results per project",
+          "f3": "Articles and clients — saved once",
+          "f4": "All in one place, straight from your phone"
         }
       }
     }

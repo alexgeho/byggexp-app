@@ -11,6 +11,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTranslation } from "react-i18next";
 import { SvgXml } from "react-native-svg";
+import Icon from "react-native-vector-icons/Feather";
 
 import AuthContext from "../../../contexts/AuthContext";
 import { track } from "../../../utils/analytics";
@@ -30,12 +31,17 @@ import { createStyles } from "./WelcomeSlides.styles";
 const SEEN_KEY = "welcome-slides-seen-v3";
 const { width } = Dimensions.get("window");
 
-// One strong value screen per role — the single benefit that answers "why do I
-// need this?". Copy lives in i18n under welcome.<roleKey>.slide.1.{title,text}.
-// (Illustrations are placeholder icons for now; a designer can swap them later.)
+// Post-login value screens. Worker: one strong screen (title + benefit line).
+// Admin: two screens — team/projects and finance/invoicing — each with a
+// feature list. Copy lives in i18n under welcome.<roleKey>.slide.<key>.*
+// (title + text, or title + f1..fN when `features` is set). `illustration` picks
+// the vector art in valueIllustrations.js.
 const SLIDES_BY_ROLE = {
-  worker: [{ key: "1", icon: "clock" }],
-  admin: [{ key: "1", icon: "briefcase" }],
+  worker: [{ key: "1", illustration: "worker" }],
+  admin: [
+    { key: "1", illustration: "adminTeam", features: 4 },
+    { key: "2", illustration: "adminEconomy", features: 4 },
+  ],
 };
 
 export function WelcomeSlides() {
@@ -132,17 +138,32 @@ export function WelcomeSlides() {
         renderItem={({ item }) => (
           <View style={[styles.slide, { width }]}>
             <SvgXml
-              xml={valueIllustration(roleKey)}
-              width={248}
-              height={190}
+              xml={valueIllustration(item.illustration)}
+              width={240}
+              height={180}
               style={styles.illustration}
             />
             <Text style={styles.title}>
               {t(`welcome.${roleKey}.slide.${item.key}.title`)}
             </Text>
-            <Text style={styles.text}>
-              {t(`welcome.${roleKey}.slide.${item.key}.text`)}
-            </Text>
+            {item.features ? (
+              <View style={styles.featureList}>
+                {Array.from({ length: item.features }, (_, i) => (
+                  <View key={i} style={styles.featureRow}>
+                    <View style={styles.featureBullet}>
+                      <Icon name="check" size={13} color="#FFFFFF" />
+                    </View>
+                    <Text style={styles.featureText}>
+                      {t(`welcome.${roleKey}.slide.${item.key}.f${i + 1}`)}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            ) : (
+              <Text style={styles.text}>
+                {t(`welcome.${roleKey}.slide.${item.key}.text`)}
+              </Text>
+            )}
           </View>
         )}
       />

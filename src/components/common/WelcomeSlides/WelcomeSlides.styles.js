@@ -47,6 +47,32 @@ export function createStyles() {
       lineHeight: 24,
       textAlign: "center",
     },
+    featureList: {
+      alignSelf: "stretch",
+      gap: 14,
+      marginTop: 4,
+      paddingHorizontal: 4,
+    },
+    featureRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+    },
+    featureBullet: {
+      width: 24,
+      height: 24,
+      borderRadius: 999,
+      backgroundColor: "rgba(255,255,255,0.22)",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    featureText: {
+      flex: 1,
+      color: "#FFFFFF",
+      fontSize: 15,
+      lineHeight: 21,
+      fontWeight: "500",
+    },
     dots: {
       flexDirection: "row",
       justifyContent: "center",

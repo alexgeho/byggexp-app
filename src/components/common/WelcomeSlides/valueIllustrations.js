@@ -23,9 +23,26 @@ const WORKER = `<svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" fi
 <path d="M69 131 L84 140 L69 149 Z" fill="#0785F4"/>
 </svg>`;
 
-// Admin: "the whole company in your pocket" — a dashboard card with a rising
-// bar chart, a growth trend line, and a green up-arrow badge.
-const ADMIN = `<svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" fill="none">
+// Admin — projects & team: a roster card with member rows and a green "add
+// person" badge (invite your crew).
+const ADMIN_TEAM = `<svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" fill="none">
+<circle cx="130" cy="100" r="92" fill="#FFFFFF" opacity="0.12"/>
+<circle cx="130" cy="100" r="66" fill="#FFFFFF" opacity="0.10"/>
+<rect x="70" y="50" width="120" height="100" rx="16" fill="#FFFFFF"/>
+<rect x="84" y="64" width="46" height="6" rx="3" fill="#DCEBFF"/>
+<circle cx="92" cy="94" r="9" fill="#3A73F0"/>
+<rect x="108" y="89" width="58" height="5" rx="2.5" fill="#EAF3FF"/>
+<rect x="108" y="98" width="36" height="5" rx="2.5" fill="#EAF3FF"/>
+<circle cx="92" cy="122" r="9" fill="#0785F4"/>
+<rect x="108" y="117" width="50" height="5" rx="2.5" fill="#EAF3FF"/>
+<rect x="108" y="126" width="30" height="5" rx="2.5" fill="#EAF3FF"/>
+<circle cx="180" cy="58" r="16" fill="#34C759"/>
+<path d="M180 51 V65 M173 58 H187" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+</svg>`;
+
+// Admin — finance: a dashboard card with a rising bar chart, a growth trend
+// line, and a green up-arrow badge.
+const ADMIN_ECONOMY = `<svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" fill="none">
 <circle cx="130" cy="100" r="92" fill="#FFFFFF" opacity="0.12"/>
 <circle cx="130" cy="100" r="66" fill="#FFFFFF" opacity="0.10"/>
 <rect x="66" y="54" width="128" height="98" rx="16" fill="#FFFFFF"/>
@@ -42,5 +59,10 @@ const ADMIN = `<svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" fil
 <path d="M182 68 V53 M176 59 L182 53 L188 59" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
 
-export const valueIllustration = (roleKey) =>
-  roleKey === "worker" ? WORKER : ADMIN;
+const BY_KEY = {
+  worker: WORKER,
+  adminTeam: ADMIN_TEAM,
+  adminEconomy: ADMIN_ECONOMY,
+};
+
+export const valueIllustration = (key) => BY_KEY[key] || WORKER;

@@ -1293,8 +1293,18 @@
     "admin": {
       "slide": {
         "1": {
-          "title": "Hela företaget i fickan",
-          "text": "Styr projekt och team, fördela uppgifter, skicka offerter och fakturor och se projektets ekonomi — direkt i mobilen."
+          "title": "Styr projekt & team",
+          "f1": "Skapa projekt — samla pass, uppgifter och foton",
+          "f2": "Bjud in ditt team på minuter",
+          "f3": "Fördela uppgifter och följ status",
+          "f4": "GPS-närvaro i realtid — se vem som jobbar var"
+        },
+        "2": {
+          "title": "Ekonomi & fakturering",
+          "f1": "Skapa offerter och skicka fakturor",
+          "f2": "Följ kostnader och resultat per projekt",
+          "f3": "Artiklar och kunder — sparade en gång",
+          "f4": "Allt samlat, direkt i mobilen"
         }
       }
     }

@@ -1293,8 +1293,18 @@
     "admin": {
       "slide": {
         "1": {
-          "title": "Hele firmaet i lomma",
-          "text": "Styr prosjekter og team, fordel oppgaver, send tilbud og fakturaer, og se prosjektets økonomi — rett fra mobilen."
+          "title": "Styr prosjekter & team",
+          "f1": "Opprett prosjekter — samle skift, oppgaver og bilder",
+          "f2": "Inviter teamet på minutter",
+          "f3": "Fordel oppgaver og følg status",
+          "f4": "GPS-oppmøte i sanntid — se hvem som jobber hvor"
+        },
+        "2": {
+          "title": "Økonomi & fakturering",
+          "f1": "Lag tilbud og send fakturaer",
+          "f2": "Følg kostnader og resultat per prosjekt",
+          "f3": "Artikler og kunder — lagret én gang",
+          "f4": "Alt samlet, rett fra mobilen"
         }
       }
     }
