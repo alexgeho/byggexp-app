@@ -1286,17 +1286,17 @@
       "slide": {
         "1": {
           "title": "Tidsføring uten styr",
-          "f1": "Automatisk eller manuell tidsregistrering — ingen flere timelister eller sms."
+          "f1": "Automatisk eller manuell registrering av arbeidstid — ingen flere timelister eller sms."
         },
         "2": {
           "title": "Gå glipp av ingenting",
-          "f1": "Oppgaver med påminnelser — lar deg aldri glemme noe viktig.",
-          "f2": "Alle prosjektdokumenter på ett sted — slutt på leting etter tegninger."
+          "f1": "Oppgaver med automatiske påminnelser — lar deg ikke glemme det viktige.",
+          "f2": "Alle prosjektdokumenter på ett sted — ikke mer leting etter bortkomne tegninger."
         },
         "3": {
           "title": "Bilder som ordner seg selv",
-          "f1": "Bilder av arbeid og kvitteringer festes automatisk til prosjektet — ta bildet og glem det.",
-          "f2": "Kvitteringer skannes og regnes automatisk inn i prosjektets økonomi."
+          "f1": "Bilder av arbeid og kvitteringer fra skiftet festes automatisk til prosjektet og vises umiddelbart i systemet — ta bildet og glem det.",
+          "f2": "Kvitteringsbilder skannes og regnes automatisk inn i prosjektets økonomi."
         }
       }
     },

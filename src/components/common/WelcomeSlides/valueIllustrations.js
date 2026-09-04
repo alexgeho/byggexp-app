@@ -6,8 +6,8 @@
 // Worker: "log your time easily" — an app card with a clock, a done check, and
 // the white Play button motif from Home.
 const WORKER = `<svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" fill="none">
-<circle cx="130" cy="100" r="92" fill="#FFFFFF" opacity="0.12"/>
-<circle cx="130" cy="100" r="66" fill="#FFFFFF" opacity="0.10"/>
+<circle cx="130" cy="100" r="92" fill="#D8E8FB"/>
+<circle cx="130" cy="100" r="66" fill="#E7F1FD"/>
 <rect x="88" y="44" width="90" height="124" rx="18" fill="#FFFFFF"/>
 <circle cx="108" cy="66" r="7" fill="#DCEBFF"/>
 <rect x="120" y="61" width="42" height="5" rx="2.5" fill="#EAF3FF"/>
@@ -26,8 +26,8 @@ const WORKER = `<svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" fi
 // Admin — projects & team: a roster card with member rows and a green "add
 // person" badge (invite your crew).
 const ADMIN_TEAM = `<svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" fill="none">
-<circle cx="130" cy="100" r="92" fill="#FFFFFF" opacity="0.12"/>
-<circle cx="130" cy="100" r="66" fill="#FFFFFF" opacity="0.10"/>
+<circle cx="130" cy="100" r="92" fill="#D8E8FB"/>
+<circle cx="130" cy="100" r="66" fill="#E7F1FD"/>
 <rect x="70" y="50" width="120" height="100" rx="16" fill="#FFFFFF"/>
 <rect x="84" y="64" width="46" height="6" rx="3" fill="#DCEBFF"/>
 <circle cx="92" cy="94" r="9" fill="#3A73F0"/>
@@ -43,8 +43,8 @@ const ADMIN_TEAM = `<svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg
 // Admin — finance: a dashboard card with a rising bar chart, a growth trend
 // line, and a green up-arrow badge.
 const ADMIN_ECONOMY = `<svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" fill="none">
-<circle cx="130" cy="100" r="92" fill="#FFFFFF" opacity="0.12"/>
-<circle cx="130" cy="100" r="66" fill="#FFFFFF" opacity="0.10"/>
+<circle cx="130" cy="100" r="92" fill="#D8E8FB"/>
+<circle cx="130" cy="100" r="66" fill="#E7F1FD"/>
 <rect x="66" y="54" width="128" height="98" rx="16" fill="#FFFFFF"/>
 <rect x="80" y="68" width="50" height="6" rx="3" fill="#DCEBFF"/>
 <rect x="80" y="80" width="32" height="5" rx="2.5" fill="#EAF3FF"/>
@@ -61,8 +61,8 @@ const ADMIN_ECONOMY = `<svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/
 
 // Tasks & reminders: a checklist card (one item done) with a blue bell badge.
 const TASKS = `<svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" fill="none">
-<circle cx="130" cy="100" r="92" fill="#FFFFFF" opacity="0.12"/>
-<circle cx="130" cy="100" r="66" fill="#FFFFFF" opacity="0.10"/>
+<circle cx="130" cy="100" r="92" fill="#D8E8FB"/>
+<circle cx="130" cy="100" r="66" fill="#E7F1FD"/>
 <rect x="72" y="48" width="116" height="104" rx="16" fill="#FFFFFF"/>
 <rect x="86" y="66" width="18" height="18" rx="5" fill="#34C759"/>
 <path d="M90 75 l4 4 l7 -8" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
@@ -79,8 +79,8 @@ const TASKS = `<svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" fil
 // Photos & receipts: a photo card plus a receipt with a green scan line and a
 // done check — snapped photos and scanned receipts flow into the project.
 const PHOTOS = `<svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" fill="none">
-<circle cx="130" cy="100" r="92" fill="#FFFFFF" opacity="0.12"/>
-<circle cx="130" cy="100" r="66" fill="#FFFFFF" opacity="0.10"/>
+<circle cx="130" cy="100" r="92" fill="#D8E8FB"/>
+<circle cx="130" cy="100" r="66" fill="#E7F1FD"/>
 <rect x="56" y="54" width="100" height="86" rx="14" fill="#FFFFFF"/>
 <rect x="66" y="64" width="80" height="52" rx="8" fill="#EAF3FF"/>
 <circle cx="88" cy="82" r="7" fill="#3A73F0"/>

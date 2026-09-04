@@ -117,6 +117,16 @@ export function WelcomeSlides() {
     track("welcome_slide_viewed", { role: roleKey, index: next });
   };
 
+  // Keep dots + CTA label in sync when the user swipes between slides by hand
+  // (swiping right also steps back).
+  const onScrollEnd = (e) => {
+    const i = Math.round(e.nativeEvent.contentOffset.x / width);
+    if (i !== index && i >= 0 && i < slides.length) {
+      setIndex(i);
+      track("welcome_slide_viewed", { role: roleKey, index: i });
+    }
+  };
+
   const isLast = index === slides.length - 1;
 
   return (
@@ -141,15 +151,15 @@ export function WelcomeSlides() {
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        scrollEnabled={false}
+        onMomentumScrollEnd={onScrollEnd}
         renderItem={({ item }) => (
           <View style={[styles.slide, { width }]}>
             <View style={styles.card}>
               <View style={styles.hero}>
                 <SvgXml
                   xml={valueIllustration(item.illustration)}
-                  width={220}
-                  height={150}
+                  width={244}
+                  height={188}
                 />
               </View>
               <Text style={styles.title}>

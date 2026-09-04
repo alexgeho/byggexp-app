@@ -1286,17 +1286,17 @@
       "slide": {
         "1": {
           "title": "Time tracking, no hassle",
-          "f1": "Automatic or manual time logging — no more timesheets or texts."
+          "f1": "Automatic or manual work-time logging — no more filling in timesheets or sending texts."
         },
         "2": {
           "title": "Miss nothing, find everything",
-          "f1": "Tasks with reminders — never let you forget anything important.",
-          "f2": "All project documents in one place — no more hunting for drawings."
+          "f1": "Tasks with automatic reminders — they won't let you forget what matters.",
+          "f2": "All project documents in one place — no more searching for lost drawings."
         },
         "3": {
           "title": "Photos that handle themselves",
-          "f1": "Job and receipt photos attach to the project automatically — snap it and forget it.",
-          "f2": "Receipts are scanned and counted into the project's economy automatically."
+          "f1": "Job and receipt photos from the shift attach to the project automatically and show up instantly in the system — take the photo and forget it.",
+          "f2": "Receipt photos are scanned and counted into the project's economy automatically."
         }
       }
     },
