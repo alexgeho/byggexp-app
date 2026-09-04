@@ -20,6 +20,8 @@ const STEP_ICON = {
   task: "check-square",
   tools: "tool",
   companyDetails: "briefcase",
+  client: "users",
+  article: "package",
   billing: "file-text",
   selectProject: "folder",
   timeReport: "clock",

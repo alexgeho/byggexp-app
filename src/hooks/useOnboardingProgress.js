@@ -12,6 +12,8 @@ import {
 import { companyService } from "../services/company.service";
 import { offerService } from "../services/offer.service";
 import { invoiceService } from "../services/invoice.service";
+import { clientService } from "../services/client.service";
+import { articleService } from "../services/article.service";
 import {
   getOnboardingDismissed,
   getOnboardingCustomizeOpened,
@@ -58,6 +60,8 @@ export function useOnboardingProgress({
     hasTask: false,
     hasTools: false,
     hasCompanyDetails: false,
+    hasClient: false,
+    hasArticle: false,
     hasBilling: false,
   });
 
@@ -116,16 +120,27 @@ export function useOnboardingProgress({
           }
 
           // Admin — all signals for the two-direction checklist.
-          const [projects, team, tasks, tools, company, offers, invoices] =
-            await Promise.all([
-              projectService.getMyProjects().catch(() => []),
-              userService.getMyCompanyUsers().catch(() => []),
-              taskService.getAll().catch(() => []),
-              toolService.getAll().catch(() => []),
-              companyService.getMyCompany().catch(() => null),
-              offerService.getAll().catch(() => []),
-              invoiceService.getAll().catch(() => []),
-            ]);
+          const [
+            projects,
+            team,
+            tasks,
+            tools,
+            company,
+            offers,
+            invoices,
+            clients,
+            articles,
+          ] = await Promise.all([
+            projectService.getMyProjects().catch(() => []),
+            userService.getMyCompanyUsers().catch(() => []),
+            taskService.getAll().catch(() => []),
+            toolService.getAll().catch(() => []),
+            companyService.getMyCompany().catch(() => null),
+            offerService.getAll().catch(() => []),
+            invoiceService.getAll().catch(() => []),
+            clientService.getAll().catch(() => []),
+            articleService.getAll().catch(() => []),
+          ]);
           if (!active) return;
           setState((prev) => ({
             ...prev,
@@ -136,6 +151,8 @@ export function useOnboardingProgress({
             hasTask: countOf(tasks) > 0,
             hasTools: countOf(tools) > 0,
             hasCompanyDetails: Boolean(company?.orgNumber),
+            hasClient: countOf(clients) > 0,
+            hasArticle: countOf(articles) > 0,
             hasBilling: countOf(offers) + countOf(invoices) > 0,
           }));
         }
@@ -190,6 +207,8 @@ export function useOnboardingProgress({
       done: state.hasCompanyDetails,
       screen: "CompanyDetails",
     },
+    { key: "client", done: state.hasClient, screen: "Clients" },
+    { key: "article", done: state.hasArticle, screen: "Articles" },
     { key: "billing", done: state.hasBilling, screen: "Economy" },
   ];
 
