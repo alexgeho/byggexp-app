@@ -1248,7 +1248,9 @@
       "team": "Bjud in ditt team",
       "shift": "Starta ditt första pass",
       "location": "Tillåt plats",
-      "notifications": "Slå på notiser"
+      "notifications": "Slå på notiser",
+      "timeAuto": "Starta ditt första pass",
+      "timeManual": "Registrera dina timmar"
     },
     "startHere": "Börja här",
     "done": "Klar",
@@ -1258,7 +1260,9 @@
       "team": "De loggar in i appen med sin e-post för att stämpla tid.",
       "shift": "Stämpla in på plats — tiden räknas automatiskt.",
       "location": "Behövs för att stämpla in och ut automatiskt på arbetsplatsen.",
-      "notifications": "Få påminnelser om pass, uppgifter och meddelanden."
+      "notifications": "Få påminnelser om pass, uppgifter och meddelanden.",
+      "timeAuto": "Tryck på ▶ så stämplas du in automatiskt på plats.",
+      "timeManual": "Två sätt: starta ett pass, eller fyll i tiden direkt."
     }
   },
   "welcome": {
@@ -1268,24 +1272,16 @@
     "worker": {
       "slide": {
         "1": {
-          "title": "Stämpla in med ett tryck",
-          "text": "Appen checkar in och ut automatiskt när du kommer till och lämnar arbetsplatsen — inga papperslappar."
-        },
-        "2": {
-          "title": "Foton, uppgifter & chatt",
-          "text": "Dokumentera jobbet med bilder, se dina uppgifter och håll kontakt med teamet."
+          "title": "Din tid, utan krångel",
+          "text": "Stämpla in med ett tryck — eller fyll i timmar manuellt. Aldrig mer papperslappar."
         }
       }
     },
     "admin": {
       "slide": {
         "1": {
-          "title": "Styr projekt & team",
-          "text": "Samla projekt, tid och GPS-närvaro på ett ställe. Bjud in ditt team på minuter."
-        },
-        "2": {
-          "title": "Ekonomi & anpassning",
-          "text": "Skapa offerter och fakturor, följ kostnader — och anpassa startsidan som du vill."
+          "title": "Hela företaget i fickan",
+          "text": "Styr projekt och team, fördela uppgifter, skicka offerter och fakturor och se projektets ekonomi — direkt i mobilen."
         }
       }
     }

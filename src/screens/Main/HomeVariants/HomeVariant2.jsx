@@ -883,6 +883,8 @@ export default function HomeVariant2() {
             completed={onboarding.completed}
             total={onboarding.total}
             onDismiss={dismissOnboarding}
+            onStartShift={handlePlayPause}
+            onLogHours={handleEnterEditHours}
           />
         ) : null}
 

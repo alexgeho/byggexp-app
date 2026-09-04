@@ -1248,7 +1248,9 @@
       "team": "Invite your team",
       "shift": "Start your first shift",
       "location": "Allow location",
-      "notifications": "Turn on notifications"
+      "notifications": "Turn on notifications",
+      "timeAuto": "Start your first shift",
+      "timeManual": "Log your hours"
     },
     "startHere": "Start here",
     "done": "Done",
@@ -1258,7 +1260,9 @@
       "team": "They sign in to the app with their email to log time.",
       "shift": "Clock in on site — time is tracked automatically.",
       "location": "Needed to clock in and out automatically on site.",
-      "notifications": "Get reminders about shifts, tasks and messages."
+      "notifications": "Get reminders about shifts, tasks and messages.",
+      "timeAuto": "Tap ▶ to clock in automatically on site.",
+      "timeManual": "Two ways: start a shift, or enter the time directly."
     }
   },
   "welcome": {
@@ -1268,24 +1272,16 @@
     "worker": {
       "slide": {
         "1": {
-          "title": "Clock in with one tap",
-          "text": "The app checks you in and out automatically as you arrive at and leave the site — no paper slips."
-        },
-        "2": {
-          "title": "Photos, tasks & chat",
-          "text": "Document the job with pictures, see your tasks and stay in touch with your team."
+          "title": "Your time, no hassle",
+          "text": "Clock in with one tap — or enter hours manually. No more paper slips."
         }
       }
     },
     "admin": {
       "slide": {
         "1": {
-          "title": "Run projects & team",
-          "text": "Keep projects, time and GPS attendance in one place. Invite your team in minutes."
-        },
-        "2": {
-          "title": "Finances & customisation",
-          "text": "Create quotes and invoices, track costs — and tailor the home screen your way."
+          "title": "Your whole company in your pocket",
+          "text": "Run projects and team, assign tasks, send offers and invoices, and see project economy — straight from your phone."
         }
       }
     }

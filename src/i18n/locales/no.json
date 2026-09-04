@@ -1248,7 +1248,9 @@
       "team": "Inviter teamet ditt",
       "shift": "Start ditt første skift",
       "location": "Tillat plassering",
-      "notifications": "Slå på varsler"
+      "notifications": "Slå på varsler",
+      "timeAuto": "Start ditt første skift",
+      "timeManual": "Registrer timene dine"
     },
     "startHere": "Begynn her",
     "done": "Ferdig",
@@ -1258,7 +1260,9 @@
       "team": "De logger inn i appen med e-posten sin for å registrere tid.",
       "shift": "Stemple inn på stedet — tiden telles automatisk.",
       "location": "Nødvendig for å stemple inn og ut automatisk på stedet.",
-      "notifications": "Få påminnelser om skift, oppgaver og meldinger."
+      "notifications": "Få påminnelser om skift, oppgaver og meldinger.",
+      "timeAuto": "Trykk på ▶ for å stemple inn automatisk på stedet.",
+      "timeManual": "To måter: start et skift, eller fyll inn tiden direkte."
     }
   },
   "welcome": {
@@ -1268,24 +1272,16 @@
     "worker": {
       "slide": {
         "1": {
-          "title": "Stemple inn med ett trykk",
-          "text": "Appen sjekker deg inn og ut automatisk når du kommer til og forlater arbeidsplassen — ingen papirlapper."
-        },
-        "2": {
-          "title": "Bilder, oppgaver og chat",
-          "text": "Dokumenter jobben med bilder, se oppgavene dine og hold kontakt med teamet."
+          "title": "Tiden din, uten styr",
+          "text": "Stemple inn med ett trykk — eller fyll inn timer manuelt. Ingen flere papirlapper."
         }
       }
     },
     "admin": {
       "slide": {
         "1": {
-          "title": "Styr prosjekter og team",
-          "text": "Samle prosjekter, tid og GPS-oppmøte på ett sted. Inviter teamet på minutter."
-        },
-        "2": {
-          "title": "Økonomi og tilpasning",
-          "text": "Lag tilbud og fakturaer, følg kostnader — og tilpass startskjermen slik du vil."
+          "title": "Hele firmaet i lomma",
+          "text": "Styr prosjekter og team, fordel oppgaver, send tilbud og fakturaer, og se prosjektets økonomi — rett fra mobilen."
         }
       }
     }

@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import * as Location from "expo-location";
-import * as Notifications from "expo-notifications";
 
 import { projectService, shiftService, userService } from "../services";
 import { getOnboardingDismissed } from "../utils/onboardingStorage";
@@ -68,9 +67,12 @@ export function useOnboardingProgress({ role }) {
           const shiftsP = shiftService.getHistory().catch(() => []);
 
           if (isWorker) {
-            const [location, notifications, shifts] = await Promise.all([
+            // Location permission decides how the worker logs time: granted →
+            // auto clock-in via geofence (press Play); denied → they enter hours
+            // manually. hasShift covers both a real shift and manual hours
+            // (addManualHours writes a history entry).
+            const [location, shifts] = await Promise.all([
               permGranted(Location.getForegroundPermissionsAsync),
-              permGranted(Notifications.getPermissionsAsync),
               shiftsP,
             ]);
             if (!active) return;
@@ -78,7 +80,7 @@ export function useOnboardingProgress({ role }) {
               loading: false,
               dismissed: false,
               hasLocation: location,
-              hasNotifications: notifications,
+              hasNotifications: false,
               hasProject: false,
               hasTeam: false,
               hasShift: asArray(shifts).length > 0,
@@ -117,12 +119,14 @@ export function useOnboardingProgress({ role }) {
 
   const steps = isWorker
     ? [
-        { key: "location", done: state.hasLocation, screen: "LocationConsent" },
-        { key: "shift", done: state.hasShift, screen: "Shifts" },
+        // A single, adaptive "log your first time" step — the one action that
+        // matters for a worker. Mode drives copy + tap target (see
+        // HomeOnboarding): auto = press Play; manual = open the hours wheel.
         {
-          key: "notifications",
-          done: state.hasNotifications,
-          screen: "NotificationsSettings",
+          key: "time",
+          done: state.hasShift,
+          action: "time",
+          mode: state.hasLocation ? "auto" : "manual",
         },
       ]
     : [

@@ -29,17 +29,12 @@ import { createStyles } from "./WelcomeSlides.styles";
 const SEEN_KEY = "welcome-slides-seen-v2";
 const { width } = Dimensions.get("window");
 
-// Feature/benefit slides per role. Copy lives in i18n under
-// welcome.<roleKey>.slide.<key>.{title,text}.
+// One strong value screen per role — the single benefit that answers "why do I
+// need this?". Copy lives in i18n under welcome.<roleKey>.slide.1.{title,text}.
+// (Illustrations are placeholder icons for now; a designer can swap them later.)
 const SLIDES_BY_ROLE = {
-  worker: [
-    { key: "1", icon: "clock" },
-    { key: "2", icon: "camera" },
-  ],
-  admin: [
-    { key: "1", icon: "briefcase" },
-    { key: "2", icon: "file-text" },
-  ],
+  worker: [{ key: "1", icon: "clock" }],
+  admin: [{ key: "1", icon: "briefcase" }],
 };
 
 export function WelcomeSlides() {
@@ -148,14 +143,16 @@ export function WelcomeSlides() {
         )}
       />
 
-      <View style={styles.dots}>
-        {slides.map((s, i) => (
-          <View
-            key={s.key}
-            style={[styles.dot, i === index && styles.dotActive]}
-          />
-        ))}
-      </View>
+      {slides.length > 1 ? (
+        <View style={styles.dots}>
+          {slides.map((s, i) => (
+            <View
+              key={s.key}
+              style={[styles.dot, i === index && styles.dotActive]}
+            />
+          ))}
+        </View>
+      ) : null}
 
       <TouchableOpacity
         style={styles.cta}
