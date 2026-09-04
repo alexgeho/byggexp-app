@@ -10,11 +10,12 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTranslation } from "react-i18next";
-import Icon from "react-native-vector-icons/Feather";
+import { SvgXml } from "react-native-svg";
 
 import AuthContext from "../../../contexts/AuthContext";
 import { track } from "../../../utils/analytics";
 import { ByggExpWordmark } from "../ByggExpWordmark/ByggExpWordmark";
+import { valueIllustration } from "./valueIllustrations";
 import { createStyles } from "./WelcomeSlides.styles";
 
 // One-time value tour shown right after the FIRST sign-in — not before it,
@@ -130,9 +131,12 @@ export function WelcomeSlides() {
         scrollEnabled={false}
         renderItem={({ item }) => (
           <View style={[styles.slide, { width }]}>
-            <View style={styles.iconCircle}>
-              <Icon name={item.icon} size={44} color="#FFFFFF" />
-            </View>
+            <SvgXml
+              xml={valueIllustration(roleKey)}
+              width={248}
+              height={190}
+              style={styles.illustration}
+            />
             <Text style={styles.title}>
               {t(`welcome.${roleKey}.slide.${item.key}.title`)}
             </Text>

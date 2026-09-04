@@ -32,14 +32,8 @@ export function createStyles() {
       paddingHorizontal: 32,
       gap: 18,
     },
-    iconCircle: {
-      width: 96,
-      height: 96,
-      borderRadius: 999,
-      backgroundColor: "rgba(255,255,255,0.16)",
-      alignItems: "center",
-      justifyContent: "center",
-      marginBottom: 8,
+    illustration: {
+      marginBottom: 12,
     },
     title: {
       color: "#FFFFFF",
