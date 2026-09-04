@@ -66,6 +66,20 @@ eas update --branch production --message "что изменил"
 - **События:** welcome_started/slide_viewed/completed/skipped; onboarding_step_clicked/step_completed/completed/dismissed. Видно, где отваливаются worker vs admin.
 - Отклонено из референса (B2C-воронка Puffcount): survey «сколько сотрудников», social-proof, paywall — не наша B2B-модель.
 
+### Онбординг v3 (2026-09-04, всё в OTA, runtime 1.1.0)
+
+- **Value-тур** (`WelcomeSlides`, после логина, ключ `welcome-slides-seen-v4`): worker 3 экрана, admin 3 экрана, списки выгод, SVG-иллюстрации (`valueIllustrations.js`: worker/tasks/photos/adminTeam/adminEconomy). Стиль = **логин** (светлый градиент #eaf2fb→#dce9f6, белая карточка + синяя плашка под иллюстрацию, навы #052d50, кнопка #3183ff).
+- **Kom igång карточка** (`HomeOnboarding`, 90% непрозр.): worker 4 шага (Välj projekt → Rapportera tid[шит: GPS/Fyll timmar/Arbetspass] → Fyll profil → Anpassa startsidan); admin project/team/shift + кнопка оферта/фактура. Роль-детект в `useOnboardingProgress` (+ `selectedProjectId`, `userId`).
+- **Фикс:** worker «Välj projekt» = done только при выбранном `selectedProjectId` (было по getMyProjects → ложный Klar → «Välj ett projekt innan du loggar timmar»).
+- Прочее в OTA: вектор-лого (`ByggExpWordmark`→SvgXml, навы #052D50), email-лого навы 900×115, worker роль скрыта на Mitt konto, письмо-инвайт без пароля, Android intent package `se.byggexp.app`, web-admin ссылка только админам на reset-success.
+
+### ⏳ ОТКРЫТО (онбординг)
+
+- **БАГ репорт юзера:** «переустановил — вообще ничего нет». Гипотеза: тестит **веб byggexp.expo.app в Safari** (OTA туда НЕ идёт, нужен отдельный deploy EAS Hosting) ИЛИ старая сборка 1.0 из публичного стора (runtime mismatch). Надо: подтвердить источник (нативный vs веб); если веб — задеплоить веб.
+- **Не сделано (ждёт «го»):** тап по таймеру 00:00 → колесо часов (сейчас «барабан» только через вторичную круглую кнопку в режиме "hours", вкл. в Customize — по умолчанию камера); хинты-подсветка в визарде (Arbetspass «+», колесо, вкл. кнопки).
+- **Веб-мастер создания проекта** (`byggexp-admin` ProjectCreateForm шаг Team): добавить «+ пригласить воркера по email» (у свежего админа нет воркеров в списке). Не начато.
+- Geofence: авто-off по радиусу работает; откат `c22cd737` (re-point на новый проект) — НЕ трогаем без «да». iOS bg-локация OFF намеренно (2.5.4), не включать.
+
 ## 📋 Фидбек Натальи — статус (все dev-пункты закрыты)
 
 | Пункт                                         | Статус                                                             |
