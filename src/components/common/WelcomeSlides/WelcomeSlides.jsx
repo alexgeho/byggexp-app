@@ -28,7 +28,7 @@ import { createStyles } from "./WelcomeSlides.styles";
 // Key is versioned: bumping it re-shows the tour once to everyone (e.g. when the
 // content changes), which is why existing users who saw the old generic slides
 // get the new role-aware ones a single time.
-const SEEN_KEY = "welcome-slides-seen-v3";
+const SEEN_KEY = "welcome-slides-seen-v4";
 const { width } = Dimensions.get("window");
 
 // Post-login value screens. Worker: one strong screen (title + benefit line).
