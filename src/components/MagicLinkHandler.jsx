@@ -3,7 +3,9 @@ import { Linking } from "react-native";
 import AuthContext from "../contexts/AuthContext";
 
 const extractMagicCode = (url) => {
-  if (!url || !url.includes("auth/magic")) {
+  // Custom scheme (byggexp://auth/magic?code=…) or Universal/App Link
+  // (https://api.byggexp.se/app/magic?code=…) delivered to the app.
+  if (!url || !(url.includes("auth/magic") || url.includes("app/magic"))) {
     return null;
   }
 

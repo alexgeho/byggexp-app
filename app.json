@@ -16,6 +16,7 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.anonymous.totbygghubmobileapp",
       "buildNumber": "177",
+      "associatedDomains": ["applinks:api.byggexp.se"],
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -28,7 +29,21 @@
       "edgeToEdgeEnabled": true,
       "package": "se.byggexp.app",
       "versionCode": 20,
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "api.byggexp.se",
+              "pathPrefix": "/app/magic"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "favicon": "./src/assets/favicon.png"
