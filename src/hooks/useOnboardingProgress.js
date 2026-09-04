@@ -3,7 +3,10 @@ import { useFocusEffect } from "@react-navigation/native";
 import * as Location from "expo-location";
 
 import { projectService, shiftService, userService } from "../services";
-import { getOnboardingDismissed } from "../utils/onboardingStorage";
+import {
+  getOnboardingDismissed,
+  getOnboardingCustomizeOpened,
+} from "../utils/onboardingStorage";
 
 const asArray = (value) => (Array.isArray(value) ? value : []);
 
@@ -17,26 +20,25 @@ const permGranted = async (getter) => {
 };
 
 // Role-aware "Kom igång" home checklist progress.
-// - Workers: allow location -> start first shift -> turn on notifications.
+// - Workers: pick a project -> report time (auto/manual) -> fill in profile ->
+//   customise the home screen.
 // - Admins:  create project -> invite team -> start a shift.
-// Every step's done-state comes from real signals (permissions / API data), so
-// it ticks automatically. Fully defensive — a failed check just leaves the step
-// un-done.
-export function useOnboardingProgress({ role }) {
+// Every step's done-state comes from real signals (permissions / API data /
+// local flags), so it ticks automatically. Fully defensive — a failed check
+// just leaves the step un-done.
+export function useOnboardingProgress({ role, userId }) {
   const isWorker = role === "worker";
   const enabled = Boolean(role);
 
   const [state, setState] = useState({
     loading: true,
     dismissed: false,
-    // worker signals
     hasLocation: false,
-    hasNotifications: false,
-    // admin signals
     hasProject: false,
     hasTeam: false,
-    // shared
     hasShift: false,
+    hasProfile: false,
+    hasCustomized: false,
   });
 
   useFocusEffect(
@@ -67,23 +69,30 @@ export function useOnboardingProgress({ role }) {
           const shiftsP = shiftService.getHistory().catch(() => []);
 
           if (isWorker) {
-            // Location permission decides how the worker logs time: granted →
-            // auto clock-in via geofence (press Play); denied → they enter hours
-            // manually. hasShift covers both a real shift and manual hours
-            // (addManualHours writes a history entry).
-            const [location, shifts] = await Promise.all([
-              permGranted(Location.getForegroundPermissionsAsync),
-              shiftsP,
-            ]);
+            // Location permission decides how the time step routes its "GPS"
+            // option (granted → auto clock-in; denied → location settings).
+            // hasShift covers a real shift and manual hours (both write history).
+            const [location, shifts, projects, profile, customized] =
+              await Promise.all([
+                permGranted(Location.getForegroundPermissionsAsync),
+                shiftsP,
+                projectService.getMyProjects().catch(() => []),
+                userId
+                  ? userService.getInfo(userId).catch(() => null)
+                  : Promise.resolve(null),
+                getOnboardingCustomizeOpened(),
+              ]);
             if (!active) return;
             setState({
               loading: false,
               dismissed: false,
               hasLocation: location,
-              hasNotifications: false,
-              hasProject: false,
+              hasProject: asArray(projects).length > 0,
               hasTeam: false,
               hasShift: asArray(shifts).length > 0,
+              // "Profile filled in" = they added a professional role or phone.
+              hasProfile: Boolean(profile?.profession || profile?.phoneNumber),
+              hasCustomized: customized,
             });
             return;
           }
@@ -98,12 +107,13 @@ export function useOnboardingProgress({ role }) {
             loading: false,
             dismissed: false,
             hasLocation: false,
-            hasNotifications: false,
             hasProject: asArray(projects).length > 0,
             // "Invite team" is done once the company has more than just the
             // admin themselves.
             hasTeam: asArray(team).length > 1,
             hasShift: asArray(shifts).length > 0,
+            hasProfile: false,
+            hasCustomized: false,
           });
         }
 
@@ -113,21 +123,27 @@ export function useOnboardingProgress({ role }) {
           active = false;
         };
       },
-      [enabled, isWorker],
+      [enabled, isWorker, userId],
     ),
   );
 
   const steps = isWorker
     ? [
-        // A single, adaptive "log your first time" step — the one action that
-        // matters for a worker. Mode drives copy + tap target (see
-        // HomeOnboarding): auto = press Play; manual = open the hours wheel.
+        // Pick a project → report time (opens a chooser: GPS / manual) →
+        // fill in profile (optional) → customise the home screen (optional).
         {
-          key: "time",
+          key: "selectProject",
+          done: state.hasProject,
+          action: "selectProject",
+        },
+        {
+          key: "timeReport",
           done: state.hasShift,
           action: "time",
           mode: state.hasLocation ? "auto" : "manual",
         },
+        { key: "profile", done: state.hasProfile, screen: "MyAccount" },
+        { key: "customize", done: state.hasCustomized, action: "customize" },
       ]
     : [
         { key: "project", done: state.hasProject, screen: "CreateProject" },

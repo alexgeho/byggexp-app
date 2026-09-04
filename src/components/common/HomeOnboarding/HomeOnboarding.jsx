@@ -1,6 +1,6 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Modal, Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
@@ -11,34 +11,24 @@ import { createStyles } from "./HomeOnboarding.styles";
 
 // "Kom igång" first-run checklist. Mirrors the admin dashboard's onboarding
 // principle (Linear/Stripe style): a short list of setup steps, each with a
-// title + one-line description, live completion detection, and a single
-// highlighted "do this next" step.
+// title + one-line description and a single highlighted "do this next" step.
 //
-// Admin steps deep-link to the screen that finishes them. The worker's single
-// step ("log your first time") is adaptive and acts in-place on Home instead of
-// navigating: with location granted it nudges Play (auto clock-in); without it,
-// it opens the manual hours wheel — via the onStartShift / onLogHours callbacks.
+// Admin steps deep-link to the screen that finishes them. Worker steps act in
+// place on Home (select project, log time, customise) via callbacks, since those
+// live inline on Home rather than on separate screens. The "report time" step
+// opens a chooser sheet: automatic (GPS) or two manual ways.
 const STEP_ICON = {
   project: "folder",
   team: "user-plus",
   shift: "clock",
+  selectProject: "folder",
+  timeReport: "clock",
+  profile: "user",
+  customize: "sliders",
   time: "clock",
   location: "map-pin",
   notifications: "bell",
 };
-
-const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
-
-// i18n key for a step's title/description. The adaptive time step keys off its
-// mode (auto/manual); every other step keys off its plain key.
-const titleKey = (step) =>
-  step.action === "time"
-    ? `onboarding.step.time${cap(step.mode)}`
-    : `onboarding.step.${step.key}`;
-const descKey = (step) =>
-  step.action === "time"
-    ? `onboarding.stepDesc.time${cap(step.mode)}`
-    : `onboarding.stepDesc.${step.key}`;
 
 export function HomeOnboarding({
   role,
@@ -48,6 +38,8 @@ export function HomeOnboarding({
   onDismiss,
   onStartShift,
   onLogHours,
+  onSelectProject,
+  onCustomize,
 }) {
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -57,30 +49,75 @@ export function HomeOnboarding({
   const accent = theme.colors.primary;
   const progress = total > 0 ? completed / total : 0;
   const isWorker = role === "worker";
-  const single = total === 1; // hide progress chrome for a one-step card
+  const single = total === 1;
 
-  // Attention hierarchy: the first not-done step is the single "do this next"
-  // focal point — highlighted with a primary CTA. Everything else is muted.
+  // The "report time" chooser sheet — remembers the tapped step's GPS mode so
+  // the automatic option knows whether to clock in or route to location setup.
+  const [timeSheet, setTimeSheet] = useState(null); // null | { mode }
+
   const activeKey = steps.find((s) => !s.done)?.key || null;
 
   const runStep = (step) => {
-    if (step.action === "time") {
-      track("onboarding_step_clicked", { step: step.key, mode: step.mode });
-      if (step.mode === "auto") {
-        onStartShift?.();
-      } else {
-        onLogHours?.();
-      }
-      return;
+    track("onboarding_step_clicked", { step: step.key, mode: step.mode });
+    switch (step.action) {
+      case "time":
+        setTimeSheet({ mode: step.mode });
+        return;
+      case "selectProject":
+        onSelectProject?.();
+        return;
+      case "customize":
+        onCustomize?.();
+        return;
+      default:
+        navigation.navigate(step.screen);
     }
-    track("onboarding_step_clicked", { step: step.key });
-    navigation.navigate(step.screen);
+  };
+
+  const chooseTime = (method) => {
+    const mode = timeSheet?.mode;
+    setTimeSheet(null);
+    track("onboarding_time_method", { method, mode });
+    if (method === "gps") {
+      // GPS configured (location granted) → start the live timer; otherwise
+      // send them to set location up first.
+      if (mode === "auto") onStartShift?.();
+      else navigation.navigate("LocationConsent");
+    } else if (method === "manual") {
+      onLogHours?.();
+    } else if (method === "shifts") {
+      navigation.navigate("Shifts");
+    }
   };
 
   const goToBilling = () => {
     track("onboarding_billing_clicked", { role });
     navigation.navigate("Economy");
   };
+
+  const TimeOption = ({ icon, title, desc, onPress }) => (
+    <TouchableOpacity
+      style={styles.sheetRow}
+      activeOpacity={0.7}
+      onPress={onPress}
+    >
+      <View
+        style={[
+          styles.iconCircle,
+          { borderColor: accent, backgroundColor: theme.content.accentSoft },
+        ]}
+      >
+        <Icon name={icon} size={16} color={accent} />
+      </View>
+      <View style={styles.rowBody}>
+        <Text style={styles.rowTitle}>{title}</Text>
+        <Text style={styles.rowDesc} numberOfLines={2}>
+          {desc}
+        </Text>
+      </View>
+      <Icon name="chevron-right" size={20} color={theme.content.textMuted} />
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.card}>
@@ -165,11 +202,11 @@ export function HomeOnboarding({
                   style={[styles.rowTitle, step.done && styles.rowTitleDone]}
                   numberOfLines={1}
                 >
-                  {t(titleKey(step))}
+                  {t(`onboarding.step.${step.key}`)}
                 </Text>
                 {!step.done ? (
                   <Text style={styles.rowDesc} numberOfLines={2}>
-                    {t(descKey(step), "")}
+                    {t(`onboarding.stepDesc.${step.key}`, "")}
                   </Text>
                 ) : null}
               </View>
@@ -203,6 +240,54 @@ export function HomeOnboarding({
           <Icon name="chevron-right" size={18} color={accent} />
         </TouchableOpacity>
       ) : null}
+
+      {/* Report-time chooser: automatic (GPS) or two manual ways. */}
+      <Modal
+        visible={timeSheet !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setTimeSheet(null)}
+      >
+        <Pressable
+          style={styles.sheetBackdrop}
+          onPress={() => setTimeSheet(null)}
+        >
+          <Pressable style={styles.sheet} onPress={() => {}}>
+            <View style={styles.sheetHandle} />
+            <Text style={styles.sheetTitle}>
+              {t("onboarding.timeSheet.title", "Rapportera din tid")}
+            </Text>
+
+            <TimeOption
+              icon="map-pin"
+              title={t("onboarding.timeSheet.gps", "Automatiskt (GPS)")}
+              desc={t(
+                "onboarding.timeSheet.gpsDesc",
+                "Stämpla in på plats — tiden räknas av sig själv.",
+              )}
+              onPress={() => chooseTime("gps")}
+            />
+            <TimeOption
+              icon="edit-3"
+              title={t("onboarding.timeSheet.manual", "Fyll i timmar")}
+              desc={t(
+                "onboarding.timeSheet.manualDesc",
+                "Ange antal timmar direkt.",
+              )}
+              onPress={() => chooseTime("manual")}
+            />
+            <TimeOption
+              icon="list"
+              title={t("onboarding.timeSheet.shifts", "I Arbetspass")}
+              desc={t(
+                "onboarding.timeSheet.shiftsDesc",
+                "Skriv in eller justera tid i dina pass.",
+              )}
+              onPress={() => chooseTime("shifts")}
+            />
+          </Pressable>
+        </Pressable>
+      </Modal>
     </View>
   );
 }

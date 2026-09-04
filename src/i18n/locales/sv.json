@@ -1249,8 +1249,10 @@
       "shift": "Starta ditt första pass",
       "location": "Tillåt plats",
       "notifications": "Slå på notiser",
-      "timeAuto": "Starta ditt första pass",
-      "timeManual": "Registrera dina timmar"
+      "selectProject": "Välj ett projekt",
+      "timeReport": "Rapportera din tid",
+      "profile": "Fyll i din profil",
+      "customize": "Anpassa startsidan"
     },
     "startHere": "Börja här",
     "done": "Klar",
@@ -1261,8 +1263,19 @@
       "shift": "Stämpla in på plats — tiden räknas automatiskt.",
       "location": "Behövs för att stämpla in och ut automatiskt på arbetsplatsen.",
       "notifications": "Få påminnelser om pass, uppgifter och meddelanden.",
-      "timeAuto": "Tryck på ▶ så stämplas du in automatiskt på plats.",
-      "timeManual": "Två sätt: starta ett pass, eller fyll i tiden direkt."
+      "selectProject": "Välj projektet du ska jobba på.",
+      "timeReport": "Automatiskt på plats eller manuellt — du väljer.",
+      "profile": "Lägg till yrkesroll, telefon och certifikat.",
+      "customize": "Välj vilka knappar du vill se — enkelt eller fullt."
+    },
+    "timeSheet": {
+      "title": "Rapportera din tid",
+      "gps": "Automatiskt (GPS)",
+      "gpsDesc": "Stämpla in på plats — tiden räknas av sig själv.",
+      "manual": "Fyll i timmar",
+      "manualDesc": "Ange antal timmar direkt.",
+      "shifts": "I Arbetspass",
+      "shiftsDesc": "Skriv in eller justera tid i dina pass."
     }
   },
   "welcome": {

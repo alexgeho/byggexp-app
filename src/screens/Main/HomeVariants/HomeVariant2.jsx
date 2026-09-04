@@ -83,7 +83,10 @@ import TasksPreview from "../../../components/common/TasksPreview/TasksPreview";
 import { isHomeButtonVisible } from "../../../utils/userRoles";
 import { HomeOnboarding } from "../../../components/common/HomeOnboarding/HomeOnboarding";
 import { useOnboardingProgress } from "../../../hooks/useOnboardingProgress";
-import { setOnboardingDismissed } from "../../../utils/onboardingStorage";
+import {
+  setOnboardingDismissed,
+  setOnboardingCustomizeOpened,
+} from "../../../utils/onboardingStorage";
 import { track, trackOnce } from "../../../utils/analytics";
 
 // react-native-web's Alert.alert is a no-op, so on web the shift-guard messages
@@ -151,7 +154,10 @@ export default function HomeVariant2() {
   // "Kom igång" first-run checklist — role-aware (worker vs admin steps),
   // shows until done or dismissed.
   const [onboardingHidden, setOnboardingHidden] = useState(false);
-  const onboarding = useOnboardingProgress({ role: user?.role });
+  const onboarding = useOnboardingProgress({
+    role: user?.role,
+    userId: user?._id || user?.id,
+  });
   function dismissOnboarding() {
     setOnboardingHidden(true);
     setOnboardingDismissed();
@@ -199,6 +205,9 @@ export default function HomeVariant2() {
   const backdropOpacity = useRef(new Animated.Value(0)).current;
 
   const openCustomize = useCallback(() => {
+    // Mark the onboarding "Anpassa startsidan" step done — opening the drawer is
+    // the signal (there's no server-side "customised the home" flag).
+    setOnboardingCustomizeOpened();
     setCustomizeMounted(true);
     drawerX.setValue(-CUSTOMIZE_WIDTH);
     requestAnimationFrame(() => {
@@ -885,6 +894,8 @@ export default function HomeVariant2() {
             onDismiss={dismissOnboarding}
             onStartShift={handlePlayPause}
             onLogHours={handleEnterEditHours}
+            onSelectProject={openProjects}
+            onCustomize={openCustomize}
           />
         ) : null}
 

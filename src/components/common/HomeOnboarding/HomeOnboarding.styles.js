@@ -122,5 +122,42 @@ export function createStyles(theme) {
       fontSize: 15,
       fontFamily: theme.text.fontFamily.semiBold,
     },
+    // Report-time chooser sheet
+    sheetBackdrop: {
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.4)",
+      justifyContent: "flex-end",
+    },
+    sheet: {
+      backgroundColor: c.surface,
+      borderTopLeftRadius: 24,
+      borderTopRightRadius: 24,
+      paddingHorizontal: 16,
+      paddingTop: 10,
+      paddingBottom: 34,
+      gap: 6,
+    },
+    sheetHandle: {
+      alignSelf: "center",
+      width: 40,
+      height: 4,
+      borderRadius: 999,
+      backgroundColor: c.border,
+      marginBottom: 10,
+    },
+    sheetTitle: {
+      color: c.textPrimary,
+      fontSize: 17,
+      fontFamily: theme.text.fontFamily.semiBold,
+      marginBottom: 6,
+      marginLeft: 4,
+    },
+    sheetRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+      paddingVertical: 12,
+      paddingHorizontal: 6,
+    },
   });
 }

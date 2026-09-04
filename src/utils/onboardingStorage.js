@@ -19,3 +19,23 @@ export async function setOnboardingDismissed() {
     // ignore — worst case the card shows again next launch
   }
 }
+
+// Marks the "Anpassa startsidan" onboarding step done once the user has opened
+// the Customize drawer (there's no server signal for "customised the home").
+const CUSTOMIZE_OPENED_KEY = "home-onboarding-customize-opened";
+
+export async function getOnboardingCustomizeOpened() {
+  try {
+    return (await AsyncStorage.getItem(CUSTOMIZE_OPENED_KEY)) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export async function setOnboardingCustomizeOpened() {
+  try {
+    await AsyncStorage.setItem(CUSTOMIZE_OPENED_KEY, "1");
+  } catch {
+    // ignore
+  }
+}

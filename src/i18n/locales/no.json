@@ -1249,8 +1249,10 @@
       "shift": "Start ditt første skift",
       "location": "Tillat plassering",
       "notifications": "Slå på varsler",
-      "timeAuto": "Start ditt første skift",
-      "timeManual": "Registrer timene dine"
+      "selectProject": "Velg et prosjekt",
+      "timeReport": "Registrer tiden din",
+      "profile": "Fyll inn profilen din",
+      "customize": "Tilpass startskjermen"
     },
     "startHere": "Begynn her",
     "done": "Ferdig",
@@ -1261,8 +1263,19 @@
       "shift": "Stemple inn på stedet — tiden telles automatisk.",
       "location": "Nødvendig for å stemple inn og ut automatisk på stedet.",
       "notifications": "Få påminnelser om skift, oppgaver og meldinger.",
-      "timeAuto": "Trykk på ▶ for å stemple inn automatisk på stedet.",
-      "timeManual": "To måter: start et skift, eller fyll inn tiden direkte."
+      "selectProject": "Velg prosjektet du skal jobbe på.",
+      "timeReport": "Automatisk på stedet eller manuelt — du velger.",
+      "profile": "Legg til yrkesrolle, telefon og sertifikater.",
+      "customize": "Velg hvilke knapper du vil se — enkelt eller fullt."
+    },
+    "timeSheet": {
+      "title": "Registrer tiden din",
+      "gps": "Automatisk (GPS)",
+      "gpsDesc": "Stemple inn på stedet — tiden telles av seg selv.",
+      "manual": "Fyll inn timer",
+      "manualDesc": "Angi antall timer direkte.",
+      "shifts": "I Arbeidsøkter",
+      "shiftsDesc": "Skriv inn eller juster tid i øktene dine."
     }
   },
   "welcome": {

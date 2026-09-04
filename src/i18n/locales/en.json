@@ -1249,8 +1249,10 @@
       "shift": "Start your first shift",
       "location": "Allow location",
       "notifications": "Turn on notifications",
-      "timeAuto": "Start your first shift",
-      "timeManual": "Log your hours"
+      "selectProject": "Choose a project",
+      "timeReport": "Report your time",
+      "profile": "Fill in your profile",
+      "customize": "Customise your home screen"
     },
     "startHere": "Start here",
     "done": "Done",
@@ -1261,8 +1263,19 @@
       "shift": "Clock in on site — time is tracked automatically.",
       "location": "Needed to clock in and out automatically on site.",
       "notifications": "Get reminders about shifts, tasks and messages.",
-      "timeAuto": "Tap ▶ to clock in automatically on site.",
-      "timeManual": "Two ways: start a shift, or enter the time directly."
+      "selectProject": "Pick the project you'll work on.",
+      "timeReport": "Automatically on site or manually — your choice.",
+      "profile": "Add your professional role, phone and certificates.",
+      "customize": "Pick which buttons you want — lean or full."
+    },
+    "timeSheet": {
+      "title": "Report your time",
+      "gps": "Automatic (GPS)",
+      "gpsDesc": "Clock in on site — time is counted for you.",
+      "manual": "Enter hours",
+      "manualDesc": "Type the number of hours directly.",
+      "shifts": "In Shifts",
+      "shiftsDesc": "Enter or adjust time in your shifts."
     }
   },
   "welcome": {
