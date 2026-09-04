@@ -268,6 +268,12 @@ export default function AppNavigator() {
               }
             />
             <Stack.Screen
+              name="CompanyDetails"
+              getComponent={() =>
+                require("../screens/Menu/CompanyDetailsScreen").default
+              }
+            />
+            <Stack.Screen
               name="CreateTool"
               getComponent={() =>
                 require("../screens/Menu/CreateToolScreen").default

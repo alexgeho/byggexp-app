@@ -1321,5 +1321,16 @@
         }
       }
     }
+  },
+  "companyDetails": {
+    "title": "Företagsuppgifter",
+    "name": "Företagsnamn",
+    "orgNumber": "Org.nummer",
+    "address": "Adress",
+    "email": "E-post",
+    "phone": "Telefon",
+    "hint": "Används på varje offert och faktura.",
+    "savedTitle": "Sparat",
+    "savedMessage": "Företagsuppgifterna sparades."
   }
 }

@@ -1321,5 +1321,16 @@
         }
       }
     }
+  },
+  "companyDetails": {
+    "title": "Company details",
+    "name": "Company name",
+    "orgNumber": "Org. number",
+    "address": "Address",
+    "email": "Email",
+    "phone": "Phone",
+    "hint": "Used on every offer and invoice.",
+    "savedTitle": "Saved",
+    "savedMessage": "Company details saved."
   }
 }

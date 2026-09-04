@@ -1321,5 +1321,16 @@
         }
       }
     }
+  },
+  "companyDetails": {
+    "title": "Firmaopplysninger",
+    "name": "Firmanavn",
+    "orgNumber": "Org.nummer",
+    "address": "Adresse",
+    "email": "E-post",
+    "phone": "Telefon",
+    "hint": "Brukes på hvert tilbud og faktura.",
+    "savedTitle": "Lagret",
+    "savedMessage": "Firmaopplysningene ble lagret."
   }
 }
