@@ -10,6 +10,7 @@ import {
   Platform,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { styles } from "./LoginScreen.styles";
 import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
@@ -22,6 +23,7 @@ import { ByggExpWordmark } from "../../components/common/ByggExpWordmark/ByggExp
 export default function LoginScreen({ navigation }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const { login, isLoading } = useContext(AuthContext);
   const { showError } = useFeedback();
   const [email, setEmail] = useState("");
@@ -176,8 +178,11 @@ export default function LoginScreen({ navigation }) {
         </ScrollView>
       </KeyboardAvoidingView>
 
-      <View style={styles.brandRow} pointerEvents="none">
-        <ByggExpWordmark width={168} />
+      <View
+        style={[styles.brandRow, { bottom: insets.bottom + 24 }]}
+        pointerEvents="none"
+      >
+        <ByggExpWordmark width={168} color="#052D50" />
       </View>
     </LinearGradient>
   );

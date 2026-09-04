@@ -44,7 +44,7 @@ export default function LoaderScreen() {
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.logoWrap, { opacity: logoOpacity }]}>
-        <ByggExpWordmark width={200} />
+        <ByggExpWordmark width={200} color="#052D50" />
       </Animated.View>
       <Animated.Text
         style={[
