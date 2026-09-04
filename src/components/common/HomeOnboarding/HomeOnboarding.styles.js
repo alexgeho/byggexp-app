@@ -9,8 +9,6 @@ export function createStyles(theme) {
     card: {
       backgroundColor:
         c.scheme === "dark" ? "rgba(44,44,46,0.90)" : "rgba(255,255,255,0.90)",
-      borderWidth: 1,
-      borderColor: c.border,
       borderRadius: 20,
       padding: 16,
       gap: 12,
