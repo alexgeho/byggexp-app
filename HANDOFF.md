@@ -73,12 +73,50 @@ eas update --branch production --message "что изменил"
 - **Фикс:** worker «Välj projekt» = done только при выбранном `selectedProjectId` (было по getMyProjects → ложный Klar → «Välj ett projekt innan du loggar timmar»).
 - Прочее в OTA: вектор-лого (`ByggExpWordmark`→SvgXml, навы #052D50), email-лого навы 900×115, worker роль скрыта на Mitt konto, письмо-инвайт без пароля, Android intent package `se.byggexp.app`, web-admin ссылка только админам на reset-success.
 
-### ⏳ ОТКРЫТО (онбординг)
+### Онбординг v4 + Economy-экраны (2026-09-04 вечер, всё в OTA)
 
-- **БАГ репорт юзера:** «переустановил — вообще ничего нет». Гипотеза: тестит **веб byggexp.expo.app в Safari** (OTA туда НЕ идёт, нужен отдельный deploy EAS Hosting) ИЛИ старая сборка 1.0 из публичного стора (runtime mismatch). Надо: подтвердить источник (нативный vs веб); если веб — задеплоить веб.
-- **Не сделано (ждёт «го»):** тап по таймеру 00:00 → колесо часов (сейчас «барабан» только через вторичную круглую кнопку в режиме "hours", вкл. в Customize — по умолчанию камера); хинты-подсветка в визарде (Arbetspass «+», колесо, вкл. кнопки).
-- **Веб-мастер создания проекта** (`byggexp-admin` ProjectCreateForm шаг Team): добавить «+ пригласить воркера по email» (у свежего админа нет воркеров в списке). Не начато.
-- Geofence: авто-off по радиусу работает; откат `c22cd737` (re-point на новый проект) — НЕ трогаем без «да». iOS bg-локация OFF намеренно (2.5.4), не включать.
+**Value-тур (`WelcomeSlides`) — стиль ЛОГИНА (светлый):** градиент #eaf2fb→#dce9f6, белая карточка, навы #052d50, кнопка #3183ff. Иллюстрации на **светлом медальоне** (без тяжёлой синей плашки), галочки **зелёные** (#34C759), синий только на кнопке. Свайп влево/вправо (`onMomentumScrollEnd`) + назад. worker 3 экрана / admin 3 экрана. Тексты worker — дословно из копий юзера. Ключ показа `welcome-slides-seen-v4`. Иллюстрации: `valueIllustrations.js` (worker/tasks/photos/adminTeam/adminEconomy), рендер-проверка через resvg в scratchpad.
+
+**Kom igång карточка (`HomeOnboarding`):** рамка убрана, 90% непрозр.
+
+- **worker (4):** Välj projekt (done по `selectedProjectId`, НЕ по наличию проектов) → Rapportera tid (шит: GPS/Fyll timmar/Arbetspass) → Fyll profil (done при сохранении Mitt konto) → Anpassa startsidan (done при открытии Customize).
+- **admin — ДВА НАПРАВЛЕНИЯ как в вебе** (`focus` в onboardingStorage): вопрос «Vad är viktigast just nu?» →
+  - **Hantera projekt och team:** project→team→task→tools
+  - **Skicka offert eller faktura:** företagsuppgifter→**klient→artiklar**→offert/faktura
+  - переключение фокуса + «Byt fokus»; done по реальным данным.
+
+**Новые мобильные экраны (1:1 с админкой):**
+
+- `CompanyDetailsScreen` (route `CompanyDetails`) — name/org.nr/adress/e-post/telefon → companyService.update.
+- `Economy/ArticlesScreen` (route `Articles`) + `services/article.service.js` — name/авто-Art.nr/Moms%(по стране)/Enhet/notes + kontering.
+- `Economy/ClientsScreen` (route `Clients`) — все поля веб-визарда (company/private, реквизиты, адрес, контакты, оплата, reverseVAT). Инпуты стабильные (модульный `LabeledInput` — без потери фокуса).
+
+**Баг-фиксы (в OTA/деплой):**
+
+- Тёмная тема: видимость текста через токены на `ShiftsScreen`(Arbetspass), `CreateProjectScreen`, `CreateTaskScreen` (было navy-hardcode → невидимо).
+- **Магик-ссылка мигала** — обрабатывалась дважды (getInitialURL + listener); дедуп кода в `MagicLinkHandler`.
+- Лого навы (#052D50) на login/loader + подъём над Android-навбаром (safe-area).
+- Письмо-инвайт **без пароля**; email-лого навы 900×115.
+- Воркеру **скрыта роль** на Mitt konto.
+- **Backend:** инвайт на существующий e-mail → сообщение с ролью («…redan registrerad som Företagsadministratör»); reset-success web-admin ссылка только админам; Android intent package `se.byggexp.app`.
+
+### ⏳ ОТКРЫТО / СЛЕД. ШАГИ
+
+- **Тест воркера:** приглашать на СВЕЖИЙ e-mail (НЕ demo@byggexp.se — это админ). demo@byggexp.se всегда войдёт как админ.
+- **Не сделано (ждёт «го»):**
+  1. Тап по таймеру **00:00 → колесо часов** (сейчас «барабан» только через вторичную круглую кнопку в режиме "hours" = Customize; по умолч. камера).
+  2. **Хинты-подсветка в визарде** (Arbetspass «+», где жать) — предлагал баннер+подсветка, не начато.
+- **Universal Links активация:** ENV на сервере (`APPLE_TEAM_ID`, `ANDROID_SHA256` — значения в разделе выше) + pm2 restart + новый нативный билд + submit.
+- **Нативные билды + submit** в сторы (для свежих установок / App Links). Сейчас всё едет по OTA (runtime 1.1.0).
+- **Веб byggexp.expo.app** — юзер сказал забыть/не трогать; OTA туда не идёт (отдельный EAS Hosting). Админку (admin.byggexp.se) НЕ трогать.
+- **Geofence:** авто-off по радиусу работает; откат `c22cd737` (re-point на новый проект) НЕ трогаем без «да». iOS bg-локация OFF намеренно (App Store 2.5.4), не включать.
+- **Аналитика онбординга:** данные копятся (`POST /analytics/events`), funnel `GET /analytics/onboarding/funnel` (superadmin) — глянуть где отваливаются worker vs admin.
+
+### ⚙️ Инструменты сессии
+
+- SVG→PNG растеризация: `@resvg/resvg-js` установлен в scratchpad (`.../scratchpad`), скрипты `render.mjs` — для проверки/генерации лого и иллюстраций.
+
+## 📋 Фидбек Натальи — статус (все dev-пункты закрыты)
 
 ## 📋 Фидбек Натальи — статус (все dev-пункты закрыты)
 
