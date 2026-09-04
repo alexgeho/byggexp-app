@@ -59,6 +59,13 @@ eas update --branch production --message "что изменил"
 - **Обрезка длинных подписей** в Customize пофикшена (`adjustsFontSizeToFit` + `minimumFontScale` в DraggablePillList/secondary).
 - ⚠️ НЕ делали: floating-тултип на кнопке Play (избыточно — действие подсвечено чеклистом+слайдом+CTA; coachmark хрупкий). Можно инлайн-хинт по запросу.
 
+### Онбординг v2 — роль-слайды + аналитика (2026-09-04, в OTA)
+
+- **Value-слайды теперь роль-зависимые и ПОСЛЕ логина** (`WelcomeSlides.jsx`): роль есть только после входа. worker (2 слайда: one-tap in/out, foto/uppgifter/chat) vs admin (2: projekt+team+GPS, ekonomi+anpassning). Копия в i18n `welcome.<worker|admin>.slide.*`. Ключ `welcome-slides-seen-v2` → показ 1 раз всем заново.
+- **Аналитика онбординга** — новый `src/utils/analytics.js` (зеркало админского `shared/analytics.js`): буфер → `POST /analytics/events` (бэк сам ставит user/company/role из JWT), `trackOnce` через AsyncStorage, флаш по AppState. Бэк-эндпоинт уже существовал + есть funnel-репорт `GET /analytics/onboarding/funnel` (superadmin).
+- **События:** welcome_started/slide_viewed/completed/skipped; onboarding_step_clicked/step_completed/completed/dismissed. Видно, где отваливаются worker vs admin.
+- Отклонено из референса (B2C-воронка Puffcount): survey «сколько сотрудников», social-proof, paywall — не наша B2B-модель.
+
 ## 📋 Фидбек Натальи — статус (все dev-пункты закрыты)
 
 | Пункт                                         | Статус                                                             |
