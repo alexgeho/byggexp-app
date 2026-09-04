@@ -39,3 +39,23 @@ export async function setOnboardingCustomizeOpened() {
     // ignore
   }
 }
+
+// Marks the "Fyll i din profil" step done once the user has saved their account
+// (they touched the profile — that's enough; they now know where it is).
+const PROFILE_SAVED_KEY = "home-onboarding-profile-saved";
+
+export async function getOnboardingProfileSaved() {
+  try {
+    return (await AsyncStorage.getItem(PROFILE_SAVED_KEY)) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export async function setOnboardingProfileSaved() {
+  try {
+    await AsyncStorage.setItem(PROFILE_SAVED_KEY, "1");
+  } catch {
+    // ignore
+  }
+}

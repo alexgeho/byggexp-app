@@ -30,6 +30,7 @@ import {
 import { pickUploadAssets } from "../../utils/uploadPicker";
 import { userService } from "../../services";
 import { resolveUploadUrl } from "../../utils/shifts";
+import { setOnboardingProfileSaved } from "../../utils/onboardingStorage";
 
 const parseOptionalNumber = (value) => {
   const normalized = String(value || "").replace(/\D/g, "");
@@ -294,6 +295,8 @@ export const MyAccount = () => {
         ...updatedUser,
         id: updatedUser?._id || updatedUser?.id || profileId,
       });
+      // Onboarding: saving the account marks the "Fyll i din profil" step done.
+      setOnboardingProfileSaved();
       showSuccess({
         title: t("myAccount.profileUpdated"),
         message: t("myAccount.profileUpdatedMessage"),

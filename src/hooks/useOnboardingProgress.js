@@ -6,6 +6,7 @@ import { projectService, shiftService, userService } from "../services";
 import {
   getOnboardingDismissed,
   getOnboardingCustomizeOpened,
+  getOnboardingProfileSaved,
 } from "../utils/onboardingStorage";
 
 const asArray = (value) => (Array.isArray(value) ? value : []);
@@ -72,14 +73,16 @@ export function useOnboardingProgress({ role, userId, selectedProjectId }) {
             // Location permission decides how the time step routes its "GPS"
             // option (granted → auto clock-in; denied → location settings).
             // hasShift covers a real shift and manual hours (both write history).
-            const [location, shifts, profile, customized] = await Promise.all([
-              permGranted(Location.getForegroundPermissionsAsync),
-              shiftsP,
-              userId
-                ? userService.getInfo(userId).catch(() => null)
-                : Promise.resolve(null),
-              getOnboardingCustomizeOpened(),
-            ]);
+            const [location, shifts, profile, customized, profileSaved] =
+              await Promise.all([
+                permGranted(Location.getForegroundPermissionsAsync),
+                shiftsP,
+                userId
+                  ? userService.getInfo(userId).catch(() => null)
+                  : Promise.resolve(null),
+                getOnboardingCustomizeOpened(),
+                getOnboardingProfileSaved(),
+              ]);
             if (!active) return;
             setState({
               loading: false,
@@ -91,8 +94,11 @@ export function useOnboardingProgress({ role, userId, selectedProjectId }) {
               hasProject: Boolean(selectedProjectId),
               hasTeam: false,
               hasShift: asArray(shifts).length > 0,
-              // "Profile filled in" = they added a professional role or phone.
-              hasProfile: Boolean(profile?.profession || profile?.phoneNumber),
+              // "Profile filled in" = they saved the account (touched it) or have
+              // a professional role / phone on file.
+              hasProfile: Boolean(
+                profileSaved || profile?.profession || profile?.phoneNumber,
+              ),
               hasCustomized: customized,
             });
             return;
