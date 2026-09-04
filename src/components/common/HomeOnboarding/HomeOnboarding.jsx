@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
 
 import { useTheme } from "../../../theme/ThemeContext";
+import { track } from "../../../utils/analytics";
 import { createStyles } from "./HomeOnboarding.styles";
 
 // "Kom igång" first-run checklist. Renders on Home for admins until every step
@@ -68,7 +69,10 @@ export function HomeOnboarding({ steps, completed, total, onDismiss }) {
           style={styles.row}
           disabled={step.done}
           activeOpacity={0.7}
-          onPress={() => navigation.navigate(step.screen)}
+          onPress={() => {
+            track("onboarding_step_clicked", { step: step.key });
+            navigation.navigate(step.screen);
+          }}
         >
           <View
             style={[

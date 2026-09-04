@@ -1255,18 +1255,28 @@
     "skip": "Skip",
     "next": "Next",
     "start": "Get started",
-    "slide": {
-      "1": {
-        "title": "Welcome to ByggExp",
-        "text": "Projects, time and team — all in one place."
-      },
-      "2": {
-        "title": "Stay on top of time",
-        "text": "Start a shift with one tap and check in automatically on site."
-      },
-      "3": {
-        "title": "Everything about your jobs",
-        "text": "Photos, tasks and daily reports for every project."
+    "worker": {
+      "slide": {
+        "1": {
+          "title": "Clock in with one tap",
+          "text": "The app checks you in and out automatically as you arrive at and leave the site — no paper slips."
+        },
+        "2": {
+          "title": "Photos, tasks & chat",
+          "text": "Document the job with pictures, see your tasks and stay in touch with your team."
+        }
+      }
+    },
+    "admin": {
+      "slide": {
+        "1": {
+          "title": "Run projects & team",
+          "text": "Keep projects, time and GPS attendance in one place. Invite your team in minutes."
+        },
+        "2": {
+          "title": "Finances & customisation",
+          "text": "Create quotes and invoices, track costs — and tailor the home screen your way."
+        }
       }
     }
   }

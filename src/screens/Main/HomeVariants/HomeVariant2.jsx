@@ -84,6 +84,7 @@ import { isHomeButtonVisible } from "../../../utils/userRoles";
 import { HomeOnboarding } from "../../../components/common/HomeOnboarding/HomeOnboarding";
 import { useOnboardingProgress } from "../../../hooks/useOnboardingProgress";
 import { setOnboardingDismissed } from "../../../utils/onboardingStorage";
+import { track, trackOnce } from "../../../utils/analytics";
 
 // react-native-web's Alert.alert is a no-op, so on web the shift-guard messages
 // (e.g. "You are not at the project location…") never reach the user and the
@@ -154,7 +155,39 @@ export default function HomeVariant2() {
   function dismissOnboarding() {
     setOnboardingHidden(true);
     setOnboardingDismissed();
+    track("onboarding_dismissed", {
+      role: user?.role,
+      completed: onboarding.completed,
+      total: onboarding.total,
+    });
   }
+
+  // Onboarding funnel: emit each step's completion (and overall activation) once
+  // per install so we can see where workers vs admins drop off. Steps auto-tick
+  // from real data, so this useEffect just watches those flags flip to done.
+  useEffect(() => {
+    if (onboarding.loading || !user?.role) return;
+    onboarding.steps.forEach((s) => {
+      if (s.done) {
+        trackOnce(`onb.${user.role}.${s.key}`, "onboarding_step_completed", {
+          role: user.role,
+          step: s.key,
+        });
+      }
+    });
+    if (onboarding.allDone) {
+      trackOnce(`onb.${user.role}.activation`, "onboarding_completed", {
+        role: user.role,
+        total: onboarding.total,
+      });
+    }
+  }, [
+    onboarding.loading,
+    onboarding.steps,
+    onboarding.allDone,
+    onboarding.total,
+    user?.role,
+  ]);
 
   /* CUSTOMIZE DRAWER — the customize panel slides in over Home at 70% width so
      theme / layout changes preview live on the exposed part of the home screen.

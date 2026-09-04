@@ -1255,18 +1255,28 @@
     "skip": "Hopp over",
     "next": "Neste",
     "start": "Kom i gang",
-    "slide": {
-      "1": {
-        "title": "Velkommen til ByggExp",
-        "text": "Prosjekter, tid og team — samlet på ett sted."
-      },
-      "2": {
-        "title": "Hold styr på tiden",
-        "text": "Start skift med ett trykk og sjekk inn automatisk på stedet."
-      },
-      "3": {
-        "title": "Alt om jobbene dine",
-        "text": "Bilder, oppgaver og dagsrapporter for hvert prosjekt."
+    "worker": {
+      "slide": {
+        "1": {
+          "title": "Stemple inn med ett trykk",
+          "text": "Appen sjekker deg inn og ut automatisk når du kommer til og forlater arbeidsplassen — ingen papirlapper."
+        },
+        "2": {
+          "title": "Bilder, oppgaver og chat",
+          "text": "Dokumenter jobben med bilder, se oppgavene dine og hold kontakt med teamet."
+        }
+      }
+    },
+    "admin": {
+      "slide": {
+        "1": {
+          "title": "Styr prosjekter og team",
+          "text": "Samle prosjekter, tid og GPS-oppmøte på ett sted. Inviter teamet på minutter."
+        },
+        "2": {
+          "title": "Økonomi og tilpasning",
+          "text": "Lag tilbud og fakturaer, følg kostnader — og tilpass startskjermen slik du vil."
+        }
       }
     }
   }
