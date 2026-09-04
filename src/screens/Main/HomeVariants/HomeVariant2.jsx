@@ -157,6 +157,7 @@ export default function HomeVariant2() {
   const onboarding = useOnboardingProgress({
     role: user?.role,
     userId: user?._id || user?.id,
+    selectedProjectId,
   });
   function dismissOnboarding() {
     setOnboardingHidden(true);

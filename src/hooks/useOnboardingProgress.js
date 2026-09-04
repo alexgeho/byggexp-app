@@ -26,7 +26,7 @@ const permGranted = async (getter) => {
 // Every step's done-state comes from real signals (permissions / API data /
 // local flags), so it ticks automatically. Fully defensive — a failed check
 // just leaves the step un-done.
-export function useOnboardingProgress({ role, userId }) {
+export function useOnboardingProgress({ role, userId, selectedProjectId }) {
   const isWorker = role === "worker";
   const enabled = Boolean(role);
 
@@ -72,22 +72,23 @@ export function useOnboardingProgress({ role, userId }) {
             // Location permission decides how the time step routes its "GPS"
             // option (granted → auto clock-in; denied → location settings).
             // hasShift covers a real shift and manual hours (both write history).
-            const [location, shifts, projects, profile, customized] =
-              await Promise.all([
-                permGranted(Location.getForegroundPermissionsAsync),
-                shiftsP,
-                projectService.getMyProjects().catch(() => []),
-                userId
-                  ? userService.getInfo(userId).catch(() => null)
-                  : Promise.resolve(null),
-                getOnboardingCustomizeOpened(),
-              ]);
+            const [location, shifts, profile, customized] = await Promise.all([
+              permGranted(Location.getForegroundPermissionsAsync),
+              shiftsP,
+              userId
+                ? userService.getInfo(userId).catch(() => null)
+                : Promise.resolve(null),
+              getOnboardingCustomizeOpened(),
+            ]);
             if (!active) return;
             setState({
               loading: false,
               dismissed: false,
               hasLocation: location,
-              hasProject: asArray(projects).length > 0,
+              // "Choose a project" is done only when one is actually SELECTED —
+              // the app blocks logging time until then. Company having projects
+              // isn't enough (the worker must pick the one they're on).
+              hasProject: Boolean(selectedProjectId),
               hasTeam: false,
               hasShift: asArray(shifts).length > 0,
               // "Profile filled in" = they added a professional role or phone.
@@ -123,7 +124,7 @@ export function useOnboardingProgress({ role, userId }) {
           active = false;
         };
       },
-      [enabled, isWorker, userId],
+      [enabled, isWorker, userId, selectedProjectId],
     ),
   );
 
