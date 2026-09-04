@@ -1193,7 +1193,8 @@
     "noDate": "No date",
     "noTasks": "No open tasks",
     "untitled": "Untitled task",
-    "complete": "Mark as done"
+    "complete": "Mark as done",
+    "emptyCta": "View tasks"
   },
   "moderation": {
     "actionsTitle": "Message options",

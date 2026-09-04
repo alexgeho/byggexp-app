@@ -1193,7 +1193,8 @@
     "noDate": "Ingen dato",
     "noTasks": "Ingen åpne oppgaver",
     "untitled": "Oppgave uten navn",
-    "complete": "Merk som ferdig"
+    "complete": "Merk som ferdig",
+    "emptyCta": "Vis oppgaver"
   },
   "moderation": {
     "actionsTitle": "Meldingsalternativer",

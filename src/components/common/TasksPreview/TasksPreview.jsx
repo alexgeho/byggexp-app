@@ -229,9 +229,28 @@ export function TasksPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
             })}
           </ScrollView>
         ) : (
-          <View style={styles.emptyState}>
+          <TouchableOpacity
+            style={styles.emptyState}
+            activeOpacity={0.8}
+            onPress={() => navigation.navigate("Tasks")}
+          >
+            <Icon
+              name="check-square"
+              size={26}
+              color={styles.emptyText.color}
+            />
             <Text style={styles.emptyText}>{t("tasksPreview.noTasks")}</Text>
-          </View>
+            <View style={styles.emptyCta}>
+              <Text style={styles.emptyCtaText}>
+                {t("tasksPreview.emptyCta", "Visa uppgifter")}
+              </Text>
+              <Icon
+                name="chevron-right"
+                size={16}
+                color={styles.emptyCtaText.color}
+              />
+            </View>
+          </TouchableOpacity>
         )}
       </View>
     </View>

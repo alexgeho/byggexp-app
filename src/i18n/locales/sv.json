@@ -1193,7 +1193,8 @@
     "noDate": "Inget datum",
     "noTasks": "Inga öppna uppgifter",
     "untitled": "Namnlös uppgift",
-    "complete": "Markera som klar"
+    "complete": "Markera som klar",
+    "emptyCta": "Visa uppgifter"
   },
   "moderation": {
     "actionsTitle": "Meddelandealternativ",
