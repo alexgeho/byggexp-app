@@ -57,7 +57,7 @@ export const createStyles = (c) =>
     heroMain: { flex: 1 },
     heroSide: { alignItems: "flex-end", paddingLeft: 12, paddingBottom: 3 },
     heroLabel: {
-      color: "#667E93",
+      color: c.textMuted,
       fontSize: 12.5,
       fontFamily: "DMSans-Medium",
     },
@@ -68,7 +68,7 @@ export const createStyles = (c) =>
       marginTop: 2,
     },
     heroSub: {
-      color: "#667E93",
+      color: c.textMuted,
       fontSize: 12.5,
       fontFamily: "DMSans-Medium",
       marginTop: 1,
@@ -86,7 +86,7 @@ export const createStyles = (c) =>
       fontFamily: "DMSans-SemiBold",
     },
     heroStatLabel: {
-      color: "#667E93",
+      color: c.textMuted,
       fontSize: 11,
       fontFamily: "DMSans-Medium",
       marginTop: 1,
@@ -101,7 +101,7 @@ export const createStyles = (c) =>
     hoursByLabel: {
       fontSize: 12,
       fontWeight: "700",
-      color: "#667E93",
+      color: c.textMuted,
       letterSpacing: 0.4,
       textTransform: "uppercase",
       marginBottom: 8,
@@ -183,13 +183,13 @@ export const createStyles = (c) =>
       fontWeight: "500",
     },
     dropdownPlaceholderText: {
-      color: "rgba(5, 45, 80, 0.5)",
+      color: c.placeholder,
       fontWeight: "500",
     },
     dropdownIcon: {
       width: 16,
       height: 16,
-      tintColor: "#052D50",
+      tintColor: c.textPrimary,
     },
     calendarContainer: {
       width: "100%",
@@ -420,7 +420,7 @@ export const createStyles = (c) =>
       fontWeight: "400",
     },
     selectionSummaryLabel: {
-      color: "rgba(5, 45, 80, 0.6)",
+      color: c.textMuted,
       fontSize: 14,
       fontWeight: "400",
     },
@@ -529,7 +529,7 @@ export const createStyles = (c) =>
       fontSize: 14,
     },
     statValue: {
-      color: "#052D5099",
+      color: c.textMuted,
       fontSize: 16,
       fontWeight: "500",
     },
