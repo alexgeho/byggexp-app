@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { Linking } from "react-native";
 import AuthContext from "../contexts/AuthContext";
 
@@ -15,14 +15,20 @@ const extractMagicCode = (url) => {
 
 export default function MagicLinkHandler() {
   const { magicLogin } = useContext(AuthContext);
+  // A cold open via a link can deliver the same URL to BOTH getInitialURL() and
+  // the "url" listener — processing it twice runs magicLogin twice, and the
+  // second call fails on the now-consumed code, flip-flopping auth (the loader
+  // "flashes"). Process each code at most once.
+  const handledCodesRef = useRef(new Set());
 
   useEffect(() => {
     const handleUrl = async (url) => {
       const code = extractMagicCode(url);
 
-      if (!code) {
+      if (!code || handledCodesRef.current.has(code)) {
         return;
       }
+      handledCodesRef.current.add(code);
 
       await magicLogin(code);
     };
