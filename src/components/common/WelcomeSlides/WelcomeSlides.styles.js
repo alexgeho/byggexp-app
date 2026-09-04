@@ -1,14 +1,17 @@
 import { StyleSheet } from "react-native";
 
-// Brand-blue full-screen intro. Not theme-dependent — it's a one-time branded
-// splash-style overlay, always the blue appearance.
-const BRAND_BLUE = "#0785F4";
+// Light look, matching the Login screen: soft blue gradient background, a white
+// card, navy text and a blue pill button. The illustration sits on a blue hero
+// panel inside the card so its white/light-blue art still reads.
+const NAVY = "#052d50";
+const MUTED = "#687898";
+const BLUE = "#3183ff";
+const BRAND_BLUE = "#0785f4";
 
 export function createStyles() {
   return StyleSheet.create({
     overlay: {
       ...StyleSheet.absoluteFillObject,
-      backgroundColor: BRAND_BLUE,
       zIndex: 1000,
       elevation: 1000,
       paddingTop: 64,
@@ -22,7 +25,7 @@ export function createStyles() {
       paddingHorizontal: 24,
     },
     skip: {
-      color: "rgba(255,255,255,0.85)",
+      color: MUTED,
       fontSize: 15,
       fontWeight: "600",
     },
@@ -33,29 +36,46 @@ export function createStyles() {
       flex: 1,
       alignItems: "center",
       justifyContent: "center",
-      paddingHorizontal: 32,
-      gap: 16,
+      paddingHorizontal: 20,
     },
-    illustration: {
-      marginBottom: 12,
+    card: {
+      width: "100%",
+      maxWidth: 420,
+      backgroundColor: "#ffffff",
+      borderRadius: 20,
+      padding: 18,
+      gap: 16,
+      shadowColor: "#052d50",
+      shadowOpacity: 0.1,
+      shadowRadius: 18,
+      shadowOffset: { width: 0, height: 8 },
+      elevation: 4,
+    },
+    hero: {
+      backgroundColor: BRAND_BLUE,
+      borderRadius: 16,
+      height: 170,
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
     },
     title: {
-      color: "#FFFFFF",
-      fontSize: 26,
+      color: NAVY,
+      fontSize: 23,
+      lineHeight: 30,
       fontWeight: "700",
       textAlign: "center",
     },
     text: {
-      color: "rgba(255,255,255,0.9)",
-      fontSize: 16,
-      lineHeight: 24,
+      color: MUTED,
+      fontSize: 15,
+      lineHeight: 22,
       textAlign: "center",
     },
     featureList: {
       alignSelf: "stretch",
-      gap: 14,
-      marginTop: 4,
-      paddingHorizontal: 4,
+      gap: 12,
+      paddingHorizontal: 2,
     },
     featureRow: {
       flexDirection: "row",
@@ -63,45 +83,46 @@ export function createStyles() {
       gap: 12,
     },
     featureBullet: {
-      width: 24,
-      height: 24,
+      width: 22,
+      height: 22,
       borderRadius: 999,
-      backgroundColor: "rgba(255,255,255,0.22)",
+      backgroundColor: BLUE,
       alignItems: "center",
       justifyContent: "center",
     },
     featureText: {
       flex: 1,
-      color: "#FFFFFF",
-      fontSize: 15,
-      lineHeight: 21,
+      color: NAVY,
+      fontSize: 14.5,
+      lineHeight: 20,
       fontWeight: "500",
     },
     dots: {
       flexDirection: "row",
       justifyContent: "center",
       gap: 8,
-      marginBottom: 20,
+      marginTop: 20,
+      marginBottom: 18,
     },
     dot: {
       width: 8,
       height: 8,
       borderRadius: 999,
-      backgroundColor: "rgba(255,255,255,0.4)",
+      backgroundColor: "#c4d3e6",
     },
     dotActive: {
-      backgroundColor: "#FFFFFF",
+      backgroundColor: BLUE,
       width: 22,
     },
     cta: {
       marginHorizontal: 24,
-      backgroundColor: "#FFFFFF",
+      backgroundColor: BLUE,
       borderRadius: 999,
-      paddingVertical: 18,
+      paddingVertical: 17,
       alignItems: "center",
     },
     ctaText: {
-      color: BRAND_BLUE,
+      color: "#ffffff",
       fontSize: 17,
       fontWeight: "700",
     },

@@ -9,6 +9,7 @@ import {
   StatusBar,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 import { SvgXml } from "react-native-svg";
 import Icon from "react-native-vector-icons/Feather";
@@ -119,11 +120,11 @@ export function WelcomeSlides() {
   const isLast = index === slides.length - 1;
 
   return (
-    <View style={styles.overlay}>
-      <StatusBar barStyle="light-content" />
+    <LinearGradient colors={["#eaf2fb", "#dce9f6"]} style={styles.overlay}>
+      <StatusBar barStyle="dark-content" />
 
       <View style={styles.topBar}>
-        <ByggExpWordmark width={120} color="#FFFFFF" />
+        <ByggExpWordmark width={120} color="#052D50" />
         <TouchableOpacity
           onPress={() => finish("skipped")}
           hitSlop={styles.hitSlop}
@@ -143,33 +144,36 @@ export function WelcomeSlides() {
         scrollEnabled={false}
         renderItem={({ item }) => (
           <View style={[styles.slide, { width }]}>
-            <SvgXml
-              xml={valueIllustration(item.illustration)}
-              width={210}
-              height={158}
-              style={styles.illustration}
-            />
-            <Text style={styles.title}>
-              {t(`welcome.${roleKey}.slide.${item.key}.title`)}
-            </Text>
-            {item.features ? (
-              <View style={styles.featureList}>
-                {Array.from({ length: item.features }, (_, i) => (
-                  <View key={i} style={styles.featureRow}>
-                    <View style={styles.featureBullet}>
-                      <Icon name="check" size={13} color="#FFFFFF" />
-                    </View>
-                    <Text style={styles.featureText}>
-                      {t(`welcome.${roleKey}.slide.${item.key}.f${i + 1}`)}
-                    </Text>
-                  </View>
-                ))}
+            <View style={styles.card}>
+              <View style={styles.hero}>
+                <SvgXml
+                  xml={valueIllustration(item.illustration)}
+                  width={220}
+                  height={150}
+                />
               </View>
-            ) : (
-              <Text style={styles.text}>
-                {t(`welcome.${roleKey}.slide.${item.key}.text`)}
+              <Text style={styles.title}>
+                {t(`welcome.${roleKey}.slide.${item.key}.title`)}
               </Text>
-            )}
+              {item.features ? (
+                <View style={styles.featureList}>
+                  {Array.from({ length: item.features }, (_, i) => (
+                    <View key={i} style={styles.featureRow}>
+                      <View style={styles.featureBullet}>
+                        <Icon name="check" size={13} color="#FFFFFF" />
+                      </View>
+                      <Text style={styles.featureText}>
+                        {t(`welcome.${roleKey}.slide.${item.key}.f${i + 1}`)}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              ) : (
+                <Text style={styles.text}>
+                  {t(`welcome.${roleKey}.slide.${item.key}.text`)}
+                </Text>
+              )}
+            </View>
           </View>
         )}
       />
@@ -196,6 +200,6 @@ export function WelcomeSlides() {
             : t("welcome.next", "Nästa")}
         </Text>
       </TouchableOpacity>
-    </View>
+    </LinearGradient>
   );
 }
