@@ -79,7 +79,7 @@ eas update --branch production --message "что изменил"
 
 **ЧТОБЫ ЗАРАБОТАЛО (осталось):**
 
-1. **ENV на сервере** api.byggexp.se: `APPLE_TEAM_ID` (10 симв., Apple Developer → Membership) и `ANDROID_SHA256` (Play Console → App integrity → App signing key → SHA-256; можно несколько через запятую). После — pm2 restart.
+1. **ENV на сервере** api.byggexp.se: `APPLE_TEAM_ID=33667XUA76` (найден из EAS credentials) и `ANDROID_SHA256=<Play App Signing SHA-256>` (Play Console → App integrity → App signing key → SHA-256; можно несколько через запятую). После — pm2 restart.
 2. **Новый нативный билд + submit** (associatedDomains/intentFilters — нативные): `eas build -p all --profile production` → `eas submit`.
 3. Проверить: `curl https://api.byggexp.se/.well-known/apple-app-site-association` (должен вернуть JSON с реальным Team ID), и что nginx не перехватывает `/.well-known/` (ACME использует только `/.well-known/acme-challenge/`, наши пути другие).
 
