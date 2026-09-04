@@ -38,10 +38,7 @@ const { width } = Dimensions.get("window");
 // the vector art in valueIllustrations.js.
 const SLIDES_BY_ROLE = {
   worker: [{ key: "1", illustration: "worker", features: 4 }],
-  admin: [
-    { key: "1", illustration: "adminTeam", features: 4 },
-    { key: "2", illustration: "adminEconomy", features: 4 },
-  ],
+  admin: [{ key: "1", illustration: "adminEconomy", features: 4 }],
 };
 
 export function WelcomeSlides() {

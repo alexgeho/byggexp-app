@@ -1287,7 +1287,7 @@
         "1": {
           "title": "Everything you need on the job",
           "f1": "Time logged automatically or manually — no more timesheets or texts.",
-          "f2": "Tasks with reminders — you never miss anything important.",
+          "f2": "Tasks with reminders — never let you forget anything important.",
           "f3": "All project documents in one place — no more hunting for drawings.",
           "f4": "Job and receipt photos attach to the project automatically — snap it and forget it."
         }
@@ -1296,18 +1296,11 @@
     "admin": {
       "slide": {
         "1": {
-          "title": "Run projects & team",
-          "f1": "Create projects — gather shifts, tasks and photos",
-          "f2": "Invite your team in minutes",
-          "f3": "Assign tasks and track status",
-          "f4": "GPS attendance in real time — see who works where"
-        },
-        "2": {
-          "title": "Finance & invoicing",
-          "f1": "Create offers and send invoices",
-          "f2": "Track costs and results per project",
-          "f3": "Articles and clients — saved once",
-          "f4": "All in one place, straight from your phone"
+          "title": "Your whole company in your pocket",
+          "f1": "All projects, time and team in one place — nothing scattered across chats and Excel.",
+          "f2": "GPS attendance in real time — see who's on site without calling.",
+          "f3": "Offers and invoices from your phone — turn work into money without a computer.",
+          "f4": "Costs and results per project — see instantly where you earn."
         }
       }
     }

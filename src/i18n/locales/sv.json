@@ -1287,7 +1287,7 @@
         "1": {
           "title": "Allt du behöver på jobbet",
           "f1": "Tid registreras automatiskt eller manuellt — inga fler tidrapporter eller sms.",
-          "f2": "Uppgifter med påminnelser — du missar aldrig något viktigt.",
+          "f2": "Uppgifter med påminnelser — låter dig aldrig glömma något viktigt.",
           "f3": "Alla projektdokument på ett ställe — slut på jakten efter ritningar.",
           "f4": "Foton på jobb och kvitton fästs automatiskt på projektet — ta bilden och glöm."
         }
@@ -1296,18 +1296,11 @@
     "admin": {
       "slide": {
         "1": {
-          "title": "Styr projekt & team",
-          "f1": "Skapa projekt — samla pass, uppgifter och foton",
-          "f2": "Bjud in ditt team på minuter",
-          "f3": "Fördela uppgifter och följ status",
-          "f4": "GPS-närvaro i realtid — se vem som jobbar var"
-        },
-        "2": {
-          "title": "Ekonomi & fakturering",
-          "f1": "Skapa offerter och skicka fakturor",
-          "f2": "Följ kostnader och resultat per projekt",
-          "f3": "Artiklar och kunder — sparade en gång",
-          "f4": "Allt samlat, direkt i mobilen"
+          "title": "Hela företaget i fickan",
+          "f1": "Alla projekt, tid och team på ett ställe — inget spritt i chattar och Excel.",
+          "f2": "GPS-närvaro i realtid — se vem som är på plats, utan att ringa.",
+          "f3": "Offerter och fakturor från mobilen — gör jobb till pengar utan datorn.",
+          "f4": "Kostnader och resultat per projekt — se direkt var du tjänar pengar."
         }
       }
     }
