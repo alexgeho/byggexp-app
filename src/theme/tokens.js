@@ -75,6 +75,10 @@ export const lightContent = {
   dangerSoft: "#FF3B301F",
   success: "#248A3D",
   successSoft: "#34C75924",
+  // Brand "success" green used by the success popup (e.g. project created) and
+  // reused for onboarding done-states, so the whole app shares one success mark.
+  successStrong: "rgb(69, 179, 107)",
+  successStrongSoft: "rgba(69, 179, 107, 0.18)",
   warning: "#C77700",
   warningSoft: "#FF95001F",
 
@@ -123,6 +127,8 @@ export const darkContent = {
   dangerSoft: "rgba(255,69,58,0.22)",
   success: "#32D74B",
   successSoft: "rgba(50,215,75,0.20)",
+  successStrong: "rgb(69, 179, 107)",
+  successStrongSoft: "rgba(69, 179, 107, 0.18)",
   warning: "#FFD60A",
   warningSoft: "rgba(255,214,10,0.18)",
 

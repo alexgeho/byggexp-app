@@ -50,7 +50,7 @@ export default function HelpGuideScreen() {
             onPress={openWelcomeTour}
             activeOpacity={0.85}
           >
-            <Icon name="play-circle" size={18} color="#ffffff" />
+            <Icon name="play-circle" size={18} color={theme.content.onAccent} />
             <Text
               style={[
                 styles.replayButtonText,

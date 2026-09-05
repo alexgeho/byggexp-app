@@ -35,7 +35,7 @@ export const createStyles = (c) =>
       borderRadius: 999,
     },
     replayButtonText: {
-      color: "#ffffff",
+      color: c.onAccent,
       fontSize: 15,
     },
     groupCard: {

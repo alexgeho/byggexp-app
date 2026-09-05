@@ -6,7 +6,6 @@ import { StyleSheet } from "react-native";
 const NAVY = "#052d50";
 const MUTED = "#687898";
 const BLUE = "#3183ff";
-const BRAND_BLUE = "#0785f4";
 
 export function createStyles() {
   return StyleSheet.create({
@@ -58,39 +57,6 @@ export function createStyles() {
       letterSpacing: -0.3,
       textAlign: "center",
       marginTop: 2,
-    },
-    text: {
-      color: MUTED,
-      fontSize: 15,
-      lineHeight: 22,
-      textAlign: "center",
-    },
-    featureList: {
-      alignSelf: "stretch",
-      gap: 14,
-      paddingHorizontal: 2,
-      marginTop: 2,
-    },
-    featureRow: {
-      flexDirection: "column",
-      alignItems: "center",
-      gap: 10,
-    },
-    featureBullet: {
-      width: 26,
-      height: 26,
-      borderRadius: 999,
-      backgroundColor: "rgb(69, 179, 107)",
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    featureText: {
-      alignSelf: "stretch",
-      textAlign: "center",
-      color: NAVY,
-      fontSize: 15,
-      lineHeight: 21,
-      fontWeight: "500",
     },
     dots: {
       flexDirection: "row",

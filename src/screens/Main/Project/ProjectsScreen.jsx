@@ -40,6 +40,9 @@ import {
   getProjectStatusBadgeStyle,
 } from "../../../utils/projectStatus";
 
+// Show the search box only once the list is long enough to be worth scanning.
+const SEARCH_MIN_PROJECTS = 10;
+
 const projectsCache = new Map();
 
 const getProjectId = (project) => project?._id || project?.id;
@@ -268,9 +271,8 @@ export default function ProjectsScreen() {
       onBack={goBackSafely}
       style={styles.screenExtra}
     >
-      {/* Search only earns its space once the list is long enough to scan for —
-          hidden until the user has more than 10 projects. */}
-      {projects.length > 10 ? (
+      {/* Search only earns its space once the list is long enough to scan for. */}
+      {projects.length > SEARCH_MIN_PROJECTS ? (
         <View style={styles.searchContainer}>
           <View style={styles.searchInputWrapper}>
             <TextInput

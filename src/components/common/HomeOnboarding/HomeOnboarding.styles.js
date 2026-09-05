@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-import { successPopupIconColor } from "../../../theme/settings";
+import { radius } from "../../../theme/tokens";
 
 export function createStyles(theme) {
   const c = theme.content;
@@ -102,7 +102,7 @@ export function createStyles(theme) {
       fontFamily: theme.text.fontFamily.regular,
     },
     doneTag: {
-      color: successPopupIconColor,
+      color: c.successStrong,
       fontSize: 13,
       fontFamily: theme.text.fontFamily.semiBold,
     },
@@ -197,13 +197,12 @@ export function createStyles(theme) {
     guideNumber: {
       width: 30,
       height: 30,
-      borderRadius: 999,
-      borderWidth: 1.5,
+      borderRadius: radius.full,
       alignItems: "center",
       justifyContent: "center",
     },
     guideNumberText: {
-      color: "#FFFFFF",
+      color: c.onAccent,
       fontSize: 15,
       fontFamily: theme.text.fontFamily.semiBold,
     },
@@ -220,10 +219,10 @@ export function createStyles(theme) {
       alignItems: "center",
       justifyContent: "center",
       paddingVertical: 15,
-      borderRadius: 999,
+      borderRadius: radius.full,
     },
     guideCtaText: {
-      color: "#FFFFFF",
+      color: c.onAccent,
       fontSize: 16,
       fontFamily: theme.text.fontFamily.semiBold,
     },

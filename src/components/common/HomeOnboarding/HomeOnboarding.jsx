@@ -6,10 +6,6 @@ import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
 
 import { useTheme } from "../../../theme/ThemeContext";
-import {
-  successPopupIconColor,
-  successPopupIconBackground,
-} from "../../../theme/settings";
 import { track } from "../../../utils/analytics";
 import { createStyles } from "./HomeOnboarding.styles";
 
@@ -58,15 +54,24 @@ export function HomeOnboarding({
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const accent = theme.colors.primary;
+  // Done state uses the shared "success" brand green (same mark as the
+  // project-created popup), soft-filled — not the blue accent.
+  const successColor = theme.content.successStrong;
+  const successSoftColor = theme.content.successStrongSoft;
   const progress = total > 0 ? completed / total : 0;
   const isWorker = role === "worker";
   const single = total === 1;
   const showProgress = !single && !needsFocus;
 
   const [timeSheet, setTimeSheet] = useState(null);
-  // When the worker picks "Fyll i timmar" / "I Arbetspass", show a short 3-step
+  // When the worker picks "Fyll i timmar" / "I Arbetspass", show a short how-to
   // guide first so they learn the repeatable path before the busy screen opens.
-  const [guide, setGuide] = useState(null); // null | "manual" | "shifts"
+  // One entry per guide type — copy lives in i18n `onboarding.<type>Guide.*`.
+  const [guide, setGuide] = useState(null); // null | key of GUIDES
+  const GUIDES = {
+    manual: { steps: 3, run: () => onLogHours?.() },
+    shifts: { steps: 3, run: () => navigation.navigate("Shifts") },
+  };
 
   const activeKey = steps.find((s) => !s.done)?.key || null;
 
@@ -110,8 +115,7 @@ export function HomeOnboarding({
     const which = guide;
     closeSheet();
     track("onboarding_guide_opened", { which });
-    if (which === "manual") onLogHours?.();
-    else if (which === "shifts") navigation.navigate("Shifts");
+    GUIDES[which]?.run();
   };
 
   // Subtitle: routing question when unanswered, else progress / a "change focus".
@@ -211,8 +215,8 @@ export function HomeOnboarding({
                   styles.iconCircle,
                   step.done
                     ? {
-                        backgroundColor: successPopupIconBackground,
-                        borderColor: successPopupIconBackground,
+                        backgroundColor: successSoftColor,
+                        borderColor: successSoftColor,
                       }
                     : isActive
                       ? {
@@ -223,7 +227,7 @@ export function HomeOnboarding({
                 ]}
               >
                 {step.done ? (
-                  <Icon name="check" size={15} color={successPopupIconColor} />
+                  <Icon name="check" size={15} color={successColor} />
                 ) : (
                   <Icon
                     name={STEP_ICON[step.key]}
@@ -318,24 +322,15 @@ export function HomeOnboarding({
                   {t(`onboarding.${guide}Guide.title`)}
                 </Text>
 
-                <GuideStep
-                  styles={styles}
-                  accent={accent}
-                  n="1"
-                  text={t(`onboarding.${guide}Guide.step1`)}
-                />
-                <GuideStep
-                  styles={styles}
-                  accent={accent}
-                  n="2"
-                  text={t(`onboarding.${guide}Guide.step2`)}
-                />
-                <GuideStep
-                  styles={styles}
-                  accent={accent}
-                  n="3"
-                  text={t(`onboarding.${guide}Guide.step3`)}
-                />
+                {Array.from({ length: GUIDES[guide].steps }, (_, i) => (
+                  <GuideStep
+                    key={i}
+                    styles={styles}
+                    accent={accent}
+                    n={String(i + 1)}
+                    text={t(`onboarding.${guide}Guide.step${i + 1}`)}
+                  />
+                ))}
 
                 <Text style={styles.guideNote}>
                   {t(`onboarding.${guide}Guide.note`)}
@@ -431,12 +426,7 @@ function TimeOption({ styles, accent, theme, icon, title, desc, onPress }) {
 function GuideStep({ styles, accent, n, text }) {
   return (
     <View style={styles.sheetRow}>
-      <View
-        style={[
-          styles.guideNumber,
-          { borderColor: accent, backgroundColor: accent },
-        ]}
-      >
+      <View style={[styles.guideNumber, { backgroundColor: accent }]}>
         <Text style={styles.guideNumberText}>{n}</Text>
       </View>
       <View style={styles.rowBody}>

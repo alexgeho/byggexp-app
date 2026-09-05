@@ -13,7 +13,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 import { SvgXml } from "react-native-svg";
-import Icon from "react-native-vector-icons/Feather";
 
 import AuthContext from "../../../contexts/AuthContext";
 import { track } from "../../../utils/analytics";
@@ -23,9 +22,9 @@ import { createStyles } from "./WelcomeSlides.styles";
 
 // One-time value tour shown right after the FIRST sign-in — not before it,
 // because the slides are role-specific and the role only exists once the user is
-// authenticated. Workers and admins see a different, short (2-slide) pitch of
-// the features that matter to them. Reads its own "seen" flag from AsyncStorage,
-// so it renders nothing on every later launch. Pure JS overlay → ships over OTA.
+// authenticated. Workers and admins see a different, short pitch of the features
+// that matter to them. Reads its own "seen" flag from AsyncStorage, so it
+// renders nothing on every later launch. Pure JS overlay → ships over OTA.
 //
 // Key is versioned: bumping it re-shows the tour once to everyone (e.g. when the
 // content changes), which is why existing users who saw the old generic slides
@@ -42,11 +41,10 @@ export function openWelcomeTour() {
   DeviceEventEmitter.emit(OPEN_EVENT);
 }
 
-// Post-login value screens. Worker: one strong screen (title + benefit line).
-// Admin: two screens — team/projects and finance/invoicing — each with a
-// feature list. Copy lives in i18n under welcome.<roleKey>.slide.<key>.*
-// (title + text, or title + f1..fN when `features` is set). `illustration` picks
-// the vector art in valueIllustrations.js.
+// Post-login value screens: one illustration + one benefit sentence (rendered in
+// the title/heading style) per slide. Copy lives in i18n under
+// welcome.<roleKey>.slide.<key>.title. `illustration` picks the vector art in
+// valueIllustrations.js.
 const SLIDES_BY_ROLE = {
   // Worker: one benefit sentence per slide, set in the title (heading) style —
   // no separate small title, no body text, no green-check bullets.
@@ -195,24 +193,6 @@ export function WelcomeSlides() {
               <Text style={styles.title}>
                 {t(`welcome.${roleKey}.slide.${item.key}.title`)}
               </Text>
-              {item.features ? (
-                <View style={styles.featureList}>
-                  {Array.from({ length: item.features }, (_, i) => (
-                    <View key={i} style={styles.featureRow}>
-                      <View style={styles.featureBullet}>
-                        <Icon name="check" size={13} color="#FFFFFF" />
-                      </View>
-                      <Text style={styles.featureText}>
-                        {t(`welcome.${roleKey}.slide.${item.key}.f${i + 1}`)}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              ) : item.text ? (
-                <Text style={styles.text}>
-                  {t(`welcome.${roleKey}.slide.${item.key}.text`)}
-                </Text>
-              ) : null}
             </View>
           </View>
         )}
