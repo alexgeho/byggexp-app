@@ -41,15 +41,9 @@ export function createStyles() {
     card: {
       width: "100%",
       maxWidth: 420,
-      backgroundColor: "#ffffff",
-      borderRadius: 26,
-      padding: 20,
+      backgroundColor: "transparent",
+      paddingHorizontal: 12,
       gap: 18,
-      shadowColor: "#0a4d8c",
-      shadowOpacity: 0.16,
-      shadowRadius: 28,
-      shadowOffset: { width: 0, height: 14 },
-      elevation: 6,
     },
     hero: {
       height: 190,
