@@ -1315,7 +1315,7 @@
         },
         "3": {
           "title": "Bilder som ordner seg selv",
-          "f1": "Bilder av arbeid og kvitteringer festes automatisk til prosjektet og vises umiddelbart i systemet — ta bildet og glem det."
+          "f1": "Bilder av arbeid festes automatisk til prosjektet og kvitteringer skannes inn i systemet umiddelbart — ta bildet og glem det."
         }
       }
     },
