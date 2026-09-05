@@ -265,6 +265,8 @@
     "phoneLabel": "Telefonnummer",
     "addProject": "Lägg till projekt",
     "selectRole": "Välj roll",
+    "language": "Språk",
+    "selectLanguage": "Välj språk",
     "loadingInstruments": "Laddar verktyg...",
     "selectInstruments": "Välj verktyg",
     "financeAccessLabel": "Åtkomst till ekonomidata",

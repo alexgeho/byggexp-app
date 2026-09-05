@@ -100,6 +100,26 @@ const PlainFormRow = ({
   </View>
 );
 
+// Language assignable to an invited user — drives their emails + app default
+// until they change it in-app. Codes match the app locales (Norwegian = "no").
+const LANGUAGE_OPTIONS = [
+  { value: "sv", label: "Svenska" },
+  { value: "en", label: "English" },
+  { value: "no", label: "Norsk" },
+  { value: "pl", label: "Polski" },
+  { value: "et", label: "Eesti" },
+  { value: "uk", label: "Українська" },
+  { value: "ru", label: "Русский" },
+  { value: "fi", label: "Suomi" },
+  { value: "lt", label: "Lietuvių" },
+  { value: "lv", label: "Latviešu" },
+];
+const DEFAULT_USER_LANGUAGE = "sv";
+const languageObjectToCode = (language) =>
+  language && typeof language === "object"
+    ? Object.keys(language)[0] || DEFAULT_USER_LANGUAGE
+    : language || DEFAULT_USER_LANGUAGE;
+
 const SelectRow = ({
   icon,
   label,
@@ -154,6 +174,10 @@ export default function CreateEmployeeScreen() {
   const [selectedProjectIds, setSelectedProjectIds] = useState([]);
   const [selectedRole, setSelectedRole] = useState("");
   const [showRoleModal, setShowRoleModal] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState(
+    DEFAULT_USER_LANGUAGE,
+  );
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
   // Finance capability delegation for Project Admins (mirrors the admin panel's
   // Permissions tab: grants `finance.manage`). Only company/super admins can set
   // it; workers never get it.
@@ -182,6 +206,13 @@ export default function CreateEmployeeScreen() {
     const option = roleOptions.find((item) => item.value === selectedRole);
     return option ? t(`roles.${option.value}`, option.label) : "";
   }, [roleOptions, selectedRole, t]);
+
+  const selectedLanguageLabel = useMemo(
+    () =>
+      LANGUAGE_OPTIONS.find((item) => item.value === selectedLanguage)?.label ||
+      "",
+    [selectedLanguage],
+  );
 
   const isWorkerRole = selectedRole === USER_ROLES.WORKER;
   const canGrantFinance =
@@ -290,6 +321,7 @@ export default function CreateEmployeeScreen() {
             : "",
         );
         setSelectedRole(data?.role || USER_ROLES.WORKER);
+        setSelectedLanguage(languageObjectToCode(data?.language));
         setSelectedProjectIds(
           Array.isArray(data?.projects)
             ? data.projects
@@ -378,6 +410,10 @@ export default function CreateEmployeeScreen() {
 
       if (selectedRole) {
         payload.role = selectedRole;
+      }
+
+      if (selectedLanguage) {
+        payload.language = { [selectedLanguage]: selectedLanguageLabel };
       }
 
       if (selectedProjectIds.length > 0 || isEditing) {
@@ -593,6 +629,15 @@ export default function CreateEmployeeScreen() {
               placeholder={t("createEmployee.selectRole")}
               onPress={() => setShowRoleModal(true)}
               theme={theme}
+            />
+            <SelectRow
+              styles={styles}
+              icon="globe"
+              label={t("createEmployee.language", "Språk")}
+              value={selectedLanguageLabel}
+              placeholder={t("createEmployee.selectLanguage", "Välj språk")}
+              onPress={() => setShowLanguageModal(true)}
+              theme={theme}
               isLast={!isWorkerRole && !showFinanceToggle}
             />
             {isWorkerRole ? (
@@ -685,6 +730,59 @@ export default function CreateEmployeeScreen() {
                   <Text style={styles.pickerOptionLabel}>
                     {t(`roles.${option.value}`, option.label)}
                   </Text>
+                  {isSelected ? (
+                    <Icon name="check" size={18} color={theme.colors.primary} />
+                  ) : null}
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
+
+      <Modal
+        visible={showLanguageModal}
+        animationType="slide"
+        onRequestClose={() => setShowLanguageModal(false)}
+      >
+        <SafeAreaView style={styles.pickerModalContainer}>
+          <View style={styles.pickerModalHeader}>
+            <BackButton
+              backgroundColor={theme.content.surfaceMuted}
+              tint="light"
+              borderColor="#FFFFFF50"
+              onPress={() => setShowLanguageModal(false)}
+              iconSource={require("../../assets/Arrow-left.png")}
+            />
+            <Text
+              style={[
+                styles.pickerModalTitle,
+                { fontFamily: theme.text.fontFamily.semiBold },
+              ]}
+            >
+              {t("createEmployee.selectLanguage", "Välj språk")}
+            </Text>
+            <View style={standardScreenHeaderPlaceholder} />
+          </View>
+
+          <ScrollView contentContainerStyle={styles.pickerListContent}>
+            {LANGUAGE_OPTIONS.map((option, index) => {
+              const isSelected = selectedLanguage === option.value;
+
+              return (
+                <TouchableOpacity
+                  key={option.value}
+                  style={[
+                    styles.pickerOptionRow,
+                    index !== LANGUAGE_OPTIONS.length - 1 &&
+                      styles.groupRowDivider,
+                  ]}
+                  onPress={() => {
+                    setSelectedLanguage(option.value);
+                    setShowLanguageModal(false);
+                  }}
+                >
+                  <Text style={styles.pickerOptionLabel}>{option.label}</Text>
                   {isSelected ? (
                     <Icon name="check" size={18} color={theme.colors.primary} />
                   ) : null}

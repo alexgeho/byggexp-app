@@ -265,6 +265,8 @@
     "phoneLabel": "Phone number",
     "addProject": "Add project",
     "selectRole": "Select role",
+    "language": "Language",
+    "selectLanguage": "Select language",
     "loadingInstruments": "Loading tools...",
     "selectInstruments": "Select tools",
     "financeAccessLabel": "Access to financial data",
