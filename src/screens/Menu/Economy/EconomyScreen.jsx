@@ -86,6 +86,21 @@ export default function EconomyScreen() {
   const [statusFilter, setStatusFilter] = useState(null);
   const [customerFilter, setCustomerFilter] = useState(null);
   const [customerModalVisible, setCustomerModalVisible] = useState(false);
+  const [registersModalVisible, setRegistersModalVisible] = useState(false);
+
+  // Reference registers shared by BOTH offers and invoices (not a filter of the
+  // current tab) — so they live behind the header's "•••" menu, out of the
+  // document canvas, instead of sitting under the Offers/Invoices switch where
+  // they read as offer sub-filters.
+  const registers = [
+    { icon: "users", label: t("clientForm.title"), route: "Clients" },
+    { icon: "package", label: t("articleForm.title"), route: "Articles" },
+    {
+      icon: "briefcase",
+      label: t("companyDetails.title"),
+      route: "CompanyDetails",
+    },
+  ];
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -225,8 +240,14 @@ export default function EconomyScreen() {
           <Icon name="chevron-left" size={22} color="#030303" />
         </TouchableOpacity>
         <Text style={styles.title}>{t("economy.title")}</Text>
-        {/* Transparent spacer keeps the title centered (settings button removed). */}
-        <View style={styles.headerSpacer} />
+        <TouchableOpacity
+          style={styles.headerBtn}
+          onPress={() => setRegistersModalVisible(true)}
+          accessibilityRole="button"
+          accessibilityLabel={t("economy.registers", "Register")}
+        >
+          <Icon name="more-horizontal" size={22} color="#030303" />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.segmented}>
@@ -244,41 +265,6 @@ export default function EconomyScreen() {
         >
           <Text style={[styles.segText, !isOffers && styles.segTextOn]}>
             {t("economy.invoices")}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Quick access to the registers used by offers/invoices. Previously these
-          screens were only reachable from the onboarding checklist. */}
-      <View style={styles.quickLinks}>
-        <TouchableOpacity
-          style={styles.quickLink}
-          activeOpacity={0.85}
-          onPress={() => navigation.navigate("Clients")}
-        >
-          <Icon name="users" size={16} color={theme.colors.primary} />
-          <Text style={styles.quickLinkText} numberOfLines={1}>
-            {t("clientForm.title")}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.quickLink}
-          activeOpacity={0.85}
-          onPress={() => navigation.navigate("Articles")}
-        >
-          <Icon name="package" size={16} color={theme.colors.primary} />
-          <Text style={styles.quickLinkText} numberOfLines={1}>
-            {t("articleForm.title")}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.quickLink}
-          activeOpacity={0.85}
-          onPress={() => navigation.navigate("CompanyDetails")}
-        >
-          <Icon name="briefcase" size={16} color={theme.colors.primary} />
-          <Text style={styles.quickLinkText} numberOfLines={1}>
-            {t("companyDetails.title")}
           </Text>
         </TouchableOpacity>
       </View>
@@ -385,6 +371,48 @@ export default function EconomyScreen() {
         onRightPress={() => navigation.navigate("Menu")}
         onAddPress={openCreate}
       />
+
+      <Modal
+        visible={registersModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setRegistersModalVisible(false)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setRegistersModalVisible(false)}
+        >
+          <Pressable style={styles.modalSheet} onPress={() => {}}>
+            <View style={styles.grab} />
+            <Text style={styles.modalTitle}>
+              {t("economy.registers", "Register")}
+            </Text>
+            {registers.map((reg) => (
+              <TouchableOpacity
+                key={reg.route}
+                style={styles.registerRow}
+                activeOpacity={0.8}
+                onPress={() => {
+                  setRegistersModalVisible(false);
+                  navigation.navigate(reg.route);
+                }}
+              >
+                <View style={styles.registerRowLeft}>
+                  <Icon
+                    name={reg.icon}
+                    size={20}
+                    color={theme.colors.primary}
+                  />
+                  <Text style={styles.registerRowText} numberOfLines={1}>
+                    {reg.label}
+                  </Text>
+                </View>
+                <Icon name="chevron-right" size={20} color="#9AA6B2" />
+              </TouchableOpacity>
+            ))}
+          </Pressable>
+        </Pressable>
+      </Modal>
 
       <Modal
         visible={customerModalVisible}
