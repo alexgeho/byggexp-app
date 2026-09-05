@@ -80,7 +80,7 @@ export function createStyles() {
       width: 26,
       height: 26,
       borderRadius: 999,
-      backgroundColor: "#34C759",
+      backgroundColor: "rgb(69, 179, 107)",
       alignItems: "center",
       justifyContent: "center",
     },

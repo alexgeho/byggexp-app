@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
 
 import { useTheme } from "../../../theme/ThemeContext";
+import { successPopupIconColor } from "../../../theme/settings";
 import { track } from "../../../utils/analytics";
 import { createStyles } from "./HomeOnboarding.styles";
 
@@ -54,9 +55,9 @@ export function HomeOnboarding({
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const accent = theme.colors.primary;
-  // Completed steps use the app's success green (same token as the "Klar" label
-  // and the success popup on e.g. creating a project), not the blue accent.
-  const successColor = theme.content.success;
+  // Completed steps use the exact same green as the success popup shown on e.g.
+  // creating a project — one success color across the app, not the blue accent.
+  const successColor = successPopupIconColor;
   const progress = total > 0 ? completed / total : 0;
   const isWorker = role === "worker";
   const single = total === 1;

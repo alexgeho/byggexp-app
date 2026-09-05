@@ -1,5 +1,7 @@
 import { StyleSheet } from "react-native";
 
+import { successPopupIconColor } from "../../../theme/settings";
+
 export function createStyles(theme) {
   const c = theme.content;
   return StyleSheet.create({
@@ -100,7 +102,7 @@ export function createStyles(theme) {
       fontFamily: theme.text.fontFamily.regular,
     },
     doneTag: {
-      color: c.success,
+      color: successPopupIconColor,
       fontSize: 13,
       fontFamily: theme.text.fontFamily.semiBold,
     },
