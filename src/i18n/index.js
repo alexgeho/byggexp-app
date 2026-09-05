@@ -10,6 +10,13 @@ const localeLoaders = {
   en: () => require("./locales/en.json"),
   sv: () => require("./locales/sv.json"),
   no: () => require("./locales/no.json"),
+  pl: () => require("./locales/pl.json"),
+  uk: () => require("./locales/uk.json"),
+  ru: () => require("./locales/ru.json"),
+  fi: () => require("./locales/fi.json"),
+  et: () => require("./locales/et.json"),
+  lt: () => require("./locales/lt.json"),
+  lv: () => require("./locales/lv.json"),
 };
 
 export const LANGUAGE_STORAGE_KEY = "app-language";
@@ -20,6 +27,13 @@ export const SUPPORTED_LANGUAGES = [
   { code: "en", label: "English" },
   { code: "sv", label: "Svenska" },
   { code: "no", label: "Norsk" },
+  { code: "pl", label: "Polski" },
+  { code: "uk", label: "Українська" },
+  { code: "ru", label: "Русский" },
+  { code: "fi", label: "Suomi" },
+  { code: "et", label: "Eesti" },
+  { code: "lt", label: "Lietuvių" },
+  { code: "lv", label: "Latviešu" },
 ];
 
 // Fallback for text and for devices whose language we don't support.
