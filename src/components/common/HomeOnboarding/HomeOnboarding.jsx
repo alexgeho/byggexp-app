@@ -54,6 +54,9 @@ export function HomeOnboarding({
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const accent = theme.colors.primary;
+  // Completed steps use the app's success green (same token as the "Klar" label
+  // and the success popup on e.g. creating a project), not the blue accent.
+  const successColor = theme.content.success;
   const progress = total > 0 ? completed / total : 0;
   const isWorker = role === "worker";
   const single = total === 1;
@@ -190,7 +193,10 @@ export function HomeOnboarding({
                 style={[
                   styles.iconCircle,
                   step.done
-                    ? { backgroundColor: accent, borderColor: accent }
+                    ? {
+                        backgroundColor: successColor,
+                        borderColor: successColor,
+                      }
                     : isActive
                       ? {
                           backgroundColor: theme.content.accentSoft,
