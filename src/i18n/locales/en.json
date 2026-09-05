@@ -1293,11 +1293,19 @@
     },
     "manualGuide": {
       "title": "How to fill in hours",
-      "step1": "Tap the large time on the home screen.",
+      "step1": "Tap the large 00:00 clock (or the time shown) on the home screen.",
       "step2": "Spin the wheel to the right number of hours.",
       "step3": "Tap ✓ to save.",
-      "note": "Next time you do the same — tap the large time.",
+      "note": "Next time you do the same — tap the large clock.",
       "cta": "Open now"
+    },
+    "shiftsGuide": {
+      "title": "How to add time in Shifts",
+      "step1": "Pick the \"Manual\" tab at the top.",
+      "step2": "Tap + on the day in the calendar.",
+      "step3": "Fill in the time and save.",
+      "note": "Next time you do the same — open Shifts and tap +.",
+      "cta": "Open Shifts"
     },
     "focus": {
       "question": "What matters most right now?",

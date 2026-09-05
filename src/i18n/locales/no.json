@@ -1293,11 +1293,19 @@
     },
     "manualGuide": {
       "title": "Slik fyller du inn timer",
-      "step1": "Trykk på den store tiden på startsiden.",
+      "step1": "Trykk på den store klokken 00:00 (eller tiden som vises) på startsiden.",
       "step2": "Snurr hjulet til riktig antall timer.",
       "step3": "Trykk på ✓ for å lagre.",
-      "note": "Neste gang gjør du det samme — trykk på den store tiden.",
+      "note": "Neste gang gjør du det samme — trykk på den store klokken.",
       "cta": "Åpne nå"
+    },
+    "shiftsGuide": {
+      "title": "Slik fyller du inn tid i Arbeidsøkter",
+      "step1": "Velg fanen \"Manuell\" øverst.",
+      "step2": "Trykk på + på dagen i kalenderen.",
+      "step3": "Fyll inn tiden og lagre.",
+      "note": "Neste gang gjør du det samme — åpne Arbeidsøkter og trykk på +.",
+      "cta": "Åpne Arbeidsøkter"
     },
     "focus": {
       "question": "Hva er viktigst nå?",

@@ -64,9 +64,9 @@ export function HomeOnboarding({
   const showProgress = !single && !needsFocus;
 
   const [timeSheet, setTimeSheet] = useState(null);
-  // When the worker picks "Fyll i timmar", show a short 3-step guide first so
-  // they learn the repeatable path (tap 00:00 → wheel → ✓) before it opens.
-  const [manualGuide, setManualGuide] = useState(false);
+  // When the worker picks "Fyll i timmar" / "I Arbetspass", show a short 3-step
+  // guide first so they learn the repeatable path before the busy screen opens.
+  const [guide, setGuide] = useState(null); // null | "manual" | "shifts"
 
   const activeKey = steps.find((s) => !s.done)?.key || null;
 
@@ -87,6 +87,11 @@ export function HomeOnboarding({
     }
   };
 
+  const closeSheet = () => {
+    setGuide(null);
+    setTimeSheet(null);
+  };
+
   const chooseTime = (method) => {
     const mode = timeSheet?.mode;
     track("onboarding_time_method", { method, mode });
@@ -94,21 +99,19 @@ export function HomeOnboarding({
       setTimeSheet(null);
       if (mode === "auto") onStartShift?.();
       else navigation.navigate("LocationConsent");
-    } else if (method === "manual") {
-      // Swap the chooser for the how-to guide (keeps the modal open).
-      setManualGuide(true);
-    } else if (method === "shifts") {
-      setTimeSheet(null);
-      navigation.navigate("Shifts");
+    } else if (method === "manual" || method === "shifts") {
+      // Swap the chooser for a how-to guide (keeps the modal open).
+      setGuide(method);
     }
   };
 
-  // Close the guide + chooser and actually open the hours wheel.
-  const openHoursWheel = () => {
-    setManualGuide(false);
-    setTimeSheet(null);
-    track("onboarding_manual_guide_opened", {});
-    onLogHours?.();
+  // Close the guide + chooser and actually open the target (wheel / Shifts).
+  const runGuideAction = () => {
+    const which = guide;
+    closeSheet();
+    track("onboarding_guide_opened", { which });
+    if (which === "manual") onLogHours?.();
+    else if (which === "shifts") navigation.navigate("Shifts");
   };
 
   // Subtitle: routing question when unanswered, else progress / a "change focus".
@@ -303,69 +306,48 @@ export function HomeOnboarding({
         visible={timeSheet !== null}
         transparent
         animationType="fade"
-        onRequestClose={() => {
-          setManualGuide(false);
-          setTimeSheet(null);
-        }}
+        onRequestClose={closeSheet}
       >
-        <Pressable
-          style={styles.sheetBackdrop}
-          onPress={() => {
-            setManualGuide(false);
-            setTimeSheet(null);
-          }}
-        >
+        <Pressable style={styles.sheetBackdrop} onPress={closeSheet}>
           <Pressable style={styles.sheet} onPress={() => {}}>
             <View style={styles.sheetHandle} />
 
-            {manualGuide ? (
+            {guide ? (
               <>
                 <Text style={styles.sheetTitle}>
-                  {t("onboarding.manualGuide.title", "Så fyller du i timmar")}
+                  {t(`onboarding.${guide}Guide.title`)}
                 </Text>
 
                 <GuideStep
                   styles={styles}
                   accent={accent}
                   n="1"
-                  text={t(
-                    "onboarding.manualGuide.step1",
-                    "Tryck på tiden 00:00 på startsidan.",
-                  )}
+                  text={t(`onboarding.${guide}Guide.step1`)}
                 />
                 <GuideStep
                   styles={styles}
                   accent={accent}
                   n="2"
-                  text={t(
-                    "onboarding.manualGuide.step2",
-                    "Snurra hjulet till rätt antal timmar.",
-                  )}
+                  text={t(`onboarding.${guide}Guide.step2`)}
                 />
                 <GuideStep
                   styles={styles}
                   accent={accent}
                   n="3"
-                  text={t(
-                    "onboarding.manualGuide.step3",
-                    "Tryck på ✓ för att spara.",
-                  )}
+                  text={t(`onboarding.${guide}Guide.step3`)}
                 />
 
                 <Text style={styles.guideNote}>
-                  {t(
-                    "onboarding.manualGuide.note",
-                    "Nästa gång gör du likadant — tryck på 00:00.",
-                  )}
+                  {t(`onboarding.${guide}Guide.note`)}
                 </Text>
 
                 <TouchableOpacity
                   style={[styles.guideCta, { backgroundColor: accent }]}
                   activeOpacity={0.85}
-                  onPress={openHoursWheel}
+                  onPress={runGuideAction}
                 >
                   <Text style={styles.guideCtaText}>
-                    {t("onboarding.manualGuide.cta", "Öppna nu")}
+                    {t(`onboarding.${guide}Guide.cta`)}
                   </Text>
                 </TouchableOpacity>
               </>

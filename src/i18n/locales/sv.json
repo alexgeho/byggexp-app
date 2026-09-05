@@ -1293,11 +1293,19 @@
     },
     "manualGuide": {
       "title": "Så fyller du i timmar",
-      "step1": "Tryck på den stora tiden på startsidan.",
+      "step1": "Tryck på den stora klockan 00:00 (eller tiden som visas) på startsidan.",
       "step2": "Snurra hjulet till rätt antal timmar.",
       "step3": "Tryck på ✓ för att spara.",
-      "note": "Nästa gång gör du likadant — tryck på den stora tiden.",
+      "note": "Nästa gång gör du likadant — tryck på den stora klockan.",
       "cta": "Öppna nu"
+    },
+    "shiftsGuide": {
+      "title": "Så fyller du i tid i Arbetspass",
+      "step1": "Välj fliken \"Manuell\" högst upp.",
+      "step2": "Tryck på + på dagen i kalendern.",
+      "step3": "Fyll i tiden och spara.",
+      "note": "Nästa gång gör du likadant — öppna Arbetspass och tryck på +.",
+      "cta": "Öppna Arbetspass"
     },
     "focus": {
       "question": "Vad är viktigast just nu?",
