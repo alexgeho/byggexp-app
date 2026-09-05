@@ -54,6 +54,31 @@ export const createStyles = (c) => {
     segText: { fontSize: 15, fontFamily: F_MED, color: INK },
     segTextOn: { color: INK },
 
+    /* Quick links to the offer/invoice registers (clients, articles, company) */
+    quickLinks: {
+      flexDirection: "row",
+      gap: 8,
+      marginHorizontal: 16,
+      marginBottom: 20,
+    },
+    quickLink: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 6,
+      height: 40,
+      paddingHorizontal: 8,
+      borderRadius: 12,
+      backgroundColor: c.inputSurface,
+    },
+    quickLinkText: {
+      fontSize: 13,
+      fontFamily: F_MED,
+      color: INK,
+      flexShrink: 1,
+    },
+
     /* Status filter pills */
     // Single horizontally-scrollable row of filter pills.
     pillsWrap: { position: "relative", marginBottom: 20 },

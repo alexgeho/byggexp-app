@@ -248,6 +248,41 @@ export default function EconomyScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* Quick access to the registers used by offers/invoices. Previously these
+          screens were only reachable from the onboarding checklist. */}
+      <View style={styles.quickLinks}>
+        <TouchableOpacity
+          style={styles.quickLink}
+          activeOpacity={0.85}
+          onPress={() => navigation.navigate("Clients")}
+        >
+          <Icon name="users" size={16} color={theme.colors.primary} />
+          <Text style={styles.quickLinkText} numberOfLines={1}>
+            {t("clientForm.title")}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.quickLink}
+          activeOpacity={0.85}
+          onPress={() => navigation.navigate("Articles")}
+        >
+          <Icon name="package" size={16} color={theme.colors.primary} />
+          <Text style={styles.quickLinkText} numberOfLines={1}>
+            {t("articleForm.title")}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.quickLink}
+          activeOpacity={0.85}
+          onPress={() => navigation.navigate("CompanyDetails")}
+        >
+          <Icon name="briefcase" size={16} color={theme.colors.primary} />
+          <Text style={styles.quickLinkText} numberOfLines={1}>
+            {t("companyDetails.title")}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       {(customerOptions.length > 0 || filterOptions.length > 0) && (
         <View style={styles.pillsWrap}>
           <ScrollView
