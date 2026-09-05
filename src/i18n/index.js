@@ -23,17 +23,18 @@ export const LANGUAGE_STORAGE_KEY = "app-language";
 
 // Languages offered in the in-app language switcher. Add a locale JSON +
 // an entry here to support a new language.
+// Swedish first (home market / default), then the rest alphabetically by label.
 export const SUPPORTED_LANGUAGES = [
-  { code: "en", label: "English" },
   { code: "sv", label: "Svenska" },
+  { code: "et", label: "Eesti" },
+  { code: "en", label: "English" },
+  { code: "lv", label: "Latviešu" },
+  { code: "lt", label: "Lietuvių" },
   { code: "no", label: "Norsk" },
   { code: "pl", label: "Polski" },
-  { code: "uk", label: "Ukrainska" },
   { code: "ru", label: "Russkij" },
   { code: "fi", label: "Suomi" },
-  { code: "et", label: "Eesti" },
-  { code: "lt", label: "Lietuvių" },
-  { code: "lv", label: "Latviešu" },
+  { code: "uk", label: "Ukrainska" },
 ];
 
 // Fallback for text and for devices whose language we don't support.
