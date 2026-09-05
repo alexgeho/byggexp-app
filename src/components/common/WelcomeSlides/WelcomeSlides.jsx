@@ -48,12 +48,12 @@ export function openWelcomeTour() {
 // (title + text, or title + f1..fN when `features` is set). `illustration` picks
 // the vector art in valueIllustrations.js.
 const SLIDES_BY_ROLE = {
-  // Worker: title-only slides (no green-check bullets), except the dedicated
-  // "Projekt" slide which keeps a single line of body text.
+  // Worker: one benefit sentence per slide, set in the title (heading) style —
+  // no separate small title, no body text, no green-check bullets.
   worker: [
     { key: "1", illustration: "worker" },
     { key: "2", illustration: "tasks" },
-    { key: "3", illustration: "projects", text: true },
+    { key: "3", illustration: "projects" },
     { key: "4", illustration: "photos" },
   ],
   admin: [

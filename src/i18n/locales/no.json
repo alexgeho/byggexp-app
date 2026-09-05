@@ -1305,17 +1305,16 @@
     "worker": {
       "slide": {
         "1": {
-          "title": "Tidsføring uten styr"
+          "title": "Automatisk eller manuell registrering av arbeidstid — du slipper å fylle inn timelister og sende sms."
         },
         "2": {
-          "title": "Gå glipp av ingenting"
+          "title": "Oppgaver med automatiske påminnelser — minner deg om det viktige."
         },
         "3": {
-          "title": "Prosjekt og tegninger",
-          "text": "Alle prosjektdokumenter på ett sted — ikke mer leting etter bortkomne tegninger."
+          "title": "Alle prosjektdokumenter på ett sted — ikke mer leting etter bortkomne tegninger."
         },
         "4": {
-          "title": "Fotorapporter og kvitteringsskanning"
+          "title": "Bilder av arbeid festes automatisk til prosjektet og kvitteringer skannes inn i systemet umiddelbart — ta bildet og glem det."
         }
       }
     },
