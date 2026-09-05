@@ -13,6 +13,7 @@ import {
 import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
 
 import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
@@ -30,6 +31,7 @@ const buildKontering = (vat) => `Tjänster ${vat}%`;
 
 export default function ArticlesScreen() {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { user } = useContext(AuthContext);
@@ -124,7 +126,10 @@ export default function ArticlesScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
       <View style={styles.header}>
-        <BackButton />
+        <BackButton
+          onPress={() => navigation.goBack()}
+          iconSource={require("../../../assets/Arrow-left.png")}
+        />
         <Text style={styles.headerTitle}>
           {t("articleForm.title", "Artiklar")}
         </Text>

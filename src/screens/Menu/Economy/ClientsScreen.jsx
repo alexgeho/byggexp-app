@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
 
 import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
@@ -92,6 +93,7 @@ function LabeledInput({
 
 export default function ClientsScreen() {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { user } = useContext(AuthContext);
@@ -220,7 +222,10 @@ export default function ClientsScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
       <View style={styles.header}>
-        <BackButton />
+        <BackButton
+          onPress={() => navigation.goBack()}
+          iconSource={require("../../../assets/Arrow-left.png")}
+        />
         <Text style={styles.headerTitle}>
           {t("clientForm.title", "Klienter")}
         </Text>

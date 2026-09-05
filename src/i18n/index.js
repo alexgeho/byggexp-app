@@ -27,16 +27,16 @@ export const LANGUAGE_STORAGE_KEY = "app-language";
 // Swedish first (home market / default), then the rest alphabetically by label.
 export const SUPPORTED_LANGUAGES = [
   { code: "sv", label: "Svenska" },
-  { code: "bs", label: "Bosniska / Kroatiska / Serbiska" },
+  { code: "bs", label: "Bosanski / Hrvatski / Srpski" },
   { code: "et", label: "Eesti" },
   { code: "en", label: "English" },
   { code: "lv", label: "Latviešu" },
   { code: "lt", label: "Lietuvių" },
   { code: "no", label: "Norsk" },
   { code: "pl", label: "Polski" },
-  { code: "ru", label: "Russkij" },
   { code: "fi", label: "Suomi" },
-  { code: "uk", label: "Ukrainska" },
+  { code: "ru", label: "Русский" },
+  { code: "uk", label: "Українська" },
 ];
 
 // Fallback for text and for devices whose language we don't support.

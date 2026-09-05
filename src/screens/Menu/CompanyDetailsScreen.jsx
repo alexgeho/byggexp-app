@@ -116,7 +116,10 @@ export default function CompanyDetailsScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
       <View style={styles.header}>
-        <BackButton />
+        <BackButton
+          onPress={() => navigation.goBack()}
+          iconSource={require("../../assets/Arrow-left.png")}
+        />
         <Text style={styles.headerTitle}>
           {t("companyDetails.title", "Företagsuppgifter")}
         </Text>
