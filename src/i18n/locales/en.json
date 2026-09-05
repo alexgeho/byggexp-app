@@ -1293,10 +1293,10 @@
     },
     "manualGuide": {
       "title": "How to fill in hours",
-      "step1": "Tap the 00:00 time on the home screen.",
+      "step1": "Tap the large time on the home screen.",
       "step2": "Spin the wheel to the right number of hours.",
       "step3": "Tap ✓ to save.",
-      "note": "Next time you do the same — tap 00:00.",
+      "note": "Next time you do the same — tap the large time.",
       "cta": "Open now"
     },
     "focus": {

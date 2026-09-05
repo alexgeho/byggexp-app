@@ -1293,10 +1293,10 @@
     },
     "manualGuide": {
       "title": "Slik fyller du inn timer",
-      "step1": "Trykk på tiden 00:00 på startsiden.",
+      "step1": "Trykk på den store tiden på startsiden.",
       "step2": "Snurr hjulet til riktig antall timer.",
       "step3": "Trykk på ✓ for å lagre.",
-      "note": "Neste gang gjør du det samme — trykk på 00:00.",
+      "note": "Neste gang gjør du det samme — trykk på den store tiden.",
       "cta": "Åpne nå"
     },
     "focus": {

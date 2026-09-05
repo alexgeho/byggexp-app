@@ -1293,10 +1293,10 @@
     },
     "manualGuide": {
       "title": "Så fyller du i timmar",
-      "step1": "Tryck på tiden 00:00 på startsidan.",
+      "step1": "Tryck på den stora tiden på startsidan.",
       "step2": "Snurra hjulet till rätt antal timmar.",
       "step3": "Tryck på ✓ för att spara.",
-      "note": "Nästa gång gör du likadant — tryck på 00:00.",
+      "note": "Nästa gång gör du likadant — tryck på den stora tiden.",
       "cta": "Öppna nu"
     },
     "focus": {
