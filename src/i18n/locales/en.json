@@ -1338,21 +1338,13 @@
     "admin": {
       "slide": {
         "1": {
-          "title": "Get your team started",
-          "f1": "Create projects and add staff — they instantly get an email with login and app download.",
-          "f2": "Real-time overview — see who started a shift, who's absent and where."
+          "title": "Create projects, invite your team and see in real time who works where."
         },
         "2": {
-          "title": "Run the work",
-          "f1": "Tasks with reminders — assign to everyone, selected people or one; reminders until it's done.",
-          "f2": "Job and receipt photos attach to the project automatically."
+          "title": "Assign tasks with reminders — photos and receipts attach to the right project automatically."
         },
         "3": {
-          "title": "Money & economy",
-          "f1": "Receipts are scanned and counted into the project's economy automatically.",
-          "f2": "Project economy live — straight from your phone.",
-          "f3": "Export work time to Excel or straight into an invoice/payroll in a couple of clicks.",
-          "f4": "…and much more."
+          "title": "Project finances live on your phone — export work time to invoice or payroll in a couple of taps."
         }
       }
     }

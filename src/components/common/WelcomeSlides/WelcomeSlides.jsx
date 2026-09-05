@@ -56,10 +56,12 @@ const SLIDES_BY_ROLE = {
     { key: "3", illustration: "projects" },
     { key: "4", illustration: "photos" },
   ],
+  // Admin: same style as worker — one benefit sentence per slide in the title
+  // (heading) style, no bullets.
   admin: [
-    { key: "1", illustration: "adminTeam", features: 2 },
-    { key: "2", illustration: "tasks", features: 2 },
-    { key: "3", illustration: "adminEconomy", features: 4 },
+    { key: "1", illustration: "adminTeam" },
+    { key: "2", illustration: "tasks" },
+    { key: "3", illustration: "adminEconomy" },
   ],
 };
 

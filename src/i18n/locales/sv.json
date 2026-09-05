@@ -1338,21 +1338,13 @@
     "admin": {
       "slide": {
         "1": {
-          "title": "Kom igång med teamet",
-          "f1": "Skapa projekt och lägg till anställda — de får direkt mejl med inlogg och app-nedladdning.",
-          "f2": "Koll i realtid — se vem som startat pass, vem som är frånvarande och var."
+          "title": "Skapa projekt, bjud in teamet och se i realtid vem som jobbar var."
         },
         "2": {
-          "title": "Styr arbetet",
-          "f1": "Uppgifter med påminnelser — tilldela alla, valda eller en person; påminnelser tills den är klar.",
-          "f2": "Foton på jobb och kvitton fästs automatiskt på projektet."
+          "title": "Tilldela uppgifter med påminnelser — foton och kvitton fästs automatiskt på rätt projekt."
         },
         "3": {
-          "title": "Pengar & ekonomi",
-          "f1": "Kvitton skannas och räknas in i projektets ekonomi automatiskt.",
-          "f2": "Projektets ekonomi live — direkt från mobilen.",
-          "f3": "Exportera arbetstid till Excel eller direkt till faktura/lön på ett par klick.",
-          "f4": "…och mycket mer."
+          "title": "Projektets ekonomi live i mobilen — exportera arbetstid till faktura eller lön på ett par klick."
         }
       }
     }

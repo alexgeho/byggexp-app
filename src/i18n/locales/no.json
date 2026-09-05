@@ -1338,21 +1338,13 @@
     "admin": {
       "slide": {
         "1": {
-          "title": "Kom i gang med teamet",
-          "f1": "Opprett prosjekter og legg til ansatte — de får straks e-post med innlogging og app-nedlasting.",
-          "f2": "Oversikt i sanntid — se hvem som har startet skift, hvem som er borte og hvor."
+          "title": "Opprett prosjekter, inviter teamet og se i sanntid hvem som jobber hvor."
         },
         "2": {
-          "title": "Styr arbeidet",
-          "f1": "Oppgaver med påminnelser — tildel alle, utvalgte eller én; påminnelser til den er ferdig.",
-          "f2": "Bilder av arbeid og kvitteringer festes automatisk til prosjektet."
+          "title": "Tildel oppgaver med påminnelser — bilder og kvitteringer festes automatisk til riktig prosjekt."
         },
         "3": {
-          "title": "Penger & økonomi",
-          "f1": "Kvitteringer skannes og regnes inn i prosjektets økonomi automatisk.",
-          "f2": "Prosjektets økonomi live — rett fra mobilen.",
-          "f3": "Eksporter arbeidstid til Excel eller rett til faktura/lønn på et par klikk.",
-          "f4": "…og mye mer."
+          "title": "Prosjektets økonomi live på mobilen — eksporter arbeidstid til faktura eller lønn med et par trykk."
         }
       }
     }
