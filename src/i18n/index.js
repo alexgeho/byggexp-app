@@ -76,6 +76,33 @@ export async function loadStoredLanguage() {
   }
 }
 
+// Apply the language the admin assigned to this user (stored on the server as
+// `user.language`), but ONLY if the user hasn't made their own explicit in-app
+// choice — that always wins. Accepts a bare code or the legacy { code: name }
+// object. No-op for unsupported codes (e.g. a locale not bundled yet), so it's
+// safe to call before every locale JSON ships. Not persisted: the persisted key
+// is reserved for the user's own choice, so a later admin change still applies.
+export async function applyServerLanguage(language) {
+  try {
+    const stored = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
+    if (stored) {
+      return; // the user's own choice takes precedence
+    }
+    const code =
+      typeof language === "string"
+        ? language
+        : language
+          ? Object.keys(language)[0]
+          : "";
+    if (code && isSupportedLanguage(code) && code !== i18n.language) {
+      ensureLanguageLoaded(code);
+      await i18n.changeLanguage(code);
+    }
+  } catch (error) {
+    console.warn("i18n: failed to apply server language", error);
+  }
+}
+
 // Change the active language and persist the choice for next launch.
 export async function setLanguage(code) {
   if (!isSupportedLanguage(code)) {

@@ -33,6 +33,7 @@ import { jwtDecode } from "jwt-decode";
 import { unregisterPushToken } from "../services/notifications.service";
 import { setUnauthorizedHandler } from "../services/api";
 import { getApiErrorMessage } from "../utils/apiError";
+import { applyServerLanguage } from "../i18n";
 
 const AuthContext = createContext();
 
@@ -73,6 +74,16 @@ export const AuthProvider = ({ children }) => {
     };
     loadTokenAndUser();
   }, []);
+
+  // Apply the admin-assigned language for this user (server `user.language`)
+  // on every path that sets the user — hydration, login, code-login, refresh.
+  // A no-op if the user has made their own in-app choice (that always wins) or
+  // the locale isn't bundled yet.
+  useEffect(() => {
+    if (user?.language) {
+      applyServerLanguage(user.language);
+    }
+  }, [user]);
 
   // Persist the selected project so it survives app restarts.
   useEffect(() => {
