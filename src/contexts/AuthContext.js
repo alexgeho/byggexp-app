@@ -34,6 +34,7 @@ import { unregisterPushToken } from "../services/notifications.service";
 import { setUnauthorizedHandler } from "../services/api";
 import { getApiErrorMessage } from "../utils/apiError";
 import { applyServerLanguage } from "../i18n";
+import { resetOnboardingForNewUser } from "../utils/onboardingStorage";
 
 const AuthContext = createContext();
 
@@ -149,6 +150,10 @@ export const AuthProvider = ({ children }) => {
     await saveUser(userData);
 
     const decodedToken = jwtDecode(access_token);
+    // If a different user is signing in on this install, give them their own
+    // onboarding (value tour + Kom igång) instead of inheriting the previous
+    // user's "already seen" flags. No-op when the same user signs in again.
+    await resetOnboardingForNewUser(decodedToken.sub || userData?.id);
     setUserId(decodedToken.sub);
     setUser(userData);
     setIsAuthenticated(true);

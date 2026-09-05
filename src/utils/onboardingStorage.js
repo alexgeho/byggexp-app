@@ -1,5 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+// The value-tour "seen" flag lives in WelcomeSlides but is reset here too, so
+// keep the single source of truth for the key in one place. Bumping the version
+// re-shows the tour once to everyone (see WelcomeSlides).
+export const WELCOME_SLIDES_SEEN_KEY = "welcome-slides-seen-v4";
+
 // Whether the user dismissed the "Kom igång" home checklist. Once dismissed
 // (or once all steps are done) the card stays hidden.
 const ONBOARDING_DISMISSED_KEY = "home-onboarding-dismissed";
@@ -79,5 +84,33 @@ export async function setOnboardingFocus(value) {
     else await AsyncStorage.removeItem(FOCUS_KEY);
   } catch {
     // ignore
+  }
+}
+
+// The onboarding "seen/dismissed" flags above are stored per-device. That's fine
+// for the common case (one device = one user), but if a DIFFERENT user signs in
+// on the same install — a re-invited account, a handed-over work phone, or just
+// testing — they'd inherit the previous user's "already onboarded" state and
+// never see the value tour or the Kom igång checklist. So we remember which user
+// the flags belong to and reset them the first time a new user id signs in.
+// Called from the auth session bootstrap on every explicit login.
+const LAST_ONBOARDED_USER_KEY = "onboarding-owner-user-id";
+
+export async function resetOnboardingForNewUser(userId) {
+  const id = userId ? String(userId) : "";
+  if (!id) return;
+  try {
+    const previous = await AsyncStorage.getItem(LAST_ONBOARDED_USER_KEY);
+    if (previous === id) return; // same user — keep their progress
+    await AsyncStorage.multiRemove([
+      WELCOME_SLIDES_SEEN_KEY,
+      ONBOARDING_DISMISSED_KEY,
+      CUSTOMIZE_OPENED_KEY,
+      PROFILE_SAVED_KEY,
+      FOCUS_KEY,
+    ]);
+    await AsyncStorage.setItem(LAST_ONBOARDED_USER_KEY, id);
+  } catch {
+    // ignore — worst case onboarding shows/hides one launch off
   }
 }

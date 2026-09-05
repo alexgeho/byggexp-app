@@ -19,6 +19,7 @@ import { track } from "../../../utils/analytics";
 import { ByggExpWordmark } from "../ByggExpWordmark/ByggExpWordmark";
 import { valueIllustration } from "./valueIllustrations";
 import { createStyles } from "./WelcomeSlides.styles";
+import { WELCOME_SLIDES_SEEN_KEY } from "../../../utils/onboardingStorage";
 
 // One-time value tour shown right after the FIRST sign-in — not before it,
 // because the slides are role-specific and the role only exists once the user is
@@ -28,8 +29,9 @@ import { createStyles } from "./WelcomeSlides.styles";
 //
 // Key is versioned: bumping it re-shows the tour once to everyone (e.g. when the
 // content changes), which is why existing users who saw the old generic slides
-// get the new role-aware ones a single time.
-const SEEN_KEY = "welcome-slides-seen-v4";
+// get the new role-aware ones a single time. Defined in onboardingStorage so the
+// per-user reset on login can clear it alongside the checklist flags.
+const SEEN_KEY = WELCOME_SLIDES_SEEN_KEY;
 // Event that any screen can emit to re-open the tour on demand (e.g. from the
 // in-app guide) — separate from the one-time auto-show gated by SEEN_KEY.
 const OPEN_EVENT = "welcome-slides:open";
