@@ -2,6 +2,36 @@
 
 Мобильное приложение ByggExp (Expo/React Native). Всё закоммичено в `main`, если не помечено WIP. Правки **чисто JS** → раздаются через **OTA** (см. ниже).
 
+## 🆕 Сессия 2026-09-05 — value-тур v5, тап-00:00, гайды часов, success-зелёный, шведские письма (всё в OTA)
+
+Всё чисто-JS (кроме бэкенд-писем) → раздано `eas update --branch production`. Куча мелких OTA за сессию.
+
+**Value-тур (`WelcomeSlides`) — большой редизайн под фидбек Натальи «чище/меньше элементов»:**
+
+- **Стиль слайда:** убран круг-медальон из SVG (`valueIllustrations.js` — сняты 2 фоновых `<circle>`, белым фигурам добавлена тонкая обводка `#E3ECF7`), убрана белая карточка (`card` → прозрачная), фон посветлён (`#f5f9fe→#eaf2fb`). Иллюстрация **+30%** (317×244, `hero` height 248).
+- **Контент = одно предложение-выгода КАК ЗАГОЛОВОК** (title-стиль), без мелкого заголовка, без текста-подписи, **без зелёных буллетов**. Рендер: `item.features?bullets : item.text?text : null` — но и worker, и admin теперь только title.
+- **worker = 4 слайда** (было 3): Tid / Missa inget / **Projekt (отдельный слайд, своя иллюстрация `projects`)** / Foto+kvittoskanning. Тексты 1:1 из копий юзера (шведский), чек чеков = «kvitton skannas in i systemet».
+- **admin = 3 слайда** в том же стиле (одно предложение-заголовок каждый).
+- **Тур можно открыть снова:** `openWelcomeTour()` (DeviceEventEmitter, экспортится из WelcomeSlides) + кнопка **«Visa introduktionen igen»** в Guide (HelpGuideScreen). i18n `guide.replayTour`.
+
+**Барабан часов — discoverability (было в открытых пунктах, теперь сделано):**
+
+- **Тап по крупному 00:00 (Timer) на Home → открывает барабан** (`HomeVariant2.jsx`: Timer обёрнут в `TouchableOpacity` → `handleEnterEditHours`). Раньше только через скрытую вторичную кнопку. i18n `home.tapToEnterHours`.
+- **Проходные экраны-гайды в онбординге** (`HomeOnboarding`): при выборе «Fyll i timmar» и «I Arbetspass» показывается 3-шаговый гайд ВНУТРИ того же bottom-sheet (свап контента, `guide` = null|"manual"|"shifts"), потом кнопка «Öppna nu»/«Öppna Arbetspass». Ключи `onboarding.manualGuide.*` / `onboarding.shiftsGuide.*`. Текст барабана ссылается на «den stora klockan 00:00 (eller tiden som visas)» — т.к. по GPS может быть не 00:00.
+
+**Success-зелёный — унификация (фидбек «один и тот же цвет для одного правила»):**
+
+- Галочка выполненного шага в «Kom igång» + текст «Klar» + буллеты welcome → все на **success-зелёном из попапа создания проекта** = `successPopupIconColor` (`rgb(69,179,107)`), а done-кружок в **мягком** стиле: фон `successPopupIconBackground` (rgba .18) + зелёная галочка (как SuccessPopupIcon). Не синий accent.
+
+**Прочее:**
+
+- **Поиск проектов** (`ProjectsScreen`) скрыт, пока проектов не > 10.
+- **Шведские письма (бэкенд `ByggExp-BackEnd/src/mail/mail.service.ts`):** reset-password и login-code были захардкожены на английском → локализованы (sv дефолт, nb/en; `resolveMailLang`). Запушено на api.byggexp.se (авто-деплой), НЕ через OTA.
+
+**ОТКРЫТО после этой сессии:** зелёные check-badge внутри самих SVG-иллюстраций всё ещё `#34C759` (не тронуты, отличаются от rgb(69,179,107) буллетов — при желании унифицировать). Рефакторинг value-тура/онбординга — по запросу.
+
+---
+
 ## 🚀 OTA — как раздавать изменения (ГЛАВНОЕ)
 
 Залогинен в EAS как `alexgeho` (сессия сохранена в `~/.expo`). Публикация:
