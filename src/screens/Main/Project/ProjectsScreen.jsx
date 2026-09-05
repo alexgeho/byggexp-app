@@ -268,20 +268,24 @@ export default function ProjectsScreen() {
       onBack={goBackSafely}
       style={styles.screenExtra}
     >
-      <View style={styles.searchContainer}>
-        <View style={styles.searchInputWrapper}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder={t("common.search")}
-            placeholderTextColor={theme.content.textMuted}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-          <View style={styles.searchIconWrapper} pointerEvents="none">
-            <Icon name="search" size={18} color={theme.content.textMuted} />
+      {/* Search only earns its space once the list is long enough to scan for —
+          hidden until the user has more than 10 projects. */}
+      {projects.length > 10 ? (
+        <View style={styles.searchContainer}>
+          <View style={styles.searchInputWrapper}>
+            <TextInput
+              style={styles.searchInput}
+              placeholder={t("common.search")}
+              placeholderTextColor={theme.content.textMuted}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+            <View style={styles.searchIconWrapper} pointerEvents="none">
+              <Icon name="search" size={18} color={theme.content.textMuted} />
+            </View>
           </View>
         </View>
-      </View>
+      ) : null}
 
       {authLoading || (loading && projects.length === 0) ? (
         <View style={styles.inlineLoader}>

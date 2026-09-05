@@ -1,9 +1,11 @@
 import React, { useMemo } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
+import Icon from "react-native-vector-icons/Feather";
 import { Screen } from "../../components/common/Screen/Screen";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
+import { openWelcomeTour } from "../../components/common/WelcomeSlides/WelcomeSlides";
 import { createStyles } from "./HelpGuideScreen.styles";
 import { useTheme } from "../../theme/ThemeContext";
 
@@ -39,6 +41,25 @@ export default function HelpGuideScreen() {
           >
             {t("guide.intro")}
           </Text>
+
+          <TouchableOpacity
+            style={[
+              styles.replayButton,
+              { backgroundColor: theme.colors.primary },
+            ]}
+            onPress={openWelcomeTour}
+            activeOpacity={0.85}
+          >
+            <Icon name="play-circle" size={18} color="#ffffff" />
+            <Text
+              style={[
+                styles.replayButtonText,
+                { fontFamily: theme.text.fontFamily.semiBold },
+              ]}
+            >
+              {t("guide.replayTour")}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {SECTIONS.map((section) => {

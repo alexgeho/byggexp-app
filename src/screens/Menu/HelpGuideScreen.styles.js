@@ -24,6 +24,20 @@ export const createStyles = (c) =>
       fontSize: 15,
       lineHeight: 22,
     },
+    replayButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+      marginTop: 16,
+      paddingVertical: 12,
+      paddingHorizontal: 18,
+      borderRadius: 999,
+    },
+    replayButtonText: {
+      color: "#ffffff",
+      fontSize: 15,
+    },
     groupCard: {
       width: "100%",
       backgroundColor: c.surfaceMuted,

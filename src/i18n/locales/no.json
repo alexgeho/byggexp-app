@@ -819,6 +819,7 @@
   "guide": {
     "title": "Guide",
     "intro": "En rask guide til appens viktigste funksjoner.",
+    "replayTour": "Vis introduksjonen igjen",
     "gettingStartedTitle": "Kom i gang",
     "gettingStarted": [
       "Velg et prosjekt øverst på startskjermen.",

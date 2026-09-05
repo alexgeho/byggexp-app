@@ -7,6 +7,7 @@ import {
   Dimensions,
   TouchableOpacity,
   StatusBar,
+  DeviceEventEmitter,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
@@ -30,7 +31,16 @@ import { createStyles } from "./WelcomeSlides.styles";
 // content changes), which is why existing users who saw the old generic slides
 // get the new role-aware ones a single time.
 const SEEN_KEY = "welcome-slides-seen-v4";
+// Event that any screen can emit to re-open the tour on demand (e.g. from the
+// in-app guide) — separate from the one-time auto-show gated by SEEN_KEY.
+const OPEN_EVENT = "welcome-slides:open";
 const { width } = Dimensions.get("window");
+
+// Re-open the value tour from anywhere (Help guide, etc.). Safe to call before
+// the overlay has mounted its listener — the emit is just a no-op then.
+export function openWelcomeTour() {
+  DeviceEventEmitter.emit(OPEN_EVENT);
+}
 
 // Post-login value screens. Worker: one strong screen (title + benefit line).
 // Admin: two screens — team/projects and finance/invoicing — each with a
@@ -82,6 +92,21 @@ export function WelcomeSlides() {
     return () => {
       active = false;
     };
+  }, [role]);
+
+  // Manual re-open (from the Help guide): reset to the first slide and show,
+  // regardless of the SEEN_KEY flag. Only meaningful once we know the role.
+  useEffect(() => {
+    const sub = DeviceEventEmitter.addListener(OPEN_EVENT, () => {
+      if (!role) {
+        return;
+      }
+      startedRef.current = false;
+      setIndex(0);
+      listRef.current?.scrollToOffset?.({ offset: 0, animated: false });
+      setVisible(true);
+    });
+    return () => sub.remove();
   }, [role]);
 
   // Fire the "started" + first-slide-viewed events once the tour appears.
