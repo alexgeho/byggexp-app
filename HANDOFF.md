@@ -2,6 +2,22 @@
 
 Мобильное приложение ByggExp (Expo/React Native). Всё закоммичено в `main`, если не помечено WIP. Правки **чисто JS** → раздаются через **OTA** (см. ниже).
 
+## 🌍 Мультиязычность — 10 языков (2026-09-05, все 3 репо)
+
+Добавлены **pl, uk, ru, fi, et, lt, lv** к sv/en/no = **10 языков**. Переводы делали 7 параллельных суб-агентов (по языку), проверено parity-скриптами.
+
+**Архитектура «язык на пользователе»:** админ при инвайте выбирает язык юзера → он сохраняется на юзере и определяет язык писем + дефолт приложения (пока юзер сам не сменит в апп).
+
+- **Backend** (`ByggExp-BackEnd`): новый `src/common/language.ts` (`SUPPORTED_LANGS`, `languageCode()`); инвайт/reset/login-code письма берут `user.language`. Письма локализованы на все 10 в `src/mail/email-copy.ts` (inviteCopy/resetCopy/loginCodeCopy + GREETING_FALLBACK); `resolveMailLang` → полный набор (no→nb); `getRoleLabel(role, lang)` локализован. Авто-деплой.
+- **Admin** (`byggexp-admin`): селект языка в `UserCreateForm` (хранит `{код: имя}`); UI-словари `messages/{pl,uk,ru,fi,et,lt,lv}.js` (по 1610 ключей, keyed по англ-источнику) + `messages.js` index + `LanguageProvider` (antd-локали + `SUPPORTED_LANGS`) + переключатель в `DashboardHeader`. Норвежский код = `nb` в админке.
+- **Mobile**: `applyServerLanguage(user.language)` в `AuthContext` (приоритет: выбор юзера в апп > язык от админа > sv); локали `locales/{pl,uk,ru,fi,et,lt,lv}.json` (по 1180 ключей, parity ✓, lazy-load) + `localeLoaders`/`SUPPORTED_LANGUAGES` в `src/i18n/index.js`; пикер языка в `CreateEmployeeScreen` (мобильный админ). Код норвежского = `no` (mobile), бэкенд маппит no→nb для писем.
+
+**Проверки:** mobile parity 10 локалей × 1180 ключей ✓, compile ✓, jest 326/326 ✓; admin — все словари 1610 ключей, 0 расхождений, eslint ✓; backend tsc ✓. Всё в OTA/деплое.
+
+**ОТКРЫТО:** переводы делались агентами (качество хорошее, но не носитель-ревью) — при желании прогнать носителями/DeepL для полировки. Письма trial-welcome/invoice остались на англ/шв (не входили в per-user 3 письма).
+
+---
+
 ## 🆕 Сессия 2026-09-05 — value-тур v5, тап-00:00, гайды часов, success-зелёный, шведские письма (всё в OTA)
 
 Всё чисто-JS (кроме бэкенд-писем) → раздано `eas update --branch production`. Куча мелких OTA за сессию.
