@@ -25,18 +25,21 @@ export const LANGUAGE_STORAGE_KEY = "app-language";
 // Languages offered in the in-app language switcher. Add a locale JSON +
 // an entry here to support a new language.
 // Swedish first (home market / default), then the rest alphabetically by label.
+// Labels are the SWEDISH names of each language (Swedish-first product), never
+// endonyms or transliteration — no Cyrillic. Order: Swedish first, then the rest
+// alphabetical by their Swedish label. Mirrors byggexp-admin.
 export const SUPPORTED_LANGUAGES = [
   { code: "sv", label: "Svenska" },
-  { code: "bs", label: "Bosanski / Hrvatski / Srpski" },
-  { code: "et", label: "Eesti" },
-  { code: "en", label: "English" },
-  { code: "lv", label: "Latviešu" },
-  { code: "lt", label: "Lietuvių" },
-  { code: "no", label: "Norsk" },
-  { code: "pl", label: "Polski" },
-  { code: "fi", label: "Suomi" },
-  { code: "ru", label: "Русский" },
-  { code: "uk", label: "Українська" },
+  { code: "bs", label: "Bosniska / Kroatiska / Serbiska" },
+  { code: "en", label: "Engelska" },
+  { code: "et", label: "Estniska" },
+  { code: "fi", label: "Finska" },
+  { code: "lv", label: "Lettiska" },
+  { code: "lt", label: "Litauiska" },
+  { code: "no", label: "Norska" },
+  { code: "pl", label: "Polska" },
+  { code: "ru", label: "Ryska" },
+  { code: "uk", label: "Ukrainska" },
 ];
 
 // Fallback for text and for devices whose language we don't support.

@@ -102,18 +102,19 @@ const PlainFormRow = ({
 
 // Language assignable to an invited user — drives their emails + app default
 // until they change it in-app. Codes match the app locales (Norwegian = "no").
+// Swedish names, no Cyrillic/endonyms — matches SUPPORTED_LANGUAGES + admin.
 const LANGUAGE_OPTIONS = [
   { value: "sv", label: "Svenska" },
-  { value: "bs", label: "Bosanski / Hrvatski / Srpski" },
-  { value: "et", label: "Eesti" },
-  { value: "en", label: "English" },
-  { value: "lv", label: "Latviešu" },
-  { value: "lt", label: "Lietuvių" },
-  { value: "no", label: "Norsk" },
-  { value: "pl", label: "Polski" },
-  { value: "fi", label: "Suomi" },
-  { value: "ru", label: "Русский" },
-  { value: "uk", label: "Українська" },
+  { value: "bs", label: "Bosniska / Kroatiska / Serbiska" },
+  { value: "en", label: "Engelska" },
+  { value: "et", label: "Estniska" },
+  { value: "fi", label: "Finska" },
+  { value: "lv", label: "Lettiska" },
+  { value: "lt", label: "Litauiska" },
+  { value: "no", label: "Norska" },
+  { value: "pl", label: "Polska" },
+  { value: "ru", label: "Ryska" },
+  { value: "uk", label: "Ukrainska" },
 ];
 const DEFAULT_USER_LANGUAGE = "sv";
 const languageObjectToCode = (language) =>
