@@ -223,16 +223,6 @@ export function ShiftHistoryPreview({
           >
             <Icon name="clock" size={26} color={styles.emptyText.color} />
             <Text style={styles.emptyText}>{t("shiftHistory.empty")}</Text>
-            <View style={styles.emptyCta}>
-              <Text style={styles.emptyCtaText}>
-                {t("shiftHistory.emptyCta", "Visa arbetspass")}
-              </Text>
-              <Icon
-                name="chevron-right"
-                size={16}
-                color={styles.emptyCtaText.color}
-              />
-            </View>
           </TouchableOpacity>
         )}
       </View>

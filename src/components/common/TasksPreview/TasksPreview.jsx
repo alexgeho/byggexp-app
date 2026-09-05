@@ -240,16 +240,6 @@ export function TasksPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
               color={styles.emptyText.color}
             />
             <Text style={styles.emptyText}>{t("tasksPreview.noTasks")}</Text>
-            <View style={styles.emptyCta}>
-              <Text style={styles.emptyCtaText}>
-                {t("tasksPreview.emptyCta", "Visa uppgifter")}
-              </Text>
-              <Icon
-                name="chevron-right"
-                size={16}
-                color={styles.emptyCtaText.color}
-              />
-            </View>
           </TouchableOpacity>
         )}
       </View>
