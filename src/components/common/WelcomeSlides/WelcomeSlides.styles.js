@@ -78,9 +78,9 @@ export function createStyles() {
       marginTop: 2,
     },
     featureRow: {
-      flexDirection: "row",
+      flexDirection: "column",
       alignItems: "center",
-      gap: 12,
+      gap: 10,
     },
     featureBullet: {
       width: 26,
@@ -91,7 +91,8 @@ export function createStyles() {
       justifyContent: "center",
     },
     featureText: {
-      flex: 1,
+      alignSelf: "stretch",
+      textAlign: "center",
       color: NAVY,
       fontSize: 15,
       lineHeight: 21,

@@ -1315,8 +1315,7 @@
         },
         "3": {
           "title": "Photos that handle themselves",
-          "f1": "Job and receipt photos from the shift attach to the project automatically and show up instantly in the system — take the photo and forget it.",
-          "f2": "Receipt photos are scanned and counted into the project's economy automatically."
+          "f1": "Job and receipt photos attach to the project automatically and show up instantly in the system — take the photo and forget it."
         }
       }
     },

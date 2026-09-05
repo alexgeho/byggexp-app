@@ -1315,8 +1315,7 @@
         },
         "3": {
           "title": "Bilder som ordner seg selv",
-          "f1": "Bilder av arbeid og kvitteringer fra skiftet festes automatisk til prosjektet og vises umiddelbart i systemet — ta bildet og glem det.",
-          "f2": "Kvitteringsbilder skannes og regnes automatisk inn i prosjektets økonomi."
+          "f1": "Bilder av arbeid og kvitteringer festes automatisk til prosjektet og vises umiddelbart i systemet — ta bildet og glem det."
         }
       }
     },

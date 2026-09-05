@@ -51,7 +51,7 @@ const SLIDES_BY_ROLE = {
   worker: [
     { key: "1", illustration: "worker", features: 1 },
     { key: "2", illustration: "tasks", features: 2 },
-    { key: "3", illustration: "photos", features: 2 },
+    { key: "3", illustration: "photos", features: 1 },
   ],
   admin: [
     { key: "1", illustration: "adminTeam", features: 2 },
