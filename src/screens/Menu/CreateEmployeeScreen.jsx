@@ -104,6 +104,7 @@ const PlainFormRow = ({
 // until they change it in-app. Codes match the app locales (Norwegian = "no").
 const LANGUAGE_OPTIONS = [
   { value: "sv", label: "Svenska" },
+  { value: "bs", label: "Bosanski / Hrvatski / Srpski" },
   { value: "et", label: "Eesti" },
   { value: "en", label: "English" },
   { value: "lv", label: "Latviešu" },
