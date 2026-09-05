@@ -6,7 +6,10 @@ import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
 
 import { useTheme } from "../../../theme/ThemeContext";
-import { successPopupIconColor } from "../../../theme/settings";
+import {
+  successPopupIconColor,
+  successPopupIconBackground,
+} from "../../../theme/settings";
 import { track } from "../../../utils/analytics";
 import { createStyles } from "./HomeOnboarding.styles";
 
@@ -55,9 +58,6 @@ export function HomeOnboarding({
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const accent = theme.colors.primary;
-  // Completed steps use the exact same green as the success popup shown on e.g.
-  // creating a project — one success color across the app, not the blue accent.
-  const successColor = successPopupIconColor;
   const progress = total > 0 ? completed / total : 0;
   const isWorker = role === "worker";
   const single = total === 1;
@@ -195,8 +195,8 @@ export function HomeOnboarding({
                   styles.iconCircle,
                   step.done
                     ? {
-                        backgroundColor: successColor,
-                        borderColor: successColor,
+                        backgroundColor: successPopupIconBackground,
+                        borderColor: successPopupIconBackground,
                       }
                     : isActive
                       ? {
@@ -207,7 +207,7 @@ export function HomeOnboarding({
                 ]}
               >
                 {step.done ? (
-                  <Icon name="check" size={15} color="#FFFFFF" />
+                  <Icon name="check" size={15} color={successPopupIconColor} />
                 ) : (
                   <Icon
                     name={STEP_ICON[step.key]}
