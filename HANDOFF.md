@@ -1,3 +1,26 @@
+# 🆕 Сессия 2026-09-06 — фиксы после теста на устройстве (всё в OTA, runtime 1.1.0)
+
+Диагностика с реального iPhone (idevicesyslog/idevicecrashreport через libimobiledevice; Developer Mode на телефоне ВЫКЛ, поэтому devicectl к процессам не пускает). iOS уже LIVE в App Store (ByggExp, by Alexander Gerhard).
+
+**Сделано (все запушено в `main` + роздано `eas update --branch production`):**
+
+1. **Верификация приглашённого юзера — идемпотентность** (backend `ByggExp-BackEnd/src/users/users.service.ts` `verifyEmailByToken`, commit `f9eaa26`). Было: «Verification failed / Invalid or expired» даже на свежей ссылке, если аккаунт уже Active (resendInvite даёт новый токен, но не сбрасывает статус, а запрос требовал `WaitingForApproval`). Стало: матч по токену+сроку без привязки к статусу; одноразовость сохранена. **Backend auto-deploy** на api.byggexp.se (НЕ OTA).
+2. **Онбординг per-user** (mobile, commits `dff2471`+`50b8905`). Флаги value-тура/«Kom igång» были на устройство → новый юзер на затёртом телефоне онбординга не видел. Добавлен `resetOnboardingForNewUser(userId)` в `src/utils/onboardingStorage.js`, дёргается из `AuthContext.applyAuthSession` (новый id → сброс флагов; тот же id → прогресс сохраняется). Тест `onboardingStorage.test.js` 5/5. WelcomeSlides SEEN-ключ вынесен в onboardingStorage.
+3. **Кнопка «назад»** на Articles/Clients/CompanyDetails (commit `b416e99`). Было `<BackButton />` без `iconSource`/`onPress` → пустой кружок, не работала. Подключены `goBack()` + стрелка.
+4. **Языки в переключателе → шведские названия, БЕЗ кириллицы/эндонимов/транслита** (commits `b416e99`, `69d406c`). Итог: Svenska, Bosniska / Kroatiska / Serbiska, Engelska, Estniska, Finska, Lettiska, Litauiska, Norska, Polska, **Ryska**, **Ukrainska** (Swedish-first + алфавит). Mobile `src/i18n/index.js` + `CreateEmployeeScreen.LANGUAGE_OPTIONS`. Admin уже был на шведском — не трогали. (Alexander жёстко: никакого «Русский»/«Russkij».)
+5. **Ekonomi UX — регистры в шапку** (commit `886027a`). Клиенты/Артикулы/Данные компании убраны из-под таба «Предложения/Счета» (читались как фильтры оферт) → в кнопку **«•••»** справа в шапке → шит «Register». `EconomyScreen.jsx`.
+6. **Home — убраны лишние ссылки** «Показать смены»/«Показать задачи» из пустых карточек (дублировали «Показать все»). `ShiftHistoryPreview.jsx`, `TasksPreview.jsx` (commit `1588dee`).
+
+### ⏭️ СЛЕДУЮЩИЕ ШАГИ (эта сессия)
+
+1. **ПРОВЕРИТЬ НА УСТРОЙСТВЕ** — OTA применяется со 2-го запуска: закрыть-открыть приложение дважды, потом тестить. Проверить: back-кнопки, онбординг у нового юзера, шведские лейблы языков, «•••» в Финансах.
+2. **Локализовать заголовок шита «Register»** — сейчас inline-дефолт `t("economy.registers","Register")` (одинаково на всех языках). Добавить ключ `economy.registers` во ВСЕ 11 locale-JSON (иначе parity-чек упадёт) + шведский/переводы.
+3. **magic-login не отдаёт `user.language`** (backend `generateTokens` возвращает role/companyId, но не language) → на входе по ссылке админский язык не применяется, падает на устройство/сохранённый. Починить: добавить `language` в объект user в `generateTokens` + убедиться, что `applyServerLanguage` его подхватывает. НЕ начато.
+4. **«Серый таб ›» на левом крае** — в нашем коде НЕ найден; вероятно системная плашка iOS «вернуться в предыдущее приложение» (открывал по ссылке из Mail/Safari). Проверить: запуск с иконки → должна пропасть. Если нет — копать дальше.
+5. Хвосты из прошлой сессии (маркетинг-копия 11 языков, пульс-хинт, нативные билды+сабмит для Universal Links, локализация пушей) — см. ниже.
+
+---
+
 # Рабочий лог — сессия 2026-09-02/03
 
 Мобильное приложение ByggExp (Expo/React Native). Всё закоммичено в `main`, если не помечено WIP. Правки **чисто JS** → раздаются через **OTA** (см. ниже).
