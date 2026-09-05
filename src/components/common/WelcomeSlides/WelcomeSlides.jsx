@@ -155,7 +155,7 @@ export function WelcomeSlides() {
   const isLast = index === slides.length - 1;
 
   return (
-    <LinearGradient colors={["#eaf2fb", "#dce9f6"]} style={styles.overlay}>
+    <LinearGradient colors={["#f5f9fe", "#eaf2fb"]} style={styles.overlay}>
       <StatusBar barStyle="dark-content" />
 
       <View style={styles.topBar}>
