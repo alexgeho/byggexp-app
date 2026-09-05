@@ -48,10 +48,13 @@ export function openWelcomeTour() {
 // (title + text, or title + f1..fN when `features` is set). `illustration` picks
 // the vector art in valueIllustrations.js.
 const SLIDES_BY_ROLE = {
+  // Worker: title-only slides (no green-check bullets), except the dedicated
+  // "Projekt" slide which keeps a single line of body text.
   worker: [
-    { key: "1", illustration: "worker", features: 1 },
-    { key: "2", illustration: "tasks", features: 2 },
-    { key: "3", illustration: "photos", features: 1 },
+    { key: "1", illustration: "worker" },
+    { key: "2", illustration: "tasks" },
+    { key: "3", illustration: "projects", text: true },
+    { key: "4", illustration: "photos" },
   ],
   admin: [
     { key: "1", illustration: "adminTeam", features: 2 },
@@ -203,11 +206,11 @@ export function WelcomeSlides() {
                     </View>
                   ))}
                 </View>
-              ) : (
+              ) : item.text ? (
                 <Text style={styles.text}>
                   {t(`welcome.${roleKey}.slide.${item.key}.text`)}
                 </Text>
-              )}
+              ) : null}
             </View>
           </View>
         )}

@@ -1305,17 +1305,17 @@
     "worker": {
       "slide": {
         "1": {
-          "title": "Time tracking, no hassle",
-          "f1": "Automatic or manual work-time logging — no more filling in timesheets or sending texts."
+          "title": "Time tracking, no hassle"
         },
         "2": {
-          "title": "Miss nothing, find everything",
-          "f1": "Tasks with automatic reminders — they won't let you forget what matters.",
-          "f2": "All project documents in one place — no more searching for lost drawings."
+          "title": "Miss nothing, find everything"
         },
         "3": {
-          "title": "Photo reports and receipt scanning",
-          "f1": "Job photos attach to the project automatically and receipts are scanned into the system instantly — take the photo and forget it."
+          "title": "Projects and drawings",
+          "text": "All project documents in one place — no more searching for lost drawings."
+        },
+        "4": {
+          "title": "Photo reports and receipt scanning"
         }
       }
     },

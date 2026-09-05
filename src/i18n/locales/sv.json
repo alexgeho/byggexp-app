@@ -1305,17 +1305,17 @@
     "worker": {
       "slide": {
         "1": {
-          "title": "Tidrapportering utan krångel",
-          "f1": "Automatisk eller manuell registrering av arbetstid — du slipper fylla i tidrapporter och skicka sms."
+          "title": "Tidrapportering utan krångel"
         },
         "2": {
-          "title": "Missa inget, hitta allt",
-          "f1": "Uppgifter med automatiska påminnelser — påminner dig om det viktiga.",
-          "f2": "Projektdokument samlade på ett ställe — inget mer letande efter borttappade ritningar."
+          "title": "Missa inget, hitta allt"
         },
         "3": {
-          "title": "Fotorapporter och kvittoskanning",
-          "f1": "Foton på jobb fästs automatiskt på projektet och kvitton skannas in i systemet direkt — ta bilden och glöm."
+          "title": "Projekt och ritningar",
+          "text": "Projektdokument samlade på ett ställe — inget mer letande efter borttappade ritningar."
+        },
+        "4": {
+          "title": "Fotorapporter och kvittoskanning"
         }
       }
     },

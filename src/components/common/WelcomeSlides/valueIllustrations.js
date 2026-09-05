@@ -87,10 +87,23 @@ const PHOTOS = `<svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" fi
 <path d="M190 90 l4 4 l8 -9" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
 
+// Projects & drawings: a folder holding a document, with a green done badge —
+// all project files gathered in one place.
+const PROJECTS = `<svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" fill="none">
+<path d="M62 68 h36 l10 12 h90 a12 12 0 0 1 12 12 v54 a12 12 0 0 1 -12 12 H62 a12 12 0 0 1 -12 -12 V80 a12 12 0 0 1 12 -12 z" fill="#FFFFFF" ${CARD_STROKE}/>
+<rect x="80" y="104" width="70" height="6" rx="3" fill="#DCEBFF"/>
+<rect x="80" y="118" width="104" height="5" rx="2.5" fill="#EAF3FF"/>
+<rect x="80" y="128" width="86" height="5" rx="2.5" fill="#EAF3FF"/>
+<rect x="80" y="138" width="58" height="5" rx="2.5" fill="#EAF3FF"/>
+<circle cx="188" cy="72" r="15" fill="#34C759"/>
+<path d="M181 72 l5 5 l9 -10" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+
 const BY_KEY = {
   worker: WORKER,
   tasks: TASKS,
   photos: PHOTOS,
+  projects: PROJECTS,
   adminTeam: ADMIN_TEAM,
   adminEconomy: ADMIN_ECONOMY,
 };
