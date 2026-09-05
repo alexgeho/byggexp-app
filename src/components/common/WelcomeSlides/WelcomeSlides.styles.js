@@ -46,7 +46,7 @@ export function createStyles() {
       gap: 18,
     },
     hero: {
-      height: 190,
+      height: 248,
       alignItems: "center",
       justifyContent: "center",
     },

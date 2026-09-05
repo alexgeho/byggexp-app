@@ -970,7 +970,17 @@ export default function HomeVariant2() {
               {/* The clock stays in the layout (hidden while editing) so nothing
                   below moves. The hours wheel + Done button live in a full-screen
                   blurred overlay rendered at the bottom of this file. */}
-              <View style={styles.timerSlot}>
+              {/* Tapping the time opens the hours wheel — the discoverable,
+                  repeatable way to fill in hours manually (same action the
+                  onboarding "Fyll i timmar" guide points to). */}
+              <TouchableOpacity
+                style={styles.timerSlot}
+                activeOpacity={0.75}
+                disabled={isEditingHours}
+                onPress={handleEnterEditHours}
+                accessibilityRole="button"
+                accessibilityLabel={t("home.tapToEnterHours", "Fyll i timmar")}
+              >
                 <Timer
                   hours={formattedTime.hours}
                   minutes={formattedTime.minutes}
@@ -990,7 +1000,7 @@ export default function HomeVariant2() {
                     isLightBlueTheme && styles.timerSecondsLightBlue,
                   ]}
                 />
-              </View>
+              </TouchableOpacity>
 
               {showCoreSpacers ? (
                 <View style={styles.timerToActionsSpacer} />

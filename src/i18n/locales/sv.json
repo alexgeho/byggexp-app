@@ -752,6 +752,7 @@
     "saveHoursError": "Det gick inte att spara timmar just nu.",
     "shiftErrorTitle": "Fel på arbetspass",
     "shiftErrorMessage": "Det gick inte att uppdatera arbetspasset just nu.",
+    "tapToEnterHours": "Fyll i timmar",
     "manualHoursBlockedTitle": "Kan inte logga timmar här",
     "manualHoursBlockedMessage": "Du kan bara logga timmar när du är på projektets plats, precis som när du startar ett arbetspass.",
     "buttonsListTitle": "Knappar",
@@ -1289,6 +1290,14 @@
       "manualDesc": "Ange antal timmar direkt.",
       "shifts": "I Arbetspass",
       "shiftsDesc": "Skriv in eller justera tid i dina pass."
+    },
+    "manualGuide": {
+      "title": "Så fyller du i timmar",
+      "step1": "Tryck på tiden 00:00 på startsidan.",
+      "step2": "Snurra hjulet till rätt antal timmar.",
+      "step3": "Tryck på ✓ för att spara.",
+      "note": "Nästa gång gör du likadant — tryck på 00:00.",
+      "cta": "Öppna nu"
     },
     "focus": {
       "question": "Vad är viktigast just nu?",

@@ -752,6 +752,7 @@
     "saveHoursError": "Unable to save hours right now.",
     "shiftErrorTitle": "Shift error",
     "shiftErrorMessage": "Unable to update the shift right now.",
+    "tapToEnterHours": "Enter hours",
     "manualHoursBlockedTitle": "Can't log hours here",
     "manualHoursBlockedMessage": "You can only log hours while you're at the project location, just like starting a shift.",
     "buttonsListTitle": "Buttons",
@@ -1289,6 +1290,14 @@
       "manualDesc": "Type the number of hours directly.",
       "shifts": "In Shifts",
       "shiftsDesc": "Enter or adjust time in your shifts."
+    },
+    "manualGuide": {
+      "title": "How to fill in hours",
+      "step1": "Tap the 00:00 time on the home screen.",
+      "step2": "Spin the wheel to the right number of hours.",
+      "step3": "Tap ✓ to save.",
+      "note": "Next time you do the same — tap 00:00.",
+      "cta": "Open now"
     },
     "focus": {
       "question": "What matters most right now?",

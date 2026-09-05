@@ -186,8 +186,8 @@ export function WelcomeSlides() {
               <View style={styles.hero}>
                 <SvgXml
                   xml={valueIllustration(item.illustration)}
-                  width={244}
-                  height={188}
+                  width={317}
+                  height={244}
                 />
               </View>
               <Text style={styles.title}>

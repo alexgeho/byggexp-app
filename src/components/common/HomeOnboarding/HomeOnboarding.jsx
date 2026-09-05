@@ -64,6 +64,9 @@ export function HomeOnboarding({
   const showProgress = !single && !needsFocus;
 
   const [timeSheet, setTimeSheet] = useState(null);
+  // When the worker picks "Fyll i timmar", show a short 3-step guide first so
+  // they learn the repeatable path (tap 00:00 → wheel → ✓) before it opens.
+  const [manualGuide, setManualGuide] = useState(false);
 
   const activeKey = steps.find((s) => !s.done)?.key || null;
 
@@ -86,16 +89,26 @@ export function HomeOnboarding({
 
   const chooseTime = (method) => {
     const mode = timeSheet?.mode;
-    setTimeSheet(null);
     track("onboarding_time_method", { method, mode });
     if (method === "gps") {
+      setTimeSheet(null);
       if (mode === "auto") onStartShift?.();
       else navigation.navigate("LocationConsent");
     } else if (method === "manual") {
-      onLogHours?.();
+      // Swap the chooser for the how-to guide (keeps the modal open).
+      setManualGuide(true);
     } else if (method === "shifts") {
+      setTimeSheet(null);
       navigation.navigate("Shifts");
     }
+  };
+
+  // Close the guide + chooser and actually open the hours wheel.
+  const openHoursWheel = () => {
+    setManualGuide(false);
+    setTimeSheet(null);
+    track("onboarding_manual_guide_opened", {});
+    onLogHours?.();
   };
 
   // Subtitle: routing question when unanswered, else progress / a "change focus".
@@ -290,54 +303,116 @@ export function HomeOnboarding({
         visible={timeSheet !== null}
         transparent
         animationType="fade"
-        onRequestClose={() => setTimeSheet(null)}
+        onRequestClose={() => {
+          setManualGuide(false);
+          setTimeSheet(null);
+        }}
       >
         <Pressable
           style={styles.sheetBackdrop}
-          onPress={() => setTimeSheet(null)}
+          onPress={() => {
+            setManualGuide(false);
+            setTimeSheet(null);
+          }}
         >
           <Pressable style={styles.sheet} onPress={() => {}}>
             <View style={styles.sheetHandle} />
-            <Text style={styles.sheetTitle}>
-              {t("onboarding.timeSheet.title", "Rapportera din tid")}
-            </Text>
 
-            <TimeOption
-              styles={styles}
-              accent={accent}
-              theme={theme}
-              icon="map-pin"
-              title={t("onboarding.timeSheet.gps", "Automatiskt (GPS)")}
-              desc={t(
-                "onboarding.timeSheet.gpsDesc",
-                "Stämpla in på plats — tiden räknas av sig själv.",
-              )}
-              onPress={() => chooseTime("gps")}
-            />
-            <TimeOption
-              styles={styles}
-              accent={accent}
-              theme={theme}
-              icon="edit-3"
-              title={t("onboarding.timeSheet.manual", "Fyll i timmar")}
-              desc={t(
-                "onboarding.timeSheet.manualDesc",
-                "Ange antal timmar direkt.",
-              )}
-              onPress={() => chooseTime("manual")}
-            />
-            <TimeOption
-              styles={styles}
-              accent={accent}
-              theme={theme}
-              icon="list"
-              title={t("onboarding.timeSheet.shifts", "I Arbetspass")}
-              desc={t(
-                "onboarding.timeSheet.shiftsDesc",
-                "Skriv in eller justera tid i dina pass.",
-              )}
-              onPress={() => chooseTime("shifts")}
-            />
+            {manualGuide ? (
+              <>
+                <Text style={styles.sheetTitle}>
+                  {t("onboarding.manualGuide.title", "Så fyller du i timmar")}
+                </Text>
+
+                <GuideStep
+                  styles={styles}
+                  accent={accent}
+                  n="1"
+                  text={t(
+                    "onboarding.manualGuide.step1",
+                    "Tryck på tiden 00:00 på startsidan.",
+                  )}
+                />
+                <GuideStep
+                  styles={styles}
+                  accent={accent}
+                  n="2"
+                  text={t(
+                    "onboarding.manualGuide.step2",
+                    "Snurra hjulet till rätt antal timmar.",
+                  )}
+                />
+                <GuideStep
+                  styles={styles}
+                  accent={accent}
+                  n="3"
+                  text={t(
+                    "onboarding.manualGuide.step3",
+                    "Tryck på ✓ för att spara.",
+                  )}
+                />
+
+                <Text style={styles.guideNote}>
+                  {t(
+                    "onboarding.manualGuide.note",
+                    "Nästa gång gör du likadant — tryck på 00:00.",
+                  )}
+                </Text>
+
+                <TouchableOpacity
+                  style={[styles.guideCta, { backgroundColor: accent }]}
+                  activeOpacity={0.85}
+                  onPress={openHoursWheel}
+                >
+                  <Text style={styles.guideCtaText}>
+                    {t("onboarding.manualGuide.cta", "Öppna nu")}
+                  </Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                <Text style={styles.sheetTitle}>
+                  {t("onboarding.timeSheet.title", "Rapportera din tid")}
+                </Text>
+
+                <TimeOption
+                  styles={styles}
+                  accent={accent}
+                  theme={theme}
+                  icon="map-pin"
+                  title={t("onboarding.timeSheet.gps", "Automatiskt (GPS)")}
+                  desc={t(
+                    "onboarding.timeSheet.gpsDesc",
+                    "Stämpla in på plats — tiden räknas av sig själv.",
+                  )}
+                  onPress={() => chooseTime("gps")}
+                />
+                <TimeOption
+                  styles={styles}
+                  accent={accent}
+                  theme={theme}
+                  icon="edit-3"
+                  title={t("onboarding.timeSheet.manual", "Fyll i timmar")}
+                  desc={t(
+                    "onboarding.timeSheet.manualDesc",
+                    "Ange antal timmar direkt.",
+                  )}
+                  onPress={() => chooseTime("manual")}
+                />
+                <TimeOption
+                  styles={styles}
+                  accent={accent}
+                  theme={theme}
+                  icon="list"
+                  title={t("onboarding.timeSheet.shifts", "I Arbetspass")}
+                  desc={t(
+                    "onboarding.timeSheet.shiftsDesc",
+                    "Skriv in eller justera tid i dina pass.",
+                  )}
+                  onPress={() => chooseTime("shifts")}
+                />
+              </>
+            )}
           </Pressable>
         </Pressable>
       </Modal>
@@ -368,5 +443,23 @@ function TimeOption({ styles, accent, theme, icon, title, desc, onPress }) {
       </View>
       <Icon name="chevron-right" size={20} color={theme.content.textMuted} />
     </TouchableOpacity>
+  );
+}
+
+function GuideStep({ styles, accent, n, text }) {
+  return (
+    <View style={styles.sheetRow}>
+      <View
+        style={[
+          styles.guideNumber,
+          { borderColor: accent, backgroundColor: accent },
+        ]}
+      >
+        <Text style={styles.guideNumberText}>{n}</Text>
+      </View>
+      <View style={styles.rowBody}>
+        <Text style={styles.rowTitle}>{text}</Text>
+      </View>
+    </View>
   );
 }

@@ -752,6 +752,7 @@
     "saveHoursError": "Kan ikke lagre timer akkurat nå.",
     "shiftErrorTitle": "Skiftfeil",
     "shiftErrorMessage": "Kan ikke oppdatere skiftet akkurat nå.",
+    "tapToEnterHours": "Fyll inn timer",
     "manualHoursBlockedTitle": "Kan ikke registrere timer her",
     "manualHoursBlockedMessage": "Du kan bare registrere timer når du er på prosjektstedet, akkurat som når du starter et skift.",
     "buttonsListTitle": "Knapper",
@@ -1289,6 +1290,14 @@
       "manualDesc": "Angi antall timer direkte.",
       "shifts": "I Arbeidsøkter",
       "shiftsDesc": "Skriv inn eller juster tid i øktene dine."
+    },
+    "manualGuide": {
+      "title": "Slik fyller du inn timer",
+      "step1": "Trykk på tiden 00:00 på startsiden.",
+      "step2": "Snurr hjulet til riktig antall timer.",
+      "step3": "Trykk på ✓ for å lagre.",
+      "note": "Neste gang gjør du det samme — trykk på 00:00.",
+      "cta": "Åpne nå"
     },
     "focus": {
       "question": "Hva er viktigst nå?",

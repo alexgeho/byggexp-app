@@ -193,5 +193,39 @@ export function createStyles(theme) {
       paddingVertical: 12,
       paddingHorizontal: 6,
     },
+    // Manual-hours how-to guide (inside the chooser sheet)
+    guideNumber: {
+      width: 30,
+      height: 30,
+      borderRadius: 999,
+      borderWidth: 1.5,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    guideNumberText: {
+      color: "#FFFFFF",
+      fontSize: 15,
+      fontFamily: theme.text.fontFamily.semiBold,
+    },
+    guideNote: {
+      color: c.textMuted,
+      fontSize: 13.5,
+      lineHeight: 19,
+      fontFamily: theme.text.fontFamily.medium,
+      marginTop: 4,
+      marginBottom: 10,
+      marginLeft: 4,
+    },
+    guideCta: {
+      alignItems: "center",
+      justifyContent: "center",
+      paddingVertical: 15,
+      borderRadius: 999,
+    },
+    guideCtaText: {
+      color: "#FFFFFF",
+      fontSize: 16,
+      fontFamily: theme.text.fontFamily.semiBold,
+    },
   });
 }
