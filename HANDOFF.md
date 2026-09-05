@@ -2,19 +2,40 @@
 
 Мобильное приложение ByggExp (Expo/React Native). Всё закоммичено в `main`, если не помечено WIP. Правки **чисто JS** → раздаются через **OTA** (см. ниже).
 
-## 🌍 Мультиязычность — 10 языков (2026-09-05, все 3 репо)
+## 🌍 Мультиязычность — 11 языков (2026-09-05, все 3 репо) — ГОТОВО, в проде/OTA
 
-Добавлены **pl, uk, ru, fi, et, lt, lv** к sv/en/no = **10 языков**. Переводы делали 7 параллельных суб-агентов (по языку), проверено parity-скриптами.
+Языки: **sv, en, no, pl, uk, ru, fi, et, lt, lv, bs** (11). `bs` = BCS (босн/серб/хорв), один пункт латиницей, метка **«Bosniska / Kroatiska / Serbiska»** (шведская группировка BKS), admin antd-локаль = `hr_HR`. Переводы делали параллельные суб-агенты (14 для 10 языков + 2 для bs), parity 100%.
 
-**Архитектура «язык на пользователе»:** админ при инвайте выбирает язык юзера → он сохраняется на юзере и определяет язык писем + дефолт приложения (пока юзер сам не сменит в апп).
+**Порядок в переключателе:** Swedish-first, дальше по алфавиту метки. Кириллические эндонимы показаны латиницей (**Ukrainska, Russkij**) — список единообразно латиницей.
 
-- **Backend** (`ByggExp-BackEnd`): новый `src/common/language.ts` (`SUPPORTED_LANGS`, `languageCode()`); инвайт/reset/login-code письма берут `user.language`. Письма локализованы на все 10 в `src/mail/email-copy.ts` (inviteCopy/resetCopy/loginCodeCopy + GREETING_FALLBACK); `resolveMailLang` → полный набор (no→nb); `getRoleLabel(role, lang)` локализован. Авто-деплой.
-- **Admin** (`byggexp-admin`): селект языка в `UserCreateForm` (хранит `{код: имя}`); UI-словари `messages/{pl,uk,ru,fi,et,lt,lv}.js` (по 1610 ключей, keyed по англ-источнику) + `messages.js` index + `LanguageProvider` (antd-локали + `SUPPORTED_LANGS`) + переключатель в `DashboardHeader`. Норвежский код = `nb` в админке.
-- **Mobile**: `applyServerLanguage(user.language)` в `AuthContext` (приоритет: выбор юзера в апп > язык от админа > sv); локали `locales/{pl,uk,ru,fi,et,lt,lv}.json` (по 1180 ключей, parity ✓, lazy-load) + `localeLoaders`/`SUPPORTED_LANGUAGES` в `src/i18n/index.js`; пикер языка в `CreateEmployeeScreen` (мобильный админ). Код норвежского = `no` (mobile), бэкенд маппит no→nb для писем.
+**Архитектура «язык на пользователе»:** админ при инвайте выбирает язык юзера → сохраняется на юзере → определяет язык его писем + дефолт приложения (пока юзер сам не сменит).
 
-**Проверки:** mobile parity 10 локалей × 1180 ключей ✓, compile ✓, jest 326/326 ✓; admin — все словари 1610 ключей, 0 расхождений, eslint ✓; backend tsc ✓. Всё в OTA/деплое.
+- **Backend** (`ByggExp-BackEnd`): `src/common/language.ts` (`SUPPORTED_LANGS`, `languageCode()`); все per-user письма (invite/reset/login-code/company-invite) берут `user.language`, копия в `src/mail/email-copy.ts` (+ GREETING_FALLBACK/COMPANY_FALLBACK); `resolveMailLang` (no→nb); `getRoleLabel(role, lang)` локализован. **Письма ЗАКАЗЧИКУ (Swedish-first):** company-verification (шаг 1) + trial-welcome — ЖЁСТКО шведские (первое касание); company-invite = по `company.country` (SE→sv).
+- **Admin** (`byggexp-admin`): селект языка в `UserCreateForm` (хранит `{код: имя}`); словари `messages/<code>.js` (по 1610 ключей, keyed по англ-строке) + `messages.js` + `LanguageProvider` (antd + `SUPPORTED_LANGS`) + переключатель в `DashboardHeader`. Норв. код = `nb`.
+- **Mobile**: `applyServerLanguage(user.language)` в `AuthContext` (приоритет: выбор юзера > язык от админа > sv); `locales/<code>.json` (по 1180 ключей, parity ✓, lazy-load) + `localeLoaders`/`SUPPORTED_LANGUAGES` в `src/i18n/index.js`; пикер языка в `CreateEmployeeScreen`. Норв. код = `no` (бэк маппит no→nb).
 
-**ОТКРЫТО:** переводы делались агентами (качество хорошее, но не носитель-ревью) — при желании прогнать носителями/DeepL для полировки. Письма trial-welcome/invoice остались на англ/шв (не входили в per-user 3 письма).
+**Проверки:** mobile parity 11×1180 ✓ compile ✓ jest 326/326 ✓; admin словари 1610×0-расхождений ✓ build ✓ eslint ✓; backend tsc ✓.
+
+### 🔧 Прочие фиксы этой сессии (в OTA)
+
+- **Ekonomi — постоянный вход к регистрам:** экраны Clients/Articles/CompanyDetails существовали и работали, но открывались ТОЛЬКО из онбординг-чеклиста. Добавлен ряд быстрых кнопок на `EconomyScreen` (Klienter · Artiklar · Företagsuppgifter), переиспользуя `clientForm.title`/`articleForm.title`/`companyDetails.title`.
+
+### ⏭️ СЛЕДУЮЩИЕ ШАГИ (чтобы продолжить, а не начинать заново)
+
+1. **Маркетинг-копия «11 языков»** (НЕ начато) — тексты для App Store / Google Play (What's New) + блок на лендинг (`byggexp-lp-react`) + пост, на sv+en. УТП для шведского стройрынка с мигрантами.
+2. **Пульс-хинт на Home** (НЕ начато) — шаг «Välj projekt» в «Kom igång» подсвечивает реальную кнопку `Välj eller skapa projekt` (Animated-пульс, без reanimated), а не просто переходит. Дозакрыть онбординг.
+3. **Нативные билды + сабмит** (НЕ начато, нужен юзер) — `eas build -p all --profile production` → `eas submit`. Разблокирует: 11 языков/шведский с первого запуска у НОВЫХ установок + активацию **Universal Links** (код готов; нужен ENV на сервере: `APPLE_TEAM_ID=33667XUA76`, `ANDROID_SHA256=…` см. раздел Universal Links ниже + pm2 restart). Билд длинный/по квоте — юзер даёт «го» на `eas build`.
+4. **Пуш-уведомления НЕ локализованы** (гэп, НЕ начато) — `notifications.service.ts` шлёт захардкоженный текст (напр. `"You are outside the project area"`). Локализовать по `user.language` (как письма) — task-assign, hours-reminder, geofence-exit. Дозакрывает мультиязычность.
+5. **Ревью переводов носителями** (опц.) — агентские переводы структурно чисты (плейсхолдеры/parity ✓), но нюансы pl/uk/ru/fi/bs стоит вычитать перед широким пушем.
+6. **Арабский + RTL** (стратегич., большой) — крупнейшая мигрант-группа; требует RTL-верстки (зеркалирование), не только перевода. Румынский/турецкий юзер отклонил.
+7. **Онбординг-воронка** — оставлена как есть (данные n=2, ждём трафик). Считает по компаниям, не по ролям; при желании — срез worker/admin (события роль хранят).
+
+### 📌 Как добавить ещё язык (чек-лист)
+
+- Mobile: `locales/<code>.json` (полный parity) → `localeLoaders` + `SUPPORTED_LANGUAGES` в `src/i18n/index.js`; метка в `CreateEmployeeScreen.LANGUAGE_OPTIONS`. Норв.=`no`.
+- Admin: `messages/<code>.js` → `messages.js` + `LanguageProvider` (antd-локаль + `SUPPORTED_LANGS`) + `DashboardHeader` + `UserCreateForm.LANGUAGE_OPTIONS`. Норв.=`nb`.
+- Backend: `email-copy.ts` (MailLang/MAIL_LANGS + 4 copy-мапы + GREETING/COMPANY_FALLBACK), `common/language.ts` SUPPORTED_LANGS, `getRoleLabel`. DeepL-сервис есть (`translation.service.ts`, нужен `DEEPL_API_KEY`) — можно для машинного прогона.
+- Переводы: удобно фан-аутить суб-агентами (по языку), потом `yarn test:i18n` (mobile) + node-сверка ключей (admin).
 
 ---
 
