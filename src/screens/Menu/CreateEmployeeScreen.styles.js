@@ -87,8 +87,8 @@ export const createStyles = (c) =>
       flex: 1,
     },
     fieldIconBadge: {
-      width: 27,
-      height: 27,
+      width: 30,
+      height: 30,
       borderRadius: 5,
       alignItems: "center",
       justifyContent: "center",

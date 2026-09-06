@@ -161,7 +161,7 @@ export const FieldIcon = ({
   // render it in systemBlue instead, and keep glyphs at a readable size.
   const isWhite = /^#f{3}$|^#f{6}$/i.test(String(color).replace(/\s/g, ""));
   const resolved = isWhite ? "#007AFF" : color;
-  const s = size < 22 ? 22 : size;
+  const s = size < 28 ? 28 : size;
   if (library === "material-community") {
     return <MaterialCommunityIcons name={name} size={s} color={resolved} />;
   }

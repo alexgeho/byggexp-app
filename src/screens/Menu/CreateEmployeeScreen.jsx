@@ -55,7 +55,7 @@ const parsePhoneFields = (value) => {
 
 const FieldIcon = ({ name, styles }) => (
   <View style={styles.fieldIconBadge}>
-    <Icon name={name} size={22} color="#007AFF" />
+    <Icon name={name} size={28} color="#007AFF" />
   </View>
 );
 

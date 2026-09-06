@@ -187,8 +187,8 @@ export const createStyles = (c) =>
       paddingRight: 12,
     },
     locationFieldIconContainer: {
-      width: 27,
-      height: 27,
+      width: 30,
+      height: 30,
       borderRadius: 5,
       alignItems: "center",
       justifyContent: "center",
@@ -274,8 +274,8 @@ export const createStyles = (c) =>
       gap: 16,
     },
     iconContainer: {
-      width: 27,
-      height: 27,
+      width: 30,
+      height: 30,
       borderRadius: 5,
       alignItems: "center",
       justifyContent: "center",
