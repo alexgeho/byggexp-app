@@ -40,6 +40,11 @@ export const SUPPORTED_LANGUAGES = [
   { code: "pl", label: "Polska" },
   { code: "ru", label: "Ryska" },
   { code: "uk", label: "Ukrainska" },
+  // No bundled translations yet — selecting these falls back to English
+  // (FALLBACK_LANGUAGE). Listed for parity with the website/admin picker.
+  { code: "es", label: "Spanska" },
+  { code: "pt", label: "Portugisiska" },
+  { code: "fr", label: "Franska" },
 ];
 
 // Fallback for text and for devices whose language we don't support.
