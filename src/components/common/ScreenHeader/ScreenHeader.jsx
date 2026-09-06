@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingTop: 48 + 8, // clear notch (48) + small gap — matches main screens
+    paddingTop: 48 + 20, // notch (48) + header gap (20) — matches main screens 1:1
     paddingBottom: 10,
   },
   title: {

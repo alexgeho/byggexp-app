@@ -115,9 +115,9 @@ export default function CreateProjectScreen() {
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const defaultShiftSchedule = createDefaultShiftSchedule();
-  const [shiftScheduleEnabled, setShiftScheduleEnabled] = useState(
-    defaultShiftSchedule.enabled,
-  );
+  // Shift schedule is on by default (07:00–16:00); the in-sheet toggle was
+  // removed — the schedule is always configured, edited inline on the sheet.
+  const [shiftScheduleEnabled, setShiftScheduleEnabled] = useState(true);
   const [workDayStartTime, setWorkDayStartTime] = useState(() =>
     parseTimeStringToDate(defaultShiftSchedule.workDayStartTime),
   );
@@ -1031,7 +1031,7 @@ export default function CreateProjectScreen() {
                 </View>
                 <View>
                   <Text style={[styles.locationFieldText, styles.dateLabel]}>
-                    {t("createProject.workHoursShort", "Arbetstid")}
+                    {t("createProject.workHoursShort", "Arbetspass")}
                   </Text>
                   <Text style={styles.dateValue}>
                     {shiftScheduleEnabled
@@ -1055,7 +1055,7 @@ export default function CreateProjectScreen() {
           >
             <View style={styles.sheetContainer}>
               <ScreenHeader
-                title={t("createProject.workHoursShort", "Arbetstid")}
+                title={t("createProject.workHoursShort", "Arbetspass")}
                 onBack={() => setShowShiftSheet(false)}
               />
               <ScrollView
@@ -1063,27 +1063,6 @@ export default function CreateProjectScreen() {
                 keyboardShouldPersistTaps="handled"
               >
                 <View style={styles.groupCard}>
-                  <View style={[styles.switchField, styles.groupedField]}>
-                    <View style={styles.locationFieldContent}>
-                      <View style={styles.locationFieldIconContainer}>
-                        <FieldIcon name="clock" color="#007AFF" />
-                      </View>
-                      <Text style={styles.switchLabel}>
-                        {t("createProject.limitShiftByHours")}
-                      </Text>
-                    </View>
-                    <Switch
-                      value={shiftScheduleEnabled}
-                      onValueChange={setShiftScheduleEnabled}
-                      trackColor={{ false: "#D9E3EC", true: "#34C759" }}
-                      thumbColor="#FFFFFF"
-                      ios_backgroundColor="#D9E3EC"
-                      style={styles.switchControl}
-                    />
-                  </View>
-
-                  <View style={styles.rowSepIcon} />
-
                   <View
                     style={[
                       styles.scheduleInlineRow,
