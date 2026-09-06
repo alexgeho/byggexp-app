@@ -198,7 +198,8 @@ export const createStyles = (c) =>
       fontSize: 16,
     },
     locationFieldPlaceholder: {
-      color: c.placeholder,
+      // iOS nav rows: the label stays black (like a button), not grey.
+      color: c.textPrimary,
     },
     locationFieldValue: {
       color: c.textPrimary,
