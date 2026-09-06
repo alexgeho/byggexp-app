@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { View, StyleSheet } from "react-native";
-import { radius, spacing } from "../../../theme/tokens";
+import { spacing } from "../../../theme/tokens";
 import { useTheme } from "../../../theme/ThemeContext";
 
 // Rounded surface used across the app. `variant="frosted"` is the translucent
@@ -24,14 +24,14 @@ export const Card = ({ variant = "frosted", style, children, ...rest }) => {
 
 const createStyles = (c) =>
   StyleSheet.create({
+    // iOS grouped card: solid white, no border, 10pt radius.
     base: {
-      borderRadius: radius.xl,
-      borderWidth: 1,
-      borderColor: c.surface,
+      borderRadius: 10,
+      borderWidth: 0,
       padding: spacing.lg,
     },
     frosted: {
-      backgroundColor: c.surfaceMuted,
+      backgroundColor: c.surface,
     },
     solid: {
       backgroundColor: c.surface,

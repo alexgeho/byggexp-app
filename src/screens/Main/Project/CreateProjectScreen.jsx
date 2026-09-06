@@ -13,7 +13,6 @@ import {
   Keyboard,
   Modal,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../../../theme/ThemeContext";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
@@ -1030,7 +1029,7 @@ export default function CreateProjectScreen() {
                 </View>
                 <View>
                   <Text style={[styles.locationFieldText, styles.dateLabel]}>
-                    {t("createProject.limitShiftByHours")}
+                    {t("createProject.workHoursShort", "Arbetstid")}
                   </Text>
                   <Text style={styles.dateValue}>
                     {shiftScheduleEnabled
@@ -1052,7 +1051,7 @@ export default function CreateProjectScreen() {
             animationType="slide"
             onRequestClose={() => setShowShiftSheet(false)}
           >
-            <SafeAreaView style={styles.sheetContainer}>
+            <View style={styles.sheetContainer}>
               <View style={styles.header}>
                 <BackButton
                   onPress={() => setShowShiftSheet(false)}
@@ -1253,7 +1252,7 @@ export default function CreateProjectScreen() {
                   </TouchableOpacity>
                 </View>
               </ScrollView>
-            </SafeAreaView>
+            </View>
           </Modal>
 
           <View style={styles.groupCard}>
@@ -1389,7 +1388,7 @@ export default function CreateProjectScreen() {
         animationType="slide"
         onRequestClose={() => setShowEconomySheet(false)}
       >
-        <SafeAreaView style={styles.sheetContainer}>
+        <View style={styles.sheetContainer}>
           <View style={styles.header}>
             <BackButton
               onPress={() => setShowEconomySheet(false)}
@@ -1428,7 +1427,7 @@ export default function CreateProjectScreen() {
               setLittera={setLittera}
             />
           </ScrollView>
-        </SafeAreaView>
+        </View>
       </Modal>
 
       <ProjectDatePickerModal
