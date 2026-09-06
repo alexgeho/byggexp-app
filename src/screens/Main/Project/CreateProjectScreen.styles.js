@@ -40,7 +40,7 @@ export const createStyles = (c) =>
       textAlign: "center",
     },
     formSectionTitle: {
-      color: c.textMuted,
+      color: c.textPrimary,
       fontSize: 13,
       fontWeight: "600",
       marginBottom: 8,
@@ -63,6 +63,7 @@ export const createStyles = (c) =>
     groupRowDivider: {
       borderBottomWidth: 1,
       borderBottomColor: c.divider,
+      marginLeft: 16, // iOS-style inset separator (starts at the label)
     },
     groupRowLast: {
       borderBottomWidth: 0,

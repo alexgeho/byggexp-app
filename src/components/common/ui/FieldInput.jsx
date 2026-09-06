@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: fontSize.caption,
-    color: content.textSecondary,
+    color: content.textPrimary,
     marginBottom: spacing.xs + 2,
   },
   input: {

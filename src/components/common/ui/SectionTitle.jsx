@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize.footnote,
     fontWeight: "700",
-    color: content.textSecondary,
+    color: content.textPrimary,
     textTransform: "uppercase",
     letterSpacing: 0.4,
     marginBottom: spacing.md,

@@ -35,11 +35,10 @@ export const createStyles = (c) =>
     },
     groupCard: {
       width: "100%",
-      backgroundColor: c.surfaceMuted,
-      borderRadius: 24,
+      backgroundColor: c.surface,
+      borderRadius: 12,
       overflow: "hidden",
-      borderWidth: 1,
-      borderColor: c.border,
+      borderWidth: 0,
     },
     groupedField: {
       paddingHorizontal: 16,
@@ -48,6 +47,7 @@ export const createStyles = (c) =>
     groupRowDivider: {
       borderBottomWidth: 1,
       borderBottomColor: c.divider,
+      marginLeft: 16,
     },
     groupRowLast: {
       borderBottomWidth: 0,
@@ -162,10 +162,9 @@ export const createStyles = (c) =>
       color: c.textPrimary,
     },
     pickerListContent: {
-      backgroundColor: c.surfaceMuted,
-      borderRadius: 24,
-      borderWidth: 1,
-      borderColor: c.border,
+      backgroundColor: c.surface,
+      borderRadius: 12,
+      borderWidth: 0,
       overflow: "hidden",
     },
     pickerOptionRow: {
