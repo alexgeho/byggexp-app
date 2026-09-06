@@ -43,6 +43,7 @@ import { useReverseGeocode } from "../../../hooks/useReverseGeocode";
 import { pickUploadAssets } from "../../../utils/uploadPicker";
 import {
   SHIFT_GRACE_MINUTE_OPTIONS,
+  SHIFT_LUNCH_MINUTE_OPTIONS,
   buildShiftSchedulePayload,
   createDefaultShiftSchedule,
   parseTimeFromDate,
@@ -129,6 +130,9 @@ export default function CreateProjectScreen() {
   );
   const [endGraceMinutes, setEndGraceMinutes] = useState(
     defaultShiftSchedule.endGraceMinutes,
+  );
+  const [lunchMinutes, setLunchMinutes] = useState(
+    defaultShiftSchedule.lunchMinutes,
   );
   const [showWorkStartPicker, setShowWorkStartPicker] = useState(false);
   const [showWorkEndPicker, setShowWorkEndPicker] = useState(false);
@@ -483,6 +487,7 @@ export default function CreateProjectScreen() {
             workDayEndTime: parseTimeFromDate(workDayEndTime),
             startGraceMinutes,
             endGraceMinutes,
+            lunchMinutes,
           }),
         ),
       );
@@ -1141,7 +1146,6 @@ export default function CreateProjectScreen() {
                   <View
                     style={[
                       styles.scheduleInlineColRow,
-                      styles.groupRowLast,
                       !shiftScheduleEnabled && styles.groupRowDisabled,
                     ]}
                   >
@@ -1163,6 +1167,37 @@ export default function CreateProjectScreen() {
                             style={[
                               styles.gracePillText,
                               endGraceMinutes === m && styles.gracePillTextOn,
+                            ]}
+                          >
+                            {t("createProject.minutesShort", { minutes: m })}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  </View>
+
+                  <View style={styles.rowSepIcon} />
+
+                  <View
+                    style={[styles.scheduleInlineColRow, styles.groupRowLast]}
+                  >
+                    <Text style={styles.scheduleInlineLabel}>
+                      {t("createProject.lunchDeduction", "Lunchavdrag")}
+                    </Text>
+                    <View style={styles.gracePills}>
+                      {SHIFT_LUNCH_MINUTE_OPTIONS.map((m) => (
+                        <TouchableOpacity
+                          key={`l${m}`}
+                          onPress={() => setLunchMinutes(m)}
+                          style={[
+                            styles.gracePill,
+                            lunchMinutes === m && styles.gracePillOn,
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.gracePillText,
+                              lunchMinutes === m && styles.gracePillTextOn,
                             ]}
                           >
                             {t("createProject.minutesShort", { minutes: m })}
