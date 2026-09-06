@@ -34,7 +34,10 @@ export function createStyles() {
     slide: {
       flex: 1,
       alignItems: "center",
-      justifyContent: "center",
+      // Anchor content to the top (not centred) so the heading always starts at
+      // the same Y on every slide regardless of how many lines it wraps to.
+      justifyContent: "flex-start",
+      paddingTop: 56,
       paddingHorizontal: 20,
     },
     card: {
