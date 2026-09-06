@@ -16,12 +16,9 @@ export const MenuButton = ({ screen, params, title, icon, isLast = false }) => {
         accessibilityRole="button"
         accessibilityLabel={title}
       >
-        <View
-          style={[
-            styles.menuIconContainer,
-            { backgroundColor: theme.colors.primaryIconBadge },
-          ]}
-        >
+        {/* iOS-style row: the glyph sits directly on the row, tinted the system
+            accent — no filled colour badge behind it. */}
+        <View style={styles.menuIconContainer}>
           <Image style={styles.menuIcon} source={icon} resizeMode="contain" />
         </View>
         <Text style={styles.menuTitle}>{title}</Text>
@@ -50,16 +47,15 @@ const createStyles = (c) =>
       borderBottomColor: c.divider,
     },
     menuIconContainer: {
-      width: 32,
-      height: 32,
-      borderRadius: 8,
+      width: 30,
+      height: 30,
       justifyContent: "center",
       alignItems: "center",
     },
     menuIcon: {
-      width: 16,
-      height: 16,
-      tintColor: "#ffffff",
+      width: 26,
+      height: 26,
+      tintColor: "#007AFF", // iOS system blue — glyph only, no badge
     },
     menuTitle: {
       flex: 1,
