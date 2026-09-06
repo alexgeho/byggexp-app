@@ -34,6 +34,7 @@ import {
   companyService,
 } from "../../../services";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
+import { ScreenHeader } from "../../../components/common/ScreenHeader/ScreenHeader";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { shiftLocationPolicy } from "../../../config/shiftLocationPolicy";
 import { useAddressSearch } from "../../../hooks/useAddressSearch";
@@ -1052,16 +1053,10 @@ export default function CreateProjectScreen() {
             onRequestClose={() => setShowShiftSheet(false)}
           >
             <View style={styles.sheetContainer}>
-              <View style={styles.header}>
-                <BackButton
-                  onPress={() => setShowShiftSheet(false)}
-                  iconSource={require("../../../assets/Arrow-left.png")}
-                />
-                <Text style={styles.headerTitle}>
-                  {t("createProject.limitShiftByHours")}
-                </Text>
-                <View style={styles.placeholder} />
-              </View>
+              <ScreenHeader
+                title={t("createProject.workHoursShort", "Arbetstid")}
+                onBack={() => setShowShiftSheet(false)}
+              />
               <ScrollView
                 contentContainerStyle={styles.sheetContent}
                 keyboardShouldPersistTaps="handled"
@@ -1389,16 +1384,10 @@ export default function CreateProjectScreen() {
         onRequestClose={() => setShowEconomySheet(false)}
       >
         <View style={styles.sheetContainer}>
-          <View style={styles.header}>
-            <BackButton
-              onPress={() => setShowEconomySheet(false)}
-              iconSource={require("../../../assets/Arrow-left.png")}
-            />
-            <Text style={styles.headerTitle}>
-              {t("createProject.economySection")}
-            </Text>
-            <View style={styles.placeholder} />
-          </View>
+          <ScreenHeader
+            title={t("createProject.economySection")}
+            onBack={() => setShowEconomySheet(false)}
+          />
           <ScrollView
             contentContainerStyle={styles.sheetContent}
             keyboardShouldPersistTaps="handled"

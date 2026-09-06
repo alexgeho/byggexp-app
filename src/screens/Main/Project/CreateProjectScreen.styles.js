@@ -58,7 +58,6 @@ export const createStyles = (c) =>
     sheetContainer: {
       flex: 1,
       backgroundColor: c.background,
-      paddingTop: 48, // clear the notch/status bar (matches main screens)
     },
     sheetContent: {
       padding: 16,
