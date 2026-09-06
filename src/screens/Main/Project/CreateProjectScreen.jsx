@@ -25,6 +25,7 @@ import {
   useState,
 } from "react";
 import Icon from "react-native-vector-icons/Feather";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import {
@@ -1083,168 +1084,114 @@ export default function CreateProjectScreen() {
 
                   <View style={styles.rowSepIcon} />
 
-                  <TouchableOpacity
+                  <View
                     style={[
-                      styles.groupedDateRow,
+                      styles.scheduleInlineRow,
                       !shiftScheduleEnabled && styles.groupRowDisabled,
                     ]}
-                    onPress={() =>
-                      shiftScheduleEnabled && setShowWorkStartPicker(true)
-                    }
-                    activeOpacity={0.85}
-                    disabled={!shiftScheduleEnabled}
                   >
-                    <View style={styles.locationFieldContent}>
-                      <View
-                        style={[
-                          styles.locationFieldIconContainer,
-                          fieldIconBadgeStyle,
-                        ]}
-                      >
-                        <FieldIcon name="clock" size={14} color="#FFFFFF" />
-                      </View>
-                      <View>
-                        <Text style={styles.dateLabel}>
-                          {t("createProject.workDayStarts")}
-                        </Text>
-                        <Text style={styles.dateValue}>
-                          {parseTimeFromDate(workDayStartTime)}
-                        </Text>
-                      </View>
-                    </View>
-                    <Icon
-                      name="chevron-right"
-                      size={18}
-                      color={theme.content.textPrimary}
+                    <Text style={styles.scheduleInlineLabel}>
+                      {t("createProject.workDayStarts")}
+                    </Text>
+                    <DateTimePicker
+                      value={workDayStartTime}
+                      mode="time"
+                      display="compact"
+                      disabled={!shiftScheduleEnabled}
+                      onChange={(_e, d) => d && setWorkDayStartTime(d)}
                     />
-                  </TouchableOpacity>
+                  </View>
 
                   <View style={styles.rowSepIcon} />
 
-                  <TouchableOpacity
+                  <View
                     style={[
-                      styles.groupedDateRow,
+                      styles.scheduleInlineRow,
                       !shiftScheduleEnabled && styles.groupRowDisabled,
                     ]}
-                    onPress={() =>
-                      shiftScheduleEnabled && setShowWorkEndPicker(true)
-                    }
-                    activeOpacity={0.85}
-                    disabled={!shiftScheduleEnabled}
                   >
-                    <View style={styles.locationFieldContent}>
-                      <View
-                        style={[
-                          styles.locationFieldIconContainer,
-                          fieldIconBadgeStyle,
-                        ]}
-                      >
-                        <FieldIcon name="clock" size={14} color="#FFFFFF" />
-                      </View>
-                      <View>
-                        <Text style={styles.dateLabel}>
-                          {t("createProject.workDayEnds")}
-                        </Text>
-                        <Text style={styles.dateValue}>
-                          {parseTimeFromDate(workDayEndTime)}
-                        </Text>
-                      </View>
-                    </View>
-                    <Icon
-                      name="chevron-right"
-                      size={18}
-                      color={theme.content.textPrimary}
+                    <Text style={styles.scheduleInlineLabel}>
+                      {t("createProject.workDayEnds")}
+                    </Text>
+                    <DateTimePicker
+                      value={workDayEndTime}
+                      mode="time"
+                      display="compact"
+                      disabled={!shiftScheduleEnabled}
+                      onChange={(_e, d) => d && setWorkDayEndTime(d)}
                     />
-                  </TouchableOpacity>
+                  </View>
 
                   <View style={styles.rowSepIcon} />
 
-                  <TouchableOpacity
+                  <View
                     style={[
-                      styles.groupedDateRow,
+                      styles.scheduleInlineColRow,
                       !shiftScheduleEnabled && styles.groupRowDisabled,
                     ]}
-                    onPress={() =>
-                      shiftScheduleEnabled &&
-                      pickGraceMinutes(
-                        t("createProject.startGracePrompt"),
-                        setStartGraceMinutes,
-                      )
-                    }
-                    activeOpacity={0.85}
-                    disabled={!shiftScheduleEnabled}
                   >
-                    <View style={styles.locationFieldContent}>
-                      <View
-                        style={[
-                          styles.locationFieldIconContainer,
-                          fieldIconBadgeStyle,
-                        ]}
-                      >
-                        <FieldIcon name="clock" size={14} color="#FFFFFF" />
-                      </View>
-                      <View>
-                        <Text style={styles.dateLabel}>
-                          {t("createProject.startGrace")}
-                        </Text>
-                        <Text style={styles.dateValue}>
-                          {t("createProject.minutesShort", {
-                            minutes: startGraceMinutes,
-                          })}
-                        </Text>
-                      </View>
+                    <Text style={styles.scheduleInlineLabel}>
+                      {t("createProject.startGrace")}
+                    </Text>
+                    <View style={styles.gracePills}>
+                      {SHIFT_GRACE_MINUTE_OPTIONS.map((m) => (
+                        <TouchableOpacity
+                          key={`s${m}`}
+                          disabled={!shiftScheduleEnabled}
+                          onPress={() => setStartGraceMinutes(m)}
+                          style={[
+                            styles.gracePill,
+                            startGraceMinutes === m && styles.gracePillOn,
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.gracePillText,
+                              startGraceMinutes === m && styles.gracePillTextOn,
+                            ]}
+                          >
+                            {t("createProject.minutesShort", { minutes: m })}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
                     </View>
-                    <Icon
-                      name="chevron-right"
-                      size={18}
-                      color={theme.content.textPrimary}
-                    />
-                  </TouchableOpacity>
+                  </View>
 
                   <View style={styles.rowSepIcon} />
 
-                  <TouchableOpacity
+                  <View
                     style={[
-                      styles.groupedDateRow,
+                      styles.scheduleInlineColRow,
                       styles.groupRowLast,
                       !shiftScheduleEnabled && styles.groupRowDisabled,
                     ]}
-                    onPress={() =>
-                      shiftScheduleEnabled &&
-                      pickGraceMinutes(
-                        t("createProject.endGracePrompt"),
-                        setEndGraceMinutes,
-                      )
-                    }
-                    activeOpacity={0.85}
-                    disabled={!shiftScheduleEnabled}
                   >
-                    <View style={styles.locationFieldContent}>
-                      <View
-                        style={[
-                          styles.locationFieldIconContainer,
-                          fieldIconBadgeStyle,
-                        ]}
-                      >
-                        <FieldIcon name="clock" size={14} color="#FFFFFF" />
-                      </View>
-                      <View>
-                        <Text style={styles.dateLabel}>
-                          {t("createProject.endGrace")}
-                        </Text>
-                        <Text style={styles.dateValue}>
-                          {t("createProject.minutesShort", {
-                            minutes: endGraceMinutes,
-                          })}
-                        </Text>
-                      </View>
+                    <Text style={styles.scheduleInlineLabel}>
+                      {t("createProject.endGrace")}
+                    </Text>
+                    <View style={styles.gracePills}>
+                      {SHIFT_GRACE_MINUTE_OPTIONS.map((m) => (
+                        <TouchableOpacity
+                          key={`e${m}`}
+                          disabled={!shiftScheduleEnabled}
+                          onPress={() => setEndGraceMinutes(m)}
+                          style={[
+                            styles.gracePill,
+                            endGraceMinutes === m && styles.gracePillOn,
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.gracePillText,
+                              endGraceMinutes === m && styles.gracePillTextOn,
+                            ]}
+                          >
+                            {t("createProject.minutesShort", { minutes: m })}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
                     </View>
-                    <Icon
-                      name="chevron-right"
-                      size={18}
-                      color={theme.content.textPrimary}
-                    />
-                  </TouchableOpacity>
+                  </View>
                 </View>
               </ScrollView>
             </View>

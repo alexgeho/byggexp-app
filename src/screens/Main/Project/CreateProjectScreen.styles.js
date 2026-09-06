@@ -63,6 +63,45 @@ export const createStyles = (c) =>
       padding: 16,
       paddingBottom: 60,
     },
+    // Inline shift-schedule editing (no drill-in): time pickers + grace pills.
+    scheduleInlineRow: {
+      minHeight: 52,
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    scheduleInlineColRow: {
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+    },
+    scheduleInlineLabel: {
+      color: c.textPrimary,
+      fontSize: 16,
+    },
+    gracePills: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 8,
+      marginTop: 10,
+    },
+    gracePill: {
+      paddingHorizontal: 14,
+      paddingVertical: 8,
+      borderRadius: 999,
+      backgroundColor: c.inputSurface,
+    },
+    gracePillOn: {
+      backgroundColor: "#007AFF",
+    },
+    gracePillText: {
+      color: c.textPrimary,
+      fontSize: 15,
+    },
+    gracePillTextOn: {
+      color: "#FFFFFF",
+    },
     groupedField: {
       backgroundColor: "transparent",
       borderRadius: 0,
