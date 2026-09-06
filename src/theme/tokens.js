@@ -48,27 +48,27 @@ export const fontWeight = {
 // them via `theme.content.*` so they follow the active theme.
 export const lightContent = {
   scheme: "light", // lets components branch light/dark glass effects
-  // Text
-  textPrimary: "#052D50", // headings / primary text (navy)
-  textSecondary: "#687898", // labels
-  textMuted: "#667E93", // subtitles / meta
-  placeholder: "#A7B3C2",
+  // Text — iOS (light) system label colours.
+  textPrimary: "#000000", // label
+  textSecondary: "#6C6C70", // secondaryLabel
+  textMuted: "#8E8E93", // systemGray
+  placeholder: "#C7C7CC", // placeholderText-ish
   onAccent: "#FFFFFF",
 
-  // Surfaces
-  surface: "#FFFFFF",
-  card: "#F8F8F8", // list-card fill (Figma) — white border sits on top
+  // Surfaces — iOS grouped backgrounds.
+  surface: "#FFFFFF", // secondarySystemGroupedBackground
+  card: "#FFFFFF", // iOS list cards are white
   surfaceMuted: "rgba(255,255,255,0.6)", // frosted cards
-  inputSurface: "#052D500D", // muted field / filter pill background
-  background: "#EEEEEE", // app screen background (Figma)
+  inputSurface: "#7676801F", // iOS tertiarySystemFill (field / pill bg)
+  background: "#F2F2F7", // systemGroupedBackground
 
   // Lines
-  divider: "#E9E9E9",
-  border: "#E7ECF0",
+  divider: "#C6C6C8", // opaque separator
+  border: "#C6C6C8",
 
-  // Accent
-  accent: "#0785F4",
-  accentSoft: "#0785F41A",
+  // Accent — iOS systemBlue.
+  accent: "#007AFF",
+  accentSoft: "#007AFF1A",
 
   // States (foreground + soft background pairs)
   danger: "#FF3B30",
