@@ -13,6 +13,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
+import { AppIcon } from "../../components/common/AppIcon";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AuthContext from "../../contexts/AuthContext";
 import { useFeedback } from "../../contexts/FeedbackContext";
@@ -28,18 +29,14 @@ import { getEntityId } from "../../utils/entityId";
 import { canManageTools } from "../../utils/userRoles";
 import { DEFAULT_TOOL_STATUS } from "../../constants/toolStatus";
 
-const FieldIcon = ({ name, theme, styles }) => (
-  <View
-    style={[
-      styles.fieldIconBadge,
-      { backgroundColor: theme.colors.primaryIconBadge },
-    ]}
-  >
-    <Icon name={name} size={14} color="#FFFFFF" />
+const FieldIcon = ({ name, styles }) => (
+  <View style={styles.fieldIconBadge}>
+    <AppIcon name={name} size={28} color="#007AFF" strokeWidth={1.5} />
   </View>
 );
 
 const PlainFormRow = ({
+  icon,
   label,
   value,
   onChangeText,
@@ -49,26 +46,26 @@ const PlainFormRow = ({
   theme,
   styles,
 }) => (
-  <View
-    style={[
-      styles.groupedField,
-      !isLast && styles.groupRowDivider,
-      isLast && styles.groupRowLast,
-    ]}
-  >
-    <View style={styles.fieldInputWrap}>
-      <Text style={styles.fieldLabel}>{label}</Text>
-      <TextInput
-        style={[styles.fieldInput, multiline && styles.fieldInputMultiline]}
-        value={value}
-        onChangeText={onChangeText}
-        placeholder={placeholder}
-        placeholderTextColor={theme.content.placeholder}
-        multiline={multiline}
-        textAlignVertical={multiline ? "top" : "auto"}
-      />
+  <>
+    <View style={styles.groupedField}>
+      <View style={styles.fieldRowContent}>
+        {icon ? <FieldIcon name={icon} styles={styles} /> : null}
+        <View style={styles.fieldInputWrap}>
+          <Text style={styles.fieldLabel}>{label}</Text>
+          <TextInput
+            style={[styles.fieldInput, multiline && styles.fieldInputMultiline]}
+            value={value}
+            onChangeText={onChangeText}
+            placeholder={placeholder}
+            placeholderTextColor={theme.content.placeholder}
+            multiline={multiline}
+            textAlignVertical={multiline ? "top" : "auto"}
+          />
+        </View>
+      </View>
     </View>
-  </View>
+    {!isLast ? <View style={styles.rowSepIcon} /> : null}
+  </>
 );
 
 const SelectRow = ({
@@ -81,29 +78,28 @@ const SelectRow = ({
   styles,
   isLast = false,
 }) => (
-  <TouchableOpacity
-    style={[
-      styles.selectRow,
-      !isLast && styles.groupRowDivider,
-      isLast && styles.groupRowLast,
-    ]}
-    onPress={onPress}
-    activeOpacity={0.85}
-  >
-    <View style={styles.fieldRowContent}>
-      <FieldIcon name={icon} theme={theme} styles={styles} />
-      <View style={styles.fieldInputWrap}>
-        <Text style={styles.fieldLabel}>{label}</Text>
-        <Text
-          numberOfLines={2}
-          style={[styles.selectValue, !value && styles.selectPlaceholder]}
-        >
-          {value || placeholder}
-        </Text>
+  <>
+    <TouchableOpacity
+      style={styles.selectRow}
+      onPress={onPress}
+      activeOpacity={0.85}
+    >
+      <View style={styles.fieldRowContent}>
+        <FieldIcon name={icon} styles={styles} />
+        <View style={styles.fieldInputWrap}>
+          <Text style={styles.fieldLabel}>{label}</Text>
+          <Text
+            numberOfLines={2}
+            style={[styles.selectValue, !value && styles.selectPlaceholder]}
+          >
+            {value || placeholder}
+          </Text>
+        </View>
       </View>
-    </View>
-    <Icon name="chevron-right" size={18} color={theme.content.textPrimary} />
-  </TouchableOpacity>
+      <Icon name="chevron-right" size={18} color={theme.content.textPrimary} />
+    </TouchableOpacity>
+    {!isLast ? <View style={styles.rowSepIcon} /> : null}
+  </>
 );
 
 export default function CreateToolScreen() {
@@ -345,6 +341,7 @@ export default function CreateToolScreen() {
             <PlainFormRow
               styles={styles}
               theme={theme}
+              icon="tool"
               label={t("tools.nameLabel")}
               value={name}
               onChangeText={setName}
@@ -396,7 +393,7 @@ export default function CreateToolScreen() {
             />
             <SelectRow
               styles={styles}
-              icon="briefcase"
+              icon="folder"
               label={t("tools.attachProjects")}
               value={selectedProjectsLabel}
               placeholder={
@@ -412,6 +409,7 @@ export default function CreateToolScreen() {
             <PlainFormRow
               styles={styles}
               theme={theme}
+              icon="file-text"
               label={t("tools.notesLabel")}
               value={notes}
               onChangeText={setNotes}

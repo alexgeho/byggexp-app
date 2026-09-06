@@ -51,6 +51,16 @@ export const createStyles = (c) =>
     groupRowLast: {
       borderBottomWidth: 0,
     },
+    rowSep: {
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: c.divider,
+      marginLeft: 16,
+    },
+    rowSepIcon: {
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: c.divider,
+      marginLeft: 58,
+    },
     fieldRowContent: {
       flexDirection: "row",
       alignItems: "center",
@@ -58,8 +68,8 @@ export const createStyles = (c) =>
       flex: 1,
     },
     fieldIconBadge: {
-      width: 27,
-      height: 27,
+      width: 30,
+      height: 30,
       borderRadius: 5,
       alignItems: "center",
       justifyContent: "center",
@@ -69,8 +79,9 @@ export const createStyles = (c) =>
       gap: 2,
     },
     fieldLabel: {
-      fontSize: 12,
-      color: "rgba(5, 45, 80, 0.55)",
+      fontSize: 13,
+      fontWeight: "600",
+      color: "#6C6C70",
     },
     fieldInput: {
       fontSize: 16,
