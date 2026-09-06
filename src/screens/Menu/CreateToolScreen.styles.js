@@ -47,7 +47,6 @@ export const createStyles = (c) =>
     groupRowDivider: {
       borderBottomWidth: 1,
       borderBottomColor: c.divider,
-      marginLeft: 16,
     },
     groupRowLast: {
       borderBottomWidth: 0,
