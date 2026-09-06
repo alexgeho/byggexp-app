@@ -64,6 +64,18 @@ export const createStyles = (c) =>
       borderBottomWidth: 1,
       borderBottomColor: c.divider,
     },
+    // iOS inset separators: a hairline child line (not a row border), so it can
+    // start at the label without widening the row / clipping trailing controls.
+    rowSep: {
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: c.divider,
+      marginLeft: 16, // rows without a leading icon
+    },
+    rowSepIcon: {
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: c.divider,
+      marginLeft: 58, // rows with a leading icon (16 + 30 icon + 12 gap)
+    },
     groupRowLast: {
       borderBottomWidth: 0,
     },

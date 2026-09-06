@@ -731,11 +731,7 @@ export default function CreateProjectScreen() {
         >
           <View style={styles.groupCard}>
             <TouchableOpacity
-              style={[
-                styles.locationField,
-                styles.groupedField,
-                styles.groupRowDivider,
-              ]}
+              style={[styles.locationField, styles.groupedField]}
               onPress={openLocationPicker}
               activeOpacity={0.85}
             >
@@ -759,13 +755,9 @@ export default function CreateProjectScreen() {
               />
             </TouchableOpacity>
 
-            <View
-              style={[
-                styles.switchField,
-                styles.groupedField,
-                styles.groupRowDivider,
-              ]}
-            >
+            <View style={styles.rowSep} />
+
+            <View style={[styles.switchField, styles.groupedField]}>
               <Text style={styles.switchLabel}>
                 {t("createProject.useLocationAsName")}
               </Text>
@@ -778,6 +770,8 @@ export default function CreateProjectScreen() {
                 style={styles.switchControl}
               />
             </View>
+
+            <View style={styles.rowSep} />
 
             <View
               style={[
@@ -826,11 +820,7 @@ export default function CreateProjectScreen() {
 
           <View style={styles.groupCard}>
             <TouchableOpacity
-              style={[
-                styles.locationField,
-                styles.groupedField,
-                styles.groupRowDivider,
-              ]}
+              style={[styles.locationField, styles.groupedField]}
               onPress={openWorkersModal}
               activeOpacity={0.85}
             >
@@ -861,6 +851,8 @@ export default function CreateProjectScreen() {
                 color={theme.content.textPrimary}
               />
             </TouchableOpacity>
+
+            <View style={styles.rowSepIcon} />
 
             <TouchableOpacity
               style={[
@@ -903,11 +895,7 @@ export default function CreateProjectScreen() {
 
           <View style={styles.groupCard}>
             <TouchableOpacity
-              style={[
-                styles.locationField,
-                styles.groupedField,
-                styles.groupRowDivider,
-              ]}
+              style={[styles.locationField, styles.groupedField]}
               onPress={openToolsModal}
               activeOpacity={0.85}
             >
@@ -938,6 +926,8 @@ export default function CreateProjectScreen() {
                 color={theme.content.textPrimary}
               />
             </TouchableOpacity>
+
+            <View style={styles.rowSepIcon} />
 
             <TouchableOpacity
               style={[
@@ -1021,13 +1011,7 @@ export default function CreateProjectScreen() {
           ) : null}
 
           <View style={styles.groupCard}>
-            <View
-              style={[
-                styles.switchField,
-                styles.groupedField,
-                styles.groupRowDivider,
-              ]}
-            >
+            <View style={[styles.switchField, styles.groupedField]}>
               <View style={styles.locationFieldContent}>
                 <View
                   style={[
@@ -1051,10 +1035,11 @@ export default function CreateProjectScreen() {
               />
             </View>
 
+            <View style={styles.rowSepIcon} />
+
             <TouchableOpacity
               style={[
                 styles.groupedDateRow,
-                styles.groupRowDivider,
                 !shiftScheduleEnabled && styles.groupRowDisabled,
               ]}
               onPress={() =>
@@ -1088,10 +1073,11 @@ export default function CreateProjectScreen() {
               />
             </TouchableOpacity>
 
+            <View style={styles.rowSepIcon} />
+
             <TouchableOpacity
               style={[
                 styles.groupedDateRow,
-                styles.groupRowDivider,
                 !shiftScheduleEnabled && styles.groupRowDisabled,
               ]}
               onPress={() => shiftScheduleEnabled && setShowWorkEndPicker(true)}
@@ -1123,10 +1109,11 @@ export default function CreateProjectScreen() {
               />
             </TouchableOpacity>
 
+            <View style={styles.rowSepIcon} />
+
             <TouchableOpacity
               style={[
                 styles.groupedDateRow,
-                styles.groupRowDivider,
                 !shiftScheduleEnabled && styles.groupRowDisabled,
               ]}
               onPress={() =>
@@ -1165,6 +1152,8 @@ export default function CreateProjectScreen() {
                 color={theme.content.textPrimary}
               />
             </TouchableOpacity>
+
+            <View style={styles.rowSepIcon} />
 
             <TouchableOpacity
               style={[
@@ -1212,7 +1201,7 @@ export default function CreateProjectScreen() {
 
           <View style={styles.groupCard}>
             <TouchableOpacity
-              style={[styles.groupedDateRow, styles.groupRowDivider]}
+              style={styles.groupedDateRow}
               onPress={() => setShowStartDatePicker(true)}
             >
               <View style={styles.locationFieldContent}>
@@ -1241,6 +1230,8 @@ export default function CreateProjectScreen() {
                 color={theme.content.textPrimary}
               />
             </TouchableOpacity>
+
+            <View style={styles.rowSepIcon} />
 
             <TouchableOpacity
               style={[styles.groupedDateRow, styles.groupRowLast]}
