@@ -17,7 +17,7 @@ export const MenuButton = ({ screen, params, title, icon, isLast = false }) => {
 
   return (
     <TouchableOpacity
-      style={[styles.menuItem, !isLast && styles.menuItemDivider]}
+      style={styles.menuItem}
       onPress={() => navigation.navigate(screen ? screen : "Menu", params)}
       accessibilityRole="button"
       accessibilityLabel={title}
@@ -25,8 +25,12 @@ export const MenuButton = ({ screen, params, title, icon, isLast = false }) => {
       <View style={styles.menuIconContainer}>
         <Icon name={icon} size={22} color={IOS.blue} />
       </View>
-      <Text style={styles.menuTitle}>{title}</Text>
-      <Icon name="chevron-right" size={20} color={IOS.chevron} />
+      {/* Text + chevron carry the separator, so — like iOS — the hairline is
+          inset to start at the label, not under the icon. */}
+      <View style={[styles.rowRight, !isLast && styles.rowRightDivider]}>
+        <Text style={styles.menuTitle}>{title}</Text>
+        <Icon name="chevron-right" size={20} color={IOS.chevron} />
+      </View>
     </TouchableOpacity>
   );
 };
@@ -37,12 +41,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     minHeight: 48,
     backgroundColor: "transparent",
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-  },
-  menuItemDivider: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: IOS.separator,
+    paddingLeft: 16,
   },
   menuIconContainer: {
     width: 30,
@@ -50,9 +49,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  rowRight: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: 12,
+    paddingRight: 16,
+    paddingVertical: 12,
+  },
+  rowRightDivider: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: IOS.separator,
+  },
   menuTitle: {
     flex: 1,
-    marginLeft: 12,
     color: IOS.label,
     fontSize: 17, // iOS body
     fontWeight: "400",
