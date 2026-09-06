@@ -72,28 +72,25 @@ const PlainFormRow = ({
   theme,
   styles,
 }) => (
-  <View
-    style={[
-      styles.groupedField,
-      !isLast && styles.groupRowDivider,
-      isLast && styles.groupRowLast,
-    ]}
-  >
-    <View style={styles.fieldInputWrap}>
-      <Text style={styles.fieldLabel}>{label}</Text>
-      <TextInput
-        style={[styles.fieldInput, multiline && styles.fieldInputMultiline]}
-        value={value}
-        onChangeText={onChangeText}
-        placeholder={placeholder}
-        placeholderTextColor={theme.content.placeholder}
-        keyboardType={keyboardType}
-        autoCapitalize={autoCapitalize}
-        multiline={multiline}
-        textAlignVertical={multiline ? "top" : "auto"}
-      />
+  <>
+    <View style={styles.groupedField}>
+      <View style={styles.fieldInputWrap}>
+        <Text style={styles.fieldLabel}>{label}</Text>
+        <TextInput
+          style={[styles.fieldInput, multiline && styles.fieldInputMultiline]}
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={placeholder}
+          placeholderTextColor={theme.content.placeholder}
+          keyboardType={keyboardType}
+          autoCapitalize={autoCapitalize}
+          multiline={multiline}
+          textAlignVertical={multiline ? "top" : "auto"}
+        />
+      </View>
     </View>
-  </View>
+    {!isLast ? <View style={styles.rowSep} /> : null}
+  </>
 );
 
 // Language assignable to an invited user — drives their emails + app default
@@ -128,29 +125,28 @@ const SelectRow = ({
   styles,
   isLast = false,
 }) => (
-  <TouchableOpacity
-    style={[
-      styles.selectRow,
-      !isLast && styles.groupRowDivider,
-      isLast && styles.groupRowLast,
-    ]}
-    onPress={onPress}
-    activeOpacity={0.85}
-  >
-    <View style={styles.fieldRowContent}>
-      <FieldIcon name={icon} theme={theme} styles={styles} />
-      <View style={styles.fieldInputWrap}>
-        <Text style={styles.fieldLabel}>{label}</Text>
-        <Text
-          numberOfLines={2}
-          style={[styles.selectValue, !value && styles.selectPlaceholder]}
-        >
-          {value || placeholder}
-        </Text>
+  <>
+    <TouchableOpacity
+      style={styles.selectRow}
+      onPress={onPress}
+      activeOpacity={0.85}
+    >
+      <View style={styles.fieldRowContent}>
+        <FieldIcon name={icon} theme={theme} styles={styles} />
+        <View style={styles.fieldInputWrap}>
+          <Text style={styles.fieldLabel}>{label}</Text>
+          <Text
+            numberOfLines={2}
+            style={[styles.selectValue, !value && styles.selectPlaceholder]}
+          >
+            {value || placeholder}
+          </Text>
+        </View>
       </View>
-    </View>
-    <Icon name="chevron-right" size={18} color={theme.content.textPrimary} />
-  </TouchableOpacity>
+      <Icon name="chevron-right" size={18} color={theme.content.textPrimary} />
+    </TouchableOpacity>
+    {!isLast ? <View style={styles.rowSepIcon} /> : null}
+  </>
 );
 
 export default function CreateEmployeeScreen() {

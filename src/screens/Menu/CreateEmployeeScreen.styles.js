@@ -51,6 +51,17 @@ export const createStyles = (c) =>
     groupRowLast: {
       borderBottomWidth: 0,
     },
+    // iOS inset separators (hairline child line, aligns to the label).
+    rowSep: {
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: c.divider,
+      marginLeft: 16,
+    },
+    rowSepIcon: {
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: c.divider,
+      marginLeft: 58,
+    },
     financeRow: {
       flexDirection: "row",
       alignItems: "center",
