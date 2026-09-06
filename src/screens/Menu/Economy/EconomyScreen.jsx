@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -11,7 +11,11 @@ import {
 import Icon from "react-native-vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import {
+  useNavigation,
+  useFocusEffect,
+  useRoute,
+} from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { offerService, invoiceService } from "../../../services";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
@@ -73,12 +77,16 @@ function Pill({ label, active, onPress, styles }) {
 
 export default function EconomyScreen() {
   const navigation = useNavigation();
+  const route = useRoute();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
 
-  const [mode, setMode] = useState("offers"); // 'offers' | 'invoices'
+  // Opened from the menu's Ekonomi category with mode: "offers" | "invoices".
+  const [mode, setMode] = useState(
+    route.params?.mode === "invoices" ? "invoices" : "offers",
+  ); // 'offers' | 'invoices'
   const [offers, setOffers] = useState([]);
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -125,6 +133,15 @@ export default function EconomyScreen() {
       load();
     }, [load]),
   );
+
+  // Follow the tab requested by the menu if the screen is re-navigated with a
+  // different mode while still mounted.
+  useEffect(() => {
+    const requested = route.params?.mode;
+    if (requested === "offers" || requested === "invoices") {
+      setMode(requested);
+    }
+  }, [route.params?.mode]);
 
   const isOffers = mode === "offers";
   const rawItems = isOffers ? offers : invoices;

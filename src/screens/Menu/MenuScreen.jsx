@@ -5,7 +5,7 @@ import React, {
   useCallback,
   useRef,
 } from "react";
-import { View, Text, Image, ScrollView } from "react-native";
+import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../theme/ThemeContext";
@@ -76,6 +76,19 @@ export default function MenuScreen() {
       };
     }, [profileId]),
   );
+
+  // Collapsible categories: the page was one long scroll, so every category
+  // except the primary "Projekt & arbete" starts collapsed. Tap a header to
+  // expand/collapse.
+  const [collapsedSections, setCollapsedSections] = useState({
+    economy: true,
+    settings: true,
+    information: true,
+    support: true,
+  });
+  const toggleSection = useCallback((id) => {
+    setCollapsedSections((prev) => ({ ...prev, [id]: !prev[id] }));
+  }, []);
 
   const avatarSource = resolveUploadUrl(profileAvatarUrl || user?.avatarUrl);
   // Economy/invoicing is gated on the finance.manage capability, so a delegated
@@ -337,30 +350,81 @@ export default function MenuScreen() {
     ...menuItems.filter((item) => item.id === "notifications"),
   ];
 
-  // Group the flat menu items into labelled categories.
-  // Order: Settings, Work (incl. Finance), Information, Support (Support last).
-  const menuSections = [
+  // Economy is its own category with the registers surfaced directly (no need to
+  // dive into the Economy screen first): offers/invoices open that screen on the
+  // right tab, the rest are their own screens. Gated on finance.manage.
+  const economySectionItems = [
     {
-      id: "settings",
-      title: t("menu.sectionSettings"),
-      items: settingsSectionItems,
+      id: "offers",
+      screen: "Economy",
+      params: { mode: "offers" },
+      title: t("economy.offers"),
+      icon: require("../../assets/Documents.png"),
+      color: theme.colors.primary,
     },
     {
-      id: "work",
-      title: t("menu.sectionWork"),
+      id: "invoices",
+      screen: "Economy",
+      params: { mode: "invoices" },
+      title: t("economy.invoices"),
+      icon: require("../../assets/Legal.png"),
+      color: theme.colors.primary,
+    },
+    {
+      id: "clients",
+      screen: "Clients",
+      title: t("clientForm.title"),
+      icon: require("../../assets/mainButtons/employees.png"),
+      color: theme.colors.primary,
+    },
+    {
+      id: "articles",
+      screen: "Articles",
+      title: t("articleForm.title"),
+      icon: require("../../assets/Tracker.png"),
+      color: theme.colors.primary,
+    },
+    {
+      id: "company",
+      screen: "CompanyDetails",
+      title: t("companyDetails.title"),
+      icon: require("../../assets/About.png"),
+      color: theme.colors.primary,
+    },
+  ];
+
+  // Group the flat menu items into labelled, collapsible categories.
+  // Order: Projects & work, Economy, Settings, Information, Support.
+  const menuSections = [
+    {
+      id: "projects",
+      title: t("menu.sectionProjects", "Projekt & arbete"),
       items: menuItems.filter((item) =>
         [
-          "chats",
+          "projects",
+          "planning",
           "tasks",
           "shifts",
           "workShifts",
           "employees",
           "tools",
-          "projects",
-          "planning",
-          "economy",
+          "chats",
         ].includes(item.id),
       ),
+    },
+    ...(canFinance
+      ? [
+          {
+            id: "economy",
+            title: t("menu.economy"),
+            items: economySectionItems,
+          },
+        ]
+      : []),
+    {
+      id: "settings",
+      title: t("menu.sectionSettings"),
+      items: settingsSectionItems,
     },
     {
       id: "information",
@@ -452,24 +516,47 @@ export default function MenuScreen() {
 
       {/* MAIN */}
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {menuSections.map((section) => (
-          <View key={section.id} style={styles.menuSection}>
-            <Text style={styles.sectionTitle}>{section.title}</Text>
-            <View style={styles.groupCard}>
-              {section.items.map((item, index) => (
-                <MenuButton
-                  key={item.id}
-                  screen={item.screen ? item.screen : "Menu"}
-                  params={item.params}
-                  title={item.title}
-                  color={item.color}
-                  icon={item.icon}
-                  isLast={index === section.items.length - 1}
+        {menuSections.map((section) => {
+          const collapsed = !!collapsedSections[section.id];
+          return (
+            <View key={section.id} style={styles.menuSection}>
+              <TouchableOpacity
+                style={styles.sectionHeaderRow}
+                activeOpacity={0.7}
+                onPress={() => toggleSection(section.id)}
+                accessibilityRole="button"
+                accessibilityLabel={section.title}
+                accessibilityState={{ expanded: !collapsed }}
+              >
+                <Text style={styles.sectionHeaderTitle}>{section.title}</Text>
+                <Image
+                  style={styles.sectionChevron}
+                  source={
+                    collapsed
+                      ? require("../../assets/Arrow-right.png")
+                      : require("../../assets/Arrow-down.png")
+                  }
+                  resizeMode="contain"
                 />
-              ))}
+              </TouchableOpacity>
+              {!collapsed && (
+                <View style={styles.groupCard}>
+                  {section.items.map((item, index) => (
+                    <MenuButton
+                      key={item.id}
+                      screen={item.screen ? item.screen : "Menu"}
+                      params={item.params}
+                      title={item.title}
+                      color={item.color}
+                      icon={item.icon}
+                      isLast={index === section.items.length - 1}
+                    />
+                  ))}
+                </View>
+              )}
             </View>
-          </View>
-        ))}
+          );
+        })}
       </ScrollView>
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}

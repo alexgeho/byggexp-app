@@ -45,6 +45,25 @@ export function createStyles(theme) {
     menuSection: {
       marginBottom: 16,
     },
+    sectionHeaderRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginTop: 8,
+      marginBottom: 8,
+      paddingHorizontal: 8,
+    },
+    sectionHeaderTitle: {
+      color: c.textMuted,
+      fontSize: 17,
+      fontWeight: "500",
+      fontFamily: theme.text.fontFamily.medium,
+    },
+    sectionChevron: {
+      width: 18,
+      height: 18,
+      tintColor: c.textMuted,
+    },
     settingsSection: {
       marginBottom: 24,
     },
