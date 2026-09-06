@@ -108,8 +108,9 @@ export const createStyles = (c) =>
       gap: 2,
     },
     fieldLabel: {
-      fontSize: 12,
-      color: "rgba(5, 45, 80, 0.55)",
+      fontSize: 13,
+      fontWeight: "600",
+      color: "#6C6C70",
     },
     fieldInput: {
       fontSize: 16,

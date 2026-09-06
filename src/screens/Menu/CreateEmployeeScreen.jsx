@@ -61,6 +61,7 @@ const FieldIcon = ({ name, styles }) => (
 );
 
 const PlainFormRow = ({
+  icon,
   label,
   value,
   onChangeText,
@@ -74,22 +75,25 @@ const PlainFormRow = ({
 }) => (
   <>
     <View style={styles.groupedField}>
-      <View style={styles.fieldInputWrap}>
-        <Text style={styles.fieldLabel}>{label}</Text>
-        <TextInput
-          style={[styles.fieldInput, multiline && styles.fieldInputMultiline]}
-          value={value}
-          onChangeText={onChangeText}
-          placeholder={placeholder}
-          placeholderTextColor={theme.content.placeholder}
-          keyboardType={keyboardType}
-          autoCapitalize={autoCapitalize}
-          multiline={multiline}
-          textAlignVertical={multiline ? "top" : "auto"}
-        />
+      <View style={styles.fieldRowContent}>
+        {icon ? <FieldIcon name={icon} styles={styles} /> : null}
+        <View style={styles.fieldInputWrap}>
+          <Text style={styles.fieldLabel}>{label}</Text>
+          <TextInput
+            style={[styles.fieldInput, multiline && styles.fieldInputMultiline]}
+            value={value}
+            onChangeText={onChangeText}
+            placeholder={placeholder}
+            placeholderTextColor={theme.content.placeholder}
+            keyboardType={keyboardType}
+            autoCapitalize={autoCapitalize}
+            multiline={multiline}
+            textAlignVertical={multiline ? "top" : "auto"}
+          />
+        </View>
       </View>
     </View>
-    {!isLast ? <View style={styles.rowSep} /> : null}
+    {!isLast ? <View style={styles.rowSepIcon} /> : null}
   </>
 );
 
@@ -564,6 +568,7 @@ export default function CreateEmployeeScreen() {
             <PlainFormRow
               styles={styles}
               theme={theme}
+              icon="mail"
               label={t("createEmployee.emailLabel")}
               value={email}
               onChangeText={setEmail}
@@ -574,6 +579,7 @@ export default function CreateEmployeeScreen() {
             <PlainFormRow
               styles={styles}
               theme={theme}
+              icon="user"
               label={t("createEmployee.nameLabel")}
               value={name}
               onChangeText={setName}
@@ -583,6 +589,7 @@ export default function CreateEmployeeScreen() {
             <PlainFormRow
               styles={styles}
               theme={theme}
+              icon="briefcase"
               label={t("myAccount.professionLabel")}
               value={profession}
               onChangeText={setProfession}
@@ -592,6 +599,7 @@ export default function CreateEmployeeScreen() {
             <PlainFormRow
               styles={styles}
               theme={theme}
+              icon="phone"
               label={t("createEmployee.phoneLabel")}
               value={phone}
               onChangeText={setPhone}
