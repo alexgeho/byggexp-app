@@ -1022,11 +1022,7 @@ export default function CreateProjectScreen() {
 
           <View style={styles.groupCard}>
             <TouchableOpacity
-              style={[
-                styles.locationField,
-                styles.groupedField,
-                styles.groupRowLast,
-              ]}
+              style={styles.groupedDateRow}
               onPress={() => setShowShiftSheet(true)}
               activeOpacity={0.85}
             >
@@ -1035,7 +1031,7 @@ export default function CreateProjectScreen() {
                   <FieldIcon name="clock" color="#007AFF" />
                 </View>
                 <View>
-                  <Text style={[styles.locationFieldText, styles.dateLabel]}>
+                  <Text style={styles.dateLabel}>
                     {t("createProject.workHoursShort", "Arbetspass")}
                   </Text>
                   <Text style={styles.dateValue}>
@@ -1108,6 +1104,35 @@ export default function CreateProjectScreen() {
 
                   <View style={styles.rowSepIcon} />
 
+                  <View style={styles.scheduleInlineColRow}>
+                    <Text style={styles.scheduleInlineLabel}>
+                      {t("createProject.lunchDeduction", "Lunchavdrag")}
+                    </Text>
+                    <View style={styles.gracePills}>
+                      {SHIFT_LUNCH_MINUTE_OPTIONS.map((m) => (
+                        <TouchableOpacity
+                          key={`l${m}`}
+                          onPress={() => setLunchMinutes(m)}
+                          style={[
+                            styles.gracePill,
+                            lunchMinutes === m && styles.gracePillOn,
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.gracePillText,
+                              lunchMinutes === m && styles.gracePillTextOn,
+                            ]}
+                          >
+                            {t("createProject.minutesShort", { minutes: m })}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  </View>
+
+                  <View style={styles.rowSepIcon} />
+
                   <View
                     style={[
                       styles.scheduleInlineColRow,
@@ -1146,6 +1171,7 @@ export default function CreateProjectScreen() {
                   <View
                     style={[
                       styles.scheduleInlineColRow,
+                      styles.groupRowLast,
                       !shiftScheduleEnabled && styles.groupRowDisabled,
                     ]}
                   >
@@ -1167,37 +1193,6 @@ export default function CreateProjectScreen() {
                             style={[
                               styles.gracePillText,
                               endGraceMinutes === m && styles.gracePillTextOn,
-                            ]}
-                          >
-                            {t("createProject.minutesShort", { minutes: m })}
-                          </Text>
-                        </TouchableOpacity>
-                      ))}
-                    </View>
-                  </View>
-
-                  <View style={styles.rowSepIcon} />
-
-                  <View
-                    style={[styles.scheduleInlineColRow, styles.groupRowLast]}
-                  >
-                    <Text style={styles.scheduleInlineLabel}>
-                      {t("createProject.lunchDeduction", "Lunchavdrag")}
-                    </Text>
-                    <View style={styles.gracePills}>
-                      {SHIFT_LUNCH_MINUTE_OPTIONS.map((m) => (
-                        <TouchableOpacity
-                          key={`l${m}`}
-                          onPress={() => setLunchMinutes(m)}
-                          style={[
-                            styles.gracePill,
-                            lunchMinutes === m && styles.gracePillOn,
-                          ]}
-                        >
-                          <Text
-                            style={[
-                              styles.gracePillText,
-                              lunchMinutes === m && styles.gracePillTextOn,
                             ]}
                           >
                             {t("createProject.minutesShort", { minutes: m })}

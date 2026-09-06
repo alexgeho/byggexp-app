@@ -100,7 +100,7 @@ export const getStartWindowErrorMessage = (window) =>
   `Shift can be started between ${window.earliestStartLabel} and ${window.latestStartLabel}.`;
 
 // Lunch deduction options (minutes) offered in the shift sheet.
-export const SHIFT_LUNCH_MINUTE_OPTIONS = [0, 30, 60];
+export const SHIFT_LUNCH_MINUTE_OPTIONS = [0, 30];
 
 export const createDefaultShiftSchedule = () => ({
   enabled: false,
@@ -108,7 +108,7 @@ export const createDefaultShiftSchedule = () => ({
   workDayEndTime: "16:00",
   startGraceMinutes: 20,
   endGraceMinutes: 20,
-  lunchMinutes: 60,
+  lunchMinutes: 30,
   timezone: DEFAULT_SHIFT_TIMEZONE,
 });
 
@@ -141,6 +141,6 @@ export const buildShiftSchedulePayload = ({
   workDayEndTime: workDayEndTime || "16:00",
   startGraceMinutes: Number(startGraceMinutes ?? 20),
   endGraceMinutes: Number(endGraceMinutes ?? 20),
-  lunchMinutes: Number(lunchMinutes ?? 60),
+  lunchMinutes: Number(lunchMinutes ?? 30),
   timezone,
 });
