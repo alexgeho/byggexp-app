@@ -12,9 +12,8 @@ export const createStyles = (c) =>
     },
     groupCard: {
       borderRadius: 28,
-      borderWidth: 1,
-      borderColor: c.border,
-      backgroundColor: c.surfaceMuted,
+      borderWidth: 0,
+      backgroundColor: c.surface,
       overflow: "hidden",
     },
     languageRow: {

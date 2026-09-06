@@ -25,10 +25,9 @@ export const createStyles = (c) =>
     },
     heroCard: {
       width: "100%",
-      backgroundColor: c.surfaceMuted,
-      borderRadius: 24,
-      borderWidth: 1,
-      borderColor: c.border,
+      backgroundColor: c.surface,
+      borderRadius: 12,
+      borderWidth: 0,
       padding: 20,
     },
     heroIconWrap: {
@@ -101,10 +100,9 @@ export const createStyles = (c) =>
     },
     groupCard: {
       width: "100%",
-      backgroundColor: c.surfaceMuted,
-      borderRadius: 24,
-      borderWidth: 1,
-      borderColor: c.border,
+      backgroundColor: c.surface,
+      borderRadius: 12,
+      borderWidth: 0,
       overflow: "hidden",
     },
     documentRow: {
