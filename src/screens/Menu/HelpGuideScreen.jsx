@@ -1,11 +1,18 @@
 import React, { useMemo } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  DeviceEventEmitter,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
 import { Screen } from "../../components/common/Screen/Screen";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { openWelcomeTour } from "../../components/common/WelcomeSlides/WelcomeSlides";
+import { clearOnboardingDismissed } from "../../utils/onboardingStorage";
 import { createStyles } from "./HelpGuideScreen.styles";
 import { useTheme } from "../../theme/ThemeContext";
 
@@ -25,6 +32,12 @@ export default function HelpGuideScreen() {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
+
+  const reopenChecklist = async () => {
+    await clearOnboardingDismissed();
+    DeviceEventEmitter.emit("home-onboarding:reopen");
+    navigation.navigate("Main");
+  };
 
   return (
     <Screen title={t("guide.title")} onBack={() => navigation.goBack()}>
@@ -58,6 +71,32 @@ export default function HelpGuideScreen() {
               ]}
             >
               {t("guide.replayTour")}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.replayButton,
+              {
+                backgroundColor: "transparent",
+                borderWidth: 1,
+                borderColor: theme.colors.primary,
+              },
+            ]}
+            onPress={reopenChecklist}
+            activeOpacity={0.85}
+          >
+            <Icon name="check-circle" size={18} color={theme.colors.primary} />
+            <Text
+              style={[
+                styles.replayButtonText,
+                {
+                  color: theme.colors.primary,
+                  fontFamily: theme.text.fontFamily.semiBold,
+                },
+              ]}
+            >
+              {t("guide.replayChecklist", "Visa Kom igång igen")}
             </Text>
           </TouchableOpacity>
         </View>

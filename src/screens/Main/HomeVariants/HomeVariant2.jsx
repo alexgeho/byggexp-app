@@ -18,6 +18,7 @@ import {
   Animated,
   Pressable,
   StyleSheet,
+  DeviceEventEmitter,
 } from "react-native";
 
 import { LinearGradient } from "expo-linear-gradient";
@@ -156,6 +157,14 @@ export default function HomeVariant2() {
   // "Kom igång" first-run checklist — role-aware (worker vs admin steps),
   // shows until done or dismissed.
   const [onboardingHidden, setOnboardingHidden] = useState(false);
+  // Re-open the checklist from the Guide: clear the in-session hide so it shows
+  // again (the dismissed flag is cleared in storage before this fires).
+  useEffect(() => {
+    const sub = DeviceEventEmitter.addListener("home-onboarding:reopen", () =>
+      setOnboardingHidden(false),
+    );
+    return () => sub.remove();
+  }, []);
   // Admin onboarding focus (fieldwork/billing/skip/null) — persisted per install.
   const [onboardingFocus, setOnboardingFocusState] = useState(null);
   useEffect(() => {

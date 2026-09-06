@@ -25,6 +25,16 @@ export async function setOnboardingDismissed() {
   }
 }
 
+// Re-open the "Kom igång" checklist (from the Guide). Clears the dismissed flag
+// so it shows again on Home (unless every step is already done).
+export async function clearOnboardingDismissed() {
+  try {
+    await AsyncStorage.removeItem(ONBOARDING_DISMISSED_KEY);
+  } catch {
+    // ignore
+  }
+}
+
 // Marks the "Anpassa startsidan" onboarding step done once the user has opened
 // the Customize drawer (there's no server signal for "customised the home").
 const CUSTOMIZE_OPENED_KEY = "home-onboarding-customize-opened";
