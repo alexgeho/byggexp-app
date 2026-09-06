@@ -53,14 +53,9 @@ const parsePhoneFields = (value) => {
   };
 };
 
-const FieldIcon = ({ name, theme, styles }) => (
-  <View
-    style={[
-      styles.fieldIconBadge,
-      { backgroundColor: theme.colors.primaryIconBadge },
-    ]}
-  >
-    <Icon name={name} size={14} color="#FFFFFF" />
+const FieldIcon = ({ name, styles }) => (
+  <View style={styles.fieldIconBadge}>
+    <Icon name={name} size={22} color="#007AFF" />
   </View>
 );
 
@@ -674,7 +669,7 @@ export default function CreateEmployeeScreen() {
                 <Switch
                   value={financeAccess}
                   onValueChange={setFinanceAccess}
-                  trackColor={{ true: "#0785F4", false: "#D1D9E0" }}
+                  trackColor={{ true: "#34C759", false: "#D1D9E0" }}
                 />
               </View>
             ) : null}

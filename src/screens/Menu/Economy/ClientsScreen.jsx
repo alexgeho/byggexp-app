@@ -354,7 +354,7 @@ export default function ClientsScreen() {
             <Switch
               value={form.reverseVAT}
               onValueChange={(v) => set("reverseVAT", v)}
-              trackColor={{ true: theme.colors.primary }}
+              trackColor={{ true: "#34C759" }}
             />
           </View>
           {field("notes", t("clientForm.notes", "Anteckningar"), {

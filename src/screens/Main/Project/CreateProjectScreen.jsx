@@ -772,7 +772,7 @@ export default function CreateProjectScreen() {
               <Switch
                 value={useLocationAsName}
                 onValueChange={setUseLocationAsName}
-                trackColor={{ false: "#D9E3EC", true: theme.colors.primary }}
+                trackColor={{ false: "#D9E3EC", true: "#34C759" }}
                 thumbColor="#FFFFFF"
                 ios_backgroundColor="#D9E3EC"
                 style={styles.switchControl}
@@ -1044,7 +1044,7 @@ export default function CreateProjectScreen() {
               <Switch
                 value={shiftScheduleEnabled}
                 onValueChange={setShiftScheduleEnabled}
-                trackColor={{ false: "#D9E3EC", true: theme.colors.primary }}
+                trackColor={{ false: "#D9E3EC", true: "#34C759" }}
                 thumbColor="#FFFFFF"
                 ios_backgroundColor="#D9E3EC"
                 style={styles.switchControl}

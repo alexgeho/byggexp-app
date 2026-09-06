@@ -36,7 +36,7 @@ export const createStyles = (c) =>
     groupCard: {
       width: "100%",
       backgroundColor: c.surface,
-      borderRadius: 12,
+      borderRadius: 10,
       overflow: "hidden",
       borderWidth: 0,
     },
@@ -135,7 +135,7 @@ export const createStyles = (c) =>
     },
     pickerListContent: {
       backgroundColor: c.surface,
-      borderRadius: 12,
+      borderRadius: 10,
       borderWidth: 0,
       overflow: "hidden",
     },

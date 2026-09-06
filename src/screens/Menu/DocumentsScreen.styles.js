@@ -26,7 +26,7 @@ export const createStyles = (c) =>
     heroCard: {
       width: "100%",
       backgroundColor: c.surface,
-      borderRadius: 12,
+      borderRadius: 10,
       borderWidth: 0,
       padding: 20,
     },
@@ -101,7 +101,7 @@ export const createStyles = (c) =>
     groupCard: {
       width: "100%",
       backgroundColor: c.surface,
-      borderRadius: 12,
+      borderRadius: 10,
       borderWidth: 0,
       overflow: "hidden",
     },
@@ -147,7 +147,7 @@ export const createStyles = (c) =>
     extensionBadge: {
       minWidth: 44,
       height: 24,
-      borderRadius: 12,
+      borderRadius: 10,
       paddingHorizontal: 8,
       backgroundColor: c.inputSurface,
       alignItems: "center",

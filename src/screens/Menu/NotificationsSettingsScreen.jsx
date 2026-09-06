@@ -190,7 +190,7 @@ export default function NotificationsSettingsScreen() {
                   onValueChange={(value) => handleToggle(item.key, value)}
                   trackColor={{
                     false: "rgba(5, 45, 80, 0.18)",
-                    true: theme.colors.primary,
+                    true: "#34C759",
                   }}
                   thumbColor="#FFFFFF"
                   ios_backgroundColor="rgba(5, 45, 80, 0.18)"

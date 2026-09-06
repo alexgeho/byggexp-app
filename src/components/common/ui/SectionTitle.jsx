@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize.footnote,
     fontWeight: "700",
-    color: content.textPrimary,
+    color: content.textSecondary, // iOS grouped sub-header = secondaryLabel
     textTransform: "uppercase",
     letterSpacing: 0.4,
     marginBottom: spacing.md,

@@ -56,7 +56,7 @@ export function createStyles(theme) {
     sectionHeaderTitle: {
       // iOS navigational group header (Mail "iCloud"/"Byggexp"): bold black.
       color: "#000000", // iOS label
-      fontSize: 22,
+      fontSize: 20,
       fontWeight: "700",
       fontFamily: theme.text.fontFamily.bold,
     },
@@ -74,7 +74,7 @@ export function createStyles(theme) {
     groupCard: {
       width: "100%",
       backgroundColor: "#FFFFFF", // iOS secondarySystemGroupedBackground
-      borderRadius: 12, // iOS inset-grouped corner radius
+      borderRadius: 10, // iOS inset-grouped corner radius
       overflow: "hidden",
     },
     menuItem: {

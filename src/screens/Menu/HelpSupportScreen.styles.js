@@ -14,7 +14,7 @@ export const createStyles = (c) =>
     heroCard: {
       width: "100%",
       backgroundColor: c.surface,
-      borderRadius: 12,
+      borderRadius: 10,
       borderWidth: 0,
       padding: 20,
       alignItems: "center",
@@ -22,7 +22,7 @@ export const createStyles = (c) =>
     heroIconWrap: {
       width: 72,
       height: 72,
-      borderRadius: 12,
+      borderRadius: 10,
       alignItems: "center",
       justifyContent: "center",
       marginBottom: 16,
@@ -44,7 +44,7 @@ export const createStyles = (c) =>
       flexDirection: "row",
       alignItems: "flex-start",
       backgroundColor: c.surface,
-      borderRadius: 12,
+      borderRadius: 10,
       borderWidth: 0,
       padding: 20,
       gap: 14,

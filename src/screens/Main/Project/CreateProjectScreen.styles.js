@@ -40,7 +40,7 @@ export const createStyles = (c) =>
       textAlign: "center",
     },
     formSectionTitle: {
-      color: c.textPrimary,
+      color: c.textSecondary,
       fontSize: 13,
       fontWeight: "600",
       marginBottom: 8,
@@ -50,7 +50,7 @@ export const createStyles = (c) =>
     groupCard: {
       width: "100%",
       backgroundColor: c.surface,
-      borderRadius: 12,
+      borderRadius: 10,
       overflow: "hidden",
       marginBottom: 20,
       borderWidth: 0,
@@ -92,7 +92,7 @@ export const createStyles = (c) =>
     noteGroup: {
       width: "100%",
       backgroundColor: c.surface,
-      borderRadius: 12,
+      borderRadius: 10,
       paddingHorizontal: 16,
       paddingVertical: 12,
       marginBottom: 28,
@@ -335,7 +335,7 @@ export const createStyles = (c) =>
       width: "100%",
       maxWidth: 360,
       backgroundColor: c.surface,
-      borderRadius: 12,
+      borderRadius: 10,
       padding: 16,
       borderWidth: 0,
     },
@@ -424,7 +424,7 @@ export const createStyles = (c) =>
     workerAvatarPlaceholder: {
       width: 48,
       height: 48,
-      borderRadius: 12,
+      borderRadius: 10,
       backgroundColor: "#D9E3EC",
       alignItems: "center",
       justifyContent: "center",
@@ -474,7 +474,7 @@ export const createStyles = (c) =>
     createButton: {
       backgroundColor: "#0091FF",
       padding: 16,
-      borderRadius: 12,
+      borderRadius: 10,
       alignItems: "center",
       marginBottom: 100,
     },
@@ -643,7 +643,7 @@ export const createStyles = (c) =>
     },
     mapBottomPanel: {
       backgroundColor: "rgba(255, 255, 255, 0.96)",
-      borderRadius: 12,
+      borderRadius: 10,
       paddingHorizontal: 16,
       paddingTop: 16,
       paddingBottom: 14,
@@ -693,7 +693,7 @@ export const createStyles = (c) =>
       minWidth: 78,
       height: 36,
       paddingHorizontal: 12,
-      borderRadius: 12,
+      borderRadius: 10,
       backgroundColor: "rgba(5, 45, 80, 0.05)",
       alignItems: "center",
       justifyContent: "center",

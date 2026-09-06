@@ -835,7 +835,7 @@ export default function CreateTaskScreen() {
               <Switch
                 value={allDay}
                 onValueChange={handleAllDayChange}
-                trackColor={{ false: "#D9E3EC", true: theme.colors.primary }}
+                trackColor={{ false: "#D9E3EC", true: "#34C759" }}
                 thumbColor="#FFFFFF"
               />
             </GroupRow>
@@ -1143,7 +1143,7 @@ export default function CreateTaskScreen() {
                     }
                     trackColor={{
                       false: "#D9E3EC",
-                      true: theme.colors.primary,
+                      true: "#34C759",
                     }}
                     thumbColor="#FFFFFF"
                   />
@@ -1224,7 +1224,7 @@ export default function CreateTaskScreen() {
                       }
                       trackColor={{
                         false: "#D9E3EC",
-                        true: theme.colors.primary,
+                        true: "#34C759",
                       }}
                       thumbColor="#FFFFFF"
                     />

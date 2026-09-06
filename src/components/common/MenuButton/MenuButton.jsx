@@ -23,13 +23,13 @@ export const MenuButton = ({ screen, params, title, icon, isLast = false }) => {
       accessibilityLabel={title}
     >
       <View style={styles.menuIconContainer}>
-        <Icon name={icon} size={22} color={IOS.blue} />
+        <Icon name={icon} size={28} color={IOS.blue} />
       </View>
       {/* Text + chevron carry the separator, so — like iOS — the hairline is
           inset to start at the label, not under the icon. */}
       <View style={[styles.rowRight, !isLast && styles.rowRightDivider]}>
         <Text style={styles.menuTitle}>{title}</Text>
-        <Icon name="chevron-right" size={20} color={IOS.chevron} />
+        <Icon name="chevron-right" size={14} color={IOS.chevron} />
       </View>
     </TouchableOpacity>
   );
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
-    minHeight: 48,
+    minHeight: 44, // iOS standard row height
     backgroundColor: "transparent",
     paddingLeft: 16,
   },
