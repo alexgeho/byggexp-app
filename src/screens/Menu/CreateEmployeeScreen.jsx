@@ -12,6 +12,7 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
+import { AppIcon } from "../../components/common/AppIcon";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AuthContext from "../../contexts/AuthContext";
 import { useFeedback } from "../../contexts/FeedbackContext";
@@ -55,7 +56,7 @@ const parsePhoneFields = (value) => {
 
 const FieldIcon = ({ name, styles }) => (
   <View style={styles.fieldIconBadge}>
-    <Icon name={name} size={28} color="#007AFF" />
+    <AppIcon name={name} size={28} color="#007AFF" strokeWidth={1.5} />
   </View>
 );
 

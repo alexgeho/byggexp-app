@@ -15,6 +15,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import Slider from "@react-native-community/slider";
 import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
+import { AppIcon } from "../../../components/common/AppIcon";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { PersonListItem } from "../../../components/common/PersonListItem/PersonListItem";
@@ -166,7 +167,7 @@ export const FieldIcon = ({
     return <MaterialCommunityIcons name={name} size={s} color={resolved} />;
   }
 
-  return <Icon name={name} size={s} color={resolved} />;
+  return <AppIcon name={name} size={s} color={resolved} strokeWidth={1.5} />;
 };
 
 // isImageDocument / getDocumentTypeMeta now live in utils/documentPreview
