@@ -17,6 +17,35 @@ import { BackButton } from "../../components/common/BackButton/BackButton";
 import { createStyles } from "./MenuScreen.styles";
 import { resolveUploadUrl } from "../../utils/shifts";
 
+// One icon collection for the whole menu (Feather), keyed by item id — replaces
+// the mixed PNG glyphs so every row reads as the same set.
+const MENU_ICONS = {
+  customizeHome: "home",
+  account: "user",
+  notifications: "bell",
+  documents: "file-text",
+  chats: "message-circle",
+  employees: "user-plus",
+  tools: "tool",
+  planning: "calendar",
+  economy: "dollar-sign",
+  tasks: "check-square",
+  shifts: "clock",
+  workShifts: "clock",
+  projects: "folder",
+  offers: "file-text",
+  invoices: "file",
+  clients: "users",
+  articles: "package",
+  company: "briefcase",
+  language: "globe",
+  legal: "shield",
+  guide: "book-open",
+  help: "help-circle",
+  reportBug: "alert-triangle",
+  about: "info",
+};
+
 export default function MenuScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -547,8 +576,7 @@ export default function MenuScreen() {
                       screen={item.screen ? item.screen : "Menu"}
                       params={item.params}
                       title={item.title}
-                      color={item.color}
-                      icon={item.icon}
+                      icon={MENU_ICONS[item.id] || "circle"}
                       isLast={index === section.items.length - 1}
                     />
                   ))}

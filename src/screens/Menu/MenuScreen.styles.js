@@ -10,7 +10,7 @@ export function createStyles(theme) {
   return StyleSheet.create({
     container: {
       ...standardScreenContainer,
-      backgroundColor: c.background,
+      backgroundColor: "#F2F2F7", // iOS systemGroupedBackground (light)
     },
     header: {
       ...standardScreenHeader,
@@ -54,7 +54,7 @@ export function createStyles(theme) {
       paddingHorizontal: 8,
     },
     sectionHeaderTitle: {
-      color: c.textMuted,
+      color: "#6C6C70", // iOS secondaryLabel (grouped section header)
       fontSize: 17,
       fontWeight: "500",
       fontFamily: theme.text.fontFamily.medium,
@@ -62,7 +62,7 @@ export function createStyles(theme) {
     sectionChevron: {
       width: 18,
       height: 18,
-      tintColor: c.textMuted,
+      tintColor: "#C7C7CC", // iOS chevron grey
     },
     settingsSection: {
       marginBottom: 24,
@@ -72,8 +72,8 @@ export function createStyles(theme) {
     },
     groupCard: {
       width: "100%",
-      backgroundColor: c.surface,
-      borderRadius: 24,
+      backgroundColor: "#FFFFFF", // iOS secondarySystemGroupedBackground
+      borderRadius: 12, // iOS inset-grouped corner radius
       overflow: "hidden",
     },
     menuItem: {
