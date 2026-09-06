@@ -30,11 +30,16 @@ export const FieldIcon = ({
   size = 20,
   color = "#052D50",
 }) => {
+  // iOS-style: no filled badge behind the glyph, so a white glyph would vanish —
+  // render it in systemBlue instead, and keep glyphs at a readable size.
+  const isWhite = /^#f{3}$|^#f{6}$/i.test(String(color).replace(/\s/g, ""));
+  const resolved = isWhite ? "#007AFF" : color;
+  const s = size < 22 ? 22 : size;
   if (library === "material-community") {
-    return <MaterialCommunityIcons name={name} size={size} color={color} />;
+    return <MaterialCommunityIcons name={name} size={s} color={resolved} />;
   }
 
-  return <Icon name={name} size={size} color={color} />;
+  return <Icon name={name} size={s} color={resolved} />;
 };
 
 // isImageDocument / getDocumentTypeMeta now live in utils/documentPreview

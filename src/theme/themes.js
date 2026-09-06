@@ -5,7 +5,6 @@ import {
   lightGrayColors,
   colorfulColors,
 } from "./colors";
-import { iconBadgeBackground } from "./colorUtils";
 import {
   spacing as spacingTokens,
   radius as radiusTokens,
@@ -18,7 +17,10 @@ import {
 function withIconBadgeBackground(colors) {
   return {
     ...colors,
-    primaryIconBadge: iconBadgeBackground(colors.primary),
+    // iOS-style rows: no filled pill behind field icons — the glyph sits on the
+    // row (FieldIcon renders it in the accent colour). Kept as a key so existing
+    // `backgroundColor: primaryIconBadge` call sites simply render transparent.
+    primaryIconBadge: "transparent",
   };
 }
 
