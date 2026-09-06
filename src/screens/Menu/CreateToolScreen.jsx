@@ -414,7 +414,6 @@ export default function CreateToolScreen() {
               value={notes}
               onChangeText={setNotes}
               placeholder={t("tools.notesPlaceholder")}
-              multiline
               isLast
             />
           </View>
