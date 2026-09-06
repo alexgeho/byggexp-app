@@ -612,7 +612,7 @@ export default function CreateEmployeeScreen() {
           <View style={styles.groupCard}>
             <SelectRow
               styles={styles}
-              icon="briefcase"
+              icon="folder"
               label={t("createEmployee.addProject")}
               value={selectedProjectsLabel}
               placeholder={
