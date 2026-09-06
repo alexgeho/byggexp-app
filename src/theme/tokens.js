@@ -63,8 +63,8 @@ export const lightContent = {
   background: "#F2F2F7", // systemGroupedBackground
 
   // Lines
-  divider: "#C6C6C8", // opaque separator
-  border: "#C6C6C8",
+  divider: "#C6C6C8", // opaque separator (row dividers)
+  border: "#E5E5EA", // iOS systemGray5 — subtle card / field outline
 
   // Accent — iOS systemBlue.
   accent: "#007AFF",
