@@ -1,4 +1,39 @@
-# 🆕 Сессия 2026-09-06 — фиксы после теста на устройстве (всё в OTA, runtime 1.1.0)
+# 🆕 Сессия 2026-09-06 (вечер) — iOS-редизайн UI + мелкие фичи (всё в OTA, runtime 1.1.0)
+
+Большой заход по «сделать как в iOS 1:1» + мелкие фичи. Всё в `main` + роздано `eas update --branch production`. Само-сверка: поднимал **expo web** (`npx expo start --web`, порт 8081) + Chrome (mcp) и скриншотил сам; Chrome автозаполнил сохранённый логин `svbyggmaleri@gmail.com` — но это **Arbetare (worker)**, админ-экраны (Skapa projekt/Anställd) с него недоступны → для их само-сверки нужен ВХОД АДМИНОМ.
+
+**Палитра/типографика (Apple 1:1):** iOS system colours в `theme.content` (light): label `#000`, secondaryLabel `#6C6C70`, systemGray `#8E8E93`, bg `#F2F2F7`, cards `#FFFFFF`, separator `#C6C6C8`, systemBlue `#007AFF`; border смягчён до `#E5E5EA`. Switch → зелёный `#34C759`. Шрифт → системный **SF** (`fontFamily: "System"` в themes.js + App.js). Спек-таблица в памяти: `reference_ios_palette.md`.
+
+**Иконки:** новый `AppIcon` (react-native-feather поверх react-native-svg) — тонкий штрих 1.5, синие, БЕЗ пилюли-бейджа (`primaryIconBadge`→transparent). Размер 28. **Важный баг-паттерн:** локальные `FieldIcon` рендерили белый глиф на прозрачном бейдже → невидимо; чинил переводом на AppIcon.
+
+**Меню:** сворачиваемые категории (Projekt&arbete / Ekonomi / Inställningar / Information / Support), Ekonomi раскрывает регистры (Offerter/Fakturor/Klienter/Artiklar/Företagsuppgifter, Offerter/Fakturor → EconomyScreen с параметром `mode`). Строки: Feather-глиф 28, инсет-разделители (от текста), заголовки групп bold 22 + синий шеврон.
+
+**Skapa projekt:** Ekonomi/Avtal/Arbetspass вынесены в строки-переходы → внутренние шиты (Modal, стейт в форме). Arbetspass: инлайн-редактирование (компактный time-picker + пилюли), тумблер убран (смена вкл по умолч. 07–16), обед (Lunchavdrag) 0/30/60 дефолт 60, маргинал 0/30 дефолт 30. Инсет-разделители через дочернюю линию (rowSep 16 / rowSepIcon 58) — НЕ marginLeft на строку (иначе overflow/сдвиг).
+
+**Общий `ScreenHeader`** (`components/common/ScreenHeader`) для шитов; **Card** ui → белый без рамки r10; **SectionTitle/FieldInput** лейблы поправлены.
+
+**Anställd/Verktyg:** иконки видны (AppIcon), инсет-разделители в обеих карточках, заголовки рядов заметнее (#6C6C70/600), верхняя карточка получила иконки в рядах; project=folder (отдельно от briefcase/tool); Anteckningar = стандартная высота.
+
+**Язык:** метки на шведском, БЕЗ кириллицы (Ryska/Ukrainska/Bosniska…); + Spanska/Portugisiska/Franska в конце (фолбэк на английский, бандлов нет).
+
+**Guide:** кнопка **«Visa Kom igång igen»** (сброс `home-onboarding-dismissed` + событие `home-onboarding:reopen`) рядом с «Visa introduktionen igen». Само-проверил на web (worker): скрыл→Guide→кнопка→чеклист вернулся ✅.
+
+**Обед в бэкенде:** `shiftSchedule.lunchMinutes` (default 60) добавлен в схему+DTO (ByggExp-BackEnd, авто-деплой). ⚠️ **Вычет из часов/зарплаты НЕ реализован** — поле только сохраняется.
+
+### ⏭️ СЛЕДУЮЩИЕ ШАГИ (эта сессия)
+
+1. **РЕФАКТОРИНГ (главное, обсудили):** сейчас `FieldIcon` дублируется ×4, `PlainFormRow`/`SelectRow` ×2, стили `groupCard/rowSep/rowSepIcon/fieldLabel` скопированы в каждый `.styles.js`. Сделать ОДИН общий набор в `components/common/ui` — `GroupCard`(=Card), `FieldRow`/`SelectRow` (иконка+заголовок+значение/инпут+шеврон+инсет-divider), `Divider` — и мигрировать ВСЕ экраны, удалив локальные копии. Это устранит дрейф/баги.
+2. **Обед → вычет часов/зарплаты** — `hours.service` + `payroll-math` в backend + тесты + паритет с админкой (сейчас поле лежит, но не вычитается). Осторожно (payroll).
+3. **Skapa uppgift: слить назначение в 1 мультивыбор-ячейку** — дефолт вся команда, выбрать 1+ (сейчас 2 взаимоисключающие ячейки personalTaskUser/assignToLabel; учесть worker-flow + submit `assigneeUserId` vs `assigneeIds`).
+4. **magic-login не отдаёт `user.language`** — `generateTokens` в backend не кладёт language → на входе по ссылке админ-язык не применяется.
+5. **Экраны ещё не под общий iOS-стиль:** Skapa uppgift, Shifts, EmployeeProfile, Clients, Artiklar, ChatList, CompanyDetails, Dokument, MyAccount.
+6. **Локализовать инлайн-дефолты** в 11 языков: `economy.registers`("Register"), `createProject.workHoursShort`("Arbetspass"), `createProject.lunchDeduction`("Lunchavdrag"), `guide.replayChecklist`.
+7. **Само-сверка админ-экранов:** нужен вход админом в expo web (worker-аккаунт не видит их).
+8. Тёмная тема iOS-палитры (сейчас захардкожены light-значения в меню/шитах).
+
+---
+
+# 🆕 Сессия 2026-09-06 (день) — фиксы после теста на устройстве (всё в OTA, runtime 1.1.0)
 
 Диагностика с реального iPhone (idevicesyslog/idevicecrashreport через libimobiledevice; Developer Mode на телефоне ВЫКЛ, поэтому devicectl к процессам не пускает). iOS уже LIVE в App Store (ByggExp, by Alexander Gerhard).
 
