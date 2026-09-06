@@ -56,9 +56,9 @@ describe("createDefaultShiftSchedule / buildShiftSchedulePayload", () => {
       enabled: false,
       workDayStartTime: "07:00",
       workDayEndTime: "16:00",
-      startGraceMinutes: 20,
-      endGraceMinutes: 20,
-      lunchMinutes: 30,
+      startGraceMinutes: 30,
+      endGraceMinutes: 30,
+      lunchMinutes: 60,
       timezone: DEFAULT_SHIFT_TIMEZONE,
     });
   });
@@ -77,8 +77,8 @@ describe("createDefaultShiftSchedule / buildShiftSchedulePayload", () => {
       workDayStartTime: "07:00",
       workDayEndTime: "16:00",
       startGraceMinutes: 15,
-      endGraceMinutes: 20,
-      lunchMinutes: 30,
+      endGraceMinutes: 30,
+      lunchMinutes: 60,
       timezone: DEFAULT_SHIFT_TIMEZONE,
     });
   });
