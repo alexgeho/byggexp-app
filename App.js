@@ -27,7 +27,7 @@ import { loadStoredLanguage } from "./src/i18n";
 // Start crash reporting as early as possible (no-op without a DSN).
 initSentry();
 
-const defaultTextStyle = { fontFamily: "DMSans-Regular" };
+const defaultTextStyle = { fontFamily: "System" };
 
 const mergeDefaultStyle = (currentStyle) => {
   if (Array.isArray(currentStyle)) {

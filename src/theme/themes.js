@@ -47,11 +47,13 @@ const common = {
   content: contentTokens,
 
   text: {
+    // iOS system font (San Francisco). "System" → SF on iOS / Roboto on Android;
+    // weight comes from each style's fontWeight (paired below via typography).
     fontFamily: {
-      regular: "DMSans-Regular",
-      medium: "DMSans-Medium",
-      semiBold: "DMSans-SemiBold",
-      bold: "DMSans-Bold",
+      regular: "System",
+      medium: "System",
+      semiBold: "System",
+      bold: "System",
     },
 
     sizes: {
