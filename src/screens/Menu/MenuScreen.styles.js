@@ -54,15 +54,16 @@ export function createStyles(theme) {
       paddingHorizontal: 8,
     },
     sectionHeaderTitle: {
-      color: "#6C6C70", // iOS secondaryLabel (grouped section header)
-      fontSize: 17,
-      fontWeight: "500",
-      fontFamily: theme.text.fontFamily.medium,
+      // iOS navigational group header (Mail "iCloud"/"Byggexp"): bold black.
+      color: "#000000", // iOS label
+      fontSize: 22,
+      fontWeight: "700",
+      fontFamily: theme.text.fontFamily.bold,
     },
     sectionChevron: {
-      width: 18,
-      height: 18,
-      tintColor: "#C7C7CC", // iOS chevron grey
+      width: 20,
+      height: 20,
+      tintColor: "#007AFF", // iOS systemBlue chevron
     },
     settingsSection: {
       marginBottom: 24,
