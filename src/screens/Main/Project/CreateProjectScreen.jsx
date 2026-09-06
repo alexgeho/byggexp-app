@@ -11,7 +11,9 @@ import {
   Animated,
   Switch,
   Keyboard,
+  Modal,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../../../theme/ThemeContext";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
@@ -107,6 +109,7 @@ export default function CreateProjectScreen() {
   const { resolveAddress, cacheAddress } = useReverseGeocode();
   const [beginningDate, setBeginningDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [showEconomySheet, setShowEconomySheet] = useState(false);
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const defaultShiftSchedule = createDefaultShiftSchedule();
@@ -1266,30 +1269,113 @@ export default function CreateProjectScreen() {
           </View>
 
           {canSeeFinance ? (
-            <EconomySection
-              budget={budget}
-              setBudget={setBudget}
-              plannedHours={plannedHours}
-              setPlannedHours={setPlannedHours}
-              plannedMaterialsCost={plannedMaterialsCost}
-              setPlannedMaterialsCost={setPlannedMaterialsCost}
-              spentMaterialsCost={spentMaterialsCost}
-              setSpentMaterialsCost={setSpentMaterialsCost}
-              costRatePerHour={costRatePerHour}
-              setCostRatePerHour={setCostRatePerHour}
-              billRatePerHour={billRatePerHour}
-              setBillRatePerHour={setBillRatePerHour}
-            />
-          ) : null}
+            <View style={styles.groupCard}>
+              <TouchableOpacity
+                style={[styles.locationField, styles.groupedField]}
+                onPress={() => setShowEconomySheet(true)}
+                activeOpacity={0.85}
+              >
+                <View style={styles.locationFieldContent}>
+                  <View style={styles.locationFieldIconContainer}>
+                    <FieldIcon name="dollar-sign" color="#007AFF" />
+                  </View>
+                  <Text
+                    style={[
+                      styles.locationFieldText,
+                      styles.locationFieldPlaceholder,
+                    ]}
+                  >
+                    {t("createProject.economySection")}
+                  </Text>
+                </View>
+                <Icon
+                  name="chevron-right"
+                  size={18}
+                  color={theme.content.textPrimary}
+                />
+              </TouchableOpacity>
 
-          <ContractSection
-            contractNumber={contractNumber}
-            setContractNumber={setContractNumber}
-            littera={littera}
-            setLittera={setLittera}
-          />
+              <View style={styles.rowSepIcon} />
+
+              <TouchableOpacity
+                style={[
+                  styles.locationField,
+                  styles.groupedField,
+                  styles.groupRowLast,
+                ]}
+                onPress={() => setShowEconomySheet(true)}
+                activeOpacity={0.85}
+              >
+                <View style={styles.locationFieldContent}>
+                  <View style={styles.locationFieldIconContainer}>
+                    <FieldIcon name="file-text" color="#007AFF" />
+                  </View>
+                  <Text
+                    style={[
+                      styles.locationFieldText,
+                      styles.locationFieldPlaceholder,
+                    ]}
+                  >
+                    {t("createProject.contractSection")}
+                  </Text>
+                </View>
+                <Icon
+                  name="chevron-right"
+                  size={18}
+                  color={theme.content.textPrimary}
+                />
+              </TouchableOpacity>
+            </View>
+          ) : null}
         </ScrollView>
       </View>
+
+      <Modal
+        visible={showEconomySheet}
+        animationType="slide"
+        onRequestClose={() => setShowEconomySheet(false)}
+      >
+        <SafeAreaView style={styles.sheetContainer}>
+          <View style={styles.header}>
+            <BackButton
+              onPress={() => setShowEconomySheet(false)}
+              iconSource={require("../../../assets/Arrow-left.png")}
+            />
+            <Text style={styles.headerTitle}>
+              {t("createProject.economySection")}
+            </Text>
+            <View style={styles.placeholder} />
+          </View>
+          <ScrollView
+            contentContainerStyle={styles.sheetContent}
+            keyboardShouldPersistTaps="handled"
+          >
+            {canSeeFinance ? (
+              <EconomySection
+                budget={budget}
+                setBudget={setBudget}
+                plannedHours={plannedHours}
+                setPlannedHours={setPlannedHours}
+                plannedMaterialsCost={plannedMaterialsCost}
+                setPlannedMaterialsCost={setPlannedMaterialsCost}
+                spentMaterialsCost={spentMaterialsCost}
+                setSpentMaterialsCost={setSpentMaterialsCost}
+                costRatePerHour={costRatePerHour}
+                setCostRatePerHour={setCostRatePerHour}
+                billRatePerHour={billRatePerHour}
+                setBillRatePerHour={setBillRatePerHour}
+              />
+            ) : null}
+
+            <ContractSection
+              contractNumber={contractNumber}
+              setContractNumber={setContractNumber}
+              littera={littera}
+              setLittera={setLittera}
+            />
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
 
       <ProjectDatePickerModal
         showStart={showStartDatePicker}

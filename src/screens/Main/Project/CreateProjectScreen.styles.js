@@ -55,6 +55,14 @@ export const createStyles = (c) =>
       marginBottom: 20,
       borderWidth: 0,
     },
+    sheetContainer: {
+      flex: 1,
+      backgroundColor: c.background,
+    },
+    sheetContent: {
+      padding: 16,
+      paddingBottom: 60,
+    },
     groupedField: {
       backgroundColor: "transparent",
       borderRadius: 0,
