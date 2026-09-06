@@ -88,9 +88,9 @@ export const createStyles = (c) =>
       borderColor: c.border,
     },
     groupRow: {
-      minHeight: 60,
+      minHeight: 72,
       paddingHorizontal: 16,
-      paddingVertical: 10,
+      paddingVertical: 14,
       borderBottomWidth: 1,
       borderBottomColor: c.divider,
       flexDirection: "row",
@@ -121,8 +121,8 @@ export const createStyles = (c) =>
     },
     rowLabel: {
       color: c.textMuted,
-      fontSize: 12,
-      marginBottom: 2,
+      fontSize: 13,
+      marginBottom: 6,
     },
     rowValue: {
       color: c.textPrimary,
