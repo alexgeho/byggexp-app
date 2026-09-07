@@ -56,8 +56,8 @@ export function createStyles() {
     // each a compact illustration + heading + body so both fit on one screen.
     slidePair: {
       justifyContent: "center",
-      paddingTop: 16,
-      gap: 20,
+      paddingTop: 12,
+      gap: 28,
     },
     pairCard: {
       width: "100%",
@@ -67,14 +67,14 @@ export function createStyles() {
       gap: 6,
     },
     pairHero: {
-      height: 154,
+      height: 128,
       alignItems: "center",
       justifyContent: "center",
     },
     pairTitle: {
       color: NAVY,
-      fontSize: 20,
-      lineHeight: 26,
+      fontSize: 21,
+      lineHeight: 28,
       fontWeight: "800",
       letterSpacing: -0.3,
       textAlign: "center",

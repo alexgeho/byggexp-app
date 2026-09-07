@@ -50,9 +50,10 @@ export function canManageEmployees(role) {
   return hasRole(role, MANAGEMENT_ROLES);
 }
 
-/** Create projects — backend: SuperAdmin, CompanyAdmin only */
+/** Create projects — everyone except plain workers (backend: SuperAdmin,
+ * CompanyAdmin, ProjectAdmin). */
 export function canCreateProjects(role) {
-  return hasRole(role, [USER_ROLES.SUPERADMIN, USER_ROLES.COMPANY_ADMIN]);
+  return hasRole(role, MANAGEMENT_ROLES);
 }
 
 /** Update projects, workers, project documents — backend includes ProjectAdmin */

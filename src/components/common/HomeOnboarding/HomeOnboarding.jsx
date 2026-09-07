@@ -148,12 +148,11 @@ export function HomeOnboarding({
               <Text style={styles.subtitle}>{subtitle}</Text>
               <Text style={styles.title}>{headerTitle}</Text>
             </>
-          ) : (
-            <>
-              <Text style={styles.title}>{headerTitle}</Text>
-              {!single ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
-            </>
-          )}
+          ) : // Step 2 (focused checklist): the "Kom igång" title is redundant —
+          // show only the progress line.
+          !single ? (
+            <Text style={styles.subtitle}>{subtitle}</Text>
+          ) : null}
         </View>
 
         <TouchableOpacity

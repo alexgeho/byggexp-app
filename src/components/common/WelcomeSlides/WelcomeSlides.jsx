@@ -199,28 +199,25 @@ export function WelcomeSlides() {
           return (
             <View style={[styles.slide, two && styles.slidePair, { width }]}>
               {page.map((s) => {
-                // Some roles (admin) add a supporting sentence under the
-                // heading; workers use the sentence-as-heading style, no body.
-                const body = t(`welcome.${roleKey}.slide.${s.key}.text`, {
-                  defaultValue: "",
-                });
+                // Sentence-as-heading everywhere: no separate short title. Admin
+                // slides carry the full benefit sentence in `.text`; workers put
+                // it in `.title`. Whichever exists is shown in the heading style.
+                const text =
+                  t(`welcome.${roleKey}.slide.${s.key}.text`, {
+                    defaultValue: "",
+                  }) || t(`welcome.${roleKey}.slide.${s.key}.title`);
                 return (
                   <View key={s.key} style={two ? styles.pairCard : styles.card}>
                     <View style={two ? styles.pairHero : styles.hero}>
                       <SvgXml
                         xml={valueIllustration(s.illustration)}
-                        width={two ? 200 : 317}
-                        height={two ? 154 : 244}
+                        width={two ? 165 : 317}
+                        height={two ? 127 : 244}
                       />
                     </View>
                     <Text style={two ? styles.pairTitle : styles.title}>
-                      {t(`welcome.${roleKey}.slide.${s.key}.title`)}
+                      {text}
                     </Text>
-                    {body ? (
-                      <Text style={two ? styles.pairBody : styles.body}>
-                        {body}
-                      </Text>
-                    ) : null}
                   </View>
                 );
               })}

@@ -612,10 +612,20 @@ export const createStyles = (c) =>
       textAlign: "center",
       marginBottom: 32,
     },
+    backButton: {
+      backgroundColor: c.accent,
+      paddingVertical: 15,
+      paddingHorizontal: 40,
+      borderRadius: 999,
+      alignItems: "center",
+      justifyContent: "center",
+      alignSelf: "stretch",
+    },
     backButtonText: {
       color: "#ffffff",
-      fontSize: 16,
-      fontWeight: "600",
+      fontSize: 17,
+      fontWeight: "700",
+      textAlign: "center",
     },
     mapModalScreen: {
       flex: 1,

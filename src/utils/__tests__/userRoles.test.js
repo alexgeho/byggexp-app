@@ -10,10 +10,10 @@ import {
 } from "../userRoles";
 
 describe("userRoles permissions", () => {
-  it("only superadmin/companyAdmin can create projects", () => {
+  it("every role except plain workers can create projects", () => {
     expect(canCreateProjects(USER_ROLES.SUPERADMIN)).toBe(true);
     expect(canCreateProjects(USER_ROLES.COMPANY_ADMIN)).toBe(true);
-    expect(canCreateProjects(USER_ROLES.PROJECT_ADMIN)).toBe(false);
+    expect(canCreateProjects(USER_ROLES.PROJECT_ADMIN)).toBe(true);
     expect(canCreateProjects(USER_ROLES.WORKER)).toBe(false);
   });
 
