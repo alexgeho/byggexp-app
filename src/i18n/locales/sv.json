@@ -1340,13 +1340,28 @@
     "admin": {
       "slide": {
         "1": {
-          "title": "Skapa projekt, bjud in teamet och se i realtid vem som jobbar var."
+          "title": "Projekt & team på minuter",
+          "text": "Skapa ett projekt och lägg till anställda. Alla får direkt ett mejl med inloggning och en länk för att ladda ner appen."
         },
         "2": {
-          "title": "Tilldela uppgifter med påminnelser — foton och kvitton fästs automatiskt på rätt projekt."
+          "title": "Se personalen i realtid",
+          "text": "Vem har startat sitt arbetspass, vem är frånvarande och var — allt syns direkt."
         },
         "3": {
-          "title": "Projektets ekonomi live i mobilen — exportera arbetstid till faktura eller lön på ett par klick."
+          "title": "Tid → lön & faktura",
+          "text": "Exportera arbetstid till Excel med ett par klick — eller direkt till en faktura eller lön."
+        },
+        "4": {
+          "title": "Uppgifter som inte glöms",
+          "text": "Automatiska påminnelser skickas efter deadline tills den anställde bekräftar att uppgiften är klar."
+        },
+        "5": {
+          "title": "Foton & kvitton",
+          "text": "Fotorapporter från arbetsplatsen och kvitton skannas av appen — direkt in i systemet. Ta bilden och glöm resten."
+        },
+        "6": {
+          "title": "Ekonomi på autopilot",
+          "text": "Skannade kvitton, arbetstimmar och skickade/mottagna fakturor räknas automatiskt in i projektets ekonomi."
         }
       }
     }

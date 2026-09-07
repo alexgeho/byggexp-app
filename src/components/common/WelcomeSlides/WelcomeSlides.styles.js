@@ -61,6 +61,16 @@ export function createStyles() {
       textAlign: "center",
       marginTop: 2,
     },
+    // Supporting sentence under the heading (admin slides). Worker slides don't
+    // set a body, so this only shows where copy provides one.
+    body: {
+      color: MUTED,
+      fontSize: 16,
+      lineHeight: 23,
+      fontWeight: "500",
+      textAlign: "center",
+      marginTop: -4,
+    },
     dots: {
       flexDirection: "row",
       justifyContent: "center",

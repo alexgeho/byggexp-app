@@ -1340,13 +1340,28 @@
     "admin": {
       "slide": {
         "1": {
-          "title": "Twórz projekty, zapraszaj zespół i widz w czasie rzeczywistym, kto gdzie pracuje."
+          "title": "Projekt i zespół w kilka minut",
+          "text": "Utwórz projekt i dodaj pracowników. Każdy od razu otrzyma e-mail z danymi logowania i linkiem do pobrania aplikacji."
         },
         "2": {
-          "title": "Przydzielaj zadania z przypomnieniami — zdjęcia i paragony dołączają się automatycznie do właściwego projektu."
+          "title": "Zobacz zespół w czasie rzeczywistym",
+          "text": "Kto rozpoczął zmianę, kto jest nieobecny i gdzie — wszystko widać od razu."
         },
         "3": {
-          "title": "Finanse projektu na żywo w telefonie — eksportuj czas pracy do faktury lub listy płac w kilka dotknięć."
+          "title": "Czas → wypłata i faktura",
+          "text": "Eksportuj czas pracy do Excela w kilka kliknięć — albo prosto na fakturę lub listę płac."
+        },
+        "4": {
+          "title": "Zadania, o których nie zapomnisz",
+          "text": "Automatyczne przypomnienia są wysyłane po terminie, aż pracownik potwierdzi wykonanie zadania."
+        },
+        "5": {
+          "title": "Zdjęcia i paragony",
+          "text": "Raporty zdjęciowe z placu budowy i paragony są skanowane przez aplikację — prosto do systemu. Zrób zdjęcie i zapomnij o reszcie."
+        },
+        "6": {
+          "title": "Finanse na autopilocie",
+          "text": "Zeskanowane paragony, godziny pracy oraz wysłane/otrzymane faktury są automatycznie dodawane do finansów projektu."
         }
       }
     }

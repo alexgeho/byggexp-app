@@ -56,12 +56,16 @@ const SLIDES_BY_ROLE = {
     { key: "3", illustration: "projects" },
     { key: "4", illustration: "photos" },
   ],
-  // Admin: same style as worker — one benefit sentence per slide in the title
-  // (heading) style, no bullets.
+  // Admin: a fuller 6-slide pitch — each slide has a short title (heading) plus
+  // a supporting sentence (body), covering the whole product loop the owner
+  // cares about: team, live status, time→money, tasks, photos/receipts, economy.
   admin: [
-    { key: "1", illustration: "adminTeam" },
-    { key: "2", illustration: "tasks" },
-    { key: "3", illustration: "adminEconomy" },
+    { key: "1", illustration: "projects" },
+    { key: "2", illustration: "adminTeam" },
+    { key: "3", illustration: "worker" },
+    { key: "4", illustration: "tasks" },
+    { key: "5", illustration: "photos" },
+    { key: "6", illustration: "adminEconomy" },
   ],
 };
 
@@ -182,22 +186,30 @@ export function WelcomeSlides() {
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         onMomentumScrollEnd={onScrollEnd}
-        renderItem={({ item }) => (
-          <View style={[styles.slide, { width }]}>
-            <View style={styles.card}>
-              <View style={styles.hero}>
-                <SvgXml
-                  xml={valueIllustration(item.illustration)}
-                  width={317}
-                  height={244}
-                />
+        renderItem={({ item }) => {
+          // Some roles (admin) add a supporting sentence under the heading;
+          // others (worker) use the sentence-as-heading style with no body.
+          const body = t(`welcome.${roleKey}.slide.${item.key}.text`, {
+            defaultValue: "",
+          });
+          return (
+            <View style={[styles.slide, { width }]}>
+              <View style={styles.card}>
+                <View style={styles.hero}>
+                  <SvgXml
+                    xml={valueIllustration(item.illustration)}
+                    width={317}
+                    height={244}
+                  />
+                </View>
+                <Text style={styles.title}>
+                  {t(`welcome.${roleKey}.slide.${item.key}.title`)}
+                </Text>
+                {body ? <Text style={styles.body}>{body}</Text> : null}
               </View>
-              <Text style={styles.title}>
-                {t(`welcome.${roleKey}.slide.${item.key}.title`)}
-              </Text>
             </View>
-          </View>
-        )}
+          );
+        }}
       />
 
       {slides.length > 1 ? (

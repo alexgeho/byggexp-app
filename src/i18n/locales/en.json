@@ -1340,13 +1340,28 @@
     "admin": {
       "slide": {
         "1": {
-          "title": "Create projects, invite your team and see in real time who works where."
+          "title": "Projects & team in minutes",
+          "text": "Create a project and add employees. Everyone instantly gets an email with login details and a link to download the app."
         },
         "2": {
-          "title": "Assign tasks with reminders — photos and receipts attach to the right project automatically."
+          "title": "See your crew in real time",
+          "text": "Who has started their shift, who's absent and where — it's all visible instantly."
         },
         "3": {
-          "title": "Project finances live on your phone — export work time to invoice or payroll in a couple of taps."
+          "title": "Time → payroll & invoice",
+          "text": "Export work time to Excel in a couple of taps — or straight to an invoice or payroll."
+        },
+        "4": {
+          "title": "Tasks that never slip",
+          "text": "Automatic reminders are sent after the deadline until the employee confirms the task is done."
+        },
+        "5": {
+          "title": "Photos & receipts",
+          "text": "Site photo reports and receipts are scanned by the app — straight into the system. Snap it and forget the rest."
+        },
+        "6": {
+          "title": "Finances on autopilot",
+          "text": "Scanned receipts, work hours and sent/received invoices are automatically added to the project's finances."
         }
       }
     }

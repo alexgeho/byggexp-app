@@ -1340,13 +1340,28 @@
     "admin": {
       "slide": {
         "1": {
-          "title": "Kurkite projektus, kvieskite komandą ir matykite realiu laiku, kas kur dirba."
+          "title": "Projektas ir komanda per minutes",
+          "text": "Sukurkite projektą ir pridėkite darbuotojus. Kiekvienas iškart gaus el. laišką su prisijungimo duomenimis ir nuoroda programėlei atsisiųsti."
         },
         "2": {
-          "title": "Priskirkite užduotis su priminimais — nuotraukos ir kvitai automatiškai susiejami su tinkamu projektu."
+          "title": "Matykite komandą realiuoju laiku",
+          "text": "Kas pradėjo pamainą, kas nedirba ir kur — viskas matoma iškart."
         },
         "3": {
-          "title": "Projekto finansai gyvai telefone — eksportuokite darbo laiką į sąskaitą ar atlyginimą keliais paspaudimais."
+          "title": "Laikas → atlyginimas ir sąskaita",
+          "text": "Eksportuokite darbo laiką į Excel keliais paspaudimais — arba tiesiai į sąskaitą ar atlyginimą."
+        },
+        "4": {
+          "title": "Užduotys, kurių nepamiršite",
+          "text": "Automatiniai priminimai siunčiami pasibaigus terminui, kol darbuotojas patvirtina, kad užduotis atlikta."
+        },
+        "5": {
+          "title": "Nuotraukos ir kvitai",
+          "text": "Objekto nuotraukų ataskaitas ir kvitus nuskaito programėlė — tiesiai į sistemą. Nufotografuokite ir pamirškite kita."
+        },
+        "6": {
+          "title": "Finansai automatiniu režimu",
+          "text": "Nuskaityti kvitai, darbo valandos ir išsiųstos/gautos sąskaitos automatiškai įtraukiami į projekto finansus."
         }
       }
     }

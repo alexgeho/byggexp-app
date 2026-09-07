@@ -1340,13 +1340,28 @@
     "admin": {
       "slide": {
         "1": {
-          "title": "Kreirajte projekte, pozovite svoj tim i vidite u realnom vremenu ko gdje radi."
+          "title": "Projekt i tim za nekoliko minuta",
+          "text": "Kreirajte projekt i dodajte zaposlenike. Svako odmah dobije e-mail s podacima za prijavu i linkom za preuzimanje aplikacije."
         },
         "2": {
-          "title": "Dodjeljujte zadatke s podsjetnicima — fotografije i računi automatski se povezuju s pravim projektom."
+          "title": "Vidite ekipu u realnom vremenu",
+          "text": "Ko je započeo smjenu, ko je odsutan i gdje — sve se vidi odmah."
         },
         "3": {
-          "title": "Finansije projekta uživo na telefonu — izvezite radno vrijeme za fakturu ili plaću u par dodira."
+          "title": "Vrijeme → plata i faktura",
+          "text": "Izvezite radno vrijeme u Excel u par klikova — ili direktno u fakturu ili platu."
+        },
+        "4": {
+          "title": "Zadaci koji se ne zaboravljaju",
+          "text": "Automatski podsjetnici se šalju nakon roka dok zaposlenik ne potvrdi da je zadatak završen."
+        },
+        "5": {
+          "title": "Fotografije i računi",
+          "text": "Foto izvještaji s gradilišta i računi se skeniraju aplikacijom — direktno u sistem. Slikajte i zaboravite ostalo."
+        },
+        "6": {
+          "title": "Finansije na autopilotu",
+          "text": "Skenirani računi, radni sati i poslane/primljene fakture automatski se dodaju u finansije projekta."
         }
       }
     }

@@ -1340,13 +1340,28 @@
     "admin": {
       "slide": {
         "1": {
-          "title": "Izveidojiet projektus, uzaiciniet komandu un reāllaikā redziet, kurš kur strādā."
+          "title": "Projekts un komanda dažās minūtēs",
+          "text": "Izveidojiet projektu un pievienojiet darbiniekus. Katrs uzreiz saņem e-pastu ar pieteikšanās datiem un saiti lietotnes lejupielādei."
         },
         "2": {
-          "title": "Piešķiriet uzdevumus ar atgādinājumiem — fotoattēli un čeki automātiski piesaistās pareizajam projektam."
+          "title": "Redziet komandu reāllaikā",
+          "text": "Kurš ir sācis maiņu, kurš ir prombūtnē un kur — viss redzams uzreiz."
         },
         "3": {
-          "title": "Projekta finanses tieši jūsu tālrunī — eksportējiet darba laiku uz rēķinu vai algu ar dažiem pieskārieniem."
+          "title": "Laiks → alga un rēķins",
+          "text": "Eksportējiet darba laiku uz Excel ar dažiem klikšķiem — vai uzreiz rēķinā vai algā."
+        },
+        "4": {
+          "title": "Uzdevumi, kas netiek aizmirsti",
+          "text": "Automātiski atgādinājumi tiek sūtīti pēc termiņa, līdz darbinieks apstiprina, ka uzdevums ir pabeigts."
+        },
+        "5": {
+          "title": "Fotoattēli un čeki",
+          "text": "Objekta foto atskaites un čekus skenē lietotne — tieši sistēmā. Uzņemiet foto un aizmirstiet pārējo."
+        },
+        "6": {
+          "title": "Finanses uz autopilota",
+          "text": "Skenētie čeki, darba stundas un nosūtītie/saņemtie rēķini tiek automātiski iekļauti projekta finansēs."
         }
       }
     }

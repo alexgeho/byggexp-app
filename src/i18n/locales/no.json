@@ -1340,13 +1340,28 @@
     "admin": {
       "slide": {
         "1": {
-          "title": "Opprett prosjekter, inviter teamet og se i sanntid hvem som jobber hvor."
+          "title": "Prosjekt og team på minutter",
+          "text": "Opprett et prosjekt og legg til ansatte. Alle får umiddelbart en e-post med innlogging og en lenke for å laste ned appen."
         },
         "2": {
-          "title": "Tildel oppgaver med påminnelser — bilder og kvitteringer festes automatisk til riktig prosjekt."
+          "title": "Se personalen i sanntid",
+          "text": "Hvem har startet vakten sin, hvem er fraværende og hvor — alt vises umiddelbart."
         },
         "3": {
-          "title": "Prosjektets økonomi live på mobilen — eksporter arbeidstid til faktura eller lønn med et par trykk."
+          "title": "Tid → lønn og faktura",
+          "text": "Eksporter arbeidstid til Excel med et par klikk — eller rett til en faktura eller lønn."
+        },
+        "4": {
+          "title": "Oppgaver som ikke glemmes",
+          "text": "Automatiske påminnelser sendes etter fristen til den ansatte bekrefter at oppgaven er ferdig."
+        },
+        "5": {
+          "title": "Bilder og kvitteringer",
+          "text": "Bilderapporter fra arbeidsplassen og kvitteringer skannes av appen — rett inn i systemet. Ta bildet og glem resten."
+        },
+        "6": {
+          "title": "Økonomi på autopilot",
+          "text": "Skannede kvitteringer, arbeidstimer og sendte/mottatte fakturaer legges automatisk inn i prosjektets økonomi."
         }
       }
     }

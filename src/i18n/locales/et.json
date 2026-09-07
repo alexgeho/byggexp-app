@@ -1340,13 +1340,28 @@
     "admin": {
       "slide": {
         "1": {
-          "title": "Loo projekte, kutsu oma meeskond ja näe reaalajas, kes kus töötab."
+          "title": "Projekt ja meeskond minutitega",
+          "text": "Loo projekt ja lisa töötajad. Igaüks saab kohe e-kirja sisselogimisandmete ja rakenduse allalaadimise lingiga."
         },
         "2": {
-          "title": "Määra ülesandeid meeldetuletustega — fotod ja kviitungid lisatakse automaatselt õigele projektile."
+          "title": "Näe meeskonda reaalajas",
+          "text": "Kes on vahetuse alustanud, kes on puudu ja kus — kõik on kohe näha."
         },
         "3": {
-          "title": "Projekti finantsid otse su telefonis — ekspordi tööaeg arvele või palgaarvestusse paari puudutusega."
+          "title": "Aeg → palk ja arve",
+          "text": "Ekspordi tööaeg Excelisse paari klikiga — või otse arvele või palgale."
+        },
+        "4": {
+          "title": "Ülesanded, mis ei unune",
+          "text": "Automaatsed meeldetuletused saadetakse pärast tähtaega, kuni töötaja kinnitab ülesande tehtuks."
+        },
+        "5": {
+          "title": "Fotod ja kviitungid",
+          "text": "Objekti fotoraportid ja kviitungid skaneerib rakendus — otse süsteemi. Tee pilt ja unusta ülejäänu."
+        },
+        "6": {
+          "title": "Rahandus autopiloodil",
+          "text": "Skaneeritud kviitungid, töötunnid ja saadetud/saadud arved lisatakse automaatselt projekti rahandusse."
         }
       }
     }

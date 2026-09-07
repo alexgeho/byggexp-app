@@ -1340,13 +1340,28 @@
     "admin": {
       "slide": {
         "1": {
-          "title": "Luo projekteja, kutsu tiimisi ja näe reaaliajassa kuka työskentelee missäkin."
+          "title": "Projekti ja tiimi minuuteissa",
+          "text": "Luo projekti ja lisää työntekijät. Jokainen saa heti sähköpostin kirjautumistiedoilla ja linkin sovelluksen lataamiseen."
         },
         "2": {
-          "title": "Määrää tehtäviä muistutuksilla — kuvat ja kuitit kiinnittyvät oikeaan projektiin automaattisesti."
+          "title": "Näe tiimi reaaliajassa",
+          "text": "Kuka on aloittanut työvuoronsa, kuka on poissa ja missä — kaikki näkyy heti."
         },
         "3": {
-          "title": "Projektin talous live puhelimessasi — vie työaika laskutukseen tai palkanmaksuun parilla napautuksella."
+          "title": "Aika → palkka ja lasku",
+          "text": "Vie työaika Exceliin parilla klikkauksella — tai suoraan laskuun tai palkkaan."
+        },
+        "4": {
+          "title": "Tehtävät, jotka eivät unohdu",
+          "text": "Automaattiset muistutukset lähetetään määräajan jälkeen, kunnes työntekijä vahvistaa tehtävän valmiiksi."
+        },
+        "5": {
+          "title": "Valokuvat ja kuitit",
+          "text": "Työmaan valokuvaraportit ja kuitit skannataan sovelluksella — suoraan järjestelmään. Ota kuva ja unohda loput."
+        },
+        "6": {
+          "title": "Talous autopilotilla",
+          "text": "Skannatut kuitit, työtunnit ja lähetetyt/vastaanotetut laskut lisätään automaattisesti projektin talouteen."
         }
       }
     }
