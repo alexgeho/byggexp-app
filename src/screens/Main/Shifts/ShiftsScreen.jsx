@@ -1119,7 +1119,12 @@ export default function ShiftsScreen() {
         )}
       </View>
 
-      {loading ? (
+      {/* Only block the whole screen on the FIRST load (no data yet). On every
+          later focus useShiftHistory re-fetches and flips loading=true again —
+          if we hid everything then, the calendar would blank out and "reappear"
+          each time. Keep the (local) calendar visible and let data refresh in
+          place instead. */}
+      {loading && !days.length ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#0088FF" />
         </View>
