@@ -145,8 +145,12 @@ export function HomeOnboarding({
         <View style={styles.headerText}>
           {needsFocus ? (
             <>
-              <Text style={styles.subtitle}>{subtitle}</Text>
-              <Text style={styles.title}>{headerTitle}</Text>
+              <Text style={[styles.subtitle, styles.focusText]}>
+                {subtitle}
+              </Text>
+              <Text style={[styles.title, styles.focusText]}>
+                {headerTitle}
+              </Text>
             </>
           ) : // Step 2 (focused checklist): the "Kom igång" title is redundant —
           // show only the progress line.

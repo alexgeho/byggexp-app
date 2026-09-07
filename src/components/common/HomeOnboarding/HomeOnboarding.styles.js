@@ -40,6 +40,13 @@ export function createStyles(theme) {
       fontSize: 13,
       fontFamily: theme.text.fontFamily.regular,
     },
+    // On the routing (needsFocus) card every text is the SAME size (16) — only
+    // the colour/weight differ. Applied on top of title/subtitle to override
+    // their default sizes there without touching the other states.
+    focusText: {
+      fontSize: 16,
+      lineHeight: 22,
+    },
     progressTrack: {
       height: 6,
       borderRadius: 999,
@@ -139,13 +146,13 @@ export function createStyles(theme) {
       backgroundColor: c.accentSoft,
     },
     focusBtnText: {
-      fontSize: 15,
+      fontSize: 16,
       fontFamily: theme.text.fontFamily.semiBold,
     },
     focusSkip: {
       textAlign: "center",
       color: c.textMuted,
-      fontSize: 14,
+      fontSize: 16,
       fontFamily: theme.text.fontFamily.medium,
       paddingVertical: 4,
     },
