@@ -19,68 +19,13 @@ import {
 } from "../../utils/userRoles";
 import { statusBadgeFor } from "../../utils/workerStatusBadge";
 import { getEntityId } from "../../utils/entityId";
+import {
+  buildProjectNameById,
+  getPersonProjectLabel,
+} from "../../utils/personProjectLabel";
 import { getApiErrorMessage } from "../../utils/apiError";
 
 const getUserId = (employee) => employee?._id || employee?.id;
-
-const buildProjectNameById = (projects) => {
-  const map = new Map();
-
-  projects.forEach((project) => {
-    const id = getEntityId(project);
-    if (id && project?.name) {
-      map.set(id, project.name);
-    }
-  });
-
-  return map;
-};
-
-const getEmployeeProjectIds = (employee, projects) => {
-  const ids = new Set();
-  const employeeId = getEntityId(employee);
-
-  if (Array.isArray(employee?.projectIds)) {
-    employee.projectIds.forEach((projectId) => {
-      const normalizedId = getEntityId({ id: projectId });
-      if (normalizedId) {
-        ids.add(normalizedId);
-      }
-    });
-  }
-
-  projects.forEach((project) => {
-    if (!Array.isArray(project?.workers)) {
-      return;
-    }
-
-    const isAssigned = project.workers.some((worker) => {
-      const workerId =
-        typeof worker === "string" ? worker : worker?._id || worker?.id;
-
-      return getEntityId({ id: workerId }) === employeeId;
-    });
-
-    if (isAssigned) {
-      const projectId = getEntityId(project);
-      if (projectId) {
-        ids.add(projectId);
-      }
-    }
-  });
-
-  return [...ids];
-};
-
-const MAX_PROJECT_NAME_LENGTH = 35;
-
-const truncateProjectName = (name) => {
-  if (!name || name.length <= MAX_PROJECT_NAME_LENGTH) {
-    return name;
-  }
-
-  return `${name.slice(0, MAX_PROJECT_NAME_LENGTH - 3)}...`;
-};
 
 const getTodayDateKey = () => {
   const date = new Date();
@@ -96,18 +41,6 @@ const STATUS_SORT_PRIORITY = {
   not_at_work: 1,
   off_duty: 2,
   at_work: 3,
-};
-
-const getEmployeeProjectLabel = (employee, projectNameById, projects) => {
-  const projectNames = getEmployeeProjectIds(employee, projects)
-    .map((projectId) => truncateProjectName(projectNameById.get(projectId)))
-    .filter(Boolean);
-
-  if (projectNames.length === 0) {
-    return null;
-  }
-
-  return projectNames.join(", ");
 };
 
 export default function EmployeesScreen() {
@@ -204,7 +137,7 @@ export default function EmployeesScreen() {
   const renderEmployee = useCallback(
     ({ item: employee }) => {
       const employeeId = getUserId(employee);
-      const projectLabel = getEmployeeProjectLabel(
+      const projectLabel = getPersonProjectLabel(
         employee,
         projectNameById,
         projects,

@@ -22,6 +22,10 @@ import { PersonListItem } from "../../../components/common/PersonListItem/Person
 import { chatService, projectService, userService } from "../../../services";
 import { getPersonWorkStatus, USER_ROLES } from "../../../utils/userRoles";
 import { getEntityId } from "../../../utils/entityId";
+import {
+  buildProjectNameById,
+  getPersonProjectLabel,
+} from "../../../utils/personProjectLabel";
 import { statusBadgeFor } from "../../../utils/workerStatusBadge";
 
 const getUserId = (person) => person?._id || person?.id;
@@ -123,6 +127,11 @@ export default function ChatListScreen() {
     useCallback(() => {
       loadColleagues();
     }, [loadColleagues]),
+  );
+
+  const projectNameById = useMemo(
+    () => buildProjectNameById(projects),
+    [projects],
   );
 
   const visibleColleagues = useMemo(() => {
@@ -318,12 +327,18 @@ export default function ChatListScreen() {
     // message, or "No messages yet" — never the person's profession.
     const preview = chat?.lastMessageText || t("chat.noMessages");
     const unread = Number(chat?.unreadCount) || 0;
+    // Third line: the person's project(s) — same as the employees list, so
+    // every person card shares the identical 3-row layout.
+    const projectLabel =
+      getPersonProjectLabel(person, projectNameById, projects) ||
+      t("employees.noProjectAssigned");
 
     return (
       <PersonListItem
         key={personId}
         person={person}
         subtitle={preview}
+        meta={projectLabel}
         timeAgo={timeAgo}
         statusBadge={statusBadge}
         unread={unread}
