@@ -199,78 +199,83 @@ export function HomeOnboarding({
         </View>
       ) : null}
 
-      <View style={styles.list}>
-        {steps.map((step) => {
-          const isActive = !step.done && step.key === activeKey;
-          return (
-            <TouchableOpacity
-              key={step.key}
-              style={[styles.row, isActive && styles.rowActive]}
-              disabled={step.done}
-              activeOpacity={0.7}
-              onPress={() => runStep(step)}
-            >
-              <View
-                style={[
-                  styles.iconCircle,
-                  step.done
-                    ? {
-                        backgroundColor: successSoftColor,
-                        borderColor: successSoftColor,
-                      }
-                    : isActive
-                      ? {
-                          backgroundColor: theme.content.accentSoft,
-                          borderColor: accent,
-                        }
-                      : { borderColor: theme.content.border },
-                ]}
+      {/* Focus hierarchy: until a direction is chosen, the routing question is
+          the ONLY focus. The detailed step list appears only after the admin
+          picks a focus (or for workers, who never route) — never both at once. */}
+      {!needsFocus ? (
+        <View style={styles.list}>
+          {steps.map((step) => {
+            const isActive = !step.done && step.key === activeKey;
+            return (
+              <TouchableOpacity
+                key={step.key}
+                style={[styles.row, isActive && styles.rowActive]}
+                disabled={step.done}
+                activeOpacity={0.7}
+                onPress={() => runStep(step)}
               >
+                <View
+                  style={[
+                    styles.iconCircle,
+                    step.done
+                      ? {
+                          backgroundColor: successSoftColor,
+                          borderColor: successSoftColor,
+                        }
+                      : isActive
+                        ? {
+                            backgroundColor: theme.content.accentSoft,
+                            borderColor: accent,
+                          }
+                        : { borderColor: theme.content.border },
+                  ]}
+                >
+                  {step.done ? (
+                    <Icon name="check" size={15} color={successColor} />
+                  ) : (
+                    <Icon
+                      name={STEP_ICON[step.key]}
+                      size={15}
+                      color={isActive ? accent : theme.content.textMuted}
+                    />
+                  )}
+                </View>
+
+                <View style={styles.rowBody}>
+                  {isActive ? (
+                    <Text style={[styles.eyebrow, { color: accent }]}>
+                      {t("onboarding.startHere", "Börja här")}
+                    </Text>
+                  ) : null}
+                  <Text
+                    style={[styles.rowTitle, step.done && styles.rowTitleDone]}
+                    numberOfLines={1}
+                  >
+                    {t(`onboarding.step.${step.key}`)}
+                  </Text>
+                  {!step.done ? (
+                    <Text style={styles.rowDesc} numberOfLines={2}>
+                      {t(`onboarding.stepDesc.${step.key}`, "")}
+                    </Text>
+                  ) : null}
+                </View>
+
                 {step.done ? (
-                  <Icon name="check" size={15} color={successColor} />
+                  <Text style={styles.doneTag}>
+                    {t("onboarding.done", "Klar")}
+                  </Text>
                 ) : (
                   <Icon
-                    name={STEP_ICON[step.key]}
-                    size={15}
+                    name="chevron-right"
+                    size={20}
                     color={isActive ? accent : theme.content.textMuted}
                   />
                 )}
-              </View>
-
-              <View style={styles.rowBody}>
-                {isActive ? (
-                  <Text style={[styles.eyebrow, { color: accent }]}>
-                    {t("onboarding.startHere", "Börja här")}
-                  </Text>
-                ) : null}
-                <Text
-                  style={[styles.rowTitle, step.done && styles.rowTitleDone]}
-                  numberOfLines={1}
-                >
-                  {t(`onboarding.step.${step.key}`)}
-                </Text>
-                {!step.done ? (
-                  <Text style={styles.rowDesc} numberOfLines={2}>
-                    {t(`onboarding.stepDesc.${step.key}`, "")}
-                  </Text>
-                ) : null}
-              </View>
-
-              {step.done ? (
-                <Text style={styles.doneTag}>
-                  {t("onboarding.done", "Klar")}
-                </Text>
-              ) : (
-                <Icon
-                  name="chevron-right"
-                  size={20}
-                  color={isActive ? accent : theme.content.textMuted}
-                />
-              )}
-            </TouchableOpacity>
-          );
-        })}
-      </View>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      ) : null}
 
       {/* Switch to the other focus (once one is picked). */}
       {otherFocus ? (
