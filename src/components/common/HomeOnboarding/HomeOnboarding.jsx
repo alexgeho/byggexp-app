@@ -118,9 +118,14 @@ export function HomeOnboarding({
     GUIDES[which]?.run();
   };
 
-  // Subtitle: routing question when unanswered, else progress / a "change focus".
-  const subtitle = needsFocus
+  // Header. In the routing (needsFocus) state the QUESTION is the primary focus,
+  // so it becomes the big black heading and "Kom igång" drops to a small grey
+  // eyebrow above it. Otherwise the title is "Kom igång" with progress beneath.
+  const headerTitle = needsFocus
     ? t("onboarding.focus.question", "Vad är viktigast just nu?")
+    : t("onboarding.title", "Kom igång");
+  const subtitle = needsFocus
+    ? t("onboarding.title", "Kom igång")
     : t("onboarding.progress", "{{done}} av {{total}} klara", {
         done: completed,
         total,
@@ -138,8 +143,17 @@ export function HomeOnboarding({
     <View style={styles.card}>
       <View style={styles.header}>
         <View style={styles.headerText}>
-          <Text style={styles.title}>{t("onboarding.title", "Kom igång")}</Text>
-          {!single ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+          {needsFocus ? (
+            <>
+              <Text style={styles.subtitle}>{subtitle}</Text>
+              <Text style={styles.title}>{headerTitle}</Text>
+            </>
+          ) : (
+            <>
+              <Text style={styles.title}>{headerTitle}</Text>
+              {!single ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+            </>
+          )}
         </View>
 
         <TouchableOpacity
