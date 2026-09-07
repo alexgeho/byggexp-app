@@ -1,4 +1,54 @@
-# 🆕 Сессия 2026-09-06 (вечер) — iOS-редизайн UI + мелкие фичи (всё в OTA, runtime 1.1.0)
+# 🆕 Сессия 2026-09-07 — онбординг/валу-тур, права, verify-фикс, /app/magic, Play-билд
+
+Всё в `main` + роздано `eas update --branch production` (runtime 1.1.0). Бэкенд — auto-deploy на push.
+
+**Валу-тур в приложении (`WelcomeSlides`) — только для роли АДМИН (не для веб-админки!).**
+
+- ВАЖНО: заказ «валу 2 из 6 пунктов» был для **мобилки, роль админа**, НЕ для веб-админки. Я по ошибке сделал в `byggexp-admin` → **откатил** (удалил `features/onboarding/ValueTour.jsx`, коммит `69b2346`). Не повторять. См. память `project_onboarding_value_tour`.
+- Admin-слайды: было 3 → стало **6** (Projekt&team / Se personalen i realtid / Tid→lön&faktura / Uppgifter / Foton&kvitton / Ekonomi på autopilot). Копия в i18n `welcome.admin.slide.1..6` (`.title` + `.text`), переведено на **все 11 языков** (localeParity-тест требует ВСЕ локали).
+- Отображение: **по 2 блока на экран** (6→3 страницы, `perPage` в `WelcomeSlides.jsx`), только у админа; worker — по одному.
+- По просьбе: короткий `.title` НЕ показываем — только `.text` в стиле заголовка (`text = t(.text) || t(.title)`), шрифт **обычный, не жирный** (`title`/`pairTitle` weight 400).
+- Seen-key поднят до `welcome-slides-seen-v5` (показать один раз заново).
+- en-правка: «Job photos» → «Photo reports» (`welcome.worker.slide.4.title`).
+
+**HomeOnboarding «Kom igång» — фокус-иерархия (память `feedback_focus_hierarchy`).**
+
+- Принцип Александра: на экране ОДИН главный фокус, остальное подчинено; конкурирующие фокусы = «сломано».
+- Шаг 1 (`needsFocus`): показываем ТОЛЬКО вопрос + 2 кнопки выбора (чек-лист скрыт, пока направление не выбрано). Заголовок: «Kom igång» маленьким серым eyebrow + вопрос большим. Все шрифты на карточке ОДНОГО размера 16 (`focusText`), кнопки чуть крупнее.
+- Шаг 2 (чек-лист после выбора): заголовок «Kom igång» убран, только прогресс «X av Y klara».
+
+**Чат-лист:** карточки людей теперь **3 строки** как в Employees (имя+бейдж / превью / проект). Логику проекта вынес в общий `src/utils/personProjectLabel.js` (используется в EmployeesScreen + ChatListScreen).
+
+**Ekonomi-экраны:** убраны подзаголовки «Details»/«New article» (Clients/Articles) и блок **Unit** в Articles (дефолт `st`).
+
+**Права: project-админ может создавать проекты.** `canCreateProjects` → `MANAGEMENT_ROLES` (все, кроме worker); бэкенд `@Roles` на `POST /projects` + ProjectAdmin (коммит `0d6527b`); тест обновлён.
+
+**Access-denied «Go back» был НЕвидим** (стиль `backButton` использовал несуществующий `c.primary` → прозрачный фон). Фикс: синяя кнопка-пилюля на `c.accent`.
+
+**Verify-email идемпотентность vs предпросмотр писем (память `reference_email_link_preview_consumes_tokens`).**
+
+- Баг «Verification failed»: Apple Mail/Outlook **пре-фетчат GET-ссылку** для превью → съедали одноразовый токен до тапа юзера. Фикс (`users.service.ts` `verifyEmailByToken`, коммит `3f565e4`): НЕ обнулять `emailVerificationToken` при верификации — жив до истечения (7 дней). Безопасность на коротком magic-коде (15 мин).
+- Гоча: ссылка, уже съеденная превью ДО фикса, мертва → пересоздать инвайт (Resend).
+
+**Страница `/app/magic` (десктоп/нет приложения):** убрал бесполезную кнопку «Öppna appen» (deep-link `byggexp://` не работает вне телефона; на телефоне Universal Link открывает приложение сам). Осталось: 2 store-кнопки, radius 16 (как карточка), не жирный текст. Коммиты `216674c`/`bbbe70d`/`b3dd6f6`.
+
+**Shifts (Arbetspass):** не гасить календарь при каждом входе. `useShiftHistory` на фокусе делает `setLoading(true)` → раньше прятался весь экран за спиннером («пусто, потом появилось»). Теперь спиннер только на ПЕРВОЙ загрузке (`loading && !days.length`), календарь остаётся при повторных входах (коммит `fdca37c3`).
+
+**Google Play билд (в процессе на конец сессии):**
+
+- Профили: `preview` = APK (только sideload), **`production` = AAB** (`app-bundle`) → Play; `eas.json` submit.production.track = **internal**.
+- Команды: `eas build -p android --profile production` затем `eas submit -p android --profile production` (или `--auto-submit`).
+- Запущен билд **`5193293e`** (version code **22**, commit `fdca37c3`) — на конец сессии `in progress`; пользователь запускал `eas submit` → «Select a build from EAS» → выбрать vc22 (не старый vc21 `e27d4ce3`).
+
+## ⏭️ Следующие шаги (2026-09-07)
+
+1. **Проверить, что AAB `5193293e` (vc22) залился в Play → internal testing**, поставить на телефон, прогнать: онбординг (worker+admin), валу-тур (6 слайдов, 2/экран), создание проекта под project-админом, verify-инвайт (переслать свежий), Shifts (нет пустого мелькания).
+2. Свериться визуально на устройстве после **2 перезапусков** (OTA).
+3. Бэклог (из прошлых сессий, ещё не сделано): shared-компоненты (FieldRow/Card/Divider в ui, миграция экранов), обед → вычет в часах/зарплате (hours.service + payroll + тесты), «Skapa uppgift» объединить назначение в один мультиселект, magic-login не возвращает `user.language`, миграция остальных экранов на iOS-стиль, локализация инлайновых дефолтов, вход админом для само-сверки, dark-theme iOS-палитра.
+
+---
+
+# Сессия 2026-09-06 (вечер) — iOS-редизайн UI + мелкие фичи (всё в OTA, runtime 1.1.0)
 
 Большой заход по «сделать как в iOS 1:1» + мелкие фичи. Всё в `main` + роздано `eas update --branch production`. Само-сверка: поднимал **expo web** (`npx expo start --web`, порт 8081) + Chrome (mcp) и скриншотил сам; Chrome автозаполнил сохранённый логин `svbyggmaleri@gmail.com` — но это **Arbetare (worker)**, админ-экраны (Skapa projekt/Anställd) с него недоступны → для их само-сверки нужен ВХОД АДМИНОМ.
 
