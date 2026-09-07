@@ -82,6 +82,14 @@ export function WelcomeSlides() {
   const roleKey = role === "worker" ? "worker" : "admin";
   const slides = SLIDES_BY_ROLE[roleKey];
 
+  // Admin gets a denser tour: two benefit blocks per screen (6 slides → 3
+  // pages), so the owner skims the value faster. Workers keep one-per-screen.
+  const perPage = roleKey === "admin" ? 2 : 1;
+  const pages = [];
+  for (let i = 0; i < slides.length; i += perPage) {
+    pages.push(slides.slice(i, i + perPage));
+  }
+
   // Only decide to show once we actually know the role (i.e. signed in).
   useEffect(() => {
     let active = true;
@@ -141,7 +149,7 @@ export function WelcomeSlides() {
   };
 
   const goNext = () => {
-    if (index >= slides.length - 1) {
+    if (index >= pages.length - 1) {
       finish("completed");
       return;
     }
@@ -151,17 +159,17 @@ export function WelcomeSlides() {
     track("welcome_slide_viewed", { role: roleKey, index: next });
   };
 
-  // Keep dots + CTA label in sync when the user swipes between slides by hand
+  // Keep dots + CTA label in sync when the user swipes between pages by hand
   // (swiping right also steps back).
   const onScrollEnd = (e) => {
     const i = Math.round(e.nativeEvent.contentOffset.x / width);
-    if (i !== index && i >= 0 && i < slides.length) {
+    if (i !== index && i >= 0 && i < pages.length) {
       setIndex(i);
       track("welcome_slide_viewed", { role: roleKey, index: i });
     }
   };
 
-  const isLast = index === slides.length - 1;
+  const isLast = index === pages.length - 1;
 
   return (
     <LinearGradient colors={["#f5f9fe", "#eaf2fb"]} style={styles.overlay}>
@@ -180,43 +188,52 @@ export function WelcomeSlides() {
       <FlatList
         ref={listRef}
         style={styles.list}
-        data={slides}
-        keyExtractor={(item) => item.key}
+        data={pages}
+        keyExtractor={(page) => page[0].key}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         onMomentumScrollEnd={onScrollEnd}
-        renderItem={({ item }) => {
-          // Some roles (admin) add a supporting sentence under the heading;
-          // others (worker) use the sentence-as-heading style with no body.
-          const body = t(`welcome.${roleKey}.slide.${item.key}.text`, {
-            defaultValue: "",
-          });
+        renderItem={({ item: page }) => {
+          const two = perPage === 2;
           return (
-            <View style={[styles.slide, { width }]}>
-              <View style={styles.card}>
-                <View style={styles.hero}>
-                  <SvgXml
-                    xml={valueIllustration(item.illustration)}
-                    width={317}
-                    height={244}
-                  />
-                </View>
-                <Text style={styles.title}>
-                  {t(`welcome.${roleKey}.slide.${item.key}.title`)}
-                </Text>
-                {body ? <Text style={styles.body}>{body}</Text> : null}
-              </View>
+            <View style={[styles.slide, two && styles.slidePair, { width }]}>
+              {page.map((s) => {
+                // Some roles (admin) add a supporting sentence under the
+                // heading; workers use the sentence-as-heading style, no body.
+                const body = t(`welcome.${roleKey}.slide.${s.key}.text`, {
+                  defaultValue: "",
+                });
+                return (
+                  <View key={s.key} style={two ? styles.pairCard : styles.card}>
+                    <View style={two ? styles.pairHero : styles.hero}>
+                      <SvgXml
+                        xml={valueIllustration(s.illustration)}
+                        width={two ? 200 : 317}
+                        height={two ? 154 : 244}
+                      />
+                    </View>
+                    <Text style={two ? styles.pairTitle : styles.title}>
+                      {t(`welcome.${roleKey}.slide.${s.key}.title`)}
+                    </Text>
+                    {body ? (
+                      <Text style={two ? styles.pairBody : styles.body}>
+                        {body}
+                      </Text>
+                    ) : null}
+                  </View>
+                );
+              })}
             </View>
           );
         }}
       />
 
-      {slides.length > 1 ? (
+      {pages.length > 1 ? (
         <View style={styles.dots}>
-          {slides.map((s, i) => (
+          {pages.map((page, i) => (
             <View
-              key={s.key}
+              key={page[0].key}
               style={[styles.dot, i === index && styles.dotActive]}
             />
           ))}

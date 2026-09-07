@@ -52,6 +52,40 @@ export function createStyles() {
       alignItems: "center",
       justifyContent: "center",
     },
+    // Admin two-per-screen layout: center the two blocks vertically and give
+    // each a compact illustration + heading + body so both fit on one screen.
+    slidePair: {
+      justifyContent: "center",
+      paddingTop: 16,
+      gap: 20,
+    },
+    pairCard: {
+      width: "100%",
+      maxWidth: 420,
+      alignItems: "center",
+      paddingHorizontal: 12,
+      gap: 6,
+    },
+    pairHero: {
+      height: 154,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    pairTitle: {
+      color: NAVY,
+      fontSize: 20,
+      lineHeight: 26,
+      fontWeight: "800",
+      letterSpacing: -0.3,
+      textAlign: "center",
+    },
+    pairBody: {
+      color: MUTED,
+      fontSize: 14,
+      lineHeight: 20,
+      fontWeight: "500",
+      textAlign: "center",
+    },
     title: {
       color: NAVY,
       fontSize: 25,
