@@ -144,14 +144,8 @@ export function HomeOnboarding({
       <View style={styles.header}>
         <View style={styles.headerText}>
           {needsFocus ? (
-            <>
-              <Text style={[styles.subtitle, styles.focusText]}>
-                {subtitle}
-              </Text>
-              <Text style={[styles.title, styles.focusText]}>
-                {headerTitle}
-              </Text>
-            </>
+            // Routing card: just the question, no separate "Kom igång" heading.
+            <Text style={[styles.title, styles.focusText]}>{headerTitle}</Text>
           ) : // Step 2 (focused checklist): the "Kom igång" title is redundant —
           // show only the progress line.
           !single ? (
