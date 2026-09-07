@@ -25,7 +25,6 @@ import { getApiErrorMessage } from "../../../utils/apiError";
 
 // Articles — mirrors the admin ArticleCreateForm exactly (name, auto art.no.,
 // notes, VAT %, unit; kontering derived). Country drives the VAT options.
-const UNIT_OPTIONS = ["st", "h", "dag", "mån", "kg", "m", "m2"];
 const VAT_BY_COUNTRY = { SE: [25, 12, 6, 0], NO: [25, 15, 12, 0] };
 const buildKontering = (vat) => `Tjänster ${vat}%`;
 
@@ -144,10 +143,6 @@ export default function ArticlesScreen() {
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
         >
-          <Text style={styles.sectionTitle}>
-            {t("articleForm.new", "Ny artikel")}
-          </Text>
-
           <Field label={t("articleForm.name", "Artikelnamn")} styles={styles}>
             <TextInput
               style={styles.input}
@@ -177,21 +172,6 @@ export default function ArticlesScreen() {
                   label={`${v}%`}
                   active={form.momsPercent === v}
                   onPress={() => handleChange("momsPercent", v)}
-                  styles={styles}
-                  accent={theme.colors.primary}
-                />
-              ))}
-            </View>
-          </Field>
-
-          <Field label={t("articleForm.unit", "Enhet")} styles={styles}>
-            <View style={styles.chips}>
-              {UNIT_OPTIONS.map((u) => (
-                <Chip
-                  key={u}
-                  label={u}
-                  active={form.unit === u}
-                  onPress={() => handleChange("unit", u)}
                   styles={styles}
                   accent={theme.colors.primary}
                 />

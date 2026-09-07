@@ -240,9 +240,6 @@ export default function ClientsScreen() {
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
         >
-          <Text style={styles.sectionTitle}>
-            {t("clientForm.details", "Uppgifter")}
-          </Text>
           <View style={styles.fieldBlock}>
             <Text style={styles.label}>
               {t("clientForm.clientType", "Kundtyp")}
