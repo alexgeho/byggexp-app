@@ -34,17 +34,19 @@
 
 **Shifts (Arbetspass):** не гасить календарь при каждом входе. `useShiftHistory` на фокусе делает `setLoading(true)` → раньше прятался весь экран за спиннером («пусто, потом появилось»). Теперь спиннер только на ПЕРВОЙ загрузке (`loading && !days.length`), календарь остаётся при повторных входах (коммит `fdca37c3`).
 
-**Google Play билд (в процессе на конец сессии):**
+**Google Play билд — ГОТОВ ✅:**
 
 - Профили: `preview` = APK (только sideload), **`production` = AAB** (`app-bundle`) → Play; `eas.json` submit.production.track = **internal**.
 - Команды: `eas build -p android --profile production` затем `eas submit -p android --profile production` (или `--auto-submit`).
-- Запущен билд **`5193293e`** (version code **22**, commit `fdca37c3`) — на конец сессии `in progress`; пользователь запускал `eas submit` → «Select a build from EAS» → выбрать vc22 (не старый vc21 `e27d4ce3`).
+- Билд **`5193293e` собран** (version code **22**, commit `fdca37c3`). AAB: `https://expo.dev/artifacts/eas/LqQ4DFNo2tlOj3xpmQchvRkSySxRVBcndYAKZ7UJT-g.aab`. Версии бампнуты → коммит `602d3dfe` (Android vc22 / iOS build 179).
+- Submit: `eas submit -p android --profile production` → «Select a build from EAS» → **vc22 (`5193293e`)**, НЕ старый vc21 (`e27d4ce3`). На конец сессии завершение submit НЕ подтверждено — проверить в Play Console.
 
-## ⏭️ Следующие шаги (2026-09-07)
+## ⏭️ Следующие шаги (продолжить здесь)
 
-1. **Проверить, что AAB `5193293e` (vc22) залился в Play → internal testing**, поставить на телефон, прогнать: онбординг (worker+admin), валу-тур (6 слайдов, 2/экран), создание проекта под project-админом, verify-инвайт (переслать свежий), Shifts (нет пустого мелькания).
-2. Свериться визуально на устройстве после **2 перезапусков** (OTA).
-3. Бэклог (из прошлых сессий, ещё не сделано): shared-компоненты (FieldRow/Card/Divider в ui, миграция экранов), обед → вычет в часах/зарплате (hours.service + payroll + тесты), «Skapa uppgift» объединить назначение в один мультиселект, magic-login не возвращает `user.language`, миграция остальных экранов на iOS-стиль, локализация инлайновых дефолтов, вход админом для само-сверки, dark-theme iOS-палитра.
+1. **Подтвердить, что AAB vc22 (`5193293e`) залит в Play → internal testing** (Play Console). Если нет — `eas submit -p android --profile production`, выбрать vc22.
+2. Поставить internal-билд на телефон, прогнать: онбординг (worker+admin), валу-тур (6 слайдов, 2/экран, текст не жирный), создание проекта под **project-админом**, verify-инвайт (переслать СВЕЖИЙ — старые ссылки мертвы), Shifts (без пустого мелькания), `/app/magic` на десктопе (2 store-кнопки, без «Öppna appen»).
+3. Свериться визуально на устройстве после **2 перезапусков** (OTA, runtime 1.1.0).
+4. Бэклог (из прошлых сессий, ещё не сделано): shared-компоненты (FieldRow/Card/Divider в ui, миграция экранов), обед → вычет в часах/зарплате (hours.service + payroll + тесты), «Skapa uppgift» объединить назначение в один мультиселект, magic-login не возвращает `user.language`, миграция остальных экранов на iOS-стиль, локализация инлайновых дефолтов, вход админом для само-сверки, dark-theme iOS-палитра.
 
 ---
 
