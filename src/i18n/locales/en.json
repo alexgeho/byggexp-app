@@ -823,6 +823,7 @@
     "title": "Guide",
     "intro": "A quick guide to the main features of the app.",
     "replayTour": "Watch the intro again",
+    "replayChecklist": "Show Getting started again",
     "gettingStartedTitle": "Getting started",
     "gettingStarted": [
       "Pick a project at the top of the home screen.",
