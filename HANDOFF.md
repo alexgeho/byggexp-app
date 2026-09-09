@@ -1,3 +1,19 @@
+# 🆕 Сессия 2026-09-09 — i18n-фикс кнопки «Руководство»
+
+**Сделано (в `main`, коммит на push):**
+
+- Экран **«Руководство»** (`HelpGuideScreen.jsx`): кнопка **«Visa Kom igång igen»** оставалась по-шведски на всех языках — ключ `guide.replayChecklist` отсутствовал в локалях, в коде висел шведский inline-fallback.
+- Добавил `guide.replayChecklist` во **все 11 локалей** (`src/i18n/locales/*.json`), ссылаясь на локальный `gettingStartedTitle`. ru → «Показать «Начало работы» снова», sv → «Visa Kom igång igen», en → «Show Getting started again» и т.д.
+- Паритет-тест `localeParity.test.js` зелёный (8/8), JSON валиден. Коммит `i18n(guide): localize 'Visa Kom igång igen'…`.
+
+### ⏭️ Следующие шаги
+
+1. **Раздать OTA** — фикс чисто-JS, нужен `eas update --branch production` (runtime 1.1.0). На конец сессии НЕ роздано (нужен `eas login`). До этого на устройстве старая шведская кнопка.
+2. Свериться на устройстве после 2 перезапусков: экран «Руководство» полностью на русском (и на др. языках — кнопка переведена).
+3. Дальше — незакрытый бэклог из сессии 2026-09-07 ниже (Play vc22 QA + shared-компоненты + обед→зарплата + magic-login language + iOS-стиль остальных экранов).
+
+---
+
 # 🆕 Сессия 2026-09-07 — онбординг/валу-тур, права, verify-фикс, /app/magic, Play-билд
 
 Всё в `main` + роздано `eas update --branch production` (runtime 1.1.0). Бэкенд — auto-deploy на push.
