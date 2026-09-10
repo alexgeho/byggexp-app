@@ -153,114 +153,116 @@ export function BottomBar({
 
   return (
     <View style={[styles.container, { bottom: bottomOffset }]}>
-      <View style={wrapperStyle}>
-        {!isTransparent && Platform.OS !== "android" ? (
-          <BlurView
+      <View style={!isTransparent ? styles.menuShadow : null}>
+        <View style={wrapperStyle}>
+          {!isTransparent && Platform.OS !== "android" ? (
+            <BlurView
+              pointerEvents="none"
+              intensity={glass ? 45 : 40}
+              tint={dark ? "dark" : "light"}
+              // Android needs the native blur method or it renders no blur at all.
+              experimentalBlurMethod="dimezisBlurView"
+              style={StyleSheet.absoluteFill}
+            />
+          ) : null}
+          <View
             pointerEvents="none"
-            intensity={glass ? 45 : 40}
-            tint={dark ? "dark" : "light"}
-            // Android needs the native blur method or it renders no blur at all.
-            experimentalBlurMethod="dimezisBlurView"
-            style={StyleSheet.absoluteFill}
+            style={[StyleSheet.absoluteFill, { backgroundColor: fillColor }]}
           />
-        ) : null}
-        <View
-          pointerEvents="none"
-          style={[StyleSheet.absoluteFill, { backgroundColor: fillColor }]}
-        />
-        {!isTransparent && dark ? (
-          <>
-            <LinearGradient
-              colors={pillGlass.base}
-              start={{ x: 0.1, y: 0 }}
-              end={{ x: 0.9, y: 1 }}
-              pointerEvents="none"
-              style={styles.glassBase}
-            />
-            <LinearGradient
-              colors={pillGlass.highlight}
-              start={{ x: 0.2, y: 0 }}
-              end={{ x: 0.8, y: 0.9 }}
-              pointerEvents="none"
-              style={styles.glassHighlight}
-            />
-            <View
-              pointerEvents="none"
-              style={[styles.glassRing, { borderColor: pillGlass.ring }]}
-            />
-          </>
-        ) : null}
-        <Pressable
-          style={styles.navButton}
-          onPress={onLeftPress}
-          accessibilityRole="button"
-          accessibilityLabel={t("a11y.home")}
-        >
-          {({ hovered, pressed }) => {
-            const isActive = isHomeActive || hovered || pressed;
+          {!isTransparent && dark ? (
+            <>
+              <LinearGradient
+                colors={pillGlass.base}
+                start={{ x: 0.1, y: 0 }}
+                end={{ x: 0.9, y: 1 }}
+                pointerEvents="none"
+                style={styles.glassBase}
+              />
+              <LinearGradient
+                colors={pillGlass.highlight}
+                start={{ x: 0.2, y: 0 }}
+                end={{ x: 0.8, y: 0.9 }}
+                pointerEvents="none"
+                style={styles.glassHighlight}
+              />
+              <View
+                pointerEvents="none"
+                style={[styles.glassRing, { borderColor: pillGlass.ring }]}
+              />
+            </>
+          ) : null}
+          <Pressable
+            style={styles.navButton}
+            onPress={onLeftPress}
+            accessibilityRole="button"
+            accessibilityLabel={t("a11y.home")}
+          >
+            {({ hovered, pressed }) => {
+              const isActive = isHomeActive || hovered || pressed;
 
-            return (
-              <>
-                <FooterHomeIcon
-                  size={styles.navIcon.width}
-                  filled={isActive}
-                  color={iconColorFor(isActive)}
-                />
+              return (
+                <>
+                  <FooterHomeIcon
+                    size={styles.navIcon.width}
+                    filled={isActive}
+                    color={iconColorFor(isActive)}
+                  />
 
-                {showText && (
-                  <Text
-                    style={[
-                      styles.navText,
-                      {
-                        color: isActive
-                          ? activeIconColor
-                          : theme.colors.bottomNav,
-                      },
-                    ]}
-                  >
-                    {t("a11y.home")}
-                  </Text>
-                )}
-              </>
-            );
-          }}
-        </Pressable>
+                  {showText && (
+                    <Text
+                      style={[
+                        styles.navText,
+                        {
+                          color: isActive
+                            ? activeIconColor
+                            : theme.colors.bottomNav,
+                        },
+                      ]}
+                    >
+                      {t("a11y.home")}
+                    </Text>
+                  )}
+                </>
+              );
+            }}
+          </Pressable>
 
-        <Pressable
-          style={styles.navButton}
-          onPress={onRightPress}
-          accessibilityRole="button"
-          accessibilityLabel={t("a11y.menu")}
-        >
-          {({ hovered, pressed }) => {
-            const isActive = isMenuActive || hovered || pressed;
+          <Pressable
+            style={styles.navButton}
+            onPress={onRightPress}
+            accessibilityRole="button"
+            accessibilityLabel={t("a11y.menu")}
+          >
+            {({ hovered, pressed }) => {
+              const isActive = isMenuActive || hovered || pressed;
 
-            return (
-              <>
-                <FooterMenuIcon
-                  size={styles.navIcon.width}
-                  filled={isActive}
-                  color={iconColorFor(isActive)}
-                />
+              return (
+                <>
+                  <FooterMenuIcon
+                    size={styles.navIcon.width}
+                    filled={isActive}
+                    color={iconColorFor(isActive)}
+                  />
 
-                {showText && (
-                  <Text
-                    style={[
-                      styles.navText,
-                      {
-                        color: isActive
-                          ? activeIconColor
-                          : theme.colors.bottomNav,
-                      },
-                    ]}
-                  >
-                    {t("a11y.menu")}
-                  </Text>
-                )}
-              </>
-            );
-          }}
-        </Pressable>
+                  {showText && (
+                    <Text
+                      style={[
+                        styles.navText,
+                        {
+                          color: isActive
+                            ? activeIconColor
+                            : theme.colors.bottomNav,
+                        },
+                      ]}
+                    >
+                      {t("a11y.menu")}
+                    </Text>
+                  )}
+                </>
+              );
+            }}
+          </Pressable>
+        </View>
       </View>
 
       {showAddButton && (

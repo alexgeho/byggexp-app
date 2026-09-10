@@ -12,6 +12,23 @@ export function createStyles(theme) {
       justifyContent: "center",
       gap: 14,
     },
+    // Soft elevation wrapper (NOT clipped): defines the pill by a gentle drop
+    // shadow instead of a bright stroke, so it reads on white backgrounds
+    // (no longer blends) and stays calm on the blue home (no glowing ring).
+    // Must sit OUTSIDE the pill because the pill uses overflow:"hidden" (to clip
+    // its blur), which would otherwise clip the iOS shadow.
+    menuShadow: {
+      borderRadius: 89,
+      ...Platform.select({
+        ios: {
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.16,
+          shadowRadius: 18,
+        },
+        default: {},
+      }),
+    },
     menuWrapper: {
       width: 226,
       height: 81,
@@ -26,12 +43,18 @@ export function createStyles(theme) {
       gap: 10,
 
       borderRadius: 89,
-      borderWidth: 2,
-      borderColor: "#FFFFFF",
+      borderWidth: 1,
+      // Soft neutral hairline (was solid #FFFFFF, invisible on white). The
+      // shadow does the heavy lifting; the border is just a crisp edge.
+      borderColor: "rgba(60,60,67,0.12)",
       backgroundColor: "rgba(255,255,255,0.6)",
       flexDirection: "row",
       justifyContent: "space-around",
       overflow: "hidden",
+      // Android draws elevation shadows outside the view even with
+      // overflow:"hidden", so it goes on the pill itself (not the outer wrapper,
+      // which is transparent and would cast nothing).
+      ...Platform.select({ android: { elevation: 8 }, default: {} }),
     },
     navButton: {
       width: 80,
@@ -66,6 +89,7 @@ export function createStyles(theme) {
     menuWrapperTransparent: {
       backgroundColor: "transparent",
       borderWidth: 0,
+      ...Platform.select({ android: { elevation: 0 }, default: {} }),
     },
     // Dark theme: swap the crisp white pill stroke for a subtle light one so
     // the (dark-filled) pill reads on the dark background.
@@ -100,11 +124,15 @@ export function createStyles(theme) {
     // Figma tab bar (Frame 5804): white 20% fill, white 30% stroke 1px, blur.
     menuWrapperGlass: {
       backgroundColor: "rgba(255,255,255,0.20)",
-      // Android has no BlurView, so the pill leans on a crisp solid-white
-      // stroke to read as a defined surface; iOS keeps the soft glass stroke.
-      borderWidth: 2,
+      // Softened the bright white ring (was 2px, white / white-30%): over the
+      // blue home it read as a glowing capsule that stole focus from the white
+      // Play button. Now a thin, low-opacity edge — the drop shadow (menuShadow
+      // / Android elevation) grounds the pill instead.
+      borderWidth: 1,
       borderColor:
-        Platform.OS === "android" ? "#FFFFFF" : "rgba(255,255,255,0.30)",
+        Platform.OS === "android"
+          ? "rgba(255,255,255,0.55)"
+          : "rgba(255,255,255,0.16)",
       overflow: "hidden",
     },
     navText: {
