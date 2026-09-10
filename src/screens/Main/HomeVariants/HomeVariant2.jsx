@@ -1081,20 +1081,13 @@ export default function HomeVariant2() {
         pointerEvents={isEditingHours ? "none" : "auto"}
       >
         <BottomBar
-          glass
-          // Only the black theme gets the dark pill. The blue theme keeps its
-          // light frosted pill.
-          darkOverride={themeName === "black"}
-          // Tint the nav icons: white only on the black theme (dark pill); the
-          // blue theme keeps the original dark-navy icons over its light frosted
-          // pill; light themes use their own text colour.
-          iconColor={
-            themeName === "black"
-              ? "#FFFFFF"
-              : isLightBlueTheme
-                ? theme.colors.text
-                : "#052D50"
-          }
+          // Opaque pill coloured to match the home background (bottom gradient
+          // colour), so it blends in and is defined only by its soft shadow —
+          // no frosted glass, no bright ring pulling focus from the Play button.
+          pillColor={gradientColors[gradientColors.length - 1]}
+          // Icons: dark on the light themes, white on the coloured/dark ones so
+          // they read against the now-opaque pill.
+          iconColor={isLightBlueTheme ? theme.colors.text : "#FFFFFF"}
           onLeftPress={() => navigation.navigate("Main")}
           onRightPress={() => navigation.navigate("Menu")}
           showAddButton={false}

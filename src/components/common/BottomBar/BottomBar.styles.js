@@ -91,6 +91,12 @@ export function createStyles(theme) {
       borderWidth: 0,
       ...Platform.select({ android: { elevation: 0 }, default: {} }),
     },
+    // Opaque pill coloured to match the screen background (home gradient). No
+    // border — it blends into the background and is defined only by the drop
+    // shadow, so it never pulls focus from the primary action.
+    menuWrapperOpaque: {
+      borderWidth: 0,
+    },
     // Dark theme: swap the crisp white pill stroke for a subtle light one so
     // the (dark-filled) pill reads on the dark background.
     menuWrapperDark: {

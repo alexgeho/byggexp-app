@@ -81,6 +81,11 @@ export function BottomBar({
   // nav icons match them (e.g. white over the blue gradient, while the pill
   // stays a light frosted glass). Inactive icons use it at reduced opacity.
   iconColor,
+  // Opaque pill fill matching the screen background (home passes the bottom
+  // gradient colour). The pill then reads as part of the background, defined
+  // only by the soft drop shadow — no translucent glass, no blur. When set it
+  // overrides the frosted-glass / white-fill treatment.
+  pillColor,
 }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -133,7 +138,13 @@ export function BottomBar({
     : isAndroid
       ? "rgba(44,44,46,0.96)"
       : "rgba(44,44,46,0.78)";
-  const fillColor = isTransparent ? "transparent" : dark ? darkFill : lightFill;
+  const fillColor = isTransparent
+    ? "transparent"
+    : pillColor
+      ? pillColor
+      : dark
+        ? darkFill
+        : lightFill;
   // Icons/text: keep the original (untinted) navy look in light themes; in dark
   // tint the icons light so they read on the dark pill.
   const activeIconColor = iconColor ?? (dark ? "#FFFFFF" : ACTIVE_ICON_COLOR);
@@ -147,15 +158,16 @@ export function BottomBar({
   const wrapperStyle = [
     styles.menuWrapper,
     isTransparent && styles.menuWrapperTransparent,
-    glass && styles.menuWrapperGlass,
-    dark && !isTransparent && styles.menuWrapperDark,
+    glass && !pillColor && styles.menuWrapperGlass,
+    dark && !isTransparent && !pillColor && styles.menuWrapperDark,
+    pillColor && styles.menuWrapperOpaque,
   ];
 
   return (
     <View style={[styles.container, { bottom: bottomOffset }]}>
       <View style={!isTransparent ? styles.menuShadow : null}>
         <View style={wrapperStyle}>
-          {!isTransparent && Platform.OS !== "android" ? (
+          {!isTransparent && !pillColor && Platform.OS !== "android" ? (
             <BlurView
               pointerEvents="none"
               intensity={glass ? 45 : 40}
