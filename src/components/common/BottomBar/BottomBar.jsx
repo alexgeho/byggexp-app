@@ -165,7 +165,7 @@ export function BottomBar({
 
   return (
     <View style={[styles.container, { bottom: bottomOffset }]}>
-      <View style={!isTransparent ? styles.menuShadow : null}>
+      <View style={!isTransparent && !glass ? styles.menuShadow : null}>
         <View style={wrapperStyle}>
           {!isTransparent && !pillColor && Platform.OS !== "android" ? (
             <BlurView
