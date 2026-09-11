@@ -912,24 +912,6 @@ export default function HomeVariant2() {
         }}
         showsVerticalScrollIndicator={false}
       >
-        {onboarding.visible && !onboardingHidden ? (
-          <HomeOnboarding
-            role={user?.role}
-            steps={onboarding.steps}
-            completed={onboarding.completed}
-            total={onboarding.total}
-            onDismiss={dismissOnboarding}
-            onStartShift={handlePlayPause}
-            onLogHours={handleEnterEditHours}
-            onSelectProject={openProjects}
-            onCustomize={openCustomize}
-            needsFocus={onboarding.needsFocus}
-            focus={onboardingFocus}
-            onChooseFocus={chooseFocus}
-            onChangeFocus={changeFocus}
-          />
-        ) : null}
-
         {/* PROJECT SELECTOR — dimmed & inactive while editing hours */}
         <View
           style={isEditingHours && styles.inactiveDimmed}
@@ -1013,6 +995,27 @@ export default function HomeVariant2() {
 
               {showCoreSpacers ? (
                 <View style={styles.timerToActionsSpacer} />
+              ) : null}
+
+              {/* ONBOARDING — sits between the timer and the action buttons
+                  (moved down from the top so it no longer competes with the
+                  project selector for the first-glance focus). */}
+              {onboarding.visible && !onboardingHidden ? (
+                <HomeOnboarding
+                  role={user?.role}
+                  steps={onboarding.steps}
+                  completed={onboarding.completed}
+                  total={onboarding.total}
+                  onDismiss={dismissOnboarding}
+                  onStartShift={handlePlayPause}
+                  onLogHours={handleEnterEditHours}
+                  onSelectProject={openProjects}
+                  onCustomize={openCustomize}
+                  needsFocus={onboarding.needsFocus}
+                  focus={onboardingFocus}
+                  onChooseFocus={chooseFocus}
+                  onChangeFocus={changeFocus}
+                />
               ) : null}
 
               {/* ACTION BUTTONS */}
