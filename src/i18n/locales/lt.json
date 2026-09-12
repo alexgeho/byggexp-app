@@ -1336,8 +1336,11 @@
       "notAtWork": "Ne darbe"
     },
     "notif": {
-      "title": "Pranešimas",
-      "body": "Metas: \"Elektros bandymų zonos A-B. Baigti iki 14:30. Baigę atsiųskite nuotraukas. Jei baigėte, patvirtinkite, kad atlikta — kitaip…"
+      "title1": "Priminimas",
+      "title2": "Laikas užduočiai",
+      "body": "Metas: \"Elektros bandymų zonos A-B. Baigti iki 14:30. Baigę atsiųskite nuotraukas. Jei baigėte, patvirtinkite, kad atlikta — kitaip…",
+      "now": "dabar",
+      "earlier": "16 min"
     },
     "photos": {
       "label": "nuotr."

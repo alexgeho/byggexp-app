@@ -1336,8 +1336,11 @@
       "notAtWork": "Ikke på jobb"
     },
     "notif": {
-      "title": "Varsel",
-      "body": "På tide med \"Elektriske testsoner A-B. Ferdig innen 14:30. Send bilder når du er ferdig. Hvis du er ferdig, bekreft at det er fullført — ellers…"
+      "title1": "Påminnelse",
+      "title2": "På tide med oppgave",
+      "body": "På tide med \"Elektriske testsoner A-B. Ferdig innen 14:30. Send bilder når du er ferdig. Hvis du er ferdig, bekreft at det er fullført — ellers…",
+      "now": "nå",
+      "earlier": "16 min"
     },
     "photos": {
       "label": "bilder"

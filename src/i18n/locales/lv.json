@@ -1336,8 +1336,11 @@
       "notAtWork": "Nav darbā"
     },
     "notif": {
-      "title": "Paziņojums",
-      "body": "Ir laiks: \"Elektrības testa zonas A-B. Pabeigt līdz 14:30. Nosūtiet fotoattēlus, kad pabeigts. Ja pabeidzāt, apstipriniet, ka izpildīts — citādi…"
+      "title1": "Atgādinājums",
+      "title2": "Uzdevuma laiks",
+      "body": "Ir laiks: \"Elektrības testa zonas A-B. Pabeigt līdz 14:30. Nosūtiet fotoattēlus, kad pabeigts. Ja pabeidzāt, apstipriniet, ka izpildīts — citādi…",
+      "now": "tagad",
+      "earlier": "16 min"
     },
     "photos": {
       "label": "foto"

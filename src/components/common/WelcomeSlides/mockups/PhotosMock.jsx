@@ -1,23 +1,20 @@
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
-import { useTranslation } from "react-i18next";
 
 import { MockCard } from "./MockCard";
+import { AppIcon } from "../../AppIcon";
 import { MOCK, ONB, FONT } from "./assets";
 
-// On-site photo report card, rebuilt from Figma: two dated sections, each a
-// 3-column photo grid. Dates are illustrative mockup data; the "N photos"
-// label localizes. Photos are bundled on-site images.
-function Section({ date, photos }) {
-  const { t } = useTranslation();
+// The real "Kamera" screen (admin slide 4): shift photos grouped by date under
+// the "Skiftfoton / Kvitton (utlägg)" tabs — on-site photo reports that sync
+// straight into the project. Mockup labels are Swedish (matches the app);
+// photos are bundled on-site images.
+function Section({ date, count, photos }) {
   return (
     <View style={styles.section}>
       <View style={styles.headRow}>
         <Text style={styles.date}>{date}</Text>
-        <Text style={styles.count}>
-          {photos.length}{" "}
-          {t("welcome.photos.label", { defaultValue: "photos" })}
-        </Text>
+        <Text style={styles.count}>{count} foton</Text>
       </View>
       <View style={styles.grid}>
         {photos.map((src, i) => (
@@ -31,39 +28,72 @@ function Section({ date, photos }) {
 export function PhotosMock() {
   return (
     <MockCard style={styles.card}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Kamera</Text>
+        <AppIcon name="search" size={18} color={MOCK.navy} />
+      </View>
+
+      <View style={styles.tabs}>
+        <View style={[styles.tab, styles.tabActive]}>
+          <Text style={[styles.tabText, styles.tabTextActive]}>Skiftfoton</Text>
+        </View>
+        <View style={styles.tab}>
+          <Text style={styles.tabText}>Kvitton (utlägg)</Text>
+        </View>
+      </View>
+
       <Section
-        date="1 Aug 2026"
-        photos={[ONB.photo1, ONB.photo2, ONB.photo3, ONB.photo4]}
+        date="17 augusti 2026"
+        count={2}
+        photos={[ONB.photo1, ONB.photo2]}
       />
       <Section
-        date="20 Jul 2026"
-        photos={[ONB.photo5, ONB.photo6, ONB.photo7]}
+        date="3 augusti 2026"
+        count={5}
+        photos={[ONB.photo3, ONB.photo4, ONB.photo5]}
       />
     </MockCard>
   );
 }
 
 const styles = StyleSheet.create({
-  // Figma: photos card 301 wide (centred), white @50%, radius 20.
-  card: {
-    width: 301,
-    maxWidth: "100%",
-    alignSelf: "center",
-    padding: 12,
-    backgroundColor: "rgba(255,255,255,0.5)",
+  card: { padding: 12 },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 2,
+    marginBottom: 10,
   },
+  title: { fontSize: 15, fontFamily: FONT.semibold, color: MOCK.navy },
+  tabs: {
+    flexDirection: "row",
+    backgroundColor: MOCK.track,
+    borderRadius: 11,
+    padding: 3,
+    marginBottom: 12,
+  },
+  tab: { flex: 1, paddingVertical: 7, borderRadius: 9, alignItems: "center" },
+  tabActive: {
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#0A2540",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.12,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  tabText: { fontSize: 12, fontFamily: FONT.medium, color: MOCK.labelDark },
+  tabTextActive: { color: MOCK.navy, fontFamily: FONT.semibold },
   section: { marginBottom: 4 },
   headRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 8,
     marginTop: 4,
   },
-  date: { fontSize: 14, fontFamily: FONT.semibold, color: MOCK.navy },
-  count: { fontSize: 14, fontFamily: FONT.medium, color: MOCK.blue },
-  // 3-up grid: space-between spreads a full row of 3 edge-to-edge and leaves a
-  // trailing single photo (4th) left-aligned on the next line, as in Figma.
+  date: { fontSize: 13, fontFamily: FONT.semibold, color: MOCK.navy },
+  count: { fontSize: 13, fontFamily: FONT.medium, color: MOCK.label },
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",

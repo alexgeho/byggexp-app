@@ -49,7 +49,7 @@ const SLIDES_BY_ROLE = {
     { key: "1", illustration: "calendar" },
     { key: "2", illustration: "notification" },
     { key: "3", illustration: "documents" },
-    { key: "4", illustration: "photos" },
+    { key: "4", illustration: "receipt" },
   ],
   admin: [
     { key: "1", illustration: "arbetspass" },

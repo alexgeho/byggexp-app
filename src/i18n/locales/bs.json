@@ -1336,8 +1336,11 @@
       "notAtWork": "Nije na poslu"
     },
     "notif": {
-      "title": "Obavijest",
-      "body": "Vrijeme je: \"Zone električnog testiranja A-B. Završiti do 14:30. Pošaljite fotografije kad završite. Ako ste gotovi, potvrdite da je završeno — u suprotnom…"
+      "title1": "Podsjetnik",
+      "title2": "Vrijeme za zadatak",
+      "body": "Vrijeme je: \"Zone električnog testiranja A-B. Završiti do 14:30. Pošaljite fotografije kad završite. Ako ste gotovi, potvrdite da je završeno — u suprotnom…",
+      "now": "sada",
+      "earlier": "16 min"
     },
     "photos": {
       "label": "fotografija"

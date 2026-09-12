@@ -19,6 +19,7 @@ export const ONB = {
   photo5: require("../../../../assets/onboarding/photo-5.png"),
   photo6: require("../../../../assets/onboarding/photo-6.png"),
   photo7: require("../../../../assets/onboarding/photo-7.png"),
+  receipt: require("../../../../assets/onboarding/receipt.png"),
 };
 
 // DM Sans (the Figma type family, loaded in App.js). "SemiBold" is mapped to the

@@ -1336,8 +1336,11 @@
       "notAtWork": "Not at work"
     },
     "notif": {
-      "title": "Notification",
-      "body": "It's time for \"Electrical test zones A-B. Finish by 14:30. Send photos when done. If you are done, confirm that it is completed — other…"
+      "title1": "Reminder",
+      "title2": "Task due",
+      "body": "It's time for \"Electrical test zones A-B. Finish by 14:30. Send photos when done. If you are done, confirm that it is completed — other…",
+      "now": "now",
+      "earlier": "16 min"
     },
     "photos": {
       "label": "photos"

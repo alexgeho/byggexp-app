@@ -1336,8 +1336,11 @@
       "notAtWork": "Inte på jobbet"
     },
     "notif": {
-      "title": "Avisering",
-      "body": "Dags för \"Elektriska testzoner A-B. Klart senast 14:30. Skicka foton när du är klar. Om du är klar, bekräfta att det är slutfört — annars…"
+      "title1": "Påminnelse",
+      "title2": "Dags för uppgift",
+      "body": "Dags för \"Elektriska testzoner A-B. Klart senast 14:30. Skicka foton när du är klar. Om du är klar, bekräfta att det är slutfört — annars…",
+      "now": "nu",
+      "earlier": "16 min"
     },
     "photos": {
       "label": "foton"

@@ -1336,8 +1336,11 @@
       "notAtWork": "Ei ole tööl"
     },
     "notif": {
-      "title": "Teavitus",
-      "body": "On aeg: \"Elektrilised testtsoonid A-B. Valmis kell 14:30. Saada fotod, kui valmis. Kui oled valmis, kinnita, et see on tehtud — muidu…"
+      "title1": "Meeldetuletus",
+      "title2": "Ülesande aeg",
+      "body": "On aeg: \"Elektrilised testtsoonid A-B. Valmis kell 14:30. Saada fotod, kui valmis. Kui oled valmis, kinnita, et see on tehtud — muidu…",
+      "now": "nüüd",
+      "earlier": "16 min"
     },
     "photos": {
       "label": "fotot"

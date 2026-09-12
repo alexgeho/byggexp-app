@@ -1336,8 +1336,11 @@
       "notAtWork": "Ei töissä"
     },
     "notif": {
-      "title": "Ilmoitus",
-      "body": "On aika: \"Sähkötestialueet A-B. Valmis klo 14:30 mennessä. Lähetä kuvat, kun olet valmis. Jos olet valmis, vahvista että se on tehty — muuten…"
+      "title1": "Muistutus",
+      "title2": "Tehtävän aika",
+      "body": "On aika: \"Sähkötestialueet A-B. Valmis klo 14:30 mennessä. Lähetä kuvat, kun olet valmis. Jos olet valmis, vahvista että se on tehty — muuten…",
+      "now": "nyt",
+      "earlier": "16 min"
     },
     "photos": {
       "label": "kuvaa"

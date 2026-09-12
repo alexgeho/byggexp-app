@@ -1336,8 +1336,11 @@
       "notAtWork": "Poza pracą"
     },
     "notif": {
-      "title": "Powiadomienie",
-      "body": "Czas na \"Strefy testów elektrycznych A-B. Zakończ do 14:30. Wyślij zdjęcia po zakończeniu. Jeśli skończyłeś, potwierdź ukończenie — w przeciwnym…"
+      "title1": "Przypomnienie",
+      "title2": "Czas na zadanie",
+      "body": "Czas na \"Strefy testów elektrycznych A-B. Zakończ do 14:30. Wyślij zdjęcia po zakończeniu. Jeśli skończyłeś, potwierdź ukończenie — w przeciwnym…",
+      "now": "teraz",
+      "earlier": "16 min"
     },
     "photos": {
       "label": "zdjęć"
