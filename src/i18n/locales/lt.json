@@ -1327,7 +1327,8 @@
       "gps": "GPS",
       "manual": "Rankiniu būdu",
       "month": "2026 m. gegužė",
-      "weekdays": "Pr,An,Tr,Kt,Pn,Št,Sk"
+      "weekdays": "Pr,An,Tr,Kt,Pn,Št,Sk",
+      "monthJuly": "2026 m. liepa"
     },
     "emp": {
       "project": "Namo 54 projektas",

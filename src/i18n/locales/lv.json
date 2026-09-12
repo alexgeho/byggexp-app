@@ -1327,7 +1327,8 @@
       "gps": "GPS",
       "manual": "Manuāli",
       "month": "2026. gada maijs",
-      "weekdays": "Pr,Ot,Tr,Ce,Pk,Se,Sv"
+      "weekdays": "Pr,Ot,Tr,Ce,Pk,Se,Sv",
+      "monthJuly": "2026. gada jūlijs"
     },
     "emp": {
       "project": "Mājas 54 projekts",

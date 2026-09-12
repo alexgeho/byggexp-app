@@ -1327,7 +1327,8 @@
       "gps": "GPS",
       "manual": "Manuellt",
       "month": "Maj 2026",
-      "weekdays": "Mån,Tis,Ons,Tor,Fre,Lör,Sön"
+      "weekdays": "Mån,Tis,Ons,Tor,Fre,Lör,Sön",
+      "monthJuly": "juli 2026"
     },
     "emp": {
       "project": "Projekt Hus 54",

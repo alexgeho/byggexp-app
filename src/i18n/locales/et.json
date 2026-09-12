@@ -1327,7 +1327,8 @@
       "gps": "GPS",
       "manual": "Käsitsi",
       "month": "Mai 2026",
-      "weekdays": "E,T,K,N,R,L,P"
+      "weekdays": "E,T,K,N,R,L,P",
+      "monthJuly": "juuli 2026"
     },
     "emp": {
       "project": "Maja 54 projekt",

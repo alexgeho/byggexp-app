@@ -1327,7 +1327,8 @@
       "gps": "GPS",
       "manual": "Ručno",
       "month": "Maj 2026",
-      "weekdays": "Pon,Uto,Sri,Čet,Pet,Sub,Ned"
+      "weekdays": "Pon,Uto,Sri,Čet,Pet,Sub,Ned",
+      "monthJuly": "juli 2026"
     },
     "emp": {
       "project": "Projekt Kuća 54",

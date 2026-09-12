@@ -52,7 +52,7 @@ const SLIDES_BY_ROLE = {
     { key: "4", illustration: "photos" },
   ],
   admin: [
-    { key: "1", illustration: "calendar" },
+    { key: "1", illustration: "arbetspass" },
     { key: "2", illustration: "employees" },
     { key: "3", illustration: "notification" },
     { key: "4", illustration: "photos" },

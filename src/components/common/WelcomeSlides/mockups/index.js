@@ -1,6 +1,7 @@
 import React from "react";
 
 import { CalendarMock } from "./CalendarMock";
+import { ArbetspassMock } from "./ArbetspassMock";
 import { EmployeesMock } from "./EmployeesMock";
 import { NotificationMock } from "./NotificationMock";
 import { PhotosMock } from "./PhotosMock";
@@ -11,6 +12,7 @@ import { DocumentsMock } from "./DocumentsMock";
 // rebuilt React Native mockup.
 const MOCKUPS = {
   calendar: CalendarMock,
+  arbetspass: ArbetspassMock,
   employees: EmployeesMock,
   notification: NotificationMock,
   photos: PhotosMock,

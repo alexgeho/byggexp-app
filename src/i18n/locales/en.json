@@ -1327,7 +1327,8 @@
       "gps": "GPS",
       "manual": "Manual",
       "month": "May 2026",
-      "weekdays": "Mon,Tue,Wed,Thu,Fri,Sat,Sun"
+      "weekdays": "Mon,Tue,Wed,Thu,Fri,Sat,Sun",
+      "monthJuly": "July 2026"
     },
     "emp": {
       "project": "House 54 project",

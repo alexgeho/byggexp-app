@@ -1327,7 +1327,8 @@
       "gps": "GPS",
       "manual": "Manuaalinen",
       "month": "Toukokuu 2026",
-      "weekdays": "Ma,Ti,Ke,To,Pe,La,Su"
+      "weekdays": "Ma,Ti,Ke,To,Pe,La,Su",
+      "monthJuly": "heinäkuu 2026"
     },
     "emp": {
       "project": "Talo 54 -projekti",

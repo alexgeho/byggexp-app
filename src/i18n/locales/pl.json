@@ -1327,7 +1327,8 @@
       "gps": "GPS",
       "manual": "Ręcznie",
       "month": "Maj 2026",
-      "weekdays": "Pon,Wto,Śro,Czw,Pią,Sob,Nie"
+      "weekdays": "Pon,Wto,Śro,Czw,Pią,Sob,Nie",
+      "monthJuly": "lipiec 2026"
     },
     "emp": {
       "project": "Projekt Dom 54",
