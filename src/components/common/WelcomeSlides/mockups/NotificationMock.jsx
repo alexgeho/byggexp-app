@@ -1,26 +1,17 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import { View, Text, Image, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 
-import { MOCK, FONT } from "./assets";
+import { MOCK, ONB, FONT } from "./assets";
 
 // Task auto-reminders, rebuilt from the real lock-screen reference: two stacked
 // push notifications for the same task — showing that reminders keep coming
-// until the job is confirmed done. Titles/time localize; the app-icon tile is
-// drawn.
+// until the job is confirmed done. Titles/time localize; the app icon is the
+// real one.
 function Banner({ title, time, body }) {
   return (
     <View style={styles.banner}>
-      <LinearGradient
-        colors={["#3AA0FF", "#0785F4"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.icon}
-      >
-        <Text style={styles.iconText}>BYGG</Text>
-        <Text style={styles.iconText}>EXP</Text>
-      </LinearGradient>
+      <Image source={ONB.appIcon} style={styles.icon} />
       <View style={styles.body}>
         <View style={styles.titleRow}>
           <Text style={styles.title} numberOfLines={1}>
@@ -71,16 +62,7 @@ const styles = StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
     marginRight: 12,
-  },
-  iconText: {
-    color: "#FFFFFF",
-    fontSize: 10,
-    fontWeight: "800",
-    letterSpacing: 0.2,
-    lineHeight: 12,
   },
   body: { flex: 1 },
   titleRow: { flexDirection: "row", alignItems: "center", marginBottom: 3 },

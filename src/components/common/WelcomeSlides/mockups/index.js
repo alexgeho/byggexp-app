@@ -1,6 +1,6 @@
 import React from "react";
 
-import { CalendarMock } from "./CalendarMock";
+import { WorkerTimeMock } from "./WorkerTimeMock";
 import { ArbetspassMock } from "./ArbetspassMock";
 import { EmployeesMock } from "./EmployeesMock";
 import { NotificationMock } from "./NotificationMock";
@@ -12,7 +12,7 @@ import { ReceiptMock } from "./ReceiptMock";
 // Maps a slide's `illustration` key (see WelcomeSlides SLIDES_BY_ROLE) to its
 // rebuilt React Native mockup.
 const MOCKUPS = {
-  calendar: CalendarMock,
+  workerTime: WorkerTimeMock,
   arbetspass: ArbetspassMock,
   employees: EmployeesMock,
   notification: NotificationMock,

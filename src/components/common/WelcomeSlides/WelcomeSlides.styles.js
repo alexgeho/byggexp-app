@@ -35,16 +35,13 @@ export function createStyles() {
     list: {
       flex: 1,
     },
-    // Figma pins the heading near y=497 (~58%) and grows the card UPWARD from
-    // just above it. Bottom-anchoring the [card + 24 gap + heading] stack with a
-    // fixed bottom inset reproduces that: tall cards (calendar) rise toward the
-    // top bar, short cards (notification) sit low near the heading.
+    // Center the [mockup + heading] group vertically so the top and bottom gaps
+    // are equal on every slide (and tall cards never clip against the top bar).
     slide: {
       flex: 1,
       alignItems: "center",
-      justifyContent: "flex-end",
+      justifyContent: "center",
       paddingHorizontal: 20,
-      paddingBottom: 130,
     },
     heroWrap: {
       width: "100%",

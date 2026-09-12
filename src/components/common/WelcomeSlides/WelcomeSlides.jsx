@@ -46,7 +46,7 @@ export function openWelcomeTour() {
 // for both roles (Figma redesign).
 const SLIDES_BY_ROLE = {
   worker: [
-    { key: "1", illustration: "calendar" },
+    { key: "1", illustration: "workerTime" },
     { key: "2", illustration: "notification" },
     { key: "3", illustration: "documents" },
     { key: "4", illustration: "receipt" },
