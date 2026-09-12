@@ -11,9 +11,9 @@ import { emitShiftLocationCheckError } from "../utils/shiftExitAutoCompleteEvent
 import { runGeofenceObservation } from "../utils/geofenceRunner";
 import { GEOFENCE_INSIDE, GEOFENCE_OUTSIDE } from "../utils/geofenceEvaluation";
 import {
+  canDeferToBackgroundMonitor,
   hasLocationTaskPermission,
   isBackgroundGeofencingSupported,
-  isBackgroundMonitorStale,
   stopShiftGeofencing,
   syncShiftGeofenceForProject,
 } from "../utils/backgroundGeofence";
@@ -272,11 +272,12 @@ export default function ShiftLocationMonitor() {
           shiftProject,
           currentShift.location,
         );
-        // Only stand down while the background monitor is actually reporting.
-        // A silenced service (Doze, battery optimisation, OEM task killer) stays
-        // registered, and deferring to it left the shift running even with the
-        // app open and a usable fix available.
-        if (backgroundActive && !(await isBackgroundMonitorStale())) {
+        // Only stand down while the background monitor can be trusted this
+        // cycle. On Android a silenced foreground service (Doze, battery
+        // optimisation, OEM task killer) stays registered but blind; on iOS
+        // region monitoring is best-effort with no health signal, so the
+        // foreground check stays on as a safety net while the app is open.
+        if (backgroundActive && (await canDeferToBackgroundMonitor())) {
           return;
         }
 
@@ -295,7 +296,7 @@ export default function ShiftLocationMonitor() {
       const backgroundActive = await syncBackgroundGeofence(
         selectedProjectForGeofence,
       );
-      if (backgroundActive && !(await isBackgroundMonitorStale())) {
+      if (backgroundActive && (await canDeferToBackgroundMonitor())) {
         return;
       }
 

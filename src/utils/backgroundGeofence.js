@@ -231,6 +231,30 @@ export const isBackgroundMonitorStale = async () => {
   return false;
 };
 
+// Whether the OS-level background monitor can be trusted on its own this cycle,
+// letting the in-app foreground check stand down (running both would be
+// redundant — though never harmful, since the transitions are idempotent and
+// share one persisted state).
+//
+// Android: yes, as long as the foreground-service stream is actually producing
+// usable readings (a silenced service must not suppress the foreground check).
+//
+// iOS: NOT while the app is open. Region monitoring is best-effort and
+// event-driven with no health signal — an exit can arrive minutes late or not
+// at all, and isBackgroundMonitorStale is exempt for iOS by design (silence is
+// expected there). Deferring unconditionally meant a granted "Always" left the
+// shift running with the app on screen and a perfectly good fix available. So
+// while foregrounded, keep the High-accuracy foreground check on as a safety
+// net; the OS geofence still covers the app-closed case, and idempotency keeps
+// the two from double-firing. When backgrounded there is no reliable JS timer,
+// so defer to the OS geofence.
+export const canDeferToBackgroundMonitor = async () => {
+  if (isAndroid) {
+    return !(await isBackgroundMonitorStale());
+  }
+  return AppState.currentState !== "active";
+};
+
 // Android: start (or keep) a foreground-service location stream for the given
 // project region. The task in shiftLocationUpdatesTask computes enter/exit from
 // the stream. Idempotent — a stream already running for the same project is
