@@ -1,3 +1,42 @@
+# 🆕 Сессия 2026-09-12/13 — Value-тур (WelcomeSlides) пересобран под РЕАЛЬНЫЕ экраны по ТЗ клиента
+
+Всё в `main` + роздано серией `eas update --branch production` (runtime 1.1.0, iOS+Android). Также в начале сессии — geofence-фиксы (см. ниже).
+
+## Онбординг value-тур — ГЛАВНОЕ
+
+**Файлы:** `src/components/common/WelcomeSlides/WelcomeSlides.jsx` (+ `.styles.js`), мокапы в `src/components/common/WelcomeSlides/mockups/`, ассеты в `src/assets/onboarding/`. Seen-key `welcome-slides-seen-v6` (onboardingStorage.js).
+
+**ТЗ клиента:** Google Doc «ТЗ Онбординг» (key `1YmPOZYfsPPTC0OTDVXzfYzaWxpXfzD641Z6OZRa_NBM`). Каждый пункт = ссылка на Drive-скрин реального экрана. Картинки тянул через `https://drive.google.com/thumbnail?id=<ID>&sz=w1200` (in-browser preview рендерит чёрное; thumbnail-URL отдаёт полное фото для расшаренных).
+
+### KLART (сделано)
+
+- **Все слайды пересобраны в RN 1:1 под реальные экраны** (не картинки → локализуемо):
+  - Admin: `ArbetspassMock` (GPS-календарь + заголовок Arbetspass + upload-иконка + фильтры + сводка 524h/14 dagar) · `EmployeesMock` (Anställda: дропдаун проекта + карточки имя/статус-пилюля/роль/объект) · `NotificationMock` (2 стопки пуш-напоминаний = «напоминает пока не подтвердишь») · `PhotosMock` (Kamera: вкладки Skiftfoton/Kvitton + фотосетка по датам) · `CostsMock` (Ekonomi: KOSTNADER + RESULTAT/Marginal).
+  - Worker: `WorkerTimeMock` (Arbetspass·Manuell: Klar, оранжевая Manuell, 80h/14 dagar, дни синие ✓ / бежевые / «+») · `NotificationMock` (общий с админом) · `DocumentsMock` (Dokument-вкладки + карточки файлов) · `ReceiptMock` (Nytt utlägg: фото чека → авто Leverantör/Totalt/Moms → Spara utlägg).
+- Chrome-фон `#EEEEEE`, без синего glow, карточки white@60% r20, заголовок DM Sans SemiBold 21, кнопка/точки `#0785F4`, без вордмарка. Палитра/шрифты сэмплены из Figma+реальных экранов (`mockups/assets.js`: brand `#0785F4`, blue `#007AFF`, label `#667E93`, DM Sans через `FONT.*`).
+- **Центрирование группы (иллюстрация+текст) по вертикали — равные отступы сверху/снизу на ВСЕХ слайдах** (`slide` justifyContent center).
+- Уведомления используют **оригинальную иконку приложения** (`assets/icon.png`), не нарисованную.
+- i18n: `welcome.*` заголовки-выгоды локализованы 11 языков (parity ✓); добавлены `welcome.cal.monthJuly`, `welcome.notif.{title1,title2,now,earlier}`.
+- CalendarMock (старый майский) удалён.
+
+### 🔜 NÄSTA STEG (продолжить тут)
+
+1. **Проверить все 9 слайдов на устройстве** (2 перезапуска, OTA runtime 1.1.0): центровка одинаковая, высокие карточки (Kamera/Ekonomi/WorkerTime) не обрезаются, заливки/цвета ок.
+2. **Мокап-лейблы внутри карточек — сейчас хардкод шведский** (Kamera, Skiftfoton, RESULTAT, Uppgifter, Nytt utlägg, Anställda, Planerat и т.д.), чтобы не плодить 11-язычный i18n на иллюстративный текст. Заголовки-выгоды под слайдами локализованы. Если клиент хочет — локализовать и лейблы (добавить ключи во все 11 локалей).
+3. **Неиспользуемые ассеты** после переделки: `avatar-marcus/amara.png`, `thumb-b1..b4.png`, `photo-6/7.png` больше не используются (EmployeesMock/PhotosMock переделаны) — можно удалить для веса бандла.
+4. Дальше по ТЗ, если появятся новые пункты/ссылки — метод: thumbnail-URL → смотрю реальный экран → RN 1:1 → OTA.
+
+### ⚠️ Öppna frågor / väntает
+
+- Ждать вердикт клиента с устройства по каждому слайду (правки размеров/цветов/копий).
+- Локализовать ли внутренние мокап-лейблы (см. п.2).
+
+## Geofence (начало сессии) — уже разобрано
+
+- iOS не ставил смену на паузу: монитор целиком отдавал управление OS-геофенсу без foreground-подстраховки → добавлен `canDeferToBackgroundMonitor()` (iOS держит foreground-проверку пока приложение открыто). Радиус clamp 120→180м. Ресерч показал: iOS region monitoring НЕ требует `isIosBackgroundLocationEnabled` (только «Always») — фон возможен без риска App Store 2.5.4. Детали в памяти `project_geofence_ios_foreground_safety_net`.
+
+---
+
 # 🆕 Сессия 2026-09-11 — Home: онбординг под таймер + откат нав-пилюли к frosted glass
 
 Всё в `main` + **роздано `eas update --branch production`** (runtime 1.1.0, iOS+Android). Две правки на главном экране (`HomeVariant2`).
