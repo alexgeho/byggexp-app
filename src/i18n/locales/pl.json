@@ -1321,48 +1321,65 @@
   "welcome": {
     "skip": "Pomiń",
     "next": "Dalej",
-    "start": "Rozpocznij",
+    "start": "Zaczynajmy",
+    "cal": {
+      "planned": "Planowane",
+      "gps": "GPS",
+      "manual": "Ręcznie",
+      "month": "Maj 2026",
+      "weekdays": "Pon,Wto,Śro,Czw,Pią,Sob,Nie"
+    },
+    "emp": {
+      "project": "Projekt Dom 54",
+      "atWork": "W pracy",
+      "notAtWork": "Poza pracą"
+    },
+    "notif": {
+      "title": "Powiadomienie",
+      "body": "Czas na \"Strefy testów elektrycznych A-B. Zakończ do 14:30. Wyślij zdjęcia po zakończeniu. Jeśli skończyłeś, potwierdź ukończenie — w przeciwnym…"
+    },
+    "photos": {
+      "label": "zdjęć"
+    },
+    "costs": {
+      "title": "KOSZTY",
+      "purchaseInvoices": "Faktury zakupu",
+      "receipts": "Paragony",
+      "labor": "Robocizna",
+      "total": "Koszt całkowity"
+    },
     "worker": {
       "slide": {
         "1": {
-          "title": "Automatyczne lub ręczne rejestrowanie czasu pracy — koniec z wypełnianiem grafików i wysyłaniem SMS-ów."
+          "title": "Automatyczna lub ręczna rejestracja czasu — koniec z wypełnianiem grafików i wysyłaniem SMS-ów."
         },
         "2": {
-          "title": "Zadania z automatycznymi przypomnieniami — przypominają o tym, co ważne."
+          "title": "Zadania z automatycznymi przypomnieniami — przypomina, aż praca zostanie potwierdzona jako gotowa."
         },
         "3": {
-          "title": "Wszystkie dokumenty projektu w jednym miejscu — koniec z szukaniem zagubionych rysunków."
+          "title": "Dokumenty projektu w jednym miejscu — koniec z szukaniem zagubionych rysunków."
         },
         "4": {
-          "title": "Zdjęcia z pracy dołączają się automatycznie do projektu, a paragony są skanowane do systemu od razu — zrób zdjęcie i zapomnij."
+          "title": "Zdjęcia z pracy automatycznie dołączają do projektu, a paragony skanują się od razu — zrób zdjęcie i zapomnij."
         }
       }
     },
     "admin": {
       "slide": {
         "1": {
-          "title": "Projekt i zespół w kilka minut",
-          "text": "Utwórz projekt i dodaj pracowników. Każdy od razu otrzyma e-mail z danymi logowania i linkiem do pobrania aplikacji."
+          "title": "Eksportuj czas pracy pracowników do Excela albo zamień go na faktury i płace w kilka kliknięć."
         },
         "2": {
-          "title": "Zobacz zespół w czasie rzeczywistym",
-          "text": "Kto rozpoczął zmianę, kto jest nieobecny i gdzie — wszystko widać od razu."
+          "title": "Podgląd pracowników na żywo — od razu widzisz, kto się zameldował, kogo nie ma i gdzie jest."
         },
         "3": {
-          "title": "Czas → wypłata i faktura",
-          "text": "Eksportuj czas pracy do Excela w kilka kliknięć — albo prosto na fakturę lub listę płac."
+          "title": "Zadania z automatycznymi przypomnieniami — przypomina, aż praca zostanie potwierdzona jako gotowa."
         },
         "4": {
-          "title": "Zadania, o których nie zapomnisz",
-          "text": "Automatyczne przypomnienia są wysyłane po terminie, aż pracownik potwierdzi wykonanie zadania."
+          "title": "Raporty zdjęciowe z placu i skany paragonów synchronizują się od razu z systemem — zrób zdjęcie i zapomnij."
         },
         "5": {
-          "title": "Zdjęcia i paragony",
-          "text": "Raporty zdjęciowe z placu budowy i paragony są skanowane przez aplikację — prosto do systemu. Zrób zdjęcie i zapomnij o reszcie."
-        },
-        "6": {
-          "title": "Finanse na autopilocie",
-          "text": "Zeskanowane paragony, godziny pracy oraz wysłane/otrzymane faktury są automatycznie dodawane do finansów projektu."
+          "title": "Zdjęcia paragonów są skanowane i automatycznie wliczane do finansów projektu."
         }
       }
     }

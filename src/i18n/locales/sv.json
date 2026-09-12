@@ -1322,47 +1322,64 @@
     "skip": "Hoppa över",
     "next": "Nästa",
     "start": "Kom igång",
+    "cal": {
+      "planned": "Planerat",
+      "gps": "GPS",
+      "manual": "Manuellt",
+      "month": "Maj 2026",
+      "weekdays": "Mån,Tis,Ons,Tor,Fre,Lör,Sön"
+    },
+    "emp": {
+      "project": "Projekt Hus 54",
+      "atWork": "På jobbet",
+      "notAtWork": "Inte på jobbet"
+    },
+    "notif": {
+      "title": "Avisering",
+      "body": "Dags för \"Elektriska testzoner A-B. Klart senast 14:30. Skicka foton när du är klar. Om du är klar, bekräfta att det är slutfört — annars…"
+    },
+    "photos": {
+      "label": "foton"
+    },
+    "costs": {
+      "title": "KOSTNADER",
+      "purchaseInvoices": "Inköpsfakturor",
+      "receipts": "Kvitton",
+      "labor": "Arbete",
+      "total": "Total kostnad"
+    },
     "worker": {
       "slide": {
         "1": {
-          "title": "Automatisk eller manuell registrering av arbetstid — du slipper fylla i tidrapporter och skicka sms."
+          "title": "Automatisk eller manuell tidregistrering — du slipper fylla i tidrapporter och skicka sms."
         },
         "2": {
-          "title": "Uppgifter med automatiska påminnelser — påminner dig om det viktiga."
+          "title": "Uppgifter med automatiska påminnelser — påminner tills jobbet är bekräftat klart."
         },
         "3": {
           "title": "Projektdokument samlade på ett ställe — inget mer letande efter borttappade ritningar."
         },
         "4": {
-          "title": "Foton på jobb fästs automatiskt på projektet och kvitton skannas in i systemet direkt — ta bilden och glöm."
+          "title": "Foton från jobbet fästs automatiskt på projektet och kvitton skannas in direkt — ta bilden och glöm."
         }
       }
     },
     "admin": {
       "slide": {
         "1": {
-          "title": "Projekt & team på minuter",
-          "text": "Skapa ett projekt och lägg till anställda. Alla får direkt ett mejl med inloggning och en länk för att ladda ner appen."
+          "title": "Exportera anställdas arbetstid till Excel, eller gör den till fakturor och lön på ett par klick."
         },
         "2": {
-          "title": "Se personalen i realtid",
-          "text": "Vem har startat sitt arbetspass, vem är frånvarande och var — allt syns direkt."
+          "title": "Se personalen i realtid — vem har stämplat in, vem är borta och var."
         },
         "3": {
-          "title": "Tid → lön & faktura",
-          "text": "Exportera arbetstid till Excel med ett par klick — eller direkt till en faktura eller lön."
+          "title": "Uppgifter med automatiska påminnelser — påminner tills jobbet är bekräftat klart."
         },
         "4": {
-          "title": "Uppgifter som inte glöms",
-          "text": "Automatiska påminnelser skickas efter deadline tills den anställde bekräftar att uppgiften är klar."
+          "title": "Fotorapporter och kvittoskanning från arbetsplatsen synkas direkt till systemet — ta bilden och glöm."
         },
         "5": {
-          "title": "Foton & kvitton",
-          "text": "Fotorapporter från arbetsplatsen och kvitton skannas av appen — direkt in i systemet. Ta bilden och glöm resten."
-        },
-        "6": {
-          "title": "Ekonomi på autopilot",
-          "text": "Skannade kvitton, arbetstimmar och skickade/mottagna fakturor räknas automatiskt in i projektets ekonomi."
+          "title": "Kvittofoton skannas och räknas automatiskt in i projektets ekonomi."
         }
       }
     }

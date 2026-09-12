@@ -1322,47 +1322,64 @@
     "skip": "Ohita",
     "next": "Seuraava",
     "start": "Aloita",
+    "cal": {
+      "planned": "Suunniteltu",
+      "gps": "GPS",
+      "manual": "Manuaalinen",
+      "month": "Toukokuu 2026",
+      "weekdays": "Ma,Ti,Ke,To,Pe,La,Su"
+    },
+    "emp": {
+      "project": "Talo 54 -projekti",
+      "atWork": "Töissä",
+      "notAtWork": "Ei töissä"
+    },
+    "notif": {
+      "title": "Ilmoitus",
+      "body": "On aika: \"Sähkötestialueet A-B. Valmis klo 14:30 mennessä. Lähetä kuvat, kun olet valmis. Jos olet valmis, vahvista että se on tehty — muuten…"
+    },
+    "photos": {
+      "label": "kuvaa"
+    },
+    "costs": {
+      "title": "KUSTANNUKSET",
+      "purchaseInvoices": "Ostolaskut",
+      "receipts": "Kuitit",
+      "labor": "Työ",
+      "total": "Kokonaiskustannus"
+    },
     "worker": {
       "slide": {
         "1": {
-          "title": "Automaattinen tai manuaalinen työajan kirjaus — ei enää tuntilappujen täyttöä tai tekstiviestien lähettelyä."
+          "title": "Automaattinen tai manuaalinen työajan kirjaus — ei enää tuntilistojen täyttöä tai tekstiviestejä."
         },
         "2": {
-          "title": "Tehtävät automaattisilla muistutuksilla — muistuttaa sinua tärkeistä asioista."
+          "title": "Tehtävät automaattisilla muistutuksilla — muistuttaa, kunnes työ on vahvistettu valmiiksi."
         },
         "3": {
-          "title": "Kaikki projektin asiakirjat yhdessä paikassa — ei enää kadonneiden piirustusten etsimistä."
+          "title": "Projektin asiakirjat yhdessä paikassa — ei enää kadonneiden piirustusten etsimistä."
         },
         "4": {
-          "title": "Työkuvat kiinnittyvät projektiin automaattisesti ja kuitit skannataan järjestelmään heti — ota kuva ja unohda se."
+          "title": "Työkuvat liittyvät projektiin automaattisesti ja kuitit skannautuvat heti — ota kuva ja unohda."
         }
       }
     },
     "admin": {
       "slide": {
         "1": {
-          "title": "Projekti ja tiimi minuuteissa",
-          "text": "Luo projekti ja lisää työntekijät. Jokainen saa heti sähköpostin kirjautumistiedoilla ja linkin sovelluksen lataamiseen."
+          "title": "Vie työntekijöiden työajat Exceliin tai muuta ne laskuiksi ja palkoiksi parilla klikkauksella."
         },
         "2": {
-          "title": "Näe tiimi reaaliajassa",
-          "text": "Kuka on aloittanut työvuoronsa, kuka on poissa ja missä — kaikki näkyy heti."
+          "title": "Henkilöstön seuranta reaaliajassa — näet heti kuka on leimannut sisään, kuka on poissa ja missä."
         },
         "3": {
-          "title": "Aika → palkka ja lasku",
-          "text": "Vie työaika Exceliin parilla klikkauksella — tai suoraan laskuun tai palkkaan."
+          "title": "Tehtävät automaattisilla muistutuksilla — muistuttaa, kunnes työ on vahvistettu valmiiksi."
         },
         "4": {
-          "title": "Tehtävät, jotka eivät unohdu",
-          "text": "Automaattiset muistutukset lähetetään määräajan jälkeen, kunnes työntekijä vahvistaa tehtävän valmiiksi."
+          "title": "Työmaan kuvaraportit ja kuittiskannaukset synkronoituvat heti järjestelmään — ota kuva ja unohda."
         },
         "5": {
-          "title": "Valokuvat ja kuitit",
-          "text": "Työmaan valokuvaraportit ja kuitit skannataan sovelluksella — suoraan järjestelmään. Ota kuva ja unohda loput."
-        },
-        "6": {
-          "title": "Talous autopilotilla",
-          "text": "Skannatut kuitit, työtunnit ja lähetetyt/vastaanotetut laskut lisätään automaattisesti projektin talouteen."
+          "title": "Kuittikuvat skannataan ja lasketaan automaattisesti projektin talouteen."
         }
       }
     }

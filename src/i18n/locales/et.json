@@ -1322,47 +1322,64 @@
     "skip": "Jäta vahele",
     "next": "Edasi",
     "start": "Alusta",
+    "cal": {
+      "planned": "Planeeritud",
+      "gps": "GPS",
+      "manual": "Käsitsi",
+      "month": "Mai 2026",
+      "weekdays": "E,T,K,N,R,L,P"
+    },
+    "emp": {
+      "project": "Maja 54 projekt",
+      "atWork": "Tööl",
+      "notAtWork": "Ei ole tööl"
+    },
+    "notif": {
+      "title": "Teavitus",
+      "body": "On aeg: \"Elektrilised testtsoonid A-B. Valmis kell 14:30. Saada fotod, kui valmis. Kui oled valmis, kinnita, et see on tehtud — muidu…"
+    },
+    "photos": {
+      "label": "fotot"
+    },
+    "costs": {
+      "title": "KULUD",
+      "purchaseInvoices": "Ostuarved",
+      "receipts": "Kviitungid",
+      "labor": "Töö",
+      "total": "Kogukulu"
+    },
     "worker": {
       "slide": {
         "1": {
-          "title": "Automaatne või käsitsi tööaja registreerimine — enam pole vaja täita tunnilehti ega saata sõnumeid."
+          "title": "Automaatne või käsitsi tööaja arvestus — enam ei pea täitma tunnilehti ega saatma sõnumeid."
         },
         "2": {
-          "title": "Ülesanded automaatsete meeldetuletustega — tuletab sulle meelde, mis on tähtis."
+          "title": "Ülesanded automaatsete meeldetuletustega — tuletab meelde, kuni töö on kinnitatud tehtuks."
         },
         "3": {
-          "title": "Kõik projekti dokumendid ühes kohas — enam pole vaja otsida kadunud jooniseid."
+          "title": "Projekti dokumendid ühes kohas — enam ei pea otsima kadunud jooniseid."
         },
         "4": {
-          "title": "Tööfotod lisatakse projektile automaatselt ja kviitungid skannitakse süsteemi kohe — tee foto ja unusta."
+          "title": "Tööfotod lisatakse projektile automaatselt ja kviitungid skannitakse kohe — pildista ja unusta."
         }
       }
     },
     "admin": {
       "slide": {
         "1": {
-          "title": "Projekt ja meeskond minutitega",
-          "text": "Loo projekt ja lisa töötajad. Igaüks saab kohe e-kirja sisselogimisandmete ja rakenduse allalaadimise lingiga."
+          "title": "Ekspordi töötajate tööaeg Excelisse või muuda see arveteks ja palgaks paari klikiga."
         },
         "2": {
-          "title": "Näe meeskonda reaalajas",
-          "text": "Kes on vahetuse alustanud, kes on puudu ja kus — kõik on kohe näha."
+          "title": "Töötajate jälgimine reaalajas — näed kohe, kes on sisse löönud, kes on ära ja kus."
         },
         "3": {
-          "title": "Aeg → palk ja arve",
-          "text": "Ekspordi tööaeg Excelisse paari klikiga — või otse arvele või palgale."
+          "title": "Ülesanded automaatsete meeldetuletustega — tuletab meelde, kuni töö on kinnitatud tehtuks."
         },
         "4": {
-          "title": "Ülesanded, mis ei unune",
-          "text": "Automaatsed meeldetuletused saadetakse pärast tähtaega, kuni töötaja kinnitab ülesande tehtuks."
+          "title": "Objekti fotoraportid ja kviitungiskannid sünkroonitakse kohe süsteemi — pildista ja unusta."
         },
         "5": {
-          "title": "Fotod ja kviitungid",
-          "text": "Objekti fotoraportid ja kviitungid skaneerib rakendus — otse süsteemi. Tee pilt ja unusta ülejäänu."
-        },
-        "6": {
-          "title": "Rahandus autopiloodil",
-          "text": "Skaneeritud kviitungid, töötunnid ja saadetud/saadud arved lisatakse automaatselt projekti rahandusse."
+          "title": "Kviitungifotod skannitakse ja arvestatakse automaatselt projekti rahandusse."
         }
       }
     }

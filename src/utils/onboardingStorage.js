@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // The value-tour "seen" flag lives in WelcomeSlides but is reset here too, so
 // keep the single source of truth for the key in one place. Bumping the version
 // re-shows the tour once to everyone (see WelcomeSlides).
-export const WELCOME_SLIDES_SEEN_KEY = "welcome-slides-seen-v5";
+export const WELCOME_SLIDES_SEEN_KEY = "welcome-slides-seen-v6";
 
 // Whether the user dismissed the "Kom igång" home checklist. Once dismissed
 // (or once all steps are done) the card stays hidden.

@@ -12,25 +12,23 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
-import { SvgXml } from "react-native-svg";
 
 import AuthContext from "../../../contexts/AuthContext";
 import { track } from "../../../utils/analytics";
-import { ByggExpWordmark } from "../ByggExpWordmark/ByggExpWordmark";
-import { valueIllustration } from "./valueIllustrations";
+import { Mockup } from "./mockups";
 import { createStyles } from "./WelcomeSlides.styles";
 import { WELCOME_SLIDES_SEEN_KEY } from "../../../utils/onboardingStorage";
 
 // One-time value tour shown right after the FIRST sign-in — not before it,
 // because the slides are role-specific and the role only exists once the user is
-// authenticated. Workers and admins see a different, short pitch of the features
-// that matter to them. Reads its own "seen" flag from AsyncStorage, so it
-// renders nothing on every later launch. Pure JS overlay → ships over OTA.
+// authenticated. Admins see a 5-slide pitch, workers a 4-slide one, each a
+// single high-fidelity product mockup + one benefit sentence. Reads its own
+// "seen" flag from AsyncStorage, so it renders nothing on every later launch.
+// Pure JS overlay → ships over OTA.
 //
-// Key is versioned: bumping it re-shows the tour once to everyone (e.g. when the
-// content changes), which is why existing users who saw the old generic slides
-// get the new role-aware ones a single time. Defined in onboardingStorage so the
-// per-user reset on login can clear it alongside the checklist flags.
+// Key is versioned (onboardingStorage): bumping it re-shows the tour once to
+// everyone when the content changes — which is why users who saw the old slides
+// get this redesigned set a single time.
 const SEEN_KEY = WELCOME_SLIDES_SEEN_KEY;
 // Event that any screen can emit to re-open the tour on demand (e.g. from the
 // in-app guide) — separate from the one-time auto-show gated by SEEN_KEY.
@@ -43,29 +41,23 @@ export function openWelcomeTour() {
   DeviceEventEmitter.emit(OPEN_EVENT);
 }
 
-// Post-login value screens: one illustration + one benefit sentence (rendered in
-// the title/heading style) per slide. Copy lives in i18n under
-// welcome.<roleKey>.slide.<key>.title. `illustration` picks the vector art in
-// valueIllustrations.js.
+// Post-login value screens: one product mockup + one benefit sentence (heading
+// style) per slide. Copy lives in i18n under welcome.<roleKey>.slide.<key>.title;
+// `illustration` picks the rebuilt RN mockup in ./mockups. One slide per page
+// for both roles (Figma redesign).
 const SLIDES_BY_ROLE = {
-  // Worker: one benefit sentence per slide, set in the title (heading) style —
-  // no separate small title, no body text, no green-check bullets.
   worker: [
-    { key: "1", illustration: "worker" },
-    { key: "2", illustration: "tasks" },
-    { key: "3", illustration: "projects" },
+    { key: "1", illustration: "calendar" },
+    { key: "2", illustration: "notification" },
+    { key: "3", illustration: "documents" },
     { key: "4", illustration: "photos" },
   ],
-  // Admin: a fuller 6-slide pitch — each slide has a short title (heading) plus
-  // a supporting sentence (body), covering the whole product loop the owner
-  // cares about: team, live status, time→money, tasks, photos/receipts, economy.
   admin: [
-    { key: "1", illustration: "projects" },
-    { key: "2", illustration: "adminTeam" },
-    { key: "3", illustration: "worker" },
-    { key: "4", illustration: "tasks" },
-    { key: "5", illustration: "photos" },
-    { key: "6", illustration: "adminEconomy" },
+    { key: "1", illustration: "calendar" },
+    { key: "2", illustration: "employees" },
+    { key: "3", illustration: "notification" },
+    { key: "4", illustration: "photos" },
+    { key: "5", illustration: "costs" },
   ],
 };
 
@@ -81,14 +73,6 @@ export function WelcomeSlides() {
   const role = user?.role;
   const roleKey = role === "worker" ? "worker" : "admin";
   const slides = SLIDES_BY_ROLE[roleKey];
-
-  // Admin gets a denser tour: two benefit blocks per screen (6 slides → 3
-  // pages), so the owner skims the value faster. Workers keep one-per-screen.
-  const perPage = roleKey === "admin" ? 2 : 1;
-  const pages = [];
-  for (let i = 0; i < slides.length; i += perPage) {
-    pages.push(slides.slice(i, i + perPage));
-  }
 
   // Only decide to show once we actually know the role (i.e. signed in).
   useEffect(() => {
@@ -149,7 +133,7 @@ export function WelcomeSlides() {
   };
 
   const goNext = () => {
-    if (index >= pages.length - 1) {
+    if (index >= slides.length - 1) {
       finish("completed");
       return;
     }
@@ -163,20 +147,19 @@ export function WelcomeSlides() {
   // (swiping right also steps back).
   const onScrollEnd = (e) => {
     const i = Math.round(e.nativeEvent.contentOffset.x / width);
-    if (i !== index && i >= 0 && i < pages.length) {
+    if (i !== index && i >= 0 && i < slides.length) {
       setIndex(i);
       track("welcome_slide_viewed", { role: roleKey, index: i });
     }
   };
 
-  const isLast = index === pages.length - 1;
+  const isLast = index === slides.length - 1;
 
   return (
-    <LinearGradient colors={["#f5f9fe", "#eaf2fb"]} style={styles.overlay}>
+    <LinearGradient colors={["#F4F5F7", "#E9ECF1"]} style={styles.overlay}>
       <StatusBar barStyle="dark-content" />
 
       <View style={styles.topBar}>
-        <ByggExpWordmark width={120} color="#052D50" />
         <TouchableOpacity
           onPress={() => finish("skipped")}
           hitSlop={styles.hitSlop}
@@ -188,49 +171,29 @@ export function WelcomeSlides() {
       <FlatList
         ref={listRef}
         style={styles.list}
-        data={pages}
-        keyExtractor={(page) => page[0].key}
+        data={slides}
+        keyExtractor={(s) => s.key}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         onMomentumScrollEnd={onScrollEnd}
-        renderItem={({ item: page }) => {
-          const two = perPage === 2;
-          return (
-            <View style={[styles.slide, two && styles.slidePair, { width }]}>
-              {page.map((s) => {
-                // Sentence-as-heading everywhere: no separate short title. Admin
-                // slides carry the full benefit sentence in `.text`; workers put
-                // it in `.title`. Whichever exists is shown in the heading style.
-                const text =
-                  t(`welcome.${roleKey}.slide.${s.key}.text`, {
-                    defaultValue: "",
-                  }) || t(`welcome.${roleKey}.slide.${s.key}.title`);
-                return (
-                  <View key={s.key} style={two ? styles.pairCard : styles.card}>
-                    <View style={two ? styles.pairHero : styles.hero}>
-                      <SvgXml
-                        xml={valueIllustration(s.illustration)}
-                        width={two ? 165 : 317}
-                        height={two ? 127 : 244}
-                      />
-                    </View>
-                    <Text style={two ? styles.pairTitle : styles.title}>
-                      {text}
-                    </Text>
-                  </View>
-                );
-              })}
+        renderItem={({ item: s }) => (
+          <View style={[styles.slide, { width }]}>
+            <View style={styles.hero}>
+              <Mockup name={s.illustration} />
             </View>
-          );
-        }}
+            <Text style={styles.title}>
+              {t(`welcome.${roleKey}.slide.${s.key}.title`)}
+            </Text>
+          </View>
+        )}
       />
 
-      {pages.length > 1 ? (
+      {slides.length > 1 ? (
         <View style={styles.dots}>
-          {pages.map((page, i) => (
+          {slides.map((s, i) => (
             <View
-              key={page[0].key}
+              key={s.key}
               style={[styles.dot, i === index && styles.dotActive]}
             />
           ))}

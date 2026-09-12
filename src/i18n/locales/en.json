@@ -1322,47 +1322,64 @@
     "skip": "Skip",
     "next": "Next",
     "start": "Get started",
+    "cal": {
+      "planned": "Planned",
+      "gps": "GPS",
+      "manual": "Manual",
+      "month": "May 2026",
+      "weekdays": "Mon,Tue,Wed,Thu,Fri,Sat,Sun"
+    },
+    "emp": {
+      "project": "House 54 project",
+      "atWork": "At work",
+      "notAtWork": "Not at work"
+    },
+    "notif": {
+      "title": "Notification",
+      "body": "It's time for \"Electrical test zones A-B. Finish by 14:30. Send photos when done. If you are done, confirm that it is completed — other…"
+    },
+    "photos": {
+      "label": "photos"
+    },
+    "costs": {
+      "title": "COSTS",
+      "purchaseInvoices": "Purchase invoices",
+      "receipts": "Receipts",
+      "labor": "Labor",
+      "total": "Total cost"
+    },
     "worker": {
       "slide": {
         "1": {
-          "title": "Automatic or manual work-time logging — no more filling in timesheets or sending texts."
+          "title": "Automatic or manual time tracking — no more filling out timesheets or sending text messages."
         },
         "2": {
-          "title": "Tasks with automatic reminders — reminds you of what matters."
+          "title": "Automated task reminders — keep notifying until the job is confirmed done."
         },
         "3": {
-          "title": "All project documents in one place — no more searching for lost drawings."
+          "title": "Project documents in one place — no more searching for lost blueprints."
         },
         "4": {
-          "title": "Photo reports attach to the project automatically and receipts are scanned into the system instantly — take the photo and forget it."
+          "title": "Job photos attach to the project automatically and receipts scan straight into the system — just snap and forget."
         }
       }
     },
     "admin": {
       "slide": {
         "1": {
-          "title": "Projects & team in minutes",
-          "text": "Create a project and add employees. Everyone instantly gets an email with login details and a link to download the app."
+          "title": "Export employee timesheets to Excel, or turn them into invoices and payroll in a couple of clicks."
         },
         "2": {
-          "title": "See your crew in real time",
-          "text": "Who has started their shift, who's absent and where — it's all visible instantly."
+          "title": "Real-time employee monitoring — see at a glance who clocked in, who is away, and where."
         },
         "3": {
-          "title": "Time → payroll & invoice",
-          "text": "Export work time to Excel in a couple of taps — or straight to an invoice or payroll."
+          "title": "Automated task reminders — keep notifying until the job is confirmed done."
         },
         "4": {
-          "title": "Tasks that never slip",
-          "text": "Automatic reminders are sent after the deadline until the employee confirms the task is done."
+          "title": "On-site photo reports and receipt scans sync instantly to the system — just snap and forget."
         },
         "5": {
-          "title": "Photos & receipts",
-          "text": "Site photo reports and receipts are scanned by the app — straight into the system. Snap it and forget the rest."
-        },
-        "6": {
-          "title": "Finances on autopilot",
-          "text": "Scanned receipts, work hours and sent/received invoices are automatically added to the project's finances."
+          "title": "Receipt photos are scanned and automatically calculated in project finances."
         }
       }
     }

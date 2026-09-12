@@ -1321,48 +1321,65 @@
   "welcome": {
     "skip": "Preskoči",
     "next": "Dalje",
-    "start": "Kako početi",
+    "start": "Započni",
+    "cal": {
+      "planned": "Planirano",
+      "gps": "GPS",
+      "manual": "Ručno",
+      "month": "Maj 2026",
+      "weekdays": "Pon,Uto,Sri,Čet,Pet,Sub,Ned"
+    },
+    "emp": {
+      "project": "Projekt Kuća 54",
+      "atWork": "Na poslu",
+      "notAtWork": "Nije na poslu"
+    },
+    "notif": {
+      "title": "Obavijest",
+      "body": "Vrijeme je: \"Zone električnog testiranja A-B. Završiti do 14:30. Pošaljite fotografije kad završite. Ako ste gotovi, potvrdite da je završeno — u suprotnom…"
+    },
+    "photos": {
+      "label": "fotografija"
+    },
+    "costs": {
+      "title": "TROŠKOVI",
+      "purchaseInvoices": "Ulazne fakture",
+      "receipts": "Računi",
+      "labor": "Rad",
+      "total": "Ukupni trošak"
+    },
     "worker": {
       "slide": {
         "1": {
-          "title": "Automatsko ili ručno bilježenje radnog vremena — bez popunjavanja evidencija i slanja poruka."
+          "title": "Automatsko ili ručno evidentiranje vremena — nema više popunjavanja evidencija ni slanja poruka."
         },
         "2": {
-          "title": "Zadaci s automatskim podsjetnicima — podsjećaju vas na ono što je važno."
+          "title": "Zadaci s automatskim podsjetnicima — podsjeća dok se posao ne potvrdi kao završen."
         },
         "3": {
-          "title": "Svi dokumenti projekta na jednom mjestu — bez traženja izgubljenih nacrta."
+          "title": "Projektni dokumenti na jednom mjestu — nema više traženja izgubljenih nacrta."
         },
         "4": {
-          "title": "Fotografije s posla automatski se povezuju s projektom, a računi se odmah skeniraju u sistem — snimite i zaboravite."
+          "title": "Fotografije s posla automatski se dodaju projektu, a računi se odmah skeniraju — slikaj i zaboravi."
         }
       }
     },
     "admin": {
       "slide": {
         "1": {
-          "title": "Projekt i tim za nekoliko minuta",
-          "text": "Kreirajte projekt i dodajte zaposlenike. Svako odmah dobije e-mail s podacima za prijavu i linkom za preuzimanje aplikacije."
+          "title": "Izvezite radno vrijeme zaposlenika u Excel ili ga pretvorite u fakture i plaće u nekoliko klikova."
         },
         "2": {
-          "title": "Vidite ekipu u realnom vremenu",
-          "text": "Ko je započeo smjenu, ko je odsutan i gdje — sve se vidi odmah."
+          "title": "Praćenje zaposlenika u realnom vremenu — odmah vidite ko se prijavio, ko je odsutan i gdje."
         },
         "3": {
-          "title": "Vrijeme → plata i faktura",
-          "text": "Izvezite radno vrijeme u Excel u par klikova — ili direktno u fakturu ili platu."
+          "title": "Zadaci s automatskim podsjetnicima — podsjeća dok se posao ne potvrdi kao završen."
         },
         "4": {
-          "title": "Zadaci koji se ne zaboravljaju",
-          "text": "Automatski podsjetnici se šalju nakon roka dok zaposlenik ne potvrdi da je zadatak završen."
+          "title": "Foto-izvještaji s gradilišta i skenovi računa odmah se sinhroniziraju sa sistemom — slikaj i zaboravi."
         },
         "5": {
-          "title": "Fotografije i računi",
-          "text": "Foto izvještaji s gradilišta i računi se skeniraju aplikacijom — direktno u sistem. Slikajte i zaboravite ostalo."
-        },
-        "6": {
-          "title": "Finansije na autopilotu",
-          "text": "Skenirani računi, radni sati i poslane/primljene fakture automatski se dodaju u finansije projekta."
+          "title": "Fotografije računa se skeniraju i automatski uračunavaju u finansije projekta."
         }
       }
     }

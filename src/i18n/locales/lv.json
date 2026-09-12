@@ -1322,47 +1322,64 @@
     "skip": "Izlaist",
     "next": "Tālāk",
     "start": "Sākt",
+    "cal": {
+      "planned": "Plānots",
+      "gps": "GPS",
+      "manual": "Manuāli",
+      "month": "2026. gada maijs",
+      "weekdays": "Pr,Ot,Tr,Ce,Pk,Se,Sv"
+    },
+    "emp": {
+      "project": "Mājas 54 projekts",
+      "atWork": "Darbā",
+      "notAtWork": "Nav darbā"
+    },
+    "notif": {
+      "title": "Paziņojums",
+      "body": "Ir laiks: \"Elektrības testa zonas A-B. Pabeigt līdz 14:30. Nosūtiet fotoattēlus, kad pabeigts. Ja pabeidzāt, apstipriniet, ka izpildīts — citādi…"
+    },
+    "photos": {
+      "label": "foto"
+    },
+    "costs": {
+      "title": "IZMAKSAS",
+      "purchaseInvoices": "Pirkuma rēķini",
+      "receipts": "Čeki",
+      "labor": "Darbs",
+      "total": "Kopējās izmaksas"
+    },
     "worker": {
       "slide": {
         "1": {
-          "title": "Automātiska vai manuāla darba laika reģistrēšana — vairs nav jāaizpilda darba laika uzskaites tabulas vai jāsūta īsziņas."
+          "title": "Automātiska vai manuāla laika uzskaite — vairs nav jāaizpilda tabeles vai jāsūta īsziņas."
         },
         "2": {
-          "title": "Uzdevumi ar automātiskiem atgādinājumiem — atgādina par to, kas ir svarīgi."
+          "title": "Uzdevumi ar automātiskiem atgādinājumiem — atgādina, līdz darbs ir apstiprināts kā pabeigts."
         },
         "3": {
-          "title": "Visi projekta dokumenti vienuviet — vairs nav jāmeklē pazaudēti rasējumi."
+          "title": "Projekta dokumenti vienuviet — vairs nav jāmeklē pazaudēti rasējumi."
         },
         "4": {
-          "title": "Darba fotoattēli automātiski piesaistās projektam, un čeki tiek uzreiz ieskenēti sistēmā — uzņemiet foto un aizmirstiet par to."
+          "title": "Darba foto automātiski pievienojas projektam, un čeki tiek skenēti uzreiz — nofotografē un aizmirsti."
         }
       }
     },
     "admin": {
       "slide": {
         "1": {
-          "title": "Projekts un komanda dažās minūtēs",
-          "text": "Izveidojiet projektu un pievienojiet darbiniekus. Katrs uzreiz saņem e-pastu ar pieteikšanās datiem un saiti lietotnes lejupielādei."
+          "title": "Eksportējiet darbinieku darba laiku uz Excel vai pārvērtiet to rēķinos un algās dažu klikšķu laikā."
         },
         "2": {
-          "title": "Redziet komandu reāllaikā",
-          "text": "Kurš ir sācis maiņu, kurš ir prombūtnē un kur — viss redzams uzreiz."
+          "title": "Darbinieku pārraudzība reāllaikā — uzreiz redzat, kurš ir reģistrējies, kura nav un kur."
         },
         "3": {
-          "title": "Laiks → alga un rēķins",
-          "text": "Eksportējiet darba laiku uz Excel ar dažiem klikšķiem — vai uzreiz rēķinā vai algā."
+          "title": "Uzdevumi ar automātiskiem atgādinājumiem — atgādina, līdz darbs ir apstiprināts kā pabeigts."
         },
         "4": {
-          "title": "Uzdevumi, kas netiek aizmirsti",
-          "text": "Automātiski atgādinājumi tiek sūtīti pēc termiņa, līdz darbinieks apstiprina, ka uzdevums ir pabeigts."
+          "title": "Objekta foto atskaites un čeku skenējumi uzreiz sinhronizējas ar sistēmu — nofotografē un aizmirsti."
         },
         "5": {
-          "title": "Fotoattēli un čeki",
-          "text": "Objekta foto atskaites un čekus skenē lietotne — tieši sistēmā. Uzņemiet foto un aizmirstiet pārējo."
-        },
-        "6": {
-          "title": "Finanses uz autopilota",
-          "text": "Skenētie čeki, darba stundas un nosūtītie/saņemtie rēķini tiek automātiski iekļauti projekta finansēs."
+          "title": "Čeku foto tiek skenēti un automātiski ieskaitīti projekta finansēs."
         }
       }
     }

@@ -1,11 +1,10 @@
 import { StyleSheet } from "react-native";
 
-// Light look, matching the Login screen: soft blue gradient background, a white
-// card, navy text and a blue pill button. The illustration sits on a blue hero
-// panel inside the card so its white/light-blue art still reads.
-const NAVY = "#052d50";
-const MUTED = "#687898";
-const BLUE = "#3183ff";
+// Figma value-tour look: light-gray background, a single high-fidelity product
+// mockup centred in the slide, one bold navy benefit sentence beneath it, page
+// dots and a blue pill CTA. "Skip" sits alone at the top-right.
+const NAVY = "#052D50";
+const BLUE = "#0A84FF";
 
 export function createStyles() {
   return StyleSheet.create({
@@ -13,124 +12,76 @@ export function createStyles() {
       ...StyleSheet.absoluteFillObject,
       zIndex: 1000,
       elevation: 1000,
-      paddingTop: 64,
+      paddingTop: 60,
       paddingBottom: 40,
     },
     hitSlop: { top: 12, bottom: 12, left: 12, right: 12 },
     topBar: {
       flexDirection: "row",
       alignItems: "center",
-      justifyContent: "space-between",
+      justifyContent: "flex-end",
       paddingHorizontal: 24,
+      height: 32,
     },
     skip: {
-      color: MUTED,
-      fontSize: 15,
+      color: NAVY,
+      fontSize: 17,
       fontWeight: "600",
     },
     list: {
       flex: 1,
     },
+    // Mockup + heading are centred as a group in the available space, so short
+    // mockups (notification, costs) sit mid-screen and tall ones (calendar) rise
+    // up — matching the Figma frames.
     slide: {
       flex: 1,
       alignItems: "center",
-      // Anchor content to the top (not centred) so the heading always starts at
-      // the same Y on every slide regardless of how many lines it wraps to.
-      justifyContent: "flex-start",
-      paddingTop: 56,
-      paddingHorizontal: 20,
-    },
-    card: {
-      width: "100%",
-      maxWidth: 420,
-      backgroundColor: "transparent",
-      paddingHorizontal: 12,
-      gap: 18,
+      justifyContent: "center",
+      paddingHorizontal: 26,
     },
     hero: {
-      height: 248,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    // Admin two-per-screen layout: center the two blocks vertically and give
-    // each a compact illustration + heading + body so both fit on one screen.
-    slidePair: {
-      justifyContent: "center",
-      paddingTop: 12,
-      gap: 28,
-    },
-    pairCard: {
       width: "100%",
-      maxWidth: 420,
-      alignItems: "center",
-      paddingHorizontal: 12,
-      gap: 6,
-    },
-    pairHero: {
-      height: 128,
       alignItems: "center",
       justifyContent: "center",
-    },
-    pairTitle: {
-      color: NAVY,
-      fontSize: 21,
-      lineHeight: 28,
-      fontWeight: "400",
-      letterSpacing: -0.3,
-      textAlign: "center",
-    },
-    pairBody: {
-      color: MUTED,
-      fontSize: 14,
-      lineHeight: 20,
-      fontWeight: "500",
-      textAlign: "center",
     },
     title: {
       color: NAVY,
       fontSize: 25,
-      lineHeight: 33,
-      fontWeight: "400",
-      letterSpacing: -0.3,
+      lineHeight: 32,
+      fontWeight: "700",
+      letterSpacing: -0.2,
       textAlign: "center",
-      marginTop: 2,
-    },
-    // Supporting sentence under the heading (admin slides). Worker slides don't
-    // set a body, so this only shows where copy provides one.
-    body: {
-      color: MUTED,
-      fontSize: 16,
-      lineHeight: 23,
-      fontWeight: "500",
-      textAlign: "center",
-      marginTop: -4,
+      marginTop: 32,
+      paddingHorizontal: 4,
     },
     dots: {
       flexDirection: "row",
       justifyContent: "center",
+      alignItems: "center",
       gap: 8,
-      marginTop: 20,
-      marginBottom: 18,
+      marginTop: 16,
+      marginBottom: 20,
     },
     dot: {
       width: 8,
       height: 8,
       borderRadius: 999,
-      backgroundColor: "#c4d3e6",
+      backgroundColor: "#C9CDD4",
     },
     dotActive: {
       backgroundColor: BLUE,
-      width: 22,
+      width: 24,
     },
     cta: {
       marginHorizontal: 24,
       backgroundColor: BLUE,
       borderRadius: 999,
-      paddingVertical: 17,
+      paddingVertical: 18,
       alignItems: "center",
     },
     ctaText: {
-      color: "#ffffff",
+      color: "#FFFFFF",
       fontSize: 17,
       fontWeight: "700",
     },

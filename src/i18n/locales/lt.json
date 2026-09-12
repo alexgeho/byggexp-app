@@ -1322,47 +1322,64 @@
     "skip": "Praleisti",
     "next": "Toliau",
     "start": "Pradėti",
+    "cal": {
+      "planned": "Suplanuota",
+      "gps": "GPS",
+      "manual": "Rankiniu būdu",
+      "month": "2026 m. gegužė",
+      "weekdays": "Pr,An,Tr,Kt,Pn,Št,Sk"
+    },
+    "emp": {
+      "project": "Namo 54 projektas",
+      "atWork": "Darbe",
+      "notAtWork": "Ne darbe"
+    },
+    "notif": {
+      "title": "Pranešimas",
+      "body": "Metas: \"Elektros bandymų zonos A-B. Baigti iki 14:30. Baigę atsiųskite nuotraukas. Jei baigėte, patvirtinkite, kad atlikta — kitaip…"
+    },
+    "photos": {
+      "label": "nuotr."
+    },
+    "costs": {
+      "title": "IŠLAIDOS",
+      "purchaseInvoices": "Pirkimo sąskaitos",
+      "receipts": "Kvitai",
+      "labor": "Darbas",
+      "total": "Bendra suma"
+    },
     "worker": {
       "slide": {
         "1": {
-          "title": "Automatinė arba rankinė darbo laiko registracija — nebereikia pildyti darbo laiko lapų ar siųsti žinučių."
+          "title": "Automatinė arba rankinė laiko apskaita — nebereikia pildyti tabelių ar siųsti žinučių."
         },
         "2": {
-          "title": "Užduotys su automatiniais priminimais — primena, kas svarbu."
+          "title": "Užduotys su automatiniais priminimais — primena, kol darbas patvirtinamas kaip atliktas."
         },
         "3": {
-          "title": "Visi projekto dokumentai vienoje vietoje — nebereikia ieškoti pamestų brėžinių."
+          "title": "Projekto dokumentai vienoje vietoje — nebereikia ieškoti pamestų brėžinių."
         },
         "4": {
-          "title": "Darbo nuotraukos automatiškai susiejamos su projektu, o kvitai iškart nuskenuojami į sistemą — nufotografuokite ir pamirškite."
+          "title": "Darbo nuotraukos automatiškai prisegamos prie projekto, o kvitai nuskaitomi iškart — nufotografuok ir pamiršk."
         }
       }
     },
     "admin": {
       "slide": {
         "1": {
-          "title": "Projektas ir komanda per minutes",
-          "text": "Sukurkite projektą ir pridėkite darbuotojus. Kiekvienas iškart gaus el. laišką su prisijungimo duomenimis ir nuoroda programėlei atsisiųsti."
+          "title": "Eksportuokite darbuotojų darbo laiką į „Excel“ arba paverskite jį sąskaitomis ir atlyginimais per kelis paspaudimus."
         },
         "2": {
-          "title": "Matykite komandą realiuoju laiku",
-          "text": "Kas pradėjo pamainą, kas nedirba ir kur — viskas matoma iškart."
+          "title": "Darbuotojų stebėjimas realiuoju laiku — iškart matote, kas atvyko, ko nėra ir kur."
         },
         "3": {
-          "title": "Laikas → atlyginimas ir sąskaita",
-          "text": "Eksportuokite darbo laiką į Excel keliais paspaudimais — arba tiesiai į sąskaitą ar atlyginimą."
+          "title": "Užduotys su automatiniais priminimais — primena, kol darbas patvirtinamas kaip atliktas."
         },
         "4": {
-          "title": "Užduotys, kurių nepamiršite",
-          "text": "Automatiniai priminimai siunčiami pasibaigus terminui, kol darbuotojas patvirtina, kad užduotis atlikta."
+          "title": "Objekto nuotraukų ataskaitos ir kvitų skenai iškart sinchronizuojami su sistema — nufotografuok ir pamiršk."
         },
         "5": {
-          "title": "Nuotraukos ir kvitai",
-          "text": "Objekto nuotraukų ataskaitas ir kvitus nuskaito programėlė — tiesiai į sistemą. Nufotografuokite ir pamirškite kita."
-        },
-        "6": {
-          "title": "Finansai automatiniu režimu",
-          "text": "Nuskaityti kvitai, darbo valandos ir išsiųstos/gautos sąskaitos automatiškai įtraukiami į projekto finansus."
+          "title": "Kvitų nuotraukos nuskaitomos ir automatiškai įskaičiuojamos į projekto finansus."
         }
       }
     }
