@@ -35,25 +35,26 @@ export function createStyles() {
     list: {
       flex: 1,
     },
+    // Figma pins the heading near y=497 (~58%) and grows the card UPWARD from
+    // just above it. Bottom-anchoring the [card + 24 gap + heading] stack with a
+    // fixed bottom inset reproduces that: tall cards (calendar) rise toward the
+    // top bar, short cards (notification) sit low near the heading.
     slide: {
       flex: 1,
       alignItems: "center",
+      justifyContent: "flex-end",
       paddingHorizontal: 20,
+      paddingBottom: 130,
     },
-    // Card floats just above the heading; the heading sits low (Figma pins it at
-    // ~58% of the frame). heroWrap bottom-aligns the card, belowSpacer holds the
-    // heading up off the dots.
     heroWrap: {
-      flex: 1,
       width: "100%",
       alignItems: "center",
-      justifyContent: "flex-end",
     },
-    // Soft blue halo (#4CABFF @14%) behind the card, as in Figma.
+    // Soft blue halo (#4CABFF @14%) behind/below the card, as in Figma.
     glow: {
       position: "absolute",
       alignSelf: "center",
-      bottom: 0,
+      bottom: -24,
       width: "128%",
       height: 190,
       borderRadius: 200,
@@ -67,7 +68,6 @@ export function createStyles() {
       textAlign: "center",
       marginTop: 24,
     },
-    belowSpacer: { flex: 0.62 },
     dots: {
       flexDirection: "row",
       justifyContent: "center",

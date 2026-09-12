@@ -185,7 +185,6 @@ export function WelcomeSlides() {
             <Text style={styles.title}>
               {t(`welcome.${roleKey}.slide.${s.key}.title`)}
             </Text>
-            <View style={styles.belowSpacer} />
           </View>
         )}
       />
