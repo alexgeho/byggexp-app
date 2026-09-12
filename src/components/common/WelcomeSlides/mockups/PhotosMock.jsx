@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
     marginBottom: 10,
   },
-  title: { fontSize: 15, fontFamily: FONT.semibold, color: MOCK.navy },
+  title: { fontSize: 15, ...FONT.semibold, color: MOCK.navy },
   tabs: {
     flexDirection: "row",
     backgroundColor: MOCK.track,
@@ -82,8 +82,8 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 2,
   },
-  tabText: { fontSize: 12, fontFamily: FONT.medium, color: MOCK.labelDark },
-  tabTextActive: { color: MOCK.navy, fontFamily: FONT.semibold },
+  tabText: { fontSize: 12, ...FONT.medium, color: MOCK.labelDark },
+  tabTextActive: { color: MOCK.navy, ...FONT.semibold },
   section: { marginBottom: 4 },
   headRow: {
     flexDirection: "row",
@@ -92,8 +92,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     marginTop: 4,
   },
-  date: { fontSize: 13, fontFamily: FONT.semibold, color: MOCK.navy },
-  count: { fontSize: 13, fontFamily: FONT.medium, color: MOCK.label },
+  date: { fontSize: 13, ...FONT.semibold, color: MOCK.navy },
+  count: { fontSize: 13, ...FONT.medium, color: MOCK.label },
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",

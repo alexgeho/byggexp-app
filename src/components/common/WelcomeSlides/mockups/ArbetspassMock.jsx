@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
     marginBottom: 10,
   },
-  headerTitle: { fontSize: 15, fontFamily: FONT.semibold, color: MOCK.navy },
+  headerTitle: { fontSize: 15, ...FONT.semibold, color: MOCK.navy },
   tabs: {
     flexDirection: "row",
     backgroundColor: MOCK.track,
@@ -229,8 +229,8 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 2,
   },
-  tabText: { fontSize: 12, fontFamily: FONT.medium, color: MOCK.labelDark },
-  tabTextActive: { color: GREEN_TX, fontFamily: FONT.semibold },
+  tabText: { fontSize: 12, ...FONT.medium, color: MOCK.labelDark },
+  tabTextActive: { color: GREEN_TX, ...FONT.semibold },
 
   filters: { flexDirection: "row", gap: 8, marginBottom: 8 },
   filterPill: {
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
   },
-  filterText: { fontSize: 11, fontFamily: FONT.medium, color: "#8A94A6" },
+  filterText: { fontSize: 11, ...FONT.medium, color: "#8A94A6" },
   filterChev: { fontSize: 12, color: "#8A94A6", marginLeft: 4 },
 
   summary: {
@@ -256,10 +256,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   summaryCol: { flex: 1, alignItems: "center" },
-  summaryValue: { fontSize: 14, fontFamily: FONT.semibold, color: MOCK.navy },
+  summaryValue: { fontSize: 14, ...FONT.semibold, color: MOCK.navy },
   summaryLabel: {
     fontSize: 10,
-    fontFamily: FONT.medium,
+    ...FONT.medium,
     color: "#8A94A6",
     marginTop: 1,
   },
@@ -280,12 +280,12 @@ const styles = StyleSheet.create({
     width: 18,
     textAlign: "center",
   },
-  month: { fontSize: 14, fontFamily: FONT.semibold, color: MOCK.navy },
+  month: { fontSize: 14, ...FONT.semibold, color: MOCK.navy },
 
   headRow: { flexDirection: "row", marginBottom: 2 },
   wkCol: { width: 16, alignItems: "flex-start", justifyContent: "center" },
-  wkNum: { fontSize: 10, fontFamily: FONT.regular, color: "#8A94A6" },
-  weekday: { fontSize: 10, fontFamily: FONT.regular, color: "#8A94A6" },
+  wkNum: { fontSize: 10, ...FONT.regular, color: "#8A94A6" },
+  weekday: { fontSize: 10, ...FONT.regular, color: "#8A94A6" },
 
   weekRow: { flexDirection: "row", alignItems: "stretch" },
   day: { flex: 1, alignItems: "center", paddingVertical: 1 },
@@ -300,8 +300,8 @@ const styles = StyleSheet.create({
   dayInnerBlue: { backgroundColor: BLUE },
   dayInnerGreen: { backgroundColor: GREEN_BG },
   dayInnerPlain: { backgroundColor: "#F7F8FA" },
-  dayNum: { fontSize: 12, color: MOCK.labelDark, fontFamily: FONT.medium },
-  dayNumBlue: { color: "#FFFFFF", fontFamily: FONT.semibold },
+  dayNum: { fontSize: 12, color: MOCK.labelDark, ...FONT.medium },
+  dayNumBlue: { color: "#FFFFFF", ...FONT.semibold },
   dayNumPlain: { color: "#AEB6C1" },
   hourPill: {
     marginTop: 2,
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
   },
   hourPillBlue: { backgroundColor: "rgba(255,255,255,0.28)" },
-  hourText: { fontSize: 8, fontFamily: FONT.medium, color: "#8A94A6" },
-  hourTextBlue: { color: "#FFFFFF", fontFamily: FONT.semibold },
-  hourTextGreen: { color: GREEN_TX, fontFamily: FONT.semibold },
+  hourText: { fontSize: 8, ...FONT.medium, color: "#8A94A6" },
+  hourTextBlue: { color: "#FFFFFF", ...FONT.semibold },
+  hourTextGreen: { color: GREEN_TX, ...FONT.semibold },
 });

@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   card: { padding: 12 },
   header: {
     fontSize: 15,
-    fontFamily: FONT.semibold,
+    ...FONT.semibold,
     color: MOCK.navy,
     textAlign: "center",
     marginBottom: 12,
@@ -97,8 +97,8 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 2,
   },
-  tabText: { fontSize: 12, fontFamily: FONT.medium, color: MOCK.labelDark },
-  tabTextActive: { color: MOCK.blue, fontFamily: FONT.semibold },
+  tabText: { fontSize: 12, ...FONT.medium, color: MOCK.labelDark },
+  tabTextActive: { color: MOCK.blue, ...FONT.semibold },
   list: { gap: 10 },
   file: {
     flexDirection: "row",
@@ -117,11 +117,11 @@ const styles = StyleSheet.create({
   info: { flex: 1 },
   name: {
     fontSize: 14,
-    fontFamily: FONT.medium,
+    ...FONT.medium,
     color: MOCK.navy,
     lineHeight: 18,
   },
   metaRow: { flexDirection: "row", gap: 14, marginTop: 4 },
-  meta: { fontSize: 12, fontFamily: FONT.medium, color: MOCK.label },
+  meta: { fontSize: 12, ...FONT.medium, color: MOCK.label },
   chevron: { fontSize: 22, color: MOCK.label, marginLeft: 8 },
 });

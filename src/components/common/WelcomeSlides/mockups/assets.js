@@ -23,13 +23,15 @@ export const ONB = {
   appIcon: require("../../../../assets/icon.png"),
 };
 
-// DM Sans (the Figma type family, loaded in App.js). "SemiBold" is mapped to the
-// Medium ttf in App.js, matching the app-wide convention.
+// The app's own font is the system font (SF Pro on iOS) — see theme.text. The
+// value-tour mockups mirror real app screens, so they use System too. These are
+// style fragments (spread into a style, e.g. `...FONT.medium`) so the weight
+// comes through on System where a family name can't carry it.
 export const FONT = {
-  regular: "DMSans-Regular",
-  medium: "DMSans-Medium",
-  semibold: "DMSans-SemiBold",
-  bold: "DMSans-Bold",
+  regular: { fontFamily: "System", fontWeight: "400" },
+  medium: { fontFamily: "System", fontWeight: "500" },
+  semibold: { fontFamily: "System", fontWeight: "600" },
+  bold: { fontFamily: "System", fontWeight: "700" },
 };
 
 // Shared palette for the mockups, sampled 1:1 from the Figma onboarding frames.

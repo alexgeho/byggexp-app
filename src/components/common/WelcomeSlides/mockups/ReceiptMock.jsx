@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   card: { padding: 14 },
   title: {
     fontSize: 17,
-    fontFamily: FONT.bold,
+    ...FONT.bold,
     color: MOCK.navy,
     marginBottom: 12,
   },
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   field: { marginBottom: 12 },
   fieldLabel: {
     fontSize: 12,
-    fontFamily: FONT.medium,
+    ...FONT.medium,
     color: MOCK.label,
     marginBottom: 5,
   },
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
   },
-  inputText: { fontSize: 14, fontFamily: FONT.medium, color: MOCK.navy },
+  inputText: { fontSize: 14, ...FONT.medium, color: MOCK.navy },
   row: { flexDirection: "row", gap: 10 },
   half: { flex: 1 },
   button: {
@@ -79,5 +79,5 @@ const styles = StyleSheet.create({
     paddingVertical: 13,
     alignItems: "center",
   },
-  buttonText: { fontSize: 15, fontFamily: FONT.semibold, color: "#FFFFFF" },
+  buttonText: { fontSize: 15, ...FONT.semibold, color: "#FFFFFF" },
 });

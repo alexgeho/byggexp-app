@@ -1323,9 +1323,9 @@
     "next": "Nästa",
     "start": "Kom igång",
     "cal": {
-      "planned": "Planerat",
+      "planned": "Planerad",
       "gps": "GPS",
-      "manual": "Manuellt",
+      "manual": "Manuell",
       "month": "Maj 2026",
       "weekdays": "Mån,Tis,Ons,Tor,Fre,Lör,Sön",
       "monthJuly": "juli 2026"

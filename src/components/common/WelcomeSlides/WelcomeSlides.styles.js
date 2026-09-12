@@ -6,8 +6,6 @@ import { StyleSheet } from "react-native";
 // sentence, page dots and a brand-blue pill CTA.
 const NAVY = "#052D50";
 const BRAND = "#0785F4";
-const FONT_MED = "DMSans-Medium";
-const FONT_SEMI = "DMSans-SemiBold";
 
 export function createStyles() {
   return StyleSheet.create({
@@ -29,7 +27,8 @@ export function createStyles() {
     },
     skip: {
       color: NAVY,
-      fontFamily: FONT_MED,
+      fontFamily: "System",
+      fontWeight: "500",
       fontSize: 15,
     },
     list: {
@@ -49,7 +48,8 @@ export function createStyles() {
     },
     title: {
       color: NAVY,
-      fontFamily: FONT_SEMI,
+      fontFamily: "System",
+      fontWeight: "700",
       fontSize: 21,
       lineHeight: 27,
       textAlign: "center",
@@ -83,7 +83,8 @@ export function createStyles() {
     },
     ctaText: {
       color: "#FFFFFF",
-      fontFamily: FONT_MED,
+      fontFamily: "System",
+      fontWeight: "600",
       fontSize: 16,
     },
   });

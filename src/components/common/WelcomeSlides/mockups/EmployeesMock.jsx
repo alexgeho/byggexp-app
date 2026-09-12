@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
     marginBottom: 12,
   },
-  headerTitle: { fontSize: 15, fontFamily: FONT.semibold, color: MOCK.navy },
+  headerTitle: { fontSize: 15, ...FONT.semibold, color: MOCK.navy },
   dropdown: {
     flexDirection: "row",
     alignItems: "center",
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   dropdownText: {
     flex: 1,
     fontSize: 13,
-    fontFamily: FONT.medium,
+    ...FONT.medium,
     color: MOCK.navy,
   },
   dropdownChev: { fontSize: 13, color: "#8A94A6", marginLeft: 6 },
@@ -138,26 +138,26 @@ const styles = StyleSheet.create({
   name: {
     flex: 1,
     fontSize: 15,
-    fontFamily: FONT.semibold,
+    ...FONT.semibold,
     color: MOCK.navy,
     marginRight: 8,
   },
   role: {
     fontSize: 12,
-    fontFamily: FONT.medium,
+    ...FONT.medium,
     color: MOCK.blue,
     marginTop: 5,
   },
   site: {
     fontSize: 12,
-    fontFamily: FONT.medium,
+    ...FONT.medium,
     color: MOCK.label,
     marginTop: 3,
   },
   pill: { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 },
   pillGreen: { backgroundColor: MOCK.greenBg },
   pillRed: { backgroundColor: MOCK.redBg },
-  pillText: { fontSize: 11, fontFamily: FONT.semibold },
+  pillText: { fontSize: 11, ...FONT.semibold },
   pillTextGreen: { color: MOCK.green },
   pillTextRed: { color: MOCK.red },
 });

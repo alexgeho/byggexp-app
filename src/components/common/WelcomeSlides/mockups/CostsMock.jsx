@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
   card: { padding: 12 },
   header: {
     fontSize: 15,
-    fontFamily: FONT.semibold,
+    ...FONT.semibold,
     color: MOCK.navy,
     textAlign: "center",
     marginBottom: 12,
@@ -79,8 +79,8 @@ const styles = StyleSheet.create({
   },
   tab: { flex: 1, paddingVertical: 7, borderRadius: 9, alignItems: "center" },
   tabActive: { backgroundColor: "#FFFFFF" },
-  tabText: { fontSize: 12, fontFamily: FONT.medium, color: MOCK.labelDark },
-  tabTextActive: { color: MOCK.blue, fontFamily: FONT.semibold },
+  tabText: { fontSize: 12, ...FONT.medium, color: MOCK.labelDark },
+  tabTextActive: { color: MOCK.blue, ...FONT.semibold },
   block: {
     backgroundColor: "#FFFFFF",
     borderRadius: 14,
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   },
   blockTitle: {
     fontSize: 12,
-    fontFamily: FONT.semibold,
+    ...FONT.semibold,
     color: MOCK.navy,
     marginBottom: 10,
     letterSpacing: 0.3,
@@ -100,10 +100,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 9,
   },
-  label: { fontSize: 13, fontFamily: FONT.medium, color: MOCK.label },
-  labelStrong: { color: MOCK.navy, fontFamily: FONT.semibold },
-  value: { fontSize: 13, fontFamily: FONT.medium, color: MOCK.navy },
-  valueStrong: { fontFamily: FONT.semibold },
+  label: { fontSize: 13, ...FONT.medium, color: MOCK.label },
+  labelStrong: { color: MOCK.navy, ...FONT.semibold },
+  value: { fontSize: 13, ...FONT.medium, color: MOCK.navy },
+  valueStrong: { ...FONT.semibold },
   divider: {
     height: 1,
     backgroundColor: MOCK.line,
