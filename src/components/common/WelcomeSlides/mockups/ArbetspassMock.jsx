@@ -165,6 +165,12 @@ export function ArbetspassMock() {
           ))}
         </View>
       ))}
+
+      <View style={styles.footer}>
+        <View style={styles.exportBtn}>
+          <Text style={styles.exportText}>Export</Text>
+        </View>
+      </View>
     </MockCard>
   );
 }
@@ -242,4 +248,12 @@ const styles = StyleSheet.create({
   hourText: { fontSize: 8, fontFamily: FONT.medium, color: "#8A94A6" },
   hourTextBlue: { color: "#FFFFFF", fontFamily: FONT.semibold },
   hourTextGreen: { color: GREEN_TX, fontFamily: FONT.semibold },
+  footer: { flexDirection: "row", justifyContent: "flex-end", marginTop: 10 },
+  exportBtn: {
+    backgroundColor: MOCK.brand,
+    borderRadius: 100,
+    paddingHorizontal: 16,
+    paddingVertical: 7,
+  },
+  exportText: { color: "#FFFFFF", fontFamily: FONT.semibold, fontSize: 12 },
 });
