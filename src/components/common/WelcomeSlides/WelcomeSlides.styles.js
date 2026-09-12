@@ -50,16 +50,6 @@ export function createStyles() {
       width: "100%",
       alignItems: "center",
     },
-    // Soft blue halo (#4CABFF @14%) behind/below the card, as in Figma.
-    glow: {
-      position: "absolute",
-      alignSelf: "center",
-      bottom: -24,
-      width: "128%",
-      height: 190,
-      borderRadius: 200,
-      backgroundColor: "rgba(76,171,255,0.14)",
-    },
     title: {
       color: NAVY,
       fontFamily: FONT_SEMI,

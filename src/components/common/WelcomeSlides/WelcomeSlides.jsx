@@ -179,7 +179,6 @@ export function WelcomeSlides() {
         renderItem={({ item: s }) => (
           <View style={[styles.slide, { width }]}>
             <View style={styles.heroWrap}>
-              <View style={styles.glow} pointerEvents="none" />
               <Mockup name={s.illustration} />
             </View>
             <Text style={styles.title}>
