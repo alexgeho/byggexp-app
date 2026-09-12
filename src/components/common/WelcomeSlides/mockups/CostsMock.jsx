@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { MockCard } from "./MockCard";
-import { MOCK } from "./assets";
+import { MOCK, FONT } from "./assets";
 
 // Project-finances summary card, rebuilt from Figma. Row labels and the "COSTS"
 // / "Total cost" captions localize; the amounts are illustrative mockup data.
@@ -48,28 +48,27 @@ export function CostsMock() {
 }
 
 const styles = StyleSheet.create({
-  card: { padding: 22 },
+  card: { padding: 20 },
   heading: {
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 17,
+    fontFamily: FONT.medium,
     color: MOCK.navy,
-    marginBottom: 16,
+    marginBottom: 24,
   },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 14,
+    marginBottom: 18,
   },
-  label: { fontSize: 16, color: MOCK.labelDark },
-  labelStrong: { color: MOCK.navy, fontWeight: "600" },
-  value: { fontSize: 16, color: MOCK.navy, fontWeight: "500" },
-  valueStrong: { fontWeight: "700" },
+  label: { fontSize: 15, fontFamily: FONT.medium, color: MOCK.label },
+  labelStrong: { color: MOCK.navy },
+  value: { fontSize: 15, fontFamily: FONT.medium, color: MOCK.navy },
+  valueStrong: {},
   divider: {
     height: 1,
     backgroundColor: MOCK.navy,
-    opacity: 0.85,
-    marginBottom: 14,
-    marginTop: 2,
+    marginBottom: 18,
+    marginTop: 0,
   },
 });

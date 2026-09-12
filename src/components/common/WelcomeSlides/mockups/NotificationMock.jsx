@@ -4,7 +4,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 
 import { MockCard } from "./MockCard";
-import { MOCK } from "./assets";
+import { MOCK, FONT } from "./assets";
 
 // A push-notification preview card, rebuilt from Figma. The app-icon tile is
 // drawn (not an image); title and body localize.
@@ -39,25 +39,34 @@ export function NotificationMock() {
 }
 
 const styles = StyleSheet.create({
-  card: { padding: 16 },
+  card: { padding: 10 },
   row: { flexDirection: "row", alignItems: "flex-start" },
   icon: {
-    width: 58,
-    height: 58,
-    borderRadius: 14,
+    width: 48,
+    height: 48,
+    borderRadius: 11,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 14,
-    marginTop: 2,
+    marginRight: 24,
   },
   iconText: {
     color: "#FFFFFF",
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: "800",
-    letterSpacing: 0.3,
-    lineHeight: 15,
+    letterSpacing: 0.2,
+    lineHeight: 13,
   },
   body: { flex: 1 },
-  title: { fontSize: 17, fontWeight: "600", color: MOCK.navy, marginBottom: 4 },
-  text: { fontSize: 14, color: MOCK.labelDark, lineHeight: 20 },
+  title: {
+    fontSize: 17,
+    fontFamily: FONT.medium,
+    color: MOCK.navy,
+    marginBottom: 4,
+  },
+  text: {
+    fontSize: 15,
+    fontFamily: FONT.medium,
+    color: MOCK.label,
+    lineHeight: 20,
+  },
 });

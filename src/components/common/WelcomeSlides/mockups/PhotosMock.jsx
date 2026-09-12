@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { MockCard } from "./MockCard";
-import { MOCK, ONB } from "./assets";
+import { MOCK, ONB, FONT } from "./assets";
 
 // On-site photo report card, rebuilt from Figma: two dated sections, each a
 // 3-column photo grid. Dates are illustrative mockup data; the "N photos"
@@ -44,17 +44,24 @@ export function PhotosMock() {
 }
 
 const styles = StyleSheet.create({
-  card: { padding: 16 },
-  section: { marginBottom: 6 },
+  // Figma: photos card 301 wide (centred), white @50%, radius 20.
+  card: {
+    width: 301,
+    maxWidth: "100%",
+    alignSelf: "center",
+    padding: 12,
+    backgroundColor: "rgba(255,255,255,0.5)",
+  },
+  section: { marginBottom: 4 },
   headRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 10,
-    marginTop: 6,
+    marginTop: 4,
   },
-  date: { fontSize: 14, fontWeight: "600", color: MOCK.navy },
-  count: { fontSize: 14, fontWeight: "500", color: MOCK.blue },
+  date: { fontSize: 14, fontFamily: FONT.semibold, color: MOCK.navy },
+  count: { fontSize: 14, fontFamily: FONT.medium, color: MOCK.blue },
   // 3-up grid: space-between spreads a full row of 3 edge-to-edge and leaves a
   // trailing single photo (4th) left-aligned on the next line, as in Figma.
   grid: {

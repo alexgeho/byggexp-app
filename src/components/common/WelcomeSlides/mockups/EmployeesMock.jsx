@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { MockCard } from "./MockCard";
-import { MOCK, ONB } from "./assets";
+import { MOCK, ONB, FONT } from "./assets";
 
 // Two live-status employee cards, rebuilt from Figma. Names and project are
 // illustrative mockup data; the status pills ("At work" / "Not at work")
@@ -82,24 +82,29 @@ export function EmployeesMock() {
 }
 
 const styles = StyleSheet.create({
-  wrap: { width: "100%", gap: 16 },
-  card: { padding: 16 },
+  wrap: { width: "100%", gap: 12 },
+  card: { padding: 10 },
   row: { flexDirection: "row", alignItems: "center" },
-  avatar: { width: 44, height: 44, borderRadius: 22, marginRight: 12 },
+  avatar: { width: 44, height: 44, borderRadius: 22, marginRight: 16 },
   info: { flex: 1 },
-  name: { fontSize: 17, fontWeight: "600", color: MOCK.navy },
-  project: { fontSize: 13, color: MOCK.label, marginTop: 2 },
-  pill: { borderRadius: 20, paddingHorizontal: 10, paddingVertical: 5 },
+  name: { fontSize: 17, fontFamily: FONT.medium, color: MOCK.navy },
+  project: {
+    fontSize: 13,
+    fontFamily: FONT.medium,
+    color: MOCK.label,
+    marginTop: 4,
+  },
+  pill: { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 },
   pillGreen: { backgroundColor: MOCK.greenBg },
   pillRed: { backgroundColor: MOCK.redBg },
-  pillText: { fontSize: 12, fontWeight: "600" },
+  pillText: { fontSize: 12, fontFamily: FONT.semibold },
   pillTextGreen: { color: MOCK.green },
   pillTextRed: { color: MOCK.red },
-  thumbs: { flexDirection: "row", marginTop: 14, gap: 8 },
+  thumbs: { flexDirection: "row", marginTop: 18, gap: 6 },
   thumb: {
-    width: 52,
-    height: 52,
-    borderRadius: 8,
+    width: 40,
+    height: 40,
+    borderRadius: 6,
     backgroundColor: MOCK.track,
   },
   thumbMore: {
@@ -107,5 +112,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#1F2937",
   },
-  thumbMoreText: { color: "#FFFFFF", fontSize: 13, fontWeight: "600" },
+  thumbMoreText: { color: "#FFFFFF", fontSize: 12, fontFamily: FONT.semibold },
 });
