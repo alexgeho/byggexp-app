@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { MockCard } from "./MockCard";
+import { AppIcon } from "../../AppIcon";
 import { MOCK, FONT } from "./assets";
 
 // The real "Arbetspass" (work-shifts) GPS calendar, rebuilt in RN for the admin
@@ -132,10 +133,39 @@ export function ArbetspassMock() {
 
   return (
     <MockCard style={styles.card}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Arbetspass</Text>
+        <AppIcon name="upload" size={20} color={MOCK.brand} />
+      </View>
+
       <View style={styles.tabs}>
         <Tab label={t("welcome.cal.planned", { defaultValue: "Planned" })} />
         <Tab label={t("welcome.cal.gps", { defaultValue: "GPS" })} active />
         <Tab label={t("welcome.cal.manual", { defaultValue: "Manual" })} />
+      </View>
+
+      <View style={styles.filters}>
+        <View style={styles.filterPill}>
+          <Text style={styles.filterText}>Alla projekt</Text>
+          <Text style={styles.filterChev}>⌄</Text>
+        </View>
+        <View style={styles.filterPill}>
+          <Text style={styles.filterText}>Alla anställda</Text>
+          <Text style={styles.filterChev}>⌄</Text>
+        </View>
+      </View>
+
+      <View style={styles.summary}>
+        <View style={styles.summaryCol}>
+          <Text style={styles.summaryValue}>524h 11m</Text>
+          <Text style={styles.summaryLabel}>Vald</Text>
+        </View>
+        <View style={styles.summaryDivider} />
+        <View style={styles.summaryCol}>
+          <Text style={styles.summaryValue}>14 dagar</Text>
+          <Text style={styles.summaryLabel}>Vald</Text>
+        </View>
+        <Text style={styles.summaryClose}>×</Text>
       </View>
 
       <View style={styles.monthRow}>
@@ -165,12 +195,6 @@ export function ArbetspassMock() {
           ))}
         </View>
       ))}
-
-      <View style={styles.footer}>
-        <View style={styles.exportBtn}>
-          <Text style={styles.exportText}>Export</Text>
-        </View>
-      </View>
     </MockCard>
   );
 }
@@ -181,6 +205,14 @@ const GREEN_TX = "#3BA45C";
 
 const styles = StyleSheet.create({
   card: { width: 301, maxWidth: "100%", alignSelf: "center", padding: 10 },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 2,
+    marginBottom: 10,
+  },
+  headerTitle: { fontSize: 15, fontFamily: FONT.semibold, color: MOCK.navy },
   tabs: {
     flexDirection: "row",
     backgroundColor: MOCK.track,
@@ -188,7 +220,7 @@ const styles = StyleSheet.create({
     padding: 3,
     marginBottom: 8,
   },
-  tab: { flex: 1, paddingVertical: 7, borderRadius: 9, alignItems: "center" },
+  tab: { flex: 1, paddingVertical: 6, borderRadius: 9, alignItems: "center" },
   tabActive: {
     backgroundColor: "#FFFFFF",
     shadowColor: "#0A2540",
@@ -199,6 +231,40 @@ const styles = StyleSheet.create({
   },
   tabText: { fontSize: 12, fontFamily: FONT.medium, color: MOCK.labelDark },
   tabTextActive: { color: GREEN_TX, fontFamily: FONT.semibold },
+
+  filters: { flexDirection: "row", gap: 8, marginBottom: 8 },
+  filterPill: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#E7E9ED",
+    borderRadius: 9,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  filterText: { fontSize: 11, fontFamily: FONT.medium, color: "#8A94A6" },
+  filterChev: { fontSize: 12, color: "#8A94A6", marginLeft: 4 },
+
+  summary: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    marginBottom: 8,
+  },
+  summaryCol: { flex: 1, alignItems: "center" },
+  summaryValue: { fontSize: 14, fontFamily: FONT.semibold, color: MOCK.navy },
+  summaryLabel: {
+    fontSize: 10,
+    fontFamily: FONT.medium,
+    color: "#8A94A6",
+    marginTop: 1,
+  },
+  summaryDivider: { width: 1, height: 26, backgroundColor: "#E4E8EF" },
+  summaryClose: { fontSize: 16, color: "#8A94A6", marginLeft: 8 },
 
   monthRow: {
     flexDirection: "row",
@@ -225,11 +291,11 @@ const styles = StyleSheet.create({
   day: { flex: 1, alignItems: "center", paddingVertical: 1 },
   dayInner: {
     width: "94%",
-    height: 37,
+    height: 31,
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 2,
+    paddingVertical: 1,
   },
   dayInnerBlue: { backgroundColor: BLUE },
   dayInnerGreen: { backgroundColor: GREEN_BG },
@@ -248,12 +314,4 @@ const styles = StyleSheet.create({
   hourText: { fontSize: 8, fontFamily: FONT.medium, color: "#8A94A6" },
   hourTextBlue: { color: "#FFFFFF", fontFamily: FONT.semibold },
   hourTextGreen: { color: GREEN_TX, fontFamily: FONT.semibold },
-  footer: { flexDirection: "row", justifyContent: "flex-end", marginTop: 10 },
-  exportBtn: {
-    backgroundColor: MOCK.brand,
-    borderRadius: 100,
-    paddingHorizontal: 16,
-    paddingVertical: 7,
-  },
-  exportText: { color: "#FFFFFF", fontFamily: FONT.semibold, fontSize: 12 },
 });
