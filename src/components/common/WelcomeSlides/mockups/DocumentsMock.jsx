@@ -26,6 +26,12 @@ const FILES = [
     size: "396.3 KB",
     date: "31 juli 2026",
   },
+  {
+    thumb: ONB.docBlueprint,
+    name: "Screenshot 2026-07-31 at 19.23.02.png",
+    size: "431.6 KB",
+    date: "31 juli 2026",
+  },
 ];
 
 function TabItem({ label, active }) {

@@ -5,13 +5,13 @@ import { MockCard } from "./MockCard";
 import { MOCK, ONB, FONT } from "./assets";
 
 // The real "Nytt utlägg" (new expense) receipt-scan sheet (worker slide 4): snap
-// a receipt and the supplier, total and VAT are read out automatically. Mockup
-// labels are Swedish (matches the app); values are data.
-function Field({ label, value, style }) {
+// a receipt and supplier, total, VAT, category and project fill in
+// automatically. Mockup labels are Swedish (matches the app); values are data.
+function Field({ label, value, style, filled }) {
   return (
     <View style={[styles.field, style]}>
       <Text style={styles.fieldLabel}>{label}</Text>
-      <View style={styles.input}>
+      <View style={[styles.input, filled && styles.inputFilled]}>
         <Text style={styles.inputText} numberOfLines={1}>
           {value}
         </Text>
@@ -31,9 +31,16 @@ export function ReceiptMock() {
         <Field label="Totalt (SEK)" value="150.1" style={styles.half} />
         <Field label="Moms (SEK)" value="23.62" style={styles.half} />
       </View>
+      <Field label="Kategori" value="Verktyg" />
+      <Field label="Projekt" value="Byggnation av BRF Peter" filled />
 
-      <View style={styles.button}>
-        <Text style={styles.buttonText}>Spara utlägg</Text>
+      <View style={styles.buttons}>
+        <View style={[styles.button, styles.cancel]}>
+          <Text style={styles.cancelText}>Avbryt</Text>
+        </View>
+        <View style={[styles.button, styles.save]}>
+          <Text style={styles.saveText}>Spara utlägg</Text>
+        </View>
       </View>
     </MockCard>
   );
@@ -41,25 +48,20 @@ export function ReceiptMock() {
 
 const styles = StyleSheet.create({
   card: { padding: 14 },
-  title: {
-    fontSize: 17,
-    ...FONT.bold,
-    color: MOCK.navy,
-    marginBottom: 12,
-  },
+  title: { fontSize: 17, ...FONT.bold, color: MOCK.navy, marginBottom: 10 },
   receipt: {
     width: "100%",
-    height: 120,
+    height: 96,
     borderRadius: 12,
-    marginBottom: 14,
+    marginBottom: 12,
     backgroundColor: MOCK.track,
   },
-  field: { marginBottom: 12 },
+  field: { marginBottom: 10 },
   fieldLabel: {
     fontSize: 12,
     ...FONT.medium,
     color: MOCK.label,
-    marginBottom: 5,
+    marginBottom: 4,
   },
   input: {
     backgroundColor: "#FFFFFF",
@@ -67,17 +69,25 @@ const styles = StyleSheet.create({
     borderColor: MOCK.line,
     borderRadius: 10,
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingVertical: 9,
   },
+  inputFilled: { backgroundColor: "#EEF0F3", borderColor: "transparent" },
   inputText: { fontSize: 14, ...FONT.medium, color: MOCK.navy },
   row: { flexDirection: "row", gap: 10 },
   half: { flex: 1 },
+  buttons: { flexDirection: "row", gap: 10, marginTop: 4 },
   button: {
-    marginTop: 2,
-    backgroundColor: MOCK.brand,
+    flex: 1,
     borderRadius: 100,
-    paddingVertical: 13,
+    paddingVertical: 12,
     alignItems: "center",
   },
-  buttonText: { fontSize: 15, ...FONT.semibold, color: "#FFFFFF" },
+  cancel: {
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: MOCK.line,
+  },
+  cancelText: { fontSize: 14, ...FONT.semibold, color: MOCK.navy },
+  save: { flex: 1.6, backgroundColor: MOCK.brand },
+  saveText: { fontSize: 14, ...FONT.semibold, color: "#FFFFFF" },
 });

@@ -144,6 +144,13 @@ export function ArbetspassMock() {
         <Tab label={t("welcome.cal.manual", { defaultValue: "Manual" })} />
       </View>
 
+      <View style={styles.monthDropdown}>
+        <Text style={styles.monthDropdownText}>
+          {t("welcome.cal.monthJuly", { defaultValue: "July 2026" })}
+        </Text>
+        <Text style={styles.filterChev}>⌄</Text>
+      </View>
+
       <View style={styles.filters}>
         <View style={styles.filterPill}>
           <Text style={styles.filterText}>Alla projekt</Text>
@@ -232,6 +239,17 @@ const styles = StyleSheet.create({
   tabText: { fontSize: 12, ...FONT.medium, color: MOCK.labelDark },
   tabTextActive: { color: GREEN_TX, ...FONT.semibold },
 
+  monthDropdown: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#E7E9ED",
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginBottom: 8,
+  },
+  monthDropdownText: { fontSize: 13, ...FONT.semibold, color: MOCK.navy },
   filters: { flexDirection: "row", gap: 8, marginBottom: 8 },
   filterPill: {
     flex: 1,

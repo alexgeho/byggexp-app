@@ -4,10 +4,9 @@ import { useTranslation } from "react-i18next";
 
 import { MOCK, ONB, FONT } from "./assets";
 
-// Task auto-reminders, rebuilt from the real lock-screen reference: two stacked
-// push notifications for the same task — showing that reminders keep coming
-// until the job is confirmed done. Titles/time localize; the app icon is the
-// real one.
+// Task auto-reminders on the lock screen (from the real reference): the clock +
+// two stacked push notifications for the same task — reminders keep coming until
+// the job is confirmed done. Titles/time localize; icon is the real app icon.
 function Banner({ title, time, body }) {
   return (
     <View style={styles.banner}>
@@ -35,6 +34,11 @@ export function NotificationMock() {
   });
   return (
     <View style={styles.wrap}>
+      <View style={styles.clock}>
+        <Text style={styles.date}>torsdag 6 augusti</Text>
+        <Text style={styles.time24}>14:46</Text>
+      </View>
+
       <Banner
         title={t("welcome.notif.title1", { defaultValue: "Reminder" })}
         time={t("welcome.notif.now", { defaultValue: "now" })}
@@ -51,32 +55,32 @@ export function NotificationMock() {
 
 const styles = StyleSheet.create({
   wrap: { width: "100%", gap: 12 },
+  clock: { alignItems: "center", marginBottom: 6 },
+  date: {
+    fontSize: 15,
+    fontFamily: "System",
+    fontWeight: "600",
+    color: MOCK.navy,
+  },
+  time24: {
+    fontSize: 56,
+    fontFamily: "System",
+    fontWeight: "700",
+    color: MOCK.navy,
+    letterSpacing: -1,
+    lineHeight: 62,
+  },
   banner: {
     flexDirection: "row",
-    alignItems: "flex-start",
+    alignItems: "center",
     backgroundColor: "rgba(255,255,255,0.72)",
     borderRadius: 22,
     padding: 14,
   },
-  icon: {
-    width: 42,
-    height: 42,
-    borderRadius: 10,
-    marginRight: 12,
-  },
+  icon: { width: 42, height: 42, borderRadius: 10, marginRight: 12 },
   body: { flex: 1 },
   titleRow: { flexDirection: "row", alignItems: "center", marginBottom: 3 },
   title: { flex: 1, fontSize: 15, ...FONT.semibold, color: MOCK.navy },
-  time: {
-    fontSize: 12,
-    ...FONT.medium,
-    color: "#8A94A6",
-    marginLeft: 8,
-  },
-  text: {
-    fontSize: 13,
-    ...FONT.medium,
-    color: MOCK.labelDark,
-    lineHeight: 18,
-  },
+  time: { fontSize: 12, ...FONT.medium, color: "#8A94A6", marginLeft: 8 },
+  text: { fontSize: 13, ...FONT.medium, color: MOCK.labelDark, lineHeight: 18 },
 });

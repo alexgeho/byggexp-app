@@ -29,11 +29,21 @@ export function CostsMock() {
 
       <View style={styles.tabs}>
         <View style={styles.tab}>
+          <Text style={styles.tabText}>Verktyg</Text>
+        </View>
+        <View style={styles.tab}>
           <Text style={styles.tabText}>Foton</Text>
         </View>
         <View style={[styles.tab, styles.tabActive]}>
           <Text style={[styles.tabText, styles.tabTextActive]}>Ekonomi</Text>
         </View>
+      </View>
+
+      <View style={styles.block}>
+        <Text style={styles.blockTitle}>ARBETE</Text>
+        <Row label="Arbetade timmar" value="1814.01 h" />
+        <Row label="Kostnad" value="562 343,51 kr" color={MOCK.red} />
+        <Row label="Debiterat" value="907 005,67 kr" color={MOCK.green} />
       </View>
 
       <View style={styles.block}>
@@ -68,14 +78,14 @@ const styles = StyleSheet.create({
     ...FONT.semibold,
     color: MOCK.navy,
     textAlign: "center",
-    marginBottom: 12,
+    marginBottom: 10,
   },
   tabs: {
     flexDirection: "row",
     backgroundColor: MOCK.track,
     borderRadius: 11,
     padding: 3,
-    marginBottom: 12,
+    marginBottom: 10,
   },
   tab: { flex: 1, paddingVertical: 7, borderRadius: 9, alignItems: "center" },
   tabActive: { backgroundColor: "#FFFFFF" },
@@ -84,21 +94,21 @@ const styles = StyleSheet.create({
   block: {
     backgroundColor: "#FFFFFF",
     borderRadius: 14,
-    padding: 14,
-    marginBottom: 10,
+    padding: 12,
+    marginBottom: 8,
   },
   blockTitle: {
     fontSize: 12,
     ...FONT.semibold,
     color: MOCK.navy,
-    marginBottom: 10,
+    marginBottom: 8,
     letterSpacing: 0.3,
   },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 9,
+    marginBottom: 7,
   },
   label: { fontSize: 13, ...FONT.medium, color: MOCK.label },
   labelStrong: { color: MOCK.navy, ...FONT.semibold },

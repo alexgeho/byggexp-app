@@ -105,7 +105,13 @@ function DayCell({ c }) {
           >
             {d}
           </Text>
-          {blue ? <Text style={styles.check}>✓</Text> : null}
+          {blue ? (
+            <View style={styles.checkDot}>
+              <Text style={styles.check}>✓</Text>
+            </View>
+          ) : (
+            <View style={styles.circle} />
+          )}
         </View>
         {h ? (
           <View style={[styles.hourPill, blue && styles.hourPillBlue]}>
@@ -151,6 +157,13 @@ export function WorkerTimeMock() {
         <Tab label={t("welcome.cal.gps", { defaultValue: "GPS" })} />
       </View>
 
+      <View style={styles.monthDropdown}>
+        <Text style={styles.monthDropdownText}>
+          {t("welcome.cal.monthJuly", { defaultValue: "July 2026" })}
+        </Text>
+        <Text style={styles.ddChev}>⌄</Text>
+      </View>
+
       <View style={styles.summary}>
         <View style={styles.summaryCol}>
           <Text style={styles.summaryValue}>80h</Text>
@@ -161,7 +174,12 @@ export function WorkerTimeMock() {
           <Text style={styles.summaryValue}>14 dagar</Text>
           <Text style={styles.summaryLabel}>Vald</Text>
         </View>
+        <Text style={styles.summaryClose}>×</Text>
       </View>
+
+      <Text style={styles.hint}>
+        Tryck på dagar för att summera timmar och exportera.
+      </Text>
 
       <View style={styles.monthRow}>
         <Text style={styles.chevron}>‹</Text>
@@ -227,6 +245,21 @@ const styles = StyleSheet.create({
   tabText: { fontSize: 12, ...FONT.medium, color: MOCK.labelDark },
   tabTextActive: { color: ORANGE, ...FONT.semibold },
 
+  monthDropdown: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#E7E9ED",
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginBottom: 8,
+  },
+  monthDropdownText: { fontSize: 13, ...FONT.semibold, color: MOCK.navy },
+  ddChev: { fontSize: 13, color: "#8A94A6" },
+  summaryClose: { fontSize: 16, color: "#8A94A6", marginLeft: 8 },
+  hint: { fontSize: 11, ...FONT.medium, color: "#8A94A6", marginBottom: 8 },
+
   summary: {
     flexDirection: "row",
     alignItems: "center",
@@ -288,7 +321,24 @@ const styles = StyleSheet.create({
   dayNum: { fontSize: 12, color: MOCK.labelDark, ...FONT.medium },
   dayNumBlue: { color: "#FFFFFF", ...FONT.semibold },
   dayNumPlain: { color: "#AEB6C1" },
-  check: { fontSize: 8, color: "#FFFFFF", marginLeft: 2 },
+  checkDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginLeft: 3,
+    backgroundColor: "rgba(255,255,255,0.35)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  check: { fontSize: 8, color: "#FFFFFF", lineHeight: 10 },
+  circle: {
+    width: 11,
+    height: 11,
+    borderRadius: 6,
+    marginLeft: 3,
+    borderWidth: 1.3,
+    borderColor: "#C6CCD6",
+  },
   hourPill: {
     marginTop: 1,
     backgroundColor: "#FFFFFF",
