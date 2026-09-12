@@ -1,32 +1,18 @@
 import React from "react";
-import { StyleSheet } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import { View, StyleSheet } from "react-native";
 
-// The rounded, softly-shadowed card every value-tour mockup sits in. A faint
-// diagonal gradient matches the Figma frames (lighter top-left). Some slides
-// stack two of these (employees, documents); most use one.
+// The rounded translucent card every value-tour mockup sits in — Figma: white
+// at 60% over the light-gray background + blue halo, radius 20, padding 10, no
+// shadow. Some slides stack two of these (employees, documents); most use one.
 export function MockCard({ children, style }) {
-  return (
-    <LinearGradient
-      colors={["#FFFFFF", "#F3F6FB"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={[styles.card, style]}
-    >
-      {children}
-    </LinearGradient>
-  );
+  return <View style={[styles.card, style]}>{children}</View>;
 }
 
 const styles = StyleSheet.create({
   card: {
     width: "100%",
-    borderRadius: 24,
-    padding: 18,
-    shadowColor: "#0A2540",
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.08,
-    shadowRadius: 24,
-    elevation: 4,
+    borderRadius: 20,
+    padding: 10,
+    backgroundColor: "rgba(255,255,255,0.6)",
   },
 });

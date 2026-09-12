@@ -10,7 +10,6 @@ import {
   DeviceEventEmitter,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 
 import AuthContext from "../../../contexts/AuthContext";
@@ -156,7 +155,7 @@ export function WelcomeSlides() {
   const isLast = index === slides.length - 1;
 
   return (
-    <LinearGradient colors={["#F4F5F7", "#E9ECF1"]} style={styles.overlay}>
+    <View style={styles.overlay}>
       <StatusBar barStyle="dark-content" />
 
       <View style={styles.topBar}>
@@ -179,12 +178,14 @@ export function WelcomeSlides() {
         onMomentumScrollEnd={onScrollEnd}
         renderItem={({ item: s }) => (
           <View style={[styles.slide, { width }]}>
-            <View style={styles.hero}>
+            <View style={styles.heroWrap}>
+              <View style={styles.glow} pointerEvents="none" />
               <Mockup name={s.illustration} />
             </View>
             <Text style={styles.title}>
               {t(`welcome.${roleKey}.slide.${s.key}.title`)}
             </Text>
+            <View style={styles.belowSpacer} />
           </View>
         )}
       />
@@ -211,6 +212,6 @@ export function WelcomeSlides() {
             : t("welcome.next", "Nästa")}
         </Text>
       </TouchableOpacity>
-    </LinearGradient>
+    </View>
   );
 }

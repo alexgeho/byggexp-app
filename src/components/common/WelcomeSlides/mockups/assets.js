@@ -21,19 +21,30 @@ export const ONB = {
   photo7: require("../../../../assets/onboarding/photo-7.png"),
 };
 
-// Shared palette for the mockups, matching the Figma onboarding frames.
+// DM Sans (the Figma type family, loaded in App.js). "SemiBold" is mapped to the
+// Medium ttf in App.js, matching the app-wide convention.
+export const FONT = {
+  regular: "DMSans-Regular",
+  medium: "DMSans-Medium",
+  semibold: "DMSans-SemiBold",
+  bold: "DMSans-Bold",
+};
+
+// Shared palette for the mockups, sampled 1:1 from the Figma onboarding frames.
 export const MOCK = {
   navy: "#052D50",
-  blue: "#0A84FF",
+  brand: "#0785F4", // primary blue (button, dots, accents) — Figma #0785F4
+  blue: "#007AFF", // iOS systemBlue used inside the app mockups (tabs, links)
   blueSoft: "#4A9EFF",
-  label: "#8A94A6",
+  glow: "rgba(76,171,255,0.14)", // #4CABFF @14% halo behind the card
+  label: "#667E93", // secondary label (project, meta) — Figma #667E93
   labelDark: "#4B5563",
   card: "#FFFFFF",
   cardAlt: "#F6F8FB",
-  track: "#EEF1F5",
+  track: "#EAECEE",
   line: "#E4E8EF",
-  green: "#2FB16B",
-  greenBg: "#E4F6EC",
-  red: "#F0526A",
-  redBg: "#FCE4E8",
+  green: "#04B251",
+  greenBg: "#E5F7EA",
+  red: "#FC1D2C",
+  redBg: "#FFDCDE",
 };

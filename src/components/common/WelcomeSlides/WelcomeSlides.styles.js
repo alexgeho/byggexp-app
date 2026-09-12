@@ -1,15 +1,19 @@
 import { StyleSheet } from "react-native";
 
-// Figma value-tour look: light-gray background, a single high-fidelity product
-// mockup centred in the slide, one bold navy benefit sentence beneath it, page
-// dots and a blue pill CTA. "Skip" sits alone at the top-right.
+// Figma value-tour look (1:1 with the "Onbording" frames): flat #EEEEEE
+// background with a soft blue halo behind the card, BYGGEXP wordmark + "Skip" in
+// the top bar, a translucent product mockup card, one DM Sans SemiBold benefit
+// sentence, page dots and a brand-blue pill CTA.
 const NAVY = "#052D50";
-const BLUE = "#0A84FF";
+const BRAND = "#0785F4";
+const FONT_MED = "DMSans-Medium";
+const FONT_SEMI = "DMSans-SemiBold";
 
 export function createStyles() {
   return StyleSheet.create({
     overlay: {
       ...StyleSheet.absoluteFillObject,
+      backgroundColor: "#EEEEEE",
       zIndex: 1000,
       elevation: 1000,
       paddingTop: 60,
@@ -20,70 +24,80 @@ export function createStyles() {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "flex-end",
-      paddingHorizontal: 24,
-      height: 32,
+      paddingHorizontal: 20,
+      height: 44,
     },
     skip: {
       color: NAVY,
-      fontSize: 17,
-      fontWeight: "600",
+      fontFamily: FONT_MED,
+      fontSize: 15,
     },
     list: {
       flex: 1,
     },
-    // Mockup + heading are centred as a group in the available space, so short
-    // mockups (notification, costs) sit mid-screen and tall ones (calendar) rise
-    // up — matching the Figma frames.
     slide: {
       flex: 1,
       alignItems: "center",
-      justifyContent: "center",
-      paddingHorizontal: 26,
+      paddingHorizontal: 20,
     },
-    hero: {
+    // Card floats just above the heading; the heading sits low (Figma pins it at
+    // ~58% of the frame). heroWrap bottom-aligns the card, belowSpacer holds the
+    // heading up off the dots.
+    heroWrap: {
+      flex: 1,
       width: "100%",
       alignItems: "center",
-      justifyContent: "center",
+      justifyContent: "flex-end",
+    },
+    // Soft blue halo (#4CABFF @14%) behind the card, as in Figma.
+    glow: {
+      position: "absolute",
+      alignSelf: "center",
+      bottom: 0,
+      width: "128%",
+      height: 190,
+      borderRadius: 200,
+      backgroundColor: "rgba(76,171,255,0.14)",
     },
     title: {
       color: NAVY,
-      fontSize: 25,
-      lineHeight: 32,
-      fontWeight: "700",
-      letterSpacing: -0.2,
+      fontFamily: FONT_SEMI,
+      fontSize: 21,
+      lineHeight: 27,
       textAlign: "center",
-      marginTop: 32,
-      paddingHorizontal: 4,
+      marginTop: 24,
     },
+    belowSpacer: { flex: 0.62 },
     dots: {
       flexDirection: "row",
       justifyContent: "center",
       alignItems: "center",
-      gap: 8,
-      marginTop: 16,
+      gap: 6,
+      marginTop: 8,
       marginBottom: 20,
     },
     dot: {
       width: 8,
       height: 8,
-      borderRadius: 999,
-      backgroundColor: "#C9CDD4",
+      borderRadius: 24,
+      backgroundColor: "rgba(5,45,80,0.1)",
     },
     dotActive: {
-      backgroundColor: BLUE,
-      width: 24,
+      backgroundColor: BRAND,
+      width: 35,
     },
     cta: {
-      marginHorizontal: 24,
-      backgroundColor: BLUE,
-      borderRadius: 999,
-      paddingVertical: 18,
+      marginHorizontal: 16,
+      backgroundColor: BRAND,
+      borderRadius: 100,
+      height: 60,
       alignItems: "center",
+      justifyContent: "center",
     },
     ctaText: {
       color: "#FFFFFF",
-      fontSize: 17,
-      fontWeight: "700",
+      fontFamily: FONT_MED,
+      fontSize: 16,
     },
   });
 }

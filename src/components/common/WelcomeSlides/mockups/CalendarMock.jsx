@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { MockCard } from "./MockCard";
-import { MOCK } from "./assets";
+import { MOCK, FONT } from "./assets";
 
 // May-2026 timesheet calendar, rebuilt from the Figma onboarding frame. The day
 // grid is fixed mockup data (it illustrates logged hours); the tab labels,
@@ -178,8 +178,8 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 2,
   },
-  tabText: { fontSize: 13, fontWeight: "500", color: MOCK.labelDark },
-  tabTextActive: { color: MOCK.blue, fontWeight: "600" },
+  tabText: { fontSize: 13, fontFamily: FONT.medium, color: MOCK.labelDark },
+  tabTextActive: { color: MOCK.blue, fontFamily: FONT.semibold },
 
   monthRow: {
     flexDirection: "row",
@@ -195,12 +195,12 @@ const styles = StyleSheet.create({
     width: 20,
     textAlign: "center",
   },
-  month: { fontSize: 15, fontWeight: "600", color: MOCK.navy },
+  month: { fontSize: 15, fontFamily: FONT.semibold, color: MOCK.navy },
 
   headRow: { flexDirection: "row", marginBottom: 2 },
   wkCol: { width: 20, alignItems: "flex-start", justifyContent: "center" },
-  wkNum: { fontSize: 11, color: MOCK.label },
-  weekday: { fontSize: 11, color: MOCK.label },
+  wkNum: { fontSize: 11, fontFamily: FONT.regular, color: "#8A94A6" },
+  weekday: { fontSize: 11, fontFamily: FONT.regular, color: "#8A94A6" },
 
   weekRow: { flexDirection: "row", alignItems: "stretch" },
   day: { flex: 1, alignItems: "center", paddingVertical: 2 },
@@ -213,9 +213,9 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   dayInnerHL: { backgroundColor: MOCK.blueSoft },
-  dayNum: { fontSize: 13, color: MOCK.labelDark, fontWeight: "500" },
-  dayNumHL: { color: "#FFFFFF", fontWeight: "600" },
-  dayNumToday: { color: MOCK.navy, fontWeight: "700" },
+  dayNum: { fontSize: 13, color: MOCK.labelDark, fontFamily: FONT.medium },
+  dayNumHL: { color: "#FFFFFF", fontFamily: FONT.semibold },
+  dayNumToday: { color: MOCK.navy, fontFamily: FONT.bold },
   hourPill: {
     marginTop: 3,
     backgroundColor: "#FFFFFF",
@@ -224,6 +224,6 @@ const styles = StyleSheet.create({
     paddingVertical: 1,
   },
   hourPillHL: { backgroundColor: "rgba(255,255,255,0.9)" },
-  hourText: { fontSize: 9, color: MOCK.label, fontWeight: "500" },
-  hourTextHL: { color: MOCK.blueSoft, fontWeight: "600" },
+  hourText: { fontSize: 9, color: "#8A94A6", fontFamily: FONT.medium },
+  hourTextHL: { color: MOCK.blueSoft, fontFamily: FONT.semibold },
 });
