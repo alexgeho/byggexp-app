@@ -3,7 +3,7 @@
     "name": "ByggExp",
     "slug": "byggexp",
     "scheme": "byggexp",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "orientation": "portrait",
     "icon": "./src/assets/icon.png",
     "userInterfaceStyle": "light",
@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.anonymous.totbygghubmobileapp",
-      "buildNumber": "179",
+      "buildNumber": "180",
       "associatedDomains": ["applinks:api.byggexp.se"],
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
@@ -63,8 +63,8 @@
         "expo-location",
         {
           "locationWhenInUsePermission": "Allow ByggExp to access your location while creating a project (to pre-fill the address) and when starting a work shift (to confirm you are at the project site).",
-          "locationAlwaysAndWhenInUsePermission": "Allow ByggExp to use your location in the background so it can automatically start your shift when you arrive at the project site and end it when you leave — even when the app is closed or your phone is locked.",
-          "isIosBackgroundLocationEnabled": false,
+          "locationAlwaysAndWhenInUsePermission": "ByggExp automatically starts and ends your work shift when you arrive at and leave the project site, so you never forget to clock in or out — even when the app is closed. It only detects whether you are inside or outside the site's area; your exact location is not tracked or stored.",
+          "isIosBackgroundLocationEnabled": true,
           "isAndroidBackgroundLocationEnabled": true,
           "isAndroidForegroundServiceEnabled": true
         }
