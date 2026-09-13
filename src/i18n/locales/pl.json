@@ -1389,6 +1389,39 @@
           "title": "Dokumenty projektu w jednym miejscu — koniec z szukaniem zagubionych rysunków."
         }
       }
+    },
+    "mock": {
+      "workShifts": "Zmiany robocze",
+      "allProjects": "Wszystkie projekty",
+      "allEmployees": "Wszyscy pracownicy",
+      "selected": "Wybrane",
+      "done": "Gotowe",
+      "tapHint": "Dotknij dni, aby zsumować godziny i wyeksportować.",
+      "employees": "Pracownicy",
+      "secWork": "Praca",
+      "secCosts": "Koszty",
+      "secResult": "Wynik",
+      "workedHours": "Przepracowane godziny",
+      "cost": "Koszt",
+      "billed": "Obciążono",
+      "purchaseInvoices": "Faktury zakupu",
+      "expensesReceipts": "Wydatki (paragony)",
+      "work": "Praca",
+      "totalCost": "Koszt całkowity",
+      "invoiced": "Zafakturowano",
+      "margin": "Marża",
+      "tabTasks": "Zadania",
+      "tabDocuments": "Dokumenty",
+      "tabWorkers": "Pracownicy",
+      "newExpense": "Nowy wydatek",
+      "supplier": "Dostawca",
+      "totalSek": "Razem (SEK)",
+      "vatSek": "VAT (SEK)",
+      "category": "Kategoria",
+      "tools": "Narzędzia",
+      "cancel": "Anuluj",
+      "saveExpense": "Zapisz wydatek",
+      "project": "Projekt"
     }
   },
   "companyDetails": {

@@ -1389,6 +1389,39 @@
           "title": "Документы проекта в одном месте — больше не нужно искать потерянные чертежи."
         }
       }
+    },
+    "mock": {
+      "workShifts": "Рабочие смены",
+      "allProjects": "Все проекты",
+      "allEmployees": "Все сотрудники",
+      "selected": "Выбрано",
+      "done": "Готово",
+      "tapHint": "Нажимайте на дни, чтобы суммировать часы и экспортировать.",
+      "employees": "Сотрудники",
+      "secWork": "Работа",
+      "secCosts": "Расходы",
+      "secResult": "Результат",
+      "workedHours": "Отработанные часы",
+      "cost": "Затраты",
+      "billed": "Выставлено",
+      "purchaseInvoices": "Счета на закупку",
+      "expensesReceipts": "Расходы (чеки)",
+      "work": "Работа",
+      "totalCost": "Общие затраты",
+      "invoiced": "Выставлен счёт",
+      "margin": "Маржа",
+      "tabTasks": "Задачи",
+      "tabDocuments": "Документы",
+      "tabWorkers": "Работники",
+      "newExpense": "Новый расход",
+      "supplier": "Поставщик",
+      "totalSek": "Итого (SEK)",
+      "vatSek": "НДС (SEK)",
+      "category": "Категория",
+      "tools": "Инструменты",
+      "cancel": "Отмена",
+      "saveExpense": "Сохранить расход",
+      "project": "Проект"
     }
   },
   "companyDetails": {

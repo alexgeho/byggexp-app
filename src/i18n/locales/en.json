@@ -1389,6 +1389,39 @@
           "title": "Project documents in one place — no more searching for lost blueprints."
         }
       }
+    },
+    "mock": {
+      "workShifts": "Work shifts",
+      "allProjects": "All projects",
+      "allEmployees": "All employees",
+      "selected": "Selected",
+      "done": "Done",
+      "tapHint": "Tap days to sum hours and export.",
+      "employees": "Employees",
+      "secWork": "Work",
+      "secCosts": "Costs",
+      "secResult": "Result",
+      "workedHours": "Worked hours",
+      "cost": "Cost",
+      "billed": "Billed",
+      "purchaseInvoices": "Purchase invoices",
+      "expensesReceipts": "Expenses (receipts)",
+      "work": "Work",
+      "totalCost": "Total cost",
+      "invoiced": "Invoiced",
+      "margin": "Margin",
+      "tabTasks": "Tasks",
+      "tabDocuments": "Documents",
+      "tabWorkers": "Workers",
+      "newExpense": "New expense",
+      "supplier": "Supplier",
+      "totalSek": "Total (SEK)",
+      "vatSek": "VAT (SEK)",
+      "category": "Category",
+      "tools": "Tools",
+      "cancel": "Cancel",
+      "saveExpense": "Save expense",
+      "project": "Project"
     }
   },
   "companyDetails": {

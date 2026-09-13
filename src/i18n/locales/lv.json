@@ -1389,6 +1389,39 @@
           "title": "Projekta dokumenti vienuviet — vairs nav jāmeklē pazaudēti rasējumi."
         }
       }
+    },
+    "mock": {
+      "workShifts": "Darba maiņas",
+      "allProjects": "Visi projekti",
+      "allEmployees": "Visi darbinieki",
+      "selected": "Atlasīts",
+      "done": "Gatavs",
+      "tapHint": "Pieskarieties dienām, lai summētu stundas un eksportētu.",
+      "employees": "Darbinieki",
+      "secWork": "Darbs",
+      "secCosts": "Izmaksas",
+      "secResult": "Rezultāts",
+      "workedHours": "Nostrādātās stundas",
+      "cost": "Izmaksas",
+      "billed": "Iekasēts",
+      "purchaseInvoices": "Pirkuma rēķini",
+      "expensesReceipts": "Izdevumi (čeki)",
+      "work": "Darbs",
+      "totalCost": "Kopējās izmaksas",
+      "invoiced": "Izrakstīts rēķins",
+      "margin": "Peļņa",
+      "tabTasks": "Uzdevumi",
+      "tabDocuments": "Dokumenti",
+      "tabWorkers": "Strādnieki",
+      "newExpense": "Jauns izdevums",
+      "supplier": "Piegādātājs",
+      "totalSek": "Kopā (SEK)",
+      "vatSek": "PVN (SEK)",
+      "category": "Kategorija",
+      "tools": "Rīki",
+      "cancel": "Atcelt",
+      "saveExpense": "Saglabāt izdevumu",
+      "project": "Projekts"
     }
   },
   "companyDetails": {

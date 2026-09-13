@@ -1389,6 +1389,39 @@
           "title": "Prosjektdokumenter samlet på ett sted — slutt på leting etter bortkomne tegninger."
         }
       }
+    },
+    "mock": {
+      "workShifts": "Arbeidsøkter",
+      "allProjects": "Alle prosjekter",
+      "allEmployees": "Alle ansatte",
+      "selected": "Valgt",
+      "done": "Ferdig",
+      "tapHint": "Trykk på dager for å summere timer og eksportere.",
+      "employees": "Ansatte",
+      "secWork": "Arbeid",
+      "secCosts": "Kostnader",
+      "secResult": "Resultat",
+      "workedHours": "Arbeidede timer",
+      "cost": "Kostnad",
+      "billed": "Debitert",
+      "purchaseInvoices": "Innkjøpsfakturaer",
+      "expensesReceipts": "Utlegg (kvitteringer)",
+      "work": "Arbeid",
+      "totalCost": "Total kostnad",
+      "invoiced": "Fakturert",
+      "margin": "Margin",
+      "tabTasks": "Oppgaver",
+      "tabDocuments": "Dokumenter",
+      "tabWorkers": "Arbeidere",
+      "newExpense": "Nytt utlegg",
+      "supplier": "Leverandør",
+      "totalSek": "Totalt (SEK)",
+      "vatSek": "Mva (SEK)",
+      "category": "Kategori",
+      "tools": "Verktøy",
+      "cancel": "Avbryt",
+      "saveExpense": "Lagre utlegg",
+      "project": "Prosjekt"
     }
   },
   "companyDetails": {

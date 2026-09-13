@@ -1389,6 +1389,39 @@
           "title": "Документи проєкту в одному місці — більше не треба шукати загублені креслення."
         }
       }
+    },
+    "mock": {
+      "workShifts": "Робочі зміни",
+      "allProjects": "Усі проєкти",
+      "allEmployees": "Усі працівники",
+      "selected": "Вибрано",
+      "done": "Готово",
+      "tapHint": "Торкніться днів, щоб підсумувати години та експортувати.",
+      "employees": "Працівники",
+      "secWork": "Робота",
+      "secCosts": "Витрати",
+      "secResult": "Результат",
+      "workedHours": "Відпрацьовані години",
+      "cost": "Вартість",
+      "billed": "Нараховано",
+      "purchaseInvoices": "Рахунки на закупівлю",
+      "expensesReceipts": "Витрати (чеки)",
+      "work": "Робота",
+      "totalCost": "Загальна вартість",
+      "invoiced": "Виставлено рахунок",
+      "margin": "Маржа",
+      "tabTasks": "Завдання",
+      "tabDocuments": "Документи",
+      "tabWorkers": "Працівники",
+      "newExpense": "Нова витрата",
+      "supplier": "Постачальник",
+      "totalSek": "Разом (SEK)",
+      "vatSek": "ПДВ (SEK)",
+      "category": "Категорія",
+      "tools": "Інструменти",
+      "cancel": "Скасувати",
+      "saveExpense": "Зберегти витрату",
+      "project": "Проєкт"
     }
   },
   "companyDetails": {

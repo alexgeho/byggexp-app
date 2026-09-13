@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { MockCard } from "./MockCard";
 import { MOCK, ONB, FONT } from "./assets";
@@ -45,6 +46,7 @@ function TabItem({ label, active }) {
 }
 
 export function DocumentsMock() {
+  const { t } = useTranslation();
   return (
     <MockCard style={styles.card}>
       <Text style={styles.header} numberOfLines={1}>
@@ -52,9 +54,16 @@ export function DocumentsMock() {
       </Text>
 
       <View style={styles.tabs}>
-        <TabItem label="Uppgifter" />
-        <TabItem label="Dokument" active />
-        <TabItem label="Arbetare" />
+        <TabItem
+          label={t("welcome.mock.tabTasks", { defaultValue: "Uppgifter" })}
+        />
+        <TabItem
+          label={t("welcome.mock.tabDocuments", { defaultValue: "Dokument" })}
+          active
+        />
+        <TabItem
+          label={t("welcome.mock.tabWorkers", { defaultValue: "Arbetare" })}
+        />
       </View>
 
       <View style={styles.list}>

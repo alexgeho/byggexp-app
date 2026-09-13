@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { MockCard } from "./MockCard";
 import { MOCK, ONB, FONT } from "./assets";
@@ -21,25 +22,50 @@ function Field({ label, value, style, filled }) {
 }
 
 export function ReceiptMock() {
+  const { t } = useTranslation();
   return (
     <MockCard style={styles.card}>
-      <Text style={styles.title}>Nytt utlägg</Text>
+      <Text style={styles.title}>
+        {t("welcome.mock.newExpense", { defaultValue: "Nytt utlägg" })}
+      </Text>
       <Image source={ONB.receipt} style={styles.receipt} resizeMode="cover" />
 
-      <Field label="Leverantör" value="HHAO sun AB" />
+      <Field
+        label={t("welcome.mock.supplier", { defaultValue: "Leverantör" })}
+        value="HHAO sun AB"
+      />
       <View style={styles.row}>
-        <Field label="Totalt (SEK)" value="150.1" style={styles.half} />
-        <Field label="Moms (SEK)" value="23.62" style={styles.half} />
+        <Field
+          label={t("welcome.mock.totalSek", { defaultValue: "Totalt (SEK)" })}
+          value="150.1"
+          style={styles.half}
+        />
+        <Field
+          label={t("welcome.mock.vatSek", { defaultValue: "Moms (SEK)" })}
+          value="23.62"
+          style={styles.half}
+        />
       </View>
-      <Field label="Kategori" value="Verktyg" />
-      <Field label="Projekt" value="Byggnation av BRF Peter" filled />
+      <Field
+        label={t("welcome.mock.category", { defaultValue: "Kategori" })}
+        value={t("welcome.mock.tools", { defaultValue: "Verktyg" })}
+      />
+      <Field
+        label={t("welcome.mock.project", { defaultValue: "Projekt" })}
+        value="Byggnation av BRF Peter"
+        filled
+      />
 
       <View style={styles.buttons}>
         <View style={[styles.button, styles.cancel]}>
-          <Text style={styles.cancelText}>Avbryt</Text>
+          <Text style={styles.cancelText}>
+            {t("welcome.mock.cancel", { defaultValue: "Avbryt" })}
+          </Text>
         </View>
         <View style={[styles.button, styles.save]}>
-          <Text style={styles.saveText}>Spara utlägg</Text>
+          <Text style={styles.saveText}>
+            {t("welcome.mock.saveExpense", { defaultValue: "Spara utlägg" })}
+          </Text>
         </View>
       </View>
     </MockCard>

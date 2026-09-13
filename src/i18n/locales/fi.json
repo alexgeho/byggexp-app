@@ -1389,6 +1389,39 @@
           "title": "Projektin asiakirjat yhdessä paikassa — ei enää kadonneiden piirustusten etsimistä."
         }
       }
+    },
+    "mock": {
+      "workShifts": "Työvuorot",
+      "allProjects": "Kaikki projektit",
+      "allEmployees": "Kaikki työntekijät",
+      "selected": "Valittu",
+      "done": "Valmis",
+      "tapHint": "Napauta päiviä laskeaksesi tunnit yhteen ja viedäksesi.",
+      "employees": "Työntekijät",
+      "secWork": "Työ",
+      "secCosts": "Kustannukset",
+      "secResult": "Tulos",
+      "workedHours": "Tehdyt tunnit",
+      "cost": "Kustannus",
+      "billed": "Veloitettu",
+      "purchaseInvoices": "Ostolaskut",
+      "expensesReceipts": "Kulut (kuitit)",
+      "work": "Työ",
+      "totalCost": "Kokonaiskustannus",
+      "invoiced": "Laskutettu",
+      "margin": "Kate",
+      "tabTasks": "Tehtävät",
+      "tabDocuments": "Asiakirjat",
+      "tabWorkers": "Työntekijät",
+      "newExpense": "Uusi kulu",
+      "supplier": "Toimittaja",
+      "totalSek": "Yhteensä (SEK)",
+      "vatSek": "ALV (SEK)",
+      "category": "Kategoria",
+      "tools": "Työkalut",
+      "cancel": "Peruuta",
+      "saveExpense": "Tallenna kulu",
+      "project": "Projekti"
     }
   },
   "companyDetails": {

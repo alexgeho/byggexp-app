@@ -135,7 +135,9 @@ export function ArbetspassMock() {
     <MockCard style={styles.card}>
       <View style={styles.header}>
         <View style={styles.headerSide} />
-        <Text style={styles.headerTitle}>Arbetspass</Text>
+        <Text style={styles.headerTitle}>
+          {t("welcome.mock.workShifts", { defaultValue: "Arbetspass" })}
+        </Text>
         <AppIcon name="upload" size={20} color={MOCK.brand} />
       </View>
 
@@ -154,11 +156,15 @@ export function ArbetspassMock() {
 
       <View style={styles.filters}>
         <View style={styles.filterPill}>
-          <Text style={styles.filterText}>Alla projekt</Text>
+          <Text style={styles.filterText}>
+            {t("welcome.mock.allProjects", { defaultValue: "Alla projekt" })}
+          </Text>
           <Text style={styles.filterChev}>⌄</Text>
         </View>
         <View style={styles.filterPill}>
-          <Text style={styles.filterText}>Alla anställda</Text>
+          <Text style={styles.filterText}>
+            {t("welcome.mock.allEmployees", { defaultValue: "Alla anställda" })}
+          </Text>
           <Text style={styles.filterChev}>⌄</Text>
         </View>
       </View>
@@ -166,12 +172,16 @@ export function ArbetspassMock() {
       <View style={styles.summary}>
         <View style={styles.summaryCol}>
           <Text style={styles.summaryValue}>524h 11m</Text>
-          <Text style={styles.summaryLabel}>Vald</Text>
+          <Text style={styles.summaryLabel}>
+            {t("welcome.mock.selected", { defaultValue: "Vald" })}
+          </Text>
         </View>
         <View style={styles.summaryDivider} />
         <View style={styles.summaryCol}>
           <Text style={styles.summaryValue}>14 dagar</Text>
-          <Text style={styles.summaryLabel}>Vald</Text>
+          <Text style={styles.summaryLabel}>
+            {t("welcome.mock.selected", { defaultValue: "Vald" })}
+          </Text>
         </View>
         <Text style={styles.summaryClose}>×</Text>
       </View>

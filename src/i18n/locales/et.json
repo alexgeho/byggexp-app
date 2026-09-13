@@ -1389,6 +1389,39 @@
           "title": "Projekti dokumendid ühes kohas — enam ei pea otsima kadunud jooniseid."
         }
       }
+    },
+    "mock": {
+      "workShifts": "Töövahetused",
+      "allProjects": "Kõik projektid",
+      "allEmployees": "Kõik töötajad",
+      "selected": "Valitud",
+      "done": "Valmis",
+      "tapHint": "Puuduta päevi, et liita tunnid ja eksportida.",
+      "employees": "Töötajad",
+      "secWork": "Töö",
+      "secCosts": "Kulud",
+      "secResult": "Tulem",
+      "workedHours": "Töötatud tunnid",
+      "cost": "Kulu",
+      "billed": "Arveldatud",
+      "purchaseInvoices": "Ostuarved",
+      "expensesReceipts": "Kulud (kviitungid)",
+      "work": "Töö",
+      "totalCost": "Kogukulu",
+      "invoiced": "Arve esitatud",
+      "margin": "Marginaal",
+      "tabTasks": "Ülesanded",
+      "tabDocuments": "Dokumendid",
+      "tabWorkers": "Töölised",
+      "newExpense": "Uus kulu",
+      "supplier": "Tarnija",
+      "totalSek": "Kokku (SEK)",
+      "vatSek": "KM (SEK)",
+      "category": "Kategooria",
+      "tools": "Tööriistad",
+      "cancel": "Tühista",
+      "saveExpense": "Salvesta kulu",
+      "project": "Projekt"
     }
   },
   "companyDetails": {

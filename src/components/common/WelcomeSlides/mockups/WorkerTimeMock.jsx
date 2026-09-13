@@ -143,9 +143,13 @@ export function WorkerTimeMock() {
     <MockCard style={styles.card}>
       <View style={styles.header}>
         <View style={styles.headerSide} />
-        <Text style={styles.headerTitle}>Arbetspass</Text>
+        <Text style={styles.headerTitle}>
+          {t("welcome.mock.workShifts", { defaultValue: "Arbetspass" })}
+        </Text>
         <View style={styles.klar}>
-          <Text style={styles.klarText}>Klar</Text>
+          <Text style={styles.klarText}>
+            {t("welcome.mock.done", { defaultValue: "Klar" })}
+          </Text>
         </View>
       </View>
 
@@ -168,18 +172,24 @@ export function WorkerTimeMock() {
       <View style={styles.summary}>
         <View style={styles.summaryCol}>
           <Text style={styles.summaryValue}>80h</Text>
-          <Text style={styles.summaryLabel}>Vald</Text>
+          <Text style={styles.summaryLabel}>
+            {t("welcome.mock.selected", { defaultValue: "Vald" })}
+          </Text>
         </View>
         <View style={styles.summaryDivider} />
         <View style={styles.summaryCol}>
           <Text style={styles.summaryValue}>14 dagar</Text>
-          <Text style={styles.summaryLabel}>Vald</Text>
+          <Text style={styles.summaryLabel}>
+            {t("welcome.mock.selected", { defaultValue: "Vald" })}
+          </Text>
         </View>
         <Text style={styles.summaryClose}>×</Text>
       </View>
 
       <Text style={styles.hint}>
-        Tryck på dagar för att summera timmar och exportera.
+        {t("welcome.mock.tapHint", {
+          defaultValue: "Tryck på dagar för att summera timmar och exportera.",
+        })}
       </Text>
 
       <View style={styles.monthRow}>

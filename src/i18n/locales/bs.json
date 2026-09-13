@@ -1389,6 +1389,39 @@
           "title": "Projektni dokumenti na jednom mjestu — nema više traženja izgubljenih nacrta."
         }
       }
+    },
+    "mock": {
+      "workShifts": "Radne smjene",
+      "allProjects": "Svi projekti",
+      "allEmployees": "Svi zaposleni",
+      "selected": "Odabrano",
+      "done": "Gotovo",
+      "tapHint": "Dodirnite dane da zbrojite sate i izvezete.",
+      "employees": "Zaposleni",
+      "secWork": "Rad",
+      "secCosts": "Troškovi",
+      "secResult": "Rezultat",
+      "workedHours": "Odrađeni sati",
+      "cost": "Trošak",
+      "billed": "Naplaćeno",
+      "purchaseInvoices": "Ulazni računi",
+      "expensesReceipts": "Troškovi (računi)",
+      "work": "Rad",
+      "totalCost": "Ukupni trošak",
+      "invoiced": "Fakturisano",
+      "margin": "Marža",
+      "tabTasks": "Zadaci",
+      "tabDocuments": "Dokumenti",
+      "tabWorkers": "Radnici",
+      "newExpense": "Novi trošak",
+      "supplier": "Dobavljač",
+      "totalSek": "Ukupno (SEK)",
+      "vatSek": "PDV (SEK)",
+      "category": "Kategorija",
+      "tools": "Alati",
+      "cancel": "Otkaži",
+      "saveExpense": "Sačuvaj trošak",
+      "project": "Projekt"
     }
   },
   "companyDetails": {

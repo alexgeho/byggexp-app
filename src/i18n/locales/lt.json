@@ -1389,6 +1389,39 @@
           "title": "Projekto dokumentai vienoje vietoje — nebereikia ieškoti pamestų brėžinių."
         }
       }
+    },
+    "mock": {
+      "workShifts": "Darbo pamainos",
+      "allProjects": "Visi projektai",
+      "allEmployees": "Visi darbuotojai",
+      "selected": "Pasirinkta",
+      "done": "Atlikta",
+      "tapHint": "Palieskite dienas, kad sumuotumėte valandas ir eksportuotumėte.",
+      "employees": "Darbuotojai",
+      "secWork": "Darbas",
+      "secCosts": "Sąnaudos",
+      "secResult": "Rezultatas",
+      "workedHours": "Dirbtos valandos",
+      "cost": "Sąnaudos",
+      "billed": "Apmokestinta",
+      "purchaseInvoices": "Pirkimo sąskaitos",
+      "expensesReceipts": "Išlaidos (kvitai)",
+      "work": "Darbas",
+      "totalCost": "Bendros sąnaudos",
+      "invoiced": "Išrašyta sąskaita",
+      "margin": "Marža",
+      "tabTasks": "Užduotys",
+      "tabDocuments": "Dokumentai",
+      "tabWorkers": "Darbininkai",
+      "newExpense": "Nauja išlaida",
+      "supplier": "Tiekėjas",
+      "totalSek": "Iš viso (SEK)",
+      "vatSek": "PVM (SEK)",
+      "category": "Kategorija",
+      "tools": "Įrankiai",
+      "cancel": "Atšaukti",
+      "saveExpense": "Išsaugoti išlaidą",
+      "project": "Projektas"
     }
   },
   "companyDetails": {

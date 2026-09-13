@@ -75,11 +75,14 @@ function StaffCard({ p }) {
 }
 
 export function EmployeesMock() {
+  const { t } = useTranslation();
   return (
     <MockCard style={styles.card}>
       <View style={styles.header}>
         <View style={styles.headerSide} />
-        <Text style={styles.headerTitle}>Anställda</Text>
+        <Text style={styles.headerTitle}>
+          {t("welcome.mock.employees", { defaultValue: "Anställda" })}
+        </Text>
         <AppIcon name="user-plus" size={20} color={MOCK.brand} />
       </View>
 

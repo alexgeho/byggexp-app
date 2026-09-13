@@ -1389,6 +1389,39 @@
           "title": "Projektdokument samlade på ett ställe — inget mer letande efter borttappade ritningar."
         }
       }
+    },
+    "mock": {
+      "workShifts": "Arbetspass",
+      "allProjects": "Alla projekt",
+      "allEmployees": "Alla anställda",
+      "selected": "Vald",
+      "done": "Klar",
+      "tapHint": "Tryck på dagar för att summera timmar och exportera.",
+      "employees": "Anställda",
+      "secWork": "Arbete",
+      "secCosts": "Kostnader",
+      "secResult": "Resultat",
+      "workedHours": "Arbetade timmar",
+      "cost": "Kostnad",
+      "billed": "Debiterat",
+      "purchaseInvoices": "Inköpsfakturor",
+      "expensesReceipts": "Utlägg (kvitton)",
+      "work": "Arbete",
+      "totalCost": "Total kostnad",
+      "invoiced": "Fakturerat",
+      "margin": "Marginal",
+      "tabTasks": "Uppgifter",
+      "tabDocuments": "Dokument",
+      "tabWorkers": "Arbetare",
+      "newExpense": "Nytt utlägg",
+      "supplier": "Leverantör",
+      "totalSek": "Totalt (SEK)",
+      "vatSek": "Moms (SEK)",
+      "category": "Kategori",
+      "tools": "Verktyg",
+      "cancel": "Avbryt",
+      "saveExpense": "Spara utlägg",
+      "project": "Projekt"
     }
   },
   "companyDetails": {

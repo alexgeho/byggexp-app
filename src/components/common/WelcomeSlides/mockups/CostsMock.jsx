@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { MockCard } from "./MockCard";
 import { MOCK, FONT } from "./assets";
@@ -21,6 +22,7 @@ function Row({ label, value, strong, color }) {
 }
 
 export function CostsMock() {
+  const { t } = useTranslation();
   return (
     <MockCard style={styles.card}>
       <Text style={styles.header} numberOfLines={1}>
@@ -28,28 +30,70 @@ export function CostsMock() {
       </Text>
 
       <View style={styles.block}>
-        <Text style={styles.blockTitle}>ARBETE</Text>
-        <Row label="Arbetade timmar" value="1823.88 h" />
-        <Row label="Kostnad" value="565 402,63 kr" color={MOCK.red} />
-        <Row label="Debiterat" value="911 939,72 kr" color={MOCK.green} />
+        <Text style={styles.blockTitle}>
+          {t("welcome.mock.secWork", { defaultValue: "Arbete" })}
+        </Text>
+        <Row
+          label={t("welcome.mock.workedHours", {
+            defaultValue: "Arbetade timmar",
+          })}
+          value="1823.88 h"
+        />
+        <Row
+          label={t("welcome.mock.cost", { defaultValue: "Kostnad" })}
+          value="565 402,63 kr"
+          color={MOCK.red}
+        />
+        <Row
+          label={t("welcome.mock.billed", { defaultValue: "Debiterat" })}
+          value="911 939,72 kr"
+          color={MOCK.green}
+        />
       </View>
 
       <View style={styles.block}>
-        <Text style={styles.blockTitle}>KOSTNADER</Text>
-        <Row label="Inköpsfakturor" value="162 077,89 kr" />
-        <Row label="Utlägg (kvitton)" value="14 118,00 kr" />
-        <Row label="Arbete" value="565 402,63 kr" />
+        <Text style={styles.blockTitle}>
+          {t("welcome.mock.secCosts", { defaultValue: "Kostnader" })}
+        </Text>
+        <Row
+          label={t("welcome.mock.purchaseInvoices", {
+            defaultValue: "Inköpsfakturor",
+          })}
+          value="162 077,89 kr"
+        />
+        <Row
+          label={t("welcome.mock.expensesReceipts", {
+            defaultValue: "Utlägg (kvitton)",
+          })}
+          value="14 118,00 kr"
+        />
+        <Row
+          label={t("welcome.mock.work", { defaultValue: "Arbete" })}
+          value="565 402,63 kr"
+        />
         <View style={styles.divider} />
-        <Row label="Total kostnad" value="741 598,52 kr" strong />
+        <Row
+          label={t("welcome.mock.totalCost", { defaultValue: "Total kostnad" })}
+          value="741 598,52 kr"
+          strong
+        />
       </View>
 
       <View style={[styles.block, styles.blockLast]}>
-        <Text style={styles.blockTitle}>RESULTAT</Text>
-        <Row label="Fakturerat" value="882 543,00 kr" />
-        <Row label="Total kostnad" value="741 598,52 kr" />
+        <Text style={styles.blockTitle}>
+          {t("welcome.mock.secResult", { defaultValue: "Resultat" })}
+        </Text>
+        <Row
+          label={t("welcome.mock.invoiced", { defaultValue: "Fakturerat" })}
+          value="882 543,00 kr"
+        />
+        <Row
+          label={t("welcome.mock.totalCost", { defaultValue: "Total kostnad" })}
+          value="741 598,52 kr"
+        />
         <View style={styles.divider} />
         <Row
-          label="Marginal (16%)"
+          label={`${t("welcome.mock.margin", { defaultValue: "Marginal" })} (16%)`}
           value="140 944,48 kr"
           strong
           color={MOCK.green}
@@ -81,6 +125,7 @@ const styles = StyleSheet.create({
     color: MOCK.navy,
     marginBottom: 8,
     letterSpacing: 0.3,
+    textTransform: "uppercase",
   },
   row: {
     flexDirection: "row",
