@@ -1384,6 +1384,9 @@
         },
         "5": {
           "title": "Kuittikuvat skannataan ja lasketaan automaattisesti projektin talouteen."
+        },
+        "6": {
+          "title": "Projektin asiakirjat yhdessä paikassa — ei enää kadonneiden piirustusten etsimistä."
         }
       }
     }

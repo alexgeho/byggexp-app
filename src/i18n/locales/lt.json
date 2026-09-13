@@ -1384,6 +1384,9 @@
         },
         "5": {
           "title": "Kvitų nuotraukos nuskaitomos ir automatiškai įskaičiuojamos į projekto finansus."
+        },
+        "6": {
+          "title": "Projekto dokumentai vienoje vietoje — nebereikia ieškoti pamestų brėžinių."
         }
       }
     }

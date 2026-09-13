@@ -57,6 +57,7 @@ const SLIDES_BY_ROLE = {
     { key: "3", illustration: "notification" },
     { key: "4", illustration: "receipt" },
     { key: "5", illustration: "costs" },
+    { key: "6", illustration: "documents" },
   ],
 };
 

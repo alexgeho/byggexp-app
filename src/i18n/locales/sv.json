@@ -1384,6 +1384,9 @@
         },
         "5": {
           "title": "Kvittofoton skannas och räknas automatiskt in i projektets ekonomi."
+        },
+        "6": {
+          "title": "Projektdokument samlade på ett ställe — inget mer letande efter borttappade ritningar."
         }
       }
     }

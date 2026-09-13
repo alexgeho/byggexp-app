@@ -1384,6 +1384,9 @@
         },
         "5": {
           "title": "Kviitungifotod skannitakse ja arvestatakse automaatselt projekti rahandusse."
+        },
+        "6": {
+          "title": "Projekti dokumendid ühes kohas — enam ei pea otsima kadunud jooniseid."
         }
       }
     }
