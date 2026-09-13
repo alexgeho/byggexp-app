@@ -48,8 +48,8 @@ export function CostsMock() {
 
       <View style={styles.block}>
         <Text style={styles.blockTitle}>KOSTNADER</Text>
-        <Row label="Inköpsfakturor" value="14 118,00 kr" />
-        <Row label="Utlägg (kvitton)" value="162 077,89 kr" />
+        <Row label="Inköpsfakturor" value="162 077,89 kr" />
+        <Row label="Utlägg (kvitton)" value="14 118,00 kr" />
         <Row label="Arbete" value="565 402,63 kr" />
         <View style={styles.divider} />
         <Row label="Total kostnad" value="741 598,52 kr" strong />
