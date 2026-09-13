@@ -43,7 +43,7 @@ export function CostsMock() {
         <Row label="Total kostnad" value="741 598,52 kr" strong />
       </View>
 
-      <View style={styles.block}>
+      <View style={[styles.block, styles.blockLast]}>
         <Text style={styles.blockTitle}>RESULTAT</Text>
         <Row label="Fakturerat" value="882 543,00 kr" />
         <Row label="Total kostnad" value="741 598,52 kr" />
@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 8,
   },
+  blockLast: { marginBottom: 0 },
   blockTitle: {
     fontSize: 12,
     ...FONT.semibold,
