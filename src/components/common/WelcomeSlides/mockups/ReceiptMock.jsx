@@ -48,15 +48,21 @@ export function ReceiptMock() {
 
 const styles = StyleSheet.create({
   card: { width: 301, maxWidth: "100%", alignSelf: "center", padding: 10 },
-  title: { fontSize: 17, ...FONT.bold, color: MOCK.navy, marginBottom: 10 },
+  title: {
+    fontSize: 15,
+    textAlign: "center",
+    ...FONT.semibold,
+    color: MOCK.navy,
+    marginBottom: 12,
+  },
   receipt: {
     width: "100%",
-    height: 96,
+    height: 84,
     borderRadius: 12,
     marginBottom: 12,
     backgroundColor: MOCK.track,
   },
-  field: { marginBottom: 10 },
+  field: { marginBottom: 8 },
   fieldLabel: {
     fontSize: 12,
     ...FONT.medium,
@@ -67,7 +73,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderWidth: 1,
     borderColor: MOCK.line,
-    borderRadius: 10,
+    borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 9,
   },
@@ -78,8 +84,8 @@ const styles = StyleSheet.create({
   buttons: { flexDirection: "row", gap: 10, marginTop: 4 },
   button: {
     flex: 1,
-    borderRadius: 100,
-    paddingVertical: 12,
+    borderRadius: 12,
+    paddingVertical: 11,
     alignItems: "center",
   },
   cancel: {
