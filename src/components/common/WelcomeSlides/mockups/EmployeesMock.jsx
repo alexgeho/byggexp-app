@@ -72,6 +72,7 @@ export function EmployeesMock() {
   return (
     <MockCard style={styles.card}>
       <View style={styles.header}>
+        <View style={styles.headerSide} />
         <Text style={styles.headerTitle}>Anställda</Text>
         <AppIcon name="user-plus" size={20} color={MOCK.brand} />
       </View>
@@ -93,15 +94,21 @@ export function EmployeesMock() {
 }
 
 const styles = StyleSheet.create({
-  card: { padding: 12 },
+  card: { width: 301, maxWidth: "100%", alignSelf: "center", padding: 10 },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     paddingHorizontal: 2,
     marginBottom: 12,
   },
-  headerTitle: { fontSize: 15, ...FONT.semibold, color: MOCK.navy },
+  headerSide: { width: 20 },
+  headerTitle: {
+    flex: 1,
+    textAlign: "center",
+    fontSize: 15,
+    ...FONT.semibold,
+    color: MOCK.navy,
+  },
   dropdown: {
     flexDirection: "row",
     alignItems: "center",

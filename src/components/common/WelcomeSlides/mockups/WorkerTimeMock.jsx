@@ -142,6 +142,7 @@ export function WorkerTimeMock() {
   return (
     <MockCard style={styles.card}>
       <View style={styles.header}>
+        <View style={styles.headerSide} />
         <Text style={styles.headerTitle}>Arbetspass</Text>
         <View style={styles.klar}>
           <Text style={styles.klarText}>Klar</Text>
@@ -221,11 +222,17 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     paddingHorizontal: 2,
     marginBottom: 8,
   },
-  headerTitle: { fontSize: 15, ...FONT.semibold, color: MOCK.navy },
+  headerSide: { width: 52 },
+  headerTitle: {
+    flex: 1,
+    textAlign: "center",
+    fontSize: 15,
+    ...FONT.semibold,
+    color: MOCK.navy,
+  },
   klar: {
     backgroundColor: "#E3F0FF",
     borderRadius: 8,

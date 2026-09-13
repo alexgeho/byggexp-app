@@ -21,6 +21,7 @@ export const ONB = {
   photo7: require("../../../../assets/onboarding/photo-7.png"),
   receipt: require("../../../../assets/onboarding/receipt.png"),
   appIcon: require("../../../../assets/icon.png"),
+  tasksLock: require("../../../../assets/onboarding/tasks-lockscreen.png"),
 };
 
 // The app's own font is the system font (SF Pro on iOS) — see theme.text. The

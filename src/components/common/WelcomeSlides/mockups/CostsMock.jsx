@@ -48,8 +48,8 @@ export function CostsMock() {
 
       <View style={styles.block}>
         <Text style={styles.blockTitle}>KOSTNADER</Text>
-        <Row label="Inköpsfakturor" value="5 912,00 kr" />
-        <Row label="Utlägg (kvitton)" value="162 077,89 kr" />
+        <Row label="Inköpsfakturor" value="162 077,89 kr" />
+        <Row label="Utlägg (kvitton)" value="5 912,00 kr" />
         <Row label="Arbete" value="562 343,51 kr" />
         <View style={styles.divider} />
         <Row label="Total kostnad" value="730 333,40 kr" strong />
@@ -72,7 +72,7 @@ export function CostsMock() {
 }
 
 const styles = StyleSheet.create({
-  card: { padding: 12 },
+  card: { width: 301, maxWidth: "100%", alignSelf: "center", padding: 10 },
   header: {
     fontSize: 15,
     ...FONT.semibold,
