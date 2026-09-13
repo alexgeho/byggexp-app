@@ -16,7 +16,7 @@ export function NotificationMock() {
 const styles = StyleSheet.create({
   image: {
     width: 301,
-    height: 394,
+    height: 486,
     alignSelf: "center",
     borderRadius: 20,
   },
