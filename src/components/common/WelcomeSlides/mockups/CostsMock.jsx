@@ -41,28 +41,28 @@ export function CostsMock() {
 
       <View style={styles.block}>
         <Text style={styles.blockTitle}>ARBETE</Text>
-        <Row label="Arbetade timmar" value="1814.01 h" />
-        <Row label="Kostnad" value="562 343,51 kr" color={MOCK.red} />
-        <Row label="Debiterat" value="907 005,67 kr" color={MOCK.green} />
+        <Row label="Arbetade timmar" value="1823.88 h" />
+        <Row label="Kostnad" value="565 402,63 kr" color={MOCK.red} />
+        <Row label="Debiterat" value="911 939,72 kr" color={MOCK.green} />
       </View>
 
       <View style={styles.block}>
         <Text style={styles.blockTitle}>KOSTNADER</Text>
-        <Row label="Inköpsfakturor" value="162 077,89 kr" />
-        <Row label="Utlägg (kvitton)" value="5 912,00 kr" />
-        <Row label="Arbete" value="562 343,51 kr" />
+        <Row label="Inköpsfakturor" value="14 118,00 kr" />
+        <Row label="Utlägg (kvitton)" value="162 077,89 kr" />
+        <Row label="Arbete" value="565 402,63 kr" />
         <View style={styles.divider} />
-        <Row label="Total kostnad" value="730 333,40 kr" strong />
+        <Row label="Total kostnad" value="741 598,52 kr" strong />
       </View>
 
       <View style={styles.block}>
         <Text style={styles.blockTitle}>RESULTAT</Text>
-        <Row label="Fakturerat" value="782 543,00 kr" />
-        <Row label="Total kostnad" value="730 333,40 kr" />
+        <Row label="Fakturerat" value="882 543,00 kr" />
+        <Row label="Total kostnad" value="741 598,52 kr" />
         <View style={styles.divider} />
         <Row
-          label="Marginal (7%)"
-          value="52 209,60 kr"
+          label="Marginal (16%)"
+          value="140 944,48 kr"
           strong
           color={MOCK.green}
         />
