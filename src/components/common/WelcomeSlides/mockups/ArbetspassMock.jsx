@@ -212,7 +212,7 @@ const GREEN_BG = "#E5F3EA";
 const GREEN_TX = "#3BA45C";
 
 const styles = StyleSheet.create({
-  card: { width: 301, maxWidth: "100%", alignSelf: "center", padding: 10 },
+  card: { width: 301, maxWidth: "100%", alignSelf: "center", padding: 18 },
   header: {
     flexDirection: "row",
     alignItems: "center",

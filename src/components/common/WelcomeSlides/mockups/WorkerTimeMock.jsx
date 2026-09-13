@@ -218,7 +218,7 @@ const BEIGE_BG = "#F5EFDC";
 const ORANGE = "#E1922E";
 
 const styles = StyleSheet.create({
-  card: { width: 301, maxWidth: "100%", alignSelf: "center", padding: 10 },
+  card: { width: 301, maxWidth: "100%", alignSelf: "center", padding: 18 },
   header: {
     flexDirection: "row",
     alignItems: "center",

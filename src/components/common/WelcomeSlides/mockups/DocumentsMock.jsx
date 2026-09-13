@@ -79,7 +79,7 @@ export function DocumentsMock() {
 }
 
 const styles = StyleSheet.create({
-  card: { width: 301, maxWidth: "100%", alignSelf: "center", padding: 10 },
+  card: { width: 301, maxWidth: "100%", alignSelf: "center", padding: 18 },
   header: {
     fontSize: 15,
     ...FONT.semibold,

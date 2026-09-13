@@ -47,7 +47,7 @@ export function ReceiptMock() {
 }
 
 const styles = StyleSheet.create({
-  card: { width: 301, maxWidth: "100%", alignSelf: "center", padding: 10 },
+  card: { width: 301, maxWidth: "100%", alignSelf: "center", padding: 18 },
   title: {
     fontSize: 15,
     textAlign: "center",
