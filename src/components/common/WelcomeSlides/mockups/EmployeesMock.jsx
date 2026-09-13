@@ -29,6 +29,12 @@ const STAFF = [
     role: "Snickare",
     site: "Byggnation av BRF Peter, Byggmästarvägen…",
   },
+  {
+    name: "Johan Lind",
+    at: false,
+    role: "Elektriker",
+    site: "Byggnation av BRF Peter, Centralvägen 38…",
+  },
 ];
 
 function StatusPill({ at }) {

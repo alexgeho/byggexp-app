@@ -34,17 +34,19 @@ export function createStyles() {
     list: {
       flex: 1,
     },
-    // Center the [mockup + heading] group vertically so the top and bottom gaps
-    // are equal on every slide (and tall cards never clip against the top bar).
+    // Anchor the heading to the bottom (fixed position just above the dots) and
+    // let the mockup fill and center in the space above it — so the caption
+    // never "jumps" between slides of different mockup heights.
     slide: {
       flex: 1,
       alignItems: "center",
-      justifyContent: "center",
       paddingHorizontal: 20,
     },
     heroWrap: {
+      flex: 1,
       width: "100%",
       alignItems: "center",
+      justifyContent: "center",
     },
     title: {
       color: NAVY,
@@ -53,7 +55,8 @@ export function createStyles() {
       fontSize: 21,
       lineHeight: 27,
       textAlign: "center",
-      marginTop: 24,
+      marginTop: 16,
+      marginBottom: 4,
     },
     dots: {
       flexDirection: "row",
