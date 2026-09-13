@@ -1421,7 +1421,11 @@
       "tools": "Інструменти",
       "cancel": "Скасувати",
       "saveExpense": "Зберегти витрату",
-      "project": "Проєкт"
+      "project": "Проєкт",
+      "roleNone": "Без ролі",
+      "roleManager": "Керівник проєкту",
+      "roleCarpenter": "Тесляр",
+      "roleElectrician": "Електрик"
     }
   },
   "companyDetails": {

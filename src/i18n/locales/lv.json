@@ -1421,7 +1421,11 @@
       "tools": "Rīki",
       "cancel": "Atcelt",
       "saveExpense": "Saglabāt izdevumu",
-      "project": "Projekts"
+      "project": "Projekts",
+      "roleNone": "Nav lomas",
+      "roleManager": "Projekta vadītājs",
+      "roleCarpenter": "Galdnieks",
+      "roleElectrician": "Elektriķis"
     }
   },
   "companyDetails": {

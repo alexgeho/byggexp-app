@@ -1421,7 +1421,11 @@
       "tools": "Verktyg",
       "cancel": "Avbryt",
       "saveExpense": "Spara utlägg",
-      "project": "Projekt"
+      "project": "Projekt",
+      "roleNone": "Ingen yrkesroll",
+      "roleManager": "Projektledare",
+      "roleCarpenter": "Snickare",
+      "roleElectrician": "Elektriker"
     }
   },
   "companyDetails": {

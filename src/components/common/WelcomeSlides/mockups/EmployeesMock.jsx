@@ -14,25 +14,29 @@ const STAFF = [
   {
     name: "Erik Olsson",
     at: false,
-    role: "Ingen yrkesroll",
+    roleKey: "roleNone",
+    roleDefault: "Ingen yrkesroll",
     site: "Byggnation av BRF Peter, Centralvägen 38…",
   },
   {
     name: "Hadjie Angela Gepanaga",
     at: true,
-    role: "Projektledare",
+    roleKey: "roleManager",
+    roleDefault: "Projektledare",
     site: "Byggnation av BRF Peter, Nybyggnation Vill…",
   },
   {
     name: "Denis Hok",
     at: true,
-    role: "Snickare",
+    roleKey: "roleCarpenter",
+    roleDefault: "Snickare",
     site: "Byggnation av BRF Peter, Byggmästarvägen…",
   },
   {
     name: "Johan Lind",
     at: false,
-    role: "Elektriker",
+    roleKey: "roleElectrician",
+    roleDefault: "Elektriker",
     site: "Byggnation av BRF Peter, Centralvägen 38…",
   },
 ];
@@ -56,6 +60,7 @@ function StatusPill({ at }) {
 }
 
 function StaffCard({ p }) {
+  const { t } = useTranslation();
   return (
     <View style={styles.staff}>
       <View style={styles.staffTop}>
@@ -65,7 +70,7 @@ function StaffCard({ p }) {
         <StatusPill at={p.at} />
       </View>
       <Text style={styles.role} numberOfLines={1}>
-        {p.role}
+        {t(`welcome.mock.${p.roleKey}`, { defaultValue: p.roleDefault })}
       </Text>
       <Text style={styles.site} numberOfLines={1}>
         {p.site}

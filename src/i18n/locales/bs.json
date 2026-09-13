@@ -1421,7 +1421,11 @@
       "tools": "Alati",
       "cancel": "Otkaži",
       "saveExpense": "Sačuvaj trošak",
-      "project": "Projekt"
+      "project": "Projekt",
+      "roleNone": "Bez uloge",
+      "roleManager": "Voditelj projekta",
+      "roleCarpenter": "Stolar",
+      "roleElectrician": "Električar"
     }
   },
   "companyDetails": {

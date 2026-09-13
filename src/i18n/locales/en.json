@@ -1421,7 +1421,11 @@
       "tools": "Tools",
       "cancel": "Cancel",
       "saveExpense": "Save expense",
-      "project": "Project"
+      "project": "Project",
+      "roleNone": "No role",
+      "roleManager": "Project manager",
+      "roleCarpenter": "Carpenter",
+      "roleElectrician": "Electrician"
     }
   },
   "companyDetails": {

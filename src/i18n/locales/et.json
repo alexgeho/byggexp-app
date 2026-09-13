@@ -1421,7 +1421,11 @@
       "tools": "Tööriistad",
       "cancel": "Tühista",
       "saveExpense": "Salvesta kulu",
-      "project": "Projekt"
+      "project": "Projekt",
+      "roleNone": "Rollita",
+      "roleManager": "Projektijuht",
+      "roleCarpenter": "Tisler",
+      "roleElectrician": "Elektrik"
     }
   },
   "companyDetails": {

@@ -1421,7 +1421,11 @@
       "tools": "Narzędzia",
       "cancel": "Anuluj",
       "saveExpense": "Zapisz wydatek",
-      "project": "Projekt"
+      "project": "Projekt",
+      "roleNone": "Brak roli",
+      "roleManager": "Kierownik projektu",
+      "roleCarpenter": "Stolarz",
+      "roleElectrician": "Elektryk"
     }
   },
   "companyDetails": {
