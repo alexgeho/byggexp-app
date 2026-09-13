@@ -27,18 +27,6 @@ export function CostsMock() {
         Byggnation av BRF Peter
       </Text>
 
-      <View style={styles.tabs}>
-        <View style={styles.tab}>
-          <Text style={styles.tabText}>Verktyg</Text>
-        </View>
-        <View style={styles.tab}>
-          <Text style={styles.tabText}>Foton</Text>
-        </View>
-        <View style={[styles.tab, styles.tabActive]}>
-          <Text style={[styles.tabText, styles.tabTextActive]}>Ekonomi</Text>
-        </View>
-      </View>
-
       <View style={styles.block}>
         <Text style={styles.blockTitle}>ARBETE</Text>
         <Row label="Arbetade timmar" value="1823.88 h" />
@@ -80,17 +68,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 10,
   },
-  tabs: {
-    flexDirection: "row",
-    backgroundColor: MOCK.track,
-    borderRadius: 11,
-    padding: 3,
-    marginBottom: 10,
-  },
-  tab: { flex: 1, paddingVertical: 7, borderRadius: 9, alignItems: "center" },
-  tabActive: { backgroundColor: "#FFFFFF" },
-  tabText: { fontSize: 12, ...FONT.medium, color: MOCK.labelDark },
-  tabTextActive: { color: MOCK.blue, ...FONT.semibold },
   block: {
     backgroundColor: "#FFFFFF",
     borderRadius: 14,
