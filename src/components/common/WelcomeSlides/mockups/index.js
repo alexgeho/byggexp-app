@@ -4,7 +4,6 @@ import { WorkerTimeMock } from "./WorkerTimeMock";
 import { ArbetspassMock } from "./ArbetspassMock";
 import { EmployeesMock } from "./EmployeesMock";
 import { NotificationMock } from "./NotificationMock";
-import { PhotosMock } from "./PhotosMock";
 import { CostsMock } from "./CostsMock";
 import { DocumentsMock } from "./DocumentsMock";
 import { ReceiptMock } from "./ReceiptMock";
@@ -16,7 +15,6 @@ const MOCKUPS = {
   arbetspass: ArbetspassMock,
   employees: EmployeesMock,
   notification: NotificationMock,
-  photos: PhotosMock,
   costs: CostsMock,
   documents: DocumentsMock,
   receipt: ReceiptMock,

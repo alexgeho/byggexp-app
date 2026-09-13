@@ -55,7 +55,7 @@ const SLIDES_BY_ROLE = {
     { key: "1", illustration: "arbetspass" },
     { key: "2", illustration: "employees" },
     { key: "3", illustration: "notification" },
-    { key: "4", illustration: "photos" },
+    { key: "4", illustration: "receipt" },
     { key: "5", illustration: "costs" },
   ],
 };
