@@ -6,7 +6,10 @@ import { styles } from "./Timer.styles";
 
 // Gap between the HH / MM / SS groups, as a fraction of the font size. Both
 // gaps use this exact value, so the three groups are always evenly spaced.
-const GROUP_GAP_RATIO = 0.1;
+// Kept small so the groups sit close together — the fixed group cells (sized to
+// the two widest digits, to never clip or jitter) already add breathing room
+// around narrow values, so a large gap on top made the clock look too spread.
+const GROUP_GAP_RATIO = 0.04;
 
 const DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 

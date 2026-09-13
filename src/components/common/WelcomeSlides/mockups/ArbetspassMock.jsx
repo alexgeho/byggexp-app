@@ -138,7 +138,7 @@ export function ArbetspassMock() {
         <Text style={styles.headerTitle}>
           {t("welcome.mock.workShifts", { defaultValue: "Arbetspass" })}
         </Text>
-        <AppIcon name="upload" size={20} color={MOCK.brand} />
+        <AppIcon name="upload" size={24} color={MOCK.brand} />
       </View>
 
       <View style={styles.tabs}>

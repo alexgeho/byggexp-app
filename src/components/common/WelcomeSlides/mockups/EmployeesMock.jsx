@@ -88,7 +88,7 @@ export function EmployeesMock() {
         <Text style={styles.headerTitle}>
           {t("welcome.mock.employees", { defaultValue: "Anställda" })}
         </Text>
-        <AppIcon name="user-plus" size={20} color={MOCK.brand} />
+        <AppIcon name="user-plus" size={24} color={MOCK.brand} />
       </View>
 
       <View style={styles.dropdown}>
