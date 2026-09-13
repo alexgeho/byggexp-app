@@ -1380,10 +1380,10 @@
           "title": "Tehtävät automaattisilla muistutuksilla — muistuttaa, kunnes työ on vahvistettu valmiiksi."
         },
         "4": {
-          "title": "Työmaan kuvaraportit ja kuittiskannaukset synkronoituvat heti järjestelmään — ota kuva ja unohda."
+          "title": "Kuvat ja kuitit skannataan ja synkronoidaan suoraan järjestelmään — ota kuva ja unohda."
         },
         "5": {
-          "title": "Kuittikuvat skannataan ja lasketaan automaattisesti projektin talouteen."
+          "title": "Kaikki tiedot kootaan ja lasketaan automaattisesti projektin talouteen."
         },
         "6": {
           "title": "Projektin asiakirjat yhdessä paikassa — ei enää kadonneiden piirustusten etsimistä."
