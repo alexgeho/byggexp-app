@@ -14,7 +14,10 @@ import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
 import { AppIcon } from "../../components/common/AppIcon";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import AuthContext from "../../contexts/AuthContext";
 import { useFeedback } from "../../contexts/FeedbackContext";
 import { useTheme } from "../../theme/ThemeContext";
@@ -104,6 +107,7 @@ const SelectRow = ({
 
 export default function CreateToolScreen() {
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
@@ -431,7 +435,10 @@ export default function CreateToolScreen() {
         animationType="slide"
         onRequestClose={() => setShowWorkerModal(false)}
       >
-        <SafeAreaView style={styles.pickerModalContainer}>
+        <SafeAreaView
+          style={[styles.pickerModalContainer, { paddingTop: insets.top + 8 }]}
+          edges={["bottom"]}
+        >
           <View style={styles.pickerModalHeader}>
             <BackButton
               backgroundColor={theme.content.surfaceMuted}
@@ -495,7 +502,10 @@ export default function CreateToolScreen() {
         animationType="slide"
         onRequestClose={() => setShowProjectModal(false)}
       >
-        <SafeAreaView style={styles.pickerModalContainer}>
+        <SafeAreaView
+          style={[styles.pickerModalContainer, { paddingTop: insets.top + 8 }]}
+          edges={["bottom"]}
+        >
           <View style={styles.pickerModalHeader}>
             <BackButton
               backgroundColor={theme.content.surfaceMuted}

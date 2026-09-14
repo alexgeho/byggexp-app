@@ -11,7 +11,10 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { FieldCard, FieldRow } from "../../components/common/FieldRow/FieldRow";
 import AuthContext from "../../contexts/AuthContext";
 import { useFeedback } from "../../contexts/FeedbackContext";
@@ -81,6 +84,7 @@ export default function CreateEmployeeScreen() {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
+  const insets = useSafeAreaInsets();
   const { user } = useContext(AuthContext);
   const { showSuccess } = useFeedback();
   const employeeId = route.params?.employeeId || "";
@@ -607,7 +611,10 @@ export default function CreateEmployeeScreen() {
         animationType="slide"
         onRequestClose={() => setShowRoleModal(false)}
       >
-        <SafeAreaView style={styles.pickerModalContainer}>
+        <SafeAreaView
+          style={[styles.pickerModalContainer, { paddingTop: insets.top + 8 }]}
+          edges={["bottom"]}
+        >
           <View style={styles.pickerModalHeader}>
             <BackButton
               backgroundColor={theme.content.surfaceMuted}
@@ -666,7 +673,10 @@ export default function CreateEmployeeScreen() {
         animationType="slide"
         onRequestClose={() => setShowLanguageModal(false)}
       >
-        <SafeAreaView style={styles.pickerModalContainer}>
+        <SafeAreaView
+          style={[styles.pickerModalContainer, { paddingTop: insets.top + 8 }]}
+          edges={["bottom"]}
+        >
           <View style={styles.pickerModalHeader}>
             <BackButton
               backgroundColor={theme.content.surfaceMuted}
@@ -723,7 +733,10 @@ export default function CreateEmployeeScreen() {
         animationType="slide"
         onRequestClose={() => setShowProjectModal(false)}
       >
-        <SafeAreaView style={styles.pickerModalContainer}>
+        <SafeAreaView
+          style={[styles.pickerModalContainer, { paddingTop: insets.top + 8 }]}
+          edges={["bottom"]}
+        >
           <View style={styles.pickerModalHeader}>
             <BackButton
               backgroundColor={theme.content.surfaceMuted}
@@ -790,7 +803,10 @@ export default function CreateEmployeeScreen() {
         animationType="slide"
         onRequestClose={() => setShowToolModal(false)}
       >
-        <SafeAreaView style={styles.pickerModalContainer}>
+        <SafeAreaView
+          style={[styles.pickerModalContainer, { paddingTop: insets.top + 8 }]}
+          edges={["bottom"]}
+        >
           <View style={styles.pickerModalHeader}>
             <BackButton
               backgroundColor={theme.content.surfaceMuted}
