@@ -1,4 +1,60 @@
-# 🆕 Сессия 2026-09-12/13 — Value-тур (WelcomeSlides) пересобран под РЕАЛЬНЫЕ экраны по ТЗ клиента
+# 🆕 Сессия 2026-09-14 — Onboarding-полировка + дизайн-система (FieldRow/пикеры) + проект в фактуре
+
+Всё в `main`, роздано серией `eas update --branch production` (runtime 1.1.0, OTA, iOS+Android). Ничего нативного не менялось в этой сессии, КРОМЕ ждущего сабмита iOS-билда (см. ⚠️).
+
+## KLART (сделано)
+
+**1. Онбординг value-тур — доводка (всё OTA):**
+
+- Подписи слайдов **прижаты к низу** (фиксировано над точками), иллюстрация центрируется в оставшемся месте → текст больше не «скачет» между слайдами (`WelcomeSlides.styles.js`: `heroWrap flex:1`, `title marginBottom`).
+- **Единый паддинг 18pt** со всех сторон у всех мокап-карточек.
+- **Локализация RN-мокапов** (убрали «свинглиш»): namespace `welcome.mock.*` (30 ключей + роли) × 11 языков; Arbetspass/WorkerTime/Employees/Costs/Documents/Receipt переведены на `t()`. Имена/проекты/файлы/суммы — остались данными. Локскрин-напоминания = фото (не трогаем).
+- Роли сотрудников (`roleNone/roleManager/roleCarpenter/roleElectrician`) локализованы.
+- RU-подписи переписаны: слайд1 «Экспорт рабочего времени…», «Присутствующие в реальном времени…», «Задачи с авто-напоминаниями — напомнит о важном». (правки только в `ru.json`).
+- Ассет напоминаний заменён на оригинал из ТЗ (IMG_4867) — **2 уведомления** видны; ширина 301 (как у всех), высота 486.
+- Иконки export/user-plus в мокапах 20→24.
+
+**2. HomeOnboarding — «стеклянный» чеклист Kom igång (по макету Wlad, OTA):**
+
+- На цветных Home-темах (blue/green/orange/dark) — полупрозрачная карточка (white 14% + light border, r24), белый текст, пустые кружки, выполненный = белый кружок с синей галкой + зачёркнут, без прогресс-бара/тега «Klar». Гейт `onDark = !isLightBlueTheme` из HomeVariant2.
+- Фикс: нижний шит («Report your time») переиспользовал белые стили → был невидим; дал ему свои `sheetRowTitle/sheetRowDesc`.
+
+**3. Дизайн-система — единый источник для экранов юзера (OTA):**
+
+- **Новый `src/components/common/FieldRow/FieldRow.jsx`** (`FieldCard` + `FieldRow` варианты input/select/readonly): синий значок + серая подпись + значение, инсет-разделители. Извлечён из «Redigera anställd» (эталон).
+- `CreateEmployeeScreen` (эталон) + `EmployeeProfileScreen` (профиль) переведены на него → выглядят одинаково.
+- Значение в `select` — **одна строка** с «…» (не переносится); высота `select`-строк = высоте input-строк (paddingVertical 12).
+- **Safe-area фикс:** `SafeAreaView` внутри `<Modal>` даёт 0 top-inset → шапки пикеров «прилипали». Пофикшено через `useSafeAreaInsets()` в CreateEmployeeScreen (4 пикера) + CreateToolScreen (2 пикера).
+- Инсет-разделители в пикерах (роль/язык/проект/инструмент).
+
+**4. Пикеры = как основные списки (OTA):**
+
+- **`ToolListCard`** (фото+статус) теперь и в пикере «Koppla verktyg» (CreateEmployeeScreen) + в `SelectTools` (проект). Добавлен проп `selected`. `gap:12` между карточками (иначе скруглённые углы «защипывались»).
+- **Новый `ProjectListCard`** (название+статус+дата+локация) в 3 пикерах проекта: CreateEmployeeScreen, CreateToolScreen, invoice `ProjectPickerModal`.
+- Воркер-пикер в CreateToolScreen → **`PersonListItem`** (как список сотрудников).
+
+**5. Фактура — опциональный проект (OTA), 1:1 с админкой:**
+
+- Поле «Projekt» + видимое «Orderreferens» на `CreateInvoiceScreen`; новый `ProjectPickerModal.jsx`.
+- При выборе проекта: `projectId` в payload (→ экономика проекта «Fakturerat»); `items[0].description = project.name` (если пусто); `orderReference = project.littera` (если пусто). Бэкенд (`invoices.schema`/DTO) уже принимает `projectId`+`orderReference`.
+
+**6. Таймер Home:** зазор между группами ЧЧ/ММ/СС 0.10→0.04em (цифры ближе). Ограничение: шрифт Landasans без tabular-figures → узкая «1» «плавает», ячейку меньше нельзя (обрежет «88»).
+
+## 🔜 NÄSTA STEG (продолжить тут)
+
+1. **iOS-билд 181 (1.1.1) ждёт сабмита** → `eas submit -p ios --profile production` → TestFlight → тест ФОНОВОГО geofence (app закрыт) → App Store с privacy-minimal формулировкой (только внутри/снаружи радиуса, не точная локация; `isIosBackgroundLocationEnabled:true`, purpose string обновлён). Это ЕДИНСТВЕННОЕ нативное, что не роздано.
+2. **Пикеры клиентов/артикулов** — ещё «голые», НО эталона нет: список клиентов сам голый (`ClientsScreen`), артикул-пикера нет вовсе. Нужно сперва решить дизайн `ClientListCard` (какие поля: имя/орг.номер/город/кол-во фактур?), потом сделать карту + подключить в пикер И список. Артикулы = новая фича (выбор из каталога в строки фактуры).
+3. **Дубли инструментов в БД** («Cirkelsåg»×2, «laser»×2, «cirkelsåg» строчными…) — мусор в справочнике, чинить в бэкенде/данных, не в вёрстке.
+4. **Мелочи для чистоты (по желанию):** `ProjectsScreen` можно перевести на `ProjectListCard` (единый источник; пока эталон-дубль); пикеры `CreateProjectScreen.parts` на хардкоде `paddingTop:48` → на `insets`; `CreateToolScreen` ещё держит приватные `FieldIcon/PlainFormRow/SelectRow` → можно на общий `FieldRow`; локализация мокап-лейблов внутри WelcomeSlides (если клиент захочет).
+
+## ⚠️ Öppna frågor / väntar på
+
+- Сабмит iOS-билда 181 — только по команде пользователя.
+- Дизайн карточки клиента — ждёт решения по набору полей.
+
+---
+
+# Сессия 2026-09-12/13 — Value-тур (WelcomeSlides) пересобран под РЕАЛЬНЫЕ экраны по ТЗ клиента
 
 Всё в `main` + роздано серией `eas update --branch production` (runtime 1.1.0, iOS+Android). Также в начале сессии — geofence-фиксы (см. ниже).
 
