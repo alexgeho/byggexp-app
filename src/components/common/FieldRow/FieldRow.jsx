@@ -95,7 +95,8 @@ export function FieldRow({
           <View style={styles.body}>
             <Text style={styles.label}>{label}</Text>
             <Text
-              numberOfLines={2}
+              numberOfLines={1}
+              ellipsizeMode="tail"
               style={[styles.value, !value && styles.placeholder]}
             >
               {value || placeholder}
