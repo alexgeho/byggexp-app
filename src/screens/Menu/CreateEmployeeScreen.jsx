@@ -632,24 +632,29 @@ export default function CreateEmployeeScreen() {
               const isSelected = selectedRole === option.value;
 
               return (
-                <TouchableOpacity
-                  key={option.value}
-                  style={[
-                    styles.pickerOptionRow,
-                    index !== roleOptions.length - 1 && styles.groupRowDivider,
-                  ]}
-                  onPress={() => {
-                    setSelectedRole(option.value);
-                    setShowRoleModal(false);
-                  }}
-                >
-                  <Text style={styles.pickerOptionLabel}>
-                    {t(`roles.${option.value}`, option.label)}
-                  </Text>
-                  {isSelected ? (
-                    <Icon name="check" size={18} color={theme.colors.primary} />
+                <React.Fragment key={option.value}>
+                  <TouchableOpacity
+                    style={styles.pickerOptionRow}
+                    onPress={() => {
+                      setSelectedRole(option.value);
+                      setShowRoleModal(false);
+                    }}
+                  >
+                    <Text style={styles.pickerOptionLabel}>
+                      {t(`roles.${option.value}`, option.label)}
+                    </Text>
+                    {isSelected ? (
+                      <Icon
+                        name="check"
+                        size={18}
+                        color={theme.colors.primary}
+                      />
+                    ) : null}
+                  </TouchableOpacity>
+                  {index !== roleOptions.length - 1 ? (
+                    <View style={styles.rowSep} />
                   ) : null}
-                </TouchableOpacity>
+                </React.Fragment>
               );
             })}
           </ScrollView>
@@ -686,23 +691,27 @@ export default function CreateEmployeeScreen() {
               const isSelected = selectedLanguage === option.value;
 
               return (
-                <TouchableOpacity
-                  key={option.value}
-                  style={[
-                    styles.pickerOptionRow,
-                    index !== LANGUAGE_OPTIONS.length - 1 &&
-                      styles.groupRowDivider,
-                  ]}
-                  onPress={() => {
-                    setSelectedLanguage(option.value);
-                    setShowLanguageModal(false);
-                  }}
-                >
-                  <Text style={styles.pickerOptionLabel}>{option.label}</Text>
-                  {isSelected ? (
-                    <Icon name="check" size={18} color={theme.colors.primary} />
+                <React.Fragment key={option.value}>
+                  <TouchableOpacity
+                    style={styles.pickerOptionRow}
+                    onPress={() => {
+                      setSelectedLanguage(option.value);
+                      setShowLanguageModal(false);
+                    }}
+                  >
+                    <Text style={styles.pickerOptionLabel}>{option.label}</Text>
+                    {isSelected ? (
+                      <Icon
+                        name="check"
+                        size={18}
+                        color={theme.colors.primary}
+                      />
+                    ) : null}
+                  </TouchableOpacity>
+                  {index !== LANGUAGE_OPTIONS.length - 1 ? (
+                    <View style={styles.rowSep} />
                   ) : null}
-                </TouchableOpacity>
+                </React.Fragment>
               );
             })}
           </ScrollView>
@@ -749,23 +758,26 @@ export default function CreateEmployeeScreen() {
                 const isSelected = selectedProjectIds.includes(projectId);
 
                 return (
-                  <TouchableOpacity
-                    key={projectId}
-                    style={[
-                      styles.pickerOptionRow,
-                      index !== projects.length - 1 && styles.groupRowDivider,
-                    ]}
-                    onPress={() => toggleProjectSelection(projectId)}
-                  >
-                    <Text style={styles.pickerOptionLabel}>{project.name}</Text>
-                    {isSelected ? (
-                      <Icon
-                        name="check"
-                        size={18}
-                        color={theme.colors.primary}
-                      />
+                  <React.Fragment key={projectId}>
+                    <TouchableOpacity
+                      style={styles.pickerOptionRow}
+                      onPress={() => toggleProjectSelection(projectId)}
+                    >
+                      <Text style={styles.pickerOptionLabel}>
+                        {project.name}
+                      </Text>
+                      {isSelected ? (
+                        <Icon
+                          name="check"
+                          size={18}
+                          color={theme.colors.primary}
+                        />
+                      ) : null}
+                    </TouchableOpacity>
+                    {index !== projects.length - 1 ? (
+                      <View style={styles.rowSep} />
                     ) : null}
-                  </TouchableOpacity>
+                  </React.Fragment>
                 );
               })
             )}
@@ -813,23 +825,24 @@ export default function CreateEmployeeScreen() {
                 const isSelected = selectedToolIds.includes(toolId);
 
                 return (
-                  <TouchableOpacity
-                    key={toolId}
-                    style={[
-                      styles.pickerOptionRow,
-                      index !== tools.length - 1 && styles.groupRowDivider,
-                    ]}
-                    onPress={() => toggleToolSelection(toolId)}
-                  >
-                    <Text style={styles.pickerOptionLabel}>{tool.name}</Text>
-                    {isSelected ? (
-                      <Icon
-                        name="check"
-                        size={18}
-                        color={theme.colors.primary}
-                      />
+                  <React.Fragment key={toolId}>
+                    <TouchableOpacity
+                      style={styles.pickerOptionRow}
+                      onPress={() => toggleToolSelection(toolId)}
+                    >
+                      <Text style={styles.pickerOptionLabel}>{tool.name}</Text>
+                      {isSelected ? (
+                        <Icon
+                          name="check"
+                          size={18}
+                          color={theme.colors.primary}
+                        />
+                      ) : null}
+                    </TouchableOpacity>
+                    {index !== tools.length - 1 ? (
+                      <View style={styles.rowSep} />
                     ) : null}
-                  </TouchableOpacity>
+                  </React.Fragment>
                 );
               })
             )}
