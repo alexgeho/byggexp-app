@@ -17,10 +17,13 @@ export function createStyles(c) {
       paddingHorizontal: 16,
       paddingVertical: 12,
     },
-    // tappable row (chevron) — taller, no vertical padding (centred)
+    // tappable row (chevron). Same vertical padding as the input row (rowPad)
+    // so select/readonly rows are the exact same height as text-field rows —
+    // the bottom card must not look shorter than the top one.
     tapRow: {
       minHeight: 56,
       paddingHorizontal: 16,
+      paddingVertical: 12,
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
