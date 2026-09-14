@@ -1011,6 +1011,7 @@ export default function HomeVariant2() {
                   onLogHours={handleEnterEditHours}
                   onSelectProject={openProjects}
                   onCustomize={openCustomize}
+                  onDark={!isLightBlueTheme}
                   needsFocus={onboarding.needsFocus}
                   focus={onboardingFocus}
                   onChooseFocus={chooseFocus}

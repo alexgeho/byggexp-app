@@ -2,25 +2,48 @@ import { StyleSheet } from "react-native";
 
 import { radius } from "../../../theme/tokens";
 
-export function createStyles(theme) {
+// `onDark` = the Home background is a solid colour/gradient (blue, green,
+// orange, black…), not a light theme. There the checklist becomes a frosted
+// "glass" card with white text (Figma "Kom igång" redesign); on light homes it
+// keeps the opaque white/dark surface so it stays legible.
+export function createStyles(theme, onDark = false) {
   const c = theme.content;
+  // White-on-glass palette for the coloured-home variant.
+  const g = {
+    text: "#FFFFFF",
+    textDim: "rgba(255,255,255,0.62)",
+    line: "rgba(255,255,255,0.65)",
+    done: "rgba(255,255,255,0.50)",
+  };
   return StyleSheet.create({
     // ~90% opaque surface (10% transparent) so the card blends slightly into the
     // Home glass aesthetic while still reading clearly — a solid fill popped too
     // hard, the old frosted surfaceMuted was light-on-light.
-    card: {
-      backgroundColor:
-        c.scheme === "dark" ? "rgba(44,44,46,0.90)" : "rgba(255,255,255,0.90)",
-      borderRadius: 20,
-      padding: 16,
-      gap: 12,
-      marginBottom: 16,
-      shadowColor: "#000",
-      shadowOpacity: 0.12,
-      shadowRadius: 16,
-      shadowOffset: { width: 0, height: 6 },
-      elevation: 4,
-    },
+    card: onDark
+      ? {
+          backgroundColor: "rgba(255,255,255,0.14)",
+          borderRadius: 24,
+          borderWidth: 1,
+          borderColor: "rgba(255,255,255,0.28)",
+          padding: 20,
+          gap: 14,
+          marginBottom: 16,
+        }
+      : {
+          backgroundColor:
+            c.scheme === "dark"
+              ? "rgba(44,44,46,0.90)"
+              : "rgba(255,255,255,0.90)",
+          borderRadius: 20,
+          padding: 16,
+          gap: 12,
+          marginBottom: 16,
+          shadowColor: "#000",
+          shadowOpacity: 0.12,
+          shadowRadius: 16,
+          shadowOffset: { width: 0, height: 6 },
+          elevation: 4,
+        },
     header: {
       flexDirection: "row",
       alignItems: "flex-start",
@@ -36,9 +59,11 @@ export function createStyles(theme) {
       fontFamily: theme.text.fontFamily.semiBold,
     },
     subtitle: {
-      color: c.textMuted,
-      fontSize: 13,
-      fontFamily: theme.text.fontFamily.regular,
+      color: onDark ? g.text : c.textMuted,
+      fontSize: onDark ? 15 : 13,
+      fontFamily: onDark
+        ? theme.text.fontFamily.medium
+        : theme.text.fontFamily.regular,
     },
     // On the routing (needsFocus) card every text is the SAME size (16) — only
     // the colour/weight differ. Applied on top of title/subtitle to override
@@ -58,13 +83,13 @@ export function createStyles(theme) {
       borderRadius: 999,
     },
     list: {
-      gap: 4,
+      gap: onDark ? 6 : 4,
     },
     row: {
       flexDirection: "row",
-      alignItems: "center",
+      alignItems: onDark ? "flex-start" : "center",
       gap: 12,
-      paddingVertical: 10,
+      paddingVertical: onDark ? 8 : 10,
       paddingHorizontal: 10,
       marginHorizontal: -10,
       borderRadius: 14,
@@ -75,16 +100,26 @@ export function createStyles(theme) {
       backgroundColor: c.accentSoft,
     },
     iconCircle: {
-      width: 30,
-      height: 30,
+      width: onDark ? 26 : 30,
+      height: onDark ? 26 : 30,
       borderRadius: 999,
-      borderWidth: 1.5,
+      borderWidth: onDark ? 2 : 1.5,
       alignItems: "center",
       justifyContent: "center",
+      marginTop: onDark ? 1 : 0,
+    },
+    // onDark todo circle: thin white ring, no fill / no per-step icon (Figma).
+    circleTodoDark: {
+      borderColor: g.line,
+    },
+    // onDark done circle: solid white with the blue check inside.
+    circleDoneDark: {
+      backgroundColor: "#FFFFFF",
+      borderColor: "#FFFFFF",
     },
     rowBody: {
       flex: 1,
-      gap: 1,
+      gap: onDark ? 2 : 1,
     },
     eyebrow: {
       fontSize: 11,
@@ -93,17 +128,17 @@ export function createStyles(theme) {
       letterSpacing: 0.4,
     },
     rowTitle: {
-      color: c.textPrimary,
-      fontSize: 15,
+      color: onDark ? g.text : c.textPrimary,
+      fontSize: onDark ? 16 : 15,
       fontFamily: theme.text.fontFamily.semiBold,
     },
     rowTitleDone: {
-      color: c.textMuted,
+      color: onDark ? g.done : c.textMuted,
       textDecorationLine: "line-through",
       fontFamily: theme.text.fontFamily.medium,
     },
     rowDesc: {
-      color: c.textMuted,
+      color: onDark ? g.textDim : c.textMuted,
       fontSize: 12.5,
       lineHeight: 17,
       fontFamily: theme.text.fontFamily.regular,

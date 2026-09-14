@@ -42,6 +42,9 @@ export function HomeOnboarding({
   onLogHours,
   onSelectProject,
   onCustomize,
+  // When the Home background is a solid colour/gradient (blue/green/orange/…),
+  // the checklist renders as a frosted "glass" card with white text.
+  onDark = false,
   // Admin focus routing
   needsFocus = false,
   focus = null,
@@ -51,9 +54,12 @@ export function HomeOnboarding({
   const navigation = useNavigation();
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const styles = useMemo(() => createStyles(theme), [theme]);
+  const styles = useMemo(() => createStyles(theme, onDark), [theme, onDark]);
 
   const accent = theme.colors.primary;
+  // On the glass (onDark) card everything is white; the completed check sits on
+  // a white disc so it uses the blue accent instead of the success green.
+  const onGlassText = onDark ? "#FFFFFF" : theme.content.textMuted;
   // Done state uses the shared "success" brand green (same mark as the
   // project-created popup), soft-filled — not the blue accent.
   const successColor = theme.content.successStrong;
@@ -165,11 +171,11 @@ export function HomeOnboarding({
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           accessibilityLabel={t("onboarding.dismiss", "Dölj")}
         >
-          <Icon name="x" size={20} color={theme.content.textMuted} />
+          <Icon name="x" size={20} color={onGlassText} />
         </TouchableOpacity>
       </View>
 
-      {showProgress ? (
+      {showProgress && !onDark ? (
         <View style={styles.progressTrack}>
           <View
             style={[
@@ -227,7 +233,7 @@ export function HomeOnboarding({
             return (
               <TouchableOpacity
                 key={step.key}
-                style={[styles.row, isActive && styles.rowActive]}
+                style={[styles.row, isActive && !onDark && styles.rowActive]}
                 disabled={step.done}
                 activeOpacity={0.7}
                 onPress={() => runStep(step)}
@@ -235,22 +241,30 @@ export function HomeOnboarding({
                 <View
                   style={[
                     styles.iconCircle,
-                    step.done
-                      ? {
-                          backgroundColor: successSoftColor,
-                          borderColor: successSoftColor,
-                        }
-                      : isActive
+                    onDark
+                      ? step.done
+                        ? styles.circleDoneDark
+                        : styles.circleTodoDark
+                      : step.done
                         ? {
-                            backgroundColor: theme.content.accentSoft,
-                            borderColor: accent,
+                            backgroundColor: successSoftColor,
+                            borderColor: successSoftColor,
                           }
-                        : { borderColor: theme.content.border },
+                        : isActive
+                          ? {
+                              backgroundColor: theme.content.accentSoft,
+                              borderColor: accent,
+                            }
+                          : { borderColor: theme.content.border },
                   ]}
                 >
                   {step.done ? (
-                    <Icon name="check" size={15} color={successColor} />
-                  ) : (
+                    <Icon
+                      name="check"
+                      size={15}
+                      color={onDark ? accent : successColor}
+                    />
+                  ) : onDark ? null : (
                     <Icon
                       name={STEP_ICON[step.key]}
                       size={15}
@@ -260,7 +274,7 @@ export function HomeOnboarding({
                 </View>
 
                 <View style={styles.rowBody}>
-                  {isActive ? (
+                  {isActive && !onDark ? (
                     <Text style={[styles.eyebrow, { color: accent }]}>
                       {t("onboarding.startHere", "Börja här")}
                     </Text>
@@ -279,14 +293,16 @@ export function HomeOnboarding({
                 </View>
 
                 {step.done ? (
-                  <Text style={styles.doneTag}>
-                    {t("onboarding.done", "Klar")}
-                  </Text>
+                  onDark ? null : (
+                    <Text style={styles.doneTag}>
+                      {t("onboarding.done", "Klar")}
+                    </Text>
+                  )
                 ) : (
                   <Icon
                     name="chevron-right"
                     size={20}
-                    color={isActive ? accent : theme.content.textMuted}
+                    color={isActive && !onDark ? accent : onGlassText}
                   />
                 )}
               </TouchableOpacity>
