@@ -20,6 +20,7 @@ import Icon from "react-native-vector-icons/Feather";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { ListCard } from "../../components/common/ListCard/ListCard";
+import { FieldCard, FieldRow } from "../../components/common/FieldRow/FieldRow";
 import AuthContext from "../../contexts/AuthContext";
 import { useFeedback } from "../../contexts/FeedbackContext";
 import { chatService, userService } from "../../services";
@@ -125,15 +126,6 @@ function ActionButton({
         {label}
       </Text>
     </TouchableOpacity>
-  );
-}
-
-function InfoRow({ label, value, isLast = false, styles }) {
-  return (
-    <View style={[styles.infoRow, !isLast && styles.groupRowDivider]}>
-      <Text style={styles.infoLabel}>{label}</Text>
-      <Text style={styles.infoValue}>{value || "-"}</Text>
-    </View>
   );
 }
 
@@ -480,24 +472,24 @@ export default function EmployeeProfileScreen() {
             ) : null}
           </View>
 
-          <View style={styles.groupCard}>
-            <InfoRow
-              styles={styles}
+          <FieldCard>
+            <FieldRow
+              icon="mail"
               label={t("myAccount.emailLabel")}
               value={employee.email}
             />
-            <InfoRow
-              styles={styles}
+            <FieldRow
+              icon="flag"
               label={t("myAccount.roleLabel")}
               value={t(`roles.${employee.role}`, getRoleLabel(employee.role))}
             />
-            <InfoRow
-              styles={styles}
+            <FieldRow
+              icon="briefcase"
               label={t("myAccount.professionLabel")}
               value={employee.profession || t("employees.noProfession")}
             />
-            <InfoRow
-              styles={styles}
+            <FieldRow
+              icon="phone"
               label={t("myAccount.phone")}
               value={formatPhone(
                 employee.phoneAreaCode,
@@ -505,13 +497,13 @@ export default function EmployeeProfileScreen() {
                 t,
               )}
             />
-            <InfoRow
-              styles={styles}
+            <FieldRow
+              icon="home"
               label={t("employeeProfile.company")}
               value={employee.company?.name || t("employeeProfile.noCompany")}
               isLast
             />
-          </View>
+          </FieldCard>
 
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>{t("menu.projects")}</Text>

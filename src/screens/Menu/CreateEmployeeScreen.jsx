@@ -5,15 +5,14 @@ import {
   ScrollView,
   Switch,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
-import { AppIcon } from "../../components/common/AppIcon";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { FieldCard, FieldRow } from "../../components/common/FieldRow/FieldRow";
 import AuthContext from "../../contexts/AuthContext";
 import { useFeedback } from "../../contexts/FeedbackContext";
 import { useTheme } from "../../theme/ThemeContext";
@@ -54,49 +53,6 @@ const parsePhoneFields = (value) => {
   };
 };
 
-const FieldIcon = ({ name, styles }) => (
-  <View style={styles.fieldIconBadge}>
-    <AppIcon name={name} size={28} color="#007AFF" strokeWidth={1.5} />
-  </View>
-);
-
-const PlainFormRow = ({
-  icon,
-  label,
-  value,
-  onChangeText,
-  placeholder,
-  keyboardType,
-  autoCapitalize,
-  isLast = false,
-  multiline = false,
-  theme,
-  styles,
-}) => (
-  <>
-    <View style={styles.groupedField}>
-      <View style={styles.fieldRowContent}>
-        {icon ? <FieldIcon name={icon} styles={styles} /> : null}
-        <View style={styles.fieldInputWrap}>
-          <Text style={styles.fieldLabel}>{label}</Text>
-          <TextInput
-            style={[styles.fieldInput, multiline && styles.fieldInputMultiline]}
-            value={value}
-            onChangeText={onChangeText}
-            placeholder={placeholder}
-            placeholderTextColor={theme.content.placeholder}
-            keyboardType={keyboardType}
-            autoCapitalize={autoCapitalize}
-            multiline={multiline}
-            textAlignVertical={multiline ? "top" : "auto"}
-          />
-        </View>
-      </View>
-    </View>
-    {!isLast ? <View style={styles.rowSepIcon} /> : null}
-  </>
-);
-
 // Language assignable to an invited user — drives their emails + app default
 // until they change it in-app. Codes match the app locales (Norwegian = "no").
 // Swedish names, no Cyrillic/endonyms — matches SUPPORTED_LANGUAGES + admin.
@@ -118,40 +74,6 @@ const languageObjectToCode = (language) =>
   language && typeof language === "object"
     ? Object.keys(language)[0] || DEFAULT_USER_LANGUAGE
     : language || DEFAULT_USER_LANGUAGE;
-
-const SelectRow = ({
-  icon,
-  label,
-  value,
-  placeholder,
-  onPress,
-  theme,
-  styles,
-  isLast = false,
-}) => (
-  <>
-    <TouchableOpacity
-      style={styles.selectRow}
-      onPress={onPress}
-      activeOpacity={0.85}
-    >
-      <View style={styles.fieldRowContent}>
-        <FieldIcon name={icon} theme={theme} styles={styles} />
-        <View style={styles.fieldInputWrap}>
-          <Text style={styles.fieldLabel}>{label}</Text>
-          <Text
-            numberOfLines={2}
-            style={[styles.selectValue, !value && styles.selectPlaceholder]}
-          >
-            {value || placeholder}
-          </Text>
-        </View>
-      </View>
-      <Icon name="chevron-right" size={18} color={theme.content.textPrimary} />
-    </TouchableOpacity>
-    {!isLast ? <View style={styles.rowSepIcon} /> : null}
-  </>
-);
 
 export default function CreateEmployeeScreen() {
   const navigation = useNavigation();
@@ -564,10 +486,9 @@ export default function CreateEmployeeScreen() {
           ) : null}
           {formError ? <Text style={styles.formError}>{formError}</Text> : null}
 
-          <View style={styles.groupCard}>
-            <PlainFormRow
-              styles={styles}
-              theme={theme}
+          <FieldCard>
+            <FieldRow
+              variant="input"
               icon="mail"
               label={t("createEmployee.emailLabel")}
               value={email}
@@ -576,9 +497,8 @@ export default function CreateEmployeeScreen() {
               keyboardType="email-address"
               autoCapitalize="none"
             />
-            <PlainFormRow
-              styles={styles}
-              theme={theme}
+            <FieldRow
+              variant="input"
               icon="user"
               label={t("createEmployee.nameLabel")}
               value={name}
@@ -586,9 +506,8 @@ export default function CreateEmployeeScreen() {
               placeholder={t("createEmployee.namePlaceholder")}
               autoCapitalize="words"
             />
-            <PlainFormRow
-              styles={styles}
-              theme={theme}
+            <FieldRow
+              variant="input"
               icon="briefcase"
               label={t("myAccount.professionLabel")}
               value={profession}
@@ -596,9 +515,8 @@ export default function CreateEmployeeScreen() {
               placeholder={t("createEmployee.professionPlaceholder")}
               autoCapitalize="words"
             />
-            <PlainFormRow
-              styles={styles}
-              theme={theme}
+            <FieldRow
+              variant="input"
               icon="phone"
               label={t("createEmployee.phoneLabel")}
               value={phone}
@@ -607,11 +525,11 @@ export default function CreateEmployeeScreen() {
               keyboardType="phone-pad"
               isLast
             />
-          </View>
+          </FieldCard>
 
-          <View style={styles.groupCard}>
-            <SelectRow
-              styles={styles}
+          <FieldCard>
+            <FieldRow
+              variant="select"
               icon="folder"
               label={t("createEmployee.addProject")}
               value={selectedProjectsLabel}
@@ -621,30 +539,27 @@ export default function CreateEmployeeScreen() {
                   : t("createTask.selectProject")
               }
               onPress={() => setShowProjectModal(true)}
-              theme={theme}
             />
-            <SelectRow
-              styles={styles}
+            <FieldRow
+              variant="select"
               icon="flag"
               label={t("myAccount.roleLabel")}
               value={selectedRoleLabel}
               placeholder={t("createEmployee.selectRole")}
               onPress={() => setShowRoleModal(true)}
-              theme={theme}
             />
-            <SelectRow
-              styles={styles}
+            <FieldRow
+              variant="select"
               icon="globe"
               label={t("createEmployee.language", "Språk")}
               value={selectedLanguageLabel}
               placeholder={t("createEmployee.selectLanguage", "Välj språk")}
               onPress={() => setShowLanguageModal(true)}
-              theme={theme}
               isLast={!isWorkerRole && !showFinanceToggle}
             />
             {isWorkerRole ? (
-              <SelectRow
-                styles={styles}
+              <FieldRow
+                variant="select"
                 icon="tool"
                 label={t("createProject.attachInstruments")}
                 value={selectedToolsLabel}
@@ -654,7 +569,6 @@ export default function CreateEmployeeScreen() {
                     : t("createEmployee.selectInstruments")
                 }
                 onPress={() => setShowToolModal(true)}
-                theme={theme}
                 isLast
               />
             ) : null}
@@ -678,7 +592,7 @@ export default function CreateEmployeeScreen() {
                 />
               </View>
             ) : null}
-          </View>
+          </FieldCard>
         </ScrollView>
 
         <BottomBar
