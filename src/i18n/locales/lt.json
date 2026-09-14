@@ -502,7 +502,8 @@
       "in_progress": "Vykdomas",
       "completed": "Užbaigtas",
       "on_hold": "Sustabdytas"
-    }
+    },
+    "untitled": "Projektas be pavadinimo"
   },
   "taskReminders": {
     "off": "Išjungta",
@@ -1192,7 +1193,14 @@
     "firstName": "Vardas",
     "lastName": "Pavardė",
     "personalNumber": "Asmens kodas",
-    "privateNameRequired": "Įveskite vardą ir pavardę."
+    "privateNameRequired": "Įveskite vardą ir pavardę.",
+    "projectOptional": "Projektas (nebūtina)",
+    "selectProject": "Pasirinkti projektą",
+    "searchProject": "Ieškoti projekto",
+    "noProject": "Be projekto",
+    "noProjects": "Projektų nėra",
+    "orderReference": "Užsakymo nuoroda",
+    "orderReferencePlaceholder": "pvz. projekto numeris"
   },
   "tasksPreview": {
     "noDate": "Nėra datos",

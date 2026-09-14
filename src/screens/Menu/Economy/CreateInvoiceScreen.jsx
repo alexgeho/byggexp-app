@@ -29,6 +29,7 @@ import { createStyles, PRIMARY, PLACEHOLDER } from "./billingForm.styles";
 import { useTheme } from "../../../theme/ThemeContext";
 import LineItemsEditor from "./LineItemsEditor";
 import ClientPickerModal from "./ClientPickerModal";
+import ProjectPickerModal from "./ProjectPickerModal";
 
 const DEFAULT_TERMS_DAYS = 20;
 
@@ -49,8 +50,14 @@ export default function CreateInvoiceScreen() {
   const [items, setItems] = useState([emptyLineItem()]);
   const [rotEnabled, setRotEnabled] = useState(false);
   const [rotLaborAmount, setRotLaborAmount] = useState("");
+  // Optional link to a project — makes the invoice roll up into that project's
+  // economy ("Fakturerat"). null = not linked.
+  const [project, setProject] = useState(null);
+  // Order reference (littera). Auto-filled from the chosen project, editable.
+  const [orderReference, setOrderReference] = useState("");
 
   const [clientPickerVisible, setClientPickerVisible] = useState(false);
+  const [projectPickerVisible, setProjectPickerVisible] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -74,6 +81,27 @@ export default function CreateInvoiceScreen() {
     setClientPickerVisible(false);
   };
 
+  // Mirrors the admin InvoiceForm: selecting a project drops its name into the
+  // first line's description (only when empty) and its order reference (littera)
+  // into Orderreferens (only when empty). null clears the link.
+  const onSelectProject = (picked) => {
+    setProjectPickerVisible(false);
+    setProject(picked);
+    if (!picked) return;
+    if (picked.littera && !orderReference.trim()) {
+      setOrderReference(String(picked.littera));
+    }
+    if (picked.name) {
+      setItems((prev) => {
+        const next = prev.length ? [...prev] : [emptyLineItem()];
+        if (!String(next[0].description || "").trim()) {
+          next[0] = { ...next[0], description: picked.name };
+        }
+        return next;
+      });
+    }
+  };
+
   const buildPayload = () => ({
     companyName: companyName.trim(),
     customerNumber: client?.customerNumber || "",
@@ -87,6 +115,11 @@ export default function CreateInvoiceScreen() {
     reverseVAT: "false",
     rotEnabled,
     rotLaborAmount: Number(String(rotLaborAmount).replace(",", ".")) || 0,
+    // Optional: link to a project so it counts toward the project economy.
+    ...(project?._id || project?.id
+      ? { projectId: project._id || project.id }
+      : {}),
+    ...(orderReference.trim() ? { orderReference: orderReference.trim() } : {}),
     items: items.map(({ _key, ...item }) => item),
   });
 
@@ -205,6 +238,42 @@ export default function CreateInvoiceScreen() {
             </Text>
             <Icon name="calendar" size={18} color={theme.content.textPrimary} />
           </TouchableOpacity>
+        </View>
+
+        {/* Project (optional) */}
+        <View style={styles.field}>
+          <Text style={styles.label}>{t("billing.projectOptional")}</Text>
+          <TouchableOpacity
+            style={styles.inputRow}
+            onPress={() => setProjectPickerVisible(true)}
+          >
+            <Text
+              style={[
+                styles.inputRowText,
+                !project && styles.inputRowPlaceholder,
+              ]}
+              numberOfLines={1}
+            >
+              {project?.name || t("billing.selectProject")}
+            </Text>
+            <Icon
+              name="chevron-down"
+              size={16}
+              color={theme.content.textPrimary}
+            />
+          </TouchableOpacity>
+        </View>
+
+        {/* Order reference (littera) — auto-filled from the project, editable */}
+        <View style={styles.field}>
+          <Text style={styles.label}>{t("billing.orderReference")}</Text>
+          <TextInput
+            style={styles.input}
+            value={orderReference}
+            onChangeText={setOrderReference}
+            placeholder={t("billing.orderReferencePlaceholder")}
+            placeholderTextColor={PLACEHOLDER}
+          />
         </View>
 
         {/* Invoice rows */}
@@ -331,6 +400,12 @@ export default function CreateInvoiceScreen() {
         visible={clientPickerVisible}
         onClose={() => setClientPickerVisible(false)}
         onSelect={onSelectClient}
+      />
+
+      <ProjectPickerModal
+        visible={projectPickerVisible}
+        onClose={() => setProjectPickerVisible(false)}
+        onSelect={onSelectProject}
       />
 
       {showDatePicker && (

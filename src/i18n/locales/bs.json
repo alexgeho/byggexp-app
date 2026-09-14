@@ -502,7 +502,8 @@
       "in_progress": "U toku",
       "completed": "Završeno",
       "on_hold": "Pauzirano"
-    }
+    },
+    "untitled": "Projekat bez naziva"
   },
   "taskReminders": {
     "off": "Isključeno",
@@ -1192,7 +1193,14 @@
     "firstName": "Ime",
     "lastName": "Prezime",
     "personalNumber": "Matični broj (JMBG)",
-    "privateNameRequired": "Unesite ime i prezime."
+    "privateNameRequired": "Unesite ime i prezime.",
+    "projectOptional": "Projekat (opcionalno)",
+    "selectProject": "Odaberi projekat",
+    "searchProject": "Pretraži projekat",
+    "noProject": "Bez projekta",
+    "noProjects": "Nema projekata",
+    "orderReference": "Referenca narudžbe",
+    "orderReferencePlaceholder": "npr. broj projekta"
   },
   "tasksPreview": {
     "noDate": "Bez datuma",

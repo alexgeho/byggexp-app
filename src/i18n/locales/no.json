@@ -502,7 +502,8 @@
       "in_progress": "Pågår",
       "completed": "Fullført",
       "on_hold": "På vent"
-    }
+    },
+    "untitled": "Uten navn"
   },
   "taskReminders": {
     "off": "Av",
@@ -1192,7 +1193,14 @@
     "firstName": "Fornavn",
     "lastName": "Etternavn",
     "personalNumber": "Personnummer",
-    "privateNameRequired": "Oppgi fornavn og etternavn."
+    "privateNameRequired": "Oppgi fornavn og etternavn.",
+    "projectOptional": "Prosjekt (valgfritt)",
+    "selectProject": "Velg prosjekt",
+    "searchProject": "Søk prosjekt",
+    "noProject": "Uten prosjekt",
+    "noProjects": "Ingen prosjekter",
+    "orderReference": "Ordrereferanse",
+    "orderReferencePlaceholder": "f.eks. prosjektnummer"
   },
   "tasksPreview": {
     "noDate": "Ingen dato",

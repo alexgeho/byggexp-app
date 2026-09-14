@@ -502,7 +502,8 @@
       "in_progress": "Norit",
       "completed": "Pabeigts",
       "on_hold": "Apturēts"
-    }
+    },
+    "untitled": "Nenosaukts projekts"
   },
   "taskReminders": {
     "off": "Izslēgts",
@@ -1192,7 +1193,14 @@
     "firstName": "Vārds",
     "lastName": "Uzvārds",
     "personalNumber": "Personas kods",
-    "privateNameRequired": "Ievadiet vārdu un uzvārdu."
+    "privateNameRequired": "Ievadiet vārdu un uzvārdu.",
+    "projectOptional": "Projekts (neobligāts)",
+    "selectProject": "Izvēlēties projektu",
+    "searchProject": "Meklēt projektu",
+    "noProject": "Bez projekta",
+    "noProjects": "Nav projektu",
+    "orderReference": "Pasūtījuma atsauce",
+    "orderReferencePlaceholder": "piem. projekta numurs"
   },
   "tasksPreview": {
     "noDate": "Nav datuma",

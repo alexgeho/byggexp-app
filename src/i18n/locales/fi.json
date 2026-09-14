@@ -502,7 +502,8 @@
       "in_progress": "Käynnissä",
       "completed": "Valmis",
       "on_hold": "Keskeytetty"
-    }
+    },
+    "untitled": "Nimetön projekti"
   },
   "taskReminders": {
     "off": "Pois",
@@ -1192,7 +1193,14 @@
     "firstName": "Etunimi",
     "lastName": "Sukunimi",
     "personalNumber": "Henkilötunnus",
-    "privateNameRequired": "Anna etu- ja sukunimi."
+    "privateNameRequired": "Anna etu- ja sukunimi.",
+    "projectOptional": "Projekti (valinnainen)",
+    "selectProject": "Valitse projekti",
+    "searchProject": "Hae projektia",
+    "noProject": "Ei projektia",
+    "noProjects": "Ei projekteja",
+    "orderReference": "Tilausviite",
+    "orderReferencePlaceholder": "esim. projektinumero"
   },
   "tasksPreview": {
     "noDate": "Ei päivämäärää",

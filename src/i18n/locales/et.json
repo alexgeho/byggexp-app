@@ -502,7 +502,8 @@
       "in_progress": "Käimas",
       "completed": "Lõpetatud",
       "on_hold": "Peatatud"
-    }
+    },
+    "untitled": "Nimeta projekt"
   },
   "taskReminders": {
     "off": "Väljas",
@@ -1192,7 +1193,14 @@
     "firstName": "Eesnimi",
     "lastName": "Perekonnanimi",
     "personalNumber": "Isikukood",
-    "privateNameRequired": "Sisesta ees- ja perekonnanimi."
+    "privateNameRequired": "Sisesta ees- ja perekonnanimi.",
+    "projectOptional": "Projekt (valikuline)",
+    "selectProject": "Vali projekt",
+    "searchProject": "Otsi projekti",
+    "noProject": "Projektita",
+    "noProjects": "Projekte pole",
+    "orderReference": "Tellimuse viide",
+    "orderReferencePlaceholder": "nt projekti number"
   },
   "tasksPreview": {
     "noDate": "Kuupäev puudub",

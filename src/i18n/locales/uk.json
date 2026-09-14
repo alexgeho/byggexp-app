@@ -502,7 +502,8 @@
       "in_progress": "У процесі",
       "completed": "Завершено",
       "on_hold": "Призупинено"
-    }
+    },
+    "untitled": "Проєкт без назви"
   },
   "taskReminders": {
     "off": "Вимк.",
@@ -1192,7 +1193,14 @@
     "firstName": "Ім'я",
     "lastName": "Прізвище",
     "personalNumber": "Особистий номер",
-    "privateNameRequired": "Введіть ім'я та прізвище."
+    "privateNameRequired": "Введіть ім'я та прізвище.",
+    "projectOptional": "Проєкт (необов’язково)",
+    "selectProject": "Обрати проєкт",
+    "searchProject": "Пошук проєкту",
+    "noProject": "Без проєкту",
+    "noProjects": "Немає проєктів",
+    "orderReference": "Референс замовлення",
+    "orderReferencePlaceholder": "напр. номер проєкту"
   },
   "tasksPreview": {
     "noDate": "Без дати",

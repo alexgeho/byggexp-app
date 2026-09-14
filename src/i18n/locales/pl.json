@@ -502,7 +502,8 @@
       "in_progress": "W toku",
       "completed": "Ukończony",
       "on_hold": "Wstrzymany"
-    }
+    },
+    "untitled": "Projekt bez nazwy"
   },
   "taskReminders": {
     "off": "Wył.",
@@ -1192,7 +1193,14 @@
     "firstName": "Imię",
     "lastName": "Nazwisko",
     "personalNumber": "Numer PESEL",
-    "privateNameRequired": "Podaj imię i nazwisko."
+    "privateNameRequired": "Podaj imię i nazwisko.",
+    "projectOptional": "Projekt (opcjonalnie)",
+    "selectProject": "Wybierz projekt",
+    "searchProject": "Szukaj projektu",
+    "noProject": "Bez projektu",
+    "noProjects": "Brak projektów",
+    "orderReference": "Numer zamówienia",
+    "orderReferencePlaceholder": "np. numer projektu"
   },
   "tasksPreview": {
     "noDate": "Brak daty",

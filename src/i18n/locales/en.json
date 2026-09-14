@@ -502,7 +502,8 @@
       "in_progress": "In progress",
       "completed": "Completed",
       "on_hold": "On hold"
-    }
+    },
+    "untitled": "Untitled project"
   },
   "taskReminders": {
     "off": "Off",
@@ -1192,7 +1193,14 @@
     "firstName": "First name",
     "lastName": "Last name",
     "personalNumber": "Personal number",
-    "privateNameRequired": "Enter first and last name."
+    "privateNameRequired": "Enter first and last name.",
+    "projectOptional": "Project (optional)",
+    "selectProject": "Select project",
+    "searchProject": "Search project",
+    "noProject": "No project",
+    "noProjects": "No projects",
+    "orderReference": "Order reference",
+    "orderReferencePlaceholder": "e.g. project number"
   },
   "tasksPreview": {
     "noDate": "No date",

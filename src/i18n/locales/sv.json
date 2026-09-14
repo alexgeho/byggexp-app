@@ -502,7 +502,8 @@
       "in_progress": "Pågår",
       "completed": "Slutfört",
       "on_hold": "Pausat"
-    }
+    },
+    "untitled": "Namnlöst projekt"
   },
   "taskReminders": {
     "off": "Av",
@@ -1192,7 +1193,14 @@
     "firstName": "Förnamn",
     "lastName": "Efternamn",
     "personalNumber": "Personnummer",
-    "privateNameRequired": "Ange förnamn och efternamn."
+    "privateNameRequired": "Ange förnamn och efternamn.",
+    "projectOptional": "Projekt (valfritt)",
+    "selectProject": "Välj projekt",
+    "searchProject": "Sök projekt",
+    "noProject": "Inget projekt",
+    "noProjects": "Inga projekt",
+    "orderReference": "Orderreferens",
+    "orderReferencePlaceholder": "t.ex. projektnummer"
   },
   "tasksPreview": {
     "noDate": "Inget datum",
