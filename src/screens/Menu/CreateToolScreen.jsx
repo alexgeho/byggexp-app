@@ -24,6 +24,8 @@ import { useTheme } from "../../theme/ThemeContext";
 import { projectService, toolService, userService } from "../../services";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
+import { ProjectListCard } from "../../components/common/ProjectListCard/ProjectListCard";
+import { PersonListItem } from "../../components/common/PersonListItem/PersonListItem";
 import FloatingActionButton from "../../components/common/FloatingActionButton/FloatingActionButton";
 import { standardScreenHeaderPlaceholder } from "../../styles/screenLayout";
 import { createStyles } from "./CreateToolScreen.styles";
@@ -458,7 +460,10 @@ export default function CreateToolScreen() {
             <View style={standardScreenHeaderPlaceholder} />
           </View>
 
-          <ScrollView contentContainerStyle={styles.pickerListContent}>
+          <ScrollView
+            contentContainerStyle={styles.pickerCardListContent}
+            showsVerticalScrollIndicator={false}
+          >
             {workers.length === 0 ? (
               <View style={styles.pickerEmptyState}>
                 <Text style={styles.pickerEmptyStateText}>
@@ -466,30 +471,18 @@ export default function CreateToolScreen() {
                 </Text>
               </View>
             ) : (
-              workers.map((worker, index) => {
+              // Same person row as the Employees list / worker pickers.
+              workers.map((worker) => {
                 const workerId = getEntityId(worker);
-                const isSelected = selectedWorkerIds.includes(workerId);
-
                 return (
-                  <TouchableOpacity
+                  <PersonListItem
                     key={workerId}
-                    style={[
-                      styles.pickerOptionRow,
-                      index !== workers.length - 1 && styles.groupRowDivider,
-                    ]}
+                    person={worker}
+                    subtitle={worker.profession || t("employees.noProfession")}
+                    selectable
+                    selected={selectedWorkerIds.includes(workerId)}
                     onPress={() => toggleWorkerSelection(workerId)}
-                  >
-                    <Text style={styles.pickerOptionLabel}>
-                      {worker.name || worker.email}
-                    </Text>
-                    {isSelected ? (
-                      <Icon
-                        name="check"
-                        size={18}
-                        color={theme.colors.primary}
-                      />
-                    ) : null}
-                  </TouchableOpacity>
+                  />
                 );
               })
             )}
@@ -525,7 +518,10 @@ export default function CreateToolScreen() {
             <View style={standardScreenHeaderPlaceholder} />
           </View>
 
-          <ScrollView contentContainerStyle={styles.pickerListContent}>
+          <ScrollView
+            contentContainerStyle={styles.pickerCardListContent}
+            showsVerticalScrollIndicator={false}
+          >
             {projects.length === 0 ? (
               <View style={styles.pickerEmptyState}>
                 <Text style={styles.pickerEmptyStateText}>
@@ -533,28 +529,16 @@ export default function CreateToolScreen() {
                 </Text>
               </View>
             ) : (
-              projects.map((project, index) => {
+              // Same rich card as the Projects list.
+              projects.map((project) => {
                 const projectId = getEntityId(project);
-                const isSelected = selectedProjectIds.includes(projectId);
-
                 return (
-                  <TouchableOpacity
+                  <ProjectListCard
                     key={projectId}
-                    style={[
-                      styles.pickerOptionRow,
-                      index !== projects.length - 1 && styles.groupRowDivider,
-                    ]}
+                    project={project}
+                    selected={selectedProjectIds.includes(projectId)}
                     onPress={() => toggleProjectSelection(projectId)}
-                  >
-                    <Text style={styles.pickerOptionLabel}>{project.name}</Text>
-                    {isSelected ? (
-                      <Icon
-                        name="check"
-                        size={18}
-                        color={theme.colors.primary}
-                      />
-                    ) : null}
-                  </TouchableOpacity>
+                  />
                 );
               })
             )}

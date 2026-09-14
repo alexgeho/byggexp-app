@@ -149,6 +149,11 @@ export const createStyles = (c) =>
       borderWidth: 0,
       overflow: "hidden",
     },
+    // For pickers rendering full entity cards (projects) / person rows (workers).
+    pickerCardListContent: {
+      gap: 12,
+      paddingBottom: 24,
+    },
     pickerOptionRow: {
       minHeight: 56,
       paddingHorizontal: 16,

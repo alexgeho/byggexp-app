@@ -17,6 +17,7 @@ import {
 } from "react-native-safe-area-context";
 import { FieldCard, FieldRow } from "../../components/common/FieldRow/FieldRow";
 import { ToolListCard } from "../../components/common/ToolListCard/ToolListCard";
+import { ProjectListCard } from "../../components/common/ProjectListCard/ProjectListCard";
 import AuthContext from "../../contexts/AuthContext";
 import { useFeedback } from "../../contexts/FeedbackContext";
 import { useTheme } from "../../theme/ThemeContext";
@@ -757,7 +758,10 @@ export default function CreateEmployeeScreen() {
             <View style={standardScreenHeaderPlaceholder} />
           </View>
 
-          <ScrollView contentContainerStyle={styles.pickerListContent}>
+          <ScrollView
+            contentContainerStyle={styles.pickerCardListContent}
+            showsVerticalScrollIndicator={false}
+          >
             {projects.length === 0 ? (
               <View style={styles.pickerEmptyState}>
                 <Text style={styles.pickerEmptyStateText}>
@@ -767,31 +771,17 @@ export default function CreateEmployeeScreen() {
                 </Text>
               </View>
             ) : (
-              projects.map((project, index) => {
+              // Same rich card as the Projects list (name + status + date +
+              // location), selected projects highlighted.
+              projects.map((project) => {
                 const projectId = getEntityId(project);
-                const isSelected = selectedProjectIds.includes(projectId);
-
                 return (
-                  <React.Fragment key={projectId}>
-                    <TouchableOpacity
-                      style={styles.pickerOptionRow}
-                      onPress={() => toggleProjectSelection(projectId)}
-                    >
-                      <Text style={styles.pickerOptionLabel}>
-                        {project.name}
-                      </Text>
-                      {isSelected ? (
-                        <Icon
-                          name="check"
-                          size={18}
-                          color={theme.colors.primary}
-                        />
-                      ) : null}
-                    </TouchableOpacity>
-                    {index !== projects.length - 1 ? (
-                      <View style={styles.rowSep} />
-                    ) : null}
-                  </React.Fragment>
+                  <ProjectListCard
+                    key={projectId}
+                    project={project}
+                    selected={selectedProjectIds.includes(projectId)}
+                    onPress={() => toggleProjectSelection(projectId)}
+                  />
                 );
               })
             )}

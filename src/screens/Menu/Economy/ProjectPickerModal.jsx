@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { projectService } from "../../../services";
 import { createStyles, PRIMARY, MUTED } from "./billingForm.styles";
 import { useTheme } from "../../../theme/ThemeContext";
+import { ProjectListCard } from "../../../components/common/ProjectListCard/ProjectListCard";
 
 // Optional project picker for the invoice form. Linking an invoice to a project
 // lets its total roll up into that project's economy ("Fakturerat"). Selecting
@@ -98,7 +99,10 @@ export default function ProjectPickerModal({ visible, onClose, onSelect }) {
               style={{ paddingVertical: 30 }}
             />
           ) : (
-            <ScrollView keyboardShouldPersistTaps="handled">
+            <ScrollView
+              keyboardShouldPersistTaps="handled"
+              contentContainerStyle={{ gap: 12, paddingBottom: 12 }}
+            >
               {filtered.length === 0 ? (
                 <Text
                   style={{
@@ -110,23 +114,13 @@ export default function ProjectPickerModal({ visible, onClose, onSelect }) {
                   {t("billing.noProjects")}
                 </Text>
               ) : (
+                // Same rich card as the Projects list.
                 filtered.map((project) => (
-                  <TouchableOpacity
+                  <ProjectListCard
                     key={project._id || project.id}
-                    style={styles.clientRow}
+                    project={project}
                     onPress={() => onSelect(project)}
-                  >
-                    <Text style={styles.clientName}>
-                      {project.name || t("projects.untitled")}
-                    </Text>
-                    {(project.address || project.clientName) && (
-                      <Text style={styles.clientMeta}>
-                        {[project.clientName, project.address]
-                          .filter(Boolean)
-                          .join(" · ")}
-                      </Text>
-                    )}
-                  </TouchableOpacity>
+                  />
                 ))
               )}
             </ScrollView>

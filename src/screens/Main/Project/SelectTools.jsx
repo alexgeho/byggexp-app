@@ -1,19 +1,13 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  FlatList,
-  Text,
-  TouchableOpacity,
-  View,
-  ActivityIndicator,
-  Alert,
-} from "react-native";
+import { FlatList, Text, View, ActivityIndicator, Alert } from "react-native";
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import { useTheme } from "../../../theme/ThemeContext";
 import { toolService } from "../../../services";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
+import { ToolListCard } from "../../../components/common/ToolListCard/ToolListCard";
 import Icon from "react-native-vector-icons/Feather";
 import { createStyles } from "./SelectTools.styles";
 
@@ -30,12 +24,6 @@ export const SelectTools = () => {
   const [selectedTools, setSelectedTools] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-
-  const themedCheckboxStyle = { borderColor: `${theme.colors.primary}66` };
-  const themedCheckboxSelectedStyle = {
-    backgroundColor: theme.colors.primary,
-    borderColor: theme.colors.primary,
-  };
 
   useEffect(() => {
     fetchTools();
@@ -121,36 +109,19 @@ export const SelectTools = () => {
         style={{ width: "100%", flex: 1 }}
         data={tools}
         keyExtractor={(tool) => String(tool._id || tool.id)}
+        contentContainerStyle={{ gap: 12, paddingBottom: 140 }}
         ListEmptyComponent={
           <Text style={styles.noToolsText}>{t("tools.noneAvailable")}</Text>
         }
         renderItem={({ item: tool }) => {
           const toolId = tool._id || tool.id;
-          const isSelected = selectedTools.includes(toolId);
           return (
-            <View style={styles.toolItem}>
-              <View style={styles.toolIcon}>
-                <Icon name="tool" size={20} color="#0785F4" />
-              </View>
-              <View style={styles.toolInfo}>
-                <Text style={styles.toolName}>
-                  {tool.name || t("common.noName")}
-                </Text>
-                {tool.location ? (
-                  <Text style={styles.toolMeta}>{tool.location}</Text>
-                ) : null}
-              </View>
-              <TouchableOpacity
-                onPress={() => toggleToolSelection(toolId)}
-                style={[
-                  styles.checkbox,
-                  themedCheckboxStyle,
-                  isSelected && themedCheckboxSelectedStyle,
-                ]}
-              >
-                {isSelected && <Text style={{ color: "#ffffff" }}>✓</Text>}
-              </TouchableOpacity>
-            </View>
+            // Same rich card as the Verktyg list.
+            <ToolListCard
+              tool={tool}
+              selected={selectedTools.includes(toolId)}
+              onPress={() => toggleToolSelection(toolId)}
+            />
           );
         }}
       />
