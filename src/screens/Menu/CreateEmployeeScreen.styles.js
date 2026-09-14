@@ -181,6 +181,7 @@ export const createStyles = (c) =>
     // For pickers that render full entity cards (e.g. tools) instead of plain
     // rows — the cards bring their own spacing, so just pad the bottom.
     pickerCardListContent: {
+      gap: 12,
       paddingBottom: 24,
     },
     pickerOptionRow: {
