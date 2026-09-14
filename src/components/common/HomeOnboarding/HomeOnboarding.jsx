@@ -452,8 +452,8 @@ function TimeOption({ styles, accent, theme, icon, title, desc, onPress }) {
         <Icon name={icon} size={16} color={accent} />
       </View>
       <View style={styles.rowBody}>
-        <Text style={styles.rowTitle}>{title}</Text>
-        <Text style={styles.rowDesc} numberOfLines={2}>
+        <Text style={styles.sheetRowTitle}>{title}</Text>
+        <Text style={styles.sheetRowDesc} numberOfLines={2}>
           {desc}
         </Text>
       </View>
@@ -469,7 +469,7 @@ function GuideStep({ styles, accent, n, text }) {
         <Text style={styles.guideNumberText}>{n}</Text>
       </View>
       <View style={styles.rowBody}>
-        <Text style={styles.rowTitle}>{text}</Text>
+        <Text style={styles.sheetRowTitle}>{text}</Text>
       </View>
     </View>
   );

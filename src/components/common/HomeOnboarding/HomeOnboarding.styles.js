@@ -235,6 +235,20 @@ export function createStyles(theme, onDark = false) {
       paddingVertical: 12,
       paddingHorizontal: 6,
     },
+    // The bottom chooser/guide sheet always sits on a light `surface`, so its
+    // rows keep the normal theme text colours — NOT the white glass palette the
+    // checklist rows use when the Home background is coloured (onDark).
+    sheetRowTitle: {
+      color: c.textPrimary,
+      fontSize: 15,
+      fontFamily: theme.text.fontFamily.semiBold,
+    },
+    sheetRowDesc: {
+      color: c.textMuted,
+      fontSize: 12.5,
+      lineHeight: 17,
+      fontFamily: theme.text.fontFamily.regular,
+    },
     // Manual-hours how-to guide (inside the chooser sheet)
     guideNumber: {
       width: 30,
