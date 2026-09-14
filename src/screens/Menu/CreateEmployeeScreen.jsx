@@ -16,6 +16,7 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { FieldCard, FieldRow } from "../../components/common/FieldRow/FieldRow";
+import { ToolListCard } from "../../components/common/ToolListCard/ToolListCard";
 import AuthContext from "../../contexts/AuthContext";
 import { useFeedback } from "../../contexts/FeedbackContext";
 import { useTheme } from "../../theme/ThemeContext";
@@ -826,7 +827,10 @@ export default function CreateEmployeeScreen() {
             <View style={standardScreenHeaderPlaceholder} />
           </View>
 
-          <ScrollView contentContainerStyle={styles.pickerListContent}>
+          <ScrollView
+            contentContainerStyle={styles.pickerCardListContent}
+            showsVerticalScrollIndicator={false}
+          >
             {tools.length === 0 ? (
               <View style={styles.pickerEmptyState}>
                 <Text style={styles.pickerEmptyStateText}>
@@ -836,29 +840,17 @@ export default function CreateEmployeeScreen() {
                 </Text>
               </View>
             ) : (
-              tools.map((tool, index) => {
+              // Same rich card as the "Verktyg" list (photo + status), with the
+              // selected tools highlighted — so the picker matches that screen.
+              tools.map((tool) => {
                 const toolId = getEntityId(tool);
-                const isSelected = selectedToolIds.includes(toolId);
-
                 return (
-                  <React.Fragment key={toolId}>
-                    <TouchableOpacity
-                      style={styles.pickerOptionRow}
-                      onPress={() => toggleToolSelection(toolId)}
-                    >
-                      <Text style={styles.pickerOptionLabel}>{tool.name}</Text>
-                      {isSelected ? (
-                        <Icon
-                          name="check"
-                          size={18}
-                          color={theme.colors.primary}
-                        />
-                      ) : null}
-                    </TouchableOpacity>
-                    {index !== tools.length - 1 ? (
-                      <View style={styles.rowSep} />
-                    ) : null}
-                  </React.Fragment>
+                  <ToolListCard
+                    key={toolId}
+                    tool={tool}
+                    selected={selectedToolIds.includes(toolId)}
+                    onPress={() => toggleToolSelection(toolId)}
+                  />
                 );
               })
             )}

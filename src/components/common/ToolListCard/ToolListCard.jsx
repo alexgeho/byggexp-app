@@ -40,7 +40,7 @@ const resolvePhotoUrl = (value) => {
 
 // Shared tool card used by both the Tools list screen and the project Tools tab
 // so the two stay visually identical (photo, status badge, notes, counts).
-export function ToolListCard({ tool, onPress }) {
+export function ToolListCard({ tool, onPress, selected = false }) {
   const { t } = useTranslation();
   const { theme } = useTheme();
 
@@ -51,6 +51,7 @@ export function ToolListCard({ tool, onPress }) {
     <ListCard
       title={tool.name || t("common.noName")}
       onPress={onPress}
+      selected={selected}
       badgeLabel={t(`tools.status.${statusMeta.value}`, statusMeta.label)}
       badgeStyle={TOOL_STATUS_BADGE_STYLES[statusMeta.tone]}
       leading={
