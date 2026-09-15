@@ -7,10 +7,12 @@ import {
   Dimensions,
   TouchableOpacity,
   StatusBar,
+  StyleSheet,
   DeviceEventEmitter,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTranslation } from "react-i18next";
+import Svg, { Defs, RadialGradient, Stop, Rect } from "react-native-svg";
 
 import AuthContext from "../../../contexts/AuthContext";
 import { track } from "../../../utils/analytics";
@@ -33,6 +35,33 @@ const SEEN_KEY = WELCOME_SLIDES_SEEN_KEY;
 // in-app guide) — separate from the one-time auto-show gated by SEEN_KEY.
 const OPEN_EVENT = "welcome-slides:open";
 const { width } = Dimensions.get("window");
+
+// Soft blue glow behind the product mockup — the Figma "Ellipse 20" (a #4CABFF
+// disc at ~14% blurred to ~88px). Reproduced with an SVG radial gradient instead
+// of a real blur (same technique the design system already uses for the Home
+// card glow in MainButtonsGrid). Absolutely fills the hero area and sits UNDER
+// the mockup, so its bright bluish centre reads as a gentle glow and its soft
+// falloff as the "darkening" fade the designer applies on the other screens.
+const GLOW = "#4CABFF";
+function SlideGlow() {
+  return (
+    <Svg
+      pointerEvents="none"
+      style={StyleSheet.absoluteFill}
+      width="100%"
+      height="100%"
+    >
+      <Defs>
+        <RadialGradient id="welcomeGlow" cx="50%" cy="50%" rx="62%" ry="46%">
+          <Stop offset="0" stopColor={GLOW} stopOpacity="0.14" />
+          <Stop offset="0.5" stopColor={GLOW} stopOpacity="0.06" />
+          <Stop offset="1" stopColor={GLOW} stopOpacity="0" />
+        </RadialGradient>
+      </Defs>
+      <Rect x="0" y="0" width="100%" height="100%" fill="url(#welcomeGlow)" />
+    </Svg>
+  );
+}
 
 // Re-open the value tour from anywhere (Help guide, etc.). Safe to call before
 // the overlay has mounted its listener — the emit is just a no-op then.
@@ -180,6 +209,7 @@ export function WelcomeSlides() {
         renderItem={({ item: s }) => (
           <View style={[styles.slide, { width }]}>
             <View style={styles.heroWrap}>
+              {roleKey === "admin" ? <SlideGlow /> : null}
               <Mockup name={s.illustration} />
             </View>
             <Text style={styles.title}>
