@@ -1,4 +1,26 @@
-# 🆕 Сессия 2026-09-14 — Onboarding-полировка + дизайн-система (FieldRow/пикеры) + проект в фактуре
+# 🆕 Сессия 2026-09-15 — iOS-билд 182 для TestFlight (ментор) собран, ждёт сабмита
+
+## KLART
+
+- **iOS-билд 1.1.1 (buildNumber 182) СОБРАН** (`eas build -p ios --profile production`, autoIncrement 181→182, bump закоммичен+запушен).
+  - .ipa: `https://expo.dev/artifacts/eas/0QrCr-kWrOsuEOzfAXwv2_aPhlyMaQiLoajkKbQuODw.ipa`
+  - Логи/страница билда: `https://expo.dev/accounts/alexgehos-organization/projects/byggexp/builds/f28b881f-17b4-44c2-b7f4-a307a8d7fa46`
+  - runtime 1.1.0, iOS background location включён (`isIosBackgroundLocationEnabled:true`), все OTA-правки (онбординг/дизайн-система/фактура) уже в JS.
+- Отдельно (не по репо): разобрал комментарии адвоката к строительному договору Gepanagas → сохранено на Рабочий стол `~/Desktop/Gepanagas_Contract_Review.md` (оплата поэтапно/in arrears, кроме мобилизации; + чек-лист). Личное, в репо не кладём.
+
+## 🔜 NÄSTA STEG (продолжить тут)
+
+1. **Отправить билд 182 в TestFlight для ментора:** `eas submit -p ios --profile production` (appleId alexander.gerhard@outlook.com, ascAppId 6748280779). Ждёт ЯВНОГО «сабмить» от пользователя (публикация наружу).
+2. После сабмита (Processing ~5–15 мин) — добавить ментора тестером в App Store Connect → **TestFlight**: Internal (Apple ID в Users → мгновенно) или External (email/ссылка + Beta App Review ~1 день).
+3. Это же — путь к тесту ФОНОВОГО geofence (app закрыт) на реальном устройстве через TestFlight, перед App Store review.
+
+## ⚠️ Öppna frågor
+
+- Сабмит билда 182 — только по команде пользователя.
+
+---
+
+# Сессия 2026-09-14 — Onboarding-полировка + дизайн-система (FieldRow/пикеры) + проект в фактуре
 
 Всё в `main`, роздано серией `eas update --branch production` (runtime 1.1.0, OTA, iOS+Android). Ничего нативного не менялось в этой сессии, КРОМЕ ждущего сабмита iOS-билда (см. ⚠️).
 
