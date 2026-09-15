@@ -7,7 +7,6 @@ import {
   Dimensions,
   TouchableOpacity,
   StatusBar,
-  StyleSheet,
   DeviceEventEmitter,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -45,16 +44,23 @@ const { width } = Dimensions.get("window");
 // the mockup, so its bright bluish centre reads as a gentle glow and its soft
 // falloff as the "darkening" fade the designer applies on the other screens.
 const GLOW = "#4CABFF";
+// The glow sits BEHIND the mockup and is wider than it (spills out the sides,
+// like the Figma "Ellipse 20" = 393 wide vs the ~301 mockup) but shorter than it
+// vertically, so it never pokes past the mockup's top/bottom edges and leaves a
+// light "gap" band there. Negative left/right push it past the sides; the
+// top/bottom insets keep it clear of those edges.
+const GLOW_BOX = {
+  position: "absolute",
+  left: -56,
+  right: -56,
+  top: "28%",
+  bottom: "28%",
+};
 function SlideGlow() {
   return (
-    <Svg
-      pointerEvents="none"
-      style={StyleSheet.absoluteFill}
-      width="100%"
-      height="100%"
-    >
+    <Svg pointerEvents="none" style={GLOW_BOX} width="100%" height="100%">
       <Defs>
-        <RadialGradient id="welcomeGlow" cx="50%" cy="50%" rx="72%" ry="30%">
+        <RadialGradient id="welcomeGlow" cx="50%" cy="50%" rx="50%" ry="50%">
           <Stop offset="0" stopColor={GLOW} stopOpacity="0.16" />
           <Stop offset="0.5" stopColor={GLOW} stopOpacity="0.08" />
           <Stop offset="1" stopColor={GLOW} stopOpacity="0" />
@@ -260,27 +266,39 @@ export function WelcomeSlides() {
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         onMomentumScrollEnd={onScrollEnd}
-        renderItem={({ item: s }) => (
-          <View style={[styles.slide, { width }]}>
-            <View style={styles.heroWrap}>
-              {roleKey === "admin" ? <SlideGlow /> : null}
-              <View
-                style={[
-                  styles.mockWrap,
-                  roleKey === "admin" && styles.mockWrapAdmin,
-                ]}
-              >
-                <Mockup name={s.illustration} />
-                {roleKey === "admin" ? <MockFade /> : null}
+        renderItem={({ item: s }) => {
+          const heading = t(`welcome.${roleKey}.slide.${s.key}.title`);
+          if (roleKey === "admin") {
+            return (
+              <View style={[styles.slide, { width }]}>
+                <View style={[styles.heroWrap, styles.heroWrapAdmin]}>
+                  <View style={[styles.mockWrap, styles.mockWrapAdmin]}>
+                    <SlideGlow />
+                    <Mockup name={s.illustration} />
+                    <MockFade />
+                  </View>
+                </View>
+                {/* Heading centred in the space below the mockup so it has
+                    equal breathing room above and below. */}
+                <View style={styles.titleWrapAdmin}>
+                  <Text style={[styles.title, styles.titleAdmin]}>
+                    {heading}
+                  </Text>
+                </View>
               </View>
+            );
+          }
+          return (
+            <View style={[styles.slide, { width }]}>
+              <View style={styles.heroWrap}>
+                <View style={styles.mockWrap}>
+                  <Mockup name={s.illustration} />
+                </View>
+              </View>
+              <Text style={styles.title}>{heading}</Text>
             </View>
-            <Text
-              style={[styles.title, roleKey === "admin" && styles.titleAdmin]}
-            >
-              {t(`welcome.${roleKey}.slide.${s.key}.title`)}
-            </Text>
-          </View>
-        )}
+          );
+        }}
       />
 
       {slides.length > 1 ? (

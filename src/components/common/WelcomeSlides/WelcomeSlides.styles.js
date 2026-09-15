@@ -48,6 +48,14 @@ export function createStyles() {
       alignItems: "center",
       justifyContent: "center",
     },
+    // Admin: let the mockup take its own height at the top, then the heading gets
+    // the remaining space (see titleWrapAdmin) and centres in it.
+    heroWrapAdmin: {
+      flexGrow: 0,
+      flexShrink: 0,
+      flexBasis: "auto",
+      paddingTop: 8,
+    },
     // Wraps tightly around the mockup so the top/bottom fade overlays pin to the
     // screenshot's own edges (not the whole hero area).
     mockWrap: {
@@ -69,10 +77,20 @@ export function createStyles() {
       marginTop: 16,
       marginBottom: 4,
     },
-    // Raise the heading up into the space freed by the smaller mockup.
+    // Centred in titleWrapAdmin — no extra margins so the space above and below
+    // the heading stays equal.
     titleAdmin: {
       marginTop: 0,
-      marginBottom: 64,
+      marginBottom: 0,
+    },
+    // Takes all the room left under the mockup and centres the heading in it, so
+    // the gap above the text (to the mockup) equals the gap below (to the dots).
+    titleWrapAdmin: {
+      flexGrow: 1,
+      flexBasis: 0,
+      width: "100%",
+      alignItems: "center",
+      justifyContent: "center",
     },
     dots: {
       flexDirection: "row",
