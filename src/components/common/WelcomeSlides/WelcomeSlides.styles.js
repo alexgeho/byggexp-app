@@ -42,19 +42,23 @@ export function createStyles() {
       alignItems: "center",
       paddingHorizontal: 20,
     },
+    // Admin: distribute equal vertical gaps around the mockup and heading.
+    slideAdmin: {
+      justifyContent: "space-evenly",
+    },
     heroWrap: {
       flex: 1,
       width: "100%",
       alignItems: "center",
       justifyContent: "center",
     },
-    // Admin: let the mockup take its own height at the top, then the heading gets
-    // the remaining space (see titleWrapAdmin) and centres in it.
+    // Admin: mockup takes its own height (can shrink a touch for very tall
+    // mockups) so space-evenly on the slide can distribute the leftover room
+    // equally around it and the heading.
     heroWrapAdmin: {
       flexGrow: 0,
       flexShrink: 0,
       flexBasis: "auto",
-      paddingTop: 8,
     },
     // Wraps tightly around the mockup so the top/bottom fade overlays pin to the
     // screenshot's own edges (not the whole hero area).
@@ -77,20 +81,11 @@ export function createStyles() {
       marginTop: 16,
       marginBottom: 4,
     },
-    // Centred in titleWrapAdmin — no extra margins so the space above and below
-    // the heading stays equal.
+    // No extra margins — the slide's space-evenly gives equal gaps above and
+    // below the heading.
     titleAdmin: {
       marginTop: 0,
       marginBottom: 0,
-    },
-    // Takes all the room left under the mockup and centres the heading in it, so
-    // the gap above the text (to the mockup) equals the gap below (to the dots).
-    titleWrapAdmin: {
-      flexGrow: 1,
-      flexBasis: 0,
-      width: "100%",
-      alignItems: "center",
-      justifyContent: "center",
     },
     dots: {
       flexDirection: "row",

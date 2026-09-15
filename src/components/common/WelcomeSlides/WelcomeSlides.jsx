@@ -269,8 +269,13 @@ export function WelcomeSlides() {
         renderItem={({ item: s }) => {
           const heading = t(`welcome.${roleKey}.slide.${s.key}.title`);
           if (roleKey === "admin") {
+            // space-evenly spreads equal gaps above the mockup, between the
+            // mockup and the heading, and below the heading — so the heading has
+            // matching breathing room top and bottom. The heading is a normal
+            // sibling (not an absolutely-centred layer), so it can never overlap
+            // a tall mockup.
             return (
-              <View style={[styles.slide, { width }]}>
+              <View style={[styles.slide, styles.slideAdmin, { width }]}>
                 <View style={[styles.heroWrap, styles.heroWrapAdmin]}>
                   <View style={[styles.mockWrap, styles.mockWrapAdmin]}>
                     <SlideGlow />
@@ -278,13 +283,7 @@ export function WelcomeSlides() {
                     <MockFade />
                   </View>
                 </View>
-                {/* Heading centred in the space below the mockup so it has
-                    equal breathing room above and below. */}
-                <View style={styles.titleWrapAdmin}>
-                  <Text style={[styles.title, styles.titleAdmin]}>
-                    {heading}
-                  </Text>
-                </View>
+                <Text style={[styles.title, styles.titleAdmin]}>{heading}</Text>
               </View>
             );
           }
