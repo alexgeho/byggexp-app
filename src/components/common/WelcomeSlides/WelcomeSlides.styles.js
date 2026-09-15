@@ -42,23 +42,11 @@ export function createStyles() {
       alignItems: "center",
       paddingHorizontal: 20,
     },
-    // Admin: distribute equal vertical gaps around the mockup and heading.
-    slideAdmin: {
-      justifyContent: "space-evenly",
-    },
     heroWrap: {
       flex: 1,
       width: "100%",
       alignItems: "center",
       justifyContent: "center",
-    },
-    // Admin: mockup takes its own height (can shrink a touch for very tall
-    // mockups) so space-evenly on the slide can distribute the leftover room
-    // equally around it and the heading.
-    heroWrapAdmin: {
-      flexGrow: 0,
-      flexShrink: 0,
-      flexBasis: "auto",
     },
     // Wraps tightly around the mockup so the top/bottom fade overlays pin to the
     // screenshot's own edges (not the whole hero area).
@@ -66,10 +54,6 @@ export function createStyles() {
       position: "relative",
       alignItems: "center",
       justifyContent: "center",
-    },
-    // Designer pass: shrink the product mockup ~10% so it feels lighter.
-    mockWrapAdmin: {
-      transform: [{ scale: 0.9 }],
     },
     title: {
       color: NAVY,
@@ -80,12 +64,6 @@ export function createStyles() {
       textAlign: "center",
       marginTop: 16,
       marginBottom: 4,
-    },
-    // No extra margins — the slide's space-evenly gives equal gaps above and
-    // below the heading.
-    titleAdmin: {
-      marginTop: 0,
-      marginBottom: 0,
     },
     dots: {
       flexDirection: "row",

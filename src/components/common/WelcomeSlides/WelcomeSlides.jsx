@@ -268,30 +268,14 @@ export function WelcomeSlides() {
         onMomentumScrollEnd={onScrollEnd}
         renderItem={({ item: s }) => {
           const heading = t(`welcome.${roleKey}.slide.${s.key}.title`);
-          if (roleKey === "admin") {
-            // space-evenly spreads equal gaps above the mockup, between the
-            // mockup and the heading, and below the heading — so the heading has
-            // matching breathing room top and bottom. The heading is a normal
-            // sibling (not an absolutely-centred layer), so it can never overlap
-            // a tall mockup.
-            return (
-              <View style={[styles.slide, styles.slideAdmin, { width }]}>
-                <View style={[styles.heroWrap, styles.heroWrapAdmin]}>
-                  <View style={[styles.mockWrap, styles.mockWrapAdmin]}>
-                    <SlideGlow />
-                    <Mockup name={s.illustration} />
-                    <MockFade />
-                  </View>
-                </View>
-                <Text style={[styles.title, styles.titleAdmin]}>{heading}</Text>
-              </View>
-            );
-          }
+          const admin = roleKey === "admin";
           return (
             <View style={[styles.slide, { width }]}>
               <View style={styles.heroWrap}>
                 <View style={styles.mockWrap}>
+                  {admin ? <SlideGlow /> : null}
                   <Mockup name={s.illustration} />
+                  {admin ? <MockFade /> : null}
                 </View>
               </View>
               <Text style={styles.title}>{heading}</Text>
