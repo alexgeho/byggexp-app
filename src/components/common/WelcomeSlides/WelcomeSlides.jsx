@@ -74,22 +74,41 @@ const BG_TRANSPARENT = "rgba(238,238,238,0)";
 // Brand blue used for the ghost CTA's label + "next" arrow icon.
 const CTA_ACCENT = "#0785F4";
 
-// Soft top+bottom fade over the mockup. Two BG-coloured linear gradients pinned
-// to the mockup's own top and bottom edges, opaque at the very edge and clearing
-// by ~90px in, so the screenshot melts into the background.
-const FADE = { position: "absolute", left: 0, right: 0, height: 44 };
+// Soft fade over ALL FOUR edges of the mockup so it melts into the background
+// with no hard card border or rounded-corner "stubs" showing. BG-coloured
+// gradients pinned to each edge: opaque at the very edge, clearing inward. The
+// overlapping corners get covered by two gradients, which dissolves the rounded
+// corners too.
+const FADE_V = { position: "absolute", left: 0, right: 0, height: 44 };
+const FADE_H = { position: "absolute", top: 0, bottom: 0, width: 40 };
+const H_START = { x: 0, y: 0 };
+const H_END = { x: 1, y: 0 };
 function MockFade() {
   return (
     <>
       <LinearGradient
         pointerEvents="none"
         colors={[BG, BG_TRANSPARENT]}
-        style={[FADE, { top: 0 }]}
+        style={[FADE_V, { top: 0 }]}
       />
       <LinearGradient
         pointerEvents="none"
         colors={[BG_TRANSPARENT, BG]}
-        style={[FADE, { bottom: 0 }]}
+        style={[FADE_V, { bottom: 0 }]}
+      />
+      <LinearGradient
+        pointerEvents="none"
+        colors={[BG, BG_TRANSPARENT]}
+        start={H_START}
+        end={H_END}
+        style={[FADE_H, { left: 0 }]}
+      />
+      <LinearGradient
+        pointerEvents="none"
+        colors={[BG_TRANSPARENT, BG]}
+        start={H_START}
+        end={H_END}
+        style={[FADE_H, { right: 0 }]}
       />
     </>
   );
