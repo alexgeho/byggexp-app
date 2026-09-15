@@ -96,11 +96,21 @@ export function createStyles() {
     // brand-blue label. The airiest button in the lightening pass.
     ctaLight: {
       backgroundColor: "transparent",
-      borderWidth: 1.5,
-      borderColor: BRAND,
+      borderWidth: 1,
+      // Pale brand-blue outline — soft, not the full-strength blue that "hit the
+      // eye" too hard.
+      borderColor: "rgba(7,133,244,0.30)",
     },
     ctaTextLight: {
       color: BRAND,
+    },
+    ctaRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    ctaIcon: {
+      marginLeft: 8,
     },
     ctaText: {
       color: "#FFFFFF",

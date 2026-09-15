@@ -14,6 +14,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTranslation } from "react-i18next";
 import Svg, { Defs, RadialGradient, Stop, Rect } from "react-native-svg";
 import { LinearGradient } from "expo-linear-gradient";
+import Icon from "react-native-vector-icons/Feather";
 
 import AuthContext from "../../../contexts/AuthContext";
 import { track } from "../../../utils/analytics";
@@ -70,6 +71,8 @@ function SlideGlow() {
 // ending on a hard edge.
 const BG = "#EEEEEE";
 const BG_TRANSPARENT = "rgba(238,238,238,0)";
+// Brand blue used for the ghost CTA's label + "next" arrow icon.
+const CTA_ACCENT = "#0785F4";
 
 // Soft top+bottom fade over the mockup. Two BG-coloured linear gradients pinned
 // to the mockup's own top and bottom edges, opaque at the very edge and clearing
@@ -267,13 +270,23 @@ export function WelcomeSlides() {
         activeOpacity={0.85}
         onPress={goNext}
       >
-        <Text
-          style={[styles.ctaText, roleKey === "admin" && styles.ctaTextLight]}
-        >
-          {isLast
-            ? t("welcome.start", "Kom igång")
-            : t("welcome.next", "Nästa")}
-        </Text>
+        <View style={styles.ctaRow}>
+          <Text
+            style={[styles.ctaText, roleKey === "admin" && styles.ctaTextLight]}
+          >
+            {isLast
+              ? t("welcome.start", "Kom igång")
+              : t("welcome.next", "Nästa")}
+          </Text>
+          {roleKey === "admin" ? (
+            <Icon
+              name="arrow-right"
+              size={18}
+              color={CTA_ACCENT}
+              style={styles.ctaIcon}
+            />
+          ) : null}
+        </View>
       </TouchableOpacity>
     </View>
   );
