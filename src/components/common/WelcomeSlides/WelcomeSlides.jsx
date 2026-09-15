@@ -263,7 +263,7 @@ export function WelcomeSlides() {
       ) : null}
 
       <TouchableOpacity
-        style={styles.cta}
+        style={[styles.cta, roleKey === "admin" && styles.ctaLight]}
         activeOpacity={0.85}
         onPress={goNext}
       >

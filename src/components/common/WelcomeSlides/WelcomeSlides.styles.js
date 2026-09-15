@@ -91,6 +91,14 @@ export function createStyles() {
       alignItems: "center",
       justifyContent: "center",
     },
+    // Lighter "glass" CTA matching the Home cards (light-blue #6EAFE4 + faint
+    // white border, white label) instead of the heavy saturated blue pill — so
+    // the button language is consistent with the app the user lands in.
+    ctaLight: {
+      backgroundColor: "#6EAFE4",
+      borderWidth: 1,
+      borderColor: "rgba(255,255,255,0.5)",
+    },
     ctaText: {
       color: "#FFFFFF",
       fontFamily: "System",
