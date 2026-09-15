@@ -86,6 +86,15 @@ const CTA_ACCENT = "#0785F4";
 // overlapping corners get covered by two gradients, which dissolves the rounded
 // corners too.
 const FADE_V = { position: "absolute", left: 0, right: 0, height: 44 };
+// Bottom fade is taller and nudged a hair past the edge so the mockup's bottom
+// rim never shows as a hard strip.
+const FADE_BOTTOM = {
+  position: "absolute",
+  left: 0,
+  right: 0,
+  height: 80,
+  bottom: -2,
+};
 const FADE_H = { position: "absolute", top: 0, bottom: 0, width: 40 };
 const H_START = { x: 0, y: 0 };
 const H_END = { x: 1, y: 0 };
@@ -100,7 +109,7 @@ function MockFade() {
       <LinearGradient
         pointerEvents="none"
         colors={[BG_TRANSPARENT, BG]}
-        style={[FADE_V, { bottom: 0 }]}
+        style={FADE_BOTTOM}
       />
       <LinearGradient
         pointerEvents="none"
