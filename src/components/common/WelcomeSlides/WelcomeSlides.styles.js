@@ -91,16 +91,16 @@ export function createStyles() {
       alignItems: "center",
       justifyContent: "center",
     },
-    // "Glass" CTA matching the Home cards 1:1 instead of the heavy saturated
-    // blue pill: a subtle top->bottom blue gradient (rendered by the LinearGradient
-    // child) + a faint white highlight border + white label — the same button
-    // language the user lands in. Colours sampled straight off the Home cards
-    // (top #7BABDD -> bottom #72A0D5, border ~white 50%).
+    // Transparent "ghost" CTA — like the Guide's secondary "Visa Kom igång igen"
+    // button: no fill (the page/glow shows through), a brand-blue outline and a
+    // brand-blue label. The airiest button in the lightening pass.
     ctaLight: {
       backgroundColor: "transparent",
-      borderWidth: 1,
-      borderColor: "rgba(255,255,255,0.5)",
-      overflow: "hidden",
+      borderWidth: 1.5,
+      borderColor: BRAND,
+    },
+    ctaTextLight: {
+      color: BRAND,
     },
     ctaText: {
       color: "#FFFFFF",
