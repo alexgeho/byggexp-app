@@ -269,16 +269,31 @@ export function WelcomeSlides() {
         renderItem={({ item: s }) => {
           const heading = t(`welcome.${roleKey}.slide.${s.key}.title`);
           const admin = roleKey === "admin";
+          // Admin: the mockup sits at the top of the hero area and the heading is
+          // centred in the gap below it via equal flex spacers. The heading lives
+          // INSIDE heroWrap (which has a definite flex:1 height), not as a sibling
+          // sized off the mockup's measured height — that measurement was what let
+          // the heading ride up onto tall mockups. Spacers collapse to 0 if a
+          // mockup ever fills the area, so overlap is impossible.
           return (
             <View style={[styles.slide, { width }]}>
               <View style={styles.heroWrap}>
-                <View style={styles.mockWrap}>
+                <View style={[styles.mockWrap, admin && styles.mockWrapAdmin]}>
                   {admin ? <SlideGlow /> : null}
                   <Mockup name={s.illustration} />
                   {admin ? <MockFade /> : null}
                 </View>
+                {admin ? (
+                  <>
+                    <View style={styles.flexSpacer} />
+                    <Text style={[styles.title, styles.titleAdmin]}>
+                      {heading}
+                    </Text>
+                    <View style={styles.flexSpacer} />
+                  </>
+                ) : null}
               </View>
-              <Text style={styles.title}>{heading}</Text>
+              {admin ? null : <Text style={styles.title}>{heading}</Text>}
             </View>
           );
         }}

@@ -55,6 +55,19 @@ export function createStyles() {
       alignItems: "center",
       justifyContent: "center",
     },
+    // Designer pass: shrink the product mockup ~10%.
+    mockWrapAdmin: {
+      transform: [{ scale: 0.9 }],
+    },
+    // Equal flex spacers above/below the admin heading centre it in the gap
+    // between the mockup and the footer; they collapse to 0 if the mockup fills
+    // the hero, so the heading can never overlap it.
+    flexSpacer: {
+      flexGrow: 1,
+      flexShrink: 1,
+      flexBasis: 0,
+      width: "100%",
+    },
     title: {
       color: NAVY,
       fontFamily: "System",
@@ -64,6 +77,11 @@ export function createStyles() {
       textAlign: "center",
       marginTop: 16,
       marginBottom: 4,
+    },
+    // Inside heroWrap between two spacers — no margins so it stays centred.
+    titleAdmin: {
+      marginTop: 0,
+      marginBottom: 0,
     },
     dots: {
       flexDirection: "row",
