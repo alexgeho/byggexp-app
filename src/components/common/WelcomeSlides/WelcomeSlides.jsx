@@ -54,9 +54,9 @@ function SlideGlow() {
       height="100%"
     >
       <Defs>
-        <RadialGradient id="welcomeGlow" cx="50%" cy="50%" rx="62%" ry="46%">
-          <Stop offset="0" stopColor={GLOW} stopOpacity="0.14" />
-          <Stop offset="0.5" stopColor={GLOW} stopOpacity="0.06" />
+        <RadialGradient id="welcomeGlow" cx="50%" cy="50%" rx="72%" ry="30%">
+          <Stop offset="0" stopColor={GLOW} stopOpacity="0.16" />
+          <Stop offset="0.5" stopColor={GLOW} stopOpacity="0.08" />
           <Stop offset="1" stopColor={GLOW} stopOpacity="0" />
         </RadialGradient>
       </Defs>
@@ -215,6 +215,9 @@ export function WelcomeSlides() {
   };
 
   const isLast = index === slides.length - 1;
+  // Light "ghost" CTA on the intermediate admin slides; the final "get started"
+  // slide keeps the solid accent pill so it reads as the primary action.
+  const ghostCta = roleKey === "admin" && !isLast;
 
   return (
     <View style={styles.overlay}>
@@ -273,19 +276,17 @@ export function WelcomeSlides() {
       ) : null}
 
       <TouchableOpacity
-        style={[styles.cta, roleKey === "admin" && styles.ctaLight]}
+        style={[styles.cta, ghostCta && styles.ctaLight]}
         activeOpacity={0.85}
         onPress={goNext}
       >
         <View style={styles.ctaRow}>
-          <Text
-            style={[styles.ctaText, roleKey === "admin" && styles.ctaTextLight]}
-          >
+          <Text style={[styles.ctaText, ghostCta && styles.ctaTextLight]}>
             {isLast
               ? t("welcome.start", "Kom igång")
               : t("welcome.next", "Nästa")}
           </Text>
-          {roleKey === "admin" ? (
+          {ghostCta ? (
             <Icon
               name="arrow-right"
               size={18}
