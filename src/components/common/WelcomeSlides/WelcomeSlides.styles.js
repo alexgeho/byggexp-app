@@ -55,6 +55,10 @@ export function createStyles() {
       alignItems: "center",
       justifyContent: "center",
     },
+    // Designer pass: shrink the product mockup ~10% so it feels lighter.
+    mockWrapAdmin: {
+      transform: [{ scale: 0.9 }],
+    },
     title: {
       color: NAVY,
       fontFamily: "System",
@@ -64,6 +68,11 @@ export function createStyles() {
       textAlign: "center",
       marginTop: 16,
       marginBottom: 4,
+    },
+    // Raise the heading up into the space freed by the smaller mockup.
+    titleAdmin: {
+      marginTop: 0,
+      marginBottom: 64,
     },
     dots: {
       flexDirection: "row",

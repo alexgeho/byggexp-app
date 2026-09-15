@@ -77,7 +77,7 @@ const CTA_ACCENT = "#0785F4";
 // Soft top+bottom fade over the mockup. Two BG-coloured linear gradients pinned
 // to the mockup's own top and bottom edges, opaque at the very edge and clearing
 // by ~90px in, so the screenshot melts into the background.
-const FADE = { position: "absolute", left: 0, right: 0, height: 96 };
+const FADE = { position: "absolute", left: 0, right: 0, height: 44 };
 function MockFade() {
   return (
     <>
@@ -242,12 +242,19 @@ export function WelcomeSlides() {
           <View style={[styles.slide, { width }]}>
             <View style={styles.heroWrap}>
               {roleKey === "admin" ? <SlideGlow /> : null}
-              <View style={styles.mockWrap}>
+              <View
+                style={[
+                  styles.mockWrap,
+                  roleKey === "admin" && styles.mockWrapAdmin,
+                ]}
+              >
                 <Mockup name={s.illustration} />
                 {roleKey === "admin" ? <MockFade /> : null}
               </View>
             </View>
-            <Text style={styles.title}>
+            <Text
+              style={[styles.title, roleKey === "admin" && styles.titleAdmin]}
+            >
               {t(`welcome.${roleKey}.slide.${s.key}.title`)}
             </Text>
           </View>
