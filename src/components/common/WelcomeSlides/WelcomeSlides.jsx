@@ -267,6 +267,13 @@ export function WelcomeSlides() {
         activeOpacity={0.85}
         onPress={goNext}
       >
+        {roleKey === "admin" ? (
+          <LinearGradient
+            pointerEvents="none"
+            colors={["#7BABDD", "#72A0D5"]}
+            style={StyleSheet.absoluteFill}
+          />
+        ) : null}
         <Text style={styles.ctaText}>
           {isLast
             ? t("welcome.start", "Kom igång")

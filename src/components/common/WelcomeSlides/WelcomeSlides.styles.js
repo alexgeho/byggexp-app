@@ -91,13 +91,16 @@ export function createStyles() {
       alignItems: "center",
       justifyContent: "center",
     },
-    // Lighter "glass" CTA matching the Home cards (light-blue #6EAFE4 + faint
-    // white border, white label) instead of the heavy saturated blue pill — so
-    // the button language is consistent with the app the user lands in.
+    // "Glass" CTA matching the Home cards 1:1 instead of the heavy saturated
+    // blue pill: a subtle top->bottom blue gradient (rendered by the LinearGradient
+    // child) + a faint white highlight border + white label — the same button
+    // language the user lands in. Colours sampled straight off the Home cards
+    // (top #7BABDD -> bottom #72A0D5, border ~white 50%).
     ctaLight: {
-      backgroundColor: "#6EAFE4",
+      backgroundColor: "transparent",
       borderWidth: 1,
       borderColor: "rgba(255,255,255,0.5)",
+      overflow: "hidden",
     },
     ctaText: {
       color: "#FFFFFF",
