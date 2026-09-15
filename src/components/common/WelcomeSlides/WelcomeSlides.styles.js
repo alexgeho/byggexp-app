@@ -48,6 +48,13 @@ export function createStyles() {
       alignItems: "center",
       justifyContent: "center",
     },
+    // Wraps tightly around the mockup so the top/bottom fade overlays pin to the
+    // screenshot's own edges (not the whole hero area).
+    mockWrap: {
+      position: "relative",
+      alignItems: "center",
+      justifyContent: "center",
+    },
     title: {
       color: NAVY,
       fontFamily: "System",

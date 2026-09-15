@@ -13,6 +13,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTranslation } from "react-i18next";
 import Svg, { Defs, RadialGradient, Stop, Rect } from "react-native-svg";
+import { LinearGradient } from "expo-linear-gradient";
 
 import AuthContext from "../../../contexts/AuthContext";
 import { track } from "../../../utils/analytics";
@@ -60,6 +61,34 @@ function SlideGlow() {
       </Defs>
       <Rect x="0" y="0" width="100%" height="100%" fill="url(#welcomeGlow)" />
     </Svg>
+  );
+}
+
+// Background colour of the overlay — the mockup dissolves into it at its top and
+// bottom edges (the "плавное затемнение" the designer applies on the admin
+// slides), so the product screenshot blends softly into the page instead of
+// ending on a hard edge.
+const BG = "#EEEEEE";
+const BG_TRANSPARENT = "rgba(238,238,238,0)";
+
+// Soft top+bottom fade over the mockup. Two BG-coloured linear gradients pinned
+// to the mockup's own top and bottom edges, opaque at the very edge and clearing
+// by ~90px in, so the screenshot melts into the background.
+const FADE = { position: "absolute", left: 0, right: 0, height: 96 };
+function MockFade() {
+  return (
+    <>
+      <LinearGradient
+        pointerEvents="none"
+        colors={[BG, BG_TRANSPARENT]}
+        style={[FADE, { top: 0 }]}
+      />
+      <LinearGradient
+        pointerEvents="none"
+        colors={[BG_TRANSPARENT, BG]}
+        style={[FADE, { bottom: 0 }]}
+      />
+    </>
   );
 }
 
@@ -210,7 +239,10 @@ export function WelcomeSlides() {
           <View style={[styles.slide, { width }]}>
             <View style={styles.heroWrap}>
               {roleKey === "admin" ? <SlideGlow /> : null}
-              <Mockup name={s.illustration} />
+              <View style={styles.mockWrap}>
+                <Mockup name={s.illustration} />
+                {roleKey === "admin" ? <MockFade /> : null}
+              </View>
             </View>
             <Text style={styles.title}>
               {t(`welcome.${roleKey}.slide.${s.key}.title`)}
