@@ -177,7 +177,7 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
   );
 
   return (
-    <View style={styles.section}>
+    <View style={[styles.section, isEditing && extraStyles.sectionLifted]}>
       <View style={styles.header}>
         <Text style={styles.title}>{t("notes.title")}</Text>
       </View>
@@ -313,6 +313,11 @@ const extraStyles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
+  },
+  // While editing, lift the whole card a bit so the edit row + send ring sit
+  // clearly above the keyboard instead of flush against it.
+  sectionLifted: {
+    transform: [{ translateY: -48 }],
   },
   // Thin ring around the arrow — same stroke weight as the arrow/× icons.
   sendBtn: {
