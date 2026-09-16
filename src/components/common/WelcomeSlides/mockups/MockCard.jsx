@@ -13,10 +13,6 @@ const styles = StyleSheet.create({
     width: "100%",
     borderRadius: 20,
     padding: 10,
-    // No fill: a translucent-white card read as a faint rectangle whose edges
-    // stayed visible through the fade. The inner content (tabs, summary box, day
-    // cells, list rows) has its own surfaces, so the mockup still reads clearly
-    // while its outline disappears completely into the background.
-    backgroundColor: "transparent",
+    backgroundColor: "rgba(255,255,255,0.6)",
   },
 });
