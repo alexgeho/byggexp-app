@@ -87,21 +87,20 @@ const CTA_ACCENT = "#0785F4";
 // gradients pinned to each edge: opaque at the very edge, clearing inward. The
 // overlapping corners get covered by two gradients, which dissolves the rounded
 // corners too.
-const FADE_V = { position: "absolute", left: 0, right: 0, height: 44 };
-// Bottom fade is taller and nudged a hair past the edge so the mockup's bottom
-// rim never shows as a hard strip.
+const FADE_V = { position: "absolute", left: 0, right: 0, height: 30 };
+// Bottom fade — kept modest per the designer ("уменьшите туман"): a gentle
+// dissolve of the very bottom edge, not a big white cover.
 const FADE_BOTTOM = {
   position: "absolute",
   left: 0,
   right: 0,
-  height: 128,
-  bottom: -12,
+  height: 60,
+  bottom: -6,
 };
-// Reaches SOLID bg by the halfway point and holds it: the bottom ~half is fully
-// opaque background so the last row + card rim dissolve COMPLETELY (not
-// "almost"), while a soft gradient above keeps the row before it just fading.
-// Values verified in a headless-Chrome replica (which includes the 0.9 scale).
-const FADE_BOTTOM_LOCS = [0, 0.5, 1];
+// A short solid-bg cap at the very bottom (last ~40%) so the mockup's bottom
+// edge still melts cleanly, with a soft gradient above — small footprint, not a
+// big white cover.
+const FADE_BOTTOM_LOCS = [0, 0.6, 1];
 const FADE_H = { position: "absolute", top: 0, bottom: 0, width: 40 };
 const H_START = { x: 0, y: 0 };
 const H_END = { x: 1, y: 0 };
