@@ -47,7 +47,7 @@ const GLOW = "#4CABFF";
 // ONE knob for the glow brightness: peak opacity at the very centre of the ball.
 // Raise for a stronger glow, lower for a fainter one. The mid/edge stops derive
 // from this (see SlideGlow), so it always stays a solid ball, never a ring.
-const GLOW_PEAK = 0.3;
+const GLOW_PEAK = 0.28;
 // The glow sits BEHIND the mockup and is wider than it (spills out the sides,
 // like the Figma "Ellipse 20" = 393 wide vs the ~301 mockup) but shorter than it
 // vertically, so it never pokes past the mockup's top/bottom edges and leaves a
@@ -57,10 +57,10 @@ const GLOW_BOX = {
   position: "absolute",
   // Match the Figma "Ellipse 20": 393 wide (≈46px past the ~301 mockup each
   // side) × 190 tall, centred a touch above the middle (Y297 in the 852 frame).
-  left: -120,
-  right: -120,
-  top: "22%",
-  bottom: "33%",
+  left: -90,
+  right: -90,
+  top: "24%",
+  bottom: "37%",
 };
 function SlideGlow() {
   return (
@@ -72,7 +72,7 @@ function SlideGlow() {
               edge. To make it brighter/dimmer change ONLY GLOW_PEAK below — the
               mid/edge stops derive from it, so a ring can't happen by accident. */}
           <Stop offset="0" stopColor={GLOW} stopOpacity={GLOW_PEAK} />
-          <Stop offset="0.75" stopColor={GLOW} stopOpacity={GLOW_PEAK * 0.2} />
+          <Stop offset="0.5" stopColor={GLOW} stopOpacity={GLOW_PEAK * 0.5} />
           <Stop offset="1" stopColor={GLOW} stopOpacity="0" />
         </RadialGradient>
       </Defs>
