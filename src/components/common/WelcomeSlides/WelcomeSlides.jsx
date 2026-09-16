@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTranslation } from "react-i18next";
-import Svg, { Defs, RadialGradient, Stop, Rect } from "react-native-svg";
+import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import Icon from "react-native-vector-icons/Feather";
 
@@ -37,26 +37,19 @@ const SEEN_KEY = WELCOME_SLIDES_SEEN_KEY;
 const OPEN_EVENT = "welcome-slides:open";
 const { width } = Dimensions.get("window");
 
-// Soft blue glow behind the product mockup — the Figma "Ellipse 20" (a #4CABFF
-// disc at ~14% blurred to ~88px). Reproduced with an SVG radial gradient instead
-// of a real blur (same technique the design system already uses for the Home
-// card glow in MainButtonsGrid). Absolutely fills the hero area and sits UNDER
-// the mockup, so its bright bluish centre reads as a gentle glow and its soft
-// falloff as the "darkening" fade the designer applies on the other screens.
-const GLOW = "#4CABFF";
-// ONE knob for the glow brightness: peak opacity at the very centre of the ball.
-// Raise for a stronger glow, lower for a fainter one. The mid/edge stops derive
-// from this (see SlideGlow), so it always stays a solid ball, never a ring.
-const GLOW_PEAK = 0.2;
-// The glow sits BEHIND the mockup and is wider than it (spills out the sides,
-// like the Figma "Ellipse 20" = 393 wide vs the ~301 mockup) but shorter than it
-// vertically, so it never pokes past the mockup's top/bottom edges and leaves a
-// light "gap" band there. Negative left/right push it past the sides; the
-// top/bottom insets keep it clear of those edges.
+// Soft blue glow — the REAL Figma "Ellipse 20" (a #4CABFF disc at 14% with an
+// ~88px layer blur), exported straight from the design file as a transparent PNG
+// and its alpha rebuilt so it is a true gaussian glow (no SVG-gradient "ball"
+// banding/donut). This is the pixel-faithful design asset, not an approximation.
+// Ships over OTA (bundled asset). ONE brightness knob: GLOW_OPACITY below — the
+// PNG is baked at full strength, so 0.14 = exactly Figma, higher = brighter.
+const GLOW_SRC = require("../../../../assets/onboarding/slide-glow.png");
+const GLOW_OPACITY = 0.2;
+// Position/size of the glow over the hero. Negative left/right push it past the
+// mockup sides (keep them EQUAL so it grows centred, not off-centre); top/bottom
+// insets set its vertical band.
 const GLOW_BOX = {
   position: "absolute",
-  // Match the Figma "Ellipse 20": 393 wide (≈46px past the ~301 mockup each
-  // side) × 190 tall, centred a touch above the middle (Y297 in the 852 frame).
   left: -100,
   right: -100,
   top: "24%",
@@ -64,20 +57,14 @@ const GLOW_BOX = {
 };
 function SlideGlow() {
   return (
-    <Svg pointerEvents="none" style={GLOW_BOX} width="100%" height="100%">
-      <Defs>
-        <RadialGradient id="welcomeGlow" cx="50%" cy="50%" rx="50%" ry="50%">
-          {/* Solid soft BALL (never a donut): opacity ONLY decreases from the
-              centre outward. Brightest in the middle, fading smoothly to 0 at the
-              edge. To make it brighter/dimmer change ONLY GLOW_PEAK below — the
-              mid/edge stops derive from it, so a ring can't happen by accident. */}
-          <Stop offset="0" stopColor={GLOW} stopOpacity={GLOW_PEAK} />
-          <Stop offset="0.5" stopColor={GLOW} stopOpacity={GLOW_PEAK * 0.5} />
-          <Stop offset="1" stopColor={GLOW} stopOpacity="0" />
-        </RadialGradient>
-      </Defs>
-      <Rect x="0" y="0" width="100%" height="100%" fill="url(#welcomeGlow)" />
-    </Svg>
+    <Image
+      pointerEvents="none"
+      source={GLOW_SRC}
+      // Stretch to the box so left/right still control width; the blob is soft so
+      // mild stretch reads fine.
+      contentFit="fill"
+      style={[GLOW_BOX, { opacity: GLOW_OPACITY }]}
+    />
   );
 }
 

@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  InputAccessoryView,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -8,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
 
@@ -17,6 +19,9 @@ import { notesService } from "../../../services";
 import { getDateLocale } from "../../../utils/dateLocale";
 // Reuse the shift-history preview styles for an identical look.
 import { createStyles } from "../ShiftHistoryPreview/ShiftHistoryPreview.styles";
+
+// Links the quick-add TextInput to its keyboard accessory bar (iOS).
+const ACCESSORY_ID = "notesQuickAddAccessory";
 
 const formatDate = (value) => {
   if (!value) {
@@ -34,9 +39,10 @@ const formatDate = (value) => {
 };
 
 // Home-screen preview of the user's personal notes, mirroring
-// ShiftHistoryPreview / TasksPreview. Most recently edited first.
+// ShiftHistoryPreview / TasksPreview. Most recently edited first. Notes are
+// written inline here — the internal list/detail screens are intentionally not
+// linked for now (quick-add + read-only recent list only).
 export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
-  const navigation = useNavigation();
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = createStyles(theme, colorMode);
@@ -46,6 +52,7 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
   const [notes, setNotes] = useState([]);
   const [draft, setDraft] = useState("");
   const [saving, setSaving] = useState(false);
+  const [focused, setFocused] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -70,9 +77,6 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
     void load();
   }, [load, refreshKey]);
 
-  const openNote = (note) =>
-    navigation.navigate("CreateNote", { noteId: note._id || note.id });
-
   // Quick-add straight from the Home card — no internal screen needed.
   const handleSend = useCallback(async () => {
     const body = draft.trim();
@@ -91,26 +95,38 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
     }
   }, [draft, saving, load]);
 
+  const canSend = !!draft.trim() && !saving;
+
+  // Thin ring around the send arrow — shared by the iOS keyboard accessory and
+  // the Android focused-only fallback.
+  const sendButton = (
+    <TouchableOpacity
+      style={[
+        extraStyles.sendBtn,
+        { borderColor: canSend ? styles.linkText.color : secondaryIconColor },
+      ]}
+      onPress={handleSend}
+      disabled={!canSend}
+      activeOpacity={0.7}
+      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+      accessibilityLabel={t("notes.add", "Lägg till anteckning")}
+    >
+      {saving ? (
+        <ActivityIndicator size="small" color={secondaryIconColor} />
+      ) : (
+        <Icon
+          name="arrow-up"
+          size={16}
+          color={canSend ? styles.linkText.color : secondaryIconColor}
+        />
+      )}
+    </TouchableOpacity>
+  );
+
   return (
     <View style={styles.section}>
       <View style={styles.header}>
         <Text style={styles.title}>{t("notes.title")}</Text>
-
-        <View style={styles.headerActions}>
-          <TouchableOpacity
-            style={styles.linkButton}
-            onPress={() => navigation.navigate("Notes")}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.linkText}>{t("common.viewAll")}</Text>
-            <Icon
-              name="arrow-right"
-              size={18}
-              color={secondaryIconColor}
-              style={styles.linkIcon}
-            />
-          </TouchableOpacity>
-        </View>
       </View>
 
       <View style={[styles.card, extraStyles.card]}>
@@ -124,45 +140,28 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
           </TouchableOpacity>
         ) : null}
 
-        {/* Quick-add — write a note straight from Home, no internal screen. The
-            send control mirrors the close (×) style and sits just under it, level
-            with the first line of text. */}
+        {/* Quick-add — write a note straight from Home. The send control lives
+            on the keyboard (iOS InputAccessoryView) so it only shows while
+            typing; Android has no accessory view, so it falls back to an inline
+            ring shown only while the field is focused. */}
         <View style={extraStyles.inputRow}>
           <TextInput
             style={[extraStyles.input, { color: styles.dateText.color }]}
             value={draft}
             onChangeText={setDraft}
-            placeholder={t("notes.quickAdd", "Skriv en anteckning…")}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            // Placeholder clears the moment the field is tapped (focused).
+            placeholder={
+              focused ? "" : t("notes.quickAdd", "Skriv en anteckning…")
+            }
             placeholderTextColor={styles.emptyText.color}
+            inputAccessoryViewID={
+              Platform.OS === "ios" ? ACCESSORY_ID : undefined
+            }
             multiline
           />
-          <TouchableOpacity
-            style={[
-              extraStyles.sendBtn,
-              {
-                borderColor: draft.trim()
-                  ? styles.linkText.color
-                  : secondaryIconColor,
-              },
-            ]}
-            onPress={handleSend}
-            disabled={!draft.trim() || saving}
-            activeOpacity={0.7}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            accessibilityLabel={t("notes.add", "Lägg till anteckning")}
-          >
-            {saving ? (
-              <ActivityIndicator size="small" color={secondaryIconColor} />
-            ) : (
-              <Icon
-                name="arrow-up"
-                size={16}
-                color={
-                  draft.trim() ? styles.linkText.color : secondaryIconColor
-                }
-              />
-            )}
-          </TouchableOpacity>
+          {Platform.OS !== "ios" && focused ? sendButton : null}
         </View>
 
         {loading ? null : notes.length ? (
@@ -176,14 +175,12 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
               const title = (note.title || "").trim();
               const body = (note.body || "").trim();
               return (
-                <TouchableOpacity
+                <View
                   key={note._id || note.id || index}
                   style={[
                     extraStyles.item,
                     index !== notes.length - 1 && styles.itemDivider,
                   ]}
-                  activeOpacity={0.7}
-                  onPress={() => openNote(note)}
                 >
                   <Text style={styles.dateText}>
                     {formatDate(note.updatedAt || note.createdAt)}
@@ -191,12 +188,18 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
                   <Text style={styles.projectText} numberOfLines={1}>
                     {title || body || t("notes.untitled")}
                   </Text>
-                </TouchableOpacity>
+                </View>
               );
             })}
           </ScrollView>
         ) : null}
       </View>
+
+      {Platform.OS === "ios" ? (
+        <InputAccessoryView nativeID={ACCESSORY_ID}>
+          <View style={extraStyles.accessoryBar}>{sendButton}</View>
+        </InputAccessoryView>
+      ) : null}
     </View>
   );
 }
@@ -234,6 +237,17 @@ const extraStyles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 14,
+  },
+  // Bar sitting on top of the keyboard (iOS), holding the send ring on the right.
+  accessoryBar: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: "#F2F2F7",
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: "rgba(0,0,0,0.12)",
   },
   listBelow: {
     marginTop: 12,
