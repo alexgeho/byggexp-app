@@ -233,7 +233,7 @@ const extraStyles = StyleSheet.create({
     borderWidth: 1.5,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 6,
+    marginRight: 14,
   },
   listBelow: {
     marginTop: 12,
