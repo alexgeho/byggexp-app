@@ -92,13 +92,14 @@ const FADE_BOTTOM = {
   position: "absolute",
   left: 0,
   right: 0,
-  height: 120,
-  bottom: -14,
+  height: 128,
+  bottom: -12,
 };
-// transparent -> solid BG by 70%, then HOLD solid BG to the end, so the very
-// bottom of the mockup (its card rim) is fully covered — a 2-stop gradient only
-// hits 100% BG on the last pixel and left a faint visible edge.
-const FADE_BOTTOM_LOCS = [0, 0.7, 1];
+// Reaches SOLID bg by the halfway point and holds it: the bottom ~half is fully
+// opaque background so the last row + card rim dissolve COMPLETELY (not
+// "almost"), while a soft gradient above keeps the row before it just fading.
+// Values verified in a headless-Chrome replica (which includes the 0.9 scale).
+const FADE_BOTTOM_LOCS = [0, 0.5, 1];
 const FADE_H = { position: "absolute", top: 0, bottom: 0, width: 40 };
 const H_START = { x: 0, y: 0 };
 const H_END = { x: 1, y: 0 };
