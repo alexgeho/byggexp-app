@@ -152,8 +152,11 @@ function AdminMock({ name, styles }) {
         onLayout={(e) => setH(e.nativeEvent.layout.height)}
         style={styles.mockScale}
       >
-        <SlideGlow />
         <Mockup name={name} />
+        {/* Glow sits IN FRONT of the mockup (subtle, transparent) so it reads
+            over the card instead of being hidden behind an opaque screenshot;
+            the edge fades stay on top so the card edges still dissolve. */}
+        <SlideGlow />
         <MockFade />
       </View>
     </View>
