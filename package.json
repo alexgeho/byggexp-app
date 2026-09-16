@@ -8,6 +8,7 @@
     "start:lan": "expo start",
     "android": "expo run:android",
     "ios": "node scripts/run-ios-simulator.js",
+    "sim": "bash scripts/run-sim.sh",
     "ios:18.2": "yarn ios",
     "ios:se": "node scripts/run-ios-simulator.js se",
     "ios:15": "node scripts/run-ios-simulator.js 15",
