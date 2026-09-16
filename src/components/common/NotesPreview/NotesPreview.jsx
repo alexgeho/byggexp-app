@@ -217,7 +217,11 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
             inputAccessoryViewID={
               Platform.OS === "ios" ? ACCESSORY_NEW : undefined
             }
-            multiline
+            // Enter SENDS the note (no newline growth that would push the cursor
+            // under the keyboard); keep the keyboard up so you can add another.
+            returnKeyType="send"
+            onSubmitEditing={handleSend}
+            blurOnSubmit={false}
           />
           {Platform.OS !== "ios" && focused && !isEditing
             ? renderSendButton(styles.linkText.color, secondaryIconColor)
@@ -254,8 +258,9 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
                         onChangeText={setEditDraft}
                         onBlur={saveEdit}
                         placeholderTextColor={styles.emptyText.color}
+                        returnKeyType="done"
+                        onSubmitEditing={saveEdit}
                         autoFocus
-                        multiline
                       />
                       {/* Send lives right here in the row while editing (the
                           keyboard accessory is unreliable for a 2nd input). */}
