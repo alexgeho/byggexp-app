@@ -55,13 +55,17 @@ export function createStyles() {
       alignItems: "center",
       justifyContent: "center",
     },
-    // Designer pass: shrink the product mockup ~10%. Scale from the BOTTOM edge
-    // (not the centre) so the mockup's visual bottom stays glued to its layout
-    // box: the bottom fade then lands exactly on the visible edge (no rim strip)
-    // and the heading below has no phantom half-gap to throw off its centring.
-    mockWrapAdmin: {
+    // Outer box clamped to the scaled mockup height (see AdminMock) so there is
+    // no phantom margin above/below the shrunk mockup.
+    mockClip: {
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    // Designer pass: shrink the product mockup ~10% (centred scale; the clamp
+    // above removes the layout phantom the transform would otherwise leave).
+    mockScale: {
+      position: "relative",
       transform: [{ scale: 0.9 }],
-      transformOrigin: "center bottom",
     },
     // Equal flex spacers above/below the admin heading centre it in the gap
     // between the mockup and the footer; they collapse to 0 if the mockup fills
@@ -99,10 +103,12 @@ export function createStyles() {
       width: 8,
       height: 8,
       borderRadius: 24,
-      backgroundColor: "rgba(5,45,80,0.1)",
+      backgroundColor: "rgba(5,45,80,0.08)",
     },
+    // Paler active pill — a soft, translucent brand blue instead of the full
+    // saturated dot.
     dotActive: {
-      backgroundColor: BRAND,
+      backgroundColor: "rgba(7,133,244,0.45)",
       width: 35,
     },
     cta: {

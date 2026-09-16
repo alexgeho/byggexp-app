@@ -129,6 +129,29 @@ function MockFade() {
   );
 }
 
+// Admin mockup wrapper: the mockup is shrunk 10% with a transform, but a
+// transform doesn't shrink the LAYOUT box — leaving a ~5% phantom margin top and
+// bottom that either pushed the heading off-centre or opened a gap above the
+// illustration. Fix: measure the mockup's natural height, then clamp the wrapper
+// to 0.9× that so the box matches the visible (scaled) mockup exactly — no
+// phantom. The scaled content (centred) fills the clamped box, so the top/bottom
+// fades sit on the real edges and the heading below centres cleanly.
+function AdminMock({ name, styles }) {
+  const [h, setH] = useState(null);
+  return (
+    <View style={[styles.mockClip, h != null && { height: h * 0.9 }]}>
+      <View
+        onLayout={(e) => setH(e.nativeEvent.layout.height)}
+        style={styles.mockScale}
+      >
+        <SlideGlow />
+        <Mockup name={name} />
+        <MockFade />
+      </View>
+    </View>
+  );
+}
+
 // Re-open the value tour from anywhere (Help guide, etc.). Safe to call before
 // the overlay has mounted its listener — the emit is just a no-op then.
 export function openWelcomeTour() {
@@ -287,11 +310,13 @@ export function WelcomeSlides() {
           return (
             <View style={[styles.slide, { width }]}>
               <View style={styles.heroWrap}>
-                <View style={[styles.mockWrap, admin && styles.mockWrapAdmin]}>
-                  {admin ? <SlideGlow /> : null}
-                  <Mockup name={s.illustration} />
-                  {admin ? <MockFade /> : null}
-                </View>
+                {admin ? (
+                  <AdminMock name={s.illustration} styles={styles} />
+                ) : (
+                  <View style={styles.mockWrap}>
+                    <Mockup name={s.illustration} />
+                  </View>
+                )}
                 {admin ? (
                   <>
                     <View style={styles.flexSpacer} />
