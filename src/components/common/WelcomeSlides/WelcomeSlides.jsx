@@ -44,6 +44,10 @@ const { width } = Dimensions.get("window");
 // the mockup, so its bright bluish centre reads as a gentle glow and its soft
 // falloff as the "darkening" fade the designer applies on the other screens.
 const GLOW = "#4CABFF";
+// ONE knob for the glow brightness: peak opacity at the very centre of the ball.
+// Raise for a stronger glow, lower for a fainter one. The mid/edge stops derive
+// from this (see SlideGlow), so it always stays a solid ball, never a ring.
+const GLOW_PEAK = 0.3;
 // The glow sits BEHIND the mockup and is wider than it (spills out the sides,
 // like the Figma "Ellipse 20" = 393 wide vs the ~301 mockup) but shorter than it
 // vertically, so it never pokes past the mockup's top/bottom edges and leaves a
@@ -63,9 +67,12 @@ function SlideGlow() {
     <Svg pointerEvents="none" style={GLOW_BOX} width="100%" height="100%">
       <Defs>
         <RadialGradient id="welcomeGlow" cx="50%" cy="50%" rx="50%" ry="50%">
-          {/* #4CABFF @ 14% in the centre (Figma), soft falloff to transparent. */}
-          <Stop offset="0" stopColor={GLOW} stopOpacity="0.4" />
-          <Stop offset="0.5" stopColor={GLOW} stopOpacity="0.4" />
+          {/* Solid soft BALL (never a donut): opacity ONLY decreases from the
+              centre outward. Brightest in the middle, fading smoothly to 0 at the
+              edge. To make it brighter/dimmer change ONLY GLOW_PEAK below — the
+              mid/edge stops derive from it, so a ring can't happen by accident. */}
+          <Stop offset="0" stopColor={GLOW} stopOpacity={GLOW_PEAK} />
+          <Stop offset="0.55" stopColor={GLOW} stopOpacity={GLOW_PEAK * 0.4} />
           <Stop offset="1" stopColor={GLOW} stopOpacity="0" />
         </RadialGradient>
       </Defs>
