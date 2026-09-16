@@ -64,8 +64,8 @@ function SlideGlow() {
       <Defs>
         <RadialGradient id="welcomeGlow" cx="50%" cy="50%" rx="50%" ry="50%">
           {/* #4CABFF @ 14% in the centre (Figma), soft falloff to transparent. */}
-          <Stop offset="0" stopColor={GLOW} stopOpacity="0.14" />
-          <Stop offset="0.5" stopColor={GLOW} stopOpacity="0.07" />
+          <Stop offset="0" stopColor={GLOW} stopOpacity="0.4" />
+          <Stop offset="0.5" stopColor={GLOW} stopOpacity="0.4" />
           <Stop offset="1" stopColor={GLOW} stopOpacity="0" />
         </RadialGradient>
       </Defs>
