@@ -92,7 +92,7 @@ const FADE_BOTTOM = {
   position: "absolute",
   left: 0,
   right: 0,
-  height: 80,
+  height: 110,
   bottom: -2,
 };
 const FADE_H = { position: "absolute", top: 0, bottom: 0, width: 40 };
