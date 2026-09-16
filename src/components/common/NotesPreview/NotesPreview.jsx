@@ -20,8 +20,10 @@ import { getDateLocale } from "../../../utils/dateLocale";
 // Reuse the shift-history preview styles for an identical look.
 import { createStyles } from "../ShiftHistoryPreview/ShiftHistoryPreview.styles";
 
-// Links the quick-add TextInput to its keyboard accessory bar (iOS).
+// Links the quick-add / inline-edit TextInputs to their keyboard accessory bar.
 const ACCESSORY_ID = "notesQuickAddAccessory";
+
+const noteText = (note) => (note?.body || note?.title || "").trim();
 
 const formatDate = (value) => {
   if (!value) {
@@ -38,10 +40,9 @@ const formatDate = (value) => {
   }).format(date);
 };
 
-// Home-screen preview of the user's personal notes, mirroring
-// ShiftHistoryPreview / TasksPreview. Most recently edited first. Notes are
-// written inline here — the internal list/detail screens are intentionally not
-// linked for now (quick-add + read-only recent list only).
+// Home-screen preview of the user's personal notes. Everything happens inline —
+// write a new note at the top, tap any recent note to edit it in place. No
+// internal list/detail screens.
 export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -53,6 +54,9 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
   const [draft, setDraft] = useState("");
   const [saving, setSaving] = useState(false);
   const [focused, setFocused] = useState(false);
+  // Inline edit: id of the note currently being edited + its working text.
+  const [editingId, setEditingId] = useState(null);
+  const [editDraft, setEditDraft] = useState("");
 
   const load = useCallback(async () => {
     try {
@@ -77,7 +81,7 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
     void load();
   }, [load, refreshKey]);
 
-  // Quick-add straight from the Home card — no internal screen needed.
+  // Quick-add straight from the Home card.
   const handleSend = useCallback(async () => {
     const body = draft.trim();
     if (!body || saving) {
@@ -95,16 +99,51 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
     }
   }, [draft, saving, load]);
 
-  const canSend = !!draft.trim() && !saving;
+  const startEdit = (note) => {
+    setEditingId(note._id || note.id);
+    setEditDraft(noteText(note));
+  };
 
-  // Thin ring around the send arrow. Colours are passed in so the same control
-  // reads correctly on two different surfaces: the light iOS keyboard-accessory
-  // bar (dark idle grey) and the coloured Home card's Android inline fallback
-  // (theme secondary colour). `accent` = active/enabled, `idle` = empty state.
+  // Save the inline edit — called on blur and from the keyboard send button.
+  // No-ops if unchanged/empty so tapping away without edits just closes it.
+  const saveEdit = useCallback(async () => {
+    if (editingId == null || saving) {
+      return;
+    }
+    const body = editDraft.trim();
+    const original = noteText(notes.find((n) => (n._id || n.id) === editingId));
+    if (!body || body === original) {
+      setEditingId(null);
+      setEditDraft("");
+      return;
+    }
+    try {
+      setSaving(true);
+      await notesService.update(editingId, { body });
+      setEditingId(null);
+      setEditDraft("");
+      await load();
+    } catch (error) {
+      console.error("Failed to update note:", error);
+    } finally {
+      setSaving(false);
+    }
+  }, [editingId, editDraft, notes, saving, load]);
+
+  const isEditing = editingId != null;
+  const canSend = isEditing
+    ? !!editDraft.trim() &&
+      editDraft.trim() !==
+        noteText(notes.find((n) => (n._id || n.id) === editingId))
+    : !!draft.trim();
+  const commit = isEditing ? saveEdit : handleSend;
+
+  // Thin ring around the send arrow — shared by the iOS keyboard accessory and
+  // the Android focused-only fallback. `accent` = enabled, `idle` = empty state.
   const renderSendButton = (accent, idle) => (
     <TouchableOpacity
       style={[extraStyles.sendBtn, { borderColor: canSend ? accent : idle }]}
-      onPress={handleSend}
+      onPress={commit}
       disabled={!canSend}
       activeOpacity={0.7}
       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
@@ -135,10 +174,9 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
           </TouchableOpacity>
         ) : null}
 
-        {/* Quick-add — write a note straight from Home. The send control lives
-            on the keyboard (iOS InputAccessoryView) so it only shows while
-            typing; Android has no accessory view, so it falls back to an inline
-            ring shown only while the field is focused. */}
+        {/* Quick-add — write a note straight from Home. The send control lives on
+            the keyboard (iOS InputAccessoryView) so it only shows while typing;
+            Android falls back to an inline ring while the field is focused. */}
         <View style={extraStyles.inputRow}>
           <TextInput
             style={[extraStyles.input, { color: styles.dateText.color }]}
@@ -146,7 +184,6 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
             onChangeText={setDraft}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
-            // Placeholder clears the moment the field is tapped (focused).
             placeholder={
               focused ? "" : t("notes.quickAdd", "Skriv en anteckning…")
             }
@@ -156,7 +193,7 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
             }
             multiline
           />
-          {Platform.OS !== "ios" && focused
+          {Platform.OS !== "ios" && focused && !isEditing
             ? renderSendButton(styles.linkText.color, secondaryIconColor)
             : null}
         </View>
@@ -167,24 +204,45 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
             contentContainerStyle={styles.list}
             showsVerticalScrollIndicator={false}
             nestedScrollEnabled={true}
+            keyboardShouldPersistTaps="handled"
           >
             {notes.map((note, index) => {
-              const title = (note.title || "").trim();
-              const body = (note.body || "").trim();
+              const id = note._id || note.id || index;
+              const editing = editingId === (note._id || note.id);
+              const divider = index !== notes.length - 1 && styles.itemDivider;
               return (
-                <View
-                  key={note._id || note.id || index}
-                  style={[
-                    extraStyles.item,
-                    index !== notes.length - 1 && styles.itemDivider,
-                  ]}
-                >
+                <View key={id} style={[extraStyles.item, divider]}>
                   <Text style={styles.dateText}>
                     {formatDate(note.updatedAt || note.createdAt)}
                   </Text>
-                  <Text style={styles.projectText} numberOfLines={1}>
-                    {title || body || t("notes.untitled")}
-                  </Text>
+                  {editing ? (
+                    <TextInput
+                      style={[
+                        extraStyles.input,
+                        extraStyles.editInput,
+                        { color: styles.projectText.color },
+                      ]}
+                      value={editDraft}
+                      onChangeText={setEditDraft}
+                      onBlur={saveEdit}
+                      placeholderTextColor={styles.emptyText.color}
+                      inputAccessoryViewID={
+                        Platform.OS === "ios" ? ACCESSORY_ID : undefined
+                      }
+                      autoFocus
+                      multiline
+                    />
+                  ) : (
+                    // Tap a note to edit it in place — no navigation.
+                    <TouchableOpacity
+                      activeOpacity={0.6}
+                      onPress={() => startEdit(note)}
+                    >
+                      <Text style={styles.projectText} numberOfLines={2}>
+                        {noteText(note) || t("notes.untitled")}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
               );
             })}
@@ -211,9 +269,6 @@ const extraStyles = StyleSheet.create({
   },
   inputRow: {
     flexDirection: "row",
-    // Vertically centred: text and the send control sit in the middle of the
-    // cell. The × stays pinned to the corner above, so the send (a bit inset
-    // from the right via marginRight) never merges with it.
     alignItems: "center",
     gap: 10,
     minHeight: 44,
@@ -227,6 +282,11 @@ const extraStyles = StyleSheet.create({
     paddingTop: 0,
     paddingBottom: 0,
   },
+  // The inline editor sits where the note's text was, same size as the title.
+  editInput: {
+    fontSize: 15,
+    marginTop: 1,
+  },
   // Thin ring around the arrow — same stroke weight as the arrow/× icons.
   sendBtn: {
     width: 30,
@@ -237,16 +297,15 @@ const extraStyles = StyleSheet.create({
     justifyContent: "center",
     marginRight: 14,
   },
-  // Bar sitting on top of the keyboard (iOS), holding the send ring on the right.
+  // Sits above the keyboard (iOS). Transparent + slim so it reads as just the
+  // send ring floating over the keyboard, not a thick white bar.
   accessoryBar: {
     flexDirection: "row",
     justifyContent: "flex-end",
     alignItems: "center",
     paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: "#F2F2F7",
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: "rgba(0,0,0,0.12)",
+    paddingVertical: 4,
+    backgroundColor: "transparent",
   },
   listBelow: {
     marginTop: 12,
