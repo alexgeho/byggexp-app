@@ -137,7 +137,14 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
             multiline
           />
           <TouchableOpacity
-            style={extraStyles.sendBtn}
+            style={[
+              extraStyles.sendBtn,
+              {
+                borderColor: draft.trim()
+                  ? styles.linkText.color
+                  : secondaryIconColor,
+              },
+            ]}
             onPress={handleSend}
             disabled={!draft.trim() || saving}
             activeOpacity={0.7}
@@ -149,7 +156,7 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
             ) : (
               <Icon
                 name="arrow-up"
-                size={20}
+                size={16}
                 color={
                   draft.trim() ? styles.linkText.color : secondaryIconColor
                 }
@@ -202,11 +209,12 @@ const extraStyles = StyleSheet.create({
   },
   inputRow: {
     flexDirection: "row",
-    // Top-aligned so the send control sits level with the first line of text
-    // (and, because the × is pinned to the corner above, just under it).
-    alignItems: "flex-start",
+    // Vertically centred: text and the send control sit in the middle of the
+    // cell. The × stays pinned to the corner above, so the send (a bit inset
+    // from the right via marginRight) never merges with it.
+    alignItems: "center",
     gap: 10,
-    // Clear the corner × so the first line + send sit below it.
+    minHeight: 44,
     marginTop: 6,
   },
   input: {
@@ -215,10 +223,17 @@ const extraStyles = StyleSheet.create({
     fontFamily: "DMSans-Regular",
     maxHeight: 88,
     paddingTop: 0,
-    paddingBottom: 2,
+    paddingBottom: 0,
   },
+  // Thin ring around the arrow — same stroke weight as the arrow/× icons.
   sendBtn: {
-    paddingTop: 1,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    borderWidth: 1.5,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 6,
   },
   listBelow: {
     marginTop: 12,
