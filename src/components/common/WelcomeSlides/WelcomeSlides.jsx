@@ -53,10 +53,11 @@ const GLOW_BOX = {
   position: "absolute",
   left: -56,
   right: -56,
-  // Kept in the UPPER half of the mockup so it never brightens the bottom fade
-  // zone — a lower glow was re-revealing the card's bottom rim through the fog.
-  top: "14%",
-  bottom: "50%",
+  // Centred on the mockup like the Figma "Ellipse 20" (Y297 / H190 ≈ centre 50%,
+  // ~40% tall) — a soft wide halo. Its bottom stays above the (now small) bottom
+  // fade so it doesn't re-reveal the card rim.
+  top: "30%",
+  bottom: "30%",
 };
 function SlideGlow() {
   return (
