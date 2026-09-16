@@ -92,9 +92,13 @@ const FADE_BOTTOM = {
   position: "absolute",
   left: 0,
   right: 0,
-  height: 110,
-  bottom: -2,
+  height: 120,
+  bottom: -14,
 };
+// transparent -> solid BG by 70%, then HOLD solid BG to the end, so the very
+// bottom of the mockup (its card rim) is fully covered — a 2-stop gradient only
+// hits 100% BG on the last pixel and left a faint visible edge.
+const FADE_BOTTOM_LOCS = [0, 0.7, 1];
 const FADE_H = { position: "absolute", top: 0, bottom: 0, width: 40 };
 const H_START = { x: 0, y: 0 };
 const H_END = { x: 1, y: 0 };
@@ -108,7 +112,8 @@ function MockFade() {
       />
       <LinearGradient
         pointerEvents="none"
-        colors={[BG_TRANSPARENT, BG]}
+        colors={[BG_TRANSPARENT, BG, BG]}
+        locations={FADE_BOTTOM_LOCS}
         style={FADE_BOTTOM}
       />
       <LinearGradient
