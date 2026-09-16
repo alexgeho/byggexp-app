@@ -311,21 +311,23 @@ export function WelcomeSlides() {
             <View style={[styles.slide, { width }]}>
               <View style={styles.heroWrap}>
                 {admin ? (
-                  <AdminMock name={s.illustration} styles={styles} />
-                ) : (
-                  <View style={styles.mockWrap}>
-                    <Mockup name={s.illustration} />
-                  </View>
-                )}
-                {admin ? (
+                  // Three equal flex spacers → equal gaps above the mockup (from
+                  // "Skip"), between mockup and heading, and below the heading (to
+                  // the dots). Spacers collapse if a mockup ever fills the area.
                   <>
+                    <View style={styles.flexSpacer} />
+                    <AdminMock name={s.illustration} styles={styles} />
                     <View style={styles.flexSpacer} />
                     <Text style={[styles.title, styles.titleAdmin]}>
                       {heading}
                     </Text>
                     <View style={styles.flexSpacer} />
                   </>
-                ) : null}
+                ) : (
+                  <View style={styles.mockWrap}>
+                    <Mockup name={s.illustration} />
+                  </View>
+                )}
               </View>
               {admin ? null : <Text style={styles.title}>{heading}</Text>}
             </View>
