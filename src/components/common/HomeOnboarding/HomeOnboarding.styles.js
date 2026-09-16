@@ -149,6 +149,9 @@ export function createStyles(theme, onDark = false) {
       fontFamily: theme.text.fontFamily.semiBold,
     },
     footerCta: {
+      // Full width so the flex:1 label wraps to two lines inside the button
+      // (growing its height) instead of overflowing on one line.
+      alignSelf: "stretch",
       flexDirection: "row",
       alignItems: "center",
       // Left-aligned so the icon sits a fixed distance from the button's left
