@@ -53,8 +53,10 @@ const GLOW_BOX = {
   position: "absolute",
   left: -56,
   right: -56,
-  top: "28%",
-  bottom: "28%",
+  // Kept in the UPPER half of the mockup so it never brightens the bottom fade
+  // zone — a lower glow was re-revealing the card's bottom rim through the fog.
+  top: "14%",
+  bottom: "50%",
 };
 function SlideGlow() {
   return (
