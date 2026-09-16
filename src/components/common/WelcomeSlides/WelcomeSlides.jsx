@@ -57,10 +57,10 @@ const GLOW_BOX = {
   position: "absolute",
   // Match the Figma "Ellipse 20": 393 wide (≈46px past the ~301 mockup each
   // side) × 190 tall, centred a touch above the middle (Y297 in the 852 frame).
-  left: -46,
-  right: -46,
-  top: "24%",
-  bottom: "37%",
+  left: -120,
+  right: -120,
+  top: "22%",
+  bottom: "33%",
 };
 function SlideGlow() {
   return (
@@ -72,7 +72,7 @@ function SlideGlow() {
               edge. To make it brighter/dimmer change ONLY GLOW_PEAK below — the
               mid/edge stops derive from it, so a ring can't happen by accident. */}
           <Stop offset="0" stopColor={GLOW} stopOpacity={GLOW_PEAK} />
-          <Stop offset="0.55" stopColor={GLOW} stopOpacity={GLOW_PEAK * 0.4} />
+          <Stop offset="0.75" stopColor={GLOW} stopOpacity={GLOW_PEAK * 0.2} />
           <Stop offset="1" stopColor={GLOW} stopOpacity="0" />
         </RadialGradient>
       </Defs>
