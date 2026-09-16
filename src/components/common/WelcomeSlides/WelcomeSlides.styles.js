@@ -55,9 +55,13 @@ export function createStyles() {
       alignItems: "center",
       justifyContent: "center",
     },
-    // Designer pass: shrink the product mockup ~10%.
+    // Designer pass: shrink the product mockup ~10%. Scale from the BOTTOM edge
+    // (not the centre) so the mockup's visual bottom stays glued to its layout
+    // box: the bottom fade then lands exactly on the visible edge (no rim strip)
+    // and the heading below has no phantom half-gap to throw off its centring.
     mockWrapAdmin: {
       transform: [{ scale: 0.9 }],
+      transformOrigin: "center bottom",
     },
     // Equal flex spacers above/below the admin heading centre it in the gap
     // between the mockup and the footer; they collapse to 0 if the mockup fills
