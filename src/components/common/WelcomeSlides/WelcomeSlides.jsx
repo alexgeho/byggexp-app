@@ -63,8 +63,8 @@ function SlideGlow() {
     <Svg pointerEvents="none" style={GLOW_BOX} width="100%" height="100%">
       <Defs>
         <RadialGradient id="welcomeGlow" cx="50%" cy="50%" rx="50%" ry="50%">
-          <Stop offset="0" stopColor={GLOW} stopOpacity="0.16" />
-          <Stop offset="0.5" stopColor={GLOW} stopOpacity="0.08" />
+          <Stop offset="0" stopColor={GLOW} stopOpacity="0.24" />
+          <Stop offset="0.5" stopColor={GLOW} stopOpacity="0.12" />
           <Stop offset="1" stopColor={GLOW} stopOpacity="0" />
         </RadialGradient>
       </Defs>
