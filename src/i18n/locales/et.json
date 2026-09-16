@@ -1513,7 +1513,9 @@
     "deleteTitle": "Kustutada märge?",
     "loadError": "Märkme laadimine ebaõnnestus.",
     "saveError": "Märkme salvestamine ebaõnnestus.",
-    "deleteError": "Märkme kustutamine ebaõnnestus."
+    "deleteError": "Märkme kustutamine ebaõnnestus.",
+    "quickAdd": "Kirjuta märge…",
+    "add": "Lisa märge"
   },
   "notesPreview": {
     "empty": "Märkmeid veel pole"

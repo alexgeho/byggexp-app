@@ -1513,7 +1513,9 @@
     "deleteTitle": "Obrisati bilješku?",
     "loadError": "Nije moguće učitati bilješku.",
     "saveError": "Nije moguće sačuvati bilješku.",
-    "deleteError": "Nije moguće obrisati bilješku."
+    "deleteError": "Nije moguće obrisati bilješku.",
+    "quickAdd": "Napišite bilješku…",
+    "add": "Dodaj bilješku"
   },
   "notesPreview": {
     "empty": "Još nema bilješki"

@@ -1513,7 +1513,9 @@
     "deleteTitle": "Slette notat?",
     "loadError": "Kunne ikke laste notatet.",
     "saveError": "Kunne ikke lagre notatet.",
-    "deleteError": "Kunne ikke slette notatet."
+    "deleteError": "Kunne ikke slette notatet.",
+    "quickAdd": "Skriv et notat…",
+    "add": "Legg til notat"
   },
   "notesPreview": {
     "empty": "Ingen notater ennå"

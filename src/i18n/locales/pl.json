@@ -1513,7 +1513,9 @@
     "deleteTitle": "Usunąć notatkę?",
     "loadError": "Nie udało się załadować notatki.",
     "saveError": "Nie udało się zapisać notatki.",
-    "deleteError": "Nie udało się usunąć notatki."
+    "deleteError": "Nie udało się usunąć notatki.",
+    "quickAdd": "Napisz notatkę…",
+    "add": "Dodaj notatkę"
   },
   "notesPreview": {
     "empty": "Brak notatek"

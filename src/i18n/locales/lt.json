@@ -1513,7 +1513,9 @@
     "deleteTitle": "Ištrinti užrašą?",
     "loadError": "Nepavyko įkelti užrašo.",
     "saveError": "Nepavyko išsaugoti užrašo.",
-    "deleteError": "Nepavyko ištrinti užrašo."
+    "deleteError": "Nepavyko ištrinti užrašo.",
+    "quickAdd": "Rašykite užrašą…",
+    "add": "Pridėti užrašą"
   },
   "notesPreview": {
     "empty": "Užrašų dar nėra"

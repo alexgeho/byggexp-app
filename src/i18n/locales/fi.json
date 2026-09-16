@@ -1513,7 +1513,9 @@
     "deleteTitle": "Poistetaanko muistiinpano?",
     "loadError": "Muistiinpanon lataus epäonnistui.",
     "saveError": "Muistiinpanon tallennus epäonnistui.",
-    "deleteError": "Muistiinpanon poisto epäonnistui."
+    "deleteError": "Muistiinpanon poisto epäonnistui.",
+    "quickAdd": "Kirjoita muistiinpano…",
+    "add": "Lisää muistiinpano"
   },
   "notesPreview": {
     "empty": "Ei muistiinpanoja vielä"

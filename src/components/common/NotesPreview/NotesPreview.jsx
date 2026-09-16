@@ -4,6 +4,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -43,6 +44,8 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
     colorMode === "light" ? `${theme.colors.text}80` : "rgba(255,255,255,0.72)";
   const [loading, setLoading] = useState(true);
   const [notes, setNotes] = useState([]);
+  const [draft, setDraft] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -70,6 +73,24 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
   const openNote = (note) =>
     navigation.navigate("CreateNote", { noteId: note._id || note.id });
 
+  // Quick-add straight from the Home card — no internal screen needed.
+  const handleSend = useCallback(async () => {
+    const body = draft.trim();
+    if (!body || saving) {
+      return;
+    }
+    try {
+      setSaving(true);
+      await notesService.create({ body });
+      setDraft("");
+      await load();
+    } catch (error) {
+      console.error("Failed to create note:", error);
+    } finally {
+      setSaving(false);
+    }
+  }, [draft, saving, load]);
+
   return (
     <View style={styles.section}>
       <View style={styles.header}>
@@ -92,12 +113,7 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
         </View>
       </View>
 
-      <View
-        style={[
-          styles.card,
-          !loading && notes.length <= 1 && extraStyles.cardShort,
-        ]}
-      >
+      <View style={[styles.card, extraStyles.card]}>
         {onClose ? (
           <TouchableOpacity
             style={styles.closeButton}
@@ -108,13 +124,40 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
           </TouchableOpacity>
         ) : null}
 
-        {loading ? (
-          <View style={styles.loadingState}>
-            <ActivityIndicator color="#FFFFFF" />
-          </View>
-        ) : notes.length ? (
+        {/* Quick-add — write a note straight from Home, no internal screen. */}
+        <View style={[extraStyles.inputRow, onClose && { paddingRight: 24 }]}>
+          <TextInput
+            style={[extraStyles.input, { color: styles.dateText.color }]}
+            value={draft}
+            onChangeText={setDraft}
+            placeholder={t("notes.quickAdd", "Skriv en anteckning…")}
+            placeholderTextColor={styles.emptyText.color}
+            multiline
+          />
+          <TouchableOpacity
+            style={extraStyles.sendBtn}
+            onPress={handleSend}
+            disabled={!draft.trim() || saving}
+            activeOpacity={0.8}
+            accessibilityLabel={t("notes.add", "Lägg till anteckning")}
+          >
+            {saving ? (
+              <ActivityIndicator size="small" color={secondaryIconColor} />
+            ) : (
+              <Icon
+                name="arrow-up-circle"
+                size={28}
+                color={
+                  draft.trim() ? styles.linkText.color : secondaryIconColor
+                }
+              />
+            )}
+          </TouchableOpacity>
+        </View>
+
+        {loading ? null : notes.length ? (
           <ScrollView
-            style={styles.scrollArea}
+            style={[styles.scrollArea, extraStyles.listBelow]}
             contentContainerStyle={styles.list}
             showsVerticalScrollIndicator={false}
             nestedScrollEnabled={true}
@@ -136,48 +179,46 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
                     {formatDate(note.updatedAt || note.createdAt)}
                   </Text>
                   <Text style={styles.projectText} numberOfLines={1}>
-                    {title || t("notes.untitled")}
+                    {title || body || t("notes.untitled")}
                   </Text>
-                  {body ? (
-                    <Text
-                      style={[
-                        extraStyles.bodyText,
-                        { color: styles.emptyText.color },
-                      ]}
-                      numberOfLines={1}
-                    >
-                      {body}
-                    </Text>
-                  ) : null}
                 </TouchableOpacity>
               );
             })}
           </ScrollView>
-        ) : (
-          <TouchableOpacity
-            style={styles.emptyState}
-            activeOpacity={0.8}
-            onPress={() => navigation.navigate("CreateNote")}
-          >
-            <Icon name="edit-3" size={26} color={styles.emptyText.color} />
-            <Text style={styles.emptyText}>{t("notesPreview.empty")}</Text>
-          </TouchableOpacity>
-        )}
+        ) : null}
       </View>
     </View>
   );
 }
 
 const extraStyles = StyleSheet.create({
-  cardShort: {
-    height: 120,
+  // Let the card grow with the input + a few notes instead of a fixed height.
+  card: {
+    height: undefined,
+    minHeight: 92,
+  },
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    gap: 8,
+  },
+  input: {
+    flex: 1,
+    fontSize: 15,
+    fontFamily: "DMSans-Regular",
+    maxHeight: 88,
+    paddingTop: 2,
+    paddingBottom: 2,
+  },
+  sendBtn: {
+    paddingBottom: 2,
+  },
+  listBelow: {
+    marginTop: 12,
+    maxHeight: 132,
   },
   item: {
     gap: 4,
-  },
-  bodyText: {
-    fontSize: 13,
-    fontFamily: "DMSans-Regular",
   },
 });
 

@@ -1513,7 +1513,9 @@
     "deleteTitle": "Ta bort anteckning?",
     "loadError": "Kunde inte ladda anteckningen.",
     "saveError": "Kunde inte spara anteckningen.",
-    "deleteError": "Kunde inte ta bort anteckningen."
+    "deleteError": "Kunde inte ta bort anteckningen.",
+    "quickAdd": "Skriv en anteckning…",
+    "add": "Lägg till anteckning"
   },
   "notesPreview": {
     "empty": "Inga anteckningar än"

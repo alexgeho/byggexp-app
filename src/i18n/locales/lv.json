@@ -1513,7 +1513,9 @@
     "deleteTitle": "Dzēst piezīmi?",
     "loadError": "Neizdevās ielādēt piezīmi.",
     "saveError": "Neizdevās saglabāt piezīmi.",
-    "deleteError": "Neizdevās izdzēst piezīmi."
+    "deleteError": "Neizdevās izdzēst piezīmi.",
+    "quickAdd": "Rakstiet piezīmi…",
+    "add": "Pievienot piezīmi"
   },
   "notesPreview": {
     "empty": "Vēl nav piezīmju"

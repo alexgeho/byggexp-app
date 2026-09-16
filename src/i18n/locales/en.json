@@ -1513,7 +1513,9 @@
     "deleteTitle": "Delete note?",
     "loadError": "Couldn't load the note.",
     "saveError": "Couldn't save the note.",
-    "deleteError": "Couldn't delete the note."
+    "deleteError": "Couldn't delete the note.",
+    "quickAdd": "Write a note…",
+    "add": "Add note"
   },
   "notesPreview": {
     "empty": "No notes yet"
