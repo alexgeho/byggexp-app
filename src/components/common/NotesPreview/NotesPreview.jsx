@@ -20,11 +20,11 @@ import { getDateLocale } from "../../../utils/dateLocale";
 // Reuse the shift-history preview styles for an identical look.
 import { createStyles } from "../ShiftHistoryPreview/ShiftHistoryPreview.styles";
 
-// Each TextInput gets its OWN keyboard-accessory nativeID — iOS is unreliable
-// when several inputs share one InputAccessoryView (the bar fails to move to the
-// second input), which made the send ring vanish while editing a note.
+// The quick-add field puts its send ring on the keyboard (InputAccessoryView).
+// The inline-edit field instead shows the ring right inside the note row —
+// iOS is unreliable moving a keyboard accessory to a second input, so editing a
+// note kept losing the button.
 const ACCESSORY_NEW = "notesQuickAddAccessory";
-const ACCESSORY_EDIT = "notesEditAccessory";
 
 const noteText = (note) => (note?.body || note?.title || "").trim();
 
@@ -133,6 +133,14 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
     }
   }, [editingId, editDraft, notes, saving, load]);
 
+  // Ring colours: white on the coloured "glass" home, the theme link colour on a
+  // light home. Used by both the keyboard accessory and the inline edit ring.
+  const onLightSurface = colorMode === "light";
+  const ringAccent = onLightSurface ? styles.linkText.color : "#FFFFFF";
+  const ringIdle = onLightSurface
+    ? secondaryIconColor
+    : "rgba(255,255,255,0.5)";
+
   const isEditing = editingId != null;
   const canSend = isEditing
     ? !!editDraft.trim() &&
@@ -227,22 +235,24 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
                     {formatDate(note.updatedAt || note.createdAt)}
                   </Text>
                   {editing ? (
-                    <TextInput
-                      style={[
-                        extraStyles.input,
-                        extraStyles.editInput,
-                        { color: styles.projectText.color },
-                      ]}
-                      value={editDraft}
-                      onChangeText={setEditDraft}
-                      onBlur={saveEdit}
-                      placeholderTextColor={styles.emptyText.color}
-                      inputAccessoryViewID={
-                        Platform.OS === "ios" ? ACCESSORY_EDIT : undefined
-                      }
-                      autoFocus
-                      multiline
-                    />
+                    <View style={extraStyles.editRow}>
+                      <TextInput
+                        style={[
+                          extraStyles.input,
+                          extraStyles.editInput,
+                          { color: styles.projectText.color },
+                        ]}
+                        value={editDraft}
+                        onChangeText={setEditDraft}
+                        onBlur={saveEdit}
+                        placeholderTextColor={styles.emptyText.color}
+                        autoFocus
+                        multiline
+                      />
+                      {/* Send lives right here in the row while editing (the
+                          keyboard accessory is unreliable for a 2nd input). */}
+                      {renderSendButton(ringAccent, ringIdle, true)}
+                    </View>
                   ) : (
                     // Tap a note to edit it in place — no navigation.
                     <TouchableOpacity
@@ -262,18 +272,11 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
       </View>
 
       {Platform.OS === "ios" ? (
-        <>
-          <InputAccessoryView nativeID={ACCESSORY_NEW}>
-            <View style={extraStyles.accessoryBar}>
-              {renderSendButton("#FFFFFF", "rgba(255,255,255,0.5)", true)}
-            </View>
-          </InputAccessoryView>
-          <InputAccessoryView nativeID={ACCESSORY_EDIT}>
-            <View style={extraStyles.accessoryBar}>
-              {renderSendButton("#FFFFFF", "rgba(255,255,255,0.5)", true)}
-            </View>
-          </InputAccessoryView>
-        </>
+        <InputAccessoryView nativeID={ACCESSORY_NEW}>
+          <View style={extraStyles.accessoryBar}>
+            {renderSendButton(ringAccent, ringIdle, true)}
+          </View>
+        </InputAccessoryView>
       ) : null}
     </View>
   );
@@ -304,6 +307,12 @@ const extraStyles = StyleSheet.create({
   editInput: {
     fontSize: 15,
     marginTop: 1,
+  },
+  // Row holding the inline editor + its send ring while editing a note.
+  editRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
   },
   // Thin ring around the arrow — same stroke weight as the arrow/× icons.
   sendBtn: {
