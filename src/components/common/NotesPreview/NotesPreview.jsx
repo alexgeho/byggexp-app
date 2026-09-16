@@ -149,6 +149,13 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
     : !!draft.trim();
   const commit = isEditing ? saveEdit : handleSend;
 
+  // While editing, collapse the list to JUST the edited note so the card stays
+  // short and its editor sits high up, clear of the keyboard (showing the whole
+  // list pushed the edited row down against the keyboard).
+  const visibleNotes = isEditing
+    ? notes.filter((n) => (n._id || n.id) === editingId)
+    : notes;
+
   // Ring around the send arrow — shared by the iOS keyboard accessory and the
   // Android focused-only fallback. `accent` = enabled, `idle` = empty state.
   // `big` gives the larger white ring used on the keyboard accessory.
@@ -177,7 +184,7 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
   );
 
   return (
-    <View style={[styles.section, isEditing && extraStyles.sectionLifted]}>
+    <View style={styles.section}>
       <View style={styles.header}>
         <Text style={styles.title}>{t("notes.title")}</Text>
       </View>
@@ -225,10 +232,11 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
             nestedScrollEnabled={true}
             keyboardShouldPersistTaps="handled"
           >
-            {notes.map((note, index) => {
+            {visibleNotes.map((note, index) => {
               const id = note._id || note.id || index;
               const editing = editingId === (note._id || note.id);
-              const divider = index !== notes.length - 1 && styles.itemDivider;
+              const divider =
+                index !== visibleNotes.length - 1 && styles.itemDivider;
               return (
                 <View key={id} style={[extraStyles.item, divider]}>
                   <Text style={styles.dateText}>
@@ -313,11 +321,6 @@ const extraStyles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-  },
-  // While editing, lift the whole card a bit so the edit row + send ring sit
-  // clearly above the keyboard instead of flush against it.
-  sectionLifted: {
-    transform: [{ translateY: -48 }],
   },
   // Thin ring around the arrow — same stroke weight as the arrow/× icons.
   sendBtn: {
