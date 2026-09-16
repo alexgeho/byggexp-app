@@ -124,8 +124,10 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
           </TouchableOpacity>
         ) : null}
 
-        {/* Quick-add — write a note straight from Home, no internal screen. */}
-        <View style={[extraStyles.inputRow, onClose && { paddingRight: 24 }]}>
+        {/* Quick-add — write a note straight from Home, no internal screen. The
+            send control mirrors the close (×) style and sits just under it, level
+            with the first line of text. */}
+        <View style={extraStyles.inputRow}>
           <TextInput
             style={[extraStyles.input, { color: styles.dateText.color }]}
             value={draft}
@@ -138,15 +140,16 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
             style={extraStyles.sendBtn}
             onPress={handleSend}
             disabled={!draft.trim() || saving}
-            activeOpacity={0.8}
+            activeOpacity={0.7}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             accessibilityLabel={t("notes.add", "Lägg till anteckning")}
           >
             {saving ? (
               <ActivityIndicator size="small" color={secondaryIconColor} />
             ) : (
               <Icon
-                name="arrow-up-circle"
-                size={28}
+                name="arrow-up"
+                size={20}
                 color={
                   draft.trim() ? styles.linkText.color : secondaryIconColor
                 }
@@ -199,19 +202,23 @@ const extraStyles = StyleSheet.create({
   },
   inputRow: {
     flexDirection: "row",
-    alignItems: "flex-end",
-    gap: 8,
+    // Top-aligned so the send control sits level with the first line of text
+    // (and, because the × is pinned to the corner above, just under it).
+    alignItems: "flex-start",
+    gap: 10,
+    // Clear the corner × so the first line + send sit below it.
+    marginTop: 6,
   },
   input: {
     flex: 1,
     fontSize: 15,
     fontFamily: "DMSans-Regular",
     maxHeight: 88,
-    paddingTop: 2,
+    paddingTop: 0,
     paddingBottom: 2,
   },
   sendBtn: {
-    paddingBottom: 2,
+    paddingTop: 1,
   },
   listBelow: {
     marginTop: 12,

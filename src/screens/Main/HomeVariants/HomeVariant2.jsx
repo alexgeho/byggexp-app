@@ -923,6 +923,10 @@ export default function HomeVariant2() {
           setContentHeight(height);
         }}
         showsVerticalScrollIndicator={false}
+        // Lift focused inputs (e.g. the inline notes quick-add at the bottom)
+        // above the keyboard instead of letting it cover them.
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
       >
         {/* PROJECT SELECTOR — dimmed & inactive while editing hours */}
         <View
