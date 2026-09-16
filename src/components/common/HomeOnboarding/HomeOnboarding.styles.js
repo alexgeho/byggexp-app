@@ -151,16 +151,20 @@ export function createStyles(theme, onDark = false) {
     footerCta: {
       flexDirection: "row",
       alignItems: "center",
-      justifyContent: "center",
-      gap: 8,
+      // Left-aligned so the icon sits a fixed distance from the button's left
+      // edge (same as the focus buttons), regardless of label length.
+      justifyContent: "flex-start",
+      gap: 10,
       marginTop: 4,
       paddingVertical: 13,
+      paddingHorizontal: 16,
       borderRadius: 14,
       borderWidth: 1.5,
       borderColor: onDark ? "rgba(255,255,255,0.45)" : c.accentSoft,
       backgroundColor: onDark ? "rgba(255,255,255,0.14)" : c.accentSoft,
     },
     footerCtaText: {
+      flex: 1,
       fontSize: 15,
       fontFamily: theme.text.fontFamily.semiBold,
     },
@@ -172,15 +176,19 @@ export function createStyles(theme, onDark = false) {
     focusBtn: {
       flexDirection: "row",
       alignItems: "center",
-      justifyContent: "center",
-      gap: 8,
+      // Left-aligned + fixed left padding so the icon is the same distance from
+      // the left edge on every button, whether the label is one line or two.
+      justifyContent: "flex-start",
+      gap: 10,
       paddingVertical: 13,
+      paddingHorizontal: 16,
       borderRadius: 14,
       borderWidth: 1.5,
       borderColor: onDark ? "rgba(255,255,255,0.45)" : c.accentSoft,
       backgroundColor: onDark ? "rgba(255,255,255,0.14)" : c.accentSoft,
     },
     focusBtnText: {
+      flex: 1,
       fontSize: 16,
       fontFamily: theme.text.fontFamily.semiBold,
     },
