@@ -51,20 +51,21 @@ const GLOW = "#4CABFF";
 // top/bottom insets keep it clear of those edges.
 const GLOW_BOX = {
   position: "absolute",
-  left: -56,
-  right: -56,
-  // Sits in the UPPER part of the mockup (a soft wide halo around its top), not
-  // dead-centre — reads better and keeps clear of the bottom fade.
-  top: "8%",
-  bottom: "54%",
+  // Match the Figma "Ellipse 20": 393 wide (≈46px past the ~301 mockup each
+  // side) × 190 tall, centred a touch above the middle (Y297 in the 852 frame).
+  left: -46,
+  right: -46,
+  top: "24%",
+  bottom: "37%",
 };
 function SlideGlow() {
   return (
     <Svg pointerEvents="none" style={GLOW_BOX} width="100%" height="100%">
       <Defs>
         <RadialGradient id="welcomeGlow" cx="50%" cy="50%" rx="50%" ry="50%">
-          <Stop offset="0" stopColor={GLOW} stopOpacity="0.24" />
-          <Stop offset="0.5" stopColor={GLOW} stopOpacity="0.12" />
+          {/* #4CABFF @ 14% in the centre (Figma), soft falloff to transparent. */}
+          <Stop offset="0" stopColor={GLOW} stopOpacity="0.14" />
+          <Stop offset="0.5" stopColor={GLOW} stopOpacity="0.07" />
           <Stop offset="1" stopColor={GLOW} stopOpacity="0" />
         </RadialGradient>
       </Defs>
