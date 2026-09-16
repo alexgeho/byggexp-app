@@ -97,14 +97,13 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
 
   const canSend = !!draft.trim() && !saving;
 
-  // Thin ring around the send arrow — shared by the iOS keyboard accessory and
-  // the Android focused-only fallback.
-  const sendButton = (
+  // Thin ring around the send arrow. Colours are passed in so the same control
+  // reads correctly on two different surfaces: the light iOS keyboard-accessory
+  // bar (dark idle grey) and the coloured Home card's Android inline fallback
+  // (theme secondary colour). `accent` = active/enabled, `idle` = empty state.
+  const renderSendButton = (accent, idle) => (
     <TouchableOpacity
-      style={[
-        extraStyles.sendBtn,
-        { borderColor: canSend ? styles.linkText.color : secondaryIconColor },
-      ]}
+      style={[extraStyles.sendBtn, { borderColor: canSend ? accent : idle }]}
       onPress={handleSend}
       disabled={!canSend}
       activeOpacity={0.7}
@@ -112,13 +111,9 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
       accessibilityLabel={t("notes.add", "Lägg till anteckning")}
     >
       {saving ? (
-        <ActivityIndicator size="small" color={secondaryIconColor} />
+        <ActivityIndicator size="small" color={idle} />
       ) : (
-        <Icon
-          name="arrow-up"
-          size={16}
-          color={canSend ? styles.linkText.color : secondaryIconColor}
-        />
+        <Icon name="arrow-up" size={16} color={canSend ? accent : idle} />
       )}
     </TouchableOpacity>
   );
@@ -161,7 +156,9 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
             }
             multiline
           />
-          {Platform.OS !== "ios" && focused ? sendButton : null}
+          {Platform.OS !== "ios" && focused
+            ? renderSendButton(styles.linkText.color, secondaryIconColor)
+            : null}
         </View>
 
         {loading ? null : notes.length ? (
@@ -197,7 +194,9 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
 
       {Platform.OS === "ios" ? (
         <InputAccessoryView nativeID={ACCESSORY_ID}>
-          <View style={extraStyles.accessoryBar}>{sendButton}</View>
+          <View style={extraStyles.accessoryBar}>
+            {renderSendButton("#0785F4", "#8E8E93")}
+          </View>
         </InputAccessoryView>
       ) : null}
     </View>

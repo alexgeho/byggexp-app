@@ -216,7 +216,10 @@ export function HomeOnboarding({
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => onChooseFocus?.("skip")}
+            // "Hoppa över" dismisses the whole card (same as ×) — it must NOT
+            // fall through to showing all 8 steps, which breaks the one-choice
+            // focus hierarchy.
+            onPress={onDismiss}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
             <Text style={styles.focusSkip}>

@@ -217,8 +217,12 @@ export function useOnboardingProgress({
   if (focus === "fieldwork") steps = fieldwork;
   else if (focus === "billing") steps = billing;
   else {
+    // No valid focus yet (null) — or a legacy "skip" value persisted by the old
+    // build. ALWAYS show the routing question here; never dump all 8 steps at
+    // once (that broke the focus hierarchy — one clear choice, not a wall). The
+    // "Hoppa över" button now dismisses the card instead of expanding to all.
     steps = [...fieldwork, ...billing];
-    needsFocus = focus == null; // null = question not answered ("skip" shows all)
+    needsFocus = true;
   }
 
   const completed = steps.filter((s) => s.done).length;
