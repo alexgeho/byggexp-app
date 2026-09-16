@@ -280,9 +280,10 @@ export function WelcomeSlides() {
   };
 
   const isLast = index === slides.length - 1;
-  // Light "ghost" CTA on the intermediate admin slides; the final "get started"
-  // slide keeps the solid accent pill so it reads as the primary action.
-  const ghostCta = roleKey === "admin" && !isLast;
+  // Light "ghost" CTA on the intermediate slides; the final "get started" slide
+  // keeps the solid accent pill so it reads as the primary action. Same for
+  // every role.
+  const ghostCta = !isLast;
 
   return (
     <View style={styles.overlay}>
@@ -308,36 +309,21 @@ export function WelcomeSlides() {
         onMomentumScrollEnd={onScrollEnd}
         renderItem={({ item: s }) => {
           const heading = t(`welcome.${roleKey}.slide.${s.key}.title`);
-          const admin = roleKey === "admin";
-          // Admin: the mockup sits at the top of the hero area and the heading is
-          // centred in the gap below it via equal flex spacers. The heading lives
-          // INSIDE heroWrap (which has a definite flex:1 height), not as a sibling
-          // sized off the mockup's measured height — that measurement was what let
-          // the heading ride up onto tall mockups. Spacers collapse to 0 if a
-          // mockup ever fills the area, so overlap is impossible.
+          // The mockup sits at the top of the hero area and the heading is centred
+          // in the gap below it via equal flex spacers (equal gaps above the
+          // mockup, between mockup and heading, and below to the dots). The heading
+          // lives INSIDE heroWrap (definite flex:1 height), not sized off the
+          // mockup's measured height, so it can never ride up onto a tall mockup.
+          // Same treatment for every role (glow / fade / scale / ghost CTA).
           return (
             <View style={[styles.slide, { width }]}>
               <View style={styles.heroWrap}>
-                {admin ? (
-                  // Three equal flex spacers → equal gaps above the mockup (from
-                  // "Skip"), between mockup and heading, and below the heading (to
-                  // the dots). Spacers collapse if a mockup ever fills the area.
-                  <>
-                    <View style={styles.flexSpacer} />
-                    <AdminMock name={s.illustration} styles={styles} />
-                    <View style={styles.flexSpacer} />
-                    <Text style={[styles.title, styles.titleAdmin]}>
-                      {heading}
-                    </Text>
-                    <View style={styles.flexSpacer} />
-                  </>
-                ) : (
-                  <View style={styles.mockWrap}>
-                    <Mockup name={s.illustration} />
-                  </View>
-                )}
+                <View style={styles.flexSpacer} />
+                <AdminMock name={s.illustration} styles={styles} />
+                <View style={styles.flexSpacer} />
+                <Text style={[styles.title, styles.titleAdmin]}>{heading}</Text>
+                <View style={styles.flexSpacer} />
               </View>
-              {admin ? null : <Text style={styles.title}>{heading}</Text>}
             </View>
           );
         }}
