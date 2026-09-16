@@ -1,6 +1,14 @@
-import React, { useEffect, useMemo, useRef } from "react";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { WebView } from "react-native-webview";
+import * as Location from "expo-location";
+import * as Device from "expo-device";
+import Icon from "react-native-vector-icons/Feather";
 
 import { useTheme } from "../../../theme/ThemeContext";
 
@@ -107,9 +115,45 @@ export const LocationMapPicker = ({
 }) => {
   const { theme } = useTheme();
   const webRef = useRef(null);
+  const [locating, setLocating] = useState(false);
   // Coordinate last emitted BY the map, so an incoming prop update that merely
   // echoes our own drag doesn't recenter and fight the user.
   const lastEmittedRef = useRef(null);
+
+  // "Locate me" — drop the pin on the device's current GPS position. Reuses the
+  // same expo-location + emulator-fallback approach as the shift geofence guard;
+  // the resolved coordinate flows through onPickCoordinate, so the parent sets
+  // "Vald plats" (reverse-geocode) and the map recenters via the prop round-trip.
+  const handleLocateMe = async () => {
+    if (locating) {
+      return;
+    }
+    try {
+      setLocating(true);
+      let coord = DEFAULT_CENTER;
+      if (Device.isDevice) {
+        let { status } = await Location.getForegroundPermissionsAsync();
+        if (status !== "granted") {
+          status = (await Location.requestForegroundPermissionsAsync()).status;
+        }
+        if (status !== "granted") {
+          return;
+        }
+        const pos = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Balanced,
+        });
+        coord = {
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+        };
+      }
+      onPickCoordinate?.(coord.latitude, coord.longitude);
+    } catch (error) {
+      console.error("Locate me failed:", error);
+    } finally {
+      setLocating(false);
+    }
+  };
 
   const html = useMemo(
     () =>
@@ -185,6 +229,19 @@ export const LocationMapPicker = ({
         )}
         style={styles.webview}
       />
+
+      <TouchableOpacity
+        style={styles.locateButton}
+        onPress={handleLocateMe}
+        activeOpacity={0.8}
+        accessibilityLabel="Min plats"
+      >
+        {locating ? (
+          <ActivityIndicator size="small" color={theme.colors.primary} />
+        ) : (
+          <Icon name="crosshair" size={20} color={theme.colors.primary} />
+        )}
+      </TouchableOpacity>
     </View>
   );
 };
@@ -204,5 +261,23 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     alignItems: "center",
     justifyContent: "center",
+  },
+  // "Locate me" control over the map, bottom-right (clear of Leaflet's zoom
+  // buttons which sit top-left).
+  locateButton: {
+    position: "absolute",
+    right: 12,
+    bottom: 12,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.18,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
   },
 });
