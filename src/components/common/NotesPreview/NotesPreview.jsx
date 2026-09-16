@@ -20,8 +20,11 @@ import { getDateLocale } from "../../../utils/dateLocale";
 // Reuse the shift-history preview styles for an identical look.
 import { createStyles } from "../ShiftHistoryPreview/ShiftHistoryPreview.styles";
 
-// Links the quick-add / inline-edit TextInputs to their keyboard accessory bar.
-const ACCESSORY_ID = "notesQuickAddAccessory";
+// Each TextInput gets its OWN keyboard-accessory nativeID — iOS is unreliable
+// when several inputs share one InputAccessoryView (the bar fails to move to the
+// second input), which made the send ring vanish while editing a note.
+const ACCESSORY_NEW = "notesQuickAddAccessory";
+const ACCESSORY_EDIT = "notesEditAccessory";
 
 const noteText = (note) => (note?.body || note?.title || "").trim();
 
@@ -138,11 +141,15 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
     : !!draft.trim();
   const commit = isEditing ? saveEdit : handleSend;
 
-  // Thin ring around the send arrow — shared by the iOS keyboard accessory and
-  // the Android focused-only fallback. `accent` = enabled, `idle` = empty state.
-  const renderSendButton = (accent, idle) => (
+  // Ring around the send arrow — shared by the iOS keyboard accessory and the
+  // Android focused-only fallback. `accent` = enabled, `idle` = empty state.
+  // `big` gives the larger white ring used on the keyboard accessory.
+  const renderSendButton = (accent, idle, big = false) => (
     <TouchableOpacity
-      style={[extraStyles.sendBtn, { borderColor: canSend ? accent : idle }]}
+      style={[
+        big ? extraStyles.sendBtnBig : extraStyles.sendBtn,
+        { borderColor: canSend ? accent : idle },
+      ]}
       onPress={commit}
       disabled={!canSend}
       activeOpacity={0.7}
@@ -152,7 +159,11 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
       {saving ? (
         <ActivityIndicator size="small" color={idle} />
       ) : (
-        <Icon name="arrow-up" size={16} color={canSend ? accent : idle} />
+        <Icon
+          name="arrow-up"
+          size={big ? 24 : 16}
+          color={canSend ? accent : idle}
+        />
       )}
     </TouchableOpacity>
   );
@@ -189,7 +200,7 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
             }
             placeholderTextColor={styles.emptyText.color}
             inputAccessoryViewID={
-              Platform.OS === "ios" ? ACCESSORY_ID : undefined
+              Platform.OS === "ios" ? ACCESSORY_NEW : undefined
             }
             multiline
           />
@@ -227,7 +238,7 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
                       onBlur={saveEdit}
                       placeholderTextColor={styles.emptyText.color}
                       inputAccessoryViewID={
-                        Platform.OS === "ios" ? ACCESSORY_ID : undefined
+                        Platform.OS === "ios" ? ACCESSORY_EDIT : undefined
                       }
                       autoFocus
                       multiline
@@ -251,11 +262,18 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
       </View>
 
       {Platform.OS === "ios" ? (
-        <InputAccessoryView nativeID={ACCESSORY_ID}>
-          <View style={extraStyles.accessoryBar}>
-            {renderSendButton("#0785F4", "#8E8E93")}
-          </View>
-        </InputAccessoryView>
+        <>
+          <InputAccessoryView nativeID={ACCESSORY_NEW}>
+            <View style={extraStyles.accessoryBar}>
+              {renderSendButton("#FFFFFF", "rgba(255,255,255,0.5)", true)}
+            </View>
+          </InputAccessoryView>
+          <InputAccessoryView nativeID={ACCESSORY_EDIT}>
+            <View style={extraStyles.accessoryBar}>
+              {renderSendButton("#FFFFFF", "rgba(255,255,255,0.5)", true)}
+            </View>
+          </InputAccessoryView>
+        </>
       ) : null}
     </View>
   );
@@ -297,6 +315,16 @@ const extraStyles = StyleSheet.create({
     justifyContent: "center",
     marginRight: 14,
   },
+  // Larger white ring for the keyboard accessory — visible on the coloured home.
+  sendBtnBig: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 2,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 14,
+  },
   // Sits above the keyboard (iOS). Transparent + slim so it reads as just the
   // send ring floating over the keyboard, not a thick white bar.
   accessoryBar: {
@@ -304,7 +332,7 @@ const extraStyles = StyleSheet.create({
     justifyContent: "flex-end",
     alignItems: "center",
     paddingHorizontal: 12,
-    paddingVertical: 4,
+    paddingVertical: 6,
     backgroundColor: "transparent",
   },
   listBelow: {
