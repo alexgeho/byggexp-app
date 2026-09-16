@@ -170,6 +170,22 @@ export default function ShiftsScreen() {
 
   const currentUserId = user?.id || user?._id || null;
 
+  // Admins default the people filter to THEMSELVES (once), so the Manuell tab
+  // opens ready to log their own hours — a tap on a day enters hours right away
+  // instead of requiring them to first pick themselves out of "Alla anställda".
+  // They can still switch the filter to a colleague or "all" afterwards; the
+  // one-shot guard means that manual change is never overridden.
+  const didInitPeopleFilterRef = useRef(false);
+  useEffect(() => {
+    if (didInitPeopleFilterRef.current) return;
+    if (isAdmin && currentUserId) {
+      setFilterWorkerIds([currentUserId]);
+      didInitPeopleFilterRef.current = true;
+    } else if (isAdmin === false) {
+      didInitPeopleFilterRef.current = true;
+    }
+  }, [isAdmin, currentUserId]);
+
   // Manual hours attach ONLY to the explicitly selected project (app-wide
   // selectedProject) — never a silent projects[0] fallback, which let hours be
   // logged to a project the worker never chose. Null here means "no project
