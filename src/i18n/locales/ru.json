@@ -738,7 +738,8 @@
     "sections": {
       "shift-history": "Дневной отчёт",
       "project-files": "Файлы проекта",
-      "tasks-history": "Задачи"
+      "tasks-history": "Задачи",
+      "notes": "Заметки"
     },
     "customizeTitle": "Настроить",
     "projectDocumentsTitle": "Документы проекта",
@@ -1498,5 +1499,23 @@
     "emptyList": "Пока нет клиентов.",
     "companyNameRequired": "Введите название компании",
     "nameRequired": "Введите имя и фамилию"
+  },
+  "notes": {
+    "title": "Заметки",
+    "untitled": "Без названия",
+    "emptyTitle": "Заметок пока нет",
+    "emptySubtitle": "Создайте первую заметку.",
+    "newTitle": "Новая заметка",
+    "editTitle": "Заметка",
+    "titlePlaceholder": "Заголовок",
+    "bodyPlaceholder": "Напишите заметку…",
+    "delete": "Удалить заметку",
+    "deleteTitle": "Удалить заметку?",
+    "loadError": "Не удалось загрузить заметку.",
+    "saveError": "Не удалось сохранить заметку.",
+    "deleteError": "Не удалось удалить заметку."
+  },
+  "notesPreview": {
+    "empty": "Заметок пока нет"
   }
 }

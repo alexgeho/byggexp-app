@@ -738,7 +738,8 @@
     "sections": {
       "shift-history": "Päiväraportti",
       "project-files": "Projektitiedostot",
-      "tasks-history": "Tehtävät"
+      "tasks-history": "Tehtävät",
+      "notes": "Muistiinpanot"
     },
     "customizeTitle": "Mukauta",
     "projectDocumentsTitle": "Projektin asiakirjat",
@@ -1498,5 +1499,23 @@
     "emptyList": "Ei vielä asiakkaita.",
     "companyNameRequired": "Anna yrityksen nimi",
     "nameRequired": "Anna etu- ja sukunimi"
+  },
+  "notes": {
+    "title": "Muistiinpanot",
+    "untitled": "Nimetön muistiinpano",
+    "emptyTitle": "Ei muistiinpanoja vielä",
+    "emptySubtitle": "Luo ensimmäinen muistiinpano.",
+    "newTitle": "Uusi muistiinpano",
+    "editTitle": "Muistiinpano",
+    "titlePlaceholder": "Otsikko",
+    "bodyPlaceholder": "Kirjoita muistiinpano…",
+    "delete": "Poista muistiinpano",
+    "deleteTitle": "Poistetaanko muistiinpano?",
+    "loadError": "Muistiinpanon lataus epäonnistui.",
+    "saveError": "Muistiinpanon tallennus epäonnistui.",
+    "deleteError": "Muistiinpanon poisto epäonnistui."
+  },
+  "notesPreview": {
+    "empty": "Ei muistiinpanoja vielä"
   }
 }

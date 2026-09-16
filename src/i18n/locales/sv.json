@@ -738,7 +738,8 @@
     "sections": {
       "shift-history": "Dagsrapport",
       "project-files": "Projektfiler",
-      "tasks-history": "Uppgifter"
+      "tasks-history": "Uppgifter",
+      "notes": "Anteckningar"
     },
     "customizeTitle": "Anpassa",
     "projectDocumentsTitle": "Projektdokument",
@@ -1498,5 +1499,23 @@
     "emptyList": "Inga klienter än.",
     "companyNameRequired": "Ange företagsnamn",
     "nameRequired": "Ange för- och efternamn"
+  },
+  "notes": {
+    "title": "Anteckningar",
+    "untitled": "Namnlös anteckning",
+    "emptyTitle": "Inga anteckningar än",
+    "emptySubtitle": "Skapa din första anteckning.",
+    "newTitle": "Ny anteckning",
+    "editTitle": "Anteckning",
+    "titlePlaceholder": "Titel",
+    "bodyPlaceholder": "Skriv en anteckning…",
+    "delete": "Ta bort anteckning",
+    "deleteTitle": "Ta bort anteckning?",
+    "loadError": "Kunde inte ladda anteckningen.",
+    "saveError": "Kunde inte spara anteckningen.",
+    "deleteError": "Kunde inte ta bort anteckningen."
+  },
+  "notesPreview": {
+    "empty": "Inga anteckningar än"
   }
 }

@@ -738,7 +738,8 @@
     "sections": {
       "shift-history": "Päevaraport",
       "project-files": "Projekti failid",
-      "tasks-history": "Ülesanded"
+      "tasks-history": "Ülesanded",
+      "notes": "Märkmed"
     },
     "customizeTitle": "Kohanda",
     "projectDocumentsTitle": "Projekti dokumendid",
@@ -1498,5 +1499,23 @@
     "emptyList": "Kliente pole veel.",
     "companyNameRequired": "Sisesta ettevõtte nimi",
     "nameRequired": "Sisesta ees- ja perekonnanimi"
+  },
+  "notes": {
+    "title": "Märkmed",
+    "untitled": "Pealkirjata märge",
+    "emptyTitle": "Märkmeid veel pole",
+    "emptySubtitle": "Loo oma esimene märge.",
+    "newTitle": "Uus märge",
+    "editTitle": "Märge",
+    "titlePlaceholder": "Pealkiri",
+    "bodyPlaceholder": "Kirjuta märge…",
+    "delete": "Kustuta märge",
+    "deleteTitle": "Kustutada märge?",
+    "loadError": "Märkme laadimine ebaõnnestus.",
+    "saveError": "Märkme salvestamine ebaõnnestus.",
+    "deleteError": "Märkme kustutamine ebaõnnestus."
+  },
+  "notesPreview": {
+    "empty": "Märkmeid veel pole"
   }
 }

@@ -738,7 +738,8 @@
     "sections": {
       "shift-history": "Daily report",
       "project-files": "Project Files",
-      "tasks-history": "Tasks"
+      "tasks-history": "Tasks",
+      "notes": "Notes"
     },
     "customizeTitle": "Customize",
     "projectDocumentsTitle": "Project Documents",
@@ -1498,5 +1499,23 @@
     "emptyList": "No clients yet.",
     "companyNameRequired": "Enter a company name",
     "nameRequired": "Enter first and last name"
+  },
+  "notes": {
+    "title": "Notes",
+    "untitled": "Untitled note",
+    "emptyTitle": "No notes yet",
+    "emptySubtitle": "Create your first note.",
+    "newTitle": "New note",
+    "editTitle": "Note",
+    "titlePlaceholder": "Title",
+    "bodyPlaceholder": "Write a note…",
+    "delete": "Delete note",
+    "deleteTitle": "Delete note?",
+    "loadError": "Couldn't load the note.",
+    "saveError": "Couldn't save the note.",
+    "deleteError": "Couldn't delete the note."
+  },
+  "notesPreview": {
+    "empty": "No notes yet"
   }
 }

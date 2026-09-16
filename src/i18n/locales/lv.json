@@ -738,7 +738,8 @@
     "sections": {
       "shift-history": "Dienas atskaite",
       "project-files": "Projekta faili",
-      "tasks-history": "Uzdevumi"
+      "tasks-history": "Uzdevumi",
+      "notes": "Piezīmes"
     },
     "customizeTitle": "Pielāgot",
     "projectDocumentsTitle": "Projekta dokumenti",
@@ -1498,5 +1499,23 @@
     "emptyList": "Vēl nav klientu.",
     "companyNameRequired": "Ievadiet uzņēmuma nosaukumu",
     "nameRequired": "Ievadiet vārdu un uzvārdu"
+  },
+  "notes": {
+    "title": "Piezīmes",
+    "untitled": "Piezīme bez nosaukuma",
+    "emptyTitle": "Vēl nav piezīmju",
+    "emptySubtitle": "Izveidojiet savu pirmo piezīmi.",
+    "newTitle": "Jauna piezīme",
+    "editTitle": "Piezīme",
+    "titlePlaceholder": "Nosaukums",
+    "bodyPlaceholder": "Rakstiet piezīmi…",
+    "delete": "Dzēst piezīmi",
+    "deleteTitle": "Dzēst piezīmi?",
+    "loadError": "Neizdevās ielādēt piezīmi.",
+    "saveError": "Neizdevās saglabāt piezīmi.",
+    "deleteError": "Neizdevās izdzēst piezīmi."
+  },
+  "notesPreview": {
+    "empty": "Vēl nav piezīmju"
   }
 }

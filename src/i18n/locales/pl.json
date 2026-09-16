@@ -738,7 +738,8 @@
     "sections": {
       "shift-history": "Raport dzienny",
       "project-files": "Pliki projektu",
-      "tasks-history": "Zadania"
+      "tasks-history": "Zadania",
+      "notes": "Notatki"
     },
     "customizeTitle": "Dostosuj",
     "projectDocumentsTitle": "Dokumenty projektu",
@@ -1498,5 +1499,23 @@
     "emptyList": "Brak klientów.",
     "companyNameRequired": "Podaj nazwę firmy",
     "nameRequired": "Podaj imię i nazwisko"
+  },
+  "notes": {
+    "title": "Notatki",
+    "untitled": "Notatka bez tytułu",
+    "emptyTitle": "Brak notatek",
+    "emptySubtitle": "Utwórz pierwszą notatkę.",
+    "newTitle": "Nowa notatka",
+    "editTitle": "Notatka",
+    "titlePlaceholder": "Tytuł",
+    "bodyPlaceholder": "Napisz notatkę…",
+    "delete": "Usuń notatkę",
+    "deleteTitle": "Usunąć notatkę?",
+    "loadError": "Nie udało się załadować notatki.",
+    "saveError": "Nie udało się zapisać notatki.",
+    "deleteError": "Nie udało się usunąć notatki."
+  },
+  "notesPreview": {
+    "empty": "Brak notatek"
   }
 }

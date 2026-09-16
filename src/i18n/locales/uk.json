@@ -738,7 +738,8 @@
     "sections": {
       "shift-history": "Денний звіт",
       "project-files": "Файли проєкту",
-      "tasks-history": "Завдання"
+      "tasks-history": "Завдання",
+      "notes": "Нотатки"
     },
     "customizeTitle": "Налаштувати",
     "projectDocumentsTitle": "Документи проєкту",
@@ -1498,5 +1499,23 @@
     "emptyList": "Поки що немає клієнтів.",
     "companyNameRequired": "Введіть назву компанії",
     "nameRequired": "Введіть ім'я та прізвище"
+  },
+  "notes": {
+    "title": "Нотатки",
+    "untitled": "Нотатка без назви",
+    "emptyTitle": "Нотаток ще немає",
+    "emptySubtitle": "Створіть першу нотатку.",
+    "newTitle": "Нова нотатка",
+    "editTitle": "Нотатка",
+    "titlePlaceholder": "Заголовок",
+    "bodyPlaceholder": "Напишіть нотатку…",
+    "delete": "Видалити нотатку",
+    "deleteTitle": "Видалити нотатку?",
+    "loadError": "Не вдалося завантажити нотатку.",
+    "saveError": "Не вдалося зберегти нотатку.",
+    "deleteError": "Не вдалося видалити нотатку."
+  },
+  "notesPreview": {
+    "empty": "Нотаток ще немає"
   }
 }

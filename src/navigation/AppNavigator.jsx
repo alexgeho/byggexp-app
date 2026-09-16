@@ -244,6 +244,18 @@ export default function AppNavigator() {
               }
             />
             <Stack.Screen
+              name="Notes"
+              getComponent={() =>
+                require("../screens/Menu/NotesScreen").default
+              }
+            />
+            <Stack.Screen
+              name="CreateNote"
+              getComponent={() =>
+                require("../screens/Menu/CreateNoteScreen").default
+              }
+            />
+            <Stack.Screen
               name="ToolScan"
               getComponent={() =>
                 require("../screens/Menu/ToolScanScreen").default

@@ -63,6 +63,7 @@ import { MainActionButtons } from "../../../components/common/mainActionButtons/
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 
 import ProjectFilesSection from "../../../components/common/ProjectFilesSection/ProjectFilesSection";
+import NotesPreview from "../../../components/common/NotesPreview/NotesPreview";
 import MainButtonsGrid from "../../../components/common/NavButtonsGrid/MainButtonsGrid";
 import CustomizeHomeScreen from "../../Menu/CustomizeHomeScreen";
 import {
@@ -846,6 +847,17 @@ export default function HomeVariant2() {
               colorMode={colorMode}
               refreshKey={previewRefreshKey}
               onClose={() => handleHideSection("project-files")}
+            />
+          );
+        }
+
+        if (sectionId === "notes") {
+          return (
+            <NotesPreview
+              key={sectionId}
+              colorMode={colorMode}
+              refreshKey={previewRefreshKey}
+              onClose={() => handleHideSection("notes")}
             />
           );
         }

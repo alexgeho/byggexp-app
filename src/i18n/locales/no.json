@@ -738,7 +738,8 @@
     "sections": {
       "shift-history": "Dagsrapport",
       "project-files": "Prosjektfiler",
-      "tasks-history": "Oppgaver"
+      "tasks-history": "Oppgaver",
+      "notes": "Notater"
     },
     "customizeTitle": "Tilpass",
     "projectDocumentsTitle": "Prosjektdokumenter",
@@ -1498,5 +1499,23 @@
     "emptyList": "Ingen klienter ennå.",
     "companyNameRequired": "Angi firmanavn",
     "nameRequired": "Angi for- og etternavn"
+  },
+  "notes": {
+    "title": "Notater",
+    "untitled": "Notat uten tittel",
+    "emptyTitle": "Ingen notater ennå",
+    "emptySubtitle": "Opprett ditt første notat.",
+    "newTitle": "Nytt notat",
+    "editTitle": "Notat",
+    "titlePlaceholder": "Tittel",
+    "bodyPlaceholder": "Skriv et notat…",
+    "delete": "Slett notat",
+    "deleteTitle": "Slette notat?",
+    "loadError": "Kunne ikke laste notatet.",
+    "saveError": "Kunne ikke lagre notatet.",
+    "deleteError": "Kunne ikke slette notatet."
+  },
+  "notesPreview": {
+    "empty": "Ingen notater ennå"
   }
 }

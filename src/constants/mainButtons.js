@@ -60,6 +60,10 @@ export const homeSections = [
     id: "project-files",
     title: "Project Files",
   },
+  {
+    id: "notes",
+    title: "Notes",
+  },
 ];
 
 // Admin default: everything on (admins curate their own home). This is also the
@@ -78,6 +82,7 @@ export const defaultEnabledSections = [
   "shift-history",
   "tasks-history",
   "project-files",
+  "notes",
 ];
 
 // Worker default: a lean home — Play + Camera round buttons (Camera is the
@@ -86,7 +91,7 @@ export const defaultEnabledSections = [
 // rest from Customize.
 export const workerDefaultEnabledButtons = ["shifts", "tasks"];
 
-export const workerDefaultEnabledSections = ["project-files"];
+export const workerDefaultEnabledSections = ["project-files", "notes"];
 
 // Role-tailored first-launch defaults. Workers get the lean set above; every
 // other role (the admins) gets the full set. Kept here (not in storage) so the

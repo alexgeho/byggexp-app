@@ -15,6 +15,7 @@ export { offerService } from "./offer.service";
 export { invoiceService } from "./invoice.service";
 export { projectFinanceService } from "./project-finance.service";
 export { clientService } from "./client.service";
+export { notesService } from "./notes.service";
 export { logUserActivity } from "./user-activity.service";
 
 export { default as authApi } from "./auth.service";

@@ -738,7 +738,8 @@
     "sections": {
       "shift-history": "Dnevni izvještaj",
       "project-files": "Datoteke projekta",
-      "tasks-history": "Zadaci"
+      "tasks-history": "Zadaci",
+      "notes": "Bilješke"
     },
     "customizeTitle": "Prilagodi",
     "projectDocumentsTitle": "Dokumenti projekta",
@@ -1498,5 +1499,23 @@
     "emptyList": "Još nema klijenata.",
     "companyNameRequired": "Unesite naziv firme",
     "nameRequired": "Unesite ime i prezime"
+  },
+  "notes": {
+    "title": "Bilješke",
+    "untitled": "Bilješka bez naslova",
+    "emptyTitle": "Još nema bilješki",
+    "emptySubtitle": "Napravite svoju prvu bilješku.",
+    "newTitle": "Nova bilješka",
+    "editTitle": "Bilješka",
+    "titlePlaceholder": "Naslov",
+    "bodyPlaceholder": "Napišite bilješku…",
+    "delete": "Obriši bilješku",
+    "deleteTitle": "Obrisati bilješku?",
+    "loadError": "Nije moguće učitati bilješku.",
+    "saveError": "Nije moguće sačuvati bilješku.",
+    "deleteError": "Nije moguće obrisati bilješku."
+  },
+  "notesPreview": {
+    "empty": "Još nema bilješki"
   }
 }

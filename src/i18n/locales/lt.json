@@ -738,7 +738,8 @@
     "sections": {
       "shift-history": "Dienos ataskaita",
       "project-files": "Projekto failai",
-      "tasks-history": "Užduotys"
+      "tasks-history": "Užduotys",
+      "notes": "Užrašai"
     },
     "customizeTitle": "Pritaikyti",
     "projectDocumentsTitle": "Projekto dokumentai",
@@ -1498,5 +1499,23 @@
     "emptyList": "Dar nėra klientų.",
     "companyNameRequired": "Įveskite įmonės pavadinimą",
     "nameRequired": "Įveskite vardą ir pavardę"
+  },
+  "notes": {
+    "title": "Užrašai",
+    "untitled": "Užrašas be pavadinimo",
+    "emptyTitle": "Užrašų dar nėra",
+    "emptySubtitle": "Sukurkite pirmą užrašą.",
+    "newTitle": "Naujas užrašas",
+    "editTitle": "Užrašas",
+    "titlePlaceholder": "Pavadinimas",
+    "bodyPlaceholder": "Rašykite užrašą…",
+    "delete": "Ištrinti užrašą",
+    "deleteTitle": "Ištrinti užrašą?",
+    "loadError": "Nepavyko įkelti užrašo.",
+    "saveError": "Nepavyko išsaugoti užrašo.",
+    "deleteError": "Nepavyko ištrinti užrašo."
+  },
+  "notesPreview": {
+    "empty": "Užrašų dar nėra"
   }
 }
