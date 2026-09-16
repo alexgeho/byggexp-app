@@ -57,6 +57,9 @@ export function HomeOnboarding({
   const styles = useMemo(() => createStyles(theme, onDark), [theme, onDark]);
 
   const accent = theme.colors.primary;
+  // Foreground for the focus/footer buttons: white on the coloured "glass" home,
+  // brand accent on light homes.
+  const btnFg = onDark ? "#FFFFFF" : accent;
   // On the glass (onDark) card everything is white; the completed check sits on
   // a white disc so it uses the blue accent instead of the success green.
   const onGlassText = onDark ? "#FFFFFF" : theme.content.textMuted;
@@ -197,8 +200,8 @@ export function HomeOnboarding({
             activeOpacity={0.85}
             onPress={() => onChooseFocus?.("fieldwork")}
           >
-            <Icon name="folder" size={16} color={accent} />
-            <Text style={[styles.focusBtnText, { color: accent }]}>
+            <Icon name="folder" size={16} color={btnFg} />
+            <Text style={[styles.focusBtnText, { color: btnFg }]}>
               {t("onboarding.focus.fieldwork", "Hantera projekt och team")}
             </Text>
           </TouchableOpacity>
@@ -207,8 +210,8 @@ export function HomeOnboarding({
             activeOpacity={0.85}
             onPress={() => onChooseFocus?.("billing")}
           >
-            <Icon name="file-text" size={16} color={accent} />
-            <Text style={[styles.focusBtnText, { color: accent }]}>
+            <Icon name="file-text" size={16} color={btnFg} />
+            <Text style={[styles.focusBtnText, { color: btnFg }]}>
               {t("onboarding.focus.billing", "Skicka offert eller faktura")}
             </Text>
           </TouchableOpacity>
@@ -321,14 +324,14 @@ export function HomeOnboarding({
           <Icon
             name={otherFocus === "billing" ? "file-text" : "folder"}
             size={16}
-            color={accent}
+            color={btnFg}
           />
-          <Text style={[styles.footerCtaText, { color: accent }]}>
+          <Text style={[styles.footerCtaText, { color: btnFg }]}>
             {otherFocus === "billing"
               ? t("onboarding.focus.billing", "Skicka offert eller faktura")
               : t("onboarding.focus.fieldwork", "Hantera projekt och team")}
           </Text>
-          <Icon name="chevron-right" size={18} color={accent} />
+          <Icon name="chevron-right" size={18} color={btnFg} />
         </TouchableOpacity>
       ) : null}
 

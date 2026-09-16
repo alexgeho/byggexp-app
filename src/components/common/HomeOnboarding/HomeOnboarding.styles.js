@@ -11,9 +11,9 @@ export function createStyles(theme, onDark = false) {
   // White-on-glass palette for the coloured-home variant.
   const g = {
     text: "#FFFFFF",
-    textDim: "rgba(255,255,255,0.62)",
+    textDim: "rgba(255,255,255,0.78)",
     line: "rgba(255,255,255,0.65)",
-    done: "rgba(255,255,255,0.50)",
+    done: "rgba(255,255,255,0.55)",
   };
   return StyleSheet.create({
     // ~90% opaque surface (10% transparent) so the card blends slightly into the
@@ -54,7 +54,7 @@ export function createStyles(theme, onDark = false) {
       gap: 2,
     },
     title: {
-      color: c.textPrimary,
+      color: onDark ? g.text : c.textPrimary,
       fontSize: 18,
       fontFamily: theme.text.fontFamily.semiBold,
     },
@@ -157,8 +157,8 @@ export function createStyles(theme, onDark = false) {
       paddingVertical: 13,
       borderRadius: 14,
       borderWidth: 1.5,
-      borderColor: c.accentSoft,
-      backgroundColor: c.accentSoft,
+      borderColor: onDark ? "rgba(255,255,255,0.45)" : c.accentSoft,
+      backgroundColor: onDark ? "rgba(255,255,255,0.14)" : c.accentSoft,
     },
     footerCtaText: {
       fontSize: 15,
@@ -177,8 +177,8 @@ export function createStyles(theme, onDark = false) {
       paddingVertical: 13,
       borderRadius: 14,
       borderWidth: 1.5,
-      borderColor: c.accentSoft,
-      backgroundColor: c.accentSoft,
+      borderColor: onDark ? "rgba(255,255,255,0.45)" : c.accentSoft,
+      backgroundColor: onDark ? "rgba(255,255,255,0.14)" : c.accentSoft,
     },
     focusBtnText: {
       fontSize: 16,
@@ -186,14 +186,14 @@ export function createStyles(theme, onDark = false) {
     },
     focusSkip: {
       textAlign: "center",
-      color: c.textMuted,
+      color: onDark ? g.text : c.textMuted,
       fontSize: 16,
       fontFamily: theme.text.fontFamily.medium,
       paddingVertical: 4,
     },
     changeFocus: {
       textAlign: "center",
-      color: c.textMuted,
+      color: onDark ? g.text : c.textMuted,
       fontSize: 13,
       fontFamily: theme.text.fontFamily.medium,
       marginTop: 2,
