@@ -46,7 +46,7 @@ const { width } = Dimensions.get("window");
 const GLOW = "#4CABFF";
 // Per-orb opacity — kept faint; two overlapping discs stack a little higher.
 const GLOW_ORB_OPACITY = 0.08;
-const GLOW_ORB_R_RATIO = 0.15; // orb radius as a fraction of the mockup width
+const GLOW_ORB_R_RATIO = 0.25; // orb radius as a fraction of the mockup width
 const GLOW_ORB_BLUR_RATIO = 0.16; // blur (stdDeviation) as a fraction of width
 const GLOW_DRIFT_X_RATIO = 0.12; // horizontal wander amplitude (× width)
 const GLOW_DRIFT_Y_RATIO = 0.12; // vertical wander amplitude (× height)
