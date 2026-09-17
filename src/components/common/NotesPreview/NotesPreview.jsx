@@ -339,7 +339,9 @@ export function NotesPreview({
             submitBehavior="newline"
           />
           {Platform.OS !== "ios" && focused && !isEditing
-            ? renderSendButton(styles.linkText.color, secondaryIconColor)
+            ? // Same ring as the inline editor (big, themed) so the quick-add and
+              // edit send buttons look identical on Android.
+              renderSendButton(ringAccent, ringIdle, true)
             : null}
         </View>
 
