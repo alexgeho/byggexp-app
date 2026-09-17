@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   InputAccessoryView,
   Platform,
   ScrollView,
@@ -106,6 +107,44 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
     setEditingId(note._id || note.id);
     setEditDraft(noteText(note));
   };
+
+  // Delete a note. Confirmed first so a stray tap can't wipe it.
+  const handleDelete = useCallback(
+    async (id) => {
+      if (id == null || saving) {
+        return;
+      }
+      try {
+        setSaving(true);
+        await notesService.remove(id);
+        if (editingId === id) {
+          setEditingId(null);
+          setEditDraft("");
+        }
+        await load();
+      } catch (error) {
+        console.error("Failed to delete note:", error);
+      } finally {
+        setSaving(false);
+      }
+    },
+    [editingId, saving, load],
+  );
+
+  const confirmDelete = useCallback(
+    (note) => {
+      const id = note._id || note.id;
+      Alert.alert(t("notes.deleteTitle", "Ta bort anteckning?"), undefined, [
+        { text: t("common.cancel", "Avbryt"), style: "cancel" },
+        {
+          text: t("notes.delete", "Ta bort anteckning"),
+          style: "destructive",
+          onPress: () => handleDelete(id),
+        },
+      ]);
+    },
+    [t, handleDelete],
+  );
 
   // Save the inline edit — called on blur and from the keyboard send button.
   // No-ops if unchanged/empty so tapping away without edits just closes it.
@@ -217,11 +256,9 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
             inputAccessoryViewID={
               Platform.OS === "ios" ? ACCESSORY_NEW : undefined
             }
-            // Enter SENDS the note (no newline growth that would push the cursor
-            // under the keyboard); keep the keyboard up so you can add another.
-            returnKeyType="send"
-            onSubmitEditing={handleSend}
-            blurOnSubmit={false}
+            // Enter inserts a newline (multiline); the note is sent only via the
+            // send ring (keyboard accessory on iOS, inline ring on Android).
+            multiline
           />
           {Platform.OS !== "ios" && focused && !isEditing
             ? renderSendButton(styles.linkText.color, secondaryIconColor)
@@ -258,8 +295,9 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
                         onChangeText={setEditDraft}
                         onBlur={saveEdit}
                         placeholderTextColor={styles.emptyText.color}
-                        returnKeyType="done"
-                        onSubmitEditing={saveEdit}
+                        // Enter inserts a newline; save via the ring or by
+                        // tapping away (onBlur).
+                        multiline
                         autoFocus
                       />
                       {/* Send lives right here in the row while editing (the
@@ -267,15 +305,30 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
                       {renderSendButton(ringAccent, ringIdle, true)}
                     </View>
                   ) : (
-                    // Tap a note to edit it in place — no navigation.
-                    <TouchableOpacity
-                      activeOpacity={0.6}
-                      onPress={() => startEdit(note)}
-                    >
-                      <Text style={styles.projectText} numberOfLines={2}>
-                        {noteText(note) || t("notes.untitled")}
-                      </Text>
-                    </TouchableOpacity>
+                    // Tap the text to edit in place; tap the trash to delete.
+                    <View style={extraStyles.noteRow}>
+                      <TouchableOpacity
+                        style={extraStyles.noteTextWrap}
+                        activeOpacity={0.6}
+                        onPress={() => startEdit(note)}
+                      >
+                        <Text style={styles.projectText} numberOfLines={2}>
+                          {noteText(note) || t("notes.untitled")}
+                        </Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={extraStyles.deleteBtn}
+                        onPress={() => confirmDelete(note)}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        accessibilityLabel={t("notes.delete", "Ta bort")}
+                      >
+                        <Icon
+                          name="trash-2"
+                          size={16}
+                          color={secondaryIconColor}
+                        />
+                      </TouchableOpacity>
+                    </View>
                   )}
                 </View>
               );
@@ -363,6 +416,19 @@ const extraStyles = StyleSheet.create({
   },
   item: {
     gap: 4,
+  },
+  // Note text + trash side by side; text takes the room, trash sits at the end.
+  noteRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 8,
+  },
+  noteTextWrap: {
+    flex: 1,
+  },
+  deleteBtn: {
+    paddingTop: 1,
+    marginRight: 4,
   },
 });
 
