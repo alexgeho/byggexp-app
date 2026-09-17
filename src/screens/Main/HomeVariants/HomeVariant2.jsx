@@ -323,6 +323,12 @@ export default function HomeVariant2() {
   // covered. Scroll to the end when a notes input focuses to lift it above the
   // keyboard. iOS already handles this via the inset prop, so no-op there.
   const scrollNotesIntoView = useCallback(() => {
+    console.log(
+      "[notes-kbd] focus os=",
+      Platform.OS,
+      "ref=",
+      !!scrollRef.current,
+    );
     if (Platform.OS !== "android") {
       return;
     }
@@ -330,11 +336,21 @@ export default function HomeVariant2() {
     // a fixed setTimeout fires too early (before adjustResize shrinks the view)
     // and the scroll gets undone. keyboardDidShow guarantees correct timing.
     const sub = Keyboard.addListener("keyboardDidShow", () => {
+      console.log(
+        "[notes-kbd] keyboardDidShow -> scrollToEnd, ref=",
+        !!scrollRef.current,
+      );
       scrollRef.current?.scrollToEnd?.({ animated: true });
       sub.remove();
     });
     // Fallback: keyboard was already open, so no event fires.
-    setTimeout(() => scrollRef.current?.scrollToEnd?.({ animated: true }), 350);
+    setTimeout(() => {
+      console.log(
+        "[notes-kbd] fallback scrollToEnd, ref=",
+        !!scrollRef.current,
+      );
+      scrollRef.current?.scrollToEnd?.({ animated: true });
+    }, 350);
   }, []);
 
   // Live preview: the customize drawer pushes each config change straight into
