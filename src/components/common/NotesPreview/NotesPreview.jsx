@@ -243,8 +243,10 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
               onChangeText={setEditDraft}
               onBlur={saveEdit}
               placeholderTextColor={styles.emptyText.color}
-              // Enter inserts a newline; save via the ring or by tapping away.
+              // Enter inserts a newline and keeps the field open (submitBehavior
+              // "newline"); save via the ring or by tapping away.
               multiline
+              submitBehavior="newline"
               autoFocus
             />
             {/* Send lives right here in the row while editing (the keyboard
@@ -311,9 +313,11 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
             inputAccessoryViewID={
               Platform.OS === "ios" ? ACCESSORY_NEW : undefined
             }
-            // Enter inserts a newline (multiline); the note is sent only via the
-            // send ring (keyboard accessory on iOS, inline ring on Android).
+            // Enter inserts a newline and keeps the field open (submitBehavior
+            // "newline"); the note is sent only via the send ring (keyboard
+            // accessory on iOS, inline ring on Android).
             multiline
+            submitBehavior="newline"
           />
           {Platform.OS !== "ios" && focused && !isEditing
             ? renderSendButton(styles.linkText.color, secondaryIconColor)
