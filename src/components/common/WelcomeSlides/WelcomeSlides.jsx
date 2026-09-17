@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   StatusBar,
   DeviceEventEmitter,
+  Animated,
+  Easing,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTranslation } from "react-i18next";
@@ -65,6 +67,40 @@ const GLOW_BOX = {
 };
 function SlideGlow() {
   const [w, setW] = useState(0);
+  // Slow ambient drift — the glow wanders like a living gradient (à la the bank
+  // welcome screen). Two loops with DIFFERENT periods on X and Y so the path is
+  // an organic wander, not a straight back-and-forth. Native driver → runs on
+  // the UI thread, no JS cost.
+  const driftX = useRef(new Animated.Value(0)).current;
+  const driftY = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    const loop = (val, duration) =>
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(val, {
+            toValue: 1,
+            duration,
+            easing: Easing.inOut(Easing.sin),
+            useNativeDriver: true,
+          }),
+          Animated.timing(val, {
+            toValue: 0,
+            duration,
+            easing: Easing.inOut(Easing.sin),
+            useNativeDriver: true,
+          }),
+        ]),
+      );
+    const ax = loop(driftX, 5200);
+    const ay = loop(driftY, 6800);
+    ax.start();
+    ay.start();
+    return () => {
+      ax.stop();
+      ay.stop();
+    };
+  }, [driftX, driftY]);
+
   // Derive the ellipse + blur from the measured mockup width (Figma ratios).
   const rx = (w * GLOW_W_RATIO) / 2;
   const ry = rx * GLOW_H_RATIO;
@@ -72,6 +108,17 @@ function SlideGlow() {
   const pad = sigma * 3.5; // room around the ellipse for the soft blurred edge
   const svgW = rx * 2 + pad * 2;
   const svgH = ry * 2 + pad * 2;
+  // Drift amplitude — a gentle fraction of the glow's own size.
+  const ampX = rx * 0.16;
+  const ampY = ry * 0.6;
+  const translateX = driftX.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-ampX, ampX],
+  });
+  const translateY = driftY.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-ampY, ampY],
+  });
   return (
     <View
       pointerEvents="none"
@@ -79,30 +126,32 @@ function SlideGlow() {
       style={GLOW_BOX}
     >
       {w > 0 ? (
-        <Svg width={svgW} height={svgH}>
-          <Defs>
-            {/* Filter region widened well past the ellipse bounds so the soft
-                blurred edge (≈3σ) is never clipped. */}
-            <Filter
-              id="welcomeBlur"
-              x="-100%"
-              y="-150%"
-              width="300%"
-              height="400%"
-            >
-              <FeGaussianBlur stdDeviation={sigma} />
-            </Filter>
-          </Defs>
-          <Ellipse
-            cx={svgW / 2}
-            cy={svgH / 2}
-            rx={rx}
-            ry={ry}
-            fill={GLOW}
-            fillOpacity={GLOW_OPACITY}
-            filter="url(#welcomeBlur)"
-          />
-        </Svg>
+        <Animated.View style={{ transform: [{ translateX }, { translateY }] }}>
+          <Svg width={svgW} height={svgH}>
+            <Defs>
+              {/* Filter region widened well past the ellipse bounds so the soft
+                  blurred edge (≈3σ) is never clipped. */}
+              <Filter
+                id="welcomeBlur"
+                x="-100%"
+                y="-150%"
+                width="300%"
+                height="400%"
+              >
+                <FeGaussianBlur stdDeviation={sigma} />
+              </Filter>
+            </Defs>
+            <Ellipse
+              cx={svgW / 2}
+              cy={svgH / 2}
+              rx={rx}
+              ry={ry}
+              fill={GLOW}
+              fillOpacity={GLOW_OPACITY}
+              filter="url(#welcomeBlur)"
+            />
+          </Svg>
+        </Animated.View>
       ) : null}
     </View>
   );
