@@ -6,7 +6,6 @@ import {
 import { shiftService } from "../../services";
 import { resetShiftTransitionQueue } from "../../utils/shiftTransitionQueue";
 import {
-  announceShiftAutoCompleted,
   announceShiftAutoPaused,
   announceShiftAutoResumed,
   announceShiftAutoStarted,
@@ -277,13 +276,13 @@ describe("concurrent GPS events", () => {
 });
 
 describe("switching from project A to project B", () => {
-  it("completes A before starting or resuming B", async () => {
+  it("pauses A (keeps it open) before starting or resuming B", async () => {
     const order = [];
 
-    shiftService.complete.mockImplementation(async () => {
+    shiftService.pause.mockImplementation(async () => {
       await tick();
-      order.push("complete-a");
-      return { id: "shift-a", projectId: PROJECT_A, status: "completed" };
+      order.push("pause-a");
+      return { id: "shift-a", projectId: PROJECT_A, status: "paused" };
     });
     shiftService.getCurrent.mockImplementation(async () => {
       await tick();
@@ -302,15 +301,20 @@ describe("switching from project A to project B", () => {
       isWithinTargetArea: true,
     });
 
-    expect(order).toEqual(["complete-a", "start-b"]);
-    expect(announceShiftAutoCompleted).toHaveBeenCalledTimes(1);
+    // A is paused (not completed) so its minutes survive for a later resume.
+    expect(order).toEqual(["pause-a", "start-b"]);
+    expect(shiftService.pause).toHaveBeenCalledWith("shift-a", {
+      reason: "project_switched",
+      source: "mobile_project_switch",
+    });
+    expect(shiftService.complete).not.toHaveBeenCalled();
     expect(announceShiftAutoStarted).toHaveBeenCalledTimes(1);
   });
 
   it("resumes B's existing shift rather than starting a second one", async () => {
-    shiftService.complete.mockResolvedValue({
+    shiftService.pause.mockResolvedValue({
       id: "shift-a",
-      status: "completed",
+      status: "paused",
     });
     shiftService.getCurrent.mockResolvedValue(
       pausedShift({ id: "shift-b", projectId: PROJECT_B }),
@@ -332,10 +336,10 @@ describe("switching from project A to project B", () => {
     expect(shiftService.start).not.toHaveBeenCalled();
   });
 
-  it("only completes A when the worker is not inside B's area", async () => {
-    shiftService.complete.mockResolvedValue({
+  it("only pauses A when the worker is not inside B's area", async () => {
+    shiftService.pause.mockResolvedValue({
       id: "shift-a",
-      status: "completed",
+      status: "paused",
     });
 
     await handleProjectSwitch({
@@ -345,7 +349,8 @@ describe("switching from project A to project B", () => {
       isWithinTargetArea: false,
     });
 
-    expect(shiftService.complete).toHaveBeenCalledTimes(1);
+    expect(shiftService.pause).toHaveBeenCalledTimes(1);
+    expect(shiftService.complete).not.toHaveBeenCalled();
     expect(shiftService.start).not.toHaveBeenCalled();
     expect(shiftService.resume).not.toHaveBeenCalled();
   });
