@@ -222,6 +222,61 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
     </TouchableOpacity>
   );
 
+  const renderNoteItem = (note, index) => {
+    const id = note._id || note.id || index;
+    const editing = editingId === (note._id || note.id);
+    const divider = index !== visibleNotes.length - 1 && styles.itemDivider;
+    return (
+      <View key={id} style={[extraStyles.item, divider]}>
+        <Text style={styles.dateText}>
+          {formatDate(note.updatedAt || note.createdAt)}
+        </Text>
+        {editing ? (
+          <View style={extraStyles.editRow}>
+            <TextInput
+              style={[
+                extraStyles.input,
+                extraStyles.editInput,
+                { color: styles.projectText.color },
+              ]}
+              value={editDraft}
+              onChangeText={setEditDraft}
+              onBlur={saveEdit}
+              placeholderTextColor={styles.emptyText.color}
+              // Enter inserts a newline; save via the ring or by tapping away.
+              multiline
+              autoFocus
+            />
+            {/* Send lives right here in the row while editing (the keyboard
+                accessory is unreliable for a 2nd input). */}
+            {renderSendButton(ringAccent, ringIdle, true)}
+          </View>
+        ) : (
+          // Tap the text to edit in place; tap the trash to delete.
+          <View style={extraStyles.noteRow}>
+            <TouchableOpacity
+              style={extraStyles.noteTextWrap}
+              activeOpacity={0.6}
+              onPress={() => startEdit(note)}
+            >
+              <Text style={styles.projectText} numberOfLines={2}>
+                {noteText(note) || t("notes.untitled")}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={extraStyles.deleteBtn}
+              onPress={() => confirmDelete(note)}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              accessibilityLabel={t("notes.delete", "Ta bort")}
+            >
+              <Icon name="trash-2" size={16} color={secondaryIconColor} />
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+    );
+  };
+
   return (
     <View style={styles.section}>
       <View style={styles.header}>
@@ -265,7 +320,17 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
             : null}
         </View>
 
-        {loading ? null : notes.length ? (
+        {loading ? null : !notes.length ? null : isEditing ? (
+          // While editing, drop the nested ScrollView and render the single
+          // edited note as a plain View in the Home ScrollView's own flow — so
+          // its `automaticallyAdjustKeyboardInsets` lifts the growing multiline
+          // editor above the keyboard, exactly like the quick-add field. Inside
+          // the nested ScrollView the outer inset couldn't reach it and the
+          // cursor slid under the keyboard.
+          <View style={extraStyles.editList}>
+            {visibleNotes.map(renderNoteItem)}
+          </View>
+        ) : (
           <ScrollView
             style={[styles.scrollArea, extraStyles.listBelow]}
             contentContainerStyle={styles.list}
@@ -273,68 +338,9 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
             nestedScrollEnabled={true}
             keyboardShouldPersistTaps="handled"
           >
-            {visibleNotes.map((note, index) => {
-              const id = note._id || note.id || index;
-              const editing = editingId === (note._id || note.id);
-              const divider =
-                index !== visibleNotes.length - 1 && styles.itemDivider;
-              return (
-                <View key={id} style={[extraStyles.item, divider]}>
-                  <Text style={styles.dateText}>
-                    {formatDate(note.updatedAt || note.createdAt)}
-                  </Text>
-                  {editing ? (
-                    <View style={extraStyles.editRow}>
-                      <TextInput
-                        style={[
-                          extraStyles.input,
-                          extraStyles.editInput,
-                          { color: styles.projectText.color },
-                        ]}
-                        value={editDraft}
-                        onChangeText={setEditDraft}
-                        onBlur={saveEdit}
-                        placeholderTextColor={styles.emptyText.color}
-                        // Enter inserts a newline; save via the ring or by
-                        // tapping away (onBlur).
-                        multiline
-                        autoFocus
-                      />
-                      {/* Send lives right here in the row while editing (the
-                          keyboard accessory is unreliable for a 2nd input). */}
-                      {renderSendButton(ringAccent, ringIdle, true)}
-                    </View>
-                  ) : (
-                    // Tap the text to edit in place; tap the trash to delete.
-                    <View style={extraStyles.noteRow}>
-                      <TouchableOpacity
-                        style={extraStyles.noteTextWrap}
-                        activeOpacity={0.6}
-                        onPress={() => startEdit(note)}
-                      >
-                        <Text style={styles.projectText} numberOfLines={2}>
-                          {noteText(note) || t("notes.untitled")}
-                        </Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        style={extraStyles.deleteBtn}
-                        onPress={() => confirmDelete(note)}
-                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                        accessibilityLabel={t("notes.delete", "Ta bort")}
-                      >
-                        <Icon
-                          name="trash-2"
-                          size={16}
-                          color={secondaryIconColor}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  )}
-                </View>
-              );
-            })}
+            {visibleNotes.map(renderNoteItem)}
           </ScrollView>
-        ) : null}
+        )}
       </View>
 
       {Platform.OS === "ios" ? (
@@ -413,6 +419,11 @@ const extraStyles = StyleSheet.create({
   listBelow: {
     marginTop: 12,
     maxHeight: 132,
+  },
+  // Editing container: no maxHeight so the multiline editor can grow, and no
+  // ScrollView so the Home keyboard-inset lifts it above the keyboard.
+  editList: {
+    marginTop: 12,
   },
   item: {
     gap: 4,
