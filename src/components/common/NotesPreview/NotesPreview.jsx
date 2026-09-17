@@ -96,8 +96,11 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
       setSaving(true);
       await notesService.create({ body });
       setDraft("");
-      // Sending closes the field: drop focus + keyboard. Tap the card again to
+      // Sending closes the field: drop focus + keyboard so the "Skriv en
+      // anteckning…" placeholder comes back. (onBlur isn't guaranteed to fire on
+      // Keyboard.dismiss(), so reset focused explicitly.) Tap the card again to
       // start another note.
+      setFocused(false);
       Keyboard.dismiss();
       await load();
     } catch (error) {
