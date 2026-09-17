@@ -10,6 +10,7 @@ import {
   DeviceEventEmitter,
   Animated,
   Easing,
+  Platform,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTranslation } from "react-i18next";
@@ -48,7 +49,8 @@ const { width } = Dimensions.get("window");
 const GLOW = "#4CABFF";
 // Opacity at the centre of each disc; it fades to 0 at the rim via the gradient,
 // so the average is much lower. Two overlapping discs stack a little higher.
-const GLOW_ORB_OPACITY = 0.22;
+// Android reads a touch brighter, so it gets a slightly lower value.
+const GLOW_ORB_OPACITY = Platform.OS === "android" ? 0.16 : 0.22;
 const GLOW_ORB_R_RATIO = 0.4; // orb radius as a fraction of the mockup width
 const GLOW_DRIFT_X_RATIO = 0.12; // horizontal wander amplitude (× width)
 const GLOW_DRIFT_Y_RATIO = 0.12; // vertical wander amplitude (× height)
