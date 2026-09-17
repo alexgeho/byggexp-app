@@ -19,6 +19,7 @@ import {
   Pressable,
   StyleSheet,
   DeviceEventEmitter,
+  Keyboard,
 } from "react-native";
 
 import { LinearGradient } from "expo-linear-gradient";
@@ -325,7 +326,15 @@ export default function HomeVariant2() {
     if (Platform.OS !== "android") {
       return;
     }
-    setTimeout(() => scrollRef.current?.scrollToEnd?.({ animated: true }), 150);
+    // Scroll only AFTER the keyboard is fully up and the window has resized —
+    // a fixed setTimeout fires too early (before adjustResize shrinks the view)
+    // and the scroll gets undone. keyboardDidShow guarantees correct timing.
+    const sub = Keyboard.addListener("keyboardDidShow", () => {
+      scrollRef.current?.scrollToEnd?.({ animated: true });
+      sub.remove();
+    });
+    // Fallback: keyboard was already open, so no event fires.
+    setTimeout(() => scrollRef.current?.scrollToEnd?.({ animated: true }), 350);
   }, []);
 
   // Live preview: the customize drawer pushes each config change straight into
