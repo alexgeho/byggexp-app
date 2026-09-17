@@ -315,9 +315,10 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
             onChangeText={setDraft}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
-            placeholder={
-              focused ? "" : t("notes.quickAdd", "Skriv en anteckning…")
-            }
+            // Always show the placeholder while the field is empty (iOS hides it
+            // as soon as you type). Toggling it to "" on focus hit an RN quirk
+            // where it wouldn't reappear after send until the input re-mounted.
+            placeholder={t("notes.quickAdd", "Skriv en anteckning…")}
             placeholderTextColor={styles.emptyText.color}
             inputAccessoryViewID={
               Platform.OS === "ios" ? ACCESSORY_NEW : undefined
