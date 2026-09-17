@@ -104,7 +104,7 @@ handleProjectSwitch({
 
 `src/config/shiftLocationPolicy.js`: `minBackgroundRadiusMeters: 180` — фоновый
 радиус зажимается снизу до **180 м** (регион-мониторинг iOS ниже ненадёжен).
-Опрос позиции — каждые ~15 с (`checkIntervalMs`).
+Опрос позиции — каждые **5 мин** (`checkIntervalMs` / `timeInterval`); раньше было 15 с. Для рабочего объекта задержки в пару минут ок, батарея — заметно легче.
 
 ### Диагностический лог
 

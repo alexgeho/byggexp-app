@@ -2,7 +2,11 @@ export const shiftLocationPolicy = {
   // Toggle this in code to enable/disable shift location enforcement.
   enabled: true,
   maxDistanceMeters: 500,
-  checkIntervalMs: 15 * 1000,
+  // Position is checked against the project radius every 5 min. Clock-in/out a
+  // few minutes late is fine for a work site, and a coarse cadence is much
+  // easier on the battery than a 15 s poll. Reliability comes from the accuracy
+  // band + confirmations + "Always" permission, not from a tight interval.
+  checkIntervalMs: 5 * 60 * 1000,
   autoCheckInEnabled: true,
   autoCheckOutEnabled: true,
   // OS-level background geofencing (expo-location + expo-task-manager). When

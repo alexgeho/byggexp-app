@@ -42,10 +42,11 @@ let androidForegroundServiceStarted = false;
 
 const ANDROID_LOCATION_STREAM_OPTIONS = {
   accuracy: Location.Accuracy.High,
-  // Fixed cadence, no distance gate, and no deferral so Doze/battery
+  // Fixed 5-min cadence, no distance gate, and no deferral so Doze/battery
   // optimisation can't batch updates until the screen wakes — otherwise the
-  // enter/exit only fires when the app is reopened.
-  timeInterval: 15000,
+  // enter/exit only fires when the app is reopened. 5 min is plenty for a work
+  // site (late clock-in/out by a few minutes is fine) and far kinder to battery.
+  timeInterval: 5 * 60 * 1000,
   distanceInterval: 0,
   deferredUpdatesInterval: 0,
   deferredUpdatesDistance: 0,
