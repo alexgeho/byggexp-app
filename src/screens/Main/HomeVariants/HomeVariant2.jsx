@@ -474,6 +474,9 @@ export default function HomeVariant2() {
         console.error("Failed to load current shift:", error);
         setCurrentShift(null);
         reset();
+      } finally {
+        // Done syncing this project's shift — re-enable the Play/Pause button.
+        setLoadingShift(false);
       }
     },
     [applyShiftState, reset],
@@ -482,6 +485,13 @@ export default function HomeVariant2() {
   /* LOAD ACTIVE SHIFT */
   useEffect(
     function loadShift() {
+      // Block the Play/Pause button until the newly-selected project's shift has
+      // actually loaded. Otherwise, right after a project switch, currentShift /
+      // isRunning still hold the PREVIOUS project's (stale) state while the timer
+      // shows 00:00 — tapping Play then acted on that stale state and the backend
+      // rejected it ("Only an active shift can be paused."). loadCurrentShift
+      // clears the flag in its finally block.
+      setLoadingShift(true);
       const task = InteractionManager.runAfterInteractions(() => {
         loadCurrentShift(selectedProjectId);
       });
