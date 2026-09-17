@@ -42,10 +42,13 @@ const { width } = Dimensions.get("window");
 // blur (FeGaussianBlur) of a filled ellipse — a true blur, not a gradient
 // approximation, so it never bands or reads as a hard "ball". Ships over OTA.
 const GLOW = "#4CABFF";
-// Brightness knob: fill opacity of the blurred ellipse (0.14 ≈ Figma).
-const GLOW_OPACITY = 0.2;
-// Softness knob: gaussian blur radius in points (≈ the Figma layer-blur / 2).
-const GLOW_BLUR = 38;
+// Brightness knob: fill opacity of the blurred ellipse. Figma "Ellipse 20" fill
+// is exactly 14% — brighter than that reads as a hard "пятно"/ball instead of a
+// soft background glow (designer: "полупрозрачный круг с блюром").
+const GLOW_OPACITY = 0.14;
+// Softness knob: SVG gaussian stdDeviation ≈ Figma layer-blur / 2. Figma layer
+// blur = 87.6 → ~44 here.
+const GLOW_BLUR = 44;
 // Position/size of the glow over the hero. Negative left/right push it past the
 // mockup sides (keep them EQUAL so it grows centred); top/bottom set its band.
 const GLOW_BOX = {
@@ -65,11 +68,15 @@ function SlideGlow() {
           <FeGaussianBlur stdDeviation={GLOW_BLUR} />
         </Filter>
       </Defs>
+      {/* Figma "Ellipse 20" is 393×190 (~2:1, full screen width) — a wide, flat
+          disc, not a tight circle. The heavy blur rounds it off so it still
+          reads as the "круг с блюром" the designer describes, without collapsing
+          into a small bright ball. */}
       <Ellipse
         cx="50%"
         cy="50%"
-        rx="42%"
-        ry="42%"
+        rx="48%"
+        ry="24%"
         fill={GLOW}
         fillOpacity={GLOW_OPACITY}
         filter="url(#welcomeBlur)"
