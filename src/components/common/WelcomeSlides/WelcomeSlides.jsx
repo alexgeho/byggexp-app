@@ -41,47 +41,70 @@ const { width } = Dimensions.get("window");
 // disc at ~14% with an ~88px layer blur). Reproduced with a REAL SVG gaussian
 // blur (FeGaussianBlur) of a filled ellipse — a true blur, not a gradient
 // approximation, so it never bands or reads as a hard "ball". Ships over OTA.
+// Figma "Ellipse 20", measured off the design: a #4CABFF disc, W393 × H190,
+// fill 14%, layer blur 87.6 — every number taken against the 393-wide frame.
+// So we keep them as RATIOS of the frame width and re-derive the real pixels
+// from the live mockup width (below). Hardcoding an absolute blur made it too
+// crisp for a large ellipse → it read as a hard "пятно"/ball instead of a soft
+// wash. Deriving from width keeps the shape AND its softness in exact Figma
+// proportion at any render size.
 const GLOW = "#4CABFF";
-// Brightness knob: fill opacity of the blurred ellipse. Figma "Ellipse 20" fill
-// is exactly 14% — brighter than that reads as a hard "пятно"/ball instead of a
-// soft background glow (designer: "полупрозрачный круг с блюром").
-const GLOW_OPACITY = 0.14;
-// Softness knob: SVG gaussian stdDeviation ≈ Figma layer-blur / 2. Figma layer
-// blur = 87.6 → ~44 here.
-const GLOW_BLUR = 44;
-// Position/size of the glow over the hero. Negative left/right push it past the
-// mockup sides (keep them EQUAL so it grows centred); top/bottom set its band.
+const GLOW_OPACITY = 0.14; // Figma fill 14%
+const GLOW_W_RATIO = 1; // ellipse spans the full frame width (393/393)
+const GLOW_H_RATIO = 190 / 393; // Figma 393×190 aspect
+const GLOW_BLUR_RATIO = 87.6 / 393 / 2; // layer blur 87.6 → SVG stdDeviation
+// Container fills the mockup and centres the (spilling) glow behind it.
 const GLOW_BOX = {
   position: "absolute",
-  left: -100,
-  right: -100,
-  top: "24%",
-  bottom: "37%",
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  alignItems: "center",
+  justifyContent: "center",
 };
 function SlideGlow() {
+  const [w, setW] = useState(0);
+  // Derive the ellipse + blur from the measured mockup width (Figma ratios).
+  const rx = (w * GLOW_W_RATIO) / 2;
+  const ry = rx * GLOW_H_RATIO;
+  const sigma = w * GLOW_BLUR_RATIO;
+  const pad = sigma * 3.5; // room around the ellipse for the soft blurred edge
+  const svgW = rx * 2 + pad * 2;
+  const svgH = ry * 2 + pad * 2;
   return (
-    <Svg pointerEvents="none" style={GLOW_BOX} width="100%" height="100%">
-      <Defs>
-        {/* Filter region expanded (-50%…200%) so the soft blurred edge isn't
-            clipped at the ellipse's tight bounds. */}
-        <Filter id="welcomeBlur" x="-50%" y="-50%" width="200%" height="200%">
-          <FeGaussianBlur stdDeviation={GLOW_BLUR} />
-        </Filter>
-      </Defs>
-      {/* Figma "Ellipse 20" is 393×190 (~2:1, full screen width) — a wide, flat
-          disc, not a tight circle. The heavy blur rounds it off so it still
-          reads as the "круг с блюром" the designer describes, without collapsing
-          into a small bright ball. */}
-      <Ellipse
-        cx="50%"
-        cy="50%"
-        rx="48%"
-        ry="24%"
-        fill={GLOW}
-        fillOpacity={GLOW_OPACITY}
-        filter="url(#welcomeBlur)"
-      />
-    </Svg>
+    <View
+      pointerEvents="none"
+      onLayout={(e) => setW(e.nativeEvent.layout.width)}
+      style={GLOW_BOX}
+    >
+      {w > 0 ? (
+        <Svg width={svgW} height={svgH}>
+          <Defs>
+            {/* Filter region widened well past the ellipse bounds so the soft
+                blurred edge (≈3σ) is never clipped. */}
+            <Filter
+              id="welcomeBlur"
+              x="-100%"
+              y="-150%"
+              width="300%"
+              height="400%"
+            >
+              <FeGaussianBlur stdDeviation={sigma} />
+            </Filter>
+          </Defs>
+          <Ellipse
+            cx={svgW / 2}
+            cy={svgH / 2}
+            rx={rx}
+            ry={ry}
+            fill={GLOW}
+            fillOpacity={GLOW_OPACITY}
+            filter="url(#welcomeBlur)"
+          />
+        </Svg>
+      ) : null}
+    </View>
   );
 }
 
