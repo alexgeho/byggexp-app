@@ -317,40 +317,46 @@ export default function HomeVariant2() {
   const [contentHeight, setContentHeight] = useState(0);
   const scrollRef = useRef(null);
 
-  // Android's adjustResize shrinks the ScrollView when the keyboard opens but,
-  // unlike iOS's automaticallyAdjustKeyboardInsets, does NOT auto-scroll to the
-  // focused field — so the inline notes quick-add/editor (bottom section) got
-  // covered. Scroll to the end when a notes input focuses to lift it above the
-  // keyboard. iOS already handles this via the inset prop, so no-op there.
-  const scrollNotesIntoView = useCallback(() => {
-    console.log(
-      "[notes-kbd] focus os=",
-      Platform.OS,
-      "ref=",
-      !!scrollRef.current,
+  // On Android this screen's window does NOT resize for the keyboard (the app
+  // uses a pan-style softInput so the 10 KeyboardAvoidingView "height" screens
+  // keep working). That means the Home ScrollView keeps its full height behind
+  // the keyboard, so a plain scrollToEnd can't lift a bottom input clear of it.
+  // Fix: while the keyboard is open, pad the scroll content by the keyboard
+  // height (Android only) so there's room to scroll the notes field above it.
+  // iOS is handled by automaticallyAdjustKeyboardInsets on the ScrollView.
+  const [keyboardPad, setKeyboardPad] = useState(0);
+  useEffect(() => {
+    if (Platform.OS !== "android") {
+      return undefined;
+    }
+    const show = Keyboard.addListener("keyboardDidShow", (e) =>
+      setKeyboardPad(e?.endCoordinates?.height ?? 0),
     );
+    const hide = Keyboard.addListener("keyboardDidHide", () =>
+      setKeyboardPad(0),
+    );
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
+
+  // When a notes input focuses on Android, scroll it above the keyboard once the
+  // keyboard is up AND the extra bottom padding has landed.
+  const scrollNotesIntoView = useCallback(() => {
     if (Platform.OS !== "android") {
       return;
     }
-    // Scroll only AFTER the keyboard is fully up and the window has resized —
-    // a fixed setTimeout fires too early (before adjustResize shrinks the view)
-    // and the scroll gets undone. keyboardDidShow guarantees correct timing.
     const sub = Keyboard.addListener("keyboardDidShow", () => {
-      console.log(
-        "[notes-kbd] keyboardDidShow -> scrollToEnd, ref=",
-        !!scrollRef.current,
-      );
-      scrollRef.current?.scrollToEnd?.({ animated: true });
       sub.remove();
-    });
-    // Fallback: keyboard was already open, so no event fires.
-    setTimeout(() => {
-      console.log(
-        "[notes-kbd] fallback scrollToEnd, ref=",
-        !!scrollRef.current,
+      // Delay so the keyboardPad state re-render applies before we scroll.
+      setTimeout(
+        () => scrollRef.current?.scrollToEnd?.({ animated: true }),
+        120,
       );
-      scrollRef.current?.scrollToEnd?.({ animated: true });
-    }, 350);
+    });
+    // Fallback if the keyboard is already open (no event fires).
+    setTimeout(() => scrollRef.current?.scrollToEnd?.({ animated: true }), 450);
   }, []);
 
   // Live preview: the customize drawer pushes each config change straight into
@@ -956,6 +962,11 @@ export default function HomeVariant2() {
               { minHeight: Math.max(0, scrollViewHeight - bottomBarClearance) }
             : // Scrolling (tall) layout: pad the bottom so content clears the bar.
               { paddingBottom: bottomBarClearance },
+          // While the Android keyboard is open, add its height as extra bottom
+          // room so a focused bottom input (notes) can be scrolled clear of it.
+          keyboardPad > 0 && {
+            paddingBottom: bottomBarClearance + keyboardPad,
+          },
         ]}
         onLayout={function handleScrollViewLayout(event) {
           setScrollViewHeight(event.nativeEvent.layout.height);
