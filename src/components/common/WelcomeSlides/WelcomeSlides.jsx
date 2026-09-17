@@ -44,19 +44,22 @@ const { width } = Dimensions.get("window");
 // welcome screen. Real SVG gaussian blur (FeGaussianBlur) so the edges are a
 // true soft blur, never a hard "ball". Ships over OTA.
 const GLOW = "#4CABFF";
-// Per-orb opacity — two overlapping discs stack up to ≈ the Figma 14% feel.
-const GLOW_ORB_OPACITY = 0.12;
+// Per-orb opacity — kept faint; two overlapping discs stack a little higher.
+const GLOW_ORB_OPACITY = 0.08;
 const GLOW_ORB_R_RATIO = 0.4; // orb radius as a fraction of the mockup width
 const GLOW_ORB_BLUR_RATIO = 0.16; // blur (stdDeviation) as a fraction of width
 const GLOW_DRIFT_X_RATIO = 0.12; // horizontal wander amplitude (× width)
 const GLOW_DRIFT_Y_RATIO = 0.12; // vertical wander amplitude (× height)
 // Container fills the mockup; the orbs are positioned absolutely inside it.
+// overflow:"hidden" clips the glow to the mockup bounds so the discs never
+// spill outside the card as they drift.
 const GLOW_BOX = {
   position: "absolute",
   top: 0,
   left: 0,
   right: 0,
   bottom: 0,
+  overflow: "hidden",
 };
 
 // One looping 0→1→0 value with a sine ease — a single drift axis. Different
