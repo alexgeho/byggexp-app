@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTranslation } from "react-i18next";
-import Svg, { Defs, Filter, FeGaussianBlur, Ellipse } from "react-native-svg";
+import Svg, { Defs, RadialGradient, Stop, Ellipse } from "react-native-svg";
 import { LinearGradient } from "expo-linear-gradient";
 import Icon from "react-native-vector-icons/Feather";
 
@@ -41,13 +41,15 @@ const { width } = Dimensions.get("window");
 
 // Living-gradient glow behind the product mockup — TWO soft #4CABFF discs (the
 // Figma "Ellipse 20" colour) that each wander on their own, à la the bank
-// welcome screen. Real SVG gaussian blur (FeGaussianBlur) so the edges are a
-// true soft blur, never a hard "ball". Ships over OTA.
+// welcome screen. Built from an SVG RadialGradient (colour → transparent) rather
+// than a blurred solid: the gradient IS the soft edge, and unlike the SVG
+// FeGaussianBlur filter it renders identically on Android (where the filter is
+// unsupported and left the discs as hard circles). Ships over OTA.
 const GLOW = "#4CABFF";
-// Per-orb opacity — kept faint; two overlapping discs stack a little higher.
-const GLOW_ORB_OPACITY = 0.08;
-const GLOW_ORB_R_RATIO = 0.25; // orb radius as a fraction of the mockup width
-const GLOW_ORB_BLUR_RATIO = 0.16; // blur (stdDeviation) as a fraction of width
+// Opacity at the centre of each disc; it fades to 0 at the rim via the gradient,
+// so the average is much lower. Two overlapping discs stack a little higher.
+const GLOW_ORB_OPACITY = 0.22;
+const GLOW_ORB_R_RATIO = 0.4; // orb radius as a fraction of the mockup width
 const GLOW_DRIFT_X_RATIO = 0.12; // horizontal wander amplitude (× width)
 const GLOW_DRIFT_Y_RATIO = 0.12; // vertical wander amplitude (× height)
 // Container fills the mockup; the orbs are positioned absolutely inside it.
@@ -89,9 +91,8 @@ function useDrift(period) {
   return v;
 }
 
-function GlowOrb({ r, sigma, cx, cy, driftX, driftY, ampX, ampY, filterId }) {
-  const pad = sigma * 3.5; // room for the soft blurred edge (≈3σ)
-  const boxSize = r * 2 + pad * 2;
+function GlowOrb({ r, cx, cy, driftX, driftY, ampX, ampY, gradId }) {
+  const boxSize = r * 2;
   const translateX = driftX.interpolate({
     inputRange: [0, 1],
     outputRange: [-ampX, ampX],
@@ -104,26 +105,26 @@ function GlowOrb({ r, sigma, cx, cy, driftX, driftY, ampX, ampY, filterId }) {
     <Animated.View
       style={{
         position: "absolute",
-        left: cx - boxSize / 2,
-        top: cy - boxSize / 2,
+        left: cx - r,
+        top: cy - r,
         transform: [{ translateX }, { translateY }],
       }}
     >
       <Svg width={boxSize} height={boxSize}>
         <Defs>
-          <Filter id={filterId} x="-100%" y="-100%" width="300%" height="300%">
-            <FeGaussianBlur stdDeviation={sigma} />
-          </Filter>
+          {/* Colour at the centre, fading to fully transparent at the rim — a
+              soft glow with no hard edge, cross-platform (no SVG filter). */}
+          <RadialGradient id={gradId} cx="50%" cy="50%" r="50%">
+            <Stop offset="0" stopColor={GLOW} stopOpacity={GLOW_ORB_OPACITY} />
+            <Stop
+              offset="0.55"
+              stopColor={GLOW}
+              stopOpacity={GLOW_ORB_OPACITY * 0.45}
+            />
+            <Stop offset="1" stopColor={GLOW} stopOpacity={0} />
+          </RadialGradient>
         </Defs>
-        <Ellipse
-          cx={boxSize / 2}
-          cy={boxSize / 2}
-          rx={r}
-          ry={r}
-          fill={GLOW}
-          fillOpacity={GLOW_ORB_OPACITY}
-          filter={`url(#${filterId})`}
-        />
+        <Ellipse cx={r} cy={r} rx={r} ry={r} fill={`url(#${gradId})`} />
       </Svg>
     </Animated.View>
   );
@@ -138,7 +139,6 @@ function SlideGlow() {
   const bX = useDrift(3000);
   const bY = useDrift(2200);
   const r = w * GLOW_ORB_R_RATIO;
-  const sigma = w * GLOW_ORB_BLUR_RATIO;
   const ampX = w * GLOW_DRIFT_X_RATIO;
   const ampY = h * GLOW_DRIFT_Y_RATIO;
   return (
@@ -156,25 +156,23 @@ function SlideGlow() {
         <>
           <GlowOrb
             r={r}
-            sigma={sigma}
             cx={w * 0.3}
             cy={h * 0.44}
             driftX={aX}
             driftY={aY}
             ampX={ampX}
             ampY={ampY}
-            filterId="welcomeOrbA"
+            gradId="welcomeOrbA"
           />
           <GlowOrb
             r={r}
-            sigma={sigma}
             cx={w * 0.7}
             cy={h * 0.56}
             driftX={bX}
             driftY={bY}
             ampX={ampX}
             ampY={ampY}
-            filterId="welcomeOrbB"
+            gradId="welcomeOrbB"
           />
         </>
       ) : null}
