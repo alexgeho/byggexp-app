@@ -48,7 +48,12 @@ const formatDate = (value) => {
 // Home-screen preview of the user's personal notes. Everything happens inline —
 // write a new note at the top, tap any recent note to edit it in place. No
 // internal list/detail screens.
-export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
+export function NotesPreview({
+  colorMode = "dark",
+  onClose,
+  refreshKey = 0,
+  onInputFocus,
+}) {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = createStyles(theme, colorMode);
@@ -250,6 +255,7 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
               ]}
               value={editDraft}
               onChangeText={setEditDraft}
+              onFocus={() => onInputFocus?.()}
               onBlur={saveEdit}
               placeholderTextColor={styles.emptyText.color}
               // Enter inserts a newline and keeps the field open (submitBehavior
@@ -313,7 +319,10 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
             style={[extraStyles.input, { color: styles.dateText.color }]}
             value={draft}
             onChangeText={setDraft}
-            onFocus={() => setFocused(true)}
+            onFocus={() => {
+              setFocused(true);
+              onInputFocus?.();
+            }}
             onBlur={() => setFocused(false)}
             // Always show the placeholder while the field is empty (iOS hides it
             // as soon as you type). Toggling it to "" on focus hit an RN quirk

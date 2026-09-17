@@ -314,6 +314,19 @@ export default function HomeVariant2() {
   const [previewRefreshKey, setPreviewRefreshKey] = useState(0);
   const [scrollViewHeight, setScrollViewHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
+  const scrollRef = useRef(null);
+
+  // Android's adjustResize shrinks the ScrollView when the keyboard opens but,
+  // unlike iOS's automaticallyAdjustKeyboardInsets, does NOT auto-scroll to the
+  // focused field — so the inline notes quick-add/editor (bottom section) got
+  // covered. Scroll to the end when a notes input focuses to lift it above the
+  // keyboard. iOS already handles this via the inset prop, so no-op there.
+  const scrollNotesIntoView = useCallback(() => {
+    if (Platform.OS !== "android") {
+      return;
+    }
+    setTimeout(() => scrollRef.current?.scrollToEnd?.({ animated: true }), 150);
+  }, []);
 
   // Live preview: the customize drawer pushes each config change straight into
   // Home's own state, so toggling a button/section (or the secondary button)
@@ -858,6 +871,7 @@ export default function HomeVariant2() {
               colorMode={colorMode}
               refreshKey={previewRefreshKey}
               onClose={() => handleHideSection("notes")}
+              onInputFocus={scrollNotesIntoView}
             />
           );
         }
@@ -871,6 +885,7 @@ export default function HomeVariant2() {
       previewRefreshKey,
       selectedProject,
       handleHideSection,
+      scrollNotesIntoView,
     ],
   );
 
@@ -905,6 +920,7 @@ export default function HomeVariant2() {
       ]}
     >
       <ScrollView
+        ref={scrollRef}
         style={styles.scrollView}
         contentContainerStyle={[
           styles.main,
