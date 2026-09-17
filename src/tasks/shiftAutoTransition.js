@@ -8,6 +8,7 @@ import {
   reportUnrecoverableShiftConflict,
 } from "../utils/shiftConflict";
 import {
+  announceShiftAutoCompleted,
   announceShiftAutoPaused,
   announceShiftAutoResumed,
   announceShiftAutoStarted,
@@ -25,9 +26,7 @@ import {
 //
 //   leaving the area  -> pause    (keeps the shift open, stops the clock)
 //   returning         -> resume   (same shift, accumulated time is preserved)
-//   switching project -> pause    (old project's shift kept open + paused, so
-//                                  returning resumes it with its minutes, and a
-//                                  paused shift doesn't block starting the new one)
+//   switching project -> complete (the old project's shift really is finished)
 //
 // The previous implementation completed the shift on exit and then only knew
 // how to resume a *paused* shift on re-entry, so returning the same day always
@@ -162,15 +161,7 @@ const performShiftExit = async ({ projectId } = {}) => {
   return pausedShift;
 };
 
-// Switching project PAUSES the old project's shift (keeps it open with its
-// accumulated time) instead of completing it. Returning to that project later
-// resumes the SAME shift with its minutes intact (manual Play recovers a paused
-// same-day shift via startShiftWithLocationGuard). And because a paused shift is
-// not "active", the backend's one-active-shift guard lets the worker start a
-// shift on the new project. No announcement here: the switch is deliberate and
-// the old project isn't on screen, so the geofence "you left the area" message
-// would be wrong.
-const performShiftPauseForSwitch = async ({ projectId, shiftId } = {}) => {
+const performShiftComplete = async ({ projectId, shiftId } = {}) => {
   let targetShiftId = shiftId || null;
   let targetShift = null;
 
@@ -183,13 +174,22 @@ const performShiftPauseForSwitch = async ({ projectId, shiftId } = {}) => {
     return null;
   }
 
-  const pausedShift =
-    (await shiftService.pause(targetShiftId, {
+  const completedShift =
+    (await shiftService.complete(targetShiftId, {
       reason: "project_switched",
       source: "mobile_project_switch",
+      // The app posts its own message in the user's language.
+      notifyUser: false,
     })) || targetShift;
 
-  return pausedShift;
+  // Completing here always means the worker switched project (the geofence-exit
+  // path pauses instead of completing), so the message must say the project was
+  // switched, not that they left the area.
+  await announceShiftAutoCompleted(completedShift, {
+    reason: "project_switched",
+  });
+
+  return completedShift;
 };
 
 // Queued public API.
@@ -221,13 +221,13 @@ export const handleProjectSwitch = ({
   isWithinTargetArea = false,
 } = {}) =>
   runExclusive(async () => {
-    const pausedShift = await performShiftPauseForSwitch({
+    const completedShift = await performShiftComplete({
       projectId: fromProjectId,
       shiftId: fromShiftId,
     });
 
     if (!toProjectId || !isWithinTargetArea) {
-      return { pausedShift, startedShift: null };
+      return { completedShift, startedShift: null };
     }
 
     const startedShift = await performShiftEnter({
@@ -235,7 +235,7 @@ export const handleProjectSwitch = ({
       project: toProject,
     });
 
-    return { pausedShift, startedShift };
+    return { completedShift, startedShift };
   });
 
 // De-dupe helper used by the two background tasks before dispatching. The
