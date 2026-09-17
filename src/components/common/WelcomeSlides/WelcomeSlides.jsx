@@ -39,78 +39,56 @@ const SEEN_KEY = WELCOME_SLIDES_SEEN_KEY;
 const OPEN_EVENT = "welcome-slides:open";
 const { width } = Dimensions.get("window");
 
-// Soft blue glow behind the product mockup — the Figma "Ellipse 20" (a #4CABFF
-// disc at ~14% with an ~88px layer blur). Reproduced with a REAL SVG gaussian
-// blur (FeGaussianBlur) of a filled ellipse — a true blur, not a gradient
-// approximation, so it never bands or reads as a hard "ball". Ships over OTA.
-// Figma "Ellipse 20", measured off the design: a #4CABFF disc, W393 × H190,
-// fill 14%, layer blur 87.6 — every number taken against the 393-wide frame.
-// So we keep them as RATIOS of the frame width and re-derive the real pixels
-// from the live mockup width (below). Hardcoding an absolute blur made it too
-// crisp for a large ellipse → it read as a hard "пятно"/ball instead of a soft
-// wash. Deriving from width keeps the shape AND its softness in exact Figma
-// proportion at any render size.
+// Living-gradient glow behind the product mockup — TWO soft #4CABFF discs (the
+// Figma "Ellipse 20" colour) that each wander on their own, à la the bank
+// welcome screen. Real SVG gaussian blur (FeGaussianBlur) so the edges are a
+// true soft blur, never a hard "ball". Ships over OTA.
 const GLOW = "#4CABFF";
-const GLOW_OPACITY = 0.14; // Figma fill 14%
-const GLOW_W_RATIO = 1; // ellipse spans the full frame width (393/393)
-const GLOW_H_RATIO = 190 / 393; // Figma 393×190 aspect
-const GLOW_BLUR_RATIO = 87.6 / 393 / 2; // layer blur 87.6 → SVG stdDeviation
-// Container fills the mockup and centres the (spilling) glow behind it.
+// Per-orb opacity — two overlapping discs stack up to ≈ the Figma 14% feel.
+const GLOW_ORB_OPACITY = 0.12;
+const GLOW_ORB_R_RATIO = 0.4; // orb radius as a fraction of the mockup width
+const GLOW_ORB_BLUR_RATIO = 0.16; // blur (stdDeviation) as a fraction of width
+const GLOW_DRIFT_X_RATIO = 0.12; // horizontal wander amplitude (× width)
+const GLOW_DRIFT_Y_RATIO = 0.12; // vertical wander amplitude (× height)
+// Container fills the mockup; the orbs are positioned absolutely inside it.
 const GLOW_BOX = {
   position: "absolute",
   top: 0,
   left: 0,
   right: 0,
   bottom: 0,
-  alignItems: "center",
-  justifyContent: "center",
 };
-function SlideGlow() {
-  const [w, setW] = useState(0);
-  // Slow ambient drift — the glow wanders like a living gradient (à la the bank
-  // welcome screen). Two loops with DIFFERENT periods on X and Y so the path is
-  // an organic wander, not a straight back-and-forth. Native driver → runs on
-  // the UI thread, no JS cost.
-  const driftX = useRef(new Animated.Value(0)).current;
-  const driftY = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    const loop = (val, duration) =>
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(val, {
-            toValue: 1,
-            duration,
-            easing: Easing.inOut(Easing.sin),
-            useNativeDriver: true,
-          }),
-          Animated.timing(val, {
-            toValue: 0,
-            duration,
-            easing: Easing.inOut(Easing.sin),
-            useNativeDriver: true,
-          }),
-        ]),
-      );
-    const ax = loop(driftX, 5200);
-    const ay = loop(driftY, 6800);
-    ax.start();
-    ay.start();
-    return () => {
-      ax.stop();
-      ay.stop();
-    };
-  }, [driftX, driftY]);
 
-  // Derive the ellipse + blur from the measured mockup width (Figma ratios).
-  const rx = (w * GLOW_W_RATIO) / 2;
-  const ry = rx * GLOW_H_RATIO;
-  const sigma = w * GLOW_BLUR_RATIO;
-  const pad = sigma * 3.5; // room around the ellipse for the soft blurred edge
-  const svgW = rx * 2 + pad * 2;
-  const svgH = ry * 2 + pad * 2;
-  // Drift amplitude — a gentle fraction of the glow's own size.
-  const ampX = rx * 0.16;
-  const ampY = ry * 0.6;
+// One looping 0→1→0 value with a sine ease — a single drift axis. Different
+// periods on each axis/orb keep the two glows from ever syncing into a pattern.
+function useDrift(period) {
+  const v = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(v, {
+          toValue: 1,
+          duration: period,
+          easing: Easing.inOut(Easing.sin),
+          useNativeDriver: true,
+        }),
+        Animated.timing(v, {
+          toValue: 0,
+          duration: period,
+          easing: Easing.inOut(Easing.sin),
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [v, period]);
+  return v;
+}
+
+function GlowOrb({ r, sigma, cx, cy, driftX, driftY, ampX, ampY, filterId }) {
+  const pad = sigma * 3.5; // room for the soft blurred edge (≈3σ)
+  const boxSize = r * 2 + pad * 2;
   const translateX = driftX.interpolate({
     inputRange: [0, 1],
     outputRange: [-ampX, ampX],
@@ -120,38 +98,82 @@ function SlideGlow() {
     outputRange: [-ampY, ampY],
   });
   return (
+    <Animated.View
+      style={{
+        position: "absolute",
+        left: cx - boxSize / 2,
+        top: cy - boxSize / 2,
+        transform: [{ translateX }, { translateY }],
+      }}
+    >
+      <Svg width={boxSize} height={boxSize}>
+        <Defs>
+          <Filter id={filterId} x="-100%" y="-100%" width="300%" height="300%">
+            <FeGaussianBlur stdDeviation={sigma} />
+          </Filter>
+        </Defs>
+        <Ellipse
+          cx={boxSize / 2}
+          cy={boxSize / 2}
+          rx={r}
+          ry={r}
+          fill={GLOW}
+          fillOpacity={GLOW_ORB_OPACITY}
+          filter={`url(#${filterId})`}
+        />
+      </Svg>
+    </Animated.View>
+  );
+}
+
+function SlideGlow() {
+  const [size, setSize] = useState({ w: 0, h: 0 });
+  const { w, h } = size;
+  // Faster wander than the old single glow; each orb has its own periods.
+  const aX = useDrift(2600);
+  const aY = useDrift(3400);
+  const bX = useDrift(3000);
+  const bY = useDrift(2200);
+  const r = w * GLOW_ORB_R_RATIO;
+  const sigma = w * GLOW_ORB_BLUR_RATIO;
+  const ampX = w * GLOW_DRIFT_X_RATIO;
+  const ampY = h * GLOW_DRIFT_Y_RATIO;
+  return (
     <View
       pointerEvents="none"
-      onLayout={(e) => setW(e.nativeEvent.layout.width)}
+      onLayout={(e) =>
+        setSize({
+          w: e.nativeEvent.layout.width,
+          h: e.nativeEvent.layout.height,
+        })
+      }
       style={GLOW_BOX}
     >
-      {w > 0 ? (
-        <Animated.View style={{ transform: [{ translateX }, { translateY }] }}>
-          <Svg width={svgW} height={svgH}>
-            <Defs>
-              {/* Filter region widened well past the ellipse bounds so the soft
-                  blurred edge (≈3σ) is never clipped. */}
-              <Filter
-                id="welcomeBlur"
-                x="-100%"
-                y="-150%"
-                width="300%"
-                height="400%"
-              >
-                <FeGaussianBlur stdDeviation={sigma} />
-              </Filter>
-            </Defs>
-            <Ellipse
-              cx={svgW / 2}
-              cy={svgH / 2}
-              rx={rx}
-              ry={ry}
-              fill={GLOW}
-              fillOpacity={GLOW_OPACITY}
-              filter="url(#welcomeBlur)"
-            />
-          </Svg>
-        </Animated.View>
+      {w > 0 && h > 0 ? (
+        <>
+          <GlowOrb
+            r={r}
+            sigma={sigma}
+            cx={w * 0.3}
+            cy={h * 0.44}
+            driftX={aX}
+            driftY={aY}
+            ampX={ampX}
+            ampY={ampY}
+            filterId="welcomeOrbA"
+          />
+          <GlowOrb
+            r={r}
+            sigma={sigma}
+            cx={w * 0.7}
+            cy={h * 0.56}
+            driftX={bX}
+            driftY={bY}
+            ampX={ampX}
+            ampY={ampY}
+            filterId="welcomeOrbB"
+          />
+        </>
       ) : null}
     </View>
   );
