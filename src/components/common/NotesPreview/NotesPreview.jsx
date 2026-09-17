@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Alert,
   InputAccessoryView,
+  Keyboard,
   Platform,
   ScrollView,
   StyleSheet,
@@ -95,6 +96,9 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
       setSaving(true);
       await notesService.create({ body });
       setDraft("");
+      // Sending closes the field: drop focus + keyboard. Tap the card again to
+      // start another note.
+      Keyboard.dismiss();
       await load();
     } catch (error) {
       console.error("Failed to create note:", error);
@@ -152,6 +156,8 @@ export function NotesPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
     if (editingId == null || saving) {
       return;
     }
+    // Confirming/closing the editor drops focus + keyboard (no lingering cursor).
+    Keyboard.dismiss();
     const body = editDraft.trim();
     const original = noteText(notes.find((n) => (n._id || n.id) === editingId));
     if (!body || body === original) {
