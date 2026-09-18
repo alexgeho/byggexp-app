@@ -1,4 +1,41 @@
-# 🆕 Сессия 2026-09-15 (вечер) — Онбординг value-слайды (админ): свечение, затухание краёв, стеклянные кнопки, центрирование текста
+# 🆕 Сессия 2026-09-18/19 — Релиз 1.1.1 в обе сторы + фон-геозона iOS + RealMar AB аккаунты
+
+## KLART (сделано этой сессией)
+
+**Чек/расход (ExpenseReviewSheet):** убрал авто-открытие клавиатуры на форме чека (`Keyboard.dismiss()` при открытии) и научил наследовать уже выбранный проект (`selectedProject` из AuthContext как fallback, если нет активной смены) — больше не переспрашивает объект. OTA.
+
+**Фоновая геозона iOS — ПОЧИНЕНА и проверена на устройстве.**
+
+- Корневая причина (была прошлой сессии): в `ios/ByggExp/Info.plist` `UIBackgroundModes` не было `location` → iOS не будил приложение в фоне. Вернул `<string>location</string>` (build 186+). ⚠️ Это одновременно риск отказа Apple 2.5.4 (раньше как раз убирали).
+- Диагностика: `src/utils/shiftGeofenceDebug.js` переведён с `console.log` на `console.warn` — иначе iOS release режет строки из os_log. Читал через `pymobiledevice3 syslog live | grep '\[geofence\]\|\[shift\]'` (macOS: `log` перехвачен в профиле → зови `/usr/bin/log`; прошлые логи: `pymobiledevice3 syslog collect ios.logarchive`).
+- **Пруф на iPhone 2026-09-18** (закрытое приложение, экран заблокирован): пришёл `[shift] exit paused` на выходе из зоны, `resume` на возврате. Android build 26 — фон тоже ок.
+- **Эталонная рабочая конфигурация зафиксирована** в `SHIFT_GEOFENCE_SYSTEM.md` → раздел «0. ЭТАЛОННАЯ РАБОЧАЯ КОНФИГУРАЦИЯ» (git-якорь `dc31b529`, все критичные значения, железные правила). Если геозона собьётся — возвращаемся туда.
+
+**Релизы:**
+
+- **Android 1.1.1 (build 26 / versionCode 26) — LIVE в Google Play Production**, 100% rollout, одобрено и опубликовано.
+- **iOS 1.1.1 (build 187) — LIVE в App Store.** Собрал 187 (свежий JS вшит), залил через `eas submit` (Transporter не нужен), создал ASC-версию 1.1.1 (у 1.0 не было поля What's New — первая версия), прикрепил 187, App Review Notes переписал под честное обоснование 2.5.4 (фоновый location вернули), отправил → Apple одобрила → авто-релиз → публично живая (apps.apple.com/app/id6748280779).
+- `eas.json`: android submit track internal → production.
+
+**RealMar AB (сменить имя разработчика в сторах на «RealMar AB» вместо «Alexander Gerhard»):**
+
+- **D-U-N-S RealMar AB = 353474424** (нашли в Google Play → Utvecklarkonto; register Dun & Bradstreet). Адрес: Byggmästarvägen 18, 168 32 Bromma, Sverige. Тел +46 707 577 575.
+- **Google — СДЕЛАНО:** аккаунт уже Organisation (org = RealMar AB). Поменял поле «Utvecklarens namn» → «RealMar AB», сохранил. **На модерации у Google** («visas tills namnet RealMar AB har godkänts») — подтянется само. Перенос НЕ нужен.
+- **Apple — В РАБОТЕ, с оговоркой:** self-enroll org на его Apple ID заблокирован («already Account Holder»). ВАЖНО: RealMar AB — **компания жены** (совладелец — её мама), **жена = firmatecknare (подписант)**. Значит держателем Apple-org должна быть ЖЕНА, не Alexander.
+  - Alexander уже **отправил** в Apple support (Contact Us → Membership & Account → Account Information Update → Email) запрос на конвертацию — НО в тексте было ошибочное «I am the owner…». Нужно уточнить: подписант — жена.
+
+## 🔜 NÄSTA STEG (продолжить тут)
+
+1. **Apple / RealMar AB:** дождаться ответа Apple на отправленную заявку. В ответе (или follow-up на Case ID) честно указать: подписант RealMar AB — **жена [вписать ФИО]**, она должна быть Account Holder, Alexander — Admin. Текст follow-up готов был в чате. Правильный целевой путь: жена оформляет Apple Developer **Organization** (свой Apple ID, self-enroll, D-U-N-S 353474424, $99/год) → **App Transfer** ByggExp (id 6748280779) с личного аккаунта Alexander на её org → она добавляет Alexander как Admin. Семья решила пока **подождать** и действовать по тому, что запросит Apple.
+2. **Google name:** проверить через пару дней, что в Play публично стал «RealMar AB» (сейчас на модерации).
+3. **Google Android developer verification — дедлайн 30 сентября 2026** (иначе приложения удалят из Play). Проверить статус в Play Console → «Verifiering av Android-utvecklare» (баннер говорил, что уже зарегистрировано — подтвердить, что закрыто).
+4. **iOS 2.5.4 watch:** если Apple позже прикопается к фоновому location — обоснование уже в App Review Notes; отвечать по нему (см. `project_appstore_submission` в памяти).
+
+Память: `project_realmar_company_accounts`, `project_appstore_submission` (оба обновлены этой сессией).
+
+---
+
+# Сессия 2026-09-15 (вечер) — Онбординг value-слайды (админ): свечение, затухание краёв, стеклянные кнопки, центрирование текста
 
 Всё в `WelcomeSlides` (`src/components/common/WelcomeSlides/WelcomeSlides.jsx` + `.styles.js`), только для **админа** («для админа пока тока»), роздано серией `eas update --branch production` (runtime 1.1.0, OTA, iOS+Android). Ничего нативного.
 
