@@ -7,6 +7,55 @@
 
 ---
 
+## 0. ЭТАЛОННАЯ РАБОЧАЯ КОНФИГУРАЦИЯ (known-good, 2026-09-18)
+
+> Если геозона снова «собьётся» — возвращаемся к ЭТИМ значениям. Проверено
+> **на устройстве** 2026-09-18: iPhone (iOS 26.6.2) при **закрытом приложении и
+> заблокированном экране** прислал `[shift] exit paused` на выходе из зоны и
+> `resume` на возврате. Android build 26 — фоновый выход/вход работает.
+>
+> **Git-якорь рабочего состояния: commit `dc31b529`** (`git diff dc31b529 -- <файл>`
+> покажет, что уехало, если сломается).
+
+**Версии проверенной сборки:** iOS `1.1.1 (187)`, Android `1.1.1 (versionCode 26)`.
+
+### Критичные нативные настройки (НЕ трогать без причины)
+
+| Файл                                | Ключ                                 | Рабочее значение                            | Зачем                                                                                                                                                                                                                              |
+| ----------------------------------- | ------------------------------------ | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ios/ByggExp/Info.plist`            | `UIBackgroundModes`                  | **должен содержать `location`** (+ `fetch`) | **ГЛАВНОЕ.** Без `location` iOS-геозона в фоне НЕ будит приложение — выход/вход не приходят при закрытом апп. Именно это чинили в этой сессии. ⚠️ Одновременно это риск отказа Apple 2.5.4 — обоснование лежит в App Review Notes. |
+| `app.json`                          | `isIosBackgroundLocationEnabled`     | `true`                                      | флаг сборки expo-location для iOS фона                                                                                                                                                                                             |
+| `app.json`                          | `isAndroidBackgroundLocationEnabled` | `true`                                      | флаг сборки для Android FGS                                                                                                                                                                                                        |
+| `src/config/shiftLocationPolicy.js` | `checkIntervalMs`                    | `15 * 1000`                                 | 15 c. **Не увеличивать** — 5 мин Doze замораживал Android FGS, фон переставал будить.                                                                                                                                              |
+| `src/config/shiftLocationPolicy.js` | `minBackgroundRadiusMeters`          | `180`                                       | iOS region monitoring ненадёжен < ~150-200 м                                                                                                                                                                                       |
+| `src/config/shiftLocationPolicy.js` | `backgroundGeofencingEnabled`        | `true`                                      | включает OS region monitoring                                                                                                                                                                                                      |
+| `src/utils/backgroundGeofence.js`   | `timeInterval`                       | `15000`                                     | Android FGS интервал; синхронно с checkIntervalMs                                                                                                                                                                                  |
+
+### Железные правила
+
+1. **НИКОГДА `expo prebuild`** — он перезатрёт `ios/ByggExp/Info.plist` и снесёт
+   `location` из UIBackgroundModes (managed workflow правит нативку руками).
+2. Нативные фоновые настройки меняются **только новым билдом**, OTA их не двигает.
+3. Диагностика на устройстве: `src/utils/shiftGeofenceDebug.js` логирует через
+   **`console.warn`** (не `.log`) — иначе iOS release-сборка режет строки из
+   os_log. Смотреть: `pymobiledevice3 syslog live | grep '\[geofence\]\|\[shift\]'`
+   (macOS: `log` перехвачен в профиле, зови `/usr/bin/log`).
+4. Прошлые логи с телефона: `pymobiledevice3 syslog collect ios.logarchive`, затем
+   `/usr/bin/log show --archive ios.logarchive --start "<время>"`. Наши JS-строки
+   там есть только если сборка их не режет (см. п.3); события Apple
+   `locationd …GeoFencing fenceUpdate` идут всегда, но значения `<private>`.
+
+### Как понять, что «сбилось», по логам
+
+- Выход из зоны при закрытом апп → должно прийти `[shift] exit paused …`.
+  Если тишина — проверь п.1 (Info.plist `location` на месте?) и что билд свежий.
+- `[shift] exit no-op … paused` на выходе — это НОРМА, если смена уже на паузе.
+- После возврата строки `[shift] resume` НЕТ (путь возврата молчит) — пруф
+  возврата смотри на **следующем** выходе: `exit paused` (а не `no-op`) = resume
+  сработал.
+
+---
+
 ## 1. Технологии
 
 | Слой            | Технология                                                                          |
