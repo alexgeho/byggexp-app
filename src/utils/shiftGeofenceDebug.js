@@ -14,6 +14,10 @@ import { addBreadcrumb, captureException, captureMessage } from "./sentry";
 // The previous build logged to logcat only, which is useless once the device is
 // out of reach — every field report had to be reproduced from scratch.
 
+// These diagnostics use console.warn, not console.log, on purpose: iOS
+// release/TestFlight builds strip console.log from os_log, so a cable debug
+// session (Console.app / pymobiledevice3 syslog) would see nothing. warn/error
+// survive. They stay gated behind debugLoggingEnabled.
 export const SHIFT_GEOFENCE_LOG_TAG = "[geofence]";
 
 const round = (value) =>
@@ -46,7 +50,7 @@ export const logGeofenceFix = ({
       : String(previousState.inside);
 
   if (shiftLocationPolicy.debugLoggingEnabled) {
-    console.log(
+    console.warn(
       `${SHIFT_GEOFENCE_LOG_TAG} d=${round(distanceMeters)}m acc=${round(
         accuracyMeters,
       )}m r=${round(radiusMeters)}m -> ${verdict} | was=${was} pending=${
@@ -73,7 +77,7 @@ export const logGeofenceFix = ({
 
 export const logGeofenceTarget = (target) => {
   if (shiftLocationPolicy.debugLoggingEnabled) {
-    console.log(
+    console.warn(
       `${SHIFT_GEOFENCE_LOG_TAG} monitoring project=${target?.projectId} lat=${target?.latitude} lng=${target?.longitude} r=${target?.radius}m`,
     );
   }
@@ -126,7 +130,7 @@ export const reportBackgroundMonitorStale = ({
   silenceThresholdMs,
 }) => {
   if (shiftLocationPolicy.debugLoggingEnabled) {
-    console.log(
+    console.warn(
       `${SHIFT_GEOFENCE_LOG_TAG} stale: last callback ${round(
         callbackAgeMs,
       )}ms ago, last usable fix ${round(
@@ -188,7 +192,7 @@ export const reportTransitionExhausted = ({
   error,
 }) => {
   if (shiftLocationPolicy.debugLoggingEnabled) {
-    console.log(
+    console.warn(
       `${SHIFT_GEOFENCE_LOG_TAG} giving up on ${direction} after ${attempts} attempts`,
     );
   }
