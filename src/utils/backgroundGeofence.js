@@ -379,7 +379,15 @@ export const syncShiftGeofenceForProject = async ({
       },
     ]);
     return true;
-  } catch {
+  } catch (error) {
+    // Don't swallow silently: a throw here (e.g. iOS startGeofencingAsync
+    // rejecting because the `location` UIBackgroundMode is missing from the
+    // native build) means NO region gets registered and background auto
+    // start/stop never fires — the exact failure that hid for months. warn()
+    // so it's visible in release logs (console.log is dropped on iOS release).
+    console.warn(
+      `[geofence] failed to register background monitor: ${error?.message || error}`,
+    );
     await stopIfRunning();
     return false;
   }
