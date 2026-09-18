@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Image,
+  Keyboard,
   Modal,
   ScrollView,
   Text,
@@ -10,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import AuthContext from "../../../contexts/AuthContext";
 import { expenseService, projectService } from "../../../services";
 import { styles } from "./ExpenseReviewSheet.styles";
 
@@ -29,6 +31,8 @@ export default function ExpenseReviewSheet({
   onSaved,
 }) {
   const { t } = useTranslation();
+  const { selectedProject } = useContext(AuthContext);
+  const selectedProjectId = selectedProject?._id || selectedProject?.id || null;
   const [supplier, setSupplier] = useState("");
   const [total, setTotal] = useState("");
   const [vat, setVat] = useState("");
@@ -42,27 +46,44 @@ export default function ExpenseReviewSheet({
 
   useEffect(() => {
     if (!visible) return;
+    // Don't auto-open the keyboard: the worker just wants to review the scanned
+    // receipt, not immediately edit the supplier. Only focus on an explicit tap.
+    Keyboard.dismiss();
     setSupplier(scanned?.supplierName || "");
     setTotal(scanned?.total ? String(scanned.total) : "");
     setVat(scanned?.vat ? String(scanned.vat) : "");
     setCategory(scanned?.category || "");
     setError("");
     if (shift?.projectId) {
+      // Active shift wins.
       setProjectId(shift.projectId);
     } else {
-      setProjectId(null);
+      // No shift: inherit the app-wide selected project so the worker who
+      // already picked an object doesn't have to select it again. Still load
+      // the list so the name resolves and they can change it if they want.
+      setProjectId(selectedProjectId);
       projectService
         .getMyProjects()
         .then((list) => setProjects(Array.isArray(list) ? list : []))
         .catch(() => setProjects([]));
     }
-  }, [visible, scanned, shift?.projectId]);
+  }, [visible, scanned, shift?.projectId, selectedProjectId]);
 
   const projectLabel = useMemo(() => {
     if (shift?.projectName) return shift.projectName;
     const p = projects.find((x) => (x._id || x.id) === projectId);
-    return p?.name || null;
-  }, [shift?.projectName, projects, projectId]);
+    if (p?.name) return p.name;
+    if (projectId && projectId === selectedProjectId) {
+      return selectedProject?.name || null;
+    }
+    return null;
+  }, [
+    shift?.projectName,
+    projects,
+    projectId,
+    selectedProjectId,
+    selectedProject?.name,
+  ]);
 
   const save = async () => {
     if (!projectId && !shift?.projectId) {
