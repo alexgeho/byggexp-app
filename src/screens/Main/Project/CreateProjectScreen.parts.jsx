@@ -16,7 +16,6 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import Slider from "@react-native-community/slider";
 import { useTranslation } from "react-i18next";
 import Icon from "react-native-vector-icons/Feather";
 import { AppIcon } from "../../../components/common/AppIcon";
@@ -32,6 +31,7 @@ import {
 import { getWorkerStatusBadge } from "../../../utils/workerStatusBadge";
 import { createStyles } from "./CreateProjectScreen.styles";
 import { LocationMapPicker } from "./LocationMapPicker";
+import { RadiusSlider } from "./RadiusSlider";
 import { useTheme } from "../../../theme/ThemeContext";
 
 const useThemedStyles = () => {
@@ -646,37 +646,24 @@ export const LocationPickerModal = ({
               </View>
             </View>
 
-            {/* Freeze the ScrollView the instant a touch lands on the slider
-                row (capture phase = before the ScrollView claims the horizontal
-                pan on Android). Explicit width so the wrapper can't collapse the
-                slider. Returns false so the Slider still receives the gesture. */}
-            <View
-              style={styles.activationAreaSliderWrap}
-              onStartShouldSetResponderCapture={() => {
-                setIsSlidingRadius(true);
-                Keyboard.dismiss();
-                return false;
-              }}
-              onResponderRelease={() => setIsSlidingRadius(false)}
-            >
-              <Slider
-                minimumValue={50}
-                maximumValue={1500}
+            {/* Custom PanResponder slider — claims the touch so the ScrollView
+                can't steal the horizontal drag on Android; big white knob with
+                an even all-around shadow. */}
+            <View style={styles.activationAreaSliderWrap}>
+              <RadiusSlider
+                min={50}
+                max={1500}
                 step={50}
                 value={radiusMeters}
-                onValueChange={setRadiusMeters}
+                onChange={setRadiusMeters}
                 onSlidingStart={() => {
                   setIsSlidingRadius(true);
                   Keyboard.dismiss();
                 }}
                 onSlidingComplete={() => setIsSlidingRadius(false)}
-                minimumTrackTintColor={theme.colors.primary}
-                maximumTrackTintColor="rgba(5, 45, 80, 0.22)"
-                // Custom thumb: a bigger white knob with a soft drop shadow, so
-                // it's clearly visible and grabbable (the library's default thumb
-                // is tiny and blends into the track).
-                thumbImage={require("../../../assets/slider-thumb.png")}
-                style={styles.activationAreaSlider}
+                minTrackColor={theme.colors.primary}
+                maxTrackColor="rgba(5, 45, 80, 0.22)"
+                thumbSize={44}
               />
             </View>
 
