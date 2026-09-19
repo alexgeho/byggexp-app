@@ -42,9 +42,15 @@
 - [x] Слайдер thumb — белый, чуть выше (transform-скейл откатил: делал овал/клип); реально БОЛЬШЕ thumb = нужен `thumbImage`-ассет (могу добавить)
 - [ ] Чёрная линия у notes — в КОДЕ источника нет (ни бордера, ни divider, ни глоб.дефолта); `underlineColorAndroid="transparent"` НЕ срабатывает на Android New-Arch (Fabric) для multiline; OTA с фиксом уже применён, линия осталась → нужен Android ПО КАБЕЛЮ (adb dump дерева вьюх), вслепую не найти
 
-## Открытые / требуют проверки на устройстве
+## Раунд 4 (adb-сессия, подтверждено на устройстве)
 
-- Чёрная линия notes — нужен Android по кабелю (adb) для точного источника
-- Перетаскивание слайдера радиуса на Android
-- iOS геозона realtime-push
-- Больший thumb слайдера — через thumbImage (по запросу)
+- [x] Чёрная линия notes — источник = нативный EditText underline (нашёл adb-дампом); фикс = сплошной backgroundColor — ✅ OTA
+- [x] Слайдер радиуса **тянется на Android** — заменил @react-native-community/slider на свой `RadiusSlider` (PanResponder, сам захватывает касание) — ✅ ПОДТВЕРЖДЕНО Alexander'ом
+- [x] Thumb крупный (44dp) + круговая тень (offset 0,0) — ✅
+- [x] Меню: у админа имя (`user.name`) + бейдж профессии как у воркера (откат «роль вместо имени») — ✅ OTA
+- [x] Ekonomi (`FieldInput`): крупнее/серая подпись + выровненные 2-колоночные пилюли — ✅ OTA
+- [x] `/app/magic` fallback: кнопка + авто «Öppna appen» (deep-link), иначе стор — ✅ backend
+
+## Открытые
+
+- iOS геозона realtime-push при выходе (ограничение iOS region-monitoring) — ждёт решения (syslog / больший радиус)
