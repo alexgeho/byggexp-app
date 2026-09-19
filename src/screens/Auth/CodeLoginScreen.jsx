@@ -17,7 +17,7 @@ import AuthContext from "../../contexts/AuthContext";
 import { useFeedback } from "../../contexts/FeedbackContext";
 import { useTheme } from "../../theme/ThemeContext";
 
-export default function CodeLoginScreen({ navigation }) {
+export default function CodeLoginScreen({ navigation, route }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const { requestLoginCode, loginWithCode, isLoading } =
@@ -26,7 +26,8 @@ export default function CodeLoginScreen({ navigation }) {
 
   // Two steps: enter email -> request code; then enter the 6-digit code.
   const [step, setStep] = useState("email");
-  const [email, setEmail] = useState("");
+  // Prefilled from the login screen when the user already typed their email.
+  const [email, setEmail] = useState(() => route?.params?.email?.trim() || "");
   const [code, setCode] = useState("");
   const [sending, setSending] = useState(false);
 

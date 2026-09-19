@@ -164,6 +164,17 @@ export default function LoginScreen({ navigation }) {
             </TouchableOpacity>
 
             <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("CodeLogin", { email: email.trim() })
+              }
+              style={styles.codeLoginLink}
+            >
+              <Text style={styles.codeLoginLinkText}>
+                {t("auth.loginWithCode")}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
               onPress={() => navigation.navigate("Register")}
               style={styles.footerLink}
             >

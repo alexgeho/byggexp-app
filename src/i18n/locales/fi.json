@@ -91,6 +91,7 @@
     "signUp": "Rekisteröidy",
     "noAccount": "Eikö sinulla ole tiliä? ",
     "createHere": "Luo tästä →",
+    "loginWithCode": "Kirjaudu koodilla",
     "alreadyMember": "Oletko jo jäsen? ",
     "loginHere": "Kirjaudu tästä →",
     "fillAllFields": "Täytä kaikki kentät.",

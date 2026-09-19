@@ -96,6 +96,15 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
   },
+  codeLoginLink: {
+    marginTop: 16,
+    alignItems: "center",
+  },
+  codeLoginLinkText: {
+    color: "#3183ff",
+    fontSize: 14,
+    fontWeight: "600",
+  },
   footerLink: {
     marginTop: 24,
     alignItems: "flex-start",
