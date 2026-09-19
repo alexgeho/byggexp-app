@@ -423,7 +423,11 @@ export const createStyles = (c) =>
       fontWeight: "600",
     },
     noteInput: {
-      backgroundColor: "transparent",
+      // A solid background (matching the card) forces a ColorDrawable that
+      // replaces the native EditText background — removing its bottom underline
+      // on Android (Fabric ignores underlineColorAndroid). "transparent" wasn't
+      // enough; the card colour keeps it visually identical.
+      backgroundColor: c.surface,
       borderRadius: 0,
       padding: 0,
       width: "100%",
