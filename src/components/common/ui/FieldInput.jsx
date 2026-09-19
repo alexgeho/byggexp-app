@@ -39,10 +39,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   label: {
-    // Match the main create-project fields: larger, muted-grey label.
+    // Match the main create-project field labels exactly (floating label =
+    // textPrimary at 0.5 opacity): larger, muted.
     fontSize: fontSize.body,
     lineHeight: 18,
-    color: content.textSecondary,
+    color: content.textPrimary,
+    opacity: 0.5,
     marginBottom: spacing.xs + 2,
   },
   // In a two-column row, reserve two lines for the label so a wrapping label

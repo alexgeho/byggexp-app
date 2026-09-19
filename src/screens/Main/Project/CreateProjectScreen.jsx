@@ -65,6 +65,7 @@ import {
   EconomySection,
   ContractSection,
 } from "./CreateProjectScreen.parts";
+import { Card, FieldInput } from "../../../components/common/ui";
 import {
   getDocumentTypeMeta,
   isImageDocument,
@@ -822,6 +823,16 @@ export default function CreateProjectScreen() {
             </View>
           </View>
 
+          {/* Order reference (littera) — right under the project name. It and the
+              project name are what carry over into the invoice's Orderreferens. */}
+          <Card style={styles.fieldCardPad}>
+            <FieldInput
+              label={t("createProject.orderReference", "Orderreferens")}
+              value={littera}
+              onChangeText={setLittera}
+            />
+          </Card>
+
           <View style={styles.noteGroup}>
             <TextInput
               multiline={true}
@@ -1374,8 +1385,6 @@ export default function CreateProjectScreen() {
             <ContractSection
               contractNumber={contractNumber}
               setContractNumber={setContractNumber}
-              littera={littera}
-              setLittera={setLittera}
             />
           </ScrollView>
         </View>

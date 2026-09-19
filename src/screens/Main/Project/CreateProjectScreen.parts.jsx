@@ -762,13 +762,9 @@ export const EconomySection = ({
   );
 };
 
-// Contract card: contract number + littera.
-export const ContractSection = ({
-  contractNumber,
-  setContractNumber,
-  littera,
-  setLittera,
-}) => {
+// Contract card: contract number. (The order reference / littera moved to the
+// main form, right under the project name — it and the name feed the invoice.)
+export const ContractSection = ({ contractNumber, setContractNumber }) => {
   const styles = useThemedStyles();
   const { t } = useTranslation();
   return (
@@ -778,11 +774,6 @@ export const ContractSection = ({
         label={t("createProject.contractNumber")}
         value={contractNumber}
         onChangeText={setContractNumber}
-      />
-      <FieldInput
-        label={t("createProject.littera")}
-        value={littera}
-        onChangeText={setLittera}
       />
     </Card>
   );

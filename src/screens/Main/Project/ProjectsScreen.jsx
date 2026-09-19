@@ -95,39 +95,22 @@ export default function ProjectsScreen() {
   const showCreateProject = canCreateProjects(user?.role);
 
   // Swipe a project card left to reveal a red "Ta bort" (delete) action. Only
-  // for roles that can manage projects. Delete is irreversible, so confirm first.
+  // for roles that can manage projects. Tapping it deletes immediately (no
+  // confirm — the deliberate left-swipe is the safeguard).
   const handleDeleteProject = useCallback(
-    (project) => {
+    async (project) => {
       const id = getProjectId(project);
-      Alert.alert(
-        t("projects.deleteConfirmTitle", "Ta bort projekt?"),
-        t("projects.deleteConfirmMessage", {
-          defaultValue:
-            '"{{name}}" tas bort permanent. Detta går inte att ångra.',
-          name: project?.name || "",
-        }),
-        [
-          { text: t("common.cancel", "Avbryt"), style: "cancel" },
-          {
-            text: t("common.delete", "Ta bort"),
-            style: "destructive",
-            onPress: async () => {
-              try {
-                await projectService.delete(id);
-                setProjects((prev) =>
-                  prev.filter((p) => getProjectId(p) !== id),
-                );
-              } catch (err) {
-                console.error("Failed to delete project:", err);
-                Alert.alert(
-                  t("common.error", "Fel"),
-                  t("projects.deleteFailed", "Kunde inte ta bort projektet."),
-                );
-              }
-            },
-          },
-        ],
-      );
+      // Optimistic remove so the row disappears at once.
+      setProjects((prev) => prev.filter((p) => getProjectId(p) !== id));
+      try {
+        await projectService.delete(id);
+      } catch (err) {
+        console.error("Failed to delete project:", err);
+        Alert.alert(
+          t("common.error", "Fel"),
+          t("projects.deleteFailed", "Kunde inte ta bort projektet."),
+        );
+      }
     },
     [t],
   );
