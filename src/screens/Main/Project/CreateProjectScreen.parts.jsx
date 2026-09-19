@@ -9,6 +9,7 @@ import {
   Platform,
   ScrollView,
   ActivityIndicator,
+  Keyboard,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -516,7 +517,13 @@ export const LocationPickerModal = ({
           <Text style={styles.mapModalTitle}>
             {t("createProject.projectAddress")}
           </Text>
-          <View style={styles.placeholder} />
+          {/* Blue checkmark save in the header (like CreateProject) — always
+              above the keyboard, unlike the old full-width bottom button. */}
+          <HeaderCheckButton
+            onPress={onConfirm}
+            disabled={!selectedCoordinate}
+            accessibilityLabel={t("common.save")}
+          />
         </View>
 
         <ScrollView
@@ -570,7 +577,10 @@ export const LocationPickerModal = ({
                       index === suggestions.length - 1 &&
                         styles.mapSuggestionItemLast,
                     ]}
-                    onPress={() => onSelectSuggestion(item)}
+                    onPress={() => {
+                      Keyboard.dismiss();
+                      onSelectSuggestion(item);
+                    }}
                   >
                     <Icon
                       name="map-pin"
@@ -604,17 +614,8 @@ export const LocationPickerModal = ({
               {location || t("createProject.chooseLocationHint")}
             </Text>
 
-            <LocationMapPicker
-              latitude={selectedCoordinate?.latitude}
-              longitude={selectedCoordinate?.longitude}
-              radiusMeters={radiusMeters}
-              onPickCoordinate={onPickCoordinate}
-              onInteractionChange={setIsMapInteracting}
-            />
-            <Text style={styles.mapDragHint}>
-              {t("createProject.mapDragHint")}
-            </Text>
-
+            {/* Radius selector ABOVE the map so the on-screen keyboard can't
+                cover it (Android). */}
             <View style={styles.activationAreaRow}>
               <View style={styles.activationAreaTextWrap}>
                 <Text style={styles.activationAreaTitle}>
@@ -632,33 +633,50 @@ export const LocationPickerModal = ({
               </View>
             </View>
 
-            <Slider
-              minimumValue={50}
-              maximumValue={1500}
-              step={50}
-              value={radiusMeters}
-              onValueChange={setRadiusMeters}
-              onSlidingStart={() => setIsSlidingRadius(true)}
-              onSlidingComplete={() => setIsSlidingRadius(false)}
-              minimumTrackTintColor={theme.colors.primary}
-              maximumTrackTintColor="rgba(5, 45, 80, 0.12)"
-              thumbTintColor={theme.colors.primary}
-              style={styles.activationAreaSlider}
-            />
-
-            <TouchableOpacity
-              style={[
-                styles.mapChooseLocationButton,
-                !selectedCoordinate && styles.mapChooseLocationButtonDisabled,
-              ]}
-              activeOpacity={0.85}
-              onPress={onConfirm}
-              disabled={!selectedCoordinate}
+            {/* Capture the touch on the way down so the enclosing ScrollView
+                doesn't steal the slider's horizontal drag on Android (freezing
+                the scroll BEFORE the gesture is lost). Returning false lets the
+                Slider still receive the touch. */}
+            <View
+              onStartShouldSetResponderCapture={() => {
+                setIsSlidingRadius(true);
+                Keyboard.dismiss();
+                return false;
+              }}
             >
-              <Text style={styles.mapChooseLocationButtonText}>
-                {t("createProject.chooseLocation")}
-              </Text>
-            </TouchableOpacity>
+              <Slider
+                minimumValue={50}
+                maximumValue={1500}
+                step={50}
+                value={radiusMeters}
+                onValueChange={setRadiusMeters}
+                onSlidingStart={() => {
+                  setIsSlidingRadius(true);
+                  Keyboard.dismiss();
+                }}
+                onSlidingComplete={() => setIsSlidingRadius(false)}
+                minimumTrackTintColor={theme.colors.primary}
+                maximumTrackTintColor="rgba(5, 45, 80, 0.12)"
+                thumbTintColor={theme.colors.primary}
+                style={styles.activationAreaSlider}
+              />
+            </View>
+
+            <LocationMapPicker
+              latitude={selectedCoordinate?.latitude}
+              longitude={selectedCoordinate?.longitude}
+              radiusMeters={radiusMeters}
+              onPickCoordinate={onPickCoordinate}
+              onInteractionChange={(interacting) => {
+                if (interacting) {
+                  Keyboard.dismiss();
+                }
+                setIsMapInteracting(interacting);
+              }}
+            />
+            <Text style={styles.mapDragHint}>
+              {t("createProject.mapDragHint")}
+            </Text>
           </View>
         </ScrollView>
       </View>

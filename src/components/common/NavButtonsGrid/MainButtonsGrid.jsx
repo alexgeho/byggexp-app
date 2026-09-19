@@ -49,10 +49,19 @@ export default function MainButtonsGrid({
     userId || user?._id || user?.id,
     selectedProject,
   );
-  const { employeeStats, shiftStats } = useHomeButtonStats({
+  const { employeeStats, shiftStats, refreshStats } = useHomeButtonStats({
     projectId: selectedProjectId,
     loadEmployeeStats: showEmployeeStats,
   });
+
+  // Re-fetch the "at work" / employee counts every time Home regains focus, so
+  // they reconcile with the backend after adding an employee, checking in, etc.
+  // (the hook otherwise only refetches when the project id changes).
+  useFocusEffect(
+    React.useCallback(() => {
+      refreshStats?.();
+    }, [refreshStats]),
+  );
 
   const [enabledButtons, setEnabledButtons] = useState(() =>
     getDefaultEnabledButtons(user?.role),

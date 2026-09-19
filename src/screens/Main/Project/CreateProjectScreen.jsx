@@ -822,6 +822,7 @@ export default function CreateProjectScreen() {
             <TextInput
               multiline={true}
               placeholder={t("createProject.note")}
+              placeholderTextColor={theme.content.placeholder}
               style={styles.noteInput}
               value={note}
               onChangeText={setNote}
