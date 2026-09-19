@@ -14,7 +14,11 @@ export const FieldInput = ({
   ...rest
 }) => (
   <View style={[half ? styles.half : styles.full, style]}>
-    {label ? <Text style={styles.label}>{label}</Text> : null}
+    {label ? (
+      <Text style={[styles.label, half && styles.labelHalf]} numberOfLines={2}>
+        {label}
+      </Text>
+    ) : null}
     <TextInput
       style={styles.input}
       value={value}
@@ -35,17 +39,25 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   label: {
-    fontSize: fontSize.caption,
-    color: content.textPrimary,
+    // Match the main create-project fields: larger, muted-grey label.
+    fontSize: fontSize.body,
+    lineHeight: 18,
+    color: content.textSecondary,
     marginBottom: spacing.xs + 2,
   },
+  // In a two-column row, reserve two lines for the label so a wrapping label
+  // (e.g. "Självkostnad / timme (SEK)") doesn't push its input box out of line
+  // with the sibling's — the pills stay level.
+  labelHalf: {
+    minHeight: 36,
+  },
   input: {
-    height: 44,
+    height: 48,
     borderWidth: 1,
     borderColor: content.border,
     borderRadius: radius.md,
     paddingHorizontal: spacing.lg - 2,
-    fontSize: fontSize.body,
+    fontSize: fontSize.subhead,
     color: content.textPrimary,
     backgroundColor: content.surface,
   },
