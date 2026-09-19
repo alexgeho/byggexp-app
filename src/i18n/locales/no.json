@@ -791,6 +791,10 @@
     "about": "Om appen",
     "logOut": "Logg ut",
     "userFallback": "Bruker",
+    "addTitle": "Legg til tittel",
+    "editTitle": "Din yrkestittel",
+    "editTitleHint": "Skriv hva du jobber som – f.eks. Tømrer, Elektriker eller Byggeleder.",
+    "titlePlaceholder": "F.eks. Tømrer",
     "economy": "Økonomi"
   },
   "schedule": {

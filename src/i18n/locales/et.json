@@ -791,6 +791,10 @@
     "about": "Rakendusest",
     "logOut": "Logi välja",
     "userFallback": "Kasutaja",
+    "addTitle": "Lisa ametinimetus",
+    "editTitle": "Sinu ametinimetus",
+    "editTitleHint": "Kirjuta, mida sa teed – nt Puusepp, Elektrik või Objektijuht.",
+    "titlePlaceholder": "Nt Puusepp",
     "economy": "Majandus"
   },
   "schedule": {

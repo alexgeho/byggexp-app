@@ -791,6 +791,10 @@
     "about": "Tietoa sovelluksesta",
     "logOut": "Kirjaudu ulos",
     "userFallback": "Käyttäjä",
+    "addTitle": "Lisää nimike",
+    "editTitle": "Ammattinimikkeesi",
+    "editTitleHint": "Kirjoita, mitä teet – esim. Kirvesmies, Sähköasentaja tai Työnjohtaja.",
+    "titlePlaceholder": "Esim. Kirvesmies",
     "economy": "Talous"
   },
   "schedule": {

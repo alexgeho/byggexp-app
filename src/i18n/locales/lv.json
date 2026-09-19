@@ -791,6 +791,10 @@
     "about": "Par lietotni",
     "logOut": "Izrakstīties",
     "userFallback": "Lietotājs",
+    "addTitle": "Pievienot amatu",
+    "editTitle": "Jūsu amats",
+    "editTitleHint": "Ieraksti, kas tu esi pēc profesijas – piem., Galdnieks, Elektriķis vai Būvdarbu vadītājs.",
+    "titlePlaceholder": "Piem., Galdnieks",
     "economy": "Finanses"
   },
   "schedule": {

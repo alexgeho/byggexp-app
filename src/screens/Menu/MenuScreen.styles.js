@@ -10,7 +10,7 @@ export function createStyles(theme) {
   return StyleSheet.create({
     container: {
       ...standardScreenContainer,
-      backgroundColor: "#F2F2F7", // iOS systemGroupedBackground (light)
+      backgroundColor: c.background, // follows theme (light #F2F2F7 / dark #141414)
     },
     header: {
       ...standardScreenHeader,
@@ -54,8 +54,8 @@ export function createStyles(theme) {
       paddingHorizontal: 8,
     },
     sectionHeaderTitle: {
-      // iOS navigational group header (Mail "iCloud"/"Byggexp"): bold black.
-      color: "#000000", // iOS label
+      // iOS navigational group header (Mail "iCloud"/"Byggexp"): bold, follows theme.
+      color: c.textPrimary, // label (light #000 / dark #FFF)
       fontSize: 20,
       fontWeight: "700",
       fontFamily: theme.text.fontFamily.bold,
@@ -63,7 +63,7 @@ export function createStyles(theme) {
     sectionChevron: {
       width: 20,
       height: 20,
-      tintColor: "#007AFF", // iOS systemBlue chevron
+      tintColor: c.accent, // systemBlue chevron (theme accent)
     },
     settingsSection: {
       marginBottom: 24,
@@ -73,7 +73,7 @@ export function createStyles(theme) {
     },
     groupCard: {
       width: "100%",
-      backgroundColor: "#FFFFFF", // iOS secondarySystemGroupedBackground
+      backgroundColor: c.card, // list card, follows theme (light #FFF / dark #2C2C2E)
       borderRadius: 10, // iOS inset-grouped corner radius
       overflow: "hidden",
     },
@@ -143,6 +143,86 @@ export function createStyles(theme) {
       fontSize: 13,
       color: theme.colors.primary,
       fontWeight: "600",
+    },
+    // Unset job title (worker): dashed, muted "add yours" invite.
+    roleBadgePlaceholder: {
+      backgroundColor: "transparent",
+      borderWidth: 1,
+      borderStyle: "dashed",
+      borderColor: theme.colors.primary + "66",
+    },
+    roleTextPlaceholder: {
+      color: c.textMuted,
+      fontWeight: "500",
+    },
+    // Job-title editor modal
+    titleModalOverlay: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      paddingHorizontal: 24,
+    },
+    titleModalBackdrop: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: "rgba(0,0,0,0.45)",
+    },
+    titleModalCard: {
+      width: "100%",
+      maxWidth: 420,
+      backgroundColor: c.card,
+      borderRadius: 20,
+      padding: 20,
+    },
+    titleModalTitle: {
+      color: c.textPrimary,
+      fontSize: 18,
+      fontWeight: "700",
+      fontFamily: theme.text.fontFamily.bold,
+    },
+    titleModalSubtitle: {
+      color: c.textMuted,
+      fontSize: 14,
+      marginTop: 6,
+      marginBottom: 16,
+      lineHeight: 20,
+    },
+    titleModalInput: {
+      backgroundColor: c.inputSurface,
+      borderRadius: 12,
+      paddingHorizontal: 14,
+      paddingVertical: 12,
+      fontSize: 16,
+      color: c.textPrimary,
+    },
+    titleModalActions: {
+      flexDirection: "row",
+      justifyContent: "flex-end",
+      marginTop: 20,
+      gap: 12,
+    },
+    titleModalButton: {
+      paddingVertical: 12,
+      paddingHorizontal: 20,
+      borderRadius: 12,
+      minWidth: 96,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    titleModalCancel: {
+      backgroundColor: c.surfaceMuted,
+    },
+    titleModalCancelText: {
+      color: c.textPrimary,
+      fontSize: 15,
+      fontWeight: "600",
+    },
+    titleModalSave: {
+      backgroundColor: theme.colors.primary,
+    },
+    titleModalSaveText: {
+      color: "#ffffff",
+      fontSize: 15,
+      fontWeight: "700",
     },
     logoutButtonText: {
       color: "#ffffff",

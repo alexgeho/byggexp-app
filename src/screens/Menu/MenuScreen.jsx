@@ -5,7 +5,18 @@ import React, {
   useCallback,
   useRef,
 } from "react";
-import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  Modal,
+  TextInput,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../theme/ThemeContext";
@@ -86,13 +97,20 @@ export default function MenuScreen() {
           }
           const nextAvatarUrl = profile?.avatarUrl ?? null;
           setProfileAvatarUrl(nextAvatarUrl);
-          // Persist the avatar onto the shared user so it's there instantly on
-          // the next entry (and after a cold start) — killing the default-avatar
-          // flash for good, and updating the photo everywhere else too.
-          if (nextAvatarUrl && nextAvatarUrl !== userRef.current?.avatarUrl) {
+          // Persist the avatar + job title onto the shared user so they're there
+          // instantly on the next entry (and after a cold start) — killing the
+          // default-avatar flash for good, and picking up an admin-set profession.
+          const nextProfession = (profile?.profession ?? "").trim();
+          const avatarChanged =
+            nextAvatarUrl && nextAvatarUrl !== userRef.current?.avatarUrl;
+          const professionChanged =
+            profile?.profession != null &&
+            nextProfession !== (userRef.current?.profession ?? "").trim();
+          if (avatarChanged || professionChanged) {
             updateStoredUserRef.current?.({
               ...userRef.current,
-              avatarUrl: nextAvatarUrl,
+              ...(avatarChanged ? { avatarUrl: nextAvatarUrl } : {}),
+              ...(professionChanged ? { profession: nextProfession } : {}),
             });
           }
         })
@@ -123,6 +141,62 @@ export default function MenuScreen() {
   // Economy/invoicing is gated on the finance.manage capability, so a delegated
   // "office" user sees it even without an admin role.
   const canFinance = hasPermission("finance.manage");
+
+  // Profile badge: show the person's self-authored job title (yrkestitel /
+  // `profession`) instead of the bare system role — people identify by their
+  // trade, not "Arbetare". If it's unset, admins keep their role label; everyone
+  // else gets a tappable invite to add one. Tapping the badge opens an inline
+  // editor so anyone can set/change their title (persisted to their profile).
+  const professionText = (user?.profession || "").trim();
+  const isAdminRole = ["superadmin", "companyAdmin", "projectAdmin"].includes(
+    user?.role,
+  );
+  const roleLabel =
+    user?.role === "superadmin"
+      ? t("roles.superadmin")
+      : user?.role === "companyAdmin"
+        ? t("roles.companyAdmin")
+        : user?.role === "projectAdmin"
+          ? t("roles.projectAdmin")
+          : user?.role === "worker"
+            ? t("roles.worker")
+            : t("roles.user");
+  const badgeIsPlaceholder = !professionText && !isAdminRole;
+  const badgeText = professionText
+    ? professionText
+    : isAdminRole
+      ? roleLabel
+      : t("menu.addTitle");
+
+  const [titleModalOpen, setTitleModalOpen] = useState(false);
+  const [titleDraft, setTitleDraft] = useState("");
+  const [savingTitle, setSavingTitle] = useState(false);
+
+  const openTitleEditor = useCallback(() => {
+    setTitleDraft((user?.profession || "").trim());
+    setTitleModalOpen(true);
+  }, [user?.profession]);
+
+  const saveTitle = useCallback(async () => {
+    if (!profileId) {
+      return;
+    }
+    const next = titleDraft.trim();
+    if (next === (user?.profession || "").trim()) {
+      setTitleModalOpen(false);
+      return;
+    }
+    try {
+      setSavingTitle(true);
+      await userService.update(profileId, { profession: next });
+      updateStoredUser?.({ ...user, profession: next });
+      setTitleModalOpen(false);
+    } catch (error) {
+      console.error("MenuScreen: Failed to save job title:", error);
+    } finally {
+      setSavingTitle(false);
+    }
+  }, [titleDraft, user, profileId, updateStoredUser]);
 
   const menuItems = useMemo(() => {
     const baseItems = [
@@ -522,24 +596,27 @@ export default function MenuScreen() {
             </Text>
           </View>
 
-          {/* BADGE */}
-          <View style={styles.roleBadge}>
+          {/* BADGE — self-authored job title (tap to edit) */}
+          <TouchableOpacity
+            style={[
+              styles.roleBadge,
+              badgeIsPlaceholder && styles.roleBadgePlaceholder,
+            ]}
+            onPress={openTitleEditor}
+            accessibilityRole="button"
+            accessibilityLabel={t("menu.editTitle")}
+          >
             <Text
-              style={styles.roleText}
+              style={[
+                styles.roleText,
+                badgeIsPlaceholder && styles.roleTextPlaceholder,
+              ]}
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-              {user.role === "superadmin"
-                ? t("roles.superadmin")
-                : user.role === "companyAdmin"
-                  ? t("roles.companyAdmin")
-                  : user.role === "projectAdmin"
-                    ? t("roles.projectAdmin")
-                    : user.role === "worker"
-                      ? t("roles.worker")
-                      : t("roles.user")}
+              {badgeText}
             </Text>
-          </View>
+          </TouchableOpacity>
         </View>
       )}
 
@@ -600,6 +677,66 @@ export default function MenuScreen() {
           </Text>
         )}
       />
+
+      {/* Inline job-title (yrkestitel) editor */}
+      <Modal
+        visible={titleModalOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setTitleModalOpen(false)}
+      >
+        <KeyboardAvoidingView
+          style={styles.titleModalOverlay}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+        >
+          <TouchableOpacity
+            style={styles.titleModalBackdrop}
+            activeOpacity={1}
+            onPress={() => setTitleModalOpen(false)}
+          />
+          <View style={styles.titleModalCard}>
+            <Text style={styles.titleModalTitle}>{t("menu.editTitle")}</Text>
+            <Text style={styles.titleModalSubtitle}>
+              {t("menu.editTitleHint")}
+            </Text>
+            <TextInput
+              style={styles.titleModalInput}
+              value={titleDraft}
+              onChangeText={setTitleDraft}
+              placeholder={t("menu.titlePlaceholder")}
+              placeholderTextColor={theme.content.placeholder}
+              maxLength={60}
+              autoFocus
+              returnKeyType="done"
+              onSubmitEditing={saveTitle}
+            />
+            <View style={styles.titleModalActions}>
+              <TouchableOpacity
+                style={[styles.titleModalButton, styles.titleModalCancel]}
+                onPress={() => setTitleModalOpen(false)}
+                disabled={savingTitle}
+              >
+                <Text style={styles.titleModalCancelText}>
+                  {t("common.cancel")}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.titleModalButton, styles.titleModalSave]}
+                onPress={saveTitle}
+                disabled={savingTitle}
+              >
+                {savingTitle ? (
+                  <ActivityIndicator size="small" color="#ffffff" />
+                ) : (
+                  <Text style={styles.titleModalSaveText}>
+                    {t("common.save")}
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </View>
   );
 }

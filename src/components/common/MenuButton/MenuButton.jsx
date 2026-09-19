@@ -2,18 +2,13 @@ import React from "react";
 import { useNavigation } from "@react-navigation/native";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { AppIcon } from "../AppIcon";
-
-// Exact iOS (light) system colours — see the palette table in HANDOFF.md.
-const IOS = {
-  blue: "#007AFF", // systemBlue
-  label: "#000000", // label
-  chevron: "#C7C7CC", // tertiaryLabel-ish chevron grey
-  separator: "#C6C6C8", // opaque separator
-};
+import { useTheme } from "../../../theme/ThemeContext";
 
 // `icon` is a Feather glyph name (one icon collection across the whole menu).
 export const MenuButton = ({ screen, params, title, icon, isLast = false }) => {
   const navigation = useNavigation();
+  const { theme } = useTheme();
+  const c = theme.content;
 
   return (
     <TouchableOpacity
@@ -23,16 +18,24 @@ export const MenuButton = ({ screen, params, title, icon, isLast = false }) => {
       accessibilityLabel={title}
     >
       <View style={styles.menuIconContainer}>
-        <AppIcon name={icon} size={28} color={IOS.blue} strokeWidth={1.5} />
+        <AppIcon name={icon} size={28} color={c.accent} strokeWidth={1.5} />
       </View>
       {/* Text + chevron carry the separator, so — like iOS — the hairline is
           inset to start at the label, not under the icon. */}
-      <View style={[styles.rowRight, !isLast && styles.rowRightDivider]}>
-        <Text style={styles.menuTitle}>{title}</Text>
+      <View
+        style={[
+          styles.rowRight,
+          !isLast && styles.rowRightDivider,
+          !isLast && { borderBottomColor: c.divider },
+        ]}
+      >
+        <Text style={[styles.menuTitle, { color: c.textPrimary }]}>
+          {title}
+        </Text>
         <AppIcon
           name="chevron-right"
           size={16}
-          color={IOS.chevron}
+          color={c.placeholder}
           strokeWidth={2}
         />
       </View>
@@ -64,11 +67,11 @@ const styles = StyleSheet.create({
   },
   rowRightDivider: {
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: IOS.separator,
+    // borderBottomColor is applied inline from theme (c.divider).
   },
   menuTitle: {
     flex: 1,
-    color: IOS.label,
+    // color is applied inline from theme (c.textPrimary).
     fontSize: 17, // iOS body
     fontWeight: "400",
   },

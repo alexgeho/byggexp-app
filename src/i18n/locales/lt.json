@@ -791,6 +791,10 @@
     "about": "Apie programėlę",
     "logOut": "Atsijungti",
     "userFallback": "Vartotojas",
+    "addTitle": "Pridėti pareigas",
+    "editTitle": "Jūsų pareigos",
+    "editTitleHint": "Parašykite, kuo dirbate – pvz., Stalius, Elektrikas ar Statybos vadovas.",
+    "titlePlaceholder": "Pvz., Stalius",
     "economy": "Finansai"
   },
   "schedule": {

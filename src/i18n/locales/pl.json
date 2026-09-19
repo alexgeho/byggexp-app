@@ -791,6 +791,10 @@
     "about": "O aplikacji",
     "logOut": "Wyloguj się",
     "userFallback": "Użytkownik",
+    "addTitle": "Dodaj tytuł",
+    "editTitle": "Twój tytuł zawodowy",
+    "editTitleHint": "Wpisz, czym się zajmujesz – np. Stolarz, Elektryk lub Kierownik budowy.",
+    "titlePlaceholder": "Np. Stolarz",
     "economy": "Finanse"
   },
   "schedule": {

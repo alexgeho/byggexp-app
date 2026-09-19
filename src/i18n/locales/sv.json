@@ -791,6 +791,10 @@
     "about": "Om appen",
     "logOut": "Logga ut",
     "userFallback": "Användare",
+    "addTitle": "Lägg till titel",
+    "editTitle": "Din yrkestitel",
+    "editTitleHint": "Skriv vad du jobbar som – t.ex. Snickare, Elektriker eller Platschef.",
+    "titlePlaceholder": "T.ex. Snickare",
     "economy": "Ekonomi"
   },
   "schedule": {

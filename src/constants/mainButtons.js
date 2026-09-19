@@ -66,12 +66,14 @@ export const homeSections = [
   },
 ];
 
-// Admin default: everything on (admins curate their own home). This is also the
-// fallback default for any non-worker role.
+// Admin default (company-admin / admin first launch): the six square buttons
+// per the 1.1.1 spec — Anställda, Verktyg, Chattar, Arbetspass, Projekt,
+// Uppgifter. Camera stays available as the round secondary action + in Customize,
+// it's just not one of the default grid buttons. Also the fallback for any
+// non-worker role. Admins can add/remove the rest from Customize.
 export const defaultEnabledButtons = [
   "employees",
   "tools",
-  "camera",
   "chats",
   "shifts",
   "projects",

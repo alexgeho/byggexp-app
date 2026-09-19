@@ -791,6 +791,10 @@
     "about": "O aplikaciji",
     "logOut": "Odjava",
     "userFallback": "Korisnik",
+    "addTitle": "Dodaj zvanje",
+    "editTitle": "Vaše zvanje",
+    "editTitleHint": "Napišite čime se bavite – npr. Stolar, Električar ili Voditelj gradilišta.",
+    "titlePlaceholder": "Npr. Stolar",
     "economy": "Finansije"
   },
   "schedule": {

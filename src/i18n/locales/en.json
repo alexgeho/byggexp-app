@@ -791,6 +791,10 @@
     "about": "About the App",
     "logOut": "Log out",
     "userFallback": "User",
+    "addTitle": "Add title",
+    "editTitle": "Your job title",
+    "editTitleHint": "Write what you do – e.g. Carpenter, Electrician or Site manager.",
+    "titlePlaceholder": "E.g. Carpenter",
     "economy": "Finance"
   },
   "schedule": {
