@@ -51,6 +51,18 @@
 - [x] Ekonomi (`FieldInput`): крупнее/серая подпись + выровненные 2-колоночные пилюли — ✅ OTA
 - [x] `/app/magic` fallback: кнопка + авто «Öppna appen» (deep-link), иначе стор — ✅ backend
 
-## Открытые
+## Раунд 5 (фидбэк 23:xx, iPhone по кабелю)
 
-- iOS геозона realtime-push при выходе (ограничение iOS region-monitoring) — ждёт решения (syslog / больший радиус)
+- [x] Удаление проекта: ProjectAdmin получал `[403] Access denied` → бэкенд: добавил ProjectAdmin в `@Roles` на `DELETE /projects/:id` + `assertCanDeleteProject` (ProjectAdmin удаляет только свои: owner/projectManager) — ✅ прод `89280b9` (серверный, без пересборки/OTA)
+- [x] Диагностика удаления: on-screen Alert показывает `[status] message` — сработало (скриншот `[403]`). NB: `idevicesyslog` на iOS 26 мёртв (Apple сменила протокол c iOS 17+), релиз режет console.* — логи по кабелю НЕ работают, юзать on-screen диагностику
+- [x] Orderreferens: перенёс в ту же карточку, что Projektnamn, строкой под ним, без рамки (floating label + hairline sep) — ✅ OTA `bd0c4e8e`
+- [x] Ekonomi «цвет как на создании»: замерил реальные пиксели — лейблы уже были идентичны (#7F7F7F=#000@50%). По выбору Alexander (AskUserQuestion, выбрал ВСЕ 3): лейблы → чёрные, поля → безрамочные, заголовки EKONOMI/AVTAL → чёрные. Через новые пропсы FieldInput `borderless`/`labelStyle` (shared-компонент не сломан) — ✅ OTA `60e55866`
+- [x] Anteckning: отступ снизу 28→20 = как у всех блоков (сверху/снизу одинаково) — ✅ OTA `60e55866`
+- [i] Процесс: при «сделай цвет как X» — СНАЧАЛА замерять пиксели+код, не на глаз; сохранено в память `feedback_color_match_sample_pixels`
+
+## Открытые / след. шаги
+
+- iOS геозона realtime-push при выходе (ограничение iOS region-monitoring) — ждёт решения (больший радиус трогает закреплённый gps-конфиг; syslog по кабелю на iOS 26 недоступен без pymobiledevice3+tunnel)
+- Слайдер радиуса на Android — перетаскивание подтверждено; ⏳ проверить в свежем OTA-билде что не регрессировало
+- Ekonomi: те же чёрные-безрамочные стили НЕ применены к экрану деталей проекта (ProjectScreen Ekonomi) — если Alexander захочет консистентности, применить те же пропсы там (call sites ProjectScreen.jsx:706/714, ecoSectionTitle)
+- Проверить на устройстве после OTA `60e55866`: Ekonomi (чёрные лейблы/заголовки, без рамок) + равные отступы Anteckning
