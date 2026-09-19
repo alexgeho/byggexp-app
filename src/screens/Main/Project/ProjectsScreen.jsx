@@ -100,15 +100,18 @@ export default function ProjectsScreen() {
   const handleDeleteProject = useCallback(
     async (project) => {
       const id = getProjectId(project);
-      // Optimistic remove so the row disappears at once.
-      setProjects((prev) => prev.filter((p) => getProjectId(p) !== id));
       try {
         await projectService.delete(id);
+        // Remove only once the backend confirms — no flash/re-appear on failure.
+        setProjects((prev) => prev.filter((p) => getProjectId(p) !== id));
       } catch (err) {
-        console.error("Failed to delete project:", err);
+        const status = err?.response?.status;
+        const raw = err?.response?.data?.message ?? err?.message;
+        const detail = Array.isArray(raw) ? raw.join(", ") : raw;
+        console.error("Failed to delete project:", status, detail, err);
         Alert.alert(
           t("common.error", "Fel"),
-          t("projects.deleteFailed", "Kunde inte ta bort projektet."),
+          `${t("projects.deleteFailed", "Kunde inte ta bort projektet.")}\n[${status ?? "?"}] ${detail ?? ""}`,
         );
       }
     },
