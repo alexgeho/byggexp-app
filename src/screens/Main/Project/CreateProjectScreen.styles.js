@@ -775,9 +775,12 @@ export const createStyles = (c) =>
       fontSize: 14,
       fontWeight: "600",
     },
+    activationAreaSliderWrap: {
+      width: "100%",
+    },
     activationAreaSlider: {
       width: "100%",
-      height: 40,
+      height: 44,
       marginTop: 2,
     },
     mapChooseLocationButton: {

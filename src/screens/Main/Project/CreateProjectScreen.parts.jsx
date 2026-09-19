@@ -646,28 +646,39 @@ export const LocationPickerModal = ({
               </View>
             </View>
 
-            <Slider
-              minimumValue={50}
-              maximumValue={1500}
-              step={50}
-              value={radiusMeters}
-              onValueChange={setRadiusMeters}
-              // Freeze the ScrollView the moment the drag starts so it doesn't
-              // steal the horizontal gesture on Android, and drop the keyboard
-              // so the slider is fully visible.
-              onSlidingStart={() => {
+            {/* Freeze the ScrollView the instant a touch lands on the slider
+                row (capture phase = before the ScrollView claims the horizontal
+                pan on Android). Explicit width so the wrapper can't collapse the
+                slider. Returns false so the Slider still receives the gesture. */}
+            <View
+              style={styles.activationAreaSliderWrap}
+              onStartShouldSetResponderCapture={() => {
                 setIsSlidingRadius(true);
                 Keyboard.dismiss();
+                return false;
               }}
-              onSlidingComplete={() => setIsSlidingRadius(false)}
-              minimumTrackTintColor={theme.colors.primary}
-              maximumTrackTintColor="rgba(5, 45, 80, 0.22)"
-              // Custom thumb: a bigger white knob with a soft drop shadow, so
-              // it's clearly visible and grabbable (the library's default thumb
-              // is tiny and blends into the track).
-              thumbImage={require("../../../assets/slider-thumb.png")}
-              style={styles.activationAreaSlider}
-            />
+              onResponderRelease={() => setIsSlidingRadius(false)}
+            >
+              <Slider
+                minimumValue={50}
+                maximumValue={1500}
+                step={50}
+                value={radiusMeters}
+                onValueChange={setRadiusMeters}
+                onSlidingStart={() => {
+                  setIsSlidingRadius(true);
+                  Keyboard.dismiss();
+                }}
+                onSlidingComplete={() => setIsSlidingRadius(false)}
+                minimumTrackTintColor={theme.colors.primary}
+                maximumTrackTintColor="rgba(5, 45, 80, 0.22)"
+                // Custom thumb: a bigger white knob with a soft drop shadow, so
+                // it's clearly visible and grabbable (the library's default thumb
+                // is tiny and blends into the track).
+                thumbImage={require("../../../assets/slider-thumb.png")}
+                style={styles.activationAreaSlider}
+              />
+            </View>
 
             <LocationMapPicker
               latitude={selectedCoordinate?.latitude}
