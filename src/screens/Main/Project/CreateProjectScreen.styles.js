@@ -153,11 +153,22 @@ export const createStyles = (c) =>
       borderRadius: 10,
       paddingHorizontal: 16,
       paddingVertical: 12,
-      marginBottom: 28,
+      // Match every other block's gap (groupCard = 20) so the space above and
+      // below the Anteckning card is identical.
+      marginBottom: 20,
       borderWidth: 0,
     },
     fieldCardPad: {
       marginBottom: 20,
+    },
+    // Ekonomi/Avtal: black section headers + black field labels (match the
+    // create-project row titles), replacing the muted grey secondaryLabel.
+    ecoSectionTitleBlack: {
+      color: c.textPrimary,
+    },
+    ecoFieldLabelBlack: {
+      color: c.textPrimary,
+      opacity: 1,
     },
     fieldRow: {
       flexDirection: "row",

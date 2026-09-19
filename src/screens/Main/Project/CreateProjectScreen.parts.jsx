@@ -709,11 +709,15 @@ export const EconomySection = ({
   const { t } = useTranslation();
   return (
     <Card style={styles.fieldCardPad}>
-      <SectionTitle>{t("createProject.economySection")}</SectionTitle>
+      <SectionTitle style={styles.ecoSectionTitleBlack}>
+        {t("createProject.economySection")}
+      </SectionTitle>
       <View style={styles.fieldRow}>
         <FieldInput
           half
           keyboardType="numeric"
+          borderless
+          labelStyle={styles.ecoFieldLabelBlack}
           label={t("createProject.budget")}
           value={budget}
           onChangeText={setBudget}
@@ -721,6 +725,8 @@ export const EconomySection = ({
         <FieldInput
           half
           keyboardType="numeric"
+          borderless
+          labelStyle={styles.ecoFieldLabelBlack}
           label={t("createProject.plannedHours")}
           value={plannedHours}
           onChangeText={setPlannedHours}
@@ -730,6 +736,8 @@ export const EconomySection = ({
         <FieldInput
           half
           keyboardType="numeric"
+          borderless
+          labelStyle={styles.ecoFieldLabelBlack}
           label={t("createProject.plannedMaterials")}
           value={plannedMaterialsCost}
           onChangeText={setPlannedMaterialsCost}
@@ -737,6 +745,8 @@ export const EconomySection = ({
         <FieldInput
           half
           keyboardType="numeric"
+          borderless
+          labelStyle={styles.ecoFieldLabelBlack}
           label={t("createProject.spentMaterials")}
           value={spentMaterialsCost}
           onChangeText={setSpentMaterialsCost}
@@ -746,6 +756,8 @@ export const EconomySection = ({
         <FieldInput
           half
           keyboardType="numeric"
+          borderless
+          labelStyle={styles.ecoFieldLabelBlack}
           label={t("createProject.costRate")}
           value={costRatePerHour}
           onChangeText={setCostRatePerHour}
@@ -753,6 +765,8 @@ export const EconomySection = ({
         <FieldInput
           half
           keyboardType="numeric"
+          borderless
+          labelStyle={styles.ecoFieldLabelBlack}
           label={t("createProject.billRate")}
           value={billRatePerHour}
           onChangeText={setBillRatePerHour}
@@ -769,8 +783,12 @@ export const ContractSection = ({ contractNumber, setContractNumber }) => {
   const { t } = useTranslation();
   return (
     <Card style={styles.fieldCardPad}>
-      <SectionTitle>{t("createProject.contractSection")}</SectionTitle>
+      <SectionTitle style={styles.ecoSectionTitleBlack}>
+        {t("createProject.contractSection")}
+      </SectionTitle>
       <FieldInput
+        borderless
+        labelStyle={styles.ecoFieldLabelBlack}
         label={t("createProject.contractNumber")}
         value={contractNumber}
         onChangeText={setContractNumber}

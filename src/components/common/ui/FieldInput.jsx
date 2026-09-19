@@ -11,16 +11,21 @@ export const FieldInput = ({
   placeholder,
   half = false,
   style,
+  labelStyle,
+  borderless = false,
   ...rest
 }) => (
   <View style={[half ? styles.half : styles.full, style]}>
     {label ? (
-      <Text style={[styles.label, half && styles.labelHalf]} numberOfLines={2}>
+      <Text
+        style={[styles.label, half && styles.labelHalf, labelStyle]}
+        numberOfLines={2}
+      >
         {label}
       </Text>
     ) : null}
     <TextInput
-      style={styles.input}
+      style={[styles.input, borderless && styles.inputBorderless]}
       value={value}
       onChangeText={onChangeText}
       keyboardType={keyboardType}
@@ -62,6 +67,14 @@ const styles = StyleSheet.create({
     fontSize: fontSize.subhead,
     color: content.textPrimary,
     backgroundColor: content.surface,
+  },
+  // Borderless variant — matches the create-project name/order-ref fields:
+  // no box outline, sits directly on the card.
+  inputBorderless: {
+    borderWidth: 0,
+    borderRadius: 0,
+    backgroundColor: "transparent",
+    paddingHorizontal: 0,
   },
 });
 
