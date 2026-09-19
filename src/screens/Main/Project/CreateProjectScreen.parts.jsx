@@ -525,11 +525,16 @@ export const LocationPickerModal = ({
           <Text style={styles.mapModalTitle}>
             {t("createProject.projectAddress")}
           </Text>
-          {/* Blue checkmark save in the header (like CreateProject) — always
-              above the keyboard, unlike the old full-width bottom button. */}
+          {/* Blue checkmark save in the header — same component/colour as the
+              CreateProject header so it's identical across screens. Kept always
+              solid (not disabled) to match; the press just no-ops until a place
+              is chosen. */}
           <HeaderCheckButton
-            onPress={onConfirm}
-            disabled={!selectedCoordinate}
+            onPress={() => {
+              if (selectedCoordinate) {
+                onConfirm();
+              }
+            }}
             accessibilityLabel={t("common.save")}
           />
         </View>

@@ -168,6 +168,18 @@ export default function MenuScreen() {
       ? roleLabel
       : t("menu.addTitle");
 
+  // A company-admin's account name IS the company name (that's how the admin is
+  // provisioned), so showing it as a person reads as a fake name ("Sverige Bygg
+  // AB"). Per the original request: don't show it — show the role instead. Other
+  // roles have a real personal name, so they keep it.
+  const showRoleAsName = user?.role === "companyAdmin";
+  const displayName = showRoleAsName
+    ? roleLabel
+    : user?.name || t("menu.userFallback");
+  // For a company-admin the role is now the name line, so a role badge would be
+  // redundant — only show a badge when there's an actual profession to show.
+  const showBadge = professionText ? true : !showRoleAsName;
+
   const [titleModalOpen, setTitleModalOpen] = useState(false);
   const [titleDraft, setTitleDraft] = useState("");
   const [savingTitle, setSavingTitle] = useState(false);
@@ -592,31 +604,33 @@ export default function MenuScreen() {
               numberOfLines={2}
               ellipsizeMode="tail"
             >
-              {user.name || t("menu.userFallback")}
+              {displayName}
             </Text>
           </View>
 
           {/* BADGE — self-authored job title (tap to edit) */}
-          <TouchableOpacity
-            style={[
-              styles.roleBadge,
-              badgeIsPlaceholder && styles.roleBadgePlaceholder,
-            ]}
-            onPress={openTitleEditor}
-            accessibilityRole="button"
-            accessibilityLabel={t("menu.editTitle")}
-          >
-            <Text
+          {showBadge && (
+            <TouchableOpacity
               style={[
-                styles.roleText,
-                badgeIsPlaceholder && styles.roleTextPlaceholder,
+                styles.roleBadge,
+                badgeIsPlaceholder && styles.roleBadgePlaceholder,
               ]}
-              numberOfLines={1}
-              ellipsizeMode="tail"
+              onPress={openTitleEditor}
+              accessibilityRole="button"
+              accessibilityLabel={t("menu.editTitle")}
             >
-              {badgeText}
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={[
+                  styles.roleText,
+                  badgeIsPlaceholder && styles.roleTextPlaceholder,
+                ]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {badgeText}
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       )}
 
