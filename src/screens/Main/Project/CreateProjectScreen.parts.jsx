@@ -662,9 +662,10 @@ export const LocationPickerModal = ({
               onSlidingComplete={() => setIsSlidingRadius(false)}
               minimumTrackTintColor={theme.colors.primary}
               maximumTrackTintColor="rgba(5, 45, 80, 0.22)"
-              // White thumb (with the slider's built-in shadow) so the draggable
-              // knob is clearly visible instead of blending into the blue track.
-              thumbTintColor="#FFFFFF"
+              // Custom thumb: a bigger white knob with a soft drop shadow, so
+              // it's clearly visible and grabbable (the library's default thumb
+              // is tiny and blends into the track).
+              thumbImage={require("../../../assets/slider-thumb.png")}
               style={styles.activationAreaSlider}
             />
 
