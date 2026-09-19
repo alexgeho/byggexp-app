@@ -427,7 +427,7 @@ export const createStyles = (c) =>
       borderRadius: 0,
       padding: 0,
       width: "100%",
-      minHeight: 100,
+      minHeight: 64,
       textAlignVertical: "top",
       color: c.textPrimary,
     },

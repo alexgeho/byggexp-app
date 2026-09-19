@@ -633,34 +633,25 @@ export const LocationPickerModal = ({
               </View>
             </View>
 
-            {/* Capture the touch on the way down so the enclosing ScrollView
-                doesn't steal the slider's horizontal drag on Android (freezing
-                the scroll BEFORE the gesture is lost). Returning false lets the
-                Slider still receive the touch. */}
-            <View
-              onStartShouldSetResponderCapture={() => {
+            <Slider
+              minimumValue={50}
+              maximumValue={1500}
+              step={50}
+              value={radiusMeters}
+              onValueChange={setRadiusMeters}
+              // Freeze the ScrollView the moment the drag starts so it doesn't
+              // steal the horizontal gesture on Android, and drop the keyboard
+              // so the slider is fully visible.
+              onSlidingStart={() => {
                 setIsSlidingRadius(true);
                 Keyboard.dismiss();
-                return false;
               }}
-            >
-              <Slider
-                minimumValue={50}
-                maximumValue={1500}
-                step={50}
-                value={radiusMeters}
-                onValueChange={setRadiusMeters}
-                onSlidingStart={() => {
-                  setIsSlidingRadius(true);
-                  Keyboard.dismiss();
-                }}
-                onSlidingComplete={() => setIsSlidingRadius(false)}
-                minimumTrackTintColor={theme.colors.primary}
-                maximumTrackTintColor="rgba(5, 45, 80, 0.12)"
-                thumbTintColor={theme.colors.primary}
-                style={styles.activationAreaSlider}
-              />
-            </View>
+              onSlidingComplete={() => setIsSlidingRadius(false)}
+              minimumTrackTintColor={theme.colors.primary}
+              maximumTrackTintColor="rgba(5, 45, 80, 0.12)"
+              thumbTintColor={theme.colors.primary}
+              style={styles.activationAreaSlider}
+            />
 
             <LocationMapPicker
               latitude={selectedCoordinate?.latitude}

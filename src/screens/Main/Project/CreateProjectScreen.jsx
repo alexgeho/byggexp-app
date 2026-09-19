@@ -186,7 +186,11 @@ export default function CreateProjectScreen() {
   const handleProjectNameFocus = useCallback(() => {
     setIsProjectNameFocused(true);
     setUseLocationAsName(false);
-  }, []);
+    // Clear the auto-filled address when the user taps in to type their own
+    // name — but only if it's still the auto value (don't wipe a custom name
+    // on a later re-focus).
+    setProjectName((current) => (current === location ? "" : current));
+  }, [location]);
 
   const fetchUsersAndCompanies = async () => {
     try {
@@ -823,6 +827,7 @@ export default function CreateProjectScreen() {
               multiline={true}
               placeholder={t("createProject.note")}
               placeholderTextColor={theme.content.placeholder}
+              underlineColorAndroid="transparent"
               style={styles.noteInput}
               value={note}
               onChangeText={setNote}
