@@ -49,6 +49,21 @@ export const createStyles = (c) =>
       gap: 12,
       paddingBottom: 140,
     },
+    // Red "delete" panel revealed when a project card is swiped left.
+    swipeDeleteAction: {
+      backgroundColor: "#FF3B30",
+      width: 92,
+      borderRadius: 16,
+      alignItems: "center",
+      justifyContent: "center",
+      marginLeft: 8,
+    },
+    swipeDeleteText: {
+      color: "#FFFFFF",
+      fontSize: 12,
+      fontWeight: "600",
+      marginTop: 4,
+    },
 
     noProjectsText: {
       textAlign: "center",

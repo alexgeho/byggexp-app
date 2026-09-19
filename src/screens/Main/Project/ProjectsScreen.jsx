@@ -21,7 +21,10 @@ import {
   FlatList,
   ActivityIndicator,
   InteractionManager,
+  TouchableOpacity,
+  Alert,
 } from "react-native";
+import { Swipeable } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../theme/ThemeContext";
@@ -90,6 +93,63 @@ export default function ProjectsScreen() {
   const projectsSignatureRef = useRef(getProjectsSignature(projects));
 
   const showCreateProject = canCreateProjects(user?.role);
+
+  // Swipe a project card left to reveal a red "Ta bort" (delete) action. Only
+  // for roles that can manage projects. Delete is irreversible, so confirm first.
+  const handleDeleteProject = useCallback(
+    (project) => {
+      const id = getProjectId(project);
+      Alert.alert(
+        t("projects.deleteConfirmTitle", "Ta bort projekt?"),
+        t("projects.deleteConfirmMessage", {
+          defaultValue:
+            '"{{name}}" tas bort permanent. Detta går inte att ångra.',
+          name: project?.name || "",
+        }),
+        [
+          { text: t("common.cancel", "Avbryt"), style: "cancel" },
+          {
+            text: t("common.delete", "Ta bort"),
+            style: "destructive",
+            onPress: async () => {
+              try {
+                await projectService.delete(id);
+                setProjects((prev) =>
+                  prev.filter((p) => getProjectId(p) !== id),
+                );
+              } catch (err) {
+                console.error("Failed to delete project:", err);
+                Alert.alert(
+                  t("common.error", "Fel"),
+                  t("projects.deleteFailed", "Kunde inte ta bort projektet."),
+                );
+              }
+            },
+          },
+        ],
+      );
+    },
+    [t],
+  );
+
+  const renderProjectDeleteAction = useCallback(
+    (project) => (
+      <TouchableOpacity
+        style={styles.swipeDeleteAction}
+        activeOpacity={0.85}
+        onPress={() => handleDeleteProject(project)}
+        accessibilityRole="button"
+        accessibilityLabel={t("common.delete", "Ta bort")}
+      >
+        <Icon name="trash-2" size={22} color="#FFFFFF" />
+        <Text style={styles.swipeDeleteText}>
+          {t("common.delete", "Ta bort")}
+        </Text>
+      </TouchableOpacity>
+    ),
+    [handleDeleteProject, styles, t],
+  );
+
   const selectedProjectId = isLocalSelectionMode
     ? (route.params?.currentProjectId ?? null)
     : selectedProject?._id || selectedProject?.id;
@@ -320,34 +380,50 @@ export default function ProjectsScreen() {
           ListEmptyComponent={
             <Text style={styles.noProjectsText}>{t("projects.notFound")}</Text>
           }
-          renderItem={({ item: project }) => (
-            <ListCard
-              onPress={() => handleProjectPress(project)}
-              selected={selectedProjectId === getProjectId(project)}
-              title={project.name}
-              badgeLabel={t(
-                `projects.status.${project.status}`,
-                formatProjectStatus(project.status),
-              )}
-              badgeStyle={getProjectStatusBadgeStyle(project.status)}
-            >
-              {formatDateOrNull(project.beginningDate) ? (
-                <Text
-                  style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
-                >
-                  {t("projects.startLabel", {
-                    date: formatDateOrNull(project.beginningDate),
+          renderItem={({ item: project }) => {
+            const card = (
+              <ListCard
+                onPress={() => handleProjectPress(project)}
+                selected={selectedProjectId === getProjectId(project)}
+                title={project.name}
+                badgeLabel={t(
+                  `projects.status.${project.status}`,
+                  formatProjectStatus(project.status),
+                )}
+                badgeStyle={getProjectStatusBadgeStyle(project.status)}
+              >
+                {formatDateOrNull(project.beginningDate) ? (
+                  <Text
+                    style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
+                  >
+                    {t("projects.startLabel", {
+                      date: formatDateOrNull(project.beginningDate),
+                    })}
+                  </Text>
+                ) : null}
+
+                <Text style={[cardStyles.cardSecondaryText, styles.mutedText]}>
+                  {t("projects.locationLabel", {
+                    location: project.location,
                   })}
                 </Text>
-              ) : null}
-
-              <Text style={[cardStyles.cardSecondaryText, styles.mutedText]}>
-                {t("projects.locationLabel", {
-                  location: project.location,
-                })}
-              </Text>
-            </ListCard>
-          )}
+              </ListCard>
+            );
+            // Swipe-left to delete — only for project managers.
+            if (!showCreateProject) {
+              return card;
+            }
+            return (
+              <Swipeable
+                renderRightActions={() => renderProjectDeleteAction(project)}
+                overshootRight={false}
+                friction={2}
+                rightThreshold={40}
+              >
+                {card}
+              </Swipeable>
+            );
+          }}
         />
       )}
 
