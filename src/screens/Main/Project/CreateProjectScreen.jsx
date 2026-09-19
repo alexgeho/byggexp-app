@@ -65,7 +65,6 @@ import {
   EconomySection,
   ContractSection,
 } from "./CreateProjectScreen.parts";
-import { Card, FieldInput } from "../../../components/common/ui";
 import {
   getDocumentTypeMeta,
   isImageDocument,
@@ -94,6 +93,7 @@ export default function CreateProjectScreen() {
   const [costRatePerHour, setCostRatePerHour] = useState("");
   const [billRatePerHour, setBillRatePerHour] = useState("");
   const [isProjectNameFocused, setIsProjectNameFocused] = useState(false);
+  const [isLitteraFocused, setIsLitteraFocused] = useState(false);
   const [useLocationAsName, setUseLocationAsName] = useState(true);
   const [note, setNote] = useState("");
   const [location, setLocation] = useState("");
@@ -163,6 +163,7 @@ export default function CreateProjectScreen() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const projectNameLabelAnim = useRef(new Animated.Value(0)).current;
+  const litteraLabelAnim = useRef(new Animated.Value(0)).current;
   const isLocationLoadingRef = useRef(false);
   const locationSearchInputRef = useRef(null);
 
@@ -177,6 +178,14 @@ export default function CreateProjectScreen() {
       useNativeDriver: false,
     }).start();
   }, [isProjectNameFocused, projectName, projectNameLabelAnim]);
+
+  useEffect(() => {
+    Animated.timing(litteraLabelAnim, {
+      toValue: isLitteraFocused || !!littera ? 1 : 0,
+      duration: 180,
+      useNativeDriver: false,
+    }).start();
+  }, [isLitteraFocused, littera, litteraLabelAnim]);
 
   useEffect(() => {
     if (useLocationAsName) {
@@ -788,13 +797,7 @@ export default function CreateProjectScreen() {
 
             <View style={styles.rowSep} />
 
-            <View
-              style={[
-                styles.projectNameField,
-                styles.groupedField,
-                styles.groupRowLast,
-              ]}
-            >
+            <View style={[styles.projectNameField, styles.groupedField]}>
               <Animated.Text
                 pointerEvents="none"
                 style={[
@@ -821,17 +824,45 @@ export default function CreateProjectScreen() {
                 onBlur={() => setIsProjectNameFocused(false)}
               />
             </View>
-          </View>
 
-          {/* Order reference (littera) — right under the project name. It and the
-              project name are what carry over into the invoice's Orderreferens. */}
-          <Card style={styles.fieldCardPad}>
-            <FieldInput
-              label={t("createProject.orderReference", "Orderreferens")}
-              value={littera}
-              onChangeText={setLittera}
-            />
-          </Card>
+            <View style={styles.rowSep} />
+
+            {/* Order reference (littera) — a second line under the project name,
+                same borderless card. Both carry into the invoice's Orderreferens. */}
+            <View
+              style={[
+                styles.projectNameField,
+                styles.groupedField,
+                styles.groupRowLast,
+              ]}
+            >
+              <Animated.Text
+                pointerEvents="none"
+                style={[
+                  styles.floatingLabel,
+                  {
+                    top: litteraLabelAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [18, 8],
+                    }),
+                    fontSize: litteraLabelAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [16, 12],
+                    }),
+                  },
+                ]}
+              >
+                {t("createProject.orderReference", "Orderreferens")}
+              </Animated.Text>
+              <TextInput
+                style={styles.floatingInput}
+                value={littera}
+                onChangeText={setLittera}
+                onFocus={() => setIsLitteraFocused(true)}
+                onBlur={() => setIsLitteraFocused(false)}
+              />
+            </View>
+          </View>
 
           <View style={styles.noteGroup}>
             <TextInput
