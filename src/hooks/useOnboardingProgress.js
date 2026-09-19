@@ -130,6 +130,7 @@ export function useOnboardingProgress({
             invoices,
             clients,
             articles,
+            customized,
           ] = await Promise.all([
             projectService.getMyProjects().catch(() => []),
             userService.getMyCompanyUsers().catch(() => []),
@@ -140,6 +141,7 @@ export function useOnboardingProgress({
             invoiceService.getAll().catch(() => []),
             clientService.getAll().catch(() => []),
             articleService.getAll().catch(() => []),
+            getOnboardingCustomizeOpened(),
           ]);
           if (!active) return;
           setState((prev) => ({
@@ -154,6 +156,7 @@ export function useOnboardingProgress({
             hasClient: countOf(clients) > 0,
             hasArticle: countOf(articles) > 0,
             hasBilling: countOf(offers) + countOf(invoices) > 0,
+            hasCustomized: customized,
           }));
         }
 
@@ -194,12 +197,22 @@ export function useOnboardingProgress({
     };
   }
 
+  // "Anpassa startsidan" (customize the home screen) — a personal step relevant
+  // to any admin regardless of focus, so it's appended to BOTH lists (shows in
+  // whichever focus they pick). Same step the worker gets.
+  const customizeStep = {
+    key: "customize",
+    done: state.hasCustomized,
+    action: "customize",
+  };
+
   // Admin: two-direction focus (fieldwork / billing).
   const fieldwork = [
     { key: "project", done: state.hasProject, screen: "CreateProject" },
     { key: "team", done: state.hasTeam, screen: "CreateEmployee" },
     { key: "task", done: state.hasTask, screen: "CreateTask" },
     { key: "tools", done: state.hasTools, screen: "Tools" },
+    customizeStep,
   ];
   const billing = [
     {
@@ -210,6 +223,7 @@ export function useOnboardingProgress({
     { key: "client", done: state.hasClient, screen: "Clients" },
     { key: "article", done: state.hasArticle, screen: "Articles" },
     { key: "billing", done: state.hasBilling, screen: "Economy" },
+    customizeStep,
   ];
 
   let steps;
@@ -221,7 +235,9 @@ export function useOnboardingProgress({
     // build. ALWAYS show the routing question here; never dump all 8 steps at
     // once (that broke the focus hierarchy — one clear choice, not a wall). The
     // "Hoppa över" button now dismisses the card instead of expanding to all.
-    steps = [...fieldwork, ...billing];
+    // Both lists carry the shared customize step — keep it once in the combined
+    // (routing) state so the count isn't double-inflated.
+    steps = [...fieldwork, ...billing.filter((s) => s.key !== "customize")];
     needsFocus = true;
   }
 
