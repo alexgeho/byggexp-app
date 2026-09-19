@@ -11,7 +11,10 @@ import {
   ActivityIndicator,
   Keyboard,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Slider from "@react-native-community/slider";
 import { useTranslation } from "react-i18next";
@@ -499,6 +502,11 @@ export const LocationPickerModal = ({
   const styles = useThemedStyles();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  // A <Modal> gets no safe-area top inset on iOS (SafeAreaView reports 0 inside
+  // a Modal — see the design-system notes), so add it manually. Without it the
+  // header sits higher than on normal screens and the save button lands at a
+  // different height than everywhere else.
+  const insets = useSafeAreaInsets();
   // While the radius slider is being dragged, freeze the ScrollView. On Android
   // the vertical ScrollView otherwise intercepts the slider's horizontal drag,
   // so the thumb never moves. Released on slide complete.
@@ -508,7 +516,7 @@ export const LocationPickerModal = ({
   const [isMapInteracting, setIsMapInteracting] = useState(false);
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-      <View style={styles.mapModalScreen}>
+      <View style={[styles.mapModalScreen, { paddingTop: insets.top }]}>
         <View style={styles.mapTopBar}>
           <BackButton
             onPress={onClose}
@@ -648,8 +656,10 @@ export const LocationPickerModal = ({
               }}
               onSlidingComplete={() => setIsSlidingRadius(false)}
               minimumTrackTintColor={theme.colors.primary}
-              maximumTrackTintColor="rgba(5, 45, 80, 0.12)"
-              thumbTintColor={theme.colors.primary}
+              maximumTrackTintColor="rgba(5, 45, 80, 0.22)"
+              // White thumb (with the slider's built-in shadow) so the draggable
+              // knob is clearly visible instead of blending into the blue track.
+              thumbTintColor="#FFFFFF"
               style={styles.activationAreaSlider}
             />
 
