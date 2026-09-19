@@ -773,8 +773,8 @@ export const createStyles = (c) =>
     },
     activationAreaSlider: {
       width: "100%",
-      height: 36,
-      marginTop: -2,
+      height: 40,
+      marginTop: 2,
     },
     mapChooseLocationButton: {
       width: "100%",

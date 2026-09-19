@@ -149,7 +149,12 @@ export function useOnboardingProgress({
             loading: false,
             dismissed: false,
             hasProject: countOf(projects) > 0,
-            hasTeam: countOf(team) > 1,
+            // "Invite your team" is done as soon as there's at least one company
+            // user besides the admin — an invited/pending employee counts (the
+            // backend list includes them), no need for every field to be filled.
+            hasTeam: asArray(team).some(
+              (u) => String(u?._id || u?.id || "") !== String(userId || ""),
+            ),
             hasTask: countOf(tasks) > 0,
             hasTools: countOf(tools) > 0,
             hasCompanyDetails: Boolean(company?.orgNumber),
