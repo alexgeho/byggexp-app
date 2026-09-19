@@ -142,43 +142,14 @@ export default function MenuScreen() {
   // "office" user sees it even without an admin role.
   const canFinance = hasPermission("finance.manage");
 
-  // Profile badge: show the person's self-authored job title (yrkestitel /
-  // `profession`) instead of the bare system role — people identify by their
-  // trade, not "Arbetare". If it's unset, admins keep their role label; everyone
-  // else gets a tappable invite to add one. Tapping the badge opens an inline
-  // editor so anyone can set/change their title (persisted to their profile).
+  // Profile: the person's name + a self-authored job title (yrkestitel /
+  // `profession`) badge — the same for everyone (worker AND admin). If the title
+  // is unset, the badge is a tappable invite to add one. Tapping it opens an
+  // inline editor that persists the title to the profile.
   const professionText = (user?.profession || "").trim();
-  const isAdminRole = ["superadmin", "companyAdmin", "projectAdmin"].includes(
-    user?.role,
-  );
-  const roleLabel =
-    user?.role === "superadmin"
-      ? t("roles.superadmin")
-      : user?.role === "companyAdmin"
-        ? t("roles.companyAdmin")
-        : user?.role === "projectAdmin"
-          ? t("roles.projectAdmin")
-          : user?.role === "worker"
-            ? t("roles.worker")
-            : t("roles.user");
-  const badgeIsPlaceholder = !professionText && !isAdminRole;
-  const badgeText = professionText
-    ? professionText
-    : isAdminRole
-      ? roleLabel
-      : t("menu.addTitle");
-
-  // A company-admin's account name IS the company name (that's how the admin is
-  // provisioned), so showing it as a person reads as a fake name ("Sverige Bygg
-  // AB"). Per the original request: don't show it — show the role instead. Other
-  // roles have a real personal name, so they keep it.
-  const showRoleAsName = user?.role === "companyAdmin";
-  const displayName = showRoleAsName
-    ? roleLabel
-    : user?.name || t("menu.userFallback");
-  // For a company-admin the role is now the name line, so a role badge would be
-  // redundant — only show a badge when there's an actual profession to show.
-  const showBadge = professionText ? true : !showRoleAsName;
+  const badgeIsPlaceholder = !professionText;
+  const badgeText = professionText || t("menu.addTitle");
+  const displayName = user?.name || t("menu.userFallback");
 
   const [titleModalOpen, setTitleModalOpen] = useState(false);
   const [titleDraft, setTitleDraft] = useState("");
@@ -609,28 +580,26 @@ export default function MenuScreen() {
           </View>
 
           {/* BADGE — self-authored job title (tap to edit) */}
-          {showBadge && (
-            <TouchableOpacity
+          <TouchableOpacity
+            style={[
+              styles.roleBadge,
+              badgeIsPlaceholder && styles.roleBadgePlaceholder,
+            ]}
+            onPress={openTitleEditor}
+            accessibilityRole="button"
+            accessibilityLabel={t("menu.editTitle")}
+          >
+            <Text
               style={[
-                styles.roleBadge,
-                badgeIsPlaceholder && styles.roleBadgePlaceholder,
+                styles.roleText,
+                badgeIsPlaceholder && styles.roleTextPlaceholder,
               ]}
-              onPress={openTitleEditor}
-              accessibilityRole="button"
-              accessibilityLabel={t("menu.editTitle")}
+              numberOfLines={1}
+              ellipsizeMode="tail"
             >
-              <Text
-                style={[
-                  styles.roleText,
-                  badgeIsPlaceholder && styles.roleTextPlaceholder,
-                ]}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                {badgeText}
-              </Text>
-            </TouchableOpacity>
-          )}
+              {badgeText}
+            </Text>
+          </TouchableOpacity>
         </View>
       )}
 
