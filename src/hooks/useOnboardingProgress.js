@@ -21,7 +21,27 @@ import {
 } from "../utils/onboardingStorage";
 
 const asArray = (value) => (Array.isArray(value) ? value : []);
-const countOf = (v) => asArray(v).length;
+
+// "Report your time" is done once this person has hours on the clock, from
+// ANY source — stamped, planned or typed in by hand. /shifts/history answers
+// with a month summary object (month totals + a day list), not an array, so
+// counting it as a list left the step permanently unticked however many hours
+// were entered.
+const hasReportedTime = (history) => {
+  if (!history) return false;
+  const totals = [
+    history.monthTotalDurationMs,
+    history.monthManualDurationMs,
+    history.monthPlannedDurationMs,
+    history.previousMonthTotalDurationMs,
+  ];
+  if (totals.some((value) => Number(value) > 0)) return true;
+  return asArray(history.days).some((day) =>
+    [day?.totalDurationMs, day?.manualDurationMs, day?.plannedDurationMs].some(
+      (value) => Number(value) > 0,
+    ),
+  );
+};
 
 const sameId = (a, b) => Boolean(a) && Boolean(b) && String(a) === String(b);
 
@@ -100,7 +120,7 @@ export function useOnboardingProgress({
             return;
           }
 
-          const shiftsP = shiftService.getHistory().catch(() => []);
+          const shiftsP = shiftService.getHistory().catch(() => null);
 
           if (isWorker) {
             const [location, shifts, profile, customized, profileSaved] =
@@ -120,7 +140,7 @@ export function useOnboardingProgress({
               dismissed: false,
               hasLocation: location,
               hasProject: Boolean(selectedProjectId),
-              hasShift: countOf(shifts) > 0,
+              hasShift: hasReportedTime(shifts),
               hasProfile: Boolean(
                 profileSaved || profile?.profession || profile?.phoneNumber,
               ),
