@@ -205,7 +205,8 @@ export const colorfulColors = {
     tools: "#5222FF",
     camera: "#FF5454",
     chats: "#F3B530",
-    shifts: "rgba(40,40,40,0.7)",
+    // Figma frame 5870: a solid #282828 card, not a washed-out grey.
+    shifts: "#282828",
     projects: "#0785F4",
     tasks: "#0785F4",
     // Reuse palette values already in this theme rather than inventing hues.
@@ -213,4 +214,7 @@ export const colorfulColors = {
     invoice: "#0785F4",
   },
   homeButtonText: "#FFFFFF",
+  // Figma paints the card badges at 60% (04B251 / FC1D2C); the calmer themes
+  // keep the 20% wash.
+  infoBadgeAlpha: 0.6,
 };

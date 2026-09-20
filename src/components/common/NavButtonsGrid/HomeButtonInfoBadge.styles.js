@@ -1,30 +1,22 @@
 import { StyleSheet } from "react-native";
 
+// Base colour per variant; the fill is that colour at `fillAlpha` (the theme
+// decides how strong — Figma's colourful home paints these at 60%, the calmer
+// themes at 20%).
 const BADGE_VARIANTS = {
-  live: {
-    backgroundColor: "rgba(4, 178, 81, 0.2)",
-    borderLeftColor: "#04B251",
-  },
-  notAtWork: {
-    backgroundColor: "rgba(252, 29, 44, 0.2)",
-    borderLeftColor: "#FC1D2C",
-  },
-  shift: {
-    backgroundColor: "rgba(7, 133, 244, 0.2)",
-    borderLeftColor: "#FFFFFF",
-  },
-  deadline: {
-    backgroundColor: "rgba(255, 149, 0, 0.2)",
-    borderLeftColor: "#FF9500",
-  },
-  overdue: {
-    backgroundColor: "rgba(252, 29, 44, 0.2)",
-    borderLeftColor: "#FC1D2C",
-  },
+  live: { color: "4, 178, 81", borderLeftColor: "#04B251" },
+  notAtWork: { color: "252, 29, 44", borderLeftColor: "#FC1D2C" },
+  shift: { color: "7, 133, 244", borderLeftColor: "#FFFFFF" },
+  deadline: { color: "255, 149, 0", borderLeftColor: "#FF9500" },
+  overdue: { color: "252, 29, 44", borderLeftColor: "#FC1D2C" },
 };
 
-export function createStyles(variant) {
-  const colors = BADGE_VARIANTS[variant] || BADGE_VARIANTS.shift;
+export function createStyles(variant, fillAlpha = 0.2) {
+  const variantColors = BADGE_VARIANTS[variant] || BADGE_VARIANTS.shift;
+  const colors = {
+    backgroundColor: `rgba(${variantColors.color}, ${fillAlpha})`,
+    borderLeftColor: variantColors.borderLeftColor,
+  };
 
   return StyleSheet.create({
     badge: {
