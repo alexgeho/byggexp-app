@@ -144,9 +144,9 @@ export default function MainButtonsGrid({
         })
         .map(function renderButton(button) {
           const buttonColor = theme.colors.buttonColors?.[button.id];
-          const iconColor = buttonColor
-            ? "#FFFFFF"
-            : theme.colors.homeButtonText || theme.colors.icon;
+          // Vector icons take the label's colour, so the icon and the word
+          // under it read as one thing (the coloured cards keep white).
+          const iconColor = buttonColor ? "#FFFFFF" : styles.buttonText.color;
 
           return (
             <View

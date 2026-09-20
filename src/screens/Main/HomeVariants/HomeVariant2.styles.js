@@ -1,5 +1,7 @@
 import { StyleSheet } from "react-native";
 
+import { hexToRgba } from "../../../theme/colorUtils";
+
 export function createStyles({
   compact = false,
   veryCompact = false,
@@ -13,6 +15,7 @@ export function createStyles({
   const horizontalPadding = compact ? 16 : 20;
   const sectionGap = veryCompact ? 14 : compact ? 18 : 24;
   const textColor = theme?.colors?.text || "#FFFFFF";
+  const mutedTextColor = hexToRgba(textColor, 0.7);
 
   return StyleSheet.create({
     container: {
@@ -89,11 +92,13 @@ export function createStyles({
       backgroundColor: "#FFFFFF",
       borderColor: "rgba(1,13,24,0.08)",
     },
+    // The selector is a placeholder until a project is picked, so it carries
+    // the same muted ink as the card labels rather than full-strength text.
     selectorTextLightBlue: {
-      color: textColor,
+      color: mutedTextColor,
     },
     selectorIconLightBlue: {
-      tintColor: textColor,
+      tintColor: mutedTextColor,
     },
     selectorColorful: {
       backgroundColor: "rgba(5, 45, 80, 0.05)",

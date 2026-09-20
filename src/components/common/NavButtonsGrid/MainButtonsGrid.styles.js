@@ -78,7 +78,8 @@ export function createStyles(theme) {
       width: theme.homeButton.iconSize,
       height: theme.homeButton.iconSize,
       resizeMode: "contain",
-      tintColor: theme.colors.homeButtonText || theme.colors.icon,
+      // Icon and label are one unit — same ink, same weight of presence.
+      tintColor: labelColor,
     },
 
     // Same type as the section headings under the grid ("Dagsrapport",
