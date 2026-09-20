@@ -11,7 +11,7 @@ const BADGE_VARIANTS = {
   overdue: { color: "252, 29, 44", borderLeftColor: "#FC1D2C" },
 };
 
-export function createStyles(variant, fillAlpha = 0.2) {
+export function createStyles(variant, fillAlpha = 0.2, textColor = "#FFFFFF") {
   const variantColors = BADGE_VARIANTS[variant] || BADGE_VARIANTS.shift;
   const colors = {
     backgroundColor: `rgba(${variantColors.color}, ${fillAlpha})`,
@@ -28,7 +28,9 @@ export function createStyles(variant, fillAlpha = 0.2) {
       paddingHorizontal: 6,
     },
     text: {
-      color: "#FFFFFF",
+      // The card's own label colour, not a fixed white: on a light card the
+      // fill is a pale wash and white text disappeared into it.
+      color: textColor,
       fontSize: 12,
       lineHeight: 16,
     },
