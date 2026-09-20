@@ -479,7 +479,8 @@
     "attest": "Подтверждение",
     "attested": "Подтверждена",
     "attestAction": "Подтвердить",
-    "approveFailed": "Не удалось подтвердить смену."
+    "approveFailed": "Не удалось подтвердить смену.",
+    "clocked": "По отметкам"
   },
   "shiftHistory": {
     "title": "Дневной отчёт",

@@ -479,7 +479,8 @@
     "attest": "Kinnitus",
     "attested": "Kinnitatud",
     "attestAction": "Kinnita",
-    "approveFailed": "Vahetust ei saanud kinnitada."
+    "approveFailed": "Vahetust ei saanud kinnitada.",
+    "clocked": "Registreeritud"
   },
   "shiftHistory": {
     "title": "Päevaraport",

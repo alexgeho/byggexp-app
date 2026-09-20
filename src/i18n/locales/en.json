@@ -479,7 +479,8 @@
     "attest": "Approval",
     "attested": "Approved",
     "attestAction": "Approve",
-    "approveFailed": "Could not approve the shift."
+    "approveFailed": "Could not approve the shift.",
+    "clocked": "Clocked"
   },
   "shiftHistory": {
     "title": "Daily report",

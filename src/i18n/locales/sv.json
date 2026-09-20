@@ -479,7 +479,8 @@
     "attest": "Attest",
     "attested": "Attesterad",
     "attestAction": "Attestera",
-    "approveFailed": "Kunde inte attestera passet."
+    "approveFailed": "Kunde inte attestera passet.",
+    "clocked": "Stämplat"
   },
   "shiftHistory": {
     "title": "Dagsrapport",

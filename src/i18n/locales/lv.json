@@ -479,7 +479,8 @@
     "attest": "Apstiprinājums",
     "attested": "Apstiprināta",
     "attestAction": "Apstiprināt",
-    "approveFailed": "Neizdevās apstiprināt maiņu."
+    "approveFailed": "Neizdevās apstiprināt maiņu.",
+    "clocked": "Reģistrēts"
   },
   "shiftHistory": {
     "title": "Dienas atskaite",

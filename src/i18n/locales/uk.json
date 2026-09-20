@@ -479,7 +479,8 @@
     "attest": "Підтвердження",
     "attested": "Підтверджено",
     "attestAction": "Підтвердити",
-    "approveFailed": "Не вдалося підтвердити зміну."
+    "approveFailed": "Не вдалося підтвердити зміну.",
+    "clocked": "Зафіксовано"
   },
   "shiftHistory": {
     "title": "Денний звіт",

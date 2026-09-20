@@ -10,6 +10,8 @@ import {
   resolveUploadUrl,
   formatShiftListProjectName,
   formatDuration,
+  effectiveDurationMs,
+  shortAddress,
   formatDurationShort,
   formatDurationCompact,
   formatTimeRange,
@@ -193,5 +195,47 @@ describe("current month/day keys", () => {
     expect(getCurrentMonthKey()).toMatch(/^\d{4}-\d{2}$/);
     expect(getTodayDateKey()).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(getTodayDateKey().startsWith(getCurrentMonthKey())).toBe(true);
+  });
+});
+
+describe("effectiveDurationMs", () => {
+  it("prefers the hours the worker declared", () => {
+    expect(
+      effectiveDurationMs({ durationMs: 0, manualDurationMs: 8 * HOUR }),
+    ).toBe(8 * HOUR);
+  });
+
+  it("falls back to the clocked time when nothing was declared", () => {
+    expect(effectiveDurationMs({ durationMs: 5 * HOUR })).toBe(5 * HOUR);
+    expect(
+      effectiveDurationMs({ durationMs: 5 * HOUR, manualDurationMs: null }),
+    ).toBe(5 * HOUR);
+  });
+
+  it("treats a declared zero as nothing declared, not as a zero day", () => {
+    expect(
+      effectiveDurationMs({ durationMs: 5 * HOUR, manualDurationMs: 0 }),
+    ).toBe(5 * HOUR);
+  });
+
+  it("is zero for a shift with neither", () => {
+    expect(effectiveDurationMs({})).toBe(0);
+  });
+});
+
+describe("shortAddress", () => {
+  it("keeps the street and the town, drops postcode and country", () => {
+    expect(shortAddress("Byggmästarvägen 18, Stockholm, 168 30, Sweden")).toBe(
+      "Byggmästarvägen 18, Stockholm",
+    );
+  });
+
+  it("passes a short address through untouched", () => {
+    expect(shortAddress("Byggmästarvägen 18")).toBe("Byggmästarvägen 18");
+  });
+
+  it("is empty for nothing", () => {
+    expect(shortAddress("")).toBe("");
+    expect(shortAddress()).toBe("");
   });
 });

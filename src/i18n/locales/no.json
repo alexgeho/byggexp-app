@@ -479,7 +479,8 @@
     "attest": "Attest",
     "attested": "Attestert",
     "attestAction": "Attester",
-    "approveFailed": "Kunne ikke attestere vakten."
+    "approveFailed": "Kunne ikke attestere vakten.",
+    "clocked": "Stemplet"
   },
   "shiftHistory": {
     "title": "Dagsrapport",

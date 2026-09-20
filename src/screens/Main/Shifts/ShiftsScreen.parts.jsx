@@ -1,6 +1,7 @@
 import React from "react";
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
   Modal,
   Platform,
   Pressable,
@@ -107,29 +108,39 @@ export function ManualHoursModal({
   projects,
   manualProjectId,
   setManualProjectId,
-  manualHoursH,
-  setManualHoursH,
-  manualHoursM,
-  setManualHoursM,
+  manualHours,
+  setManualHours,
   savingManualHours,
   onSave,
   onClear,
   styles,
   t,
 }) {
+  // A bottom sheet, not a centred dialog: the number pad covers the lower half
+  // of the screen, and a centred card ends up with its own buttons underneath
+  // it. Sliding up from the bottom and lifting with the keyboard keeps every
+  // action reachable (Fitts's), and one decimal field replaces the h + min
+  // pair, because hours are what gets reported and paid.
   return (
     <Modal
       visible={Boolean(manualHoursShift) || Boolean(manualDateEntry)}
       transparent
-      animationType="fade"
+      animationType="slide"
       onRequestClose={onClose}
     >
-      <View style={styles.datePickerOverlay}>
-        <View style={styles.datePickerCard}>
-          <Text style={styles.datePickerTitle}>
+      <KeyboardAvoidingView
+        style={styles.manualSheetOverlay}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <Pressable style={styles.manualSheetBackdrop} onPress={onClose} />
+
+        <View style={styles.manualSheet}>
+          <View style={styles.manualSheetGrab} />
+
+          <Text style={styles.manualSheetTitle}>
             {t("shifts.manualHoursTitle")}
           </Text>
-          <Text style={styles.manualHoursHint}>
+          <Text style={styles.manualSheetHint}>
             {manualDateEntry
               ? manualDateEntry.date
               : t("shifts.manualHoursHint")}
@@ -180,42 +191,27 @@ export function ManualHoursModal({
             </View>
           ) : null}
 
-          <View style={styles.manualHoursInputs}>
-            <View style={styles.manualHoursField}>
-              <TextInput
-                style={styles.manualHoursInput}
-                value={manualHoursH}
-                onChangeText={(text) =>
-                  setManualHoursH(text.replace(/[^0-9]/g, "").slice(0, 2))
-                }
-                keyboardType="number-pad"
-                placeholder="0"
-                placeholderTextColor="#9BB0C1"
-                maxLength={2}
-              />
-              <Text style={styles.manualHoursUnit}>{t("shifts.unitHour")}</Text>
-            </View>
-            <View style={styles.manualHoursField}>
-              <TextInput
-                style={styles.manualHoursInput}
-                value={manualHoursM}
-                onChangeText={(text) =>
-                  setManualHoursM(text.replace(/[^0-9]/g, "").slice(0, 2))
-                }
-                keyboardType="number-pad"
-                placeholder="0"
-                placeholderTextColor="#9BB0C1"
-                maxLength={2}
-              />
-              <Text style={styles.manualHoursUnit}>
-                {t("shifts.unitMinute")}
-              </Text>
-            </View>
+          <View style={styles.manualHoursRow}>
+            <TextInput
+              style={styles.manualHoursBigInput}
+              value={manualHours}
+              onChangeText={(text) =>
+                // A comma and a dot mean the same thing to a person.
+                setManualHours(text.replace(/[^0-9.,]/g, "").slice(0, 5))
+              }
+              keyboardType="decimal-pad"
+              placeholder="0"
+              placeholderTextColor="#9BB0C1"
+              autoFocus
+            />
+            <Text style={styles.manualHoursBigUnit}>
+              {t("shifts.unitHour")}
+            </Text>
           </View>
 
           <TouchableOpacity
             style={[
-              styles.datePickerButton,
+              styles.manualSheetSave,
               savingManualHours && styles.exportMainButtonDisabled,
             ]}
             onPress={onSave}
@@ -230,29 +226,23 @@ export function ManualHoursModal({
             )}
           </TouchableOpacity>
 
-          {manualHoursShift?.manualDurationMs != null ? (
-            <TouchableOpacity
-              style={styles.manualHoursClearButton}
-              onPress={onClear}
-              disabled={savingManualHours}
-            >
-              <Text style={styles.manualHoursClearText}>
-                {t("shifts.manualHoursClear")}
+          <View style={styles.manualSheetFooter}>
+            <TouchableOpacity onPress={onClose} disabled={savingManualHours}>
+              <Text style={styles.manualHoursCancelText}>
+                {t("common.cancel")}
               </Text>
             </TouchableOpacity>
-          ) : null}
 
-          <TouchableOpacity
-            style={styles.manualHoursCancelButton}
-            onPress={onClose}
-            disabled={savingManualHours}
-          >
-            <Text style={styles.manualHoursCancelText}>
-              {t("common.cancel")}
-            </Text>
-          </TouchableOpacity>
+            {manualHoursShift?.manualDurationMs ? (
+              <TouchableOpacity onPress={onClear} disabled={savingManualHours}>
+                <Text style={styles.manualHoursClearText}>
+                  {t("shifts.manualHoursClear")}
+                </Text>
+              </TouchableOpacity>
+            ) : null}
+          </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

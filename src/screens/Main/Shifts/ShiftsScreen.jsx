@@ -34,6 +34,8 @@ import {
   buildExportMonthOptions,
   formatDateKey,
   formatDuration,
+  effectiveDurationMs,
+  shortAddress,
   formatExportPickerDate,
   formatMonthLabel,
   formatTimeRange,
@@ -137,8 +139,8 @@ export default function ShiftsScreen() {
   // Worker manual-hours editor: the shift being edited, its hh/mm inputs, and
   // the in-flight save flag.
   const [manualHoursShift, setManualHoursShift] = useState(null);
-  const [manualHoursH, setManualHoursH] = useState("");
-  const [manualHoursM, setManualHoursM] = useState("");
+  // Hours as a decimal ("7,5"), the way they are reported and paid.
+  const [manualHours, setManualHours] = useState("");
   const [savingManualHours, setSavingManualHours] = useState(false);
   // Date-based manual entry (Manuell tab): log hours for a day that has no
   // clock-in. Holds the target date and the project to attach the hours to.
@@ -997,9 +999,8 @@ export default function ShiftsScreen() {
 
   const openManualHoursEditor = useCallback((shift) => {
     const ms = Number(shift?.manualDurationMs) || 0;
-    const totalMinutes = Math.round(ms / 60000);
-    setManualHoursH(ms ? String(Math.floor(totalMinutes / 60)) : "");
-    setManualHoursM(ms ? String(totalMinutes % 60) : "");
+    const hours = Math.round((ms / 3600000) * 100) / 100;
+    setManualHours(ms ? String(hours).replace(".", ",") : "");
     setManualHoursShift(shift);
   }, []);
 
@@ -1076,15 +1077,9 @@ export default function ShiftsScreen() {
   );
 
   const saveManualHours = useCallback(() => {
-    const hours = parseInt(manualHoursH || "0", 10) || 0;
-    const minutes = parseInt(manualHoursM || "0", 10) || 0;
-
-    if (minutes > 59) {
-      Alert.alert(t("shifts.manualHoursError"), t("shifts.manualHoursInvalid"));
-      return;
-    }
-
-    const durationMs = (hours * 60 + minutes) * 60000;
+    // A comma and a dot mean the same thing to a person typing "7,5".
+    const hours = Number(String(manualHours || "0").replace(",", ".")) || 0;
+    const durationMs = Math.round(hours * 3600000);
 
     if (durationMs > 24 * 60 * 60000) {
       Alert.alert(t("shifts.manualHoursError"), t("shifts.manualHoursTooLong"));
@@ -1097,8 +1092,7 @@ export default function ShiftsScreen() {
       submitManualHours(durationMs);
     }
   }, [
-    manualHoursH,
-    manualHoursM,
+    manualHours,
     manualDateEntry,
     submitManualDateHours,
     submitManualHours,
@@ -1335,7 +1329,11 @@ export default function ShiftsScreen() {
                             { fontFamily: theme.text.fontFamily["medium"] },
                           ]}
                         >
-                          {formatDuration(shift.durationMs)}
+                          {/* The day's hours: what the worker declared when they
+                              declared it, otherwise what the clock caught. A
+                              card that says 0 h above 8 h declared reads as a
+                              bug, even though both numbers are true. */}
+                          {formatDuration(effectiveDurationMs(shift))}
                         </Text>
                       </View>
 
@@ -1370,11 +1368,40 @@ export default function ShiftsScreen() {
                                 },
                               ]}
                             >
-                              {shift.manualDurationMs != null
+                              {shift.manualDurationMs
                                 ? formatDuration(shift.manualDurationMs)
                                 : `＋ ${t("shifts.manualHoursAdd")}`}
                             </Text>
                           </TouchableOpacity>
+                        ) : null}
+
+                        {/* When the declared hours replace the clocked ones,
+                            show what the clock caught so the difference is
+                            visible rather than silently overwritten. */}
+                        {shift.manualDurationMs &&
+                        shift.manualDurationMs !== shift.durationMs ? (
+                          <View style={styles.shiftDetailRow}>
+                            <Text
+                              style={[
+                                styles.shiftDetailLabel,
+                                {
+                                  fontFamily: theme.text.fontFamily["regular"],
+                                },
+                              ]}
+                            >
+                              {t("shifts.clocked")}
+                            </Text>
+                            <Text
+                              style={[
+                                styles.shiftDetailValue,
+                                {
+                                  fontFamily: theme.text.fontFamily["regular"],
+                                },
+                              ]}
+                            >
+                              {formatDuration(shift.durationMs)}
+                            </Text>
+                          </View>
                         ) : null}
 
                         {/* Attest — the manager's confirmation of the day. */}
@@ -1495,7 +1522,7 @@ export default function ShiftsScreen() {
                               },
                             ]}
                           >
-                            {shift.location || "—"}
+                            {shortAddress(shift.location) || "—"}
                           </Text>
                         </View>
                         <View style={styles.shiftDetailRow}>
@@ -1623,10 +1650,8 @@ export default function ShiftsScreen() {
         projects={projects}
         manualProjectId={manualProjectId}
         setManualProjectId={setManualProjectId}
-        manualHoursH={manualHoursH}
-        setManualHoursH={setManualHoursH}
-        manualHoursM={manualHoursM}
-        setManualHoursM={setManualHoursM}
+        manualHours={manualHours}
+        setManualHours={setManualHours}
         savingManualHours={savingManualHours}
         onSave={saveManualHours}
         onClear={() => submitManualHours(null)}

@@ -24,6 +24,25 @@ const getDateFormatter = (options) => {
   return formatter;
 };
 
+// A site address on a card is only there to say WHICH site, so it keeps the
+// street and the town and drops the postcode and country — "Byggmästarvägen
+// 18, Stockholm" rather than the full postal line squeezed into an ellipsis.
+export const shortAddress = (location = "") => {
+  const parts = String(location)
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+  if (!parts.length) return "";
+  return parts.slice(0, 2).join(", ");
+};
+
+// The hours a day counts for: what the worker declared, when they declared
+// something, otherwise what the clock caught. The two are kept apart in the
+// data (GPS and Manual are separate billing sources) — this is only how the
+// day is shown, so a card can't say "0 h" above "8 h declared".
+export const effectiveDurationMs = (shift = {}) =>
+  shift.manualDurationMs ? shift.manualDurationMs : shift.durationMs || 0;
+
 // Worked time reads in hours, the way hours are reported and paid — "7,5 h",
 // not "7h 30m". Nobody on a site counts a day in minutes, and the decimal is
 // the same number that ends up on the payslip. Rounded to one decimal, so a

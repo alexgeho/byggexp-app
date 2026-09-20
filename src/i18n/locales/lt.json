@@ -479,7 +479,8 @@
     "attest": "Patvirtinimas",
     "attested": "Patvirtinta",
     "attestAction": "Patvirtinti",
-    "approveFailed": "Nepavyko patvirtinti pamainos."
+    "approveFailed": "Nepavyko patvirtinti pamainos.",
+    "clocked": "Užfiksuota"
   },
   "shiftHistory": {
     "title": "Dienos ataskaita",

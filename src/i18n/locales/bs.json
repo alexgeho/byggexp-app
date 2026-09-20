@@ -479,7 +479,8 @@
     "attest": "Potvrda",
     "attested": "Potvrđena",
     "attestAction": "Potvrdi",
-    "approveFailed": "Nije moguće potvrditi smjenu."
+    "approveFailed": "Nije moguće potvrditi smjenu.",
+    "clocked": "Evidentirano"
   },
   "shiftHistory": {
     "title": "Dnevni izvještaj",

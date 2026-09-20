@@ -479,7 +479,8 @@
     "attest": "Zatwierdzenie",
     "attested": "Zatwierdzona",
     "attestAction": "Zatwierdź",
-    "approveFailed": "Nie udało się zatwierdzić zmiany."
+    "approveFailed": "Nie udało się zatwierdzić zmiany.",
+    "clocked": "Zarejestrowane"
   },
   "shiftHistory": {
     "title": "Raport dzienny",

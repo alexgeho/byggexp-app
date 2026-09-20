@@ -479,7 +479,8 @@
     "attest": "Hyväksyntä",
     "attested": "Hyväksytty",
     "attestAction": "Hyväksy",
-    "approveFailed": "Vuoron hyväksyminen epäonnistui."
+    "approveFailed": "Vuoron hyväksyminen epäonnistui.",
+    "clocked": "Leimattu"
   },
   "shiftHistory": {
     "title": "Päiväraportti",
