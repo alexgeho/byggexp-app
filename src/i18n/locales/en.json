@@ -475,7 +475,11 @@
     "periodTabs": {
       "month": "Month",
       "custom": "Custom"
-    }
+    },
+    "attest": "Approval",
+    "attested": "Approved",
+    "attestAction": "Approve",
+    "approveFailed": "Could not approve the shift."
   },
   "shiftHistory": {
     "title": "Daily report",
@@ -1607,6 +1611,10 @@
       "half": "Half",
       "full": "Full"
     },
-    "copyLast": "Copy {{date}}"
+    "copyLast": "Copy {{date}}",
+    "ata": "Variation order",
+    "noAta": "None",
+    "addPhoto": "Add photo",
+    "photoFailed": "Could not add the photo."
   }
 }

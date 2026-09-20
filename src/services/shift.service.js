@@ -157,6 +157,20 @@ export const shiftService = {
     return downloadResult;
   },
 
+  // ÄTA options for the shift's project — number and title only.
+  getAtaOptions: async (shiftId) => {
+    const { data } = await api.get(`/shifts/${shiftId}/ata-options`);
+    return data;
+  },
+
+  // Manager attest of a day's hours.
+  setApproval: async (shiftId, approved) => {
+    const { data } = await api.patch(`/shifts/${shiftId}/approval`, {
+      approved,
+    });
+    return data;
+  },
+
   // The worker's most recently reported day — backs "copy yesterday".
   getLastDayReport: async () => {
     const { data } = await api.get("/shifts/last-report");

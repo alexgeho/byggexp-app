@@ -475,7 +475,11 @@
     "periodTabs": {
       "month": "Mėnuo",
       "custom": "Pasirinktinis"
-    }
+    },
+    "attest": "Patvirtinimas",
+    "attested": "Patvirtinta",
+    "attestAction": "Patvirtinti",
+    "approveFailed": "Nepavyko patvirtinti pamainos."
   },
   "shiftHistory": {
     "title": "Dienos ataskaita",
@@ -1607,6 +1611,10 @@
       "half": "Pusė",
       "full": "Visi"
     },
-    "copyLast": "Kopijuoti {{date}}"
+    "copyLast": "Kopijuoti {{date}}",
+    "ata": "Papildomi darbai",
+    "noAta": "Nėra",
+    "addPhoto": "Pridėti nuotrauką",
+    "photoFailed": "Nepavyko pridėti nuotraukos."
   }
 }

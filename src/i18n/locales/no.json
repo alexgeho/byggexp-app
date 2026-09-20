@@ -475,7 +475,11 @@
     "periodTabs": {
       "month": "Måned",
       "custom": "Tilpasset"
-    }
+    },
+    "attest": "Attest",
+    "attested": "Attestert",
+    "attestAction": "Attester",
+    "approveFailed": "Kunne ikke attestere vakten."
   },
   "shiftHistory": {
     "title": "Dagsrapport",
@@ -1607,6 +1611,10 @@
       "half": "Halv",
       "full": "Hel"
     },
-    "copyLast": "Kopier {{date}}"
+    "copyLast": "Kopier {{date}}",
+    "ata": "Endringsordre",
+    "noAta": "Ingen",
+    "addPhoto": "Legg til foto",
+    "photoFailed": "Kunne ikke legge til bildet."
   }
 }

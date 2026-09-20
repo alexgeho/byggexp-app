@@ -475,7 +475,11 @@
     "periodTabs": {
       "month": "Miesiąc",
       "custom": "Własny"
-    }
+    },
+    "attest": "Zatwierdzenie",
+    "attested": "Zatwierdzona",
+    "attestAction": "Zatwierdź",
+    "approveFailed": "Nie udało się zatwierdzić zmiany."
   },
   "shiftHistory": {
     "title": "Raport dzienny",
@@ -1607,6 +1611,10 @@
       "half": "Połowa",
       "full": "Pełna"
     },
-    "copyLast": "Kopiuj {{date}}"
+    "copyLast": "Kopiuj {{date}}",
+    "ata": "Zlecenie dodatkowe",
+    "noAta": "Brak",
+    "addPhoto": "Dodaj zdjęcie",
+    "photoFailed": "Nie udało się dodać zdjęcia."
   }
 }

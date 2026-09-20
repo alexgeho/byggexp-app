@@ -972,6 +972,29 @@ export default function ShiftsScreen() {
     selectedMonth,
   ]);
 
+  // Attest — a manager confirms the day's hours. Optimistic, because the row is
+  // a toggle and a round trip would make it feel broken (Doherty).
+  const [approvingIds, setApprovingIds] = useState([]);
+
+  const toggleApproval = useCallback(
+    async (shift) => {
+      const id = shift.id || shift._id;
+      if (!id || approvingIds.includes(id)) return;
+      const next = !shift.approvedAt;
+      setApprovingIds((previous) => [...previous, id]);
+      try {
+        await shiftService.setApproval(id, next);
+        await refreshHistory(selectedMonth);
+      } catch (error) {
+        console.error("Failed to attest shift:", error);
+        Alert.alert(t("common.error"), t("shifts.approveFailed"));
+      } finally {
+        setApprovingIds((previous) => previous.filter((item) => item !== id));
+      }
+    },
+    [approvingIds, refreshHistory, selectedMonth, t],
+  );
+
   const openManualHoursEditor = useCallback((shift) => {
     const ms = Number(shift?.manualDurationMs) || 0;
     const totalMinutes = Math.round(ms / 60000);
@@ -1350,6 +1373,41 @@ export default function ShiftsScreen() {
                               {shift.manualDurationMs != null
                                 ? formatDuration(shift.manualDurationMs)
                                 : t("shifts.manualHoursAdd")}
+                            </Text>
+                          </TouchableOpacity>
+                        ) : null}
+
+                        {/* Attest — the manager's confirmation of the day. */}
+                        {isAdmin && shift.status === "completed" ? (
+                          <TouchableOpacity
+                            style={styles.shiftDetailRow}
+                            activeOpacity={0.7}
+                            onPress={() => toggleApproval(shift)}
+                          >
+                            <Text
+                              style={[
+                                styles.shiftDetailLabel,
+                                {
+                                  fontFamily: theme.text.fontFamily["regular"],
+                                },
+                              ]}
+                            >
+                              {t("shifts.attest")}
+                            </Text>
+                            <Text
+                              style={[
+                                styles.manualHoursValue,
+                                {
+                                  fontFamily:
+                                    theme.text.fontFamily[
+                                      shift.approvedAt ? "medium" : "regular"
+                                    ],
+                                },
+                              ]}
+                            >
+                              {shift.approvedAt
+                                ? t("shifts.attested")
+                                : t("shifts.attestAction")}
                             </Text>
                           </TouchableOpacity>
                         ) : null}

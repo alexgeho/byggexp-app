@@ -475,7 +475,11 @@
     "periodTabs": {
       "month": "Kuu",
       "custom": "Kohandatud"
-    }
+    },
+    "attest": "Kinnitus",
+    "attested": "Kinnitatud",
+    "attestAction": "Kinnita",
+    "approveFailed": "Vahetust ei saanud kinnitada."
   },
   "shiftHistory": {
     "title": "Päevaraport",
@@ -1607,6 +1611,10 @@
       "half": "Pool",
       "full": "Täis"
     },
-    "copyLast": "Kopeeri {{date}}"
+    "copyLast": "Kopeeri {{date}}",
+    "ata": "Lisatöö",
+    "noAta": "Puudub",
+    "addPhoto": "Lisa foto",
+    "photoFailed": "Foto lisamine ebaõnnestus."
   }
 }

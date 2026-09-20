@@ -475,7 +475,11 @@
     "periodTabs": {
       "month": "Kuukausi",
       "custom": "Mukautettu"
-    }
+    },
+    "attest": "Hyväksyntä",
+    "attested": "Hyväksytty",
+    "attestAction": "Hyväksy",
+    "approveFailed": "Vuoron hyväksyminen epäonnistui."
   },
   "shiftHistory": {
     "title": "Päiväraportti",
@@ -1607,6 +1611,10 @@
       "half": "Puoli",
       "full": "Koko"
     },
-    "copyLast": "Kopioi {{date}}"
+    "copyLast": "Kopioi {{date}}",
+    "ata": "Lisätyö",
+    "noAta": "Ei",
+    "addPhoto": "Lisää kuva",
+    "photoFailed": "Kuvan lisääminen epäonnistui."
   }
 }

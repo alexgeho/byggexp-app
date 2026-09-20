@@ -475,7 +475,11 @@
     "periodTabs": {
       "month": "Månad",
       "custom": "Anpassad"
-    }
+    },
+    "attest": "Attest",
+    "attested": "Attesterad",
+    "attestAction": "Attestera",
+    "approveFailed": "Kunde inte attestera passet."
   },
   "shiftHistory": {
     "title": "Dagsrapport",
@@ -1607,6 +1611,10 @@
       "half": "Halvt",
       "full": "Helt"
     },
-    "copyLast": "Kopiera {{date}}"
+    "copyLast": "Kopiera {{date}}",
+    "ata": "ÄTA",
+    "noAta": "Ingen ÄTA",
+    "addPhoto": "Lägg till foto",
+    "photoFailed": "Kunde inte lägga till fotot."
   }
 }

@@ -475,7 +475,11 @@
     "periodTabs": {
       "month": "Mēnesis",
       "custom": "Pielāgots"
-    }
+    },
+    "attest": "Apstiprinājums",
+    "attested": "Apstiprināta",
+    "attestAction": "Apstiprināt",
+    "approveFailed": "Neizdevās apstiprināt maiņu."
   },
   "shiftHistory": {
     "title": "Dienas atskaite",
@@ -1607,6 +1611,10 @@
       "half": "Puse",
       "full": "Pilna"
     },
-    "copyLast": "Kopēt {{date}}"
+    "copyLast": "Kopēt {{date}}",
+    "ata": "Papildu darbi",
+    "noAta": "Nav",
+    "addPhoto": "Pievienot foto",
+    "photoFailed": "Neizdevās pievienot fotoattēlu."
   }
 }

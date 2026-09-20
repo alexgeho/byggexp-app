@@ -23,6 +23,8 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../theme/ThemeContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import { shiftService } from "../../../services";
+import { pickUploadAssets } from "../../../utils/uploadPicker";
+import { FilterSelector } from "../../../components/common/FilterSelector/FilterSelector";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import {
   standardScreenContainer,
@@ -74,6 +76,11 @@ export default function DayReportScreen() {
   const [saving, setSaving] = useState(false);
   // The previous reported day, offered as a one-tap prefill.
   const [lastReport, setLastReport] = useState(null);
+  const [ataOptions, setAtaOptions] = useState([]);
+  const [ataId, setAtaId] = useState(shift.ataId || "");
+  const [photoCount, setPhotoCount] = useState(
+    Array.isArray(shift.photos) ? shift.photos.length : 0,
+  );
   // A second tap must not fire a second save before the button re-renders.
   const submittingRef = useRef(false);
 
@@ -94,6 +101,39 @@ export default function DayReportScreen() {
     };
   }, []);
 
+  // Which ÄTA this day belongs to, if any. Management data stays out of it —
+  // the endpoint returns number and title only.
+  useEffect(() => {
+    if (!shiftId) return undefined;
+    let active = true;
+    shiftService
+      .getAtaOptions(shiftId)
+      .then((rows) => {
+        if (active) setAtaOptions(Array.isArray(rows) ? rows : []);
+      })
+      .catch(() => {
+        /* no ÄTA on this project, or no access — the row simply stays hidden */
+      });
+    return () => {
+      active = false;
+    };
+  }, [shiftId]);
+
+  const addPhoto = useCallback(async () => {
+    try {
+      const assets = await pickUploadAssets({
+        fileNamePrefix: "shift-photo",
+        documentTypes: ["image/*"],
+      });
+      if (!assets.length) return;
+      await shiftService.uploadPhotos(shiftId, assets);
+      setPhotoCount((previous) => previous + assets.length);
+    } catch (error) {
+      console.error("Failed to add shift photo:", error);
+      Alert.alert(t("common.error"), t("dayReport.photoFailed"));
+    }
+  }, [shiftId, t]);
+
   const copyLast = useCallback(() => {
     if (!lastReport) return;
     setHourType(lastReport.hourType || "normal");
@@ -111,6 +151,7 @@ export default function DayReportScreen() {
     try {
       await shiftService.saveDayReport(shiftId, {
         hourType,
+        ataId: ataId || null,
         travelKm: toNumber(travelKm),
         travelMinutes: Math.round(toNumber(travelHours) * 60),
         perDiem,
@@ -197,6 +238,30 @@ export default function DayReportScreen() {
               />
             </View>
 
+            {/* ÄTA — only when the project has any, so the screen stays short
+                for the common case of plain contract work. */}
+            {ataOptions.length ? (
+              <>
+                <Text style={styles.sectionLabel}>{t("dayReport.ata")}</Text>
+                <View style={styles.card}>
+                  <View style={styles.ataRow}>
+                    <FilterSelector
+                      value={ataId}
+                      onChange={setAtaId}
+                      placeholder={t("dayReport.noAta")}
+                      options={[
+                        { value: "", label: t("dayReport.noAta") },
+                        ...ataOptions.map((option) => ({
+                          value: option.id,
+                          label: `ÄTA ${option.number} · ${option.title}`,
+                        })),
+                      ]}
+                    />
+                  </View>
+                </View>
+              </>
+            ) : null}
+
             {/* 2 — travel */}
             <Text style={styles.sectionLabel}>
               {t("dayReport.travelLabel")}
@@ -241,6 +306,21 @@ export default function DayReportScreen() {
                   labelFor={(option) => t(`dayReport.perDiemOption.${option}`)}
                 />
               </View>
+            </View>
+
+            {/* Photo of the day, straight onto the shift. */}
+            <Text style={styles.sectionLabel}>{t("shifts.photos")}</Text>
+            <View style={styles.card}>
+              <TouchableOpacity
+                style={styles.fieldRow}
+                onPress={addPhoto}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.fieldLabel}>{t("dayReport.addPhoto")}</Text>
+                <Text style={styles.photoCount}>
+                  {photoCount > 0 ? String(photoCount) : ""}
+                </Text>
+              </TouchableOpacity>
             </View>
 
             {/* 3 — the day in one line */}
@@ -300,6 +380,8 @@ const createStyles = (c) =>
       fontSize: 15,
       marginBottom: 12,
     },
+    ataRow: { padding: 12 },
+    photoCount: { color: c.textMuted, fontSize: 16 },
     copyLast: {
       minHeight: 44,
       borderRadius: 14,

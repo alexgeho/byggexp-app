@@ -475,7 +475,11 @@
     "periodTabs": {
       "month": "Mjesec",
       "custom": "Prilagođeno"
-    }
+    },
+    "attest": "Potvrda",
+    "attested": "Potvrđena",
+    "attestAction": "Potvrdi",
+    "approveFailed": "Nije moguće potvrditi smjenu."
   },
   "shiftHistory": {
     "title": "Dnevni izvještaj",
@@ -1607,6 +1611,10 @@
       "half": "Pola",
       "full": "Puna"
     },
-    "copyLast": "Kopiraj {{date}}"
+    "copyLast": "Kopiraj {{date}}",
+    "ata": "Dodatni radovi",
+    "noAta": "Nema",
+    "addPhoto": "Dodaj fotografiju",
+    "photoFailed": "Nije moguće dodati fotografiju."
   }
 }
