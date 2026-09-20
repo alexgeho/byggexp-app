@@ -1532,7 +1532,8 @@
     "emptyList": "No clients yet.",
     "companyNameRequired": "Enter a company name",
     "nameRequired": "Enter first and last name",
-    "addTitle": "New client"
+    "addTitle": "New client",
+    "deleteFailed": "Could not delete the client."
   },
   "notes": {
     "title": "Notes",

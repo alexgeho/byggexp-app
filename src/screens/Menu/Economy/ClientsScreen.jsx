@@ -1,12 +1,15 @@
 import React, { useCallback, useMemo, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   Text,
   TouchableOpacity,
   View,
   StyleSheet,
 } from "react-native";
+import { Swipeable } from "react-native-gesture-handler";
+import Icon from "react-native-vector-icons/Feather";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 
@@ -69,6 +72,47 @@ export default function ClientsScreen() {
     );
   }, [clients, filter]);
 
+  // Swipe a client card left to reveal a red "Ta bort", like the projects and
+  // tools lists. The deliberate left-swipe is the safeguard, so no confirm.
+  const handleDelete = useCallback(
+    async (client) => {
+      const id = getEntityId(client);
+      try {
+        await clientService.remove(id);
+        // Drop it only once the backend confirms — no flash/re-appear on error.
+        setClients((previous) =>
+          previous.filter((item) => getEntityId(item) !== id),
+        );
+      } catch (error) {
+        const status = error?.response?.status;
+        const raw = error?.response?.data?.message ?? error?.message;
+        const detail = Array.isArray(raw) ? raw.join(", ") : raw;
+        console.error("Failed to delete client:", status, detail, error);
+        Alert.alert(
+          t("common.error"),
+          `${t("clientForm.deleteFailed")}\n[${status ?? "?"}] ${detail ?? ""}`,
+        );
+      }
+    },
+    [t],
+  );
+
+  const renderDeleteAction = useCallback(
+    (client) => (
+      <TouchableOpacity
+        style={styles.swipeDeleteAction}
+        activeOpacity={0.85}
+        onPress={() => handleDelete(client)}
+        accessibilityRole="button"
+        accessibilityLabel={t("common.delete")}
+      >
+        <Icon name="trash-2" size={22} color="#FFFFFF" />
+        <Text style={styles.swipeDeleteText}>{t("common.delete")}</Text>
+      </TouchableOpacity>
+    ),
+    [handleDelete, styles, t],
+  );
+
   return (
     <View style={styles.screen}>
       <View style={styles.pageContainer}>
@@ -124,23 +168,30 @@ export default function ClientsScreen() {
             renderItem={({ item: client }) => {
               const isPrivate = (client.clientType || "company") === "private";
               return (
-                <ListCard
-                  title={clientName(client) || t("common.noName")}
-                  badgeLabel={t(
-                    isPrivate ? "clients.private" : "clients.company",
-                  )}
-                  badgeStyle={
-                    isPrivate
-                      ? cardStyles.cardBadgeOccupied
-                      : cardStyles.cardBadgeAvailable
-                  }
+                <Swipeable
+                  renderRightActions={() => renderDeleteAction(client)}
+                  overshootRight={false}
+                  friction={2}
+                  rightThreshold={40}
                 >
-                  <Text style={styles.cardMeta} numberOfLines={1}>
-                    {[client.customerNumber, client.email, client.phone]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </Text>
-                </ListCard>
+                  <ListCard
+                    title={clientName(client) || t("common.noName")}
+                    badgeLabel={t(
+                      isPrivate ? "clients.private" : "clients.company",
+                    )}
+                    badgeStyle={
+                      isPrivate
+                        ? cardStyles.cardBadgeOccupied
+                        : cardStyles.cardBadgeAvailable
+                    }
+                  >
+                    <Text style={styles.cardMeta} numberOfLines={1}>
+                      {[client.customerNumber, client.email, client.phone]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </Text>
+                  </ListCard>
+                </Swipeable>
               );
             }}
           />
@@ -215,6 +266,22 @@ const createStyles = (c) =>
     },
     listContent: {
       paddingBottom: 140,
+    },
+    // Red slab behind a swiped card — same as the projects and tools lists.
+    swipeDeleteAction: {
+      backgroundColor: "#FF3B30",
+      width: 92,
+      borderRadius: 16,
+      alignItems: "center",
+      justifyContent: "center",
+      marginLeft: 8,
+      marginBottom: 12,
+    },
+    swipeDeleteText: {
+      color: "#FFFFFF",
+      fontSize: 12,
+      fontWeight: "600",
+      marginTop: 4,
     },
     cardMeta: {
       color: c.textMuted,

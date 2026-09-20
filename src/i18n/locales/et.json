@@ -1532,7 +1532,8 @@
     "emptyList": "Kliente pole veel.",
     "companyNameRequired": "Sisesta ettevõtte nimi",
     "nameRequired": "Sisesta ees- ja perekonnanimi",
-    "addTitle": "Uus klient"
+    "addTitle": "Uus klient",
+    "deleteFailed": "Klienti kustutamine ebaõnnestus."
   },
   "notes": {
     "title": "Märkmed",

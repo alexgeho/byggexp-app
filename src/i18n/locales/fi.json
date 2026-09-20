@@ -1532,7 +1532,8 @@
     "emptyList": "Ei vielä asiakkaita.",
     "companyNameRequired": "Anna yrityksen nimi",
     "nameRequired": "Anna etu- ja sukunimi",
-    "addTitle": "Uusi asiakas"
+    "addTitle": "Uusi asiakas",
+    "deleteFailed": "Asiakkaan poistaminen epäonnistui."
   },
   "notes": {
     "title": "Muistiinpanot",

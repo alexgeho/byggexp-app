@@ -1532,7 +1532,8 @@
     "emptyList": "Dar nėra klientų.",
     "companyNameRequired": "Įveskite įmonės pavadinimą",
     "nameRequired": "Įveskite vardą ir pavardę",
-    "addTitle": "Naujas klientas"
+    "addTitle": "Naujas klientas",
+    "deleteFailed": "Nepavyko ištrinti kliento."
   },
   "notes": {
     "title": "Užrašai",

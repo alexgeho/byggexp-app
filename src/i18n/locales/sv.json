@@ -1532,7 +1532,8 @@
     "emptyList": "Inga klienter än.",
     "companyNameRequired": "Ange företagsnamn",
     "nameRequired": "Ange för- och efternamn",
-    "addTitle": "Ny klient"
+    "addTitle": "Ny klient",
+    "deleteFailed": "Kunde inte ta bort klienten."
   },
   "notes": {
     "title": "Anteckningar",

@@ -23,6 +23,10 @@ export const clientService = {
     const { data } = await api.put(`/clients/${id}`, payload);
     return data;
   },
+  remove: async (id) => {
+    const { data } = await api.delete(`/clients/${id}`);
+    return data;
+  },
 };
 
 export default clientService;

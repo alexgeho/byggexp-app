@@ -1532,7 +1532,8 @@
     "emptyList": "Ingen klienter ennå.",
     "companyNameRequired": "Angi firmanavn",
     "nameRequired": "Angi for- og etternavn",
-    "addTitle": "Ny klient"
+    "addTitle": "Ny klient",
+    "deleteFailed": "Kunne ikke slette klienten."
   },
   "notes": {
     "title": "Notater",

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -57,6 +57,11 @@ export default function CreateOfferScreen() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  // Guard against a double-tap: `saving` is state, so a second tap fires before
+  // React re-renders the disabled button and creates a second document. A ref
+  // blocks the re-entrant call synchronously (same fix the admin forms use).
+  const submittingRef = useRef(false);
+
   const totals = useMemo(() => computeTotals(items), [items]);
   const locale = getDateLocale();
 
@@ -101,7 +106,8 @@ export default function CreateOfferScreen() {
   };
 
   const handleSaveDraft = async () => {
-    if (!validate()) return;
+    if (!validate() || submittingRef.current) return;
+    submittingRef.current = true;
     try {
       setSaving(true);
       await createOffer();
@@ -112,11 +118,13 @@ export default function CreateOfferScreen() {
       Alert.alert(t("billing.saveFailedTitle"), t("billing.offerSaveFailed"));
     } finally {
       setSaving(false);
+      submittingRef.current = false;
     }
   };
 
   const handleCreateAndShare = async () => {
-    if (!validate()) return;
+    if (!validate() || submittingRef.current) return;
+    submittingRef.current = true;
     try {
       setSaving(true);
       const created = await createOffer();
@@ -136,6 +144,7 @@ export default function CreateOfferScreen() {
       Alert.alert(t("billing.shareFailedTitle"), t("billing.offerShareFailed"));
     } finally {
       setSaving(false);
+      submittingRef.current = false;
     }
   };
 

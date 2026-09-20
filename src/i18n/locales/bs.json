@@ -1532,7 +1532,8 @@
     "emptyList": "Još nema klijenata.",
     "companyNameRequired": "Unesite naziv firme",
     "nameRequired": "Unesite ime i prezime",
-    "addTitle": "Novi klijent"
+    "addTitle": "Novi klijent",
+    "deleteFailed": "Nije moguće obrisati klijenta."
   },
   "notes": {
     "title": "Bilješke",

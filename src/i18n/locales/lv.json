@@ -1532,7 +1532,8 @@
     "emptyList": "Vēl nav klientu.",
     "companyNameRequired": "Ievadiet uzņēmuma nosaukumu",
     "nameRequired": "Ievadiet vārdu un uzvārdu",
-    "addTitle": "Jauns klients"
+    "addTitle": "Jauns klients",
+    "deleteFailed": "Neizdevās dzēst klientu."
   },
   "notes": {
     "title": "Piezīmes",

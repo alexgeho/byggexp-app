@@ -1532,7 +1532,8 @@
     "emptyList": "Пока нет клиентов.",
     "companyNameRequired": "Введите название компании",
     "nameRequired": "Введите имя и фамилию",
-    "addTitle": "Новый клиент"
+    "addTitle": "Новый клиент",
+    "deleteFailed": "Не удалось удалить клиента."
   },
   "notes": {
     "title": "Заметки",

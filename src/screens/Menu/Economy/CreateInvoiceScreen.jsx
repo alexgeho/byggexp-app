@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState } from "react";
+import React, { useContext, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -73,6 +73,11 @@ export default function CreateInvoiceScreen() {
   const [projectPickerVisible, setProjectPickerVisible] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  // Guard against a double-tap: `saving` is state, so a second tap fires before
+  // React re-renders the disabled button and creates a second document. A ref
+  // blocks the re-entrant call synchronously (same fix the admin forms use).
+  const submittingRef = useRef(false);
 
   const locale = getDateLocale();
   const totals = useMemo(
@@ -183,7 +188,8 @@ export default function CreateInvoiceScreen() {
   };
 
   const handleSaveDraft = async () => {
-    if (!validate()) return;
+    if (!validate() || submittingRef.current) return;
+    submittingRef.current = true;
     try {
       setSaving(true);
       await invoiceService.create(buildPayload());
@@ -194,11 +200,13 @@ export default function CreateInvoiceScreen() {
       Alert.alert(t("billing.saveFailedTitle"), t("billing.invoiceSaveFailed"));
     } finally {
       setSaving(false);
+      submittingRef.current = false;
     }
   };
 
   const handleCreateAndSend = async () => {
-    if (!validate()) return;
+    if (!validate() || submittingRef.current) return;
+    submittingRef.current = true;
     if (!email.trim()) {
       Alert.alert(t("billing.missingEmailTitle"), t("billing.missingEmail"));
       return;
@@ -219,6 +227,7 @@ export default function CreateInvoiceScreen() {
       Alert.alert(t("billing.saveFailedTitle"), t("billing.invoiceSendFailed"));
     } finally {
       setSaving(false);
+      submittingRef.current = false;
     }
   };
 

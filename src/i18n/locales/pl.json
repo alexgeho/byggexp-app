@@ -1532,7 +1532,8 @@
     "emptyList": "Brak klientów.",
     "companyNameRequired": "Podaj nazwę firmy",
     "nameRequired": "Podaj imię i nazwisko",
-    "addTitle": "Nowy klient"
+    "addTitle": "Nowy klient",
+    "deleteFailed": "Nie udało się usunąć klienta."
   },
   "notes": {
     "title": "Notatki",
