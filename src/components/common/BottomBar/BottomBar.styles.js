@@ -56,6 +56,18 @@ export function createStyles(theme) {
       // which is transparent and would cast nothing).
       ...Platform.select({ android: { elevation: 8 }, default: {} }),
     },
+    // The pill's hairline, drawn as an overlay so it stays above the corner
+    // glow. A real border belongs to the parent and every child paints over
+    // it, which left the bottom-right arc of the line washed out.
+    pillRing: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      borderRadius: 89,
+      borderWidth: 1,
+    },
     pillGlow: {
       position: "absolute",
       right: -30,

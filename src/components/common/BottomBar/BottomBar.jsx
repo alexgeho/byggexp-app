@@ -168,9 +168,6 @@ export function BottomBar({
     glass && !pillColor && styles.menuWrapperGlass,
     dark && !isTransparent && !pillColor && styles.menuWrapperDark,
     pillColor && styles.menuWrapperOpaque,
-    pillColor && pillBorderColor
-      ? { borderWidth: 1, borderColor: pillBorderColor }
-      : null,
   ];
 
   return (
@@ -249,6 +246,12 @@ export function BottomBar({
                 style={[styles.glassRing, { borderColor: pillGlass.ring }]}
               />
             </>
+          ) : null}
+          {pillColor && pillBorderColor ? (
+            <View
+              pointerEvents="none"
+              style={[styles.pillRing, { borderColor: pillBorderColor }]}
+            />
           ) : null}
           <Pressable
             style={styles.navButton}
