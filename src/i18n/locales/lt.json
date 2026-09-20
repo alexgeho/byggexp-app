@@ -38,7 +38,8 @@
     "search": "Ieškoti...",
     "success": "Atlikta",
     "ok": "Gerai",
-    "tryAgain": "Bandykite dar kartą."
+    "tryAgain": "Bandykite dar kartą.",
+    "delete": "Ištrinti"
   },
   "locationConsent": {
     "title": "Automatinės pamainos",
@@ -612,7 +613,8 @@
     "qrLabel": "QR kodas",
     "qrPlaceholder": "Nuskaitykite įrankio kodą",
     "qrScanHint": "Nukreipkite kamerą į įrankio QR etiketę",
-    "qrTaken": "Šis kodas jau priklauso kitam įrankiui"
+    "qrTaken": "Šis kodas jau priklauso kitam įrankiui",
+    "deleteFailed": "Nepavyko ištrinti įrankio."
   },
   "language": {
     "title": "Kalba"

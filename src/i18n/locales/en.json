@@ -38,7 +38,8 @@
     "search": "Search...",
     "success": "Success",
     "ok": "OK",
-    "tryAgain": "Please try again."
+    "tryAgain": "Please try again.",
+    "delete": "Delete"
   },
   "locationConsent": {
     "title": "Automatic shifts",
@@ -612,7 +613,8 @@
     "qrLabel": "QR code",
     "qrPlaceholder": "Scan the tool's code",
     "qrScanHint": "Point the camera at the tool's QR label",
-    "qrTaken": "That code already belongs to another tool"
+    "qrTaken": "That code already belongs to another tool",
+    "deleteFailed": "Could not delete the tool."
   },
   "language": {
     "title": "Language"

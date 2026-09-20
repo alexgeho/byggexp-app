@@ -38,7 +38,8 @@
     "search": "Haku...",
     "success": "Valmis",
     "ok": "OK",
-    "tryAgain": "Yritä uudelleen."
+    "tryAgain": "Yritä uudelleen.",
+    "delete": "Poista"
   },
   "locationConsent": {
     "title": "Automaattiset työvuorot",
@@ -612,7 +613,8 @@
     "qrLabel": "QR-koodi",
     "qrPlaceholder": "Skannaa työkalun koodi",
     "qrScanHint": "Suuntaa kamera työkalun QR-tarraan",
-    "qrTaken": "Koodi kuuluu jo toiselle työkalulle"
+    "qrTaken": "Koodi kuuluu jo toiselle työkalulle",
+    "deleteFailed": "Työkalun poistaminen epäonnistui."
   },
   "language": {
     "title": "Kieli"

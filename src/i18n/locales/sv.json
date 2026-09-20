@@ -38,7 +38,8 @@
     "search": "Sök...",
     "success": "Klart",
     "ok": "OK",
-    "tryAgain": "Försök igen."
+    "tryAgain": "Försök igen.",
+    "delete": "Ta bort"
   },
   "locationConsent": {
     "title": "Automatiska arbetspass",
@@ -612,7 +613,8 @@
     "qrLabel": "QR-kod",
     "qrPlaceholder": "Skanna verktygets kod",
     "qrScanHint": "Rikta kameran mot verktygets QR-etikett",
-    "qrTaken": "Koden tillhör redan ett annat verktyg"
+    "qrTaken": "Koden tillhör redan ett annat verktyg",
+    "deleteFailed": "Kunde inte ta bort verktyget."
   },
   "language": {
     "title": "Språk"

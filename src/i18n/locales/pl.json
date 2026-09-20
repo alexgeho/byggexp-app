@@ -38,7 +38,8 @@
     "search": "Szukaj...",
     "success": "Gotowe",
     "ok": "OK",
-    "tryAgain": "Spróbuj ponownie."
+    "tryAgain": "Spróbuj ponownie.",
+    "delete": "Usuń"
   },
   "locationConsent": {
     "title": "Automatyczne zmiany",
@@ -612,7 +613,8 @@
     "qrLabel": "Kod QR",
     "qrPlaceholder": "Zeskanuj kod narzędzia",
     "qrScanHint": "Skieruj aparat na etykietę QR narzędzia",
-    "qrTaken": "Ten kod należy już do innego narzędzia"
+    "qrTaken": "Ten kod należy już do innego narzędzia",
+    "deleteFailed": "Nie udało się usunąć narzędzia."
   },
   "language": {
     "title": "Język"

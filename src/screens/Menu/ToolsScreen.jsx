@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Swipeable } from "react-native-gesture-handler";
+import Icon from "react-native-vector-icons/Feather";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import AuthContext from "../../contexts/AuthContext";
@@ -127,6 +129,48 @@ export default function ToolsScreen() {
     ]);
   };
 
+  // Swipe a tool card left to reveal a red "Ta bort". Only for roles that may
+  // manage tools; the deliberate left-swipe is the safeguard, so no confirm —
+  // same behaviour as the projects list.
+  const handleDeleteTool = useCallback(
+    async (tool) => {
+      const toolId = getEntityId(tool);
+      try {
+        await toolService.remove(toolId);
+        // Drop it only once the backend confirms — no flash/re-appear on error.
+        setTools((previousTools) =>
+          previousTools.filter((item) => getEntityId(item) !== toolId),
+        );
+      } catch (error) {
+        const status = error?.response?.status;
+        const raw = error?.response?.data?.message ?? error?.message;
+        const detail = Array.isArray(raw) ? raw.join(", ") : raw;
+        console.error("Failed to delete tool:", status, detail, error);
+        Alert.alert(
+          t("common.error"),
+          `${t("tools.deleteFailed")}\n[${status ?? "?"}] ${detail ?? ""}`,
+        );
+      }
+    },
+    [t],
+  );
+
+  const renderToolDeleteAction = useCallback(
+    (tool) => (
+      <TouchableOpacity
+        style={styles.swipeDeleteAction}
+        activeOpacity={0.85}
+        onPress={() => handleDeleteTool(tool)}
+        accessibilityRole="button"
+        accessibilityLabel={t("common.delete")}
+      >
+        <Icon name="trash-2" size={22} color="#FFFFFF" />
+        <Text style={styles.swipeDeleteText}>{t("common.delete")}</Text>
+      </TouchableOpacity>
+    ),
+    [handleDeleteTool, styles, t],
+  );
+
   return (
     <View style={styles.screen}>
       <View style={styles.pageContainer}>
@@ -182,14 +226,31 @@ export default function ToolsScreen() {
                 </Text>
               </View>
             }
-            renderItem={({ item: tool }) => (
-              <ToolListCard
-                tool={tool}
-                onPress={
-                  canEditStatus ? () => handleChangeStatus(tool) : undefined
-                }
-              />
-            )}
+            renderItem={({ item: tool }) => {
+              const card = (
+                <ToolListCard
+                  tool={tool}
+                  onPress={
+                    canEditStatus ? () => handleChangeStatus(tool) : undefined
+                  }
+                />
+              );
+
+              if (!canManageTools(user?.role)) {
+                return card;
+              }
+
+              return (
+                <Swipeable
+                  renderRightActions={() => renderToolDeleteAction(tool)}
+                  overshootRight={false}
+                  friction={2}
+                  rightThreshold={40}
+                >
+                  {card}
+                </Swipeable>
+              );
+            }}
           />
         )}
 

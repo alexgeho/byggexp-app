@@ -38,7 +38,8 @@
     "search": "Pretraga...",
     "success": "Uspješno",
     "ok": "U redu",
-    "tryAgain": "Pokušajte ponovo."
+    "tryAgain": "Pokušajte ponovo.",
+    "delete": "Obriši"
   },
   "locationConsent": {
     "title": "Automatske smjene",
@@ -612,7 +613,8 @@
     "qrLabel": "QR kod",
     "qrPlaceholder": "Skenirajte kod alata",
     "qrScanHint": "Usmjerite kameru na QR naljepnicu alata",
-    "qrTaken": "Taj kod već pripada drugom alatu"
+    "qrTaken": "Taj kod već pripada drugom alatu",
+    "deleteFailed": "Nije moguće obrisati alat."
   },
   "language": {
     "title": "Jezik"

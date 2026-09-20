@@ -38,7 +38,8 @@
     "search": "Søk...",
     "success": "Fullført",
     "ok": "OK",
-    "tryAgain": "Prøv igjen."
+    "tryAgain": "Prøv igjen.",
+    "delete": "Slett"
   },
   "locationConsent": {
     "title": "Automatiske skift",
@@ -612,7 +613,8 @@
     "qrLabel": "QR-kode",
     "qrPlaceholder": "Skann verktøyets kode",
     "qrScanHint": "Rett kameraet mot verktøyets QR-etikett",
-    "qrTaken": "Koden tilhører allerede et annet verktøy"
+    "qrTaken": "Koden tilhører allerede et annet verktøy",
+    "deleteFailed": "Kunne ikke slette verktøyet."
   },
   "language": {
     "title": "Språk"

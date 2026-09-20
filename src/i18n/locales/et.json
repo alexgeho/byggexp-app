@@ -38,7 +38,8 @@
     "search": "Otsi...",
     "success": "Valmis",
     "ok": "OK",
-    "tryAgain": "Palun proovi uuesti."
+    "tryAgain": "Palun proovi uuesti.",
+    "delete": "Kustuta"
   },
   "locationConsent": {
     "title": "Automaatsed vahetused",
@@ -612,7 +613,8 @@
     "qrLabel": "QR-kood",
     "qrPlaceholder": "Skaneeri tööriista kood",
     "qrScanHint": "Suuna kaamera tööriista QR-sildile",
-    "qrTaken": "See kood kuulub juba teisele tööriistale"
+    "qrTaken": "See kood kuulub juba teisele tööriistale",
+    "deleteFailed": "Tööriista ei saanud kustutada."
   },
   "language": {
     "title": "Keel"

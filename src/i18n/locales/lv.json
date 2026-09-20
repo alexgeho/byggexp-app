@@ -38,7 +38,8 @@
     "search": "Meklēt...",
     "success": "Izdevās",
     "ok": "Labi",
-    "tryAgain": "Lūdzu, mēģiniet vēlreiz."
+    "tryAgain": "Lūdzu, mēģiniet vēlreiz.",
+    "delete": "Dzēst"
   },
   "locationConsent": {
     "title": "Automātiskas maiņas",
@@ -612,7 +613,8 @@
     "qrLabel": "QR kods",
     "qrPlaceholder": "Skenējiet instrumenta kodu",
     "qrScanHint": "Pavērsiet kameru pret instrumenta QR uzlīmi",
-    "qrTaken": "Šis kods jau pieder citam instrumentam"
+    "qrTaken": "Šis kods jau pieder citam instrumentam",
+    "deleteFailed": "Neizdevās dzēst instrumentu."
   },
   "language": {
     "title": "Valoda"

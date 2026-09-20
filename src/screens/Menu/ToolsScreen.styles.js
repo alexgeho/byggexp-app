@@ -72,6 +72,23 @@ export const createStyles = (c) =>
       alignItems: "center",
       justifyContent: "center",
     },
+    // Swipe-left delete action behind a tool card — same red slab as the
+    // projects list.
+    swipeDeleteAction: {
+      backgroundColor: "#FF3B30",
+      width: 92,
+      borderRadius: 16,
+      alignItems: "center",
+      justifyContent: "center",
+      marginLeft: 8,
+      marginBottom: 12,
+    },
+    swipeDeleteText: {
+      color: "#FFFFFF",
+      fontSize: 12,
+      fontWeight: "600",
+      marginTop: 4,
+    },
     emptyState: {
       paddingVertical: 48,
       paddingHorizontal: 24,
