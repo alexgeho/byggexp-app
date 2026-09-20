@@ -12,6 +12,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { useTranslation } from "react-i18next";
+import Icon from "react-native-vector-icons/Feather";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 
@@ -150,7 +151,7 @@ export default function CreateClientScreen() {
       showError({ message: t("clientForm.companyNameRequired") });
       return;
     }
-    if (!isCompany && (!form.firstName.trim() || !form.lastName.trim())) {
+    if (!isCompany && !form.firstName.trim()) {
       showError({ message: t("clientForm.nameRequired") });
       return;
     }
@@ -160,7 +161,7 @@ export default function CreateClientScreen() {
         ...form,
         companyId: user?.companyId,
         hourlyRate: Number(form.hourlyRate) || 0,
-        reverseVAT: Boolean(form.reverseVAT),
+        reverseVAT: isCompany && Boolean(form.reverseVAT),
       });
       await resetForm();
       showSuccess({ title: t("clientForm.savedTitle") });
@@ -224,7 +225,21 @@ export default function CreateClientScreen() {
         <Text style={styles.headerTitle}>
           {t("clientForm.addTitle", "Ny klient")}
         </Text>
-        <View style={{ width: 44 }} />
+        {/* Save from the header too — the button at the far end of the form
+            is a long scroll away once the company name is all you needed. */}
+        <TouchableOpacity
+          style={styles.headerSave}
+          onPress={handleSave}
+          disabled={saving}
+          accessibilityRole="button"
+          accessibilityLabel={t("clientForm.add", "Lägg till klient")}
+        >
+          {saving ? (
+            <ActivityIndicator color="#FFFFFF" size="small" />
+          ) : (
+            <Icon name="check" size={22} color="#FFFFFF" />
+          )}
+        </TouchableOpacity>
       </View>
 
       <KeyboardAvoidingView
@@ -273,7 +288,7 @@ export default function CreateClientScreen() {
           ) : (
             <>
               {field("firstName", `${t("clientForm.firstName", "Förnamn")} *`)}
-              {field("lastName", `${t("clientForm.lastName", "Efternamn")} *`)}
+              {field("lastName", t("clientForm.lastName", "Efternamn"))}
               {field(
                 "personalNumber",
                 t("clientForm.personalNumber", "Personnummer"),
@@ -339,16 +354,20 @@ export default function CreateClientScreen() {
           {field("hourlyRate", t("clientForm.hourlyRate", "Timpris (SEK)"), {
             keyboardType: "numeric",
           })}
-          <View style={[styles.fieldBlock, styles.switchRow]}>
-            <Text style={styles.label}>
-              {t("clientForm.reverseVAT", "Omvänd moms")}
-            </Text>
-            <Switch
-              value={form.reverseVAT}
-              onValueChange={(v) => set("reverseVAT", v)}
-              trackColor={{ true: "#34C759" }}
-            />
-          </View>
+          {/* Byggmoms is between businesses — a private person never carries
+              it, so the toggle isn't offered (same as the web form). */}
+          {isCompany ? (
+            <View style={[styles.fieldBlock, styles.switchRow]}>
+              <Text style={styles.label}>
+                {t("clientForm.reverseVAT", "Omvänd moms")}
+              </Text>
+              <Switch
+                value={form.reverseVAT}
+                onValueChange={(v) => set("reverseVAT", v)}
+                trackColor={{ true: "#34C759" }}
+              />
+            </View>
+          ) : null}
           {field("notes", t("clientForm.notes", "Anteckningar"), {
             multiline: true,
           })}
@@ -378,6 +397,16 @@ function createStyles(theme) {
   return StyleSheet.create({
     safe: { flex: 1, backgroundColor: c.background },
     flex: { flex: 1 },
+    // Round check in the header, the same save affordance the account and
+    // company forms use.
+    headerSave: {
+      width: 44,
+      height: 44,
+      borderRadius: 999,
+      backgroundColor: theme.colors.primary,
+      alignItems: "center",
+      justifyContent: "center",
+    },
     header: {
       flexDirection: "row",
       alignItems: "center",
