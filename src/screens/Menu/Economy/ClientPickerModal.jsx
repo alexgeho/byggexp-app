@@ -304,10 +304,15 @@ export default function ClientPickerModal({ visible, onClose, onSelect }) {
                       {t("billing.noClients")}
                     </Text>
                   ) : (
-                    filtered.map((client) => (
+                    filtered.map((client, index) => (
                       <TouchableOpacity
                         key={client._id || client.id}
-                        style={styles.clientRow}
+                        // No rule under the last row — the sheet's edge is the
+                        // end of the list.
+                        style={[
+                          styles.clientRow,
+                          index === filtered.length - 1 && styles.clientRowLast,
+                        ]}
                         onPress={() => onSelect(client)}
                       >
                         <Text style={styles.clientName}>

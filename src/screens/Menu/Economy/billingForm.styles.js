@@ -342,11 +342,15 @@ export const createStyles = (c) => {
       fontFamily: F_MED,
       color: INK,
     },
+    // Rows in the picker sheets: a hairline in the theme's own separator
+    // colour, inset to start at the text — a full-width light rule looked
+    // painted on over the dark sheet.
     clientRow: {
       paddingVertical: 13,
-      borderBottomWidth: 1,
-      borderBottomColor: "#f0f3f6",
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: c.divider,
     },
+    clientRowLast: { borderBottomWidth: 0 },
     clientName: { fontSize: 15, fontFamily: F_SEMI, color: INK },
     clientMeta: { fontSize: 13, fontFamily: F_MED, color: MUTED, marginTop: 2 },
     newClientBtn: {

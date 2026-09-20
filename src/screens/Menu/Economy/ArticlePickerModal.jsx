@@ -95,11 +95,12 @@ export default function ArticlePickerModal({ visible, onClose, onSelect }) {
                   {t("billing.noArticles")}
                 </Text>
               ) : (
-                filtered.map((article) => (
+                filtered.map((article, index) => (
                   <TouchableOpacity
                     key={article._id || article.id || article.articleNumber}
                     style={[
                       styles.clientRow,
+                      index === filtered.length - 1 && styles.clientRowLast,
                       { flexDirection: "row", alignItems: "center" },
                     ]}
                     onPress={() => onSelect(article)}
