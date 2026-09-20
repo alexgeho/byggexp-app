@@ -1554,5 +1554,12 @@
     "overdueBy": "Tähtaeg ületatud {{days}} p",
     "dueOn": "Tähtaeg {{date}}",
     "taskOverdue": "Hilinenud {{date}}"
+  },
+  "reminder": {
+    "title": "Meeldetuletus",
+    "once": "Üks kord",
+    "everyMinutes": "Iga {{count}} min",
+    "everyHour": "Iga tund",
+    "clear": "Eemalda meeldetuletus"
   }
 }

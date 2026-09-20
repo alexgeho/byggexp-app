@@ -18,6 +18,7 @@ import Icon from "react-native-vector-icons/Feather";
 
 import { useTheme } from "../../../theme/ThemeContext";
 import { notesService } from "../../../services";
+import { ReminderSheet } from "../ReminderSheet/ReminderSheet";
 import { getDateLocale } from "../../../utils/dateLocale";
 // Reuse the shift-history preview styles for an identical look.
 import { createStyles } from "../ShiftHistoryPreview/ShiftHistoryPreview.styles";
@@ -68,6 +69,8 @@ export function NotesPreview({
   const [editingId, setEditingId] = useState(null);
   const [editDraft, setEditDraft] = useState("");
   const inputRef = useRef(null);
+  // Note whose bell sheet is open.
+  const [reminderNote, setReminderNote] = useState(null);
 
   const load = useCallback(async () => {
     try {
@@ -115,6 +118,37 @@ export function NotesPreview({
       setSaving(false);
     }
   }, [draft, saving, load]);
+
+  // Bell on a note: one push at the chosen moment. Saved straight onto the
+  // note, so it survives an app restart (no local scheduling).
+  const saveReminder = useCallback(
+    async ({ when }) => {
+      const note = reminderNote;
+      const id = note?._id || note?.id;
+      if (!id) return;
+      setReminderNote(null);
+      try {
+        await notesService.update(id, { remindAt: when.toISOString() });
+        await load();
+      } catch (error) {
+        console.error("Failed to set note reminder:", error);
+      }
+    },
+    [reminderNote, load],
+  );
+
+  const clearReminder = useCallback(async () => {
+    const note = reminderNote;
+    const id = note?._id || note?.id;
+    if (!id) return;
+    setReminderNote(null);
+    try {
+      await notesService.update(id, { remindAt: null });
+      await load();
+    } catch (error) {
+      console.error("Failed to clear note reminder:", error);
+    }
+  }, [reminderNote, load]);
 
   const startEdit = (note) => {
     setEditingId(note._id || note.id);
@@ -287,6 +321,18 @@ export function NotesPreview({
             </TouchableOpacity>
             <TouchableOpacity
               style={extraStyles.deleteBtn}
+              onPress={() => setReminderNote(note)}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              accessibilityLabel={t("reminder.title")}
+            >
+              <Icon
+                name="bell"
+                size={16}
+                color={note.remindAt ? "#0091FF" : secondaryIconColor}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={extraStyles.deleteBtn}
               onPress={() => confirmDelete(note)}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               accessibilityLabel={t("notes.delete", "Ta bort")}
@@ -402,6 +448,14 @@ export function NotesPreview({
           </ScrollView>
         )}
       </View>
+
+      <ReminderSheet
+        visible={!!reminderNote}
+        value={reminderNote?.remindAt ? new Date(reminderNote.remindAt) : null}
+        onSave={saveReminder}
+        onClear={reminderNote?.remindAt ? clearReminder : undefined}
+        onClose={() => setReminderNote(null)}
+      />
 
       {Platform.OS === "ios" ? (
         <InputAccessoryView nativeID={ACCESSORY_NEW}>

@@ -1554,5 +1554,12 @@
     "overdueBy": "Forfalt {{days}} d",
     "dueOn": "Forfaller {{date}}",
     "taskOverdue": "Forsinket {{date}}"
+  },
+  "reminder": {
+    "title": "Påminnelse",
+    "once": "Én gang",
+    "everyMinutes": "Hvert {{count}}. min",
+    "everyHour": "Hver time",
+    "clear": "Fjern påminnelse"
   }
 }

@@ -1554,5 +1554,12 @@
     "overdueBy": "Просрочен {{days}} д",
     "dueOn": "Срок {{date}}",
     "taskOverdue": "Просрочена с {{date}}"
+  },
+  "reminder": {
+    "title": "Напоминание",
+    "once": "Один раз",
+    "everyMinutes": "Каждые {{count}} мин",
+    "everyHour": "Каждый час",
+    "clear": "Убрать напоминание"
   }
 }

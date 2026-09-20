@@ -1554,5 +1554,12 @@
     "overdueBy": "Nokavēts {{days}} d",
     "dueOn": "Termiņš {{date}}",
     "taskOverdue": "Nokavēts kopš {{date}}"
+  },
+  "reminder": {
+    "title": "Atgādinājums",
+    "once": "Vienreiz",
+    "everyMinutes": "Ik {{count}} min",
+    "everyHour": "Katru stundu",
+    "clear": "Noņemt atgādinājumu"
   }
 }

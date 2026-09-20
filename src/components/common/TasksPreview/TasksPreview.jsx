@@ -14,6 +14,7 @@ import Icon from "react-native-vector-icons/Feather";
 import { useTheme } from "../../../theme/ThemeContext";
 import AuthContext from "../../../contexts/AuthContext";
 import { taskService } from "../../../services";
+import { ReminderSheet } from "../ReminderSheet/ReminderSheet";
 import { normalizeId } from "../../../utils/schedule";
 import { getDateLocale } from "../../../utils/dateLocale";
 // Reuse the shift-history preview styles for an identical look.
@@ -56,6 +57,8 @@ export function TasksPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
   const [loading, setLoading] = useState(true);
   const [tasks, setTasks] = useState([]);
   const [completingIds, setCompletingIds] = useState([]);
+  // Task whose bell sheet is open.
+  const [reminderTask, setReminderTask] = useState(null);
 
   const load = useCallback(async () => {
     try {
@@ -123,6 +126,69 @@ export function TasksPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
     },
     [completingIds, load],
   );
+
+  // Bell on a task row — the same contract the admin panel writes: the chosen
+  // moment becomes the due date, and a repeat interval turns on "nag until
+  // done". Interval 0 = a single ping.
+  const saveReminder = useCallback(
+    async ({ when, intervalMinutes }) => {
+      const task = reminderTask;
+      const id = task?._id || task?.id;
+      if (!id) return;
+      setReminderTask(null);
+      const existing = task.notificationSettings || {};
+      try {
+        await taskService.update(id, {
+          dueDate: when.toISOString(),
+          notificationSettings: {
+            ...existing,
+            assignees: existing.assignees || [],
+            allMembersNotification: true,
+            autoReminder: true,
+            repeat: intervalMinutes > 0 ? "minutes" : "none",
+            repeatIntervalMinutes:
+              intervalMinutes > 0
+                ? intervalMinutes
+                : Number(existing.repeatIntervalMinutes) || 15,
+            remindUntilDone: intervalMinutes > 0,
+          },
+        });
+        await load();
+      } catch (error) {
+        console.error("Failed to set task reminder:", error);
+      }
+    },
+    [reminderTask, load],
+  );
+
+  const clearReminder = useCallback(async () => {
+    const task = reminderTask;
+    const id = task?._id || task?.id;
+    if (!id) return;
+    setReminderTask(null);
+    const existing = task.notificationSettings || {};
+    try {
+      // Keep the due date, just switch the reminder off.
+      await taskService.update(id, {
+        notificationSettings: {
+          ...existing,
+          autoReminder: false,
+          repeat: "none",
+          remindUntilDone: false,
+        },
+      });
+      await load();
+    } catch (error) {
+      console.error("Failed to clear task reminder:", error);
+    }
+  }, [reminderTask, load]);
+
+  const hasReminder = (task) =>
+    Boolean(task?.dueDate) &&
+    Boolean(
+      task?.notificationSettings?.remindUntilDone ||
+      task?.notificationSettings?.autoReminder,
+    );
 
   const today = startOfToday();
 
@@ -213,6 +279,21 @@ export function TasksPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
                     </Text>
 
                     <TouchableOpacity
+                      onPress={() => setReminderTask(task)}
+                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                      activeOpacity={0.7}
+                      accessibilityLabel={t("reminder.title")}
+                    >
+                      <Icon
+                        name="bell"
+                        size={16}
+                        color={
+                          hasReminder(task) ? "#0091FF" : secondaryIconColor
+                        }
+                      />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
                       style={[
                         extraStyles.checkbox,
                         { borderColor: secondaryIconColor },
@@ -243,6 +324,22 @@ export function TasksPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
           </TouchableOpacity>
         )}
       </View>
+
+      <ReminderSheet
+        visible={!!reminderTask}
+        showRepeat={true}
+        value={reminderTask?.dueDate ? new Date(reminderTask.dueDate) : null}
+        intervalMinutes={
+          reminderTask?.notificationSettings?.remindUntilDone
+            ? Number(
+                reminderTask?.notificationSettings?.repeatIntervalMinutes,
+              ) || 15
+            : 0
+        }
+        onSave={saveReminder}
+        onClear={hasReminder(reminderTask) ? clearReminder : undefined}
+        onClose={() => setReminderTask(null)}
+      />
     </View>
   );
 }

@@ -1554,5 +1554,12 @@
     "overdueBy": "Erääntynyt {{days}} pv",
     "dueOn": "Eräpäivä {{date}}",
     "taskOverdue": "Myöhässä {{date}}"
+  },
+  "reminder": {
+    "title": "Muistutus",
+    "once": "Kerran",
+    "everyMinutes": "{{count}} min välein",
+    "everyHour": "Tunnin välein",
+    "clear": "Poista muistutus"
   }
 }

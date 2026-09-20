@@ -1554,5 +1554,12 @@
     "overdueBy": "Kasni {{days}} d",
     "dueOn": "Dospijeva {{date}}",
     "taskOverdue": "Kasni od {{date}}"
+  },
+  "reminder": {
+    "title": "Podsjetnik",
+    "once": "Jednom",
+    "everyMinutes": "Svakih {{count}} min",
+    "everyHour": "Svaki sat",
+    "clear": "Ukloni podsjetnik"
   }
 }

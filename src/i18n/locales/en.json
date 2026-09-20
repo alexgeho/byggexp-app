@@ -1554,5 +1554,12 @@
     "overdueBy": "Overdue {{days}} d",
     "dueOn": "Due {{date}}",
     "taskOverdue": "Late since {{date}}"
+  },
+  "reminder": {
+    "title": "Reminder",
+    "once": "Once",
+    "everyMinutes": "Every {{count}} min",
+    "everyHour": "Every hour",
+    "clear": "Clear reminder"
   }
 }

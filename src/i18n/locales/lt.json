@@ -1554,5 +1554,12 @@
     "overdueBy": "Vėluoja {{days}} d",
     "dueOn": "Terminas {{date}}",
     "taskOverdue": "Vėluoja nuo {{date}}"
+  },
+  "reminder": {
+    "title": "Priminimas",
+    "once": "Vieną kartą",
+    "everyMinutes": "Kas {{count}} min",
+    "everyHour": "Kas valandą",
+    "clear": "Pašalinti priminimą"
   }
 }

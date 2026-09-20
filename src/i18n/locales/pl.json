@@ -1554,5 +1554,12 @@
     "overdueBy": "Po terminie {{days}} d",
     "dueOn": "Termin {{date}}",
     "taskOverdue": "Spóźnione od {{date}}"
+  },
+  "reminder": {
+    "title": "Przypomnienie",
+    "once": "Raz",
+    "everyMinutes": "Co {{count}} min",
+    "everyHour": "Co godzinę",
+    "clear": "Usuń przypomnienie"
   }
 }
