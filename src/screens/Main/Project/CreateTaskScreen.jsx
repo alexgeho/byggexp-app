@@ -42,6 +42,7 @@ import {
   GroupCard,
   GroupRow,
   DateTimeFieldModal,
+  OptionPickerModal,
   ScheduleDateRow,
   getProjectId,
   getUserId,
@@ -53,6 +54,25 @@ import {
   getDocumentTypeMeta,
   isImageDocument,
 } from "../../../utils/documentPreview";
+
+// Same values the admin form and the backend enum use.
+const PRIORITY_VALUES = ["low", "normal", "high"];
+const RECURRENCE_VALUES = [
+  "none",
+  "daily",
+  "weekdays",
+  "weekly",
+  "biweekly",
+  "monthly",
+];
+
+// Today at a whole hour — the admin form's default start (08:00) and deadline
+// (17:00) when no time is picked.
+const todayAt = (hour) => {
+  const date = new Date();
+  date.setHours(hour, 0, 0, 0);
+  return date;
+};
 
 export default function CreateTaskScreen() {
   const navigation = useNavigation();
@@ -106,12 +126,22 @@ export default function CreateTaskScreen() {
   const [selectedDocuments, setSelectedDocuments] = useState(
     initialTaskDraft.selectedDocuments || [],
   );
+  // Pre-filled with today at the admin form's default hours (08:00 start,
+  // 17:00 deadline) so a task can be saved without touching the pickers.
   const [startDate, setStartDate] = useState(
-    parseDraftDate(initialTaskDraft.startDate),
+    () => parseDraftDate(initialTaskDraft.startDate) || todayAt(8),
   );
   const [dueDate, setDueDate] = useState(
-    parseDraftDate(initialTaskDraft.dueDate),
+    () => parseDraftDate(initialTaskDraft.dueDate) || todayAt(17),
   );
+  const [priority, setPriority] = useState(
+    initialTaskDraft.priority || "normal",
+  );
+  const [recurrence, setRecurrence] = useState(
+    initialTaskDraft.recurrence || "none",
+  );
+  const [showPriorityPicker, setShowPriorityPicker] = useState(false);
+  const [showRecurrencePicker, setShowRecurrencePicker] = useState(false);
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showDueDatePicker, setShowDueDatePicker] = useState(false);
   const [loadingProject, setLoadingProject] = useState(false);
@@ -260,8 +290,10 @@ export default function CreateTaskScreen() {
     setTaskDescription(taskDraft.taskDescription || "");
     setNotes(taskDraft.notes || "");
     setSelectedDocuments(taskDraft.selectedDocuments || []);
-    setStartDate(parseDraftDate(taskDraft.startDate));
-    setDueDate(parseDraftDate(taskDraft.dueDate));
+    setStartDate(parseDraftDate(taskDraft.startDate) || todayAt(8));
+    setDueDate(parseDraftDate(taskDraft.dueDate) || todayAt(17));
+    setPriority(taskDraft.priority || "normal");
+    setRecurrence(taskDraft.recurrence || "none");
   }, [route.params?.taskDraft]);
 
   useEffect(() => {
@@ -527,6 +559,9 @@ export default function CreateTaskScreen() {
         taskData.append("dueDate", dueDate.toISOString());
       }
 
+      taskData.append("priority", priority);
+      taskData.append("recurrence", recurrence);
+
       selectedDocuments.forEach((item, index) => {
         taskData.append("documents", {
           uri: item.uri,
@@ -781,6 +816,56 @@ export default function CreateTaskScreen() {
             />
           </GroupCard>
 
+          {/* Priority + repeat — the same two fields the admin task form has. */}
+          <GroupCard>
+            <TouchableOpacity
+              style={styles.groupRow}
+              activeOpacity={0.85}
+              onPress={() => setShowPriorityPicker(true)}
+            >
+              <View style={styles.rowContent}>
+                <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
+                  <FieldIcon name="flag" size={14} color="#FFFFFF" />
+                </View>
+                <View style={styles.rowTextContainer}>
+                  <Text style={styles.rowLabel}>
+                    {t("createTask.priorityLabel")}
+                  </Text>
+                  <Text style={styles.rowValue}>
+                    {t(`createTask.priority.${priority}`)}
+                  </Text>
+                </View>
+              </View>
+              <Icon name="chevron-right" size={18} color="#052D50" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.groupRow, styles.groupRowLast]}
+              activeOpacity={0.85}
+              onPress={() => setShowRecurrencePicker(true)}
+            >
+              <View style={styles.rowContent}>
+                <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
+                  <FieldIcon name="repeat" size={14} color="#FFFFFF" />
+                </View>
+                <View style={styles.rowTextContainer}>
+                  <Text style={styles.rowLabel}>
+                    {t("createTask.recurrenceLabel")}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.rowValue,
+                      recurrence === "none" && styles.rowPlaceholder,
+                    ]}
+                  >
+                    {t(`createTask.recurrence.${recurrence}`)}
+                  </Text>
+                </View>
+              </View>
+              <Icon name="chevron-right" size={18} color="#052D50" />
+            </TouchableOpacity>
+          </GroupCard>
+
           <SectionLabel>Details</SectionLabel>
           <GroupCard>
             <GroupRow>
@@ -913,6 +998,35 @@ export default function CreateTaskScreen() {
               </View>
             </GroupRow>
           </GroupCard>
+
+          <OptionPickerModal
+            visible={showPriorityPicker}
+            title={t("createTask.priorityLabel")}
+            options={PRIORITY_VALUES.map((value) => ({
+              value,
+              label: t(`createTask.priority.${value}`),
+            }))}
+            selectedValue={priority}
+            onSelect={(value) => {
+              setPriority(value);
+              setShowPriorityPicker(false);
+            }}
+            onClose={() => setShowPriorityPicker(false)}
+          />
+          <OptionPickerModal
+            visible={showRecurrencePicker}
+            title={t("createTask.recurrenceLabel")}
+            options={RECURRENCE_VALUES.map((value) => ({
+              value,
+              label: t(`createTask.recurrence.${value}`),
+            }))}
+            selectedValue={recurrence}
+            onSelect={(value) => {
+              setRecurrence(value);
+              setShowRecurrencePicker(false);
+            }}
+            onClose={() => setShowRecurrencePicker(false)}
+          />
 
           <DateTimeFieldModal
             visible={showStartDatePicker}

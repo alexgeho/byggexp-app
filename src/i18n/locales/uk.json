@@ -392,7 +392,22 @@
     "escalateToBossLabel": "Потім сповістити керівника",
     "escalateToBossHint": "Коли нагадування закінчаться, ескалювати до керівника проєкту / власника",
     "assignToLabel": "Призначити",
-    "wholeProjectTeam": "Уся команда проєкту"
+    "wholeProjectTeam": "Уся команда проєкту",
+    "priorityLabel": "Пріоритет",
+    "recurrenceLabel": "Повторювати",
+    "priority": {
+      "low": "Низький",
+      "normal": "Звичайний",
+      "high": "Високий"
+    },
+    "recurrence": {
+      "none": "Не повторюється",
+      "daily": "Щодня",
+      "weekdays": "У будні (пн–пт)",
+      "weekly": "Щотижня",
+      "biweekly": "Раз на 2 тижні",
+      "monthly": "Щомісяця"
+    }
   },
   "workers": {
     "loading": "Завантаження працівників...",

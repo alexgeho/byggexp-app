@@ -383,3 +383,70 @@ export const UserPickerModal = ({
     </Modal>
   );
 };
+
+// Single-choice sheet used by the Prioritet / Upprepa rows — same card as the
+// project picker, with the notification sheet's radio on the right.
+export const OptionPickerModal = ({
+  visible,
+  title,
+  options,
+  selectedValue,
+  onSelect,
+  onClose,
+}) => {
+  const styles = useThemedStyles();
+  return (
+    <Modal
+      visible={visible}
+      transparent={true}
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <View style={styles.projectPickerOverlay}>
+        <View style={styles.projectPickerCard}>
+          <View style={styles.projectPickerHeader}>
+            <Text style={styles.projectPickerTitle}>{title}</Text>
+            <TouchableOpacity
+              style={styles.projectPickerClose}
+              onPress={onClose}
+              activeOpacity={0.85}
+            >
+              <Icon name="x" size={18} color="#052D50" />
+            </TouchableOpacity>
+          </View>
+          <ScrollView
+            style={styles.projectPickerList}
+            contentContainerStyle={styles.projectPickerListContent}
+          >
+            {options.map((option) => {
+              const isSelected = option.value === selectedValue;
+              return (
+                <TouchableOpacity
+                  key={option.value}
+                  style={[
+                    styles.projectPickerItem,
+                    isSelected && styles.projectPickerItemSelected,
+                  ]}
+                  activeOpacity={0.85}
+                  onPress={() => onSelect(option.value)}
+                >
+                  <Text style={styles.projectPickerItemTitle}>
+                    {option.label}
+                  </Text>
+                  <View
+                    style={[
+                      styles.radioOuter,
+                      isSelected && styles.radioOuterSelected,
+                    ]}
+                  >
+                    {isSelected ? <View style={styles.radioInner} /> : null}
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
+  );
+};

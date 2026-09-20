@@ -392,7 +392,22 @@
     "escalateToBossLabel": "Następnie powiadom szefa",
     "escalateToBossHint": "Gdy przypomnienia się skończą, eskaluj do kierownika projektu / właściciela",
     "assignToLabel": "Przypisz do",
-    "wholeProjectTeam": "Cały zespół projektu"
+    "wholeProjectTeam": "Cały zespół projektu",
+    "priorityLabel": "Priorytet",
+    "recurrenceLabel": "Powtarzaj",
+    "priority": {
+      "low": "Niski",
+      "normal": "Normalny",
+      "high": "Wysoki"
+    },
+    "recurrence": {
+      "none": "Nie powtarza się",
+      "daily": "Codziennie",
+      "weekdays": "W dni robocze (pn–pt)",
+      "weekly": "Co tydzień",
+      "biweekly": "Co 2 tygodnie",
+      "monthly": "Co miesiąc"
+    }
   },
   "workers": {
     "loading": "Ładowanie pracowników...",

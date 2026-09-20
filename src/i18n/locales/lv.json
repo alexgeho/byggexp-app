@@ -392,7 +392,22 @@
     "escalateToBossLabel": "Pēc tam paziņot priekšniekam",
     "escalateToBossHint": "Kad atgādinājumi beidzas, eskalēt projekta vadītājam / īpašniekam",
     "assignToLabel": "Piešķirt",
-    "wholeProjectTeam": "Visai projekta komandai"
+    "wholeProjectTeam": "Visai projekta komandai",
+    "priorityLabel": "Prioritāte",
+    "recurrenceLabel": "Atkārtot",
+    "priority": {
+      "low": "Zema",
+      "normal": "Normāla",
+      "high": "Augsta"
+    },
+    "recurrence": {
+      "none": "Neatkārtojas",
+      "daily": "Katru dienu",
+      "weekdays": "Darbdienās (P–Pk)",
+      "weekly": "Katru nedēļu",
+      "biweekly": "Reizi 2 nedēļās",
+      "monthly": "Katru mēnesi"
+    }
   },
   "workers": {
     "loading": "Notiek darbinieku ielāde...",

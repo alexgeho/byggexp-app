@@ -392,7 +392,22 @@
     "escalateToBossLabel": "Påminn chefen sen",
     "escalateToBossHint": "När påminnelserna tar slut, eskalera till projektledaren / ägaren",
     "assignToLabel": "Tilldela till",
-    "wholeProjectTeam": "Hela projektteamet"
+    "wholeProjectTeam": "Hela projektteamet",
+    "priorityLabel": "Prioritet",
+    "recurrenceLabel": "Upprepa",
+    "priority": {
+      "low": "Låg",
+      "normal": "Normal",
+      "high": "Hög"
+    },
+    "recurrence": {
+      "none": "Upprepas inte",
+      "daily": "Varje dag",
+      "weekdays": "Varje vardag (mån–fre)",
+      "weekly": "Varje vecka",
+      "biweekly": "Varannan vecka",
+      "monthly": "Varje månad"
+    }
   },
   "workers": {
     "loading": "Laddar arbetare...",

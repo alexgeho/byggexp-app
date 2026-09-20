@@ -392,7 +392,22 @@
     "escalateToBossLabel": "Zatim obavijesti šefa",
     "escalateToBossHint": "Kada se podsjetnici potroše, eskaliraj voditelju projekta / vlasniku",
     "assignToLabel": "Dodijeli",
-    "wholeProjectTeam": "Cijelom timu projekta"
+    "wholeProjectTeam": "Cijelom timu projekta",
+    "priorityLabel": "Prioritet",
+    "recurrenceLabel": "Ponavljanje",
+    "priority": {
+      "low": "Nizak",
+      "normal": "Normalan",
+      "high": "Visok"
+    },
+    "recurrence": {
+      "none": "Ne ponavlja se",
+      "daily": "Svaki dan",
+      "weekdays": "Radnim danima (pon–pet)",
+      "weekly": "Svake sedmice",
+      "biweekly": "Svake 2 sedmice",
+      "monthly": "Svaki mjesec"
+    }
   },
   "workers": {
     "loading": "Učitavanje radnika...",
