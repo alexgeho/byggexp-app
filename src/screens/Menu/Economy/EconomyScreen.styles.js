@@ -127,7 +127,11 @@ export const createStyles = (c) => {
     cardNo: { fontSize: 13, fontFamily: F_MED, color: MUTED },
     cardCustomer: { fontSize: 17, fontFamily: F_MED, color: INK },
     cardMeta: { fontSize: 13, fontFamily: F_MED, color: MUTED },
-    cardRight: { alignItems: "flex-end", justifyContent: "space-between" },
+    cardRight: {
+      alignItems: "flex-end",
+      justifyContent: "space-between",
+      paddingRight: 26,
+    },
     cardAmount: { fontSize: 17, fontFamily: F_MED, color: INK },
 
     badge: {
@@ -150,8 +154,17 @@ export const createStyles = (c) => {
     badge_bad: { backgroundColor: "#FDECEC" },
     badgeText_bad: { color: "#E5484D" },
 
-    cardStatusRow: { flexDirection: "row", alignItems: "center", gap: 6 },
-    cardMore: { padding: 2 },
+    // 48×48 target in the corner — the size Material asks for, and the place
+    // it asks for. The right column is padded so nothing sits under it.
+    cardMore: {
+      position: "absolute",
+      top: 4,
+      right: 4,
+      width: 48,
+      height: 48,
+      alignItems: "center",
+      justifyContent: "center",
+    },
 
     /* Active status pill: the status colour, solid */
     pillOn_draft: { backgroundColor: "#9AA6B2" },

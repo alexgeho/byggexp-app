@@ -1651,5 +1651,23 @@
   "geofence": {
     "serviceTitle": "Arbetspasset följer platsen",
     "serviceBody": "ByggExp stämplar in och ut när du kommer till och lämnar arbetsplatsen."
+  },
+  "supplierInvoices": {
+    "title": "Leverantörsfakturor",
+    "empty": "Inga fakturor att betala.",
+    "markPaid": "Markera som betald",
+    "markPaidFailed": "Kunde inte markera fakturan som betald.",
+    "unknown": "Leverantör",
+    "overdueBy": "Förföll för {{days}} d sedan",
+    "dueIn": "Förfaller om {{days}} d",
+    "filter": {
+      "unpaid": "Obetalda",
+      "paid": "Betalda",
+      "all": "Alla"
+    },
+    "status": {
+      "paid": "Betald",
+      "unpaid": "Obetald"
+    }
   }
 }

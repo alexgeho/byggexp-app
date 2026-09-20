@@ -1651,5 +1651,23 @@
   "geofence": {
     "serviceTitle": "Työvuoro seuraa sijaintia",
     "serviceBody": "ByggExp leimaa sisään ja ulos, kun saavut työmaalle ja lähdet sieltä."
+  },
+  "supplierInvoices": {
+    "title": "Ostolaskut",
+    "empty": "Ei maksettavia laskuja.",
+    "markPaid": "Merkitse maksetuksi",
+    "markPaidFailed": "Laskua ei voitu merkitä maksetuksi.",
+    "unknown": "Toimittaja",
+    "overdueBy": "Erääntyi {{days}} pv sitten",
+    "dueIn": "Erääntyy {{days}} pv",
+    "filter": {
+      "unpaid": "Maksamattomat",
+      "paid": "Maksetut",
+      "all": "Kaikki"
+    },
+    "status": {
+      "paid": "Maksettu",
+      "unpaid": "Maksamaton"
+    }
   }
 }

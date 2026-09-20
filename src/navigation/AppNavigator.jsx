@@ -308,6 +308,15 @@ export default function AppNavigator() {
                 require("../screens/Menu/CompanyDetailsScreen").default
               }
             />
+            {/* The bills the company has to pay. The "unpaid invoice"
+                reminder opens this screen on the invoice it names. */}
+            <Stack.Screen
+              name="SupplierInvoices"
+              getComponent={() =>
+                require("../screens/Menu/Economy/SupplierInvoicesScreen")
+                  .default
+              }
+            />
             <Stack.Screen
               name="Articles"
               getComponent={() =>

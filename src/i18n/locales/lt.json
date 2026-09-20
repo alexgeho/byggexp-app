@@ -1651,5 +1651,23 @@
   "geofence": {
     "serviceTitle": "Pamaina seka vietą",
     "serviceBody": "ByggExp registruoja atvykimą ir išvykimą iš objekto."
+  },
+  "supplierInvoices": {
+    "title": "Tiekėjų sąskaitos",
+    "empty": "Nėra sąskaitų apmokėti.",
+    "markPaid": "Pažymėti apmokėta",
+    "markPaidFailed": "Nepavyko pažymėti sąskaitos kaip apmokėtos.",
+    "unknown": "Tiekėjas",
+    "overdueBy": "Vėluoja {{days}} d",
+    "dueIn": "Terminas po {{days}} d",
+    "filter": {
+      "unpaid": "Neapmokėtos",
+      "paid": "Apmokėtos",
+      "all": "Visos"
+    },
+    "status": {
+      "paid": "Apmokėta",
+      "unpaid": "Neapmokėta"
+    }
   }
 }

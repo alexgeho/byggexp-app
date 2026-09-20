@@ -1651,5 +1651,23 @@
   "geofence": {
     "serviceTitle": "Smjena prati lokaciju",
     "serviceBody": "ByggExp evidentira dolazak i odlazak sa gradilišta."
+  },
+  "supplierInvoices": {
+    "title": "Fakture dobavljača",
+    "empty": "Nema računa za plaćanje.",
+    "markPaid": "Označi kao plaćeno",
+    "markPaidFailed": "Nije moguće označiti fakturu kao plaćenu.",
+    "unknown": "Dobavljač",
+    "overdueBy": "Kasni {{days}} d",
+    "dueIn": "Dospijeva za {{days}} d",
+    "filter": {
+      "unpaid": "Neplaćene",
+      "paid": "Plaćene",
+      "all": "Sve"
+    },
+    "status": {
+      "paid": "Plaćena",
+      "unpaid": "Neplaćena"
+    }
   }
 }

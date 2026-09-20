@@ -1651,5 +1651,23 @@
   "geofence": {
     "serviceTitle": "Vahetus jälgib asukohta",
     "serviceBody": "ByggExp märgib sisse ja välja, kui saabud objektile ja lahkud sealt."
+  },
+  "supplierInvoices": {
+    "title": "Tarnijate arved",
+    "empty": "Maksmisele kuuluvaid arveid pole.",
+    "markPaid": "Märgi makstuks",
+    "markPaidFailed": "Arvet ei õnnestunud makstuks märkida.",
+    "unknown": "Tarnija",
+    "overdueBy": "Tähtaeg möödus {{days}} p tagasi",
+    "dueIn": "Tähtaeg {{days}} p pärast",
+    "filter": {
+      "unpaid": "Maksmata",
+      "paid": "Makstud",
+      "all": "Kõik"
+    },
+    "status": {
+      "paid": "Makstud",
+      "unpaid": "Maksmata"
+    }
   }
 }

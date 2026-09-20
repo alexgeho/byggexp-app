@@ -1651,5 +1651,23 @@
   "geofence": {
     "serviceTitle": "Arbeidsøkten følger posisjonen",
     "serviceBody": "ByggExp stempler deg inn og ut når du kommer til og forlater arbeidsplassen."
+  },
+  "supplierInvoices": {
+    "title": "Leverandørfakturaer",
+    "empty": "Ingen regninger å betale.",
+    "markPaid": "Merk som betalt",
+    "markPaidFailed": "Kunne ikke merke fakturaen som betalt.",
+    "unknown": "Leverandør",
+    "overdueBy": "Forfalt for {{days}} d siden",
+    "dueIn": "Forfaller om {{days}} d",
+    "filter": {
+      "unpaid": "Ubetalte",
+      "paid": "Betalte",
+      "all": "Alle"
+    },
+    "status": {
+      "paid": "Betalt",
+      "unpaid": "Ubetalt"
+    }
   }
 }

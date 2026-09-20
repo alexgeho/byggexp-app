@@ -455,6 +455,14 @@ export default function MenuScreen() {
       color: theme.colors.primary,
     },
     {
+      // The bills to pay, next to the ones we send.
+      id: "supplier-invoices",
+      screen: "SupplierInvoices",
+      title: t("supplierInvoices.title"),
+      icon: require("../../assets/Legal.png"),
+      color: theme.colors.primary,
+    },
+    {
       id: "clients",
       screen: "Clients",
       title: t("clientForm.title"),

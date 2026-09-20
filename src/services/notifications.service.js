@@ -69,6 +69,14 @@ const buildNavigationTarget = (data = {}) => {
     return taskId ? { screen, params: { taskId, projectId } } : null;
   }
 
+  // The unpaid-bill reminder: open the supplier invoices on the one it names.
+  if (data.type === "supplier_invoice_due") {
+    return {
+      screen: "SupplierInvoices",
+      params: { entityId: data.entityId || null },
+    };
+  }
+
   if (screen === "Shifts") {
     // "Log your hours" reminder: land on the manual entry for the given day.
     const params =

@@ -200,7 +200,8 @@ export function MyWorkPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
             style={styles.linkButton}
             onPress={() =>
               navigation.navigate(
-                canFinance && bills.length ? "Economy" : "Tasks",
+                // Bills live on their own screen now, not in the outgoing invoices.
+                canFinance && bills.length ? "SupplierInvoices" : "Tasks",
               )
             }
             activeOpacity={0.8}

@@ -1651,5 +1651,23 @@
   "geofence": {
     "serviceTitle": "Zmiana śledzi lokalizację",
     "serviceBody": "ByggExp odbija wejście i wyjście, gdy docierasz na budowę i ją opuszczasz."
+  },
+  "supplierInvoices": {
+    "title": "Faktury dostawców",
+    "empty": "Brak rachunków do zapłaty.",
+    "markPaid": "Oznacz jako opłaconą",
+    "markPaidFailed": "Nie udało się oznaczyć faktury jako opłaconej.",
+    "unknown": "Dostawca",
+    "overdueBy": "Po terminie o {{days}} d",
+    "dueIn": "Termin za {{days}} d",
+    "filter": {
+      "unpaid": "Nieopłacone",
+      "paid": "Opłacone",
+      "all": "Wszystkie"
+    },
+    "status": {
+      "paid": "Opłacona",
+      "unpaid": "Nieopłacona"
+    }
   }
 }

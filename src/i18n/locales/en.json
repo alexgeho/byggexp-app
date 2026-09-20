@@ -1651,5 +1651,23 @@
   "geofence": {
     "serviceTitle": "Shift is following your location",
     "serviceBody": "ByggExp clocks you in and out as you arrive at and leave the site."
+  },
+  "supplierInvoices": {
+    "title": "Supplier invoices",
+    "empty": "No bills to pay.",
+    "markPaid": "Mark as paid",
+    "markPaidFailed": "Could not mark the invoice as paid.",
+    "unknown": "Supplier",
+    "overdueBy": "Overdue by {{days}} d",
+    "dueIn": "Due in {{days}} d",
+    "filter": {
+      "unpaid": "Unpaid",
+      "paid": "Paid",
+      "all": "All"
+    },
+    "status": {
+      "paid": "Paid",
+      "unpaid": "Unpaid"
+    }
   }
 }

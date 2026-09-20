@@ -1651,5 +1651,23 @@
   "geofence": {
     "serviceTitle": "Maiņa seko atrašanās vietai",
     "serviceBody": "ByggExp atzīmē ierašanos un aiziešanu no objekta."
+  },
+  "supplierInvoices": {
+    "title": "Piegādātāju rēķini",
+    "empty": "Nav rēķinu, kas jāapmaksā.",
+    "markPaid": "Atzīmēt kā apmaksātu",
+    "markPaidFailed": "Neizdevās atzīmēt rēķinu kā apmaksātu.",
+    "unknown": "Piegādātājs",
+    "overdueBy": "Nokavēts par {{days}} d",
+    "dueIn": "Termiņš pēc {{days}} d",
+    "filter": {
+      "unpaid": "Neapmaksātie",
+      "paid": "Apmaksātie",
+      "all": "Visi"
+    },
+    "status": {
+      "paid": "Apmaksāts",
+      "unpaid": "Neapmaksāts"
+    }
   }
 }
