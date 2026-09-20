@@ -93,6 +93,25 @@ export default function LineItemsEditor({
 
       {items.map((item, index) => (
         <View key={item._key ?? index} style={styles.row}>
+          {/* The article comes first, as on the invoice itself: art.nr, then
+              what was done. A text row is a heading between the priced rows —
+              no article, no amounts, and it never reaches the totals. */}
+          {item.isText ? null : (
+            <TouchableOpacity
+              style={styles.articleBtn}
+              onPress={() => setArticleRow(index)}
+              activeOpacity={0.7}
+            >
+              <Icon name="package" size={16} color={PRIMARY} />
+              <Text style={styles.articleBtnText} numberOfLines={1}>
+                {item.articleNumber
+                  ? `${t("billing.article")} ${item.articleNumber}`
+                  : t("billing.pickArticle")}
+              </Text>
+              <Icon name="chevron-right" size={18} color={PRIMARY} />
+            </TouchableOpacity>
+          )}
+
           <View style={styles.rowBlock}>
             <View style={styles.rowLabelLine}>
               <Text style={styles.cellLabel}>
@@ -119,24 +138,6 @@ export default function LineItemsEditor({
               multiline
             />
           </View>
-
-          {/* A text row is a heading between the priced rows — no article, no
-              amounts, and it never reaches the totals. */}
-          {item.isText ? null : (
-            <TouchableOpacity
-              style={styles.articleBtn}
-              onPress={() => setArticleRow(index)}
-              activeOpacity={0.7}
-            >
-              <Icon name="package" size={16} color={PRIMARY} />
-              <Text style={styles.articleBtnText} numberOfLines={1}>
-                {item.articleNumber
-                  ? `${t("billing.article")} ${item.articleNumber}`
-                  : t("billing.pickArticle")}
-              </Text>
-              <Icon name="chevron-right" size={18} color={PRIMARY} />
-            </TouchableOpacity>
-          )}
 
           {item.isText ? null : (
             <>
