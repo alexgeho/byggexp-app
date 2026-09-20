@@ -131,8 +131,10 @@ export const blackColors = {
   icon: "#FFFFFF",
   bottomNav: "#FFFFFF",
   homeButtonBackground: "#232323",
-  // Figma cards are a flat #232323 fill with no visible stroke.
-  homeButtonBorder: "transparent",
+  // Figma dark card (Frame 5767, 155×115): fill #232323, stroke #FFFFFF @ 20%
+  // inside, weight 1, radius 20. The stroke is what separates the card from
+  // the near-black background — it was dropped here by mistake.
+  homeButtonBorder: "rgba(255,255,255,0.2)",
   // Figma dark home: clean cards, no diagonal lines, soft blue corner glow.
   hideButtonLines: true,
   cardGlow: "#3A81DB",

@@ -1195,10 +1195,17 @@ export default function HomeVariant2() {
         pointerEvents={isEditingHours ? "none" : "auto"}
       >
         <BottomBar
-          // The bar wears the same surface as the square buttons above it —
-          // same fill, same hairline, same icon colour. No blur, no glass.
-          pillColor={theme.colors.homeButtonBackground || theme.colors.card}
-          pillBorderColor={theme.colors.homeButtonBorder}
+          // A plain bordered pill: an OPAQUE fill in the screen's own colour
+          // (the gradient's bottom stop) plus the cards' hairline. The card
+          // surfaces are translucent, so using one here let the card edges
+          // behind the bar show through it as broken stripes.
+          pillColor={gradientColors[gradientColors.length - 1]}
+          pillBorderColor={
+            theme.colors.homeButtonBorder &&
+            theme.colors.homeButtonBorder !== "transparent"
+              ? theme.colors.homeButtonBorder
+              : theme.colors.border
+          }
           darkOverride={themeName === "black"}
           iconColor={
             theme.colors.homeButtonText ||
