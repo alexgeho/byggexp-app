@@ -23,9 +23,6 @@ import { createStyles } from "../ShiftHistoryPreview/ShiftHistoryPreview.styles"
 const DONE_STATUSES = new Set(["done", "completed", "closed"]);
 const ROW_LIMIT = 3;
 
-const OVERDUE_COLOR = "#FF3B30";
-const SOON_COLOR = "#FF9500";
-
 const formatDay = (value) => {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
@@ -127,12 +124,6 @@ export function MyWorkPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
 
   const renderBill = (invoice, index) => {
     const tone = invoice.tone;
-    const dueColor =
-      tone === "overdue"
-        ? OVERDUE_COLOR
-        : tone === "soon"
-          ? SOON_COLOR
-          : styles.dateText.color;
 
     return (
       <View
@@ -143,7 +134,9 @@ export function MyWorkPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
             styles.itemDivider,
         ]}
       >
-        <Text style={[styles.dateText, { color: dueColor }]}>
+        {/* The card follows the home palette — the wording carries the
+            urgency, not a colour that breaks the glass look. */}
+        <Text style={styles.dateText}>
           {tone === "overdue"
             ? t("myWork.overdueBy", {
                 days: Math.abs(invoice.days),
@@ -186,7 +179,7 @@ export function MyWorkPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
         index !== overdueTasks.length - 1 && styles.itemDivider,
       ]}
     >
-      <Text style={[styles.dateText, { color: OVERDUE_COLOR }]}>
+      <Text style={styles.dateText}>
         {t("myWork.taskOverdue", {
           date: formatDay(task.dueDate),
           defaultValue: "Försenad {{date}}",
