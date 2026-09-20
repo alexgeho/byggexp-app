@@ -1643,5 +1643,9 @@
     "supplier": "Leverantör",
     "saveExpense": "Spara utlägg",
     "expenseFailed": "Kunde inte spara utlägget."
+  },
+  "geofence": {
+    "serviceTitle": "Arbetspasset följer platsen",
+    "serviceBody": "ByggExp stämplar in och ut när du kommer till och lämnar arbetsplatsen."
   }
 }

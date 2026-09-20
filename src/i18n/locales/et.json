@@ -1643,5 +1643,9 @@
     "supplier": "Tarnija",
     "saveExpense": "Salvesta kulu",
     "expenseFailed": "Kulu salvestamine ebaõnnestus."
+  },
+  "geofence": {
+    "serviceTitle": "Vahetus jälgib asukohta",
+    "serviceBody": "ByggExp märgib sisse ja välja, kui saabud objektile ja lahkud sealt."
   }
 }

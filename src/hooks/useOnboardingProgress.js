@@ -202,9 +202,14 @@ export function useOnboardingProgress({
             // twice. (Tools, clients and the rest stay per-user: those are
             // things this person did.)
             hasCompanyDetails: Boolean(company?.orgNumber),
-            hasClient: madeByMe(clients, userId),
-            hasArticle: madeByMe(articles, userId),
-            hasBilling: madeByMe(offers, userId) || madeByMe(invoices, userId),
+            // Like the company details: the client list, the article
+            // catalogue and the documents belong to the company, not to
+            // whoever typed them in. Once the firm has them, every admin
+            // inherits the tick instead of being sent to enter them again.
+            hasClient: asArray(clients).length > 0,
+            hasArticle: asArray(articles).length > 0,
+            hasBilling:
+              asArray(offers).length > 0 || asArray(invoices).length > 0,
             hasCustomized: customized,
           }));
         }

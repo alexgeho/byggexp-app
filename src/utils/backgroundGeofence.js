@@ -2,6 +2,7 @@ import { AppState, Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Device from "expo-device";
 import * as Location from "expo-location";
+import i18n from "../i18n";
 
 import { shiftLocationPolicy } from "../config/shiftLocationPolicy";
 import { SHIFT_GEOFENCE_TASK } from "../tasks/shiftGeofenceTask";
@@ -40,6 +41,22 @@ const isAndroid = Platform.OS === "android";
 // we want (a fresh process has no foreground service yet).
 let androidForegroundServiceStarted = false;
 
+// The Android foreground-service notice. Android requires it for the WHOLE
+// time the location stream runs — it can't be periodic and it can't be
+// hidden from code; expo-location already posts it on a LOW-importance
+// channel, so it sits silently in the tray without a banner or a sound. What
+// is ours to get right is the wording, in the user's own language.
+const foregroundServiceText = () => ({
+  notificationTitle: i18n.t(
+    "geofence.serviceTitle",
+    "Arbetspasset följer platsen",
+  ),
+  notificationBody: i18n.t(
+    "geofence.serviceBody",
+    "ByggExp stämplar in och ut när du kommer till och lämnar arbetsplatsen.",
+  ),
+});
+
 const ANDROID_LOCATION_STREAM_OPTIONS = {
   accuracy: Location.Accuracy.High,
   // Fixed cadence, no distance gate, and no deferral so Doze/battery
@@ -52,9 +69,6 @@ const ANDROID_LOCATION_STREAM_OPTIONS = {
   pausesUpdatesAutomatically: false,
   showsBackgroundLocationIndicator: false,
   foregroundService: {
-    notificationTitle: "Shift location active",
-    notificationBody:
-      "ByggExp checks you in and out as you arrive at and leave the project site.",
     notificationColor: "#052D50",
     killServiceOnDestroy: false,
   },
@@ -63,10 +77,15 @@ const ANDROID_LOCATION_STREAM_OPTIONS = {
 // Start the location stream and remember whether its foreground service could
 // have started (only possible while foregrounded, see above).
 const startAndroidLocationStream = async () => {
-  await Location.startLocationUpdatesAsync(
-    SHIFT_LOCATION_TASK,
-    ANDROID_LOCATION_STREAM_OPTIONS,
-  );
+  await Location.startLocationUpdatesAsync(SHIFT_LOCATION_TASK, {
+    ...ANDROID_LOCATION_STREAM_OPTIONS,
+    foregroundService: {
+      ...ANDROID_LOCATION_STREAM_OPTIONS.foregroundService,
+      // Read at start time, not at module load: the language may have been
+      // switched since the app booted.
+      ...foregroundServiceText(),
+    },
+  });
   androidForegroundServiceStarted = AppState.currentState === "active";
 };
 

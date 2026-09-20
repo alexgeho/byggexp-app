@@ -1643,5 +1643,9 @@
     "supplier": "Toimittaja",
     "saveExpense": "Tallenna kulu",
     "expenseFailed": "Kulun tallentaminen epäonnistui."
+  },
+  "geofence": {
+    "serviceTitle": "Työvuoro seuraa sijaintia",
+    "serviceBody": "ByggExp leimaa sisään ja ulos, kun saavut työmaalle ja lähdet sieltä."
   }
 }

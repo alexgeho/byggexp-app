@@ -1643,5 +1643,9 @@
     "supplier": "Supplier",
     "saveExpense": "Save expense",
     "expenseFailed": "Could not save the expense."
+  },
+  "geofence": {
+    "serviceTitle": "Shift is following your location",
+    "serviceBody": "ByggExp clocks you in and out as you arrive at and leave the site."
   }
 }

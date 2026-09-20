@@ -1643,5 +1643,9 @@
     "supplier": "Dobavljač",
     "saveExpense": "Sačuvaj trošak",
     "expenseFailed": "Nije moguće sačuvati trošak."
+  },
+  "geofence": {
+    "serviceTitle": "Smjena prati lokaciju",
+    "serviceBody": "ByggExp evidentira dolazak i odlazak sa gradilišta."
   }
 }

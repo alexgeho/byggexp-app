@@ -1643,5 +1643,9 @@
     "supplier": "Tiekėjas",
     "saveExpense": "Išsaugoti išlaidas",
     "expenseFailed": "Nepavyko išsaugoti išlaidų."
+  },
+  "geofence": {
+    "serviceTitle": "Pamaina seka vietą",
+    "serviceBody": "ByggExp registruoja atvykimą ir išvykimą iš objekto."
   }
 }

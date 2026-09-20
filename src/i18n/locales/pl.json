@@ -1643,5 +1643,9 @@
     "supplier": "Dostawca",
     "saveExpense": "Zapisz wydatek",
     "expenseFailed": "Nie udało się zapisać wydatku."
+  },
+  "geofence": {
+    "serviceTitle": "Zmiana śledzi lokalizację",
+    "serviceBody": "ByggExp odbija wejście i wyjście, gdy docierasz na budowę i ją opuszczasz."
   }
 }

@@ -122,9 +122,16 @@ test("fresh foreground start registers the stream with a foreground service", as
   expect(active).toBe(true);
   expect(Location.startLocationUpdatesAsync).toHaveBeenCalledTimes(1);
   const [, options] = Location.startLocationUpdatesAsync.mock.calls[0];
+  // The notice is translated, so assert that it carries a title and a body at
+  // all rather than pinning the wording.
   expect(options.foregroundService).toEqual(
-    expect.objectContaining({ notificationTitle: "Shift location active" }),
+    expect.objectContaining({
+      notificationTitle: expect.any(String),
+      notificationBody: expect.any(String),
+      killServiceOnDestroy: false,
+    }),
   );
+  expect(options.foregroundService.notificationTitle.length).toBeGreaterThan(0);
 });
 
 test("promotes an already-running stream to a foreground service when foregrounded", async () => {
