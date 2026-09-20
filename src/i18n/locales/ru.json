@@ -1523,7 +1523,8 @@
     "existing": "Ваши клиенты",
     "emptyList": "Пока нет клиентов.",
     "companyNameRequired": "Введите название компании",
-    "nameRequired": "Введите имя и фамилию"
+    "nameRequired": "Введите имя и фамилию",
+    "addTitle": "Новый клиент"
   },
   "notes": {
     "title": "Заметки",
@@ -1560,5 +1561,14 @@
     "everyMinutes": "Каждые {{count}} мин",
     "everyHour": "Каждый час",
     "clear": "Убрать напоминание"
+  },
+  "clients": {
+    "filter": {
+      "all": "Все",
+      "company": "Компании",
+      "private": "Частные лица"
+    },
+    "company": "Компания",
+    "private": "Частное лицо"
   }
 }

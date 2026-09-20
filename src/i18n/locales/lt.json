@@ -1523,7 +1523,8 @@
     "existing": "Jūsų klientai",
     "emptyList": "Dar nėra klientų.",
     "companyNameRequired": "Įveskite įmonės pavadinimą",
-    "nameRequired": "Įveskite vardą ir pavardę"
+    "nameRequired": "Įveskite vardą ir pavardę",
+    "addTitle": "Naujas klientas"
   },
   "notes": {
     "title": "Užrašai",
@@ -1560,5 +1561,14 @@
     "everyMinutes": "Kas {{count}} min",
     "everyHour": "Kas valandą",
     "clear": "Pašalinti priminimą"
+  },
+  "clients": {
+    "filter": {
+      "all": "Visi",
+      "company": "Įmonės",
+      "private": "Privatūs asmenys"
+    },
+    "company": "Įmonė",
+    "private": "Privatus"
   }
 }

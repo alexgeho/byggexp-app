@@ -1523,7 +1523,8 @@
     "existing": "Jūsu klienti",
     "emptyList": "Vēl nav klientu.",
     "companyNameRequired": "Ievadiet uzņēmuma nosaukumu",
-    "nameRequired": "Ievadiet vārdu un uzvārdu"
+    "nameRequired": "Ievadiet vārdu un uzvārdu",
+    "addTitle": "Jauns klients"
   },
   "notes": {
     "title": "Piezīmes",
@@ -1560,5 +1561,14 @@
     "everyMinutes": "Ik {{count}} min",
     "everyHour": "Katru stundu",
     "clear": "Noņemt atgādinājumu"
+  },
+  "clients": {
+    "filter": {
+      "all": "Visi",
+      "company": "Uzņēmumi",
+      "private": "Privātpersonas"
+    },
+    "company": "Uzņēmums",
+    "private": "Privātpersona"
   }
 }

@@ -1523,7 +1523,8 @@
     "existing": "Asiakkaasi",
     "emptyList": "Ei vielä asiakkaita.",
     "companyNameRequired": "Anna yrityksen nimi",
-    "nameRequired": "Anna etu- ja sukunimi"
+    "nameRequired": "Anna etu- ja sukunimi",
+    "addTitle": "Uusi asiakas"
   },
   "notes": {
     "title": "Muistiinpanot",
@@ -1560,5 +1561,14 @@
     "everyMinutes": "{{count}} min välein",
     "everyHour": "Tunnin välein",
     "clear": "Poista muistutus"
+  },
+  "clients": {
+    "filter": {
+      "all": "Kaikki",
+      "company": "Yritykset",
+      "private": "Yksityiset"
+    },
+    "company": "Yritys",
+    "private": "Yksityinen"
   }
 }

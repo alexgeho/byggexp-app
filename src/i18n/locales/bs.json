@@ -1523,7 +1523,8 @@
     "existing": "Vaši klijenti",
     "emptyList": "Još nema klijenata.",
     "companyNameRequired": "Unesite naziv firme",
-    "nameRequired": "Unesite ime i prezime"
+    "nameRequired": "Unesite ime i prezime",
+    "addTitle": "Novi klijent"
   },
   "notes": {
     "title": "Bilješke",
@@ -1560,5 +1561,14 @@
     "everyMinutes": "Svakih {{count}} min",
     "everyHour": "Svaki sat",
     "clear": "Ukloni podsjetnik"
+  },
+  "clients": {
+    "filter": {
+      "all": "Svi",
+      "company": "Firme",
+      "private": "Fizička lica"
+    },
+    "company": "Firma",
+    "private": "Fizičko lice"
   }
 }

@@ -1523,7 +1523,8 @@
     "existing": "Dina klienter",
     "emptyList": "Inga klienter än.",
     "companyNameRequired": "Ange företagsnamn",
-    "nameRequired": "Ange för- och efternamn"
+    "nameRequired": "Ange för- och efternamn",
+    "addTitle": "Ny klient"
   },
   "notes": {
     "title": "Anteckningar",
@@ -1560,5 +1561,14 @@
     "everyMinutes": "Var {{count}}:e min",
     "everyHour": "Varje timme",
     "clear": "Ta bort påminnelse"
+  },
+  "clients": {
+    "filter": {
+      "all": "Alla",
+      "company": "Företag",
+      "private": "Privatpersoner"
+    },
+    "company": "Företag",
+    "private": "Privat"
   }
 }

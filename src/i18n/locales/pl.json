@@ -1523,7 +1523,8 @@
     "existing": "Twoi klienci",
     "emptyList": "Brak klientów.",
     "companyNameRequired": "Podaj nazwę firmy",
-    "nameRequired": "Podaj imię i nazwisko"
+    "nameRequired": "Podaj imię i nazwisko",
+    "addTitle": "Nowy klient"
   },
   "notes": {
     "title": "Notatki",
@@ -1560,5 +1561,14 @@
     "everyMinutes": "Co {{count}} min",
     "everyHour": "Co godzinę",
     "clear": "Usuń przypomnienie"
+  },
+  "clients": {
+    "filter": {
+      "all": "Wszyscy",
+      "company": "Firmy",
+      "private": "Osoby prywatne"
+    },
+    "company": "Firma",
+    "private": "Osoba prywatna"
   }
 }

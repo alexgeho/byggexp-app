@@ -1523,7 +1523,8 @@
     "existing": "Ваші клієнти",
     "emptyList": "Поки що немає клієнтів.",
     "companyNameRequired": "Введіть назву компанії",
-    "nameRequired": "Введіть ім'я та прізвище"
+    "nameRequired": "Введіть ім'я та прізвище",
+    "addTitle": "Новий клієнт"
   },
   "notes": {
     "title": "Нотатки",
@@ -1560,5 +1561,14 @@
     "everyMinutes": "Кожні {{count}} хв",
     "everyHour": "Щогодини",
     "clear": "Прибрати нагадування"
+  },
+  "clients": {
+    "filter": {
+      "all": "Усі",
+      "company": "Компанії",
+      "private": "Приватні особи"
+    },
+    "company": "Компанія",
+    "private": "Приватна особа"
   }
 }

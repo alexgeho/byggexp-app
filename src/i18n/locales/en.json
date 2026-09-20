@@ -1523,7 +1523,8 @@
     "existing": "Your clients",
     "emptyList": "No clients yet.",
     "companyNameRequired": "Enter a company name",
-    "nameRequired": "Enter first and last name"
+    "nameRequired": "Enter first and last name",
+    "addTitle": "New client"
   },
   "notes": {
     "title": "Notes",
@@ -1560,5 +1561,14 @@
     "everyMinutes": "Every {{count}} min",
     "everyHour": "Every hour",
     "clear": "Clear reminder"
+  },
+  "clients": {
+    "filter": {
+      "all": "All",
+      "company": "Companies",
+      "private": "Private"
+    },
+    "company": "Company",
+    "private": "Private"
   }
 }

@@ -1523,7 +1523,8 @@
     "existing": "Klientene dine",
     "emptyList": "Ingen klienter ennå.",
     "companyNameRequired": "Angi firmanavn",
-    "nameRequired": "Angi for- og etternavn"
+    "nameRequired": "Angi for- og etternavn",
+    "addTitle": "Ny klient"
   },
   "notes": {
     "title": "Notater",
@@ -1560,5 +1561,14 @@
     "everyMinutes": "Hvert {{count}}. min",
     "everyHour": "Hver time",
     "clear": "Fjern påminnelse"
+  },
+  "clients": {
+    "filter": {
+      "all": "Alle",
+      "company": "Bedrifter",
+      "private": "Privatpersoner"
+    },
+    "company": "Bedrift",
+    "private": "Privat"
   }
 }

@@ -1523,7 +1523,8 @@
     "existing": "Sinu kliendid",
     "emptyList": "Kliente pole veel.",
     "companyNameRequired": "Sisesta ettevõtte nimi",
-    "nameRequired": "Sisesta ees- ja perekonnanimi"
+    "nameRequired": "Sisesta ees- ja perekonnanimi",
+    "addTitle": "Uus klient"
   },
   "notes": {
     "title": "Märkmed",
@@ -1560,5 +1561,14 @@
     "everyMinutes": "Iga {{count}} min",
     "everyHour": "Iga tund",
     "clear": "Eemalda meeldetuletus"
+  },
+  "clients": {
+    "filter": {
+      "all": "Kõik",
+      "company": "Ettevõtted",
+      "private": "Eraisikud"
+    },
+    "company": "Ettevõte",
+    "private": "Eraisik"
   }
 }
