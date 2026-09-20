@@ -35,9 +35,13 @@ export async function clearOnboardingDismissed() {
   }
 }
 
-// Marks the "Anpassa startsidan" onboarding step done once the user has opened
-// the Customize drawer (there's no server signal for "customised the home").
-const CUSTOMIZE_OPENED_KEY = "home-onboarding-customize-opened";
+// Marks the "Anpassa startsidan" onboarding step done once the user has actually
+// CHANGED something in the Customize drawer (there's no server signal for
+// "customised the home"). The key is versioned: v1 was written just for opening
+// the drawer, so anyone who only peeked kept a wrong tick — v2 starts clean and
+// is only written on a real change.
+const CUSTOMIZE_OPENED_KEY = "home-onboarding-customized-v2";
+const CUSTOMIZE_OPENED_KEY_V1 = "home-onboarding-customize-opened";
 
 export async function getOnboardingCustomizeOpened() {
   try {
@@ -116,6 +120,7 @@ export async function resetOnboardingForNewUser(userId) {
       WELCOME_SLIDES_SEEN_KEY,
       ONBOARDING_DISMISSED_KEY,
       CUSTOMIZE_OPENED_KEY,
+      CUSTOMIZE_OPENED_KEY_V1,
       PROFILE_SAVED_KEY,
       FOCUS_KEY,
     ]);

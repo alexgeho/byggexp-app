@@ -15,6 +15,7 @@ jest.mock("@react-native-async-storage/async-storage", () => ({
 const FLAG_KEYS = [
   WELCOME_SLIDES_SEEN_KEY,
   "home-onboarding-dismissed",
+  "home-onboarding-customized-v2",
   "home-onboarding-customize-opened",
   "home-onboarding-profile-saved",
   "home-onboarding-focus",
