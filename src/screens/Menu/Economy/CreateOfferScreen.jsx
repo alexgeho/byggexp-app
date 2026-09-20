@@ -86,7 +86,12 @@ export default function CreateOfferScreen() {
     contactPersons: [
       { role: contactRole.trim(), name: contactName.trim() },
     ].filter((contact) => contact.role || contact.name),
-    items: items.map(({ _key, ...item }) => item),
+    // Strip the client-only keys (row id, remembered article name).
+    items: items.map((item) =>
+      Object.fromEntries(
+        Object.entries(item).filter(([key]) => !key.startsWith("_")),
+      ),
+    ),
   });
 
   const validate = () => {

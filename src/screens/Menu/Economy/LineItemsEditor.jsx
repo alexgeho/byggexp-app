@@ -13,6 +13,8 @@ import { getDateLocale } from "../../../utils/dateLocale";
 import { createStyles, PRIMARY, PLACEHOLDER } from "./billingForm.styles";
 import { useTheme } from "../../../theme/ThemeContext";
 
+// The VAT rate is not edited here: it belongs to the article and is fixed in
+// the catalogue, so it rides in with the article and is shown, not chosen.
 // Every value cell selects its contents when tapped, so typing replaces the
 // number instead of appending to it — nobody should have to clear a "0" by
 // hand before entering a price.
@@ -20,8 +22,6 @@ import { useTheme } from "../../../theme/ThemeContext";
 // owns `items` and receives the next array on every change. Matches the Figma
 // "Invoice rows" section — section label, one white card per row, then a
 // pill "Add row" button, all 8px apart.
-const VAT_RATES = [25, 12, 6, 0];
-
 export default function LineItemsEditor({
   items,
   onChange,
@@ -71,6 +71,9 @@ export default function LineItemsEditor({
     const hasPrice = Number(current.price) !== 0 && current.price !== "";
     update(index, {
       articleNumber: article.articleNumber || "",
+      // Client-side only (stripped before saving): lets the row say WHICH
+      // article is on it, not just its number.
+      _articleName: article.name || "",
       description: hasDescription ? current.description : article.name || "",
       price: hasPrice ? current.price : (article.priceExclMoms ?? 0),
       vatRate: article.momsPercent ?? current.vatRate ?? 25,
@@ -103,11 +106,22 @@ export default function LineItemsEditor({
               activeOpacity={0.7}
             >
               <Icon name="package" size={16} color={PRIMARY} />
-              <Text style={styles.articleBtnText} numberOfLines={1}>
-                {item.articleNumber
-                  ? `${t("billing.article")} ${item.articleNumber}`
-                  : t("billing.pickArticle")}
-              </Text>
+              {item.articleNumber ? (
+                <View style={styles.articlePicked}>
+                  <Text style={styles.articlePickedName} numberOfLines={1}>
+                    {item._articleName || item.description || ""}
+                  </Text>
+                  <Text style={styles.articlePickedMeta} numberOfLines={1}>
+                    {`${t("billing.article")} ${item.articleNumber} · ${t(
+                      "billing.vatRate",
+                    )} ${Number(item.vatRate ?? 25)}%`}
+                  </Text>
+                </View>
+              ) : (
+                <Text style={styles.articleBtnText} numberOfLines={1}>
+                  {t("billing.pickArticle")}
+                </Text>
+              )}
               <Icon name="chevron-right" size={18} color={PRIMARY} />
             </TouchableOpacity>
           )}
@@ -192,30 +206,6 @@ export default function LineItemsEditor({
                     keyboardType="decimal-pad"
                     selectTextOnFocus
                   />
-                </View>
-                <View style={[styles.cell, { flex: 2 }]}>
-                  <Text style={styles.cellLabel}>{t("billing.vatRate")}</Text>
-                  <View style={styles.vatRow}>
-                    {VAT_RATES.map((rate) => {
-                      const active = Number(item.vatRate ?? 25) === rate;
-                      return (
-                        <TouchableOpacity
-                          key={rate}
-                          style={[styles.vatChip, active && styles.vatChipOn]}
-                          onPress={() => update(index, { vatRate: rate })}
-                        >
-                          <Text
-                            style={[
-                              styles.vatChipText,
-                              active && styles.vatChipTextOn,
-                            ]}
-                          >
-                            {rate}%
-                          </Text>
-                        </TouchableOpacity>
-                      );
-                    })}
-                  </View>
                 </View>
               </View>
 

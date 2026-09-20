@@ -283,6 +283,14 @@ export const createStyles = (c) => {
       fontFamily: F_MED,
       color: PRIMARY,
     },
+    articlePicked: { flex: 1 },
+    articlePickedName: { fontSize: 15, fontFamily: F_SEMI, color: INK },
+    articlePickedMeta: {
+      fontSize: 13,
+      fontFamily: F_MED,
+      color: MUTED,
+      marginTop: 1,
+    },
     vatRow: {
       flexDirection: "row",
       gap: 6,

@@ -71,8 +71,6 @@ export default function CreateInvoiceScreen() {
   // Payment terms in days: prefilled from the client, and editing it moves the
   // due date with it — the same pair the web form keeps in step.
   const [paymentTerms, setPaymentTerms] = useState(String(DEFAULT_TERMS_DAYS));
-  // Late-payment interest printed on the invoice ("8% + referensränta").
-  const [lateInterest, setLateInterest] = useState("");
 
   const [clientPickerVisible, setClientPickerVisible] = useState(false);
   const isPrivateClient = client?.clientType === "private";
@@ -205,7 +203,6 @@ export default function CreateInvoiceScreen() {
     // The backend stores reverseVAT as a string, like the admin form sends it.
     reverseVAT: reverseVAT ? "true" : "false",
     ...(paymentTerms.trim() ? { paymentTerms: paymentTerms.trim() } : {}),
-    ...(lateInterest.trim() ? { lateInterest: lateInterest.trim() } : {}),
     // The client's contact person, as the web sends it; the PDF falls back to
     // it when "Er referens" is empty.
     ...(client?.contactPerson ? { representative: client.contactPerson } : {}),
@@ -229,7 +226,12 @@ export default function CreateInvoiceScreen() {
       ? { projectId: project._id || project.id }
       : {}),
     ...(orderReference.trim() ? { orderReference: orderReference.trim() } : {}),
-    items: items.map(({ _key, ...item }) => item),
+    // Strip the client-only keys (row id, remembered article name).
+    items: items.map((item) =>
+      Object.fromEntries(
+        Object.entries(item).filter(([key]) => !key.startsWith("_")),
+      ),
+    ),
   });
 
   const validate = () => {
@@ -439,17 +441,6 @@ export default function CreateInvoiceScreen() {
             value={yourReference}
             onChangeText={setYourReference}
             placeholder={t("billing.yourReference")}
-            placeholderTextColor={PLACEHOLDER}
-          />
-        </View>
-
-        <View style={styles.field}>
-          <Text style={styles.label}>{t("billing.lateInterest")}</Text>
-          <TextInput
-            style={styles.input}
-            value={lateInterest}
-            onChangeText={setLateInterest}
-            placeholder={t("billing.lateInterestPlaceholder")}
             placeholderTextColor={PLACEHOLDER}
           />
         </View>
