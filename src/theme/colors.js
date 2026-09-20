@@ -147,7 +147,10 @@ export const lightBlueColors = {
 
   glow: "#3097F7",
 
-  text: "#010D18",
+  // Ink, one step off black: #010D18 at ~85% over this page colour. Pure
+  // #010D18 on a pale-blue page reads as hard printed black — the headings,
+  // the card icons and the nav icons all soften with this one value.
+  text: "#24303B",
 
   hourBlockFilled: "#3097F7",
 
@@ -161,15 +164,15 @@ export const lightBlueColors = {
 
   selectorBorder: "#010D1833",
 
-  selectorArrow: "#010D18",
+  selectorArrow: "#24303B",
 
-  icon: "#010D18",
+  icon: "#24303B",
 
-  bottomNav: "#010D18",
+  bottomNav: "#24303B",
 
   homeButtonBackground: "#FFFFFF",
   homeButtonBorder: "rgba(1,13,24,0.08)",
-  homeButtonText: "#010D18",
+  homeButtonText: "#24303B",
 };
 
 // Light grey home (Figma "Home / Blue" light variant): #EEEEEE page, white
@@ -179,17 +182,18 @@ export const lightGrayColors = {
   background: "#EEEEEE",
   primary: "#3A81DB",
   glow: "#3A81DB",
-  text: "#282828",
+  // Same one-step-lighter ink as the pale-blue theme, over #EEEEEE.
+  text: "#464646",
   card: "#FFFFFF",
   border: "rgba(40,40,40,0.30)",
   selectorBackground: "transparent",
   selectorBorder: "rgba(5,45,80,0.30)",
-  selectorArrow: "#282828",
-  icon: "#282828",
-  bottomNav: "#282828",
+  selectorArrow: "#464646",
+  icon: "#464646",
+  bottomNav: "#464646",
   homeButtonBackground: "#FFFFFF",
   homeButtonBorder: "rgba(40,40,40,0.06)",
-  homeButtonText: "#282828",
+  homeButtonText: "#464646",
 };
 
 export const colorfulColors = {
