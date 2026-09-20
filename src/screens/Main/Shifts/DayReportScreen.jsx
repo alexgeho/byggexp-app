@@ -40,8 +40,24 @@ import {
 // · Jakob's — the same cards and inset separators the rest of the app uses, so
 //   there is nothing new to learn.
 // · Postel's — "7,5" and "7.5" are both accepted; blank means zero.
+// Each option carries its own colour, used at low opacity when chosen: a
+// tinted pill reads as "this one is picked" without shouting over the single
+// solid action on the screen (Von Restorff — the thing that must stand out is
+// Spara, and only Spara).
 const HOUR_TYPES = ["normal", "overtime", "ob"];
 const PER_DIEM = ["none", "half", "full"];
+
+const OPTION_COLORS = {
+  normal: "#0785F4",
+  overtime: "#F3B530",
+  ob: "#5222FF",
+  none: "#7A94A8",
+  half: "#00A8A8",
+  full: "#2FA84F",
+};
+
+// The same hue at 18% for the fill, so the label stays legible on it.
+const tint = (hex) => `${hex}2E`;
 
 // Accepts a comma or a dot, ignores anything else a keyboard might slip in.
 const toNumber = (value) => {
@@ -263,16 +279,19 @@ export default function DayReportScreen() {
     <View style={styles.pills}>
       {values.map((option) => {
         const active = option === value;
+        const color = OPTION_COLORS[option] || "#0785F4";
         return (
           <TouchableOpacity
             key={option}
-            style={[styles.pill, active && styles.pillActive]}
+            style={[styles.pill, active && { backgroundColor: tint(color) }]}
             onPress={() => onChange(option)}
             activeOpacity={0.85}
             accessibilityRole="button"
             accessibilityState={{ selected: active }}
           >
-            <Text style={[styles.pillText, active && styles.pillTextActive]}>
+            <Text
+              style={[styles.pillText, active && { color, fontWeight: "700" }]}
+            >
               {labelFor(option)}
             </Text>
           </TouchableOpacity>
@@ -389,7 +408,9 @@ export default function DayReportScreen() {
               <View style={styles.rowSep} />
 
               <View style={styles.perDiemRow}>
-                <Text style={styles.fieldLabel}>{t("dayReport.perDiem")}</Text>
+                <Text style={[styles.fieldLabel, styles.perDiemLabel]}>
+                  {t("dayReport.perDiem")}
+                </Text>
                 <Pills
                   values={PER_DIEM}
                   value={perDiem}
@@ -535,8 +556,9 @@ const createStyles = (c) =>
       color: c.textMuted,
       fontSize: 15,
       marginBottom: 12,
+      paddingHorizontal: 16,
     },
-    ataRow: { padding: 12 },
+    ataRow: { paddingHorizontal: 16, paddingVertical: 12 },
     saveExpense: {
       minHeight: 48,
       alignItems: "center",
@@ -558,7 +580,8 @@ const createStyles = (c) =>
       fontSize: 13,
       marginBottom: 8,
       marginTop: 12,
-      paddingHorizontal: 4,
+      // Section headers line up with the card's own content, iOS-style.
+      paddingHorizontal: 16,
     },
     card: {
       backgroundColor: c.surface,
@@ -570,7 +593,8 @@ const createStyles = (c) =>
       flexDirection: "row",
       flexWrap: "wrap",
       gap: 8,
-      padding: 12,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
     },
     pill: {
       minHeight: 44,
@@ -582,9 +606,7 @@ const createStyles = (c) =>
     },
     // Blue belongs to the one action on the screen (Spara). A chosen pill is a
     // state, not an action, so it reads in ink rather than competing with it.
-    pillActive: { backgroundColor: "#052D50" },
     pillText: { color: c.textPrimary, fontSize: 15 },
-    pillTextActive: { color: "#FFFFFF", fontWeight: "600" },
     fieldRow: {
       minHeight: 56,
       paddingHorizontal: 16,
@@ -594,6 +616,7 @@ const createStyles = (c) =>
       gap: 12,
     },
     fieldLabel: { color: c.textPrimary, fontSize: 16 },
+    perDiemLabel: { paddingHorizontal: 16 },
     fieldInput: {
       flex: 1,
       textAlign: "right",
@@ -601,7 +624,7 @@ const createStyles = (c) =>
       fontSize: 16,
       paddingVertical: 0,
     },
-    perDiemRow: { paddingTop: 12, paddingHorizontal: 4 },
+    perDiemRow: { paddingTop: 12 },
     rowSep: {
       height: StyleSheet.hairlineWidth,
       backgroundColor: c.divider,
