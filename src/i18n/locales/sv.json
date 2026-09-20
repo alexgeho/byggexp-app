@@ -480,7 +480,7 @@
     "attested": "Attesterad",
     "attestAction": "Attestera",
     "approveFailed": "Kunde inte attestera passet.",
-    "clocked": "Stämplat"
+    "clocked": "GPS-stämplat"
   },
   "shiftHistory": {
     "title": "Dagsrapport",

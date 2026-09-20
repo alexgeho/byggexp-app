@@ -480,7 +480,7 @@
     "attested": "Approved",
     "attestAction": "Approve",
     "approveFailed": "Could not approve the shift.",
-    "clocked": "Clocked"
+    "clocked": "GPS clocked"
   },
   "shiftHistory": {
     "title": "Daily report",
