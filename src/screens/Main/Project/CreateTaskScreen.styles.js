@@ -91,14 +91,25 @@ export const createStyles = (c) =>
       minHeight: 72,
       paddingHorizontal: 16,
       paddingVertical: 14,
-      borderBottomWidth: 1,
-      borderBottomColor: c.divider,
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
     },
     groupRowLast: {
       borderBottomWidth: 0,
+    },
+    // iOS inset-grouped separators: a hairline child line between rows, inset
+    // past the leading icon (16 pad + 30 badge + 12 gap) or to the label when
+    // the row has no icon. Same lines the settings/menu lists use.
+    rowSep: {
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: c.divider,
+      marginLeft: 16,
+    },
+    rowSepIcon: {
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: c.divider,
+      marginLeft: 58,
     },
     groupRowDisabled: {
       opacity: 0.45,
@@ -339,8 +350,6 @@ export const createStyles = (c) =>
       minHeight: 56,
       paddingHorizontal: 16,
       paddingVertical: 12,
-      borderBottomWidth: 1,
-      borderBottomColor: c.divider,
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",

@@ -703,6 +703,7 @@ export default function CreateTaskScreen() {
               </View>
               <Icon name="chevron-right" size={18} color="#052D50" />
             </TouchableOpacity>
+            <View style={styles.rowSepIcon} />
             <TouchableOpacity
               style={styles.groupRow}
               onPress={() => !isWorkerCreator && setShowUserPicker(true)}
@@ -746,46 +747,51 @@ export default function CreateTaskScreen() {
               )}
             </TouchableOpacity>
             {selectedProjectId && !selectedAssigneeUserId ? (
-              <TouchableOpacity
-                style={styles.groupRow}
-                onPress={() => setShowAssigneePicker(true)}
-                activeOpacity={0.85}
-                disabled={loadingUsers}
-              >
-                <View style={styles.rowContent}>
-                  <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
-                    <FieldIcon name="users" size={14} color="#FFFFFF" />
+              <>
+                <View style={styles.rowSepIcon} />
+                <TouchableOpacity
+                  style={styles.groupRow}
+                  onPress={() => setShowAssigneePicker(true)}
+                  activeOpacity={0.85}
+                  disabled={loadingUsers}
+                >
+                  <View style={styles.rowContent}>
+                    <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
+                      <FieldIcon name="users" size={14} color="#FFFFFF" />
+                    </View>
+                    <View style={styles.rowTextContainer}>
+                      <Text style={styles.rowLabel}>
+                        {t("createTask.assignToLabel")}
+                      </Text>
+                      <Text
+                        style={[
+                          styles.rowValue,
+                          assigneeIds.length === 0 && styles.rowPlaceholder,
+                        ]}
+                        numberOfLines={1}
+                      >
+                        {assigneeIds.length
+                          ? assigneeSummary
+                          : t("createTask.wholeProjectTeam")}
+                      </Text>
+                    </View>
                   </View>
-                  <View style={styles.rowTextContainer}>
-                    <Text style={styles.rowLabel}>
-                      {t("createTask.assignToLabel")}
-                    </Text>
-                    <Text
-                      style={[
-                        styles.rowValue,
-                        assigneeIds.length === 0 && styles.rowPlaceholder,
-                      ]}
-                      numberOfLines={1}
+                  {assigneeIds.length ? (
+                    <TouchableOpacity
+                      style={styles.clearInlineButton}
+                      onPress={() => setAssigneeIds([])}
                     >
-                      {assigneeIds.length
-                        ? assigneeSummary
-                        : t("createTask.wholeProjectTeam")}
-                    </Text>
-                  </View>
-                </View>
-                {assigneeIds.length ? (
-                  <TouchableOpacity
-                    style={styles.clearInlineButton}
-                    onPress={() => setAssigneeIds([])}
-                  >
-                    <Icon name="x" size={16} color="#052D50" />
-                  </TouchableOpacity>
-                ) : (
-                  <Icon name="chevron-right" size={18} color="#052D50" />
-                )}
-              </TouchableOpacity>
+                      <Icon name="x" size={16} color="#052D50" />
+                    </TouchableOpacity>
+                  ) : (
+                    <Icon name="chevron-right" size={18} color="#052D50" />
+                  )}
+                </TouchableOpacity>
+              </>
             ) : null}
-            <GroupRow isLast={true}>
+
+            <View style={styles.rowSep} />
+            <GroupRow>
               <View style={styles.inputWrapper}>
                 <Text style={styles.inputLabel}>
                   {t("createTask.taskTitleLabel")}
@@ -799,6 +805,42 @@ export default function CreateTaskScreen() {
                 />
               </View>
             </GroupRow>
+
+            {/* Description + notes sit with the title — they describe the same
+                thing, so they belong in the title's group. */}
+            <View style={styles.rowSep} />
+            <GroupRow>
+              <View style={styles.textAreaWrapper}>
+                <Text style={styles.inputLabel}>
+                  {t("createTask.descriptionLabel")}
+                </Text>
+                <TextInput
+                  multiline={true}
+                  style={[styles.input, styles.textArea]}
+                  value={taskDescription}
+                  onChangeText={setTaskDescription}
+                  placeholder={t("createTask.descriptionPlaceholder")}
+                  placeholderTextColor="rgba(5, 45, 80, 0.45)"
+                />
+              </View>
+            </GroupRow>
+
+            <View style={styles.rowSep} />
+            <GroupRow isLast={true}>
+              <View style={styles.textAreaWrapper}>
+                <Text style={styles.inputLabel}>
+                  {t("createTask.notesLabel")}
+                </Text>
+                <TextInput
+                  multiline={true}
+                  style={[styles.input, styles.textArea]}
+                  value={notes}
+                  onChangeText={setNotes}
+                  placeholder={t("tools.notesPlaceholder")}
+                  placeholderTextColor="rgba(5, 45, 80, 0.45)"
+                />
+              </View>
+            </GroupRow>
           </GroupCard>
 
           <SectionLabel>Schedule</SectionLabel>
@@ -808,12 +850,42 @@ export default function CreateTaskScreen() {
               value={startDate}
               onPress={() => setShowStartDatePicker(true)}
             />
+            <View style={styles.rowSep} />
             <ScheduleDateRow
               label={t("createTask.ends")}
               value={dueDate}
               onPress={() => setShowDueDatePicker(true)}
               isLast={true}
             />
+          </GroupCard>
+
+          <SectionLabel>Notifications</SectionLabel>
+          <GroupCard>
+            <TouchableOpacity
+              style={[styles.groupRow, styles.groupRowLast]}
+              activeOpacity={0.85}
+              onPress={openNotificationsSheet}
+            >
+              <View style={styles.rowContent}>
+                <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
+                  <FieldIcon name="bell" size={14} color="#FFFFFF" />
+                </View>
+                <View style={styles.rowTextContainer}>
+                  <Text style={styles.rowLabel}>
+                    {t("createTask.notificationsLabel")}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.rowValue,
+                      notificationsSummary === "Off" && styles.rowPlaceholder,
+                    ]}
+                  >
+                    {notificationsSummary}
+                  </Text>
+                </View>
+              </View>
+              <Icon name="chevron-right" size={18} color="#052D50" />
+            </TouchableOpacity>
           </GroupCard>
 
           {/* Priority + repeat — the same two fields the admin task form has. */}
@@ -839,6 +911,7 @@ export default function CreateTaskScreen() {
               <Icon name="chevron-right" size={18} color="#052D50" />
             </TouchableOpacity>
 
+            <View style={styles.rowSepIcon} />
             <TouchableOpacity
               style={[styles.groupRow, styles.groupRowLast]}
               activeOpacity={0.85}
@@ -859,54 +932,6 @@ export default function CreateTaskScreen() {
                     ]}
                   >
                     {t(`createTask.recurrence.${recurrence}`)}
-                  </Text>
-                </View>
-              </View>
-              <Icon name="chevron-right" size={18} color="#052D50" />
-            </TouchableOpacity>
-          </GroupCard>
-
-          <SectionLabel>Details</SectionLabel>
-          <GroupCard>
-            <GroupRow>
-              <View style={styles.textAreaWrapper}>
-                <Text style={styles.inputLabel}>
-                  {t("createTask.descriptionLabel")}
-                </Text>
-                <TextInput
-                  multiline={true}
-                  style={[styles.input, styles.textArea]}
-                  value={taskDescription}
-                  onChangeText={setTaskDescription}
-                  placeholder={t("createTask.descriptionPlaceholder")}
-                  placeholderTextColor="rgba(5, 45, 80, 0.45)"
-                />
-              </View>
-            </GroupRow>
-          </GroupCard>
-
-          <SectionLabel>Notifications</SectionLabel>
-          <GroupCard>
-            <TouchableOpacity
-              style={[styles.groupRow, styles.groupRowLast]}
-              activeOpacity={0.85}
-              onPress={openNotificationsSheet}
-            >
-              <View style={styles.rowContent}>
-                <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
-                  <FieldIcon name="bell" size={14} color="#FFFFFF" />
-                </View>
-                <View style={styles.rowTextContainer}>
-                  <Text style={styles.rowLabel}>
-                    {t("createTask.notificationsLabel")}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.rowValue,
-                      notificationsSummary === "Off" && styles.rowPlaceholder,
-                    ]}
-                  >
-                    {notificationsSummary}
                   </Text>
                 </View>
               </View>
@@ -979,25 +1004,6 @@ export default function CreateTaskScreen() {
               })}
             </View>
           ) : null}
-
-          <SectionLabel>Notes</SectionLabel>
-          <GroupCard>
-            <GroupRow isLast={true}>
-              <View style={styles.textAreaWrapper}>
-                <Text style={styles.inputLabel}>
-                  {t("createTask.notesLabel")}
-                </Text>
-                <TextInput
-                  multiline={true}
-                  style={[styles.input, styles.textAreaLarge]}
-                  value={notes}
-                  onChangeText={setNotes}
-                  placeholder={t("tools.notesPlaceholder")}
-                  placeholderTextColor="rgba(5, 45, 80, 0.45)"
-                />
-              </View>
-            </GroupRow>
-          </GroupCard>
 
           <OptionPickerModal
             visible={showPriorityPicker}
