@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
+import Svg, { Defs, Rect, RadialGradient, Stop } from "react-native-svg";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigationState } from "@react-navigation/native";
@@ -89,6 +90,9 @@ export function BottomBar({
   // Hairline around that flat pill; again the cards' own border. Without it
   // the pill has no edge at all.
   pillBorderColor,
+  // The cards' corner glow (dark theme). Passed so the bar is the same object
+  // as the buttons above it, down to the light in its corner.
+  pillGlowColor,
 }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -191,6 +195,39 @@ export function BottomBar({
             pointerEvents="none"
             style={[StyleSheet.absoluteFill, { backgroundColor: fillColor }]}
           />
+          {pillColor && pillGlowColor ? (
+            // Same fixed-size glow as a home card: a blurred ellipse anchored
+            // to the bottom-right corner, clipped by the pill's own radius.
+            <Svg
+              pointerEvents="none"
+              width={190}
+              height={190}
+              style={styles.pillGlow}
+            >
+              <Defs>
+                <RadialGradient id="navPillGlow" cx="50%" cy="50%" r="50%">
+                  <Stop
+                    offset="0"
+                    stopColor={pillGlowColor}
+                    stopOpacity="0.13"
+                  />
+                  <Stop
+                    offset="0.55"
+                    stopColor={pillGlowColor}
+                    stopOpacity="0.05"
+                  />
+                  <Stop offset="1" stopColor={pillGlowColor} stopOpacity="0" />
+                </RadialGradient>
+              </Defs>
+              <Rect
+                x="0"
+                y="0"
+                width="190"
+                height="190"
+                fill="url(#navPillGlow)"
+              />
+            </Svg>
+          ) : null}
           {!isTransparent && !pillColor && dark ? (
             <>
               <LinearGradient

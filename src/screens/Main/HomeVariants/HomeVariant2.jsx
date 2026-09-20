@@ -23,6 +23,7 @@ import {
 } from "react-native";
 
 import { LinearGradient } from "expo-linear-gradient";
+import { flattenColor } from "../../../theme/colorUtils";
 
 import {
   useFocusEffect,
@@ -1141,15 +1142,22 @@ export default function HomeVariant2() {
                 onEnterEditHours={handleEnterEditHours}
                 compact={isCompact}
                 veryCompact={isVeryCompact}
+                // Figma dark home (actionBtn, 124×124): a WHITE disc with the
+                // glyph in #3097F7 — the inverse of the light themes, where
+                // the disc carries the colour and the glyph is white.
                 actionButtonColor={
-                  isLightBlueTheme || themeName === "black"
-                    ? theme.colors.primary
-                    : undefined
+                  themeName === "black"
+                    ? "#FFFFFF"
+                    : isLightBlueTheme
+                      ? theme.colors.primary
+                      : undefined
                 }
                 actionIconColor={
-                  isLightBlueTheme || themeName === "black"
-                    ? "#FFFFFF"
-                    : undefined
+                  themeName === "black"
+                    ? "#3097F7"
+                    : isLightBlueTheme
+                      ? "#FFFFFF"
+                      : undefined
                 }
                 // Figma dark home: soft blue halo behind the play button.
                 actionButtonGlow={
@@ -1195,11 +1203,15 @@ export default function HomeVariant2() {
         pointerEvents={isEditingHours ? "none" : "auto"}
       >
         <BottomBar
-          // A plain bordered pill: an OPAQUE fill in the screen's own colour
-          // (the gradient's bottom stop) plus the cards' hairline. The card
-          // surfaces are translucent, so using one here let the card edges
-          // behind the bar show through it as broken stripes.
-          pillColor={gradientColors[gradientColors.length - 1]}
+          // The bar IS a card: the buttons' fill, hairline and corner glow.
+          // The fill is flattened onto the page colour first — the card
+          // surface is a translucent wash, and left translucent the card
+          // edges under the bar showed through it as broken lines.
+          pillColor={flattenColor(
+            theme.colors.homeButtonBackground || theme.colors.card,
+            gradientColors[gradientColors.length - 1],
+          )}
+          pillGlowColor={theme.colors.cardGlow}
           pillBorderColor={
             theme.colors.homeButtonBorder &&
             theme.colors.homeButtonBorder !== "transparent"

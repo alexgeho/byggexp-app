@@ -56,6 +56,11 @@ export function createStyles(theme) {
       // which is transparent and would cast nothing).
       ...Platform.select({ android: { elevation: 8 }, default: {} }),
     },
+    pillGlow: {
+      position: "absolute",
+      right: -30,
+      bottom: -30,
+    },
     navButton: {
       width: 80,
       height: 80,
