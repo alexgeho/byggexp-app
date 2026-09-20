@@ -1353,6 +1353,46 @@ export default function ShiftsScreen() {
                             </Text>
                           </TouchableOpacity>
                         ) : null}
+
+                        {/* Dagens rapport — pay bucket, travel and the day's
+                            note, on your own finished day. */}
+                        {shift.status === "completed" &&
+                        String(shift.workerId) === String(currentUserId) ? (
+                          <TouchableOpacity
+                            style={styles.shiftDetailRow}
+                            activeOpacity={0.7}
+                            onPress={() =>
+                              navigation.navigate("DayReport", { shift })
+                            }
+                          >
+                            <Text
+                              style={[
+                                styles.shiftDetailLabel,
+                                {
+                                  fontFamily: theme.text.fontFamily["regular"],
+                                },
+                              ]}
+                            >
+                              {t("dayReport.title")}
+                            </Text>
+                            <Text
+                              style={[
+                                styles.manualHoursValue,
+                                {
+                                  fontFamily:
+                                    theme.text.fontFamily[
+                                      shift.reportedAt ? "medium" : "regular"
+                                    ],
+                                },
+                              ]}
+                            >
+                              {shift.reportedAt
+                                ? t("dayReport.reported")
+                                : t("dayReport.add")}
+                            </Text>
+                          </TouchableOpacity>
+                        ) : null}
+
                         <View style={styles.shiftDetailRow}>
                           <Text
                             style={[

@@ -1582,5 +1582,29 @@
     },
     "company": "Firma",
     "private": "Osoba prywatna"
+  },
+  "dayReport": {
+    "title": "Raport dnia",
+    "add": "Dodaj",
+    "reported": "Zgłoszony",
+    "saved": "Raport zapisany",
+    "saveFailed": "Nie udało się zapisać raportu.",
+    "hoursLabel": "Godziny",
+    "travelLabel": "Podróż",
+    "noteLabel": "Notatka dnia",
+    "notePlaceholder": "Co zrobiono dzisiaj?",
+    "km": "Kilometry",
+    "travelTime": "Czas podróży (godz.)",
+    "perDiem": "Dieta",
+    "hourType": {
+      "normal": "Normalne",
+      "overtime": "Nadgodziny",
+      "ob": "Dodatek zmianowy"
+    },
+    "perDiemOption": {
+      "none": "Brak",
+      "half": "Połowa",
+      "full": "Pełna"
+    }
   }
 }

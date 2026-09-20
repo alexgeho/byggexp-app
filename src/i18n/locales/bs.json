@@ -1582,5 +1582,29 @@
     },
     "company": "Firma",
     "private": "Fizičko lice"
+  },
+  "dayReport": {
+    "title": "Dnevni izvještaj",
+    "add": "Dodaj",
+    "reported": "Prijavljeno",
+    "saved": "Izvještaj sačuvan",
+    "saveFailed": "Nije moguće sačuvati izvještaj.",
+    "hoursLabel": "Sati",
+    "travelLabel": "Putovanje",
+    "noteLabel": "Bilješka dana",
+    "notePlaceholder": "Šta je urađeno danas?",
+    "km": "Kilometri",
+    "travelTime": "Vrijeme putovanja (h)",
+    "perDiem": "Dnevnica",
+    "hourType": {
+      "normal": "Normalno",
+      "overtime": "Prekovremeno",
+      "ob": "Nepovoljno vrijeme"
+    },
+    "perDiemOption": {
+      "none": "Nema",
+      "half": "Pola",
+      "full": "Puna"
+    }
   }
 }

@@ -1582,5 +1582,29 @@
     },
     "company": "Įmonė",
     "private": "Privatus"
+  },
+  "dayReport": {
+    "title": "Dienos ataskaita",
+    "add": "Pridėti",
+    "reported": "Pateikta",
+    "saved": "Ataskaita išsaugota",
+    "saveFailed": "Nepavyko išsaugoti ataskaitos.",
+    "hoursLabel": "Valandos",
+    "travelLabel": "Kelionė",
+    "noteLabel": "Dienos pastaba",
+    "notePlaceholder": "Kas nuveikta šiandien?",
+    "km": "Kilometrai",
+    "travelTime": "Kelionės laikas (val.)",
+    "perDiem": "Dienpinigiai",
+    "hourType": {
+      "normal": "Įprastos",
+      "overtime": "Viršvalandžiai",
+      "ob": "Nepatogus laikas"
+    },
+    "perDiemOption": {
+      "none": "Nėra",
+      "half": "Pusė",
+      "full": "Visi"
+    }
   }
 }

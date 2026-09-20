@@ -1582,5 +1582,29 @@
     },
     "company": "Company",
     "private": "Private"
+  },
+  "dayReport": {
+    "title": "Day report",
+    "add": "Add",
+    "reported": "Reported",
+    "saved": "Report saved",
+    "saveFailed": "Could not save the report.",
+    "hoursLabel": "Hours",
+    "travelLabel": "Travel",
+    "noteLabel": "Note for the day",
+    "notePlaceholder": "What was done today?",
+    "km": "Kilometres",
+    "travelTime": "Travel time (h)",
+    "perDiem": "Per diem",
+    "hourType": {
+      "normal": "Normal",
+      "overtime": "Overtime",
+      "ob": "Unsocial hours"
+    },
+    "perDiemOption": {
+      "none": "None",
+      "half": "Half",
+      "full": "Full"
+    }
   }
 }

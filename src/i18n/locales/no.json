@@ -1582,5 +1582,29 @@
     },
     "company": "Bedrift",
     "private": "Privat"
+  },
+  "dayReport": {
+    "title": "Dagens rapport",
+    "add": "Legg til",
+    "reported": "Rapportert",
+    "saved": "Rapport lagret",
+    "saveFailed": "Kunne ikke lagre rapporten.",
+    "hoursLabel": "Timer",
+    "travelLabel": "Reise",
+    "noteLabel": "Dagens notat",
+    "notePlaceholder": "Hva ble gjort i dag?",
+    "km": "Kilometer",
+    "travelTime": "Reisetid (t)",
+    "perDiem": "Diett",
+    "hourType": {
+      "normal": "Normal",
+      "overtime": "Overtid",
+      "ob": "Ubekvemstillegg"
+    },
+    "perDiemOption": {
+      "none": "Ingen",
+      "half": "Halv",
+      "full": "Hel"
+    }
   }
 }

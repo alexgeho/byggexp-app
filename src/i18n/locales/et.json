@@ -1582,5 +1582,29 @@
     },
     "company": "Ettevõte",
     "private": "Eraisik"
+  },
+  "dayReport": {
+    "title": "Päeva aruanne",
+    "add": "Lisa",
+    "reported": "Esitatud",
+    "saved": "Aruanne salvestatud",
+    "saveFailed": "Aruannet ei saanud salvestada.",
+    "hoursLabel": "Tunnid",
+    "travelLabel": "Sõit",
+    "noteLabel": "Päeva märkus",
+    "notePlaceholder": "Mida täna tehti?",
+    "km": "Kilomeetrid",
+    "travelTime": "Sõiduaeg (h)",
+    "perDiem": "Päevaraha",
+    "hourType": {
+      "normal": "Tavaline",
+      "overtime": "Ületunnid",
+      "ob": "Ebamugav aeg"
+    },
+    "perDiemOption": {
+      "none": "Puudub",
+      "half": "Pool",
+      "full": "Täis"
+    }
   }
 }

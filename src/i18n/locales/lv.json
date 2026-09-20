@@ -1582,5 +1582,29 @@
     },
     "company": "Uzņēmums",
     "private": "Privātpersona"
+  },
+  "dayReport": {
+    "title": "Dienas atskaite",
+    "add": "Pievienot",
+    "reported": "Iesniegta",
+    "saved": "Atskaite saglabāta",
+    "saveFailed": "Neizdevās saglabāt atskaiti.",
+    "hoursLabel": "Stundas",
+    "travelLabel": "Brauciens",
+    "noteLabel": "Dienas piezīme",
+    "notePlaceholder": "Kas paveikts šodien?",
+    "km": "Kilometri",
+    "travelTime": "Brauciena laiks (h)",
+    "perDiem": "Dienas nauda",
+    "hourType": {
+      "normal": "Parastās",
+      "overtime": "Virsstundas",
+      "ob": "Neērtais laiks"
+    },
+    "perDiemOption": {
+      "none": "Nav",
+      "half": "Puse",
+      "full": "Pilna"
+    }
   }
 }

@@ -157,6 +157,13 @@ export const shiftService = {
     return downloadResult;
   },
 
+  // Dagens rapport — pay bucket, travel and the day's diary line. Only the
+  // fields passed are written, so a section can be saved on its own.
+  saveDayReport: async (shiftId, report) => {
+    const { data } = await api.patch(`/shifts/${shiftId}/report`, report);
+    return data;
+  },
+
   setManualHours: async (shiftId, durationMs) => {
     const { data } = await api.post(`/shifts/${shiftId}/manual-hours`, {
       durationMs,

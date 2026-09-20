@@ -1582,5 +1582,29 @@
     },
     "company": "Yritys",
     "private": "Yksityinen"
+  },
+  "dayReport": {
+    "title": "Päivän raportti",
+    "add": "Lisää",
+    "reported": "Raportoitu",
+    "saved": "Raportti tallennettu",
+    "saveFailed": "Raporttia ei voitu tallentaa.",
+    "hoursLabel": "Tunnit",
+    "travelLabel": "Matka",
+    "noteLabel": "Päivän muistiinpano",
+    "notePlaceholder": "Mitä tänään tehtiin?",
+    "km": "Kilometrit",
+    "travelTime": "Matka-aika (h)",
+    "perDiem": "Päiväraha",
+    "hourType": {
+      "normal": "Normaali",
+      "overtime": "Ylityö",
+      "ob": "Haittatyölisä"
+    },
+    "perDiemOption": {
+      "none": "Ei",
+      "half": "Puoli",
+      "full": "Koko"
+    }
   }
 }

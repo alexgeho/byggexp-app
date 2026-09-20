@@ -265,6 +265,12 @@ export default function AppNavigator() {
                 same list screen, fixed to one of them by the route. "Economy"
                 stays as the legacy name older links still use. */}
             <Stack.Screen
+              name="DayReport"
+              getComponent={() =>
+                require("../screens/Main/Shifts/DayReportScreen").default
+              }
+            />
+            <Stack.Screen
               name="Offers"
               initialParams={{ mode: "offers" }}
               getComponent={() =>

@@ -1582,5 +1582,29 @@
     },
     "company": "Компания",
     "private": "Частное лицо"
+  },
+  "dayReport": {
+    "title": "Отчёт за день",
+    "add": "Добавить",
+    "reported": "Отправлен",
+    "saved": "Отчёт сохранён",
+    "saveFailed": "Не удалось сохранить отчёт.",
+    "hoursLabel": "Часы",
+    "travelLabel": "Поездка",
+    "noteLabel": "Заметка за день",
+    "notePlaceholder": "Что сделано сегодня?",
+    "km": "Километры",
+    "travelTime": "Время в пути (ч)",
+    "perDiem": "Суточные",
+    "hourType": {
+      "normal": "Обычные",
+      "overtime": "Сверхурочные",
+      "ob": "Неудобные часы"
+    },
+    "perDiemOption": {
+      "none": "Нет",
+      "half": "Половина",
+      "full": "Полные"
+    }
   }
 }

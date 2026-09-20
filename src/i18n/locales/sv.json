@@ -1582,5 +1582,29 @@
     },
     "company": "Företag",
     "private": "Privat"
+  },
+  "dayReport": {
+    "title": "Dagens rapport",
+    "add": "Lägg till",
+    "reported": "Rapporterad",
+    "saved": "Rapport sparad",
+    "saveFailed": "Kunde inte spara rapporten.",
+    "hoursLabel": "Timmar",
+    "travelLabel": "Resa",
+    "noteLabel": "Dagens anteckning",
+    "notePlaceholder": "Vad gjordes idag?",
+    "km": "Kilometer",
+    "travelTime": "Restid (tim)",
+    "perDiem": "Traktamente",
+    "hourType": {
+      "normal": "Normal",
+      "overtime": "Övertid",
+      "ob": "OB-tillägg"
+    },
+    "perDiemOption": {
+      "none": "Inget",
+      "half": "Halvt",
+      "full": "Helt"
+    }
   }
 }

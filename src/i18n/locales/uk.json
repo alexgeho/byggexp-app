@@ -1582,5 +1582,29 @@
     },
     "company": "Компанія",
     "private": "Приватна особа"
+  },
+  "dayReport": {
+    "title": "Звіт за день",
+    "add": "Додати",
+    "reported": "Подано",
+    "saved": "Звіт збережено",
+    "saveFailed": "Не вдалося зберегти звіт.",
+    "hoursLabel": "Години",
+    "travelLabel": "Поїздка",
+    "noteLabel": "Нотатка за день",
+    "notePlaceholder": "Що зроблено сьогодні?",
+    "km": "Кілометри",
+    "travelTime": "Час у дорозі (год)",
+    "perDiem": "Добові",
+    "hourType": {
+      "normal": "Звичайні",
+      "overtime": "Понаднормові",
+      "ob": "Незручні години"
+    },
+    "perDiemOption": {
+      "none": "Немає",
+      "half": "Половина",
+      "full": "Повні"
+    }
   }
 }
