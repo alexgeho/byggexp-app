@@ -15,6 +15,13 @@ export const styles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.20)",
   },
 
+  // The pill sits on the coloured home (white label, white hairline), so the
+  // chevron is white too. Light-surface themes pass their own tint through
+  // `iconStyle`, which wins over this.
+  projectSelectorIcon: {
+    tintColor: "#FFFFFF",
+  },
+
   projectSelectorText: {
     flex: 1,
 

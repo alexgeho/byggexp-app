@@ -74,7 +74,8 @@ const common = {
     alignItems: "stretch",
     iconAlignSelf: "flex-start",
     contentGap: 8,
-    textWeight: "600",
+    // Matches the section headings under the grid — regular, not bold.
+    textWeight: "400",
   },
 };
 

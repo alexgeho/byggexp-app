@@ -50,29 +50,27 @@ export function createStyles(theme) {
     },
 
     themeContainer: {
-      marginBottom: 24,
+      marginBottom: 18,
     },
 
     sectionTitle: {
-      // Figma: DM Sans 500 (medium), 17px, white.
-      fontSize: 17,
+      fontSize: 15,
       fontFamily: theme.text.fontFamily.medium,
       color: c.textPrimary,
-      marginBottom: 14,
+      marginBottom: 10,
       marginLeft: 4,
     },
 
     themeRow: {
       flexDirection: "row",
       flexWrap: "wrap",
-      gap: 14,
-      rowGap: 14,
+      gap: 12,
+      rowGap: 12,
     },
 
     themeButton: {
-      // Figma: 44×44 ellipses.
-      width: 44,
-      height: 44,
+      width: 36,
+      height: 36,
       borderRadius: 999,
       overflow: "hidden",
       // Outline the full circle so light/white theme halves stay visible
@@ -96,12 +94,15 @@ export function createStyles(theme) {
       borderColor: accent,
     },
 
+    // Pills run one size below the Figma spec (44 tall / 15px label instead of
+    // 52 / 17): the drawer is a list of many short labels, and at the Figma
+    // size only a handful fit before it scrolls.
     // Drag-reorder list: rows are absolutely positioned (translateY animated),
     // so the container needs an explicit height (set inline). Standalone pills,
     // 14px gaps, no card wrapper.
     dragList: {
       position: "relative",
-      marginBottom: 24,
+      marginBottom: 18,
     },
 
     // One absolutely-positioned pill slot, 52 tall (Figma).
@@ -109,7 +110,7 @@ export function createStyles(theme) {
       position: "absolute",
       left: 0,
       right: 0,
-      height: 52,
+      height: 44,
     },
 
     // Figma pill: 52 tall, radius 84 (fully rounded), 14 padding. Enabled =
@@ -142,8 +143,7 @@ export function createStyles(theme) {
     },
 
     itemText: {
-      // Figma label: DM Sans 500, 17px, white.
-      fontSize: 17,
+      fontSize: 15,
       fontFamily: theme.text.fontFamily.medium,
       color: pillOffLabel,
     },
@@ -154,7 +154,7 @@ export function createStyles(theme) {
 
     // 6-dot drag handle on the pill's right edge (Figma).
     dragHandle: {
-      width: 36,
+      width: 30,
       height: "100%",
       alignItems: "center",
       justifyContent: "center",
@@ -162,8 +162,7 @@ export function createStyles(theme) {
 
     secondaryRow: {
       flexDirection: "column",
-      // Figma: 14px between pills.
-      gap: 14,
+      gap: 10,
     },
     // Pill-shaped selector matching Figma "Second round button": 52 tall,
     // radius 84, 14 padding, icon → label gap 12, left-aligned. Inactive =
@@ -175,9 +174,8 @@ export function createStyles(theme) {
       // Figma: icon + label centred as a group in the pill.
       justifyContent: "center",
       // Figma: icon → label gap 12.
-      gap: 12,
-      // Figma pill: 52 tall, 14 padding, fully rounded.
-      paddingVertical: 14,
+      gap: 10,
+      paddingVertical: 11,
       paddingHorizontal: 14,
       borderRadius: 999,
       backgroundColor: pillOffBg,
@@ -189,8 +187,7 @@ export function createStyles(theme) {
       borderColor: accent,
     },
     secondaryOptionLabel: {
-      // Figma label: DM Sans 500, 17px, white on the pill.
-      fontSize: 17,
+      fontSize: 15,
       color: pillOffLabel,
       fontFamily: theme.text.fontFamily.medium,
     },

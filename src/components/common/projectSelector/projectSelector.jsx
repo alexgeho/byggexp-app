@@ -28,7 +28,7 @@ export default function ProjectSelector2({
       </Text>
       <Image
         source={require("../../../assets/HomeScreen2/arrow-down.png")}
-        style={iconStyle}
+        style={[styles.projectSelectorIcon, iconStyle]}
       />
     </TouchableOpacity>
   );

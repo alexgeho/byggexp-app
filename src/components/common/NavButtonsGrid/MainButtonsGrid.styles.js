@@ -3,8 +3,7 @@ import { StyleSheet } from "react-native";
 export function createStyles(theme) {
   const buttonBackground =
     theme.colors.homeButtonBackground || theme.colors.card;
-  const buttonBorder =
-    theme.colors.homeButtonBorder || theme.colors.border;
+  const buttonBorder = theme.colors.homeButtonBorder || theme.colors.border;
 
   return StyleSheet.create({
     container: {
@@ -73,10 +72,17 @@ export function createStyles(theme) {
       tintColor: theme.colors.homeButtonText || theme.colors.icon,
     },
 
+    // Same type as the section headings under the grid ("Dagsrapport",
+    // "Uppgifter"): 15px, regular weight. The card is already a big tap target
+    // — it doesn't need bold on top, and matching the headings keeps one voice
+    // down the screen.
     buttonText: {
-      color: theme.colors.homeButtonText || theme.colors.textBtn || theme.colors.text,
-      fontFamily: theme.text.fontFamily.regular,
-      fontSize: theme.text.sizes.medium,
+      color:
+        theme.colors.homeButtonText ||
+        theme.colors.textBtn ||
+        theme.colors.text,
+      fontFamily: theme.text.fontFamily.medium,
+      fontSize: 15,
       fontWeight: theme.homeButton.textWeight,
     },
   });

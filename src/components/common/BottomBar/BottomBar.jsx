@@ -81,11 +81,14 @@ export function BottomBar({
   // nav icons match them (e.g. white over the blue gradient, while the pill
   // stays a light frosted glass). Inactive icons use it at reduced opacity.
   iconColor,
-  // Opaque pill fill matching the screen background (home passes the bottom
-  // gradient colour). The pill then reads as part of the background, defined
-  // only by the soft drop shadow — no translucent glass, no blur. When set it
-  // overrides the frosted-glass / white-fill treatment.
+  // Flat pill fill, no blur and no glass layers — the home screen passes the
+  // same surface its cards use, so the bar is one of them rather than a
+  // frosted sheet floating over the screen. When set it overrides the
+  // frosted-glass / white-fill treatment.
   pillColor,
+  // Hairline around that flat pill; again the cards' own border. Without it
+  // the pill has no edge at all.
+  pillBorderColor,
 }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -161,11 +164,18 @@ export function BottomBar({
     glass && !pillColor && styles.menuWrapperGlass,
     dark && !isTransparent && !pillColor && styles.menuWrapperDark,
     pillColor && styles.menuWrapperOpaque,
+    pillColor && pillBorderColor
+      ? { borderWidth: 1, borderColor: pillBorderColor }
+      : null,
   ];
 
   return (
     <View style={[styles.container, { bottom: bottomOffset }]}>
-      <View style={!isTransparent && !glass ? styles.menuShadow : null}>
+      <View
+        style={
+          !isTransparent && !glass && !pillColor ? styles.menuShadow : null
+        }
+      >
         <View style={wrapperStyle}>
           {!isTransparent && !pillColor && Platform.OS !== "android" ? (
             <BlurView
@@ -181,7 +191,7 @@ export function BottomBar({
             pointerEvents="none"
             style={[StyleSheet.absoluteFill, { backgroundColor: fillColor }]}
           />
-          {!isTransparent && dark ? (
+          {!isTransparent && !pillColor && dark ? (
             <>
               <LinearGradient
                 colors={pillGlass.base}

@@ -1195,19 +1195,14 @@ export default function HomeVariant2() {
         pointerEvents={isEditingHours ? "none" : "auto"}
       >
         <BottomBar
-          glass
-          // Only the black theme gets the dark pill. The blue theme keeps its
-          // light frosted pill.
+          // The bar wears the same surface as the square buttons above it —
+          // same fill, same hairline, same icon colour. No blur, no glass.
+          pillColor={theme.colors.homeButtonBackground || theme.colors.card}
+          pillBorderColor={theme.colors.homeButtonBorder}
           darkOverride={themeName === "black"}
-          // Tint the nav icons: white only on the black theme (dark pill); the
-          // blue theme keeps the original dark-navy icons over its light frosted
-          // pill; light themes use their own text colour.
           iconColor={
-            themeName === "black"
-              ? "#FFFFFF"
-              : isLightBlueTheme
-                ? theme.colors.text
-                : "#052D50"
+            theme.colors.homeButtonText ||
+            (isLightBlueTheme ? theme.colors.text : "#FFFFFF")
           }
           onLeftPress={() => navigation.navigate("Main")}
           onRightPress={() => navigation.navigate("Menu")}
