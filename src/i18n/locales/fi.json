@@ -518,7 +518,8 @@
       "completed": "Valmis",
       "on_hold": "Keskeytetty"
     },
-    "untitled": "Nimetön projekti"
+    "untitled": "Nimetön projekti",
+    "pin": "Kiinnitä"
   },
   "taskReminders": {
     "off": "Pois",

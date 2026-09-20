@@ -518,7 +518,8 @@
       "completed": "Pabeigts",
       "on_hold": "Apturēts"
     },
-    "untitled": "Nenosaukts projekts"
+    "untitled": "Nenosaukts projekts",
+    "pin": "Piespraust"
   },
   "taskReminders": {
     "off": "Izslēgts",

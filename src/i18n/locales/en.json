@@ -518,7 +518,8 @@
       "completed": "Completed",
       "on_hold": "On hold"
     },
-    "untitled": "Untitled project"
+    "untitled": "Untitled project",
+    "pin": "Pin"
   },
   "taskReminders": {
     "off": "Off",

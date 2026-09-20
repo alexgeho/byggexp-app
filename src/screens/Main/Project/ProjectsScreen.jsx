@@ -23,6 +23,11 @@ import { projectService } from "../../../services";
 import { EntityListScreen } from "../../../components/common/EntityListScreen/EntityListScreen";
 import { ListCard } from "../../../components/common/ListCard/ListCard";
 import { sortByNewest } from "../../../utils/sortByNewest";
+import {
+  getFavouriteProjectIds,
+  toggleFavouriteProject,
+  sortByFavourite,
+} from "../../../utils/favouriteProjects";
 import { resolveLocalProjectSelection } from "../../../utils/localProjectSelection";
 import { cardStyles } from "../../../styles/cards";
 import { createStyles } from "./ProjectsScreen.styles";
@@ -76,6 +81,8 @@ export default function ProjectsScreen() {
   );
   const [loading, setLoading] = useState(projects.length === 0);
   const [searchQuery, setSearchQuery] = useState("");
+  // Pinned projects (per device, like the home layout).
+  const [favouriteIds, setFavouriteIds] = useState([]);
   const isFocusedRef = useRef(false);
   const isLeavingRef = useRef(false);
   const fetchRequestIdRef = useRef(0);
@@ -242,12 +249,31 @@ export default function ProjectsScreen() {
         })
       : projects;
 
-    return sortByNewest(visibleProjects, (project) => [
+    const byNewest = sortByNewest(visibleProjects, (project) => [
       project?.createdAt,
       project?.updatedAt,
       project?.beginningDate,
     ]);
-  }, [projects, searchQuery]);
+
+    // Pinned sites float to the top — on a phone the crew works on one or two
+    // of them and should not scroll past everything else to find them.
+    return sortByFavourite(byNewest, favouriteIds, getProjectId);
+  }, [projects, searchQuery, favouriteIds]);
+
+  useEffect(() => {
+    let active = true;
+    getFavouriteProjectIds().then((ids) => {
+      if (active) setFavouriteIds(ids);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const handleToggleFavourite = useCallback(async (project) => {
+    const next = await toggleFavouriteProject(getProjectId(project));
+    setFavouriteIds(next);
+  }, []);
 
   const handleProjectPress = (project) => {
     if (isSelectionMode) {
@@ -292,6 +318,12 @@ export default function ProjectsScreen() {
       loading={authLoading || (loading && projects.length === 0)}
       keyExtractor={(project) => getProjectId(project)}
       onDelete={showCreateProject ? handleDeleteProject : undefined}
+      leftAction={{
+        icon: "star",
+        label: t("projects.pin"),
+        color: "#F3B530",
+        onPress: handleToggleFavourite,
+      }}
       emptyText={t("projects.notFound")}
       addScreen={showCreateProject ? "CreateProject" : undefined}
       onAdd={
@@ -337,7 +369,11 @@ export default function ProjectsScreen() {
         <ListCard
           onPress={() => handleProjectPress(project)}
           selected={selectedProjectId === getProjectId(project)}
-          title={project.name}
+          title={
+            favouriteIds.includes(String(getProjectId(project)))
+              ? `★ ${project.name}`
+              : project.name
+          }
           badgeLabel={t(
             `projects.status.${project.status}`,
             formatProjectStatus(project.status),

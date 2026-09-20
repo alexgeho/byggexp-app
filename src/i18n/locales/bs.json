@@ -518,7 +518,8 @@
       "completed": "Završeno",
       "on_hold": "Pauzirano"
     },
-    "untitled": "Projekat bez naziva"
+    "untitled": "Projekat bez naziva",
+    "pin": "Zakači"
   },
   "taskReminders": {
     "off": "Isključeno",

@@ -518,7 +518,8 @@
       "completed": "Lõpetatud",
       "on_hold": "Peatatud"
     },
-    "untitled": "Nimeta projekt"
+    "untitled": "Nimeta projekt",
+    "pin": "Kinnita"
   },
   "taskReminders": {
     "off": "Väljas",

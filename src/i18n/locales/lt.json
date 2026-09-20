@@ -518,7 +518,8 @@
       "completed": "Užbaigtas",
       "on_hold": "Sustabdytas"
     },
-    "untitled": "Projektas be pavadinimo"
+    "untitled": "Projektas be pavadinimo",
+    "pin": "Prisegti"
   },
   "taskReminders": {
     "off": "Išjungta",

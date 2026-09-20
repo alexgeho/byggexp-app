@@ -518,7 +518,8 @@
       "completed": "Ukończony",
       "on_hold": "Wstrzymany"
     },
-    "untitled": "Projekt bez nazwy"
+    "untitled": "Projekt bez nazwy",
+    "pin": "Przypnij"
   },
   "taskReminders": {
     "off": "Wył.",

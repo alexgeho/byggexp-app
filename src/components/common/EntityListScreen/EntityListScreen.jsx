@@ -46,6 +46,8 @@ import {
 //   onBack / onNavigateHome / onNavigateMenu — override the default
 //                navigation, for a screen that has to guard leaving
 //   onAdd        function alternative to addScreen
+//   leftAction   { icon, label, color, onPress } revealed by swiping RIGHT —
+//                the Mail-style counterpart to the delete swipe
 export function EntityListScreen({
   title,
   data,
@@ -68,6 +70,7 @@ export function EntityListScreen({
   onNavigateHome,
   onNavigateMenu,
   onAdd,
+  leftAction,
 }) {
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -90,25 +93,55 @@ export function EntityListScreen({
     [onDelete, styles, t],
   );
 
+  const renderLeftAction = useCallback(
+    (item) => (
+      <TouchableOpacity
+        style={[
+          styles.swipeDeleteAction,
+          {
+            backgroundColor: leftAction.color || "#0785F4",
+            marginLeft: 0,
+            marginRight: 8,
+          },
+        ]}
+        activeOpacity={0.85}
+        onPress={() => leftAction.onPress(item)}
+        accessibilityRole="button"
+        accessibilityLabel={leftAction.label}
+      >
+        <Icon name={leftAction.icon} size={22} color="#FFFFFF" />
+        <Text style={styles.swipeDeleteText}>{leftAction.label}</Text>
+      </TouchableOpacity>
+    ),
+    [leftAction, styles],
+  );
+
   // One row, wrapped in the swipe action when the screen allows deleting.
   const renderRow = useCallback(
     (item) => {
       const card = renderCard(item);
-      if (!onDelete) {
+      if (!onDelete && !leftAction) {
         return card;
       }
       return (
         <Swipeable
-          renderRightActions={() => renderDeleteAction(item)}
+          renderRightActions={
+            onDelete ? () => renderDeleteAction(item) : undefined
+          }
+          renderLeftActions={
+            leftAction ? () => renderLeftAction(item) : undefined
+          }
           overshootRight={false}
+          overshootLeft={false}
           friction={2}
           rightThreshold={40}
+          leftThreshold={40}
         >
           {card}
         </Swipeable>
       );
     },
-    [onDelete, renderCard, renderDeleteAction],
+    [onDelete, leftAction, renderCard, renderDeleteAction, renderLeftAction],
   );
 
   const emptyComponent = (

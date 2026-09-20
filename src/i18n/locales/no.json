@@ -518,7 +518,8 @@
       "completed": "Fullført",
       "on_hold": "På vent"
     },
-    "untitled": "Uten navn"
+    "untitled": "Uten navn",
+    "pin": "Fest"
   },
   "taskReminders": {
     "off": "Av",

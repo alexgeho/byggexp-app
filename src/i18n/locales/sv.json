@@ -518,7 +518,8 @@
       "completed": "Slutfört",
       "on_hold": "Pausat"
     },
-    "untitled": "Namnlöst projekt"
+    "untitled": "Namnlöst projekt",
+    "pin": "Fäst"
   },
   "taskReminders": {
     "off": "Av",
