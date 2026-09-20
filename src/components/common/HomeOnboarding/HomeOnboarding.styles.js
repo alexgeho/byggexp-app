@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 
 import { radius } from "../../../theme/tokens";
 
@@ -30,19 +30,34 @@ export function createStyles(theme, onDark = false) {
           marginBottom: 16,
         }
       : {
-          backgroundColor:
-            c.scheme === "dark"
-              ? "rgba(44,44,46,0.90)"
-              : "rgba(255,255,255,0.90)",
+          // Android draws its elevation shadow from the view's outline and
+          // paints it behind the fill — with a translucent fill the shadow
+          // shows THROUGH the card as a grey band with a hard edge. So on
+          // Android the card is opaque and leans on a hairline instead of a
+          // shadow; iOS keeps the soft drop shadow it renders correctly.
+          backgroundColor: Platform.select({
+            android: c.scheme === "dark" ? "#2C2C2E" : "#FFFFFF",
+            default:
+              c.scheme === "dark"
+                ? "rgba(44,44,46,0.90)"
+                : "rgba(255,255,255,0.90)",
+          }),
           borderRadius: 20,
           padding: 16,
           gap: 12,
           marginBottom: 16,
-          shadowColor: "#000",
-          shadowOpacity: 0.12,
-          shadowRadius: 16,
-          shadowOffset: { width: 0, height: 6 },
-          elevation: 4,
+          ...Platform.select({
+            android: {
+              borderWidth: 1,
+              borderColor: c.border,
+            },
+            default: {
+              shadowColor: "#000",
+              shadowOpacity: 0.12,
+              shadowRadius: 16,
+              shadowOffset: { width: 0, height: 6 },
+            },
+          }),
         },
     header: {
       flexDirection: "row",
