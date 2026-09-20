@@ -45,6 +45,24 @@ export const mainButtons = [
     vectorIcon: "check-square",
     screen: "Tasks",
   },
+  // Create an offer / an invoice straight from home. Same Feather glyphs the
+  // menu uses for Offerter and Fakturor. Gated on the finance capability, so a
+  // delegated "office" user gets them without an admin role — and off by
+  // default: they are added from Customize like any other button.
+  {
+    id: "offer",
+    title: "Offer",
+    vectorIcon: "file-text",
+    screen: "CreateOffer",
+    permission: "finance.manage",
+  },
+  {
+    id: "invoice",
+    title: "Invoice",
+    vectorIcon: "file",
+    screen: "CreateInvoice",
+    permission: "finance.manage",
+  },
 ];
 
 export const homeSections = [

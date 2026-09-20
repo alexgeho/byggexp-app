@@ -139,7 +139,8 @@ export default function HomeVariant2() {
   const timerWheelFontSize = isVeryCompact ? 100 : isCompact ? 118 : 140;
   const timerLetterSpacing = isVeryCompact ? -1.4 : isCompact ? -2 : -2.5;
   /* SELECTED PROJECT */
-  const { selectedProject, setSelectedProject, user } = useContext(AuthContext);
+  const { selectedProject, setSelectedProject, user, hasPermission } =
+    useContext(AuthContext);
   const selectedProjectId = selectedProject?._id || selectedProject?.id;
   const selectedProjectIdRef = useRef(selectedProjectId);
   selectedProjectIdRef.current = selectedProjectId;
@@ -385,9 +386,14 @@ export default function HomeVariant2() {
   const visibleQuickButtons = useMemo(
     () =>
       mainButtons.filter(function filterButton(button) {
-        return isHomeButtonVisible(button, enabledButtons, user?.role);
+        return isHomeButtonVisible(
+          button,
+          enabledButtons,
+          user?.role,
+          hasPermission,
+        );
       }),
-    [enabledButtons, user?.role],
+    [enabledButtons, user?.role, hasPermission],
   );
   const hasSections =
     enabledSections.includes("shift-history") ||

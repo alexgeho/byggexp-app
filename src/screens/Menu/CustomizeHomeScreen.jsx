@@ -66,7 +66,7 @@ export default function CustomizeHomeScreen({
     return patch;
   }, []);
 
-  const { selectedProject, user } = useContext(AuthContext);
+  const { selectedProject, user, hasPermission } = useContext(AuthContext);
 
   const { theme, themeName, changeTheme } = useTheme();
 
@@ -375,7 +375,11 @@ export default function CustomizeHomeScreen({
             })
             .filter(Boolean)
             .filter(function filterButton(button) {
-              return isHomeButtonCustomizable(button, user?.role);
+              return isHomeButtonCustomizable(
+                button,
+                user?.role,
+                hasPermission,
+              );
             })
             .map(function toItem(button) {
               return {

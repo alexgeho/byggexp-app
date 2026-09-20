@@ -752,7 +752,9 @@
       "chats": "Чаты",
       "shifts": "Смены",
       "projects": "Проекты",
-      "tasks": "Задачи"
+      "tasks": "Задачи",
+      "offer": "Оффер",
+      "invoice": "Счёт"
     },
     "sections": {
       "shift-history": "Дневной отчёт",

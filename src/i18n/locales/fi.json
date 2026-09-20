@@ -752,7 +752,9 @@
       "chats": "Keskustelut",
       "shifts": "Vuorot",
       "projects": "Projektit",
-      "tasks": "Tehtävät"
+      "tasks": "Tehtävät",
+      "offer": "Tarjous",
+      "invoice": "Lasku"
     },
     "sections": {
       "shift-history": "Päiväraportti",

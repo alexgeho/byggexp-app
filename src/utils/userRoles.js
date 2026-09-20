@@ -209,20 +209,28 @@ export function canViewEmployeeStatsForProject(role, userId, project) {
   return false;
 }
 
-export function isHomeButtonVisible(button, enabledButtonIds, userRole) {
+// `hasPermission` is the AuthContext capability check; buttons that declare a
+// `permission` (e.g. the offer/invoice ones) are hidden without it. Omitting it
+// keeps the old role-only behaviour for callers that have no capability access.
+export function isHomeButtonVisible(
+  button,
+  enabledButtonIds,
+  userRole,
+  hasPermission,
+) {
   if (!enabledButtonIds.includes(button.id)) {
     return false;
   }
 
+  return isHomeButtonCustomizable(button, userRole, hasPermission);
+}
+
+export function isHomeButtonCustomizable(button, userRole, hasPermission) {
   if (button.adminOnly && !canManageEmployees(userRole)) {
     return false;
   }
 
-  return true;
-}
-
-export function isHomeButtonCustomizable(button, userRole) {
-  if (button.adminOnly && !canManageEmployees(userRole)) {
+  if (button.permission && !hasPermission?.(button.permission)) {
     return false;
   }
 

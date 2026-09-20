@@ -752,7 +752,9 @@
       "chats": "Razgovori",
       "shifts": "Smjene",
       "projects": "Projekti",
-      "tasks": "Zadaci"
+      "tasks": "Zadaci",
+      "offer": "Ponuda",
+      "invoice": "Faktura"
     },
     "sections": {
       "shift-history": "Dnevni izvještaj",

@@ -752,7 +752,9 @@
       "chats": "Czaty",
       "shifts": "Zmiany",
       "projects": "Projekty",
-      "tasks": "Zadania"
+      "tasks": "Zadania",
+      "offer": "Oferta",
+      "invoice": "Faktura"
     },
     "sections": {
       "shift-history": "Raport dzienny",

@@ -752,7 +752,9 @@
       "chats": "Vestlused",
       "shifts": "Vahetused",
       "projects": "Projektid",
-      "tasks": "Ülesanded"
+      "tasks": "Ülesanded",
+      "offer": "Pakkumine",
+      "invoice": "Arve"
     },
     "sections": {
       "shift-history": "Päevaraport",

@@ -752,7 +752,9 @@
       "chats": "Чати",
       "shifts": "Зміни",
       "projects": "Проєкти",
-      "tasks": "Завдання"
+      "tasks": "Завдання",
+      "offer": "Пропозиція",
+      "invoice": "Рахунок"
     },
     "sections": {
       "shift-history": "Денний звіт",

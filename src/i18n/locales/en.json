@@ -752,7 +752,9 @@
       "chats": "Chats",
       "shifts": "Shifts",
       "projects": "Projects",
-      "tasks": "Tasks"
+      "tasks": "Tasks",
+      "offer": "Offer",
+      "invoice": "Invoice"
     },
     "sections": {
       "shift-history": "Daily report",

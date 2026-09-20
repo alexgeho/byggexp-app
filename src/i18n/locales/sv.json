@@ -752,7 +752,9 @@
       "chats": "Chattar",
       "shifts": "Arbetspass",
       "projects": "Projekt",
-      "tasks": "Uppgifter"
+      "tasks": "Uppgifter",
+      "offer": "Offert",
+      "invoice": "Faktura"
     },
     "sections": {
       "shift-history": "Dagsrapport",

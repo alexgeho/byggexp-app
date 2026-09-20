@@ -752,7 +752,9 @@
       "chats": "Chatter",
       "shifts": "Skift",
       "projects": "Prosjekter",
-      "tasks": "Oppgaver"
+      "tasks": "Oppgaver",
+      "offer": "Tilbud",
+      "invoice": "Faktura"
     },
     "sections": {
       "shift-history": "Dagsrapport",

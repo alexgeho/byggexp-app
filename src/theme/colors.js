@@ -202,6 +202,9 @@ export const colorfulColors = {
     shifts: "rgba(40,40,40,0.7)",
     projects: "#0785F4",
     tasks: "#0785F4",
+    // Reuse palette values already in this theme rather than inventing hues.
+    offer: "#5222FF",
+    invoice: "#0785F4",
   },
   homeButtonText: "#FFFFFF",
 };

@@ -34,7 +34,8 @@ export default function MainButtonsGrid({
 } = {}) {
   const navigation = useNavigation();
   const { t } = useTranslation();
-  const { user, userId, selectedProject } = useContext(AuthContext);
+  const { user, userId, selectedProject, hasPermission } =
+    useContext(AuthContext);
   const { theme } = useTheme();
   const selectedProjectId = selectedProject?._id || selectedProject?.id;
 
@@ -134,7 +135,12 @@ export default function MainButtonsGrid({
     >
       {orderedButtons
         .filter(function filterButtons(button) {
-          return isHomeButtonVisible(button, effectiveEnabled, user?.role);
+          return isHomeButtonVisible(
+            button,
+            effectiveEnabled,
+            user?.role,
+            hasPermission,
+          );
         })
         .map(function renderButton(button) {
           const buttonColor = theme.colors.buttonColors?.[button.id];

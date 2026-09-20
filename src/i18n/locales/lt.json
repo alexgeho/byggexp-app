@@ -752,7 +752,9 @@
       "chats": "Pokalbiai",
       "shifts": "Pamainos",
       "projects": "Projektai",
-      "tasks": "Užduotys"
+      "tasks": "Užduotys",
+      "offer": "Pasiūlymas",
+      "invoice": "Sąskaita"
     },
     "sections": {
       "shift-history": "Dienos ataskaita",

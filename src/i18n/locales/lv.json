@@ -752,7 +752,9 @@
       "chats": "Tērzēšana",
       "shifts": "Maiņas",
       "projects": "Projekti",
-      "tasks": "Uzdevumi"
+      "tasks": "Uzdevumi",
+      "offer": "Piedāvājums",
+      "invoice": "Rēķins"
     },
     "sections": {
       "shift-history": "Dienas atskaite",
