@@ -282,22 +282,21 @@ export function TasksPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
                     </Text>
 
                     <TouchableOpacity
+                      style={extraStyles.rowIcon}
                       onPress={() => setReminderTask(task)}
                       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                       activeOpacity={0.7}
                       accessibilityLabel={t("reminder.title")}
                     >
-                      <Icon
-                        name="bell"
-                        size={20}
-                        color={
-                          hasReminder(task) ? iconColor : secondaryIconColor
-                        }
-                      />
+                      <Icon name="bell" size={16} color={iconColor} />
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                      style={[extraStyles.checkbox, { borderColor: iconColor }]}
+                      style={[
+                        extraStyles.checkbox,
+                        extraStyles.rowIcon,
+                        { borderColor: iconColor },
+                      ]}
                       onPress={() => handleComplete(task)}
                       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                       activeOpacity={0.7}
@@ -382,14 +381,19 @@ const extraStyles = StyleSheet.create({
     lineHeight: 16,
     fontFamily: "DMSans-Bold",
   },
-  // An empty square drawn in the same stroke as the bell beside it, and at the
-  // bell's size — they are one pair, so they match in colour, weight and
-  // footprint. A white fill read as a solid tile, not as something to tick.
+  // Both sit at the task text's weight of presence: the card's ink at 50% —
+  // the same dimming `projectText` uses — so they stop jumping off the line.
+  rowIcon: {
+    opacity: 0.5,
+  },
+  // An empty square the size of the bell beside it: one pair, same colour,
+  // same stroke, same footprint. A white fill read as a solid tile rather
+  // than as something to tick.
   checkbox: {
-    width: 20,
-    height: 20,
-    borderRadius: 6,
-    borderWidth: 2,
+    width: 17,
+    height: 17,
+    borderRadius: 5,
+    borderWidth: 1.5,
     backgroundColor: "transparent",
   },
 });
