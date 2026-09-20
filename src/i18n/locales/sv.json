@@ -760,7 +760,8 @@
       "shift-history": "Dagsrapport",
       "project-files": "Projektfiler",
       "tasks-history": "Uppgifter",
-      "notes": "Anteckningar"
+      "notes": "Anteckningar",
+      "my-work": "Mitt arbete"
     },
     "customizeTitle": "Anpassa",
     "projectDocumentsTitle": "Projektdokument",
@@ -1544,5 +1545,14 @@
   },
   "notesPreview": {
     "empty": "Inga anteckningar än"
+  },
+  "myWork": {
+    "title": "Mitt arbete",
+    "allClear": "Inget som brådskar",
+    "markPaid": "Markera som betald",
+    "unknownSupplier": "Okänd leverantör",
+    "overdueBy": "Förfallen {{days}} d",
+    "dueOn": "Förfaller {{date}}",
+    "taskOverdue": "Försenad {{date}}"
   }
 }

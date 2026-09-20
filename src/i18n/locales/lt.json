@@ -760,7 +760,8 @@
       "shift-history": "Dienos ataskaita",
       "project-files": "Projekto failai",
       "tasks-history": "Užduotys",
-      "notes": "Užrašai"
+      "notes": "Užrašai",
+      "my-work": "Mano darbas"
     },
     "customizeTitle": "Pritaikyti",
     "projectDocumentsTitle": "Projekto dokumentai",
@@ -1544,5 +1545,14 @@
   },
   "notesPreview": {
     "empty": "Užrašų dar nėra"
+  },
+  "myWork": {
+    "title": "Mano darbas",
+    "allClear": "Nieko skubaus",
+    "markPaid": "Žymėti apmokėta",
+    "unknownSupplier": "Nežinomas tiekėjas",
+    "overdueBy": "Vėluoja {{days}} d",
+    "dueOn": "Terminas {{date}}",
+    "taskOverdue": "Vėluoja nuo {{date}}"
   }
 }

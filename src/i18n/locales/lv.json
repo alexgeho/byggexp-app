@@ -760,7 +760,8 @@
       "shift-history": "Dienas atskaite",
       "project-files": "Projekta faili",
       "tasks-history": "Uzdevumi",
-      "notes": "Piezīmes"
+      "notes": "Piezīmes",
+      "my-work": "Mans darbs"
     },
     "customizeTitle": "Pielāgot",
     "projectDocumentsTitle": "Projekta dokumenti",
@@ -1544,5 +1545,14 @@
   },
   "notesPreview": {
     "empty": "Vēl nav piezīmju"
+  },
+  "myWork": {
+    "title": "Mans darbs",
+    "allClear": "Nekas nav steidzams",
+    "markPaid": "Atzīmēt kā apmaksātu",
+    "unknownSupplier": "Nezināms piegādātājs",
+    "overdueBy": "Nokavēts {{days}} d",
+    "dueOn": "Termiņš {{date}}",
+    "taskOverdue": "Nokavēts kopš {{date}}"
   }
 }

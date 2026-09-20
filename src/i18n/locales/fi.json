@@ -760,7 +760,8 @@
       "shift-history": "Päiväraportti",
       "project-files": "Projektitiedostot",
       "tasks-history": "Tehtävät",
-      "notes": "Muistiinpanot"
+      "notes": "Muistiinpanot",
+      "my-work": "Oma työ"
     },
     "customizeTitle": "Mukauta",
     "projectDocumentsTitle": "Projektin asiakirjat",
@@ -1544,5 +1545,14 @@
   },
   "notesPreview": {
     "empty": "Ei muistiinpanoja vielä"
+  },
+  "myWork": {
+    "title": "Oma työ",
+    "allClear": "Ei kiireellistä",
+    "markPaid": "Merkitse maksetuksi",
+    "unknownSupplier": "Tuntematon toimittaja",
+    "overdueBy": "Erääntynyt {{days}} pv",
+    "dueOn": "Eräpäivä {{date}}",
+    "taskOverdue": "Myöhässä {{date}}"
   }
 }

@@ -69,6 +69,12 @@ export const mainButtons = [
 ];
 
 export const homeSections = [
+  // "Mitt arbete" — bills to pay + overdue tasks, the app's slice of the admin
+  // panel's Mitt-arbete page. Off by default: it is added from Customize.
+  {
+    id: "my-work",
+    title: "My work",
+  },
   {
     id: "shift-history",
     title: "Daily report",

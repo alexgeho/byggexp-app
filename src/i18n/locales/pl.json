@@ -760,7 +760,8 @@
       "shift-history": "Raport dzienny",
       "project-files": "Pliki projektu",
       "tasks-history": "Zadania",
-      "notes": "Notatki"
+      "notes": "Notatki",
+      "my-work": "Moja praca"
     },
     "customizeTitle": "Dostosuj",
     "projectDocumentsTitle": "Dokumenty projektu",
@@ -1544,5 +1545,14 @@
   },
   "notesPreview": {
     "empty": "Brak notatek"
+  },
+  "myWork": {
+    "title": "Moja praca",
+    "allClear": "Nic pilnego",
+    "markPaid": "Oznacz jako zapłacone",
+    "unknownSupplier": "Nieznany dostawca",
+    "overdueBy": "Po terminie {{days}} d",
+    "dueOn": "Termin {{date}}",
+    "taskOverdue": "Spóźnione od {{date}}"
   }
 }

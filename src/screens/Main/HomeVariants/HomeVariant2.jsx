@@ -85,6 +85,7 @@ import ShiftHistoryPreview from "../../../components/common/ShiftHistoryPreview/
 import TasksPreview from "../../../components/common/TasksPreview/TasksPreview";
 import { isHomeButtonVisible } from "../../../utils/userRoles";
 import { HomeOnboarding } from "../../../components/common/HomeOnboarding/HomeOnboarding";
+import { MyWorkPreview } from "../../../components/common/MyWorkPreview/MyWorkPreview";
 import { useOnboardingProgress } from "../../../hooks/useOnboardingProgress";
 import {
   setOnboardingDismissed,
@@ -874,6 +875,17 @@ export default function HomeVariant2() {
         }
 
         const colorMode = isLightBlueTheme ? "light" : "dark";
+
+        if (sectionId === "my-work") {
+          return (
+            <MyWorkPreview
+              key={sectionId}
+              colorMode={colorMode}
+              refreshKey={previewRefreshKey}
+              onClose={() => handleHideSection("my-work")}
+            />
+          );
+        }
 
         if (sectionId === "shift-history") {
           return (

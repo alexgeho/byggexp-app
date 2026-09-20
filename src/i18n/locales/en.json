@@ -760,7 +760,8 @@
       "shift-history": "Daily report",
       "project-files": "Project Files",
       "tasks-history": "Tasks",
-      "notes": "Notes"
+      "notes": "Notes",
+      "my-work": "My work"
     },
     "customizeTitle": "Customize",
     "projectDocumentsTitle": "Project Documents",
@@ -1544,5 +1545,14 @@
   },
   "notesPreview": {
     "empty": "No notes yet"
+  },
+  "myWork": {
+    "title": "My work",
+    "allClear": "Nothing urgent",
+    "markPaid": "Mark as paid",
+    "unknownSupplier": "Unknown supplier",
+    "overdueBy": "Overdue {{days}} d",
+    "dueOn": "Due {{date}}",
+    "taskOverdue": "Late since {{date}}"
   }
 }

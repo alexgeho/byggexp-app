@@ -760,7 +760,8 @@
       "shift-history": "Денний звіт",
       "project-files": "Файли проєкту",
       "tasks-history": "Завдання",
-      "notes": "Нотатки"
+      "notes": "Нотатки",
+      "my-work": "Моя робота"
     },
     "customizeTitle": "Налаштувати",
     "projectDocumentsTitle": "Документи проєкту",
@@ -1544,5 +1545,14 @@
   },
   "notesPreview": {
     "empty": "Нотаток ще немає"
+  },
+  "myWork": {
+    "title": "Моя робота",
+    "allClear": "Нічого термінового",
+    "markPaid": "Позначити оплаченим",
+    "unknownSupplier": "Невідомий постачальник",
+    "overdueBy": "Прострочено {{days}} д",
+    "dueOn": "Термін {{date}}",
+    "taskOverdue": "Прострочено з {{date}}"
   }
 }

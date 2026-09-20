@@ -760,7 +760,8 @@
       "shift-history": "Dnevni izvještaj",
       "project-files": "Datoteke projekta",
       "tasks-history": "Zadaci",
-      "notes": "Bilješke"
+      "notes": "Bilješke",
+      "my-work": "Moj posao"
     },
     "customizeTitle": "Prilagodi",
     "projectDocumentsTitle": "Dokumenti projekta",
@@ -1544,5 +1545,14 @@
   },
   "notesPreview": {
     "empty": "Još nema bilješki"
+  },
+  "myWork": {
+    "title": "Moj posao",
+    "allClear": "Ništa hitno",
+    "markPaid": "Označi kao plaćeno",
+    "unknownSupplier": "Nepoznat dobavljač",
+    "overdueBy": "Kasni {{days}} d",
+    "dueOn": "Dospijeva {{date}}",
+    "taskOverdue": "Kasni od {{date}}"
   }
 }

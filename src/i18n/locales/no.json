@@ -760,7 +760,8 @@
       "shift-history": "Dagsrapport",
       "project-files": "Prosjektfiler",
       "tasks-history": "Oppgaver",
-      "notes": "Notater"
+      "notes": "Notater",
+      "my-work": "Mitt arbeid"
     },
     "customizeTitle": "Tilpass",
     "projectDocumentsTitle": "Prosjektdokumenter",
@@ -1544,5 +1545,14 @@
   },
   "notesPreview": {
     "empty": "Ingen notater ennå"
+  },
+  "myWork": {
+    "title": "Mitt arbeid",
+    "allClear": "Ingenting haster",
+    "markPaid": "Marker som betalt",
+    "unknownSupplier": "Ukjent leverandør",
+    "overdueBy": "Forfalt {{days}} d",
+    "dueOn": "Forfaller {{date}}",
+    "taskOverdue": "Forsinket {{date}}"
   }
 }

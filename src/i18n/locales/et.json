@@ -760,7 +760,8 @@
       "shift-history": "Päevaraport",
       "project-files": "Projekti failid",
       "tasks-history": "Ülesanded",
-      "notes": "Märkmed"
+      "notes": "Märkmed",
+      "my-work": "Minu töö"
     },
     "customizeTitle": "Kohanda",
     "projectDocumentsTitle": "Projekti dokumendid",
@@ -1544,5 +1545,14 @@
   },
   "notesPreview": {
     "empty": "Märkmeid veel pole"
+  },
+  "myWork": {
+    "title": "Minu töö",
+    "allClear": "Midagi kiiret pole",
+    "markPaid": "Märgi makstuks",
+    "unknownSupplier": "Tundmatu tarnija",
+    "overdueBy": "Tähtaeg ületatud {{days}} p",
+    "dueOn": "Tähtaeg {{date}}",
+    "taskOverdue": "Hilinenud {{date}}"
   }
 }
