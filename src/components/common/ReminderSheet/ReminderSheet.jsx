@@ -16,7 +16,7 @@ import { useTheme } from "../../../theme/ThemeContext";
 // Repeat cadences, same set the admin panel's task-reminder popover offers.
 // 0 = a single ping at the chosen time; the rest re-nag every N minutes until
 // the task is done. A note only ever takes the one-shot.
-export const REMINDER_INTERVALS = [0, 15, 30, 60];
+const REMINDER_INTERVALS = [0, 15, 30, 60];
 
 const nextWholeHour = () => {
   const date = new Date();

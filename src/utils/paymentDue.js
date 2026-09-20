@@ -4,9 +4,9 @@
 // to make an approaching or missed due date impossible to overlook so a bill
 // never slips into debt collection (inkasso).
 const DAY_MS = 86400000;
-export const DUE_SOON_DAYS = 7;
+const DUE_SOON_DAYS = 7;
 
-export const isUnpaid = (invoice) => String(invoice?.status || "") !== "paid";
+const isUnpaid = (invoice) => String(invoice?.status || "") !== "paid";
 
 const startOfDay = (ms) => {
   const date = new Date(ms);
@@ -16,7 +16,7 @@ const startOfDay = (ms) => {
 
 // Whole calendar days until the due date; negative means overdue, 0 means today.
 // Returns null when there is no usable due date.
-export const daysUntilDue = (dueDate, now) => {
+const daysUntilDue = (dueDate, now) => {
   if (!dueDate) return null;
   const due = new Date(dueDate).getTime();
   if (Number.isNaN(due)) return null;
@@ -25,7 +25,7 @@ export const daysUntilDue = (dueDate, now) => {
 
 // 'overdue' | 'soon' | 'ok' for an unpaid invoice, or null when it is paid or
 // has no due date (so callers can skip colouring it).
-export const paymentDueTone = (invoice, now) => {
+const paymentDueTone = (invoice, now) => {
   if (!isUnpaid(invoice)) return null;
   const days = daysUntilDue(invoice.dueDate, now);
   if (days == null) return null;

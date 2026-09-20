@@ -1605,6 +1605,7 @@
       "none": "Ei",
       "half": "Puoli",
       "full": "Koko"
-    }
+    },
+    "copyLast": "Kopioi {{date}}"
   }
 }

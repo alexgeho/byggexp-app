@@ -1605,6 +1605,7 @@
       "none": "Nema",
       "half": "Pola",
       "full": "Puna"
-    }
+    },
+    "copyLast": "Kopiraj {{date}}"
   }
 }

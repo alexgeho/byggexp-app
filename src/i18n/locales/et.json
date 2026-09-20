@@ -1605,6 +1605,7 @@
       "none": "Puudub",
       "half": "Pool",
       "full": "Täis"
-    }
+    },
+    "copyLast": "Kopeeri {{date}}"
   }
 }

@@ -1605,6 +1605,7 @@
       "none": "Brak",
       "half": "Połowa",
       "full": "Pełna"
-    }
+    },
+    "copyLast": "Kopiuj {{date}}"
   }
 }

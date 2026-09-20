@@ -1605,6 +1605,7 @@
       "none": "Ingen",
       "half": "Halv",
       "full": "Hel"
-    }
+    },
+    "copyLast": "Kopier {{date}}"
   }
 }

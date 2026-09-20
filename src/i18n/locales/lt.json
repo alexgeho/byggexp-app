@@ -1605,6 +1605,7 @@
       "none": "Nėra",
       "half": "Pusė",
       "full": "Visi"
-    }
+    },
+    "copyLast": "Kopijuoti {{date}}"
   }
 }

@@ -1,4 +1,10 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -66,8 +72,37 @@ export default function DayReportScreen() {
   const [perDiem, setPerDiem] = useState(shift.perDiem || "none");
   const [dayNote, setDayNote] = useState(shift.dayNote || "");
   const [saving, setSaving] = useState(false);
+  // The previous reported day, offered as a one-tap prefill.
+  const [lastReport, setLastReport] = useState(null);
   // A second tap must not fire a second save before the button re-renders.
   const submittingRef = useRef(false);
+
+  // Zeigarnik: an unfinished report nags, so make finishing it one tap when the
+  // day looks like the last one — same site, same travel, same bucket.
+  useEffect(() => {
+    let active = true;
+    shiftService
+      .getLastDayReport()
+      .then((report) => {
+        if (active) setLastReport(report || null);
+      })
+      .catch(() => {
+        /* the prefill is a convenience, never a blocker */
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const copyLast = useCallback(() => {
+    if (!lastReport) return;
+    setHourType(lastReport.hourType || "normal");
+    setTravelKm(lastReport.travelKm ? String(lastReport.travelKm) : "");
+    setTravelHours(
+      lastReport.travelMinutes ? String(lastReport.travelMinutes / 60) : "",
+    );
+    setPerDiem(lastReport.perDiem || "none");
+  }, [lastReport]);
 
   const save = async () => {
     if (!shiftId || submittingRef.current) return;
@@ -137,6 +172,18 @@ export default function DayReportScreen() {
           >
             {shift.projectNameSnapshot ? (
               <Text style={styles.subtitle}>{shift.projectNameSnapshot}</Text>
+            ) : null}
+
+            {lastReport && !shift.reportedAt ? (
+              <TouchableOpacity
+                style={styles.copyLast}
+                onPress={copyLast}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.copyLastText}>
+                  {t("dayReport.copyLast", { date: lastReport.shiftDate })}
+                </Text>
+              </TouchableOpacity>
             ) : null}
 
             {/* 1 — which bucket the hours belong to */}
@@ -253,6 +300,15 @@ const createStyles = (c) =>
       fontSize: 15,
       marginBottom: 12,
     },
+    copyLast: {
+      minHeight: 44,
+      borderRadius: 14,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: c.inputSurface,
+      marginBottom: 4,
+    },
+    copyLastText: { color: "#0785F4", fontSize: 15, fontWeight: "600" },
     sectionLabel: {
       color: c.textMuted,
       fontSize: 13,

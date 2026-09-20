@@ -1605,6 +1605,7 @@
       "none": "Nav",
       "half": "Puse",
       "full": "Pilna"
-    }
+    },
+    "copyLast": "Kopēt {{date}}"
   }
 }

@@ -157,6 +157,12 @@ export const shiftService = {
     return downloadResult;
   },
 
+  // The worker's most recently reported day — backs "copy yesterday".
+  getLastDayReport: async () => {
+    const { data } = await api.get("/shifts/last-report");
+    return data;
+  },
+
   // Dagens rapport — pay bucket, travel and the day's diary line. Only the
   // fields passed are written, so a section can be saved on its own.
   saveDayReport: async (shiftId, report) => {

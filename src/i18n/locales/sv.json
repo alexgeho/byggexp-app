@@ -1605,6 +1605,7 @@
       "none": "Inget",
       "half": "Halvt",
       "full": "Helt"
-    }
+    },
+    "copyLast": "Kopiera {{date}}"
   }
 }
