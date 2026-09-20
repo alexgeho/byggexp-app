@@ -1381,6 +1381,10 @@
       "skip": "Hoppa över",
       "change": "Byt fokus",
       "solo": "Jag jobbar själv"
+    },
+    "handoff": {
+      "toBilling": "Bra jobbat! Nu till pengarna.",
+      "toFieldwork": "Bra jobbat! Nu till jobbet."
     }
   },
   "welcome": {

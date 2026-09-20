@@ -163,6 +163,13 @@ export function createStyles(theme, onDark = false) {
       fontSize: 13,
       fontFamily: theme.text.fontFamily.semiBold,
     },
+    // One line over the hand-off button when a track is finished.
+    handoffText: {
+      color: onDark ? g.text : c.textPrimary,
+      fontSize: 15,
+      fontFamily: theme.text.fontFamily.medium,
+      marginTop: 2,
+    },
     footerCta: {
       // Full width so the flex:1 label wraps to two lines inside the button
       // (growing its height) instead of overflowing on one line.

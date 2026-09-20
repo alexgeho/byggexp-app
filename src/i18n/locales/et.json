@@ -1381,6 +1381,10 @@
       "skip": "Jäta vahele",
       "change": "Muuda fookust",
       "solo": "Töötan üksi"
+    },
+    "handoff": {
+      "toBilling": "Tubli! Nüüd raha.",
+      "toFieldwork": "Tubli! Nüüd töö."
     }
   },
   "welcome": {

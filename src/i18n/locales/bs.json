@@ -1381,6 +1381,10 @@
       "skip": "Preskoči",
       "change": "Promijeni fokus",
       "solo": "Radim sam"
+    },
+    "handoff": {
+      "toBilling": "Bravo! Sada novac.",
+      "toFieldwork": "Bravo! Sada posao."
     }
   },
   "welcome": {

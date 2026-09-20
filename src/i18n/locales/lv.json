@@ -1381,6 +1381,10 @@
       "skip": "Izlaist",
       "change": "Mainīt fokusu",
       "solo": "Strādāju viens"
+    },
+    "handoff": {
+      "toBilling": "Lieliski! Tagad nauda.",
+      "toFieldwork": "Lieliski! Tagad darbs."
     }
   },
   "welcome": {

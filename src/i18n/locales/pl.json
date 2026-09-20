@@ -1381,6 +1381,10 @@
       "skip": "Pomiń",
       "change": "Zmień fokus",
       "solo": "Pracuję sam"
+    },
+    "handoff": {
+      "toBilling": "Dobra robota! Teraz pieniądze.",
+      "toFieldwork": "Dobra robota! Teraz robota."
     }
   },
   "welcome": {

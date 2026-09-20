@@ -1381,6 +1381,10 @@
       "skip": "Praleisti",
       "change": "Keisti fokusą",
       "solo": "Dirbu vienas"
+    },
+    "handoff": {
+      "toBilling": "Puiku! Dabar pinigai.",
+      "toFieldwork": "Puiku! Dabar darbai."
     }
   },
   "welcome": {

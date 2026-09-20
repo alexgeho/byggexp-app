@@ -1381,6 +1381,10 @@
       "skip": "Ohita",
       "change": "Vaihda fokusta",
       "solo": "Työskentelen yksin"
+    },
+    "handoff": {
+      "toBilling": "Hienoa! Nyt rahat.",
+      "toFieldwork": "Hienoa! Nyt työt."
     }
   },
   "welcome": {

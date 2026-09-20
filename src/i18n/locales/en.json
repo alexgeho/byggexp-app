@@ -1381,6 +1381,10 @@
       "skip": "Skip",
       "change": "Change focus",
       "solo": "I work on my own"
+    },
+    "handoff": {
+      "toBilling": "Nicely done. Now for the money.",
+      "toFieldwork": "Nicely done. Now for the work."
     }
   },
   "welcome": {

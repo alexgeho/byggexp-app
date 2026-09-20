@@ -195,11 +195,13 @@ export function useOnboardingProgress({
             ),
             hasTask: madeByMe(tasks, userId),
             hasTools: madeByMe(tools, userId),
-            // Only for whoever actually saved the details form — company data a
-            // colleague entered is not this user's step.
-            hasCompanyDetails:
-              Boolean(company?.orgNumber) &&
-              sameId(company?.detailsUpdatedByUserId, userId),
+            // Company details are the company's, not a person's: one record,
+            // shared by everyone in it. Once the owner has filled it in, every
+            // other admin inherits it — nagging them to fill in what is
+            // already on their invoices would be asking for the same work
+            // twice. (Tools, clients and the rest stay per-user: those are
+            // things this person did.)
+            hasCompanyDetails: Boolean(company?.orgNumber),
             hasClient: madeByMe(clients, userId),
             hasArticle: madeByMe(articles, userId),
             hasBilling: madeByMe(offers, userId) || madeByMe(invoices, userId),
@@ -313,7 +315,22 @@ export function useOnboardingProgress({
   }
 
   const completed = steps.filter((s) => s.done).length;
-  const allDone = completed === steps.length;
+  // The chosen track is finished...
+  const trackDone = steps.length > 0 && completed === steps.length;
+  // ...but the card only leaves for good once BOTH tracks are, the way the
+  // web checklist works. Finishing "manage projects" used to hide the card
+  // outright, and with it the only way into the billing track.
+  const otherTrack =
+    focus === "fieldwork"
+      ? "billing"
+      : focus === "billing"
+        ? "fieldwork"
+        : null;
+  const everyStepDone = [
+    ...fieldwork,
+    ...billing.filter((step) => step.key !== "customize"),
+  ].every((step) => step.done);
+  const allDone = otherTrack ? everyStepDone : trackDone;
 
   return {
     loading: state.loading,
@@ -322,6 +339,9 @@ export function useOnboardingProgress({
     completed,
     total: steps.length,
     allDone,
+    // The current track is complete and another one is waiting — the card
+    // stays, and the hand-off to that track becomes its point.
+    trackDone: trackDone && Boolean(otherTrack),
     needsFocus,
     visible: enabled && !state.loading && !state.dismissed && !allDone,
   };

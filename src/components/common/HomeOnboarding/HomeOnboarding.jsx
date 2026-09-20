@@ -49,6 +49,9 @@ export function HomeOnboarding({
   onDark = false,
   // Admin focus routing
   needsFocus = false,
+  // The chosen track is finished and the other one is still waiting — the
+  // hand-off becomes the card's headline instead of a quiet footer link.
+  trackDone = false,
   focus = null,
   onChooseFocus,
   onChangeFocus,
@@ -323,6 +326,18 @@ export function HomeOnboarding({
             );
           })}
         </View>
+      ) : null}
+
+      {/* The finished track hands over to the other one. */}
+      {otherFocus && trackDone ? (
+        <Text style={styles.handoffText}>
+          {otherFocus === "billing"
+            ? t("onboarding.handoff.toBilling", "Bra jobbat! Nu till pengarna.")
+            : t(
+                "onboarding.handoff.toFieldwork",
+                "Bra jobbat! Nu till jobbet.",
+              )}
+        </Text>
       ) : null}
 
       {/* Switch to the other focus (once one is picked). */}

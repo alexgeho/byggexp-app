@@ -1124,6 +1124,7 @@ export default function HomeVariant2() {
                   onCustomize={openCustomize}
                   onDark={!isLightBlueTheme}
                   needsFocus={onboarding.needsFocus}
+                  trackDone={onboarding.trackDone}
                   focus={onboardingFocus}
                   onChooseFocus={chooseFocus}
                   onChangeFocus={changeFocus}
