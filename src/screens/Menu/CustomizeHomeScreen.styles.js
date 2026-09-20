@@ -50,22 +50,22 @@ export function createStyles(theme) {
     },
 
     themeContainer: {
-      marginBottom: 18,
+      marginBottom: 24,
     },
 
     sectionTitle: {
       fontSize: 15,
       fontFamily: theme.text.fontFamily.medium,
       color: c.textPrimary,
-      marginBottom: 10,
+      marginBottom: 12,
       marginLeft: 4,
     },
 
     themeRow: {
       flexDirection: "row",
       flexWrap: "wrap",
-      gap: 12,
-      rowGap: 12,
+      gap: 14,
+      rowGap: 14,
     },
 
     themeButton: {
@@ -94,15 +94,15 @@ export function createStyles(theme) {
       borderColor: accent,
     },
 
-    // Pills run one size below the Figma spec (44 tall / 15px label instead of
-    // 52 / 17): the drawer is a list of many short labels, and at the Figma
-    // size only a handful fit before it scrolls.
+    // Pills run below the Figma spec (40 tall / 15px label instead of 52 /
+    // 17) with wider gaps: the drawer is a list of many short labels, and at
+    // the Figma size it was a wall of slabs with no air between them.
     // Drag-reorder list: rows are absolutely positioned (translateY animated),
     // so the container needs an explicit height (set inline). Standalone pills,
     // 14px gaps, no card wrapper.
     dragList: {
       position: "relative",
-      marginBottom: 18,
+      marginBottom: 24,
     },
 
     // One absolutely-positioned pill slot, 52 tall (Figma).
@@ -110,7 +110,7 @@ export function createStyles(theme) {
       position: "absolute",
       left: 0,
       right: 0,
-      height: 44,
+      height: 40,
     },
 
     // Figma pill: 52 tall, radius 84 (fully rounded), 14 padding. Enabled =
@@ -162,7 +162,7 @@ export function createStyles(theme) {
 
     secondaryRow: {
       flexDirection: "column",
-      gap: 10,
+      gap: 14,
     },
     // Pill-shaped selector matching Figma "Second round button": 52 tall,
     // radius 84, 14 padding, icon → label gap 12, left-aligned. Inactive =
@@ -175,7 +175,7 @@ export function createStyles(theme) {
       justifyContent: "center",
       // Figma: icon → label gap 12.
       gap: 10,
-      paddingVertical: 11,
+      paddingVertical: 9,
       paddingHorizontal: 14,
       borderRadius: 999,
       backgroundColor: pillOffBg,

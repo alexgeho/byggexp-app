@@ -7,8 +7,8 @@ import { PanGestureHandler, State } from "react-native-gesture-handler";
 import MCIcon from "react-native-vector-icons/MaterialCommunityIcons";
 
 // Figma pill geometry: 52 tall, 14 gap between pills.
-const ITEM_HEIGHT = 44;
-const GAP = 10;
+const ITEM_HEIGHT = 40;
+const GAP = 14;
 const PITCH = ITEM_HEIGHT + GAP;
 
 function clamp(value, min, max) {
