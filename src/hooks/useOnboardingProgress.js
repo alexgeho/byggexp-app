@@ -23,6 +23,14 @@ import {
 const asArray = (value) => (Array.isArray(value) ? value : []);
 const countOf = (v) => asArray(v).length;
 
+const sameId = (a, b) => Boolean(a) && Boolean(b) && String(a) === String(b);
+
+// A checklist step is about what THIS user did, not about what the company
+// already has: a tool a colleague registered, or a client the office added
+// before, must not tick the step for someone who never did it themselves.
+const madeByMe = (items, userId) =>
+  asArray(items).some((item) => sameId(item?.createdByUserId, userId));
+
 const permGranted = async (getter) => {
   try {
     const res = await getter();
@@ -37,8 +45,10 @@ const permGranted = async (getter) => {
 // - Admins:  a two-direction focus (mirrors the web) — "fieldwork" (project,
 //   team, task, tools) or "billing" (company details, offer/invoice). Until the
 //   focus question is answered, all steps are shown.
-// Every step's done-state comes from real signals; a failed check just leaves
-// the step un-done.
+// Every step's done-state comes from real signals, and those signals are
+// PER-USER: a step is done only if this user did it. Things the company already
+// owns (a colleague's tool, an older client) never tick someone else's step.
+// A failed check just leaves the step un-done.
 export function useOnboardingProgress({
   role,
   userId,
@@ -148,19 +158,31 @@ export function useOnboardingProgress({
             ...prev,
             loading: false,
             dismissed: false,
-            hasProject: countOf(projects) > 0,
+            // Created by me: I own it or I lead it (projects carry no
+            // createdBy — owner/manager is the closest "this is mine").
+            hasProject: asArray(projects).some(
+              (project) =>
+                sameId(project?.ownerId, userId) ||
+                sameId(project?.projectManagerId, userId),
+            ),
             // "Invite your team" is done as soon as there's at least one company
             // user besides the admin — an invited/pending employee counts (the
             // backend list includes them), no need for every field to be filled.
             hasTeam: asArray(team).some(
-              (u) => String(u?._id || u?.id || "") !== String(userId || ""),
+              (u) =>
+                String(u?._id || u?.id || "") !== String(userId || "") &&
+                sameId(u?.createdBy, userId),
             ),
-            hasTask: countOf(tasks) > 0,
-            hasTools: countOf(tools) > 0,
-            hasCompanyDetails: Boolean(company?.orgNumber),
-            hasClient: countOf(clients) > 0,
-            hasArticle: countOf(articles) > 0,
-            hasBilling: countOf(offers) + countOf(invoices) > 0,
+            hasTask: madeByMe(tasks, userId),
+            hasTools: madeByMe(tools, userId),
+            // Only for whoever actually saved the details form — company data a
+            // colleague entered is not this user's step.
+            hasCompanyDetails:
+              Boolean(company?.orgNumber) &&
+              sameId(company?.detailsUpdatedByUserId, userId),
+            hasClient: madeByMe(clients, userId),
+            hasArticle: madeByMe(articles, userId),
+            hasBilling: madeByMe(offers, userId) || madeByMe(invoices, userId),
             hasCustomized: customized,
           }));
         }
