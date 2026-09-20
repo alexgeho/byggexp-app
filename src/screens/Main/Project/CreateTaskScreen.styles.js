@@ -172,7 +172,9 @@ export const createStyles = (c) =>
       paddingVertical: 0,
     },
     textArea: {
-      minHeight: 70,
+      // Short by default — the description is usually one line; it grows as the
+      // user types.
+      minHeight: 40,
       textAlignVertical: "top",
       paddingTop: 6,
     },

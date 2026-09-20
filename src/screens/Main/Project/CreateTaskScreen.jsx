@@ -115,7 +115,6 @@ export default function CreateTaskScreen() {
   const [taskDescription, setTaskDescription] = useState(
     initialTaskDraft.taskDescription || "",
   );
-  const [notes, setNotes] = useState(initialTaskDraft.notes || "");
   const [notificationSettings, setNotificationSettings] = useState(() =>
     createDefaultTaskNotificationSettings(),
   );
@@ -288,7 +287,6 @@ export default function CreateTaskScreen() {
     setSelectedAssigneeRole(taskDraft.selectedAssigneeRole || "");
     setTaskTitle(taskDraft.taskTitle || "");
     setTaskDescription(taskDraft.taskDescription || "");
-    setNotes(taskDraft.notes || "");
     setSelectedDocuments(taskDraft.selectedDocuments || []);
     setStartDate(parseDraftDate(taskDraft.startDate) || todayAt(8));
     setDueDate(parseDraftDate(taskDraft.dueDate) || todayAt(17));
@@ -536,10 +534,6 @@ export default function CreateTaskScreen() {
 
       if (taskDescription.trim()) {
         taskData.append("taskDescription", taskDescription.trim());
-      }
-
-      if (notes.trim()) {
-        taskData.append("notes", notes.trim());
       }
 
       if (notifications.length > 0) {
@@ -806,10 +800,10 @@ export default function CreateTaskScreen() {
               </View>
             </GroupRow>
 
-            {/* Description + notes sit with the title — they describe the same
-                thing, so they belong in the title's group. */}
+            {/* Description sits with the title — it describes the same thing,
+                so it belongs in the title's group. */}
             <View style={styles.rowSep} />
-            <GroupRow>
+            <GroupRow isLast={true}>
               <View style={styles.textAreaWrapper}>
                 <Text style={styles.inputLabel}>
                   {t("createTask.descriptionLabel")}
@@ -820,23 +814,6 @@ export default function CreateTaskScreen() {
                   value={taskDescription}
                   onChangeText={setTaskDescription}
                   placeholder={t("createTask.descriptionPlaceholder")}
-                  placeholderTextColor="rgba(5, 45, 80, 0.45)"
-                />
-              </View>
-            </GroupRow>
-
-            <View style={styles.rowSep} />
-            <GroupRow isLast={true}>
-              <View style={styles.textAreaWrapper}>
-                <Text style={styles.inputLabel}>
-                  {t("createTask.notesLabel")}
-                </Text>
-                <TextInput
-                  multiline={true}
-                  style={[styles.input, styles.textArea]}
-                  value={notes}
-                  onChangeText={setNotes}
-                  placeholder={t("tools.notesPlaceholder")}
                   placeholderTextColor="rgba(5, 45, 80, 0.45)"
                 />
               </View>
