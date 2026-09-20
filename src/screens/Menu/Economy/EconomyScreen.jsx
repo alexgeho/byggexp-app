@@ -6,13 +6,9 @@ import {
   ScrollView,
   TouchableOpacity,
   Pressable,
-  ActivityIndicator,
   Modal,
 } from "react-native";
-import { Swipeable } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/Feather";
-import { LinearGradient } from "expo-linear-gradient";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   useNavigation,
   useFocusEffect,
@@ -20,7 +16,7 @@ import {
 } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { offerService, invoiceService } from "../../../services";
-import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
+import { EntityListScreen } from "../../../components/common/EntityListScreen/EntityListScreen";
 import { getDateLocale } from "../../../utils/dateLocale";
 import { sortByNewest } from "../../../utils/sortByNewest";
 import { createStyles } from "./EconomyScreen.styles";
@@ -63,25 +59,10 @@ const formatDate = (value) => {
   });
 };
 
-function Pill({ label, active, onPress, styles }) {
-  return (
-    <TouchableOpacity
-      style={[styles.pill, active && styles.pillOn]}
-      onPress={onPress}
-      activeOpacity={0.8}
-    >
-      <Text style={[styles.pillText, active && styles.pillTextOn]}>
-        {label}
-      </Text>
-    </TouchableOpacity>
-  );
-}
-
 export default function EconomyScreen() {
   const navigation = useNavigation();
   const route = useRoute();
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
 
@@ -200,10 +181,6 @@ export default function EconomyScreen() {
     return order.filter((status) => statusCounts[status]);
   }, [isOffers, statusCounts]);
 
-  const openCreate = () => {
-    navigation.navigate(isOffers ? "CreateOffer" : "CreateInvoice");
-  };
-
   // Swipe a document left to delete it, like every other list in the app. The
   // deliberate left-swipe is the safeguard, so no confirm; the row leaves only
   // once the backend confirms.
@@ -228,19 +205,6 @@ export default function EconomyScreen() {
     }
   };
 
-  const renderDeleteAction = (item) => (
-    <TouchableOpacity
-      style={styles.swipeDeleteAction}
-      activeOpacity={0.85}
-      onPress={() => handleDeleteDocument(item)}
-      accessibilityRole="button"
-      accessibilityLabel={t("common.delete")}
-    >
-      <Icon name="trash-2" size={22} color="#FFFFFF" />
-      <Text style={styles.swipeDeleteText}>{t("common.delete")}</Text>
-    </TouchableOpacity>
-  );
-
   const renderCard = (item) => {
     const id = item._id || item.id;
     const number = isOffers ? item.offerNumber : item.invoiceNumber;
@@ -257,162 +221,106 @@ export default function EconomyScreen() {
         : "";
 
     return (
-      <Swipeable
-        key={id}
-        renderRightActions={() => renderDeleteAction(item)}
-        overshootRight={false}
-        friction={2}
-        rightThreshold={40}
-      >
-        <TouchableOpacity style={styles.card} activeOpacity={0.85}>
-          <View style={styles.cardInfo}>
-            <Text style={styles.cardNo}>
-              {isOffers ? t("economy.offerNo") : t("economy.invoiceNo")} #
-              {number}
-            </Text>
-            <Text style={styles.cardCustomer} numberOfLines={1}>
-              {customer}
-            </Text>
-            <Text style={styles.cardMeta} numberOfLines={1}>
-              {dateLabel}
+      <TouchableOpacity key={id} style={styles.card} activeOpacity={0.85}>
+        <View style={styles.cardInfo}>
+          <Text style={styles.cardNo}>
+            {isOffers ? t("economy.offerNo") : t("economy.invoiceNo")} #{number}
+          </Text>
+          <Text style={styles.cardCustomer} numberOfLines={1}>
+            {customer}
+          </Text>
+          <Text style={styles.cardMeta} numberOfLines={1}>
+            {dateLabel}
+          </Text>
+        </View>
+        <View style={styles.cardRight}>
+          <View style={[styles.badge, styles[`badge_${tone}`]]}>
+            <Text style={[styles.badgeText, styles[`badgeText_${tone}`]]}>
+              {t(`economy.${statusNs}.${status}`, status)}
             </Text>
           </View>
-          <View style={styles.cardRight}>
-            <View style={[styles.badge, styles[`badge_${tone}`]]}>
-              <Text style={[styles.badgeText, styles[`badgeText_${tone}`]]}>
-                {t(`economy.${statusNs}.${status}`, status)}
-              </Text>
-            </View>
-            <Text style={styles.cardAmount}>{formatAmount(amount)}</Text>
-          </View>
-        </TouchableOpacity>
-      </Swipeable>
+          <Text style={styles.cardAmount}>{formatAmount(amount)}</Text>
+        </View>
+      </TouchableOpacity>
     );
   };
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.header, { marginTop: insets.top + 8 }]}>
-        <TouchableOpacity
-          style={styles.headerBtn}
-          onPress={() => navigation.goBack()}
-        >
-          <Icon name="chevron-left" size={22} color="#030303" />
-        </TouchableOpacity>
-        <Text style={styles.title}>
-          {isOffers ? t("economy.offers") : t("economy.invoices")}
-        </Text>
-        <TouchableOpacity
-          style={styles.headerBtn}
-          onPress={() => setRegistersModalVisible(true)}
-          accessibilityRole="button"
-          accessibilityLabel={t("economy.registers", "Register")}
-        >
-          <Icon name="more-horizontal" size={22} color="#030303" />
-        </TouchableOpacity>
-      </View>
-
-      {(customerOptions.length > 0 || filterOptions.length > 0) && (
-        <View style={styles.pillsWrap}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.pillsRow}
-            contentContainerStyle={styles.pillsContent}
+    <>
+      <EntityListScreen
+        title={isOffers ? t("economy.offers") : t("economy.invoices")}
+        data={filtered}
+        loading={loading}
+        keyExtractor={(item, index) => item._id || item.id || `doc-${index}`}
+        onDelete={handleDeleteDocument}
+        emptyText={
+          error ||
+          (isOffers ? t("economy.emptyOffers") : t("economy.emptyInvoices"))
+        }
+        addScreen={isOffers ? "CreateOffer" : "CreateInvoice"}
+        headerRight={
+          <TouchableOpacity
+            style={styles.headerBtn}
+            onPress={() => setRegistersModalVisible(true)}
+            accessibilityRole="button"
+            accessibilityLabel={t("economy.registers", "Register")}
           >
-            {/* Customer filter sits first, in the same horizontally-scrollable
-              row as the status pills. */}
-            {customerOptions.length > 0 && (
-              <TouchableOpacity
-                style={[
-                  styles.pill,
-                  styles.customerPill,
-                  customerFilter && styles.pillOn,
-                ]}
-                onPress={() => setCustomerModalVisible(true)}
-                activeOpacity={0.85}
+            <Icon name="more-horizontal" size={22} color="#030303" />
+          </TouchableOpacity>
+        }
+        beforeList={
+          customerOptions.length > 0 || filterOptions.length > 0 ? (
+            <View style={styles.pillsWrap}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.pillsRow}
+                contentContainerStyle={styles.pillsContent}
               >
-                <Text
-                  style={[
-                    styles.pillText,
-                    styles.customerPillText,
-                    customerFilter && styles.pillTextOn,
-                  ]}
-                  numberOfLines={1}
+                <TouchableOpacity
+                  style={[styles.pill, customerFilter && styles.pillOn]}
+                  onPress={() => setCustomerModalVisible(true)}
+                  activeOpacity={0.85}
                 >
-                  {customerFilter || t("economy.allCustomers")}
-                </Text>
-                {customerFilter ? (
-                  <TouchableOpacity
-                    onPress={() => setCustomerFilter(null)}
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  <Text
+                    style={[
+                      styles.pillText,
+                      customerFilter && styles.pillTextOn,
+                    ]}
+                    numberOfLines={1}
                   >
-                    <Icon name="x" size={16} color="#FFFFFF" />
-                  </TouchableOpacity>
-                ) : (
-                  <Icon name="chevron-down" size={16} color="#667E93" />
-                )}
-              </TouchableOpacity>
-            )}
+                    {customerFilter || t("economy.allCustomers")}
+                  </Text>
+                  <Icon
+                    name="chevron-down"
+                    size={14}
+                    color={customerFilter ? "#FFFFFF" : "#5F7588"}
+                  />
+                </TouchableOpacity>
 
-            {filterOptions.length > 0 && (
-              <Pill
-                styles={styles}
-                label={`${t("economy.filters.all")} (${byCustomer.length})`}
-                active={!statusFilter}
-                onPress={() => setStatusFilter(null)}
-              />
-            )}
-            {filterOptions.map((status) => (
-              <Pill
-                key={status}
-                styles={styles}
-                label={`${t(`economy.${statusNs}.${status}`, status)} (${statusCounts[status]})`}
-                active={statusFilter === status}
-                onPress={() => setStatusFilter(status)}
-              />
-            ))}
-          </ScrollView>
-          {/* Soft fade on the right edge so scrolled-off pills taper out
-              instead of being hard-cut by the screen edge. */}
-          <LinearGradient
-            pointerEvents="none"
-            colors={["rgba(242,241,246,0)", "#F2F1F6"]}
-            start={{ x: 0, y: 0.5 }}
-            end={{ x: 1, y: 0.5 }}
-            style={styles.pillsFade}
-          />
-        </View>
-      )}
-
-      <ScrollView
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {loading ? (
-          <View style={styles.center}>
-            <ActivityIndicator size="large" color="#0785F4" />
-          </View>
-        ) : error ? (
-          <View style={styles.center}>
-            <Text style={styles.emptyText}>{error}</Text>
-          </View>
-        ) : filtered.length === 0 ? (
-          <View style={styles.center}>
-            <Icon name="file-text" size={30} color="#9AA6B2" />
-            <Text style={styles.emptyText}>
-              {isOffers ? t("economy.emptyOffers") : t("economy.emptyInvoices")}
-            </Text>
-          </View>
-        ) : (
-          filtered.map(renderCard)
-        )}
-      </ScrollView>
-
-      <BottomBar
-        onLeftPress={() => navigation.navigate("Main")}
-        onRightPress={() => navigation.navigate("Menu")}
-        onAddPress={openCreate}
+                {filterOptions.map((status) => {
+                  const active = statusFilter === status;
+                  return (
+                    <TouchableOpacity
+                      key={status}
+                      style={[styles.pill, active && styles.pillOn]}
+                      onPress={() => setStatusFilter(active ? null : status)}
+                      activeOpacity={0.85}
+                    >
+                      <Text
+                        style={[styles.pillText, active && styles.pillTextOn]}
+                      >
+                        {t(`economy.${statusNs}.${status}`, status)} (
+                        {statusCounts[status]})
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            </View>
+          ) : null
+        }
+        renderCard={renderCard}
       />
 
       <Modal
@@ -509,6 +417,6 @@ export default function EconomyScreen() {
           </Pressable>
         </Pressable>
       </Modal>
-    </View>
+    </>
   );
 }

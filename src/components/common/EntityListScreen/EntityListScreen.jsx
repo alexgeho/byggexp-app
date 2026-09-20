@@ -2,6 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  SectionList,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -37,6 +38,14 @@ import {
 //   emptyText    shown when there is nothing to list
 //   addScreen    route the "+" opens (omit to hide "+")
 //   headerRight  optional element in place of the header's right spacer
+//   beforeList   element rendered under the filters — for a screen's own
+//                controls (a project filter, status pills…)
+//   sections / renderSectionHeader — render a SectionList instead of a flat
+//                list, for lists grouped by something (tasks by project)
+//   listHeader   element pinned above the first row (an "all projects" card…)
+//   onBack / onNavigateHome / onNavigateMenu — override the default
+//                navigation, for a screen that has to guard leaving
+//   onAdd        function alternative to addScreen
 export function EntityListScreen({
   title,
   data,
@@ -51,6 +60,14 @@ export function EntityListScreen({
   addScreen,
   addParams,
   headerRight,
+  beforeList,
+  sections,
+  renderSectionHeader,
+  listHeader,
+  onBack,
+  onNavigateHome,
+  onNavigateMenu,
+  onAdd,
 }) {
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -73,12 +90,39 @@ export function EntityListScreen({
     [onDelete, styles, t],
   );
 
+  // One row, wrapped in the swipe action when the screen allows deleting.
+  const renderRow = useCallback(
+    (item) => {
+      const card = renderCard(item);
+      if (!onDelete) {
+        return card;
+      }
+      return (
+        <Swipeable
+          renderRightActions={() => renderDeleteAction(item)}
+          overshootRight={false}
+          friction={2}
+          rightThreshold={40}
+        >
+          {card}
+        </Swipeable>
+      );
+    },
+    [onDelete, renderCard, renderDeleteAction],
+  );
+
+  const emptyComponent = (
+    <View style={styles.emptyState}>
+      <Text style={styles.emptyTitle}>{emptyText}</Text>
+    </View>
+  );
+
   return (
     <View style={styles.screen}>
       <View style={styles.pageContainer}>
         <View style={styles.header}>
           <BackButton
-            onPress={() => navigation.goBack()}
+            onPress={onBack || (() => navigation.goBack())}
             iconSource={require("../../../assets/Arrow-left.png")}
           />
           <Text style={styles.headerTitle}>{title}</Text>
@@ -110,10 +154,24 @@ export function EntityListScreen({
           </View>
         ) : null}
 
+        {beforeList}
+
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={theme.colors.primary} />
           </View>
+        ) : sections ? (
+          <SectionList
+            style={styles.list}
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
+            sections={sections}
+            keyExtractor={keyExtractor}
+            renderSectionHeader={renderSectionHeader}
+            ListEmptyComponent={emptyComponent}
+            ListHeaderComponent={listHeader}
+            renderItem={({ item }) => renderRow(item)}
+          />
         ) : (
           <FlatList
             style={styles.list}
@@ -121,36 +179,20 @@ export function EntityListScreen({
             showsVerticalScrollIndicator={false}
             data={data}
             keyExtractor={keyExtractor}
-            ListEmptyComponent={
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyTitle}>{emptyText}</Text>
-              </View>
-            }
-            renderItem={({ item }) => {
-              const card = renderCard(item);
-              if (!onDelete) {
-                return card;
-              }
-              return (
-                <Swipeable
-                  renderRightActions={() => renderDeleteAction(item)}
-                  overshootRight={false}
-                  friction={2}
-                  rightThreshold={40}
-                >
-                  {card}
-                </Swipeable>
-              );
-            }}
+            ListEmptyComponent={emptyComponent}
+            ListHeaderComponent={listHeader}
+            renderItem={({ item }) => renderRow(item)}
           />
         )}
 
         <BottomBar
-          onLeftPress={() => navigation.navigate("Main")}
-          onRightPress={() => navigation.navigate("Menu")}
-          showAddButton={Boolean(addScreen)}
+          onLeftPress={onNavigateHome || (() => navigation.navigate("Main"))}
+          onRightPress={onNavigateMenu || (() => navigation.navigate("Menu"))}
+          showAddButton={Boolean(addScreen || onAdd)}
           onAddPress={() =>
-            addScreen && navigation.navigate(addScreen, addParams)
+            onAdd
+              ? onAdd()
+              : addScreen && navigation.navigate(addScreen, addParams)
           }
         />
       </View>

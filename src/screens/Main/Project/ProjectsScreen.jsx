@@ -14,24 +14,13 @@ import React, {
   useRef,
   useState,
 } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  FlatList,
-  ActivityIndicator,
-  InteractionManager,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
-import { Swipeable } from "react-native-gesture-handler";
+import { View, Text, TextInput, InteractionManager, Alert } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../theme/ThemeContext";
 import AuthContext from "../../../contexts/AuthContext";
 import { projectService } from "../../../services";
-import { Screen } from "../../../components/common/Screen/Screen";
-import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
+import { EntityListScreen } from "../../../components/common/EntityListScreen/EntityListScreen";
 import { ListCard } from "../../../components/common/ListCard/ListCard";
 import { sortByNewest } from "../../../utils/sortByNewest";
 import { resolveLocalProjectSelection } from "../../../utils/localProjectSelection";
@@ -116,24 +105,6 @@ export default function ProjectsScreen() {
       }
     },
     [t],
-  );
-
-  const renderProjectDeleteAction = useCallback(
-    (project) => (
-      <TouchableOpacity
-        style={styles.swipeDeleteAction}
-        activeOpacity={0.85}
-        onPress={() => handleDeleteProject(project)}
-        accessibilityRole="button"
-        accessibilityLabel={t("common.delete", "Ta bort")}
-      >
-        <Icon name="trash-2" size={22} color="#FFFFFF" />
-        <Text style={styles.swipeDeleteText}>
-          {t("common.delete", "Ta bort")}
-        </Text>
-      </TouchableOpacity>
-    ),
-    [handleDeleteProject, styles, t],
   );
 
   const selectedProjectId = isLocalSelectionMode
@@ -312,113 +283,80 @@ export default function ProjectsScreen() {
   const themedAccentTextStyle = { color: theme.colors.primary };
 
   return (
-    <Screen
+    <EntityListScreen
       title={t("projects.myProjects")}
       onBack={goBackSafely}
-      style={styles.screenExtra}
-    >
-      {/* Search only earns its space once the list is long enough to scan for. */}
-      {projects.length > SEARCH_MIN_PROJECTS ? (
-        <View style={styles.searchContainer}>
-          <View style={styles.searchInputWrapper}>
-            <TextInput
-              style={styles.searchInput}
-              placeholder={t("common.search")}
-              placeholderTextColor={theme.content.textMuted}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
-            <View style={styles.searchIconWrapper} pointerEvents="none">
-              <Icon name="search" size={18} color={theme.content.textMuted} />
+      onNavigateHome={() => navigateSafely("Main")}
+      onNavigateMenu={() => navigateSafely("Menu")}
+      data={filteredProjects}
+      loading={authLoading || (loading && projects.length === 0)}
+      keyExtractor={(project) => getProjectId(project)}
+      onDelete={showCreateProject ? handleDeleteProject : undefined}
+      emptyText={t("projects.notFound")}
+      addScreen={showCreateProject ? "CreateProject" : undefined}
+      onAdd={
+        showCreateProject ? () => navigateSafely("CreateProject") : undefined
+      }
+      beforeList={
+        /* Search only earns its space once the list is long enough to scan. */
+        projects.length > SEARCH_MIN_PROJECTS ? (
+          <View style={styles.searchContainer}>
+            <View style={styles.searchInputWrapper}>
+              <TextInput
+                style={styles.searchInput}
+                placeholder={t("common.search")}
+                placeholderTextColor={theme.content.textMuted}
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+              />
+              <View style={styles.searchIconWrapper} pointerEvents="none">
+                <Icon name="search" size={18} color={theme.content.textMuted} />
+              </View>
             </View>
           </View>
-        </View>
-      ) : null}
+        ) : null
+      }
+      listHeader={
+        allowAllProjectsOption ? (
+          <ListCard
+            onPress={() => {
+              if (!beginLeaving()) {
+                return;
+              }
+              navigation.goBack();
+              InteractionManager.runAfterInteractions(() => {
+                resolveLocalProjectSelection(null);
+              });
+            }}
+            selected={!selectedProjectId}
+            title={t("projects.all")}
+          />
+        ) : null
+      }
+      renderCard={(project) => (
+        <ListCard
+          onPress={() => handleProjectPress(project)}
+          selected={selectedProjectId === getProjectId(project)}
+          title={project.name}
+          badgeLabel={t(
+            `projects.status.${project.status}`,
+            formatProjectStatus(project.status),
+          )}
+          badgeStyle={getProjectStatusBadgeStyle(project.status)}
+        >
+          {formatDateOrNull(project.beginningDate) ? (
+            <Text style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}>
+              {t("projects.startLabel", {
+                date: formatDateOrNull(project.beginningDate),
+              })}
+            </Text>
+          ) : null}
 
-      {authLoading || (loading && projects.length === 0) ? (
-        <View style={styles.inlineLoader}>
-          <ActivityIndicator size="large" color={theme.colors.primary} />
-          <Text>{t("common.loading")}</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={filteredProjects}
-          keyExtractor={(project) => getProjectId(project)}
-          contentContainerStyle={styles.scrollContent}
-          style={styles.scrollContainer}
-          ListHeaderComponent={
-            allowAllProjectsOption ? (
-              <ListCard
-                onPress={() => {
-                  if (!beginLeaving()) {
-                    return;
-                  }
-                  navigation.goBack();
-                  InteractionManager.runAfterInteractions(() => {
-                    resolveLocalProjectSelection(null);
-                  });
-                }}
-                selected={!selectedProjectId}
-                title={t("projects.all")}
-              />
-            ) : null
-          }
-          ListEmptyComponent={
-            <Text style={styles.noProjectsText}>{t("projects.notFound")}</Text>
-          }
-          renderItem={({ item: project }) => {
-            const card = (
-              <ListCard
-                onPress={() => handleProjectPress(project)}
-                selected={selectedProjectId === getProjectId(project)}
-                title={project.name}
-                badgeLabel={t(
-                  `projects.status.${project.status}`,
-                  formatProjectStatus(project.status),
-                )}
-                badgeStyle={getProjectStatusBadgeStyle(project.status)}
-              >
-                {formatDateOrNull(project.beginningDate) ? (
-                  <Text
-                    style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}
-                  >
-                    {t("projects.startLabel", {
-                      date: formatDateOrNull(project.beginningDate),
-                    })}
-                  </Text>
-                ) : null}
-
-                <Text style={[cardStyles.cardSecondaryText, styles.mutedText]}>
-                  {t("projects.locationLabel", {
-                    location: project.location,
-                  })}
-                </Text>
-              </ListCard>
-            );
-            // Swipe-left to delete — only for project managers.
-            if (!showCreateProject) {
-              return card;
-            }
-            return (
-              <Swipeable
-                renderRightActions={() => renderProjectDeleteAction(project)}
-                overshootRight={false}
-                friction={2}
-                rightThreshold={40}
-              >
-                {card}
-              </Swipeable>
-            );
-          }}
-        />
+          <Text style={[cardStyles.cardSecondaryText, styles.mutedText]}>
+            {t("projects.locationLabel", { location: project.location })}
+          </Text>
+        </ListCard>
       )}
-
-      <BottomBar
-        onLeftPress={() => navigateSafely("Main")}
-        onRightPress={() => navigateSafely("Menu")}
-        showAddButton={showCreateProject}
-        onAddPress={() => navigateSafely("CreateProject")}
-      />
-    </Screen>
+    />
   );
 }

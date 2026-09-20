@@ -12,22 +12,12 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import {
-  Alert,
-  View,
-  Text,
-  SectionList,
-  TouchableOpacity,
-  ActivityIndicator,
-} from "react-native";
-import { Swipeable } from "react-native-gesture-handler";
-import Icon from "react-native-vector-icons/Feather";
+import { Alert, View, Text, ActivityIndicator } from "react-native";
 import { useTranslation } from "react-i18next";
 import AuthContext from "../../contexts/AuthContext";
 import { useTheme } from "../../theme/ThemeContext";
 import { projectService, taskService } from "../../services";
-import { BottomBar } from "../../components/common/BottomBar/BottomBar";
-import { Screen } from "../../components/common/Screen/Screen";
+import { EntityListScreen } from "../../components/common/EntityListScreen/EntityListScreen";
 import { ListCard } from "../../components/common/ListCard/ListCard";
 import { ProjectFilterSelector } from "../../components/common/ProjectFilterSelector/ProjectFilterSelector";
 import { createStyles } from "./TasksScreen.styles";
@@ -176,36 +166,22 @@ export default function TasksScreen() {
     [fetchProjectsWithTasks, t],
   );
 
-  const renderTaskDeleteAction = useCallback(
-    (task) => (
-      <TouchableOpacity
-        style={styles.swipeDeleteAction}
-        activeOpacity={0.85}
-        onPress={() => handleDeleteTask(task)}
-        accessibilityRole="button"
-        accessibilityLabel={t("common.delete")}
-      >
-        <Icon name="trash-2" size={22} color="#FFFFFF" />
-        <Text style={styles.swipeDeleteText}>{t("common.delete")}</Text>
-      </TouchableOpacity>
-    ),
-    [handleDeleteTask, styles, t],
-  );
-
   const sections = useMemo(() => {
     const result = [];
     if (visiblePersonalTasks.length > 0) {
       result.push({
         title: t("task.personal"),
         project: null,
-        data: visiblePersonalTasks,
+        // The shared list renders a row without section context, so each task
+        // carries its project with it.
+        data: visiblePersonalTasks.map((task) => ({ ...task, project: null })),
       });
     }
     groupedTasks.forEach((project) => {
       result.push({
         title: project.name,
         project,
-        data: project.visibleTasks,
+        data: project.visibleTasks.map((task) => ({ ...task, project })),
       });
     });
     return result;
@@ -269,79 +245,46 @@ export default function TasksScreen() {
   };
 
   return (
-    <Screen
+    <EntityListScreen
       title={t("task.title")}
-      onBack={() => navigation.goBack()}
-      style={styles.screenExtra}
-    >
-      <View style={styles.searchContainer}>
-        <ProjectFilterSelector
-          projects={projects}
-          selectedProjectId={selectedProjectId}
-          onSelect={setSelectedProjectId}
-        />
-      </View>
-
-      <SectionList
-        style={styles.scrollContainer}
-        contentContainerStyle={styles.listContent}
-        sections={sections}
-        keyExtractor={(item, index) => item._id || `task-${index}`}
-        stickySectionHeadersEnabled={false}
-        showsVerticalScrollIndicator={false}
-        renderSectionHeader={({ section }) => (
-          <View
-            style={[styles.projectGroupHeader, styles.sectionHeaderSpacing]}
+      loading={false}
+      sections={sections}
+      keyExtractor={(item, index) => item._id || `task-${index}`}
+      renderSectionHeader={({ section }) => (
+        <View style={[styles.projectGroupHeader, styles.sectionHeaderSpacing]}>
+          <Text
+            style={[
+              styles.projectTitle,
+              { fontFamily: theme.text.fontFamily["bold"] },
+            ]}
           >
-            <Text
-              style={[
-                styles.projectTitle,
-                { fontFamily: theme.text.fontFamily["bold"] },
-              ]}
-            >
-              {section.title}
-            </Text>
-            <Text style={styles.projectCount}>
-              {t("task.count", { count: section.data.length })}
-            </Text>
-          </View>
-        )}
-        renderItem={({ item, section, index }) => {
-          const card = (
-            <View style={styles.taskCardSpacing}>
-              {renderTaskCard(item, {
-                project: section.project,
-                key: item._id || `${section.title}-${index}`,
-              })}
-            </View>
-          );
-
-          if (!canDeleteTasks) {
-            return card;
-          }
-
-          return (
-            <Swipeable
-              renderRightActions={() => renderTaskDeleteAction(item)}
-              overshootRight={false}
-              friction={2}
-              rightThreshold={40}
-            >
-              {card}
-            </Swipeable>
-          );
-        }}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>{t("task.emptyAll")}</Text>
-        }
-      />
-
-      <BottomBar
-        onLeftPress={() => navigation.navigate("Main")}
-        onRightPress={() => navigation.navigate("Menu")}
-        showAddButton={showCreateTask}
-        onAddPress={() => navigation.navigate("CreateTask")}
-      />
-    </Screen>
+            {section.title}
+          </Text>
+          <Text style={styles.projectCount}>
+            {t("task.count", { count: section.data.length })}
+          </Text>
+        </View>
+      )}
+      onDelete={canDeleteTasks ? handleDeleteTask : undefined}
+      emptyText={t("task.emptyAll")}
+      addScreen={showCreateTask ? "CreateTask" : undefined}
+      beforeList={
+        <View style={styles.searchContainer}>
+          <ProjectFilterSelector
+            projects={projects}
+            selectedProjectId={selectedProjectId}
+            onSelect={setSelectedProjectId}
+          />
+        </View>
+      }
+      renderCard={(task) => (
+        <View style={styles.taskCardSpacing}>
+          {renderTaskCard(task, {
+            project: task.project,
+            key: task._id,
+          })}
+        </View>
+      )}
+    />
   );
 }

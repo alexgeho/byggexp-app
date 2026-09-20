@@ -1,21 +1,11 @@
 import React, { useCallback, useContext, useMemo, useState } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { Swipeable } from "react-native-gesture-handler";
-import Icon from "react-native-vector-icons/Feather";
+import { Alert, Text, TouchableOpacity, View } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import AuthContext from "../../contexts/AuthContext";
 import { useTheme } from "../../theme/ThemeContext";
 import { projectService, toolService } from "../../services";
-import { BackButton } from "../../components/common/BackButton/BackButton";
-import { BottomBar } from "../../components/common/BottomBar/BottomBar";
+import { EntityListScreen } from "../../components/common/EntityListScreen/EntityListScreen";
 import {
   ToolListCard,
   getEffectiveToolStatus,
@@ -155,46 +145,30 @@ export default function ToolsScreen() {
     [t],
   );
 
-  const renderToolDeleteAction = useCallback(
-    (tool) => (
-      <TouchableOpacity
-        style={styles.swipeDeleteAction}
-        activeOpacity={0.85}
-        onPress={() => handleDeleteTool(tool)}
-        accessibilityRole="button"
-        accessibilityLabel={t("common.delete")}
-      >
-        <Icon name="trash-2" size={22} color="#FFFFFF" />
-        <Text style={styles.swipeDeleteText}>{t("common.delete")}</Text>
-      </TouchableOpacity>
-    ),
-    [handleDeleteTool, styles, t],
-  );
-
   return (
-    <View style={styles.screen}>
-      <View style={styles.pageContainer}>
-        <View style={styles.header}>
-          <BackButton
-            onPress={() => navigation.goBack()}
-            iconSource={require("../../assets/Arrow-left.png")}
-          />
-          <Text
-            style={[
-              styles.headerTitle,
-              { fontFamily: theme.text.fontFamily.semiBold },
-            ]}
-          >
-            {t("tools.listTitle")}
-          </Text>
-          <TouchableOpacity
-            style={styles.scanButton}
-            onPress={() => navigation.navigate("ToolScan")}
-          >
-            <Text style={styles.scanButtonText}>{t("tools.scan")}</Text>
-          </TouchableOpacity>
-        </View>
-
+    <EntityListScreen
+      title={t("tools.listTitle")}
+      data={filteredTools}
+      loading={loading}
+      keyExtractor={(tool) => getEntityId(tool)}
+      onDelete={canManageTools(user?.role) ? handleDeleteTool : undefined}
+      emptyText={
+        selectedProjectId
+          ? t("tools.emptyProjectFiltered")
+          : canManageTools(user?.role)
+            ? t("tools.emptyCanCreate")
+            : t("tools.emptyNoneAssigned")
+      }
+      addScreen={canManageTools(user?.role) ? "CreateTool" : undefined}
+      headerRight={
+        <TouchableOpacity
+          style={styles.scanButton}
+          onPress={() => navigation.navigate("ToolScan")}
+        >
+          <Text style={styles.scanButtonText}>{t("tools.scan")}</Text>
+        </TouchableOpacity>
+      }
+      beforeList={
         <View style={styles.searchContainer}>
           <ProjectFilterSelector
             projects={projects}
@@ -202,65 +176,13 @@ export default function ToolsScreen() {
             onSelect={setSelectedProjectId}
           />
         </View>
-
-        {loading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={theme.colors.primary} />
-          </View>
-        ) : (
-          <FlatList
-            style={styles.scrollContainer}
-            contentContainerStyle={styles.listContent}
-            showsVerticalScrollIndicator={false}
-            data={filteredTools}
-            keyExtractor={(tool) => getEntityId(tool)}
-            ListEmptyComponent={
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyTitle}>{t("tools.emptyTitle")}</Text>
-                <Text style={styles.emptySubtitle}>
-                  {selectedProjectId
-                    ? t("tools.emptyProjectFiltered")
-                    : canManageTools(user?.role)
-                      ? t("tools.emptyCanCreate")
-                      : t("tools.emptyNoneAssigned")}
-                </Text>
-              </View>
-            }
-            renderItem={({ item: tool }) => {
-              const card = (
-                <ToolListCard
-                  tool={tool}
-                  onPress={
-                    canEditStatus ? () => handleChangeStatus(tool) : undefined
-                  }
-                />
-              );
-
-              if (!canManageTools(user?.role)) {
-                return card;
-              }
-
-              return (
-                <Swipeable
-                  renderRightActions={() => renderToolDeleteAction(tool)}
-                  overshootRight={false}
-                  friction={2}
-                  rightThreshold={40}
-                >
-                  {card}
-                </Swipeable>
-              );
-            }}
-          />
-        )}
-
-        <BottomBar
-          onLeftPress={() => navigation.navigate("Main")}
-          onRightPress={() => navigation.navigate("Menu")}
-          showAddButton={canManageTools(user?.role)}
-          onAddPress={() => navigation.navigate("CreateTool")}
+      }
+      renderCard={(tool) => (
+        <ToolListCard
+          tool={tool}
+          onPress={canEditStatus ? () => handleChangeStatus(tool) : undefined}
         />
-      </View>
-    </View>
+      )}
+    />
   );
 }
