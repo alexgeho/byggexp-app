@@ -370,8 +370,6 @@
     "selectWorkerOrForeman": "Izvēlieties darbinieku vai brigadieri",
     "taskTitleLabel": "Uzdevuma nosaukums *",
     "taskTitlePlaceholder": "Ievadiet uzdevuma nosaukumu",
-    "allDay": "Visa diena",
-    "allDayHint": "Izmantot projekta darba dienu vai noklusēto 8 stundu režīmu",
     "starts": "Sākas",
     "ends": "Beidzas",
     "selectDate": "Izvēlieties datumu",

@@ -370,8 +370,6 @@
     "selectWorkerOrForeman": "Select worker or foreman",
     "taskTitleLabel": "Task title *",
     "taskTitlePlaceholder": "Enter task title",
-    "allDay": "All day",
-    "allDayHint": "Use project workday or default 8 hours",
     "starts": "Starts",
     "ends": "Ends",
     "selectDate": "Select date",

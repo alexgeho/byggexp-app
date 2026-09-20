@@ -351,11 +351,7 @@ export const createStyles = (c) =>
       fontSize: 16,
       fontFamily: "DMSans-Regular",
     },
-    allDayTextContainer: {
-      flex: 1,
-      paddingRight: 12,
-    },
-    allDayHint: {
+    hintText: {
       color: c.textMuted,
       fontSize: 12,
       marginTop: 2,

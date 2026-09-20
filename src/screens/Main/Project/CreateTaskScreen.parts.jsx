@@ -22,8 +22,6 @@ const useThemedStyles = () => {
 };
 
 const DATETIME_PICKER_DISPLAY = Platform.OS === "ios" ? "inline" : "default";
-const DEFAULT_ALL_DAY_START_TIME = "08:00";
-const DEFAULT_ALL_DAY_DURATION_MINUTES = 8 * 60;
 
 export const FieldIcon = ({
   library = "feather",
@@ -75,66 +73,6 @@ const formatScheduleTime = (date) =>
     minute: "2-digit",
     hour12: false,
   });
-
-const parseScheduleTimeToMinutes = (time) => {
-  const [hours, minutes] = String(time || "")
-    .split(":")
-    .map(Number);
-
-  if (
-    !Number.isInteger(hours) ||
-    !Number.isInteger(minutes) ||
-    hours < 0 ||
-    hours > 23 ||
-    minutes < 0 ||
-    minutes > 59
-  ) {
-    return null;
-  }
-
-  return hours * 60 + minutes;
-};
-
-const createDateAtMinutes = (baseDate, minutes) => {
-  const date = new Date(baseDate);
-  const dayOffset = Math.floor(minutes / (24 * 60));
-  const minutesOfDay = ((minutes % (24 * 60)) + 24 * 60) % (24 * 60);
-
-  date.setDate(date.getDate() + dayOffset);
-  date.setHours(Math.floor(minutesOfDay / 60), minutesOfDay % 60, 0, 0);
-
-  return date;
-};
-
-export const buildAllDayRange = (project, baseDate = new Date()) => {
-  const shiftSchedule = project?.shiftSchedule;
-  const hasProjectWorkday =
-    shiftSchedule?.enabled &&
-    shiftSchedule?.workDayStartTime &&
-    shiftSchedule?.workDayEndTime;
-  const fallbackStartMinutes =
-    parseScheduleTimeToMinutes(DEFAULT_ALL_DAY_START_TIME) || 0;
-  let startMinutes = hasProjectWorkday
-    ? parseScheduleTimeToMinutes(shiftSchedule.workDayStartTime)
-    : fallbackStartMinutes;
-  let endMinutes = hasProjectWorkday
-    ? parseScheduleTimeToMinutes(shiftSchedule.workDayEndTime)
-    : fallbackStartMinutes + DEFAULT_ALL_DAY_DURATION_MINUTES;
-
-  if (
-    startMinutes === null ||
-    endMinutes === null ||
-    endMinutes <= startMinutes
-  ) {
-    startMinutes = startMinutes ?? fallbackStartMinutes;
-    endMinutes = startMinutes + DEFAULT_ALL_DAY_DURATION_MINUTES;
-  }
-
-  return {
-    start: createDateAtMinutes(baseDate, startMinutes),
-    end: createDateAtMinutes(baseDate, endMinutes),
-  };
-};
 
 export const DateTimeFieldModal = ({
   visible,

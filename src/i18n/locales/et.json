@@ -370,8 +370,6 @@
     "selectWorkerOrForeman": "Vali töötaja või töödejuhataja",
     "taskTitleLabel": "Ülesande pealkiri *",
     "taskTitlePlaceholder": "Sisesta ülesande pealkiri",
-    "allDay": "Terve päev",
-    "allDayHint": "Kasuta projekti tööpäeva või vaikimisi 8 tundi",
     "starts": "Algab",
     "ends": "Lõpeb",
     "selectDate": "Vali kuupäev",

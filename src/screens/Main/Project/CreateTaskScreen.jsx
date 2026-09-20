@@ -41,7 +41,6 @@ import {
   SectionLabel,
   GroupCard,
   GroupRow,
-  buildAllDayRange,
   DateTimeFieldModal,
   ScheduleDateRow,
   getProjectId,
@@ -113,7 +112,6 @@ export default function CreateTaskScreen() {
   const [dueDate, setDueDate] = useState(
     parseDraftDate(initialTaskDraft.dueDate),
   );
-  const [allDay, setAllDay] = useState(Boolean(initialTaskDraft.allDay));
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showDueDatePicker, setShowDueDatePicker] = useState(false);
   const [loadingProject, setLoadingProject] = useState(false);
@@ -264,7 +262,6 @@ export default function CreateTaskScreen() {
     setSelectedDocuments(taskDraft.selectedDocuments || []);
     setStartDate(parseDraftDate(taskDraft.startDate));
     setDueDate(parseDraftDate(taskDraft.dueDate));
-    setAllDay(Boolean(taskDraft.allDay));
   }, [route.params?.taskDraft]);
 
   useEffect(() => {
@@ -293,37 +290,6 @@ export default function CreateTaskScreen() {
     () => getTaskNotificationSummary(notificationSettings),
     [notificationSettings],
   );
-
-  const effectiveSelectedProject = useMemo(() => {
-    if (
-      selectedProject &&
-      getProjectId(selectedProject) === selectedProjectId
-    ) {
-      return selectedProject;
-    }
-
-    return (
-      projects.find((project) => getProjectId(project) === selectedProjectId) ||
-      null
-    );
-  }, [projects, selectedProject, selectedProjectId]);
-
-  const applyAllDayRange = (project = effectiveSelectedProject) => {
-    const { start, end } = buildAllDayRange(
-      project,
-      startDate || dueDate || new Date(),
-    );
-    setStartDate(start);
-    setDueDate(end);
-  };
-
-  const handleAllDayChange = (enabled) => {
-    setAllDay(enabled);
-
-    if (enabled) {
-      applyAllDayRange();
-    }
-  };
 
   const updateNotificationSettings = (updater) => {
     setNotificationSettings((previous) => {
@@ -370,19 +336,6 @@ export default function CreateTaskScreen() {
     });
   };
 
-  useEffect(() => {
-    if (!allDay) {
-      return;
-    }
-
-    const { start, end } = buildAllDayRange(
-      effectiveSelectedProject,
-      startDate || dueDate || new Date(),
-    );
-    setStartDate(start);
-    setDueDate(end);
-  }, [allDay, effectiveSelectedProject]);
-
   const pickDocuments = async () => {
     try {
       const pickedAssets = await pickUploadAssets({
@@ -416,10 +369,6 @@ export default function CreateTaskScreen() {
     setShowProjectPicker(false);
     setAssigneeIds([]);
     updateNotificationSettings(createDefaultTaskNotificationSettings());
-
-    if (allDay) {
-      applyAllDayRange(project);
-    }
   };
 
   const selectUser = (nextUser) => {
@@ -435,10 +384,6 @@ export default function CreateTaskScreen() {
     setProjectName("");
     setShowUserPicker(false);
     updateNotificationSettings(createDefaultTaskNotificationSettings());
-
-    if (allDay) {
-      applyAllDayRange(null);
-    }
   };
 
   const clearSelectedUser = () => {
@@ -823,22 +768,6 @@ export default function CreateTaskScreen() {
 
           <SectionLabel>Schedule</SectionLabel>
           <GroupCard>
-            <GroupRow>
-              <View style={styles.allDayTextContainer}>
-                <Text style={styles.scheduleLabel}>
-                  {t("createTask.allDay")}
-                </Text>
-                <Text style={styles.allDayHint}>
-                  {t("createTask.allDayHint")}
-                </Text>
-              </View>
-              <Switch
-                value={allDay}
-                onValueChange={handleAllDayChange}
-                trackColor={{ false: "#D9E3EC", true: "#34C759" }}
-                thumbColor="#FFFFFF"
-              />
-            </GroupRow>
             <ScheduleDateRow
               label={t("createTask.starts")}
               value={startDate}
@@ -989,20 +918,14 @@ export default function CreateTaskScreen() {
             visible={showStartDatePicker}
             title={t("createTask.starts")}
             value={startDate}
-            onChange={(date) => {
-              setAllDay(false);
-              setStartDate(date);
-            }}
+            onChange={setStartDate}
             onClose={() => setShowStartDatePicker(false)}
           />
           <DateTimeFieldModal
             visible={showDueDatePicker}
             title={t("createTask.ends")}
             value={dueDate}
-            onChange={(date) => {
-              setAllDay(false);
-              setDueDate(date);
-            }}
+            onChange={setDueDate}
             onClose={() => setShowDueDatePicker(false)}
           />
           <ProjectPickerModal
@@ -1132,7 +1055,7 @@ export default function CreateTaskScreen() {
                     <Text style={styles.inputLabel}>
                       {t("createTask.remindUntilDoneLabel")}
                     </Text>
-                    <Text style={styles.allDayHint}>
+                    <Text style={styles.hintText}>
                       {t("createTask.remindUntilDoneHint")}
                     </Text>
                   </View>
@@ -1213,7 +1136,7 @@ export default function CreateTaskScreen() {
                       <Text style={styles.inputLabel}>
                         {t("createTask.escalateToBossLabel")}
                       </Text>
-                      <Text style={styles.allDayHint}>
+                      <Text style={styles.hintText}>
                         {t("createTask.escalateToBossHint")}
                       </Text>
                     </View>

@@ -370,8 +370,6 @@
     "selectWorkerOrForeman": "Wybierz pracownika lub brygadzistę",
     "taskTitleLabel": "Tytuł zadania *",
     "taskTitlePlaceholder": "Wpisz tytuł zadania",
-    "allDay": "Cały dzień",
-    "allDayHint": "Użyj dnia pracy projektu lub domyślnych 8 godzin",
     "starts": "Rozpoczyna się",
     "ends": "Kończy się",
     "selectDate": "Wybierz datę",

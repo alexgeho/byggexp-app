@@ -370,8 +370,6 @@
     "selectWorkerOrForeman": "Valitse työntekijä tai työnjohtaja",
     "taskTitleLabel": "Tehtävän otsikko *",
     "taskTitlePlaceholder": "Anna tehtävän otsikko",
-    "allDay": "Koko päivä",
-    "allDayHint": "Käytä projektin työpäivää tai oletusta 8 tuntia",
     "starts": "Alkaa",
     "ends": "Päättyy",
     "selectDate": "Valitse päivämäärä",

@@ -370,8 +370,6 @@
     "selectWorkerOrForeman": "Välj arbetare eller arbetsledare",
     "taskTitleLabel": "Uppgiftstitel *",
     "taskTitlePlaceholder": "Ange uppgiftstitel",
-    "allDay": "Heldag",
-    "allDayHint": "Använd projektets arbetsdag eller standard 8 timmar",
     "starts": "Börjar",
     "ends": "Slutar",
     "selectDate": "Välj datum",

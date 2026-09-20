@@ -370,8 +370,6 @@
     "selectWorkerOrForeman": "Pasirinkite darbuotoją arba brigadininką",
     "taskTitleLabel": "Užduoties pavadinimas *",
     "taskTitlePlaceholder": "Įveskite užduoties pavadinimą",
-    "allDay": "Visą dieną",
-    "allDayHint": "Naudoti projekto darbo dieną arba numatytas 8 valandas",
     "starts": "Prasideda",
     "ends": "Baigiasi",
     "selectDate": "Pasirinkite datą",

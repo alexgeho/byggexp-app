@@ -370,8 +370,6 @@
     "selectWorkerOrForeman": "Odaberi radnika ili poslovođu",
     "taskTitleLabel": "Naslov zadatka *",
     "taskTitlePlaceholder": "Unesite naslov zadatka",
-    "allDay": "Cijeli dan",
-    "allDayHint": "Koristi radni dan projekta ili standardnih 8 sati",
     "starts": "Počinje",
     "ends": "Završava",
     "selectDate": "Odaberi datum",
