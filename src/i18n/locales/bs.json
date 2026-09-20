@@ -1145,7 +1145,6 @@
   },
   "billing": {
     "itemDescription": "Opis",
-    "itemTitle": "Naslov",
     "quantity": "Količina",
     "unit": "Jedinica",
     "unitPrice": "Jedinična cijena",

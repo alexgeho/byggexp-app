@@ -1145,7 +1145,6 @@
   },
   "billing": {
     "itemDescription": "Beskrivning",
-    "itemTitle": "Titel",
     "quantity": "Antal",
     "unit": "Enhet",
     "unitPrice": "Á-pris",

@@ -19,7 +19,9 @@ export default function LineItemsEditor({ items, onChange, label, rowLabel }) {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
-  const rowFieldLabel = rowLabel || t("billing.itemTitle");
+  // The field holds what was done ("Rivning kök, 25 m²"), so it is a
+  // description on both the offer and the invoice — "Titel" read as a name.
+  const rowFieldLabel = rowLabel || t("billing.itemDescription");
 
   const update = (index, patch) => {
     const next = items.map((item, i) =>

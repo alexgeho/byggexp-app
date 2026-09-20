@@ -1145,7 +1145,6 @@
   },
   "billing": {
     "itemDescription": "Description",
-    "itemTitle": "Title",
     "quantity": "Qty",
     "unit": "Unit",
     "unitPrice": "Unit price",

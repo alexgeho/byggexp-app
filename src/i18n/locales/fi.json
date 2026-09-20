@@ -1145,7 +1145,6 @@
   },
   "billing": {
     "itemDescription": "Kuvaus",
-    "itemTitle": "Otsikko",
     "quantity": "Määrä",
     "unit": "Yksikkö",
     "unitPrice": "Á-hinta",

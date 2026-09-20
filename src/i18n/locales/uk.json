@@ -1145,7 +1145,6 @@
   },
   "billing": {
     "itemDescription": "Опис",
-    "itemTitle": "Назва",
     "quantity": "Кількість",
     "unit": "Одиниця",
     "unitPrice": "Ціна за од.",
