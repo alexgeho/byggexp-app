@@ -1,24 +1,14 @@
 import { StyleSheet } from "react-native";
 
-import { hexToRgba } from "../../../theme/colorUtils";
-
 export function createStyles(theme) {
   const buttonBackground =
     theme.colors.homeButtonBackground || theme.colors.card;
   const buttonBorder = theme.colors.homeButtonBorder || theme.colors.border;
-  const baseLabelColor =
+  // Label and icon carry the theme's ink at full strength — the same colour
+  // as the section headings under the grid ("Dagsrapport", "Uppgifter"), so
+  // the whole screen speaks in one voice.
+  const labelColor =
     theme.colors.homeButtonText || theme.colors.textBtn || theme.colors.text;
-  // On the light themes the label takes the ink of the text inside the blocks
-  // below the grid ("Inga arbetspass hittades ännu.") — the label colour at
-  // 70%, which keeps the grid from shouting. White labels over a gradient or
-  // a near-black page stay at full strength: dimming them there only makes
-  // them hard to read.
-  const isWhiteInk =
-    String(baseLabelColor).trim().toUpperCase() === "#FFFFFF" ||
-    String(baseLabelColor).trim().toUpperCase() === "#FFF";
-  const labelColor = isWhiteInk
-    ? baseLabelColor
-    : hexToRgba(baseLabelColor, 0.7);
 
   return StyleSheet.create({
     container: {
