@@ -181,12 +181,12 @@ export default function HomeVariant2() {
       setOnboardingFocus(value);
       track("onboarding_focus_chosen", { focus: value });
 
-      // The answer lays the home screen out, so the person lands on the three
-      // or four things their answer implies instead of everything at once.
-      // Skipped when they already arranged it themselves.
+      // Answering lays the home screen out. It is an explicit choice about how
+      // this person works, so it replaces the current layout — including when
+      // they come back through "Byt fokus" and answer differently.
       const preset =
         HOME_PRESETS[value === "fieldwork" ? "team" : value] || null;
-      const applied = await applyHomePreset(preset);
+      const applied = await applyHomePreset(preset, { force: true });
       if (applied) {
         setEnabledButtons(preset.buttons);
         setEnabledSections(preset.sections);

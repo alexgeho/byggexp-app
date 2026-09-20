@@ -38,16 +38,18 @@ export async function saveSecondaryAction(action) {
   await AsyncStorage.setItem(SECONDARY_ACTION_KEY, action);
 }
 
-// Applies a home preset picked in onboarding — but never over a layout the
-// person already arranged themselves. Their arrangement outranks our guess.
-export async function applyHomePreset(preset) {
+// Applies a home preset picked in onboarding. `force` is for an explicit
+// answer — someone tapping "I work on my own" is asking for that layout, so it
+// replaces what is there. Without it the preset never overwrites a layout the
+// person arranged themselves.
+export async function applyHomePreset(preset, { force = false } = {}) {
   if (!preset) return false;
   try {
     const [buttons, sections] = await Promise.all([
       AsyncStorage.getItem(STORAGE_KEY),
       AsyncStorage.getItem(ENABLED_SECTIONS_KEY),
     ]);
-    if (buttons || sections) {
+    if (!force && (buttons || sections)) {
       return false;
     }
     await AsyncStorage.multiSet([
