@@ -1332,7 +1332,7 @@
       "task": "Gi noen en oppgave med forfallsdato — de får påminnelser.",
       "tools": "Hold styr på utstyr og koble det til prosjekter.",
       "companyDetails": "Org.nummer og adresse — brukes på tilbud og faktura.",
-      "billing": "Gjør jobb til penger — kunde og artikler legges til underveis.",
+      "billing": "Gjør jobb til penger — lag et tilbud og fakturer det.",
       "client": "Du trenger en klient for å sende tilbud og faktura.",
       "article": "Produkter og tjenester du selger — legges til én gang."
     },

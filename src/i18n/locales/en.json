@@ -1332,7 +1332,7 @@
       "task": "Give someone a to-do with a due date — they get reminders.",
       "tools": "Track equipment and assign it to projects.",
       "companyDetails": "Org. number and address — used on offers and invoices.",
-      "billing": "Turn work into money — add client and articles along the way.",
+      "billing": "Turn work into money — draft an offer, then invoice it.",
       "client": "You need a client to send offers and invoices.",
       "article": "The products and services you sell — added once."
     },

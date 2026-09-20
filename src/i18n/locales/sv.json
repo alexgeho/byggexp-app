@@ -1332,7 +1332,7 @@
       "task": "Ge någon en uppgift med förfallodatum — de får påminnelser.",
       "tools": "Håll koll på utrustning och koppla den till projekt.",
       "companyDetails": "Org.nummer och adress — används på offert och faktura.",
-      "billing": "Gör jobb till pengar — kund och artiklar läggs till på vägen.",
+      "billing": "Gör jobb till pengar — skapa en offert och fakturera den.",
       "client": "Du behöver en klient för att skicka offert och faktura.",
       "article": "Produkter och tjänster du säljer — läggs till en gång."
     },

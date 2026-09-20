@@ -234,22 +234,27 @@ export function useOnboardingProgress({
   };
 
   // Admin: two-direction focus (fieldwork / billing).
+  // Every step opens the form that FINISHES it, not the list it lives in —
+  // the same deep links the web checklist uses (`?create=1`). A step that drops
+  // you on an empty list leaves you to find the + yourself.
   const fieldwork = [
     { key: "project", done: state.hasProject, screen: "CreateProject" },
     { key: "team", done: state.hasTeam, screen: "CreateEmployee" },
     { key: "task", done: state.hasTask, screen: "CreateTask" },
-    { key: "tools", done: state.hasTools, screen: "Tools" },
+    { key: "tools", done: state.hasTools, screen: "CreateTool" },
     customizeStep,
   ];
+  // Billing order is the web's: company details, the client, the article
+  // catalogue, then the offer/invoice that uses all three.
   const billing = [
     {
       key: "companyDetails",
       done: state.hasCompanyDetails,
       screen: "CompanyDetails",
     },
-    { key: "client", done: state.hasClient, screen: "Clients" },
-    { key: "article", done: state.hasArticle, screen: "Articles" },
-    { key: "billing", done: state.hasBilling, screen: "Economy" },
+    { key: "client", done: state.hasClient, screen: "CreateClient" },
+    { key: "article", done: state.hasArticle, screen: "CreateArticle" },
+    { key: "billing", done: state.hasBilling, screen: "CreateInvoice" },
     customizeStep,
   ];
 
@@ -259,6 +264,9 @@ export function useOnboardingProgress({
   else if (focus === "billing") steps = billing;
   else if (focus === "solo") {
     // Working alone means own jobs and own invoices, and never "invite a team".
+    // The article catalogue stays in: a one-man firm bills from the same
+    // price list as everyone else, and an invoice with no articles to pick
+    // from is the step that stalls.
     steps = [
       { key: "project", done: state.hasProject, screen: "CreateProject" },
       {
@@ -266,8 +274,9 @@ export function useOnboardingProgress({
         done: state.hasCompanyDetails,
         screen: "CompanyDetails",
       },
-      { key: "client", done: state.hasClient, screen: "Clients" },
-      { key: "billing", done: state.hasBilling, screen: "Economy" },
+      { key: "client", done: state.hasClient, screen: "CreateClient" },
+      { key: "article", done: state.hasArticle, screen: "CreateArticle" },
+      { key: "billing", done: state.hasBilling, screen: "CreateInvoice" },
       customizeStep,
     ];
   } else {
