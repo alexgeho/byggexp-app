@@ -361,6 +361,7 @@ export default function CreateInvoiceScreen() {
             value={paymentTerms}
             onChangeText={onChangePaymentTerms}
             keyboardType="number-pad"
+            selectTextOnFocus
             placeholder={String(DEFAULT_TERMS_DAYS)}
             placeholderTextColor={PLACEHOLDER}
           />
@@ -523,6 +524,7 @@ export default function CreateInvoiceScreen() {
               placeholder="0"
               placeholderTextColor={PLACEHOLDER}
               keyboardType="decimal-pad"
+              selectTextOnFocus
             />
           </View>
         )}

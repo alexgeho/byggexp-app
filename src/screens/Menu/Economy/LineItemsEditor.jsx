@@ -13,6 +13,9 @@ import { getDateLocale } from "../../../utils/dateLocale";
 import { createStyles, PRIMARY, PLACEHOLDER } from "./billingForm.styles";
 import { useTheme } from "../../../theme/ThemeContext";
 
+// Every value cell selects its contents when tapped, so typing replaces the
+// number instead of appending to it — nobody should have to clear a "0" by
+// hand before entering a price.
 // Editable list of offer/invoice line items. Fully controlled: the parent
 // owns `items` and receives the next array on every change. Matches the Figma
 // "Invoice rows" section — section label, one white card per row, then a
@@ -147,6 +150,7 @@ export default function LineItemsEditor({
                       update(index, { quantity: parseNumber(text) })
                     }
                     keyboardType="decimal-pad"
+                    selectTextOnFocus
                   />
                 </View>
                 <View style={styles.cell}>
@@ -158,6 +162,7 @@ export default function LineItemsEditor({
                       update(index, { unit: text });
                       onUnitChange?.(index, text);
                     }}
+                    selectTextOnFocus
                   />
                 </View>
                 <View style={styles.cell}>
@@ -169,6 +174,7 @@ export default function LineItemsEditor({
                       update(index, { price: parseNumber(text) })
                     }
                     keyboardType="decimal-pad"
+                    selectTextOnFocus
                   />
                 </View>
               </View>
@@ -183,6 +189,7 @@ export default function LineItemsEditor({
                       update(index, { discount: parseNumber(text) })
                     }
                     keyboardType="decimal-pad"
+                    selectTextOnFocus
                   />
                 </View>
                 <View style={[styles.cell, { flex: 2 }]}>
