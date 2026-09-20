@@ -59,7 +59,10 @@ export const mainButtons = [
   {
     id: "invoice",
     title: "Invoice",
-    vectorIcon: "file",
+    // A money glyph, not a second sheet of paper — an invoice has to read as
+    // different from the offer next to it at a glance. Feather has no coins;
+    // dollar-sign is its money symbol.
+    vectorIcon: "dollar-sign",
     screen: "CreateInvoice",
     permission: "finance.manage",
   },
