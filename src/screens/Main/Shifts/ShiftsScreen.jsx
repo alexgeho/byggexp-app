@@ -1350,8 +1350,14 @@ export default function ShiftsScreen() {
                           {/* The day's hours: what the worker declared when they
                               declared it, otherwise what the clock caught. A
                               card that says 0 h above 8 h declared reads as a
-                              bug, even though both numbers are true. */}
+                              bug, even though both numbers are true. The source
+                              is said in words, not in colour. */}
                           {formatDuration(effectiveDurationMs(shift))}
+                          <Text style={styles.durationSource}>
+                            {shift.manualDurationMs
+                              ? ` · ${t("shifts.sourceManual")}`
+                              : ` · ${t("shifts.sourceGps")}`}
+                          </Text>
                         </Text>
                       </View>
 
@@ -1375,11 +1381,13 @@ export default function ShiftsScreen() {
                             </Text>
                             <Text
                               style={[
-                                styles.manualHoursValue,
+                                shift.manualDurationMs
+                                  ? styles.manualHoursValue
+                                  : styles.rowActionValue,
                                 {
                                   fontFamily:
                                     theme.text.fontFamily[
-                                      shift.manualDurationMs != null
+                                      shift.manualDurationMs
                                         ? "medium"
                                         : "regular"
                                     ],
@@ -1437,7 +1445,11 @@ export default function ShiftsScreen() {
                             </Text>
                             <Text
                               style={[
-                                styles.manualHoursValue,
+                                // Green means one thing on this screen:
+                                // approved. Until then it is an action.
+                                shift.approvedAt
+                                  ? styles.approvedValue
+                                  : styles.rowActionValue,
                                 {
                                   fontFamily:
                                     theme.text.fontFamily[
@@ -1476,7 +1488,9 @@ export default function ShiftsScreen() {
                             </Text>
                             <Text
                               style={[
-                                styles.manualHoursValue,
+                                shift.reportedAt
+                                  ? styles.manualHoursValue
+                                  : styles.rowActionValue,
                                 {
                                   fontFamily:
                                     theme.text.fontFamily[

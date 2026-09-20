@@ -480,7 +480,9 @@
     "attested": "Підтверджено",
     "attestAction": "Підтвердити",
     "approveFailed": "Не вдалося підтвердити зміну.",
-    "clocked": "Час за GPS"
+    "clocked": "Час за GPS",
+    "sourceManual": "вручну",
+    "sourceGps": "GPS"
   },
   "shiftHistory": {
     "title": "Денний звіт",

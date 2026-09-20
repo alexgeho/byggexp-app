@@ -480,7 +480,9 @@
     "attested": "Patvirtinta",
     "attestAction": "Patvirtinti",
     "approveFailed": "Nepavyko patvirtinti pamainos.",
-    "clocked": "GPS laikas"
+    "clocked": "GPS laikas",
+    "sourceManual": "rankiniu būdu",
+    "sourceGps": "GPS"
   },
   "shiftHistory": {
     "title": "Dienos ataskaita",

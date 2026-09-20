@@ -480,7 +480,9 @@
     "attested": "Potvrđena",
     "attestAction": "Potvrdi",
     "approveFailed": "Nije moguće potvrditi smjenu.",
-    "clocked": "GPS vrijeme"
+    "clocked": "GPS vrijeme",
+    "sourceManual": "ručno",
+    "sourceGps": "GPS"
   },
   "shiftHistory": {
     "title": "Dnevni izvještaj",

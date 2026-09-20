@@ -805,12 +805,38 @@ export const createStyles = (c) =>
       fontSize: 15,
       fontWeight: "700",
     },
+    // A value is a value: ink, like every other number on the card. Colour on
+    // this screen says what you can DO (blue) or what is WRONG (red), never
+    // where a number came from — the label already says that.
     manualHoursValue: {
-      color: "#F59E0B",
+      color: "rgba(122, 148, 168, 1)",
       fontSize: 13,
       lineHeight: 22,
       textAlign: "right",
       flex: 1,
+    },
+    // The one accent: a row you can act on.
+    rowActionValue: {
+      color: "#0785F4",
+      fontSize: 13,
+      lineHeight: 22,
+      textAlign: "right",
+      flex: 1,
+      fontWeight: "600",
+    },
+    // Where the headline number came from, said quietly beside it.
+    durationSource: {
+      color: "rgba(122, 148, 168, 1)",
+      fontSize: 12,
+      fontWeight: "400",
+    },
+    approvedValue: {
+      color: "#2FA84F",
+      fontSize: 13,
+      lineHeight: 22,
+      textAlign: "right",
+      flex: 1,
+      fontWeight: "600",
     },
     manualHoursHint: {
       color: "rgba(122, 148, 168, 1)",

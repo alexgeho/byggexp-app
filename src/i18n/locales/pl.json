@@ -480,7 +480,9 @@
     "attested": "Zatwierdzona",
     "attestAction": "Zatwierdź",
     "approveFailed": "Nie udało się zatwierdzić zmiany.",
-    "clocked": "Czas z GPS"
+    "clocked": "Czas z GPS",
+    "sourceManual": "ręcznie",
+    "sourceGps": "GPS"
   },
   "shiftHistory": {
     "title": "Raport dzienny",

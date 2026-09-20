@@ -480,7 +480,9 @@
     "attested": "Apstiprināta",
     "attestAction": "Apstiprināt",
     "approveFailed": "Neizdevās apstiprināt maiņu.",
-    "clocked": "GPS laiks"
+    "clocked": "GPS laiks",
+    "sourceManual": "manuāli",
+    "sourceGps": "GPS"
   },
   "shiftHistory": {
     "title": "Dienas atskaite",
