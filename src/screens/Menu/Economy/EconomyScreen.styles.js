@@ -57,6 +57,10 @@ export const createStyles = (c) => {
     /* Quick links to the offer/invoice registers (clients, articles, company) */
     /* Status filter pills */
     // Single horizontally-scrollable row of filter pills.
+    clientTypeFilter: {
+      width: "100%",
+      marginBottom: 12,
+    },
     pillsWrap: { position: "relative", marginBottom: 20 },
     pillsRow: { flexGrow: 0 },
     pillsFade: {

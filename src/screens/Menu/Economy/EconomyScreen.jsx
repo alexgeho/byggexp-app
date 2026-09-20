@@ -15,7 +15,8 @@ import {
   useRoute,
 } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
-import { offerService, invoiceService } from "../../../services";
+import { offerService, invoiceService, clientService } from "../../../services";
+import { FilterSelector } from "../../../components/common/FilterSelector/FilterSelector";
 import { EntityListScreen } from "../../../components/common/EntityListScreen/EntityListScreen";
 import { getDateLocale } from "../../../utils/dateLocale";
 import { sortByNewest } from "../../../utils/sortByNewest";
@@ -77,6 +78,9 @@ export default function EconomyScreen() {
   const [error, setError] = useState("");
   const [statusFilter, setStatusFilter] = useState(null);
   const [customerFilter, setCustomerFilter] = useState(null);
+  // Kundtyp filter — "all" | "company" | "private".
+  const [clientTypeFilter, setClientTypeFilter] = useState("all");
+  const [clients, setClients] = useState([]);
   const [customerModalVisible, setCustomerModalVisible] = useState(false);
   const [registersModalVisible, setRegistersModalVisible] = useState(false);
 
@@ -98,12 +102,16 @@ export default function EconomyScreen() {
     setLoading(true);
     setError("");
     try {
-      const [offerData, invoiceData] = await Promise.all([
+      const [offerData, invoiceData, clientData] = await Promise.all([
         offerService.getAll().catch(() => []),
         invoiceService.getAll().catch(() => []),
+        // Documents snapshot the customer's name/number but not its type, so
+        // the client register is what tells private from company.
+        clientService.getAll().catch(() => []),
       ]);
       setOffers(Array.isArray(offerData) ? offerData : []);
       setInvoices(Array.isArray(invoiceData) ? invoiceData : []);
+      setClients(Array.isArray(clientData) ? clientData : []);
     } catch (loadError) {
       console.error("Failed to load economy data:", loadError);
       setError(t("economy.loadError"));
@@ -149,14 +157,55 @@ export default function EconomyScreen() {
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [items]);
 
+  // customerNumber is the reliable link (invoices carry it); the name is the
+  // fallback for offers, which only snapshot companyName.
+  const clientTypeIndex = useMemo(() => {
+    const byNumber = new Map();
+    const byName = new Map();
+    clients.forEach((client) => {
+      const type = client.clientType || "company";
+      if (client.customerNumber) {
+        byNumber.set(String(client.customerNumber).trim(), type);
+      }
+      const name =
+        client.companyName ||
+        [client.firstName, client.lastName].filter(Boolean).join(" ");
+      if (name) byName.set(name.trim(), type);
+    });
+    return { byNumber, byName };
+  }, [clients]);
+
+  const clientTypeOf = useCallback(
+    (item) => {
+      // A ROT invoice is a private buyer by definition.
+      if (item.rotEnabled) return "private";
+      const number = String(item.customerNumber || "").trim();
+      if (number && clientTypeIndex.byNumber.has(number)) {
+        return clientTypeIndex.byNumber.get(number);
+      }
+      const name = (item.companyName || "").trim();
+      // Unknown customers fall back to "company", the server's default.
+      return clientTypeIndex.byName.get(name) || "company";
+    },
+    [clientTypeIndex],
+  );
+
+  const byClientType = useMemo(
+    () =>
+      clientTypeFilter === "all"
+        ? items
+        : items.filter((item) => clientTypeOf(item) === clientTypeFilter),
+    [items, clientTypeFilter, clientTypeOf],
+  );
+
   const byCustomer = useMemo(
     () =>
       customerFilter
-        ? items.filter(
+        ? byClientType.filter(
             (item) => (item.companyName || "").trim() === customerFilter,
           )
-        : items,
-    [items, customerFilter],
+        : byClientType,
+    [byClientType, customerFilter],
   );
 
   const filtered = useMemo(
@@ -269,56 +318,69 @@ export default function EconomyScreen() {
           </TouchableOpacity>
         }
         beforeList={
-          customerOptions.length > 0 || filterOptions.length > 0 ? (
-            <View style={styles.pillsWrap}>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={styles.pillsRow}
-                contentContainerStyle={styles.pillsContent}
-              >
-                <TouchableOpacity
-                  style={[styles.pill, customerFilter && styles.pillOn]}
-                  onPress={() => setCustomerModalVisible(true)}
-                  activeOpacity={0.85}
-                >
-                  <Text
-                    style={[
-                      styles.pillText,
-                      customerFilter && styles.pillTextOn,
-                    ]}
-                    numberOfLines={1}
-                  >
-                    {customerFilter || t("economy.allCustomers")}
-                  </Text>
-                  <Icon
-                    name="chevron-down"
-                    size={14}
-                    color={customerFilter ? "#FFFFFF" : "#5F7588"}
-                  />
-                </TouchableOpacity>
-
-                {filterOptions.map((status) => {
-                  const active = statusFilter === status;
-                  return (
-                    <TouchableOpacity
-                      key={status}
-                      style={[styles.pill, active && styles.pillOn]}
-                      onPress={() => setStatusFilter(active ? null : status)}
-                      activeOpacity={0.85}
-                    >
-                      <Text
-                        style={[styles.pillText, active && styles.pillTextOn]}
-                      >
-                        {t(`economy.${statusNs}.${status}`, status)} (
-                        {statusCounts[status]})
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </ScrollView>
+          <>
+            <View style={styles.clientTypeFilter}>
+              <FilterSelector
+                value={clientTypeFilter}
+                onChange={setClientTypeFilter}
+                placeholder={t("clients.filter.all")}
+                options={["all", "company", "private"].map((value) => ({
+                  value,
+                  label: t(`clients.filter.${value}`),
+                }))}
+              />
             </View>
-          ) : null
+            {customerOptions.length > 0 || filterOptions.length > 0 ? (
+              <View style={styles.pillsWrap}>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={styles.pillsRow}
+                  contentContainerStyle={styles.pillsContent}
+                >
+                  <TouchableOpacity
+                    style={[styles.pill, customerFilter && styles.pillOn]}
+                    onPress={() => setCustomerModalVisible(true)}
+                    activeOpacity={0.85}
+                  >
+                    <Text
+                      style={[
+                        styles.pillText,
+                        customerFilter && styles.pillTextOn,
+                      ]}
+                      numberOfLines={1}
+                    >
+                      {customerFilter || t("economy.allCustomers")}
+                    </Text>
+                    <Icon
+                      name="chevron-down"
+                      size={14}
+                      color={customerFilter ? "#FFFFFF" : "#5F7588"}
+                    />
+                  </TouchableOpacity>
+
+                  {filterOptions.map((status) => {
+                    const active = statusFilter === status;
+                    return (
+                      <TouchableOpacity
+                        key={status}
+                        style={[styles.pill, active && styles.pillOn]}
+                        onPress={() => setStatusFilter(active ? null : status)}
+                        activeOpacity={0.85}
+                      >
+                        <Text
+                          style={[styles.pillText, active && styles.pillTextOn]}
+                        >
+                          {t(`economy.${statusNs}.${status}`, status)} (
+                          {statusCounts[status]})
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </ScrollView>
+              </View>
+            ) : null}
+          </>
         }
         renderCard={renderCard}
       />
