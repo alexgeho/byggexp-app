@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -67,6 +67,7 @@ export function NotesPreview({
   // Inline edit: id of the note currently being edited + its working text.
   const [editingId, setEditingId] = useState(null);
   const [editDraft, setEditDraft] = useState("");
+  const inputRef = useRef(null);
 
   const load = useCallback(async () => {
     try {
@@ -195,6 +196,10 @@ export function NotesPreview({
     : "rgba(255,255,255,0.5)";
 
   const isEditing = editingId != null;
+  // With no notes yet the card shows the same centred icon + line as the other
+  // Home previews; tapping it opens the quick-add field.
+  const showEmptyState =
+    !loading && !notes.length && !isEditing && !focused && !draft.trim();
   const canSend = isEditing
     ? !!editDraft.trim() &&
       editDraft.trim() !==
@@ -300,7 +305,13 @@ export function NotesPreview({
         <Text style={styles.title}>{t("notes.title")}</Text>
       </View>
 
-      <View style={[styles.card, extraStyles.card]}>
+      <View
+        style={[
+          styles.card,
+          extraStyles.card,
+          showEmptyState && extraStyles.cardEmpty,
+        ]}
+      >
         {onClose ? (
           <TouchableOpacity
             style={styles.closeButton}
@@ -314,8 +325,32 @@ export function NotesPreview({
         {/* Quick-add — write a note straight from Home. The send control lives on
             the keyboard (iOS InputAccessoryView) so it only shows while typing;
             Android falls back to an inline ring while the field is focused. */}
-        <View style={extraStyles.inputRow}>
+        {showEmptyState ? (
+          <TouchableOpacity
+            style={styles.emptyState}
+            activeOpacity={0.8}
+            // Expand the field first, then focus it — focusing a collapsed
+            // (0-height) TextInput is unreliable on iOS.
+            onPress={() => {
+              setFocused(true);
+              onInputFocus?.();
+              requestAnimationFrame(() => inputRef.current?.focus());
+            }}
+          >
+            <Icon name="edit-3" size={26} color={styles.emptyText.color} />
+            <Text style={styles.emptyText}>
+              {t("notes.quickAdd", "Skriv en anteckning…")}
+            </Text>
+          </TouchableOpacity>
+        ) : null}
+
+        {/* Kept mounted even while the empty state shows, so tapping it can
+            focus this field straight away. */}
+        <View
+          style={[extraStyles.inputRow, showEmptyState && extraStyles.hidden]}
+        >
           <TextInput
+            ref={inputRef}
             style={[extraStyles.input, { color: styles.dateText.color }]}
             value={draft}
             onChangeText={setDraft}
@@ -384,6 +419,17 @@ const extraStyles = StyleSheet.create({
   card: {
     height: undefined,
     minHeight: 92,
+  },
+  // Same height as the other Home preview cards while the empty state shows.
+  cardEmpty: {
+    height: 130,
+  },
+  // Collapsed, not unmounted — the empty state focuses this field on tap.
+  hidden: {
+    height: 0,
+    minHeight: 0,
+    marginTop: 0,
+    opacity: 0,
   },
   inputRow: {
     flexDirection: "row",
