@@ -580,7 +580,9 @@ const createStyles = (c) =>
       justifyContent: "center",
       backgroundColor: c.inputSurface,
     },
-    pillActive: { backgroundColor: "#0785F4" },
+    // Blue belongs to the one action on the screen (Spara). A chosen pill is a
+    // state, not an action, so it reads in ink rather than competing with it.
+    pillActive: { backgroundColor: "#052D50" },
     pillText: { color: c.textPrimary, fontSize: 15 },
     pillTextActive: { color: "#FFFFFF", fontWeight: "600" },
     fieldRow: {

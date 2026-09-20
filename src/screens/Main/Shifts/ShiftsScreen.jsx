@@ -1472,7 +1472,24 @@ export default function ShiftsScreen() {
                               ]}
                             >
                               {shift.reportedAt
-                                ? t("dayReport.reported")
+                                ? [
+                                    shift.hourType &&
+                                    shift.hourType !== "normal"
+                                      ? t(
+                                          `dayReport.hourType.${shift.hourType}`,
+                                        )
+                                      : null,
+                                    shift.travelKm
+                                      ? `${shift.travelKm} km`
+                                      : null,
+                                    shift.perDiem && shift.perDiem !== "none"
+                                      ? t(
+                                          `dayReport.perDiemOption.${shift.perDiem}`,
+                                        )
+                                      : null,
+                                  ]
+                                    .filter(Boolean)
+                                    .join(" · ") || t("dayReport.reported")
                                 : `＋ ${t("dayReport.add")}`}
                             </Text>
                           </TouchableOpacity>
