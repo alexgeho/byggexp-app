@@ -478,8 +478,15 @@ export default function MenuScreen() {
   ];
 
   // Group the flat menu items into labelled, collapsible categories.
-  // Order: Projects & work, Economy, Settings, Information, Support.
+  // Settings sits first: account, home layout, language and notifications are
+  // what people come to this screen to change — the work itself is reached from
+  // the home screen, not from here.
   const menuSections = [
+    {
+      id: "settings",
+      title: t("menu.sectionSettings"),
+      items: settingsSectionItems,
+    },
     {
       id: "projects",
       title: t("menu.sectionProjects", "Projekt & arbete"),
@@ -505,11 +512,6 @@ export default function MenuScreen() {
           },
         ]
       : []),
-    {
-      id: "settings",
-      title: t("menu.sectionSettings"),
-      items: settingsSectionItems,
-    },
     {
       id: "information",
       title: t("menu.sectionInformation", "Information"),
