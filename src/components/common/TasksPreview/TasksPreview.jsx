@@ -52,6 +52,9 @@ export function TasksPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
   const { selectedProject } = useContext(AuthContext);
   const projectId = selectedProject?._id || selectedProject?.id;
   const styles = createStyles(theme, colorMode);
+  // Icons on the card: full strength for the bell of a task that has a
+  // reminder, dimmer for everything secondary. One colour, no second hue.
+  const iconColor = colorMode === "light" ? theme.colors.text : "#FFFFFF";
   const secondaryIconColor =
     colorMode === "light" ? `${theme.colors.text}80` : "rgba(255,255,255,0.72)";
   const [loading, setLoading] = useState(true);
@@ -288,16 +291,13 @@ export function TasksPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
                         name="bell"
                         size={16}
                         color={
-                          hasReminder(task) ? "#0091FF" : secondaryIconColor
+                          hasReminder(task) ? iconColor : secondaryIconColor
                         }
                       />
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                      style={[
-                        extraStyles.checkbox,
-                        { borderColor: secondaryIconColor },
-                      ]}
+                      style={[extraStyles.checkbox, { borderColor: iconColor }]}
                       onPress={() => handleComplete(task)}
                       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                       activeOpacity={0.7}
@@ -382,12 +382,14 @@ const extraStyles = StyleSheet.create({
     lineHeight: 16,
     fontFamily: "DMSans-Bold",
   },
+  // An empty square drawn in the same stroke as the bell beside it — a white
+  // fill read as a solid tile, not as something to tick.
   checkbox: {
-    width: 28,
-    height: 28,
-    borderRadius: 8,
-    borderWidth: 2.5,
-    backgroundColor: "#FFFFFF",
+    width: 24,
+    height: 24,
+    borderRadius: 7,
+    borderWidth: 2,
+    backgroundColor: "transparent",
   },
 });
 

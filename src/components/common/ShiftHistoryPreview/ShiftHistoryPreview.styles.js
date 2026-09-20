@@ -118,6 +118,10 @@ export function createStyles(theme, colorMode = "dark") {
       gap: 14,
       paddingRight: 4,
     },
+    listWithClose: {
+      paddingTop: 6,
+      paddingRight: 26,
+    },
     item: {
       gap: 8,
     },

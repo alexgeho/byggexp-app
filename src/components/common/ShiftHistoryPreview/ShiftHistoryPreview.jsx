@@ -157,7 +157,13 @@ export function ShiftHistoryPreview({
         ) : shifts.length ? (
           <ScrollView
             style={styles.scrollArea}
-            contentContainerStyle={styles.list}
+            contentContainerStyle={[
+              styles.list,
+              // The × sits in the top-right corner, so the first row starts a
+              // touch lower and keeps clear of it — the hours used to run
+              // straight under the button.
+              onClose && styles.listWithClose,
+            ]}
             showsVerticalScrollIndicator={false}
             nestedScrollEnabled={true}
           >
