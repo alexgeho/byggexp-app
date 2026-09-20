@@ -1,9 +1,18 @@
 import { StyleSheet } from "react-native";
 
+import { hexToRgba } from "../../../theme/colorUtils";
+
 export function createStyles(theme) {
   const buttonBackground =
     theme.colors.homeButtonBackground || theme.colors.card;
   const buttonBorder = theme.colors.homeButtonBorder || theme.colors.border;
+  // Same ink as the text inside the blocks below the grid ("Inga arbetspass
+  // hittades ännu."): the label colour at 70%. Full-strength ink made every
+  // card shout; at 70% the grid reads as one calm block.
+  const labelColor = hexToRgba(
+    theme.colors.homeButtonText || theme.colors.textBtn || theme.colors.text,
+    0.7,
+  );
 
   return StyleSheet.create({
     container: {
@@ -77,10 +86,7 @@ export function createStyles(theme) {
     // — it doesn't need bold on top, and matching the headings keeps one voice
     // down the screen.
     buttonText: {
-      color:
-        theme.colors.homeButtonText ||
-        theme.colors.textBtn ||
-        theme.colors.text,
+      color: labelColor,
       fontFamily: theme.text.fontFamily.medium,
       fontSize: 15,
       fontWeight: theme.homeButton.textWeight,
