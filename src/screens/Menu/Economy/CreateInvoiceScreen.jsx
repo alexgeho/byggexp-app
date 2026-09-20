@@ -28,6 +28,8 @@ import {
   isHourRow,
 } from "../../../utils/billingTotals";
 import { createStyles, PRIMARY, PLACEHOLDER } from "./billingForm.styles";
+import { downloadAndShareDocument } from "../../../utils/documentPreview";
+import { API_BASE_URL } from "../../../config/env";
 import { useTheme } from "../../../theme/ThemeContext";
 import LineItemsEditor from "./LineItemsEditor";
 import ClientPickerModal from "./ClientPickerModal";
@@ -262,6 +264,36 @@ export default function CreateInvoiceScreen() {
     }
   };
 
+  // No customer e-mail? Then make the PDF and hand it to the phone's share
+  // sheet — mail, WhatsApp, Files, print. The invoice is created either way.
+  const handleCreateAndShare = async () => {
+    if (!validate() || submittingRef.current) return;
+    submittingRef.current = true;
+    try {
+      setSaving(true);
+      const created = await invoiceService.create(buildPayload());
+      const id = created?._id || created?.id;
+      const number = created?.invoiceNumber;
+      if (id) {
+        await downloadAndShareDocument({
+          url: `${API_BASE_URL}/invoices/${id}/pdf`,
+          fileName: `faktura-${number || id}.pdf`,
+        });
+      }
+      showSuccess({ title: t("billing.invoiceSaved") });
+      navigation.goBack();
+    } catch (error) {
+      console.error("Failed to share invoice:", error);
+      Alert.alert(
+        t("billing.shareFailedTitle"),
+        t("billing.invoiceSendFailed"),
+      );
+    } finally {
+      setSaving(false);
+      submittingRef.current = false;
+    }
+  };
+
   const handleCreateAndSend = async () => {
     if (!validate() || submittingRef.current) return;
     submittingRef.current = true;
@@ -269,7 +301,13 @@ export default function CreateInvoiceScreen() {
       // Release the double-tap guard before bailing out — leaving it set left
       // BOTH buttons dead for the rest of the screen's life.
       submittingRef.current = false;
-      Alert.alert(t("billing.missingEmailTitle"), t("billing.missingEmail"));
+      Alert.alert(t("billing.missingEmailTitle"), t("billing.missingEmail"), [
+        { text: t("common.cancel", "Avbryt"), style: "cancel" },
+        {
+          text: t("billing.downloadInstead", "Ladda ner i stället"),
+          onPress: handleCreateAndShare,
+        },
+      ]);
       return;
     }
     try {

@@ -1151,7 +1151,10 @@
     "createSoon": "Создание появится на следующем шаге.",
     "allCustomers": "Все клиенты",
     "filterByCustomer": "Фильтр по клиенту",
-    "deleteFailed": "Не удалось удалить документ."
+    "deleteFailed": "Не удалось удалить документ.",
+    "sendByEmail": "Отправить по почте",
+    "shareDocument": "Скачать / поделиться",
+    "markPaid": "Отметить оплаченным"
   },
   "billing": {
     "itemDescription": "Описание",
@@ -1256,7 +1259,8 @@
     "addTextRow": "Добавить текстовую строку",
     "paymentTerms": "Срок оплаты (дней)",
     "lateInterest": "Пеня за просрочку",
-    "lateInterestPlaceholder": "напр. 8% + ключевая ставка"
+    "lateInterestPlaceholder": "напр. 8% + ключевая ставка",
+    "downloadInstead": "Скачать вместо этого"
   },
   "tasksPreview": {
     "noDate": "Без даты",

@@ -1151,7 +1151,10 @@
     "createSoon": "Створення з'явиться на наступному кроці.",
     "allCustomers": "Усі клієнти",
     "filterByCustomer": "Фільтрувати за клієнтом",
-    "deleteFailed": "Не вдалося видалити документ."
+    "deleteFailed": "Не вдалося видалити документ.",
+    "sendByEmail": "Надіслати e-поштою",
+    "shareDocument": "Завантажити / поділитися",
+    "markPaid": "Позначити оплаченим"
   },
   "billing": {
     "itemDescription": "Опис",
@@ -1256,7 +1259,8 @@
     "addTextRow": "Додати текстовий рядок",
     "paymentTerms": "Умови оплати (днів)",
     "lateInterest": "Пеня за прострочення",
-    "lateInterestPlaceholder": "напр. 8% + облікова ставка"
+    "lateInterestPlaceholder": "напр. 8% + облікова ставка",
+    "downloadInstead": "Завантажити натомість"
   },
   "tasksPreview": {
     "noDate": "Без дати",

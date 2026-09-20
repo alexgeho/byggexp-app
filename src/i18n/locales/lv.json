@@ -1151,7 +1151,10 @@
     "createSoon": "Izveide būs pieejama nākamajā solī.",
     "allCustomers": "Visi klienti",
     "filterByCustomer": "Filtrēt pēc klienta",
-    "deleteFailed": "Neizdevās dzēst dokumentu."
+    "deleteFailed": "Neizdevās dzēst dokumentu.",
+    "sendByEmail": "Nosūtīt pa e-pastu",
+    "shareDocument": "Lejupielādēt / kopīgot",
+    "markPaid": "Atzīmēt kā apmaksātu"
   },
   "billing": {
     "itemDescription": "Apraksts",
@@ -1256,7 +1259,8 @@
     "addTextRow": "Pievienot teksta rindu",
     "paymentTerms": "Apmaksas termiņš (dienas)",
     "lateInterest": "Kavējuma procenti",
-    "lateInterestPlaceholder": "piem. 8% + bāzes likme"
+    "lateInterestPlaceholder": "piem. 8% + bāzes likme",
+    "downloadInstead": "Lejupielādēt tā vietā"
   },
   "tasksPreview": {
     "noDate": "Nav datuma",

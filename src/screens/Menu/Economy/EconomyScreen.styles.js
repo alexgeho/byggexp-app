@@ -150,6 +150,21 @@ export const createStyles = (c) => {
     badge_bad: { backgroundColor: "#FDECEC" },
     badgeText_bad: { color: "#E5484D" },
 
+    /* Active status pill: the status colour, solid */
+    pillOn_draft: { backgroundColor: "#9AA6B2" },
+    pillOn_sent: { backgroundColor: "#0C77FD" },
+    pillOn_ok: { backgroundColor: "#04B251" },
+    pillOn_bad: { backgroundColor: "#E5484D" },
+
+    /* Rows in the document's action sheet */
+    actionRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+      paddingVertical: 15,
+    },
+    actionRowText: { fontSize: 16, fontFamily: F_MED, color: INK },
+
     /* Customer filter — first pill in the status-filter row */
     customerPill: {
       flexDirection: "row",

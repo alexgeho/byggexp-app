@@ -1151,7 +1151,10 @@
     "createSoon": "Skapa kommer i nästa steg.",
     "allCustomers": "Alla kunder",
     "filterByCustomer": "Filtrera på kund",
-    "deleteFailed": "Kunde inte ta bort dokumentet."
+    "deleteFailed": "Kunde inte ta bort dokumentet.",
+    "sendByEmail": "Skicka via e-post",
+    "shareDocument": "Ladda ner / dela",
+    "markPaid": "Markera som betald"
   },
   "billing": {
     "itemDescription": "Beskrivning",
@@ -1256,7 +1259,8 @@
     "addTextRow": "Lägg till textrad",
     "paymentTerms": "Betalningsvillkor (dagar)",
     "lateInterest": "Dröjsmålsränta",
-    "lateInterestPlaceholder": "t.ex. 8% + referensränta"
+    "lateInterestPlaceholder": "t.ex. 8% + referensränta",
+    "downloadInstead": "Ladda ner i stället"
   },
   "tasksPreview": {
     "noDate": "Inget datum",

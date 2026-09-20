@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   View,
   Text,
@@ -12,11 +13,12 @@ import Icon from "react-native-vector-icons/Feather";
 import { useFocusEffect, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { offerService, invoiceService, clientService } from "../../../services";
-import { FilterSelector } from "../../../components/common/FilterSelector/FilterSelector";
 import { EntityListScreen } from "../../../components/common/EntityListScreen/EntityListScreen";
 import { getDateLocale } from "../../../utils/dateLocale";
 import { sortByNewest } from "../../../utils/sortByNewest";
 import { createStyles } from "./EconomyScreen.styles";
+import { downloadAndShareDocument } from "../../../utils/documentPreview";
+import { API_BASE_URL } from "../../../config/env";
 import { useTheme } from "../../../theme/ThemeContext";
 
 const OFFER_STATUS_TONE = {
@@ -72,11 +74,12 @@ export default function EconomyScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [statusFilter, setStatusFilter] = useState(null);
-  const [customerFilter, setCustomerFilter] = useState(null);
+  // The document whose action sheet is open, and whether one is running.
+  const [actionItem, setActionItem] = useState(null);
+  const [busyAction, setBusyAction] = useState(false);
   // Kundtyp filter — "all" | "company" | "private".
   const [clientTypeFilter, setClientTypeFilter] = useState("all");
   const [clients, setClients] = useState([]);
-  const [customerModalVisible, setCustomerModalVisible] = useState(false);
 
   // Clients, articles and the company's own details are entities of their
   // own, each with a screen in the menu. This screen makes one thing: a
@@ -129,18 +132,6 @@ export default function EconomyScreen() {
     [rawItems],
   );
 
-  // Unique customers (companyName) across the current mode, with counts.
-  const customerOptions = useMemo(() => {
-    const counts = new Map();
-    items.forEach((item) => {
-      const name = (item.companyName || "").trim();
-      if (name) counts.set(name, (counts.get(name) || 0) + 1);
-    });
-    return [...counts.entries()]
-      .map(([name, count]) => ({ name, count }))
-      .sort((a, b) => a.name.localeCompare(b.name));
-  }, [items]);
-
   // customerNumber is the reliable link (invoices carry it); the name is the
   // fallback for offers, which only snapshot companyName.
   const clientTypeIndex = useMemo(() => {
@@ -182,32 +173,22 @@ export default function EconomyScreen() {
     [items, clientTypeFilter, clientTypeOf],
   );
 
-  const byCustomer = useMemo(
-    () =>
-      customerFilter
-        ? byClientType.filter(
-            (item) => (item.companyName || "").trim() === customerFilter,
-          )
-        : byClientType,
-    [byClientType, customerFilter],
-  );
-
   const filtered = useMemo(
     () =>
       statusFilter
-        ? byCustomer.filter((item) => String(item.status) === statusFilter)
-        : byCustomer,
-    [byCustomer, statusFilter],
+        ? byClientType.filter((item) => String(item.status) === statusFilter)
+        : byClientType,
+    [byClientType, statusFilter],
   );
 
   const statusCounts = useMemo(() => {
     const counts = {};
-    byCustomer.forEach((item) => {
+    byClientType.forEach((item) => {
       const status = String(item.status || "draft");
       counts[status] = (counts[status] || 0) + 1;
     });
     return counts;
-  }, [byCustomer]);
+  }, [byClientType]);
 
   const filterOptions = useMemo(() => {
     const order = isOffers ? OFFER_FILTER_ORDER : INVOICE_FILTER_ORDER;
@@ -238,6 +219,62 @@ export default function EconomyScreen() {
     }
   };
 
+  const documentId = (item) => item?._id || item?.id;
+
+  const runAction = async (work, failedTitle, failedMessage) => {
+    setBusyAction(true);
+    try {
+      await work();
+      setActionItem(null);
+      await load();
+    } catch (error) {
+      console.error(failedTitle, error);
+      Alert.alert(t(failedTitle), t(failedMessage));
+    } finally {
+      setBusyAction(false);
+    }
+  };
+
+  // Mail it to the customer's address as it stands on the document.
+  const sendByEmail = (item) => {
+    const email = String(item?.email || "").trim();
+    if (!email) {
+      Alert.alert(t("billing.missingEmailTitle"), t("billing.missingEmail"));
+      return;
+    }
+    runAction(
+      async () => {
+        const id = documentId(item);
+        if (isOffers) await offerService.send(id, { email });
+        else await invoiceService.send(id, { email });
+      },
+      "billing.saveFailedTitle",
+      isOffers ? "billing.offerSendFailed" : "billing.invoiceSendFailed",
+    );
+  };
+
+  // Hand the PDF to the phone's share sheet — mail, chat, Files, print.
+  const shareDocument = (item) =>
+    runAction(
+      async () => {
+        const id = documentId(item);
+        const number = isOffers ? item.offerNumber : item.invoiceNumber;
+        await downloadAndShareDocument({
+          url: `${API_BASE_URL}/${isOffers ? "offers" : "invoices"}/${id}/pdf`,
+          fileName: `${isOffers ? "offert" : "faktura"}-${number || id}.pdf`,
+        });
+      },
+      "billing.shareFailedTitle",
+      isOffers ? "billing.offerShareFailed" : "billing.invoiceSendFailed",
+    );
+
+  const markPaid = (item) =>
+    runAction(
+      () => invoiceService.setStatus(documentId(item), "paid"),
+      "billing.saveFailedTitle",
+      "billing.invoiceSaveFailed",
+    );
+
   const renderCard = (item) => {
     const id = item._id || item.id;
     const number = isOffers ? item.offerNumber : item.invoiceNumber;
@@ -254,7 +291,12 @@ export default function EconomyScreen() {
         : "";
 
     return (
-      <TouchableOpacity key={id} style={styles.card} activeOpacity={0.85}>
+      <TouchableOpacity
+        key={id}
+        style={styles.card}
+        activeOpacity={0.85}
+        onPress={() => setActionItem(item)}
+      >
         <View style={styles.cardInfo}>
           <Text style={styles.cardNo}>
             {isOffers ? t("economy.offerNo") : t("economy.invoiceNo")} #{number}
@@ -291,20 +333,17 @@ export default function EconomyScreen() {
           (isOffers ? t("economy.emptyOffers") : t("economy.emptyInvoices"))
         }
         addScreen={isOffers ? "CreateOffer" : "CreateInvoice"}
+        // Same chip row as Klienter, Projekt, Verktyg — one filter control
+        // across every list instead of a dropdown here and chips there.
+        filters={["all", "company", "private"].map((value) => ({
+          value,
+          label: t(`clients.filter.${value}`),
+        }))}
+        activeFilter={clientTypeFilter}
+        onFilterChange={setClientTypeFilter}
         beforeList={
           <>
-            <View style={styles.clientTypeFilter}>
-              <FilterSelector
-                value={clientTypeFilter}
-                onChange={setClientTypeFilter}
-                placeholder={t("clients.filter.all")}
-                options={["all", "company", "private"].map((value) => ({
-                  value,
-                  label: t(`clients.filter.${value}`),
-                }))}
-              />
-            </View>
-            {customerOptions.length > 0 || filterOptions.length > 0 ? (
+            {filterOptions.length > 0 ? (
               <View style={styles.pillsWrap}>
                 <ScrollView
                   horizontal
@@ -312,38 +351,29 @@ export default function EconomyScreen() {
                   style={styles.pillsRow}
                   contentContainerStyle={styles.pillsContent}
                 >
-                  <TouchableOpacity
-                    style={[styles.pill, customerFilter && styles.pillOn]}
-                    onPress={() => setCustomerModalVisible(true)}
-                    activeOpacity={0.85}
-                  >
-                    <Text
-                      style={[
-                        styles.pillText,
-                        customerFilter && styles.pillTextOn,
-                      ]}
-                      numberOfLines={1}
-                    >
-                      {customerFilter || t("economy.allCustomers")}
-                    </Text>
-                    <Icon
-                      name="chevron-down"
-                      size={14}
-                      color={customerFilter ? "#FFFFFF" : "#5F7588"}
-                    />
-                  </TouchableOpacity>
-
                   {filterOptions.map((status) => {
                     const active = statusFilter === status;
+                    // A pill reads in its status's own colour — the same
+                    // palette the badge on the card uses, so "Förfallen" is
+                    // red in the filter and red on the document.
+                    const pillTone = toneMap[status] || "draft";
                     return (
                       <TouchableOpacity
                         key={status}
-                        style={[styles.pill, active && styles.pillOn]}
+                        style={[
+                          styles.pill,
+                          styles[`badge_${pillTone}`],
+                          active && styles[`pillOn_${pillTone}`],
+                        ]}
                         onPress={() => setStatusFilter(active ? null : status)}
                         activeOpacity={0.85}
                       >
                         <Text
-                          style={[styles.pillText, active && styles.pillTextOn]}
+                          style={[
+                            styles.pillText,
+                            styles[`badgeText_${pillTone}`],
+                            active && styles.pillTextOn,
+                          ]}
                         >
                           {t(`economy.${statusNs}.${status}`, status)} (
                           {statusCounts[status]})
@@ -359,55 +389,67 @@ export default function EconomyScreen() {
         renderCard={renderCard}
       />
 
+      {/* Tap a document → what can be done with it: send it by mail, hand
+          the PDF to the share sheet, or mark an invoice paid. */}
       <Modal
-        visible={customerModalVisible}
+        visible={Boolean(actionItem)}
         transparent
         animationType="slide"
-        onRequestClose={() => setCustomerModalVisible(false)}
+        onRequestClose={() => setActionItem(null)}
       >
         <Pressable
           style={styles.modalOverlay}
-          onPress={() => setCustomerModalVisible(false)}
+          onPress={() => setActionItem(null)}
         >
           <Pressable style={styles.modalSheet} onPress={() => {}}>
             <View style={styles.grab} />
-            <Text style={styles.modalTitle}>
-              {t("economy.filterByCustomer")}
+            <Text style={styles.modalTitle} numberOfLines={1}>
+              {actionItem?.companyName || t("economy.noCustomer")}
             </Text>
-            <ScrollView>
-              <TouchableOpacity
-                style={styles.customerRow}
-                onPress={() => {
-                  setCustomerFilter(null);
-                  setCustomerModalVisible(false);
-                }}
-              >
-                <Text style={styles.customerRowText}>
-                  {t("economy.allCustomers")}
-                </Text>
-                {!customerFilter && (
-                  <Icon name="check" size={18} color="#0785F4" />
-                )}
-              </TouchableOpacity>
-              {customerOptions.map((option) => (
+
+            {busyAction ? (
+              <ActivityIndicator
+                color={theme.colors.primary}
+                style={{ marginVertical: 18 }}
+              />
+            ) : (
+              <>
                 <TouchableOpacity
-                  key={option.name}
-                  style={styles.customerRow}
-                  onPress={() => {
-                    setCustomerFilter(option.name);
-                    setStatusFilter(null);
-                    setCustomerModalVisible(false);
-                  }}
+                  style={styles.actionRow}
+                  onPress={() => sendByEmail(actionItem)}
+                  activeOpacity={0.8}
                 >
-                  <Text style={styles.customerRowText} numberOfLines={1}>
-                    {option.name} · {option.count}
+                  <Icon name="mail" size={20} color={theme.colors.primary} />
+                  <Text style={styles.actionRowText}>
+                    {t("economy.sendByEmail", "Skicka via e-post")}
                   </Text>
-                  {customerFilter === option.name && (
-                    <Icon name="check" size={18} color="#0785F4" />
-                  )}
                 </TouchableOpacity>
-              ))}
-            </ScrollView>
+
+                <TouchableOpacity
+                  style={styles.actionRow}
+                  onPress={() => shareDocument(actionItem)}
+                  activeOpacity={0.8}
+                >
+                  <Icon name="share-2" size={20} color={theme.colors.primary} />
+                  <Text style={styles.actionRowText}>
+                    {t("economy.shareDocument", "Ladda ner / dela")}
+                  </Text>
+                </TouchableOpacity>
+
+                {!isOffers && actionItem?.status !== "paid" ? (
+                  <TouchableOpacity
+                    style={styles.actionRow}
+                    onPress={() => markPaid(actionItem)}
+                    activeOpacity={0.8}
+                  >
+                    <Icon name="check-circle" size={20} color="#04B251" />
+                    <Text style={styles.actionRowText}>
+                      {t("economy.markPaid", "Markera som betald")}
+                    </Text>
+                  </TouchableOpacity>
+                ) : null}
+              </>
+            )}
           </Pressable>
         </Pressable>
       </Modal>

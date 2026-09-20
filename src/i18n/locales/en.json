@@ -1151,7 +1151,10 @@
     "createSoon": "Creating is coming in the next step.",
     "allCustomers": "All customers",
     "filterByCustomer": "Filter by customer",
-    "deleteFailed": "Could not delete the document."
+    "deleteFailed": "Could not delete the document.",
+    "sendByEmail": "Send by email",
+    "shareDocument": "Download / share",
+    "markPaid": "Mark as paid"
   },
   "billing": {
     "itemDescription": "Description",
@@ -1256,7 +1259,8 @@
     "addTextRow": "Add text row",
     "paymentTerms": "Payment terms (days)",
     "lateInterest": "Late-payment interest",
-    "lateInterestPlaceholder": "e.g. 8% + reference rate"
+    "lateInterestPlaceholder": "e.g. 8% + reference rate",
+    "downloadInstead": "Download instead"
   },
   "tasksPreview": {
     "noDate": "No date",

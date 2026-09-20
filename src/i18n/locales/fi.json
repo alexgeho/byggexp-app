@@ -1151,7 +1151,10 @@
     "createSoon": "Luonti tulee seuraavassa vaiheessa.",
     "allCustomers": "Kaikki asiakkaat",
     "filterByCustomer": "Suodata asiakkaan mukaan",
-    "deleteFailed": "Asiakirjan poistaminen epäonnistui."
+    "deleteFailed": "Asiakirjan poistaminen epäonnistui.",
+    "sendByEmail": "Lähetä sähköpostilla",
+    "shareDocument": "Lataa / jaa",
+    "markPaid": "Merkitse maksetuksi"
   },
   "billing": {
     "itemDescription": "Kuvaus",
@@ -1256,7 +1259,8 @@
     "addTextRow": "Lisää tekstirivi",
     "paymentTerms": "Maksuehto (päivää)",
     "lateInterest": "Viivästyskorko",
-    "lateInterestPlaceholder": "esim. 8% + viitekorko"
+    "lateInterestPlaceholder": "esim. 8% + viitekorko",
+    "downloadInstead": "Lataa sen sijaan"
   },
   "tasksPreview": {
     "noDate": "Ei päivämäärää",

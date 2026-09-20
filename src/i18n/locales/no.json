@@ -1151,7 +1151,10 @@
     "createSoon": "Opprettelse kommer i neste steg.",
     "allCustomers": "Alle kunder",
     "filterByCustomer": "Filtrer på kunde",
-    "deleteFailed": "Kunne ikke slette dokumentet."
+    "deleteFailed": "Kunne ikke slette dokumentet.",
+    "sendByEmail": "Send på e-post",
+    "shareDocument": "Last ned / del",
+    "markPaid": "Merk som betalt"
   },
   "billing": {
     "itemDescription": "Beskrivelse",
@@ -1256,7 +1259,8 @@
     "addTextRow": "Legg til tekstrad",
     "paymentTerms": "Betalingsbetingelser (dager)",
     "lateInterest": "Forsinkelsesrente",
-    "lateInterestPlaceholder": "f.eks. 8% + referanserente"
+    "lateInterestPlaceholder": "f.eks. 8% + referanserente",
+    "downloadInstead": "Last ned i stedet"
   },
   "tasksPreview": {
     "noDate": "Ingen dato",

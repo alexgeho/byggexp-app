@@ -1151,7 +1151,10 @@
     "createSoon": "Loomine tuleb järgmises sammus.",
     "allCustomers": "Kõik kliendid",
     "filterByCustomer": "Filtreeri kliendi järgi",
-    "deleteFailed": "Dokumendi kustutamine ebaõnnestus."
+    "deleteFailed": "Dokumendi kustutamine ebaõnnestus.",
+    "sendByEmail": "Saada e-postiga",
+    "shareDocument": "Laadi alla / jaga",
+    "markPaid": "Märgi makstuks"
   },
   "billing": {
     "itemDescription": "Kirjeldus",
@@ -1256,7 +1259,8 @@
     "addTextRow": "Lisa tekstirida",
     "paymentTerms": "Maksetähtaeg (päeva)",
     "lateInterest": "Viivis",
-    "lateInterestPlaceholder": "nt 8% + viitemäär"
+    "lateInterestPlaceholder": "nt 8% + viitemäär",
+    "downloadInstead": "Laadi alla selle asemel"
   },
   "tasksPreview": {
     "noDate": "Kuupäev puudub",

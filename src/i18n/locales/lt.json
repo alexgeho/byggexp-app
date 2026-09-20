@@ -1151,7 +1151,10 @@
     "createSoon": "Kūrimas bus kitame etape.",
     "allCustomers": "Visi klientai",
     "filterByCustomer": "Filtruoti pagal klientą",
-    "deleteFailed": "Nepavyko ištrinti dokumento."
+    "deleteFailed": "Nepavyko ištrinti dokumento.",
+    "sendByEmail": "Siųsti el. paštu",
+    "shareDocument": "Atsisiųsti / dalintis",
+    "markPaid": "Pažymėti apmokėta"
   },
   "billing": {
     "itemDescription": "Aprašymas",
@@ -1256,7 +1259,8 @@
     "addTextRow": "Pridėti teksto eilutę",
     "paymentTerms": "Mokėjimo terminas (dienos)",
     "lateInterest": "Delspinigiai",
-    "lateInterestPlaceholder": "pvz. 8% + bazinė norma"
+    "lateInterestPlaceholder": "pvz. 8% + bazinė norma",
+    "downloadInstead": "Vietoj to atsisiųsti"
   },
   "tasksPreview": {
     "noDate": "Nėra datos",

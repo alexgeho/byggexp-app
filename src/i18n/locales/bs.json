@@ -1151,7 +1151,10 @@
     "createSoon": "Kreiranje stiže u sljedećem koraku.",
     "allCustomers": "Svi kupci",
     "filterByCustomer": "Filtriraj po kupcu",
-    "deleteFailed": "Nije moguće obrisati dokument."
+    "deleteFailed": "Nije moguće obrisati dokument.",
+    "sendByEmail": "Pošalji e-poštom",
+    "shareDocument": "Preuzmi / podijeli",
+    "markPaid": "Označi kao plaćeno"
   },
   "billing": {
     "itemDescription": "Opis",
@@ -1256,7 +1259,8 @@
     "addTextRow": "Dodaj tekstualni red",
     "paymentTerms": "Uslovi plaćanja (dana)",
     "lateInterest": "Zatezna kamata",
-    "lateInterestPlaceholder": "npr. 8% + referentna stopa"
+    "lateInterestPlaceholder": "npr. 8% + referentna stopa",
+    "downloadInstead": "Preuzmi umjesto toga"
   },
   "tasksPreview": {
     "noDate": "Bez datuma",
