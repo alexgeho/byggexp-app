@@ -45,15 +45,16 @@ export const mainButtons = [
     vectorIcon: "check-square",
     screen: "Tasks",
   },
-  // Create an offer / an invoice straight from home. Same Feather glyphs the
-  // menu uses for Offerter and Fakturor. Gated on the finance capability, so a
+  // Offers and invoices, each its own entity with its own list — the button
+  // opens the list, where "+" creates one, exactly like every other entity.
+  // Same Feather glyphs the menu uses. Gated on the finance capability, so a
   // delegated "office" user gets them without an admin role — and off by
   // default: they are added from Customize like any other button.
   {
     id: "offer",
     title: "Offer",
     vectorIcon: "file-text",
-    screen: "CreateOffer",
+    screen: "Offers",
     permission: "finance.manage",
   },
   {
@@ -63,7 +64,7 @@ export const mainButtons = [
     // different from the offer next to it at a glance. Feather has no coins;
     // dollar-sign is its money symbol.
     vectorIcon: "dollar-sign",
-    screen: "CreateInvoice",
+    screen: "Invoices",
     permission: "finance.manage",
   },
 ];

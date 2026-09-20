@@ -436,22 +436,20 @@ export default function MenuScreen() {
     ...menuItems.filter((item) => item.id === "notifications"),
   ];
 
-  // Economy is its own category with the registers surfaced directly (no need to
-  // dive into the Economy screen first): offers/invoices open that screen on the
-  // right tab, the rest are their own screens. Gated on finance.manage.
+  // Economy is its own category with every register surfaced directly: offers
+  // and invoices are separate entities with their own screens, like clients and
+  // articles. Gated on finance.manage.
   const economySectionItems = [
     {
       id: "offers",
-      screen: "Economy",
-      params: { mode: "offers" },
+      screen: "Offers",
       title: t("economy.offers"),
       icon: require("../../assets/Documents.png"),
       color: theme.colors.primary,
     },
     {
       id: "invoices",
-      screen: "Economy",
-      params: { mode: "invoices" },
+      screen: "Invoices",
       title: t("economy.invoices"),
       icon: require("../../assets/Legal.png"),
       color: theme.colors.primary,

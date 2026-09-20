@@ -261,6 +261,23 @@ export default function AppNavigator() {
                 require("../screens/Menu/ToolScanScreen").default
               }
             />
+            {/* Offers and invoices are separate entities; both render the
+                same list screen, fixed to one of them by the route. "Economy"
+                stays as the legacy name older links still use. */}
+            <Stack.Screen
+              name="Offers"
+              initialParams={{ mode: "offers" }}
+              getComponent={() =>
+                require("../screens/Menu/Economy/EconomyScreen").default
+              }
+            />
+            <Stack.Screen
+              name="Invoices"
+              initialParams={{ mode: "invoices" }}
+              getComponent={() =>
+                require("../screens/Menu/Economy/EconomyScreen").default
+              }
+            />
             <Stack.Screen
               name="Economy"
               getComponent={() =>

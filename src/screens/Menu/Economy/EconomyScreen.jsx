@@ -85,7 +85,8 @@ export default function EconomyScreen() {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
 
-  // Opened from the menu's Ekonomi category with mode: "offers" | "invoices".
+  // Offers and invoices are separate entities with their own routes; the route
+  // fixes which one this screen is. There is no in-screen switch any more.
   const [mode, setMode] = useState(
     route.params?.mode === "invoices" ? "invoices" : "offers",
   ); // 'offers' | 'invoices'
@@ -199,12 +200,6 @@ export default function EconomyScreen() {
     return order.filter((status) => statusCounts[status]);
   }, [isOffers, statusCounts]);
 
-  const switchMode = (next) => {
-    setMode(next);
-    setStatusFilter(null);
-    setCustomerFilter(null);
-  };
-
   const openCreate = () => {
     navigation.navigate(isOffers ? "CreateOffer" : "CreateInvoice");
   };
@@ -304,7 +299,9 @@ export default function EconomyScreen() {
         >
           <Icon name="chevron-left" size={22} color="#030303" />
         </TouchableOpacity>
-        <Text style={styles.title}>{t("economy.title")}</Text>
+        <Text style={styles.title}>
+          {isOffers ? t("economy.offers") : t("economy.invoices")}
+        </Text>
         <TouchableOpacity
           style={styles.headerBtn}
           onPress={() => setRegistersModalVisible(true)}
@@ -312,25 +309,6 @@ export default function EconomyScreen() {
           accessibilityLabel={t("economy.registers", "Register")}
         >
           <Icon name="more-horizontal" size={22} color="#030303" />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.segmented}>
-        <TouchableOpacity
-          style={[styles.segBtn, isOffers && styles.segBtnOn]}
-          onPress={() => switchMode("offers")}
-        >
-          <Text style={[styles.segText, isOffers && styles.segTextOn]}>
-            {t("economy.offers")}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.segBtn, !isOffers && styles.segBtnOn]}
-          onPress={() => switchMode("invoices")}
-        >
-          <Text style={[styles.segText, !isOffers && styles.segTextOn]}>
-            {t("economy.invoices")}
-          </Text>
         </TouchableOpacity>
       </View>
 
