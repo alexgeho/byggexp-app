@@ -15,6 +15,14 @@
 | 08:38 | **Skapa projekt**: убрал кнопку Avtal + карточку AVTAL, Ekonomi → 3 блока по 2 безрамочные строки (`FloatingField`) — OTA `e246b544` |
 | 08:15–08:22 | Перевёл рабочий файл в один `WORKLOG.md` (был `TZ_TASKS.md`), добавил секцию «Очередь» |
 
+## 11:34 · «Убери этот. Описание ячейку сделай ниже/меньше» (скрин Skapa uppgift)
+
+**Твоя задача:** убрать «Interna anteckningar», описание сделать ниже.
+
+- [x] «Interna anteckningar» вырезаны целиком: строка, стейт `notes`, отправка поля в submit
+- [x] Ячейка Beskrivning: minHeight 70 → 40, растёт по мере набора
+- 📦 `deee5001` · OTA `1b5aae63`
+
 ## 11:33 · «Почему отмечены?» (скрин Kom igång, fieldwork)
 
 **Твоя задача:** в чеклисте отмечены Lägg till verktyg и Anpassa startsidan.
