@@ -125,12 +125,13 @@ export const lightGrayTheme = {
 
 export const colorfulTheme = {
   ...common,
-  // Pixel-perfect grid geometry from the Figma "colorful" mockup.
   homeButton: {
     ...common.homeButton,
     height: 110,
     radius: 24,
-    padding: 14,
+    // One padding across the app: the card's text starts where every other
+    // card's text starts. (Figma's colourful mock drew 14 here.)
+    padding: 20,
     gridGap: 11,
   },
   colors: withIconBadgeBackground(colorfulColors),

@@ -12,7 +12,10 @@ import {
 import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 
-import { articleService } from "../../../services";
+// Straight from the module: the services barrel doesn't re-export this one,
+// so importing it from there handed back `undefined` and every load threw —
+// the sheet said "no articles" however many the company had.
+import { articleService } from "../../../services/article.service";
 import { formatMoney } from "../../../utils/billingTotals";
 import { getDateLocale } from "../../../utils/dateLocale";
 import { createStyles, PRIMARY, MUTED } from "./billingForm.styles";

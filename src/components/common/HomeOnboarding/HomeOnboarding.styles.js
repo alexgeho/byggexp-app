@@ -43,7 +43,9 @@ export function createStyles(theme, onDark = false) {
                 : "rgba(255,255,255,0.90)",
           }),
           borderRadius: 20,
-          padding: 16,
+          // Same 20 as every other card, so its text shares the screen's one
+          // text line.
+          padding: 20,
           gap: 12,
           marginBottom: 16,
           ...Platform.select({

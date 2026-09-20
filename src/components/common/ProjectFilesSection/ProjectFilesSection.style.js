@@ -8,12 +8,14 @@ export function createStyles(theme, colorMode = "dark") {
     section: {
       gap: 10,
     },
+    // The heading lines up with the text INSIDE the card below it (screen
+    // gutter 20 + card padding 20), not with the card's edge — one vertical
+    // line of text down the whole screen.
     header: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      paddingHorizontal: 4,
-      paddingRight: 4,
+      paddingHorizontal: 20,
     },
     headerActions: {
       flexDirection: "row",
