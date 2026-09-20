@@ -263,6 +263,8 @@ export function useOnboardingProgress({
   if (focus === "fieldwork") steps = fieldwork;
   else if (focus === "billing") steps = billing;
   else if (focus === "solo") {
+    // Legacy answer — the question now offers the web's two tracks, but a
+    // stored "solo" keeps the list it was given.
     // Working alone means own jobs and own invoices, and never "invite a team".
     // The article catalogue stays in: a one-man firm bills from the same
     // price list as everyone else, and an invoice with no articles to pick

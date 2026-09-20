@@ -1363,8 +1363,8 @@
     },
     "focus": {
       "question": "Mikä on tärkeintä juuri nyt?",
-      "fieldwork": "Minulla on tiimi",
-      "billing": "Enimmäkseen tarjouksia ja laskuja",
+      "fieldwork": "Hallitse projekteja tai työryhmiä",
+      "billing": "Lähetä lasku tai tarjous",
       "skip": "Ohita",
       "change": "Vaihda fokusta",
       "solo": "Työskentelen yksin"

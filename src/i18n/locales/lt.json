@@ -1363,8 +1363,8 @@
     },
     "focus": {
       "question": "Kas šiuo metu svarbiausia?",
-      "fieldwork": "Turiu komandą",
-      "billing": "Daugiausia pasiūlymai ir sąskaitos",
+      "fieldwork": "Tvarkyti projektus ar brigadas",
+      "billing": "Siųsti sąskaitą ar pasiūlymą",
       "skip": "Praleisti",
       "change": "Keisti fokusą",
       "solo": "Dirbu vienas"

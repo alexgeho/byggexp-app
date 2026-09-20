@@ -95,12 +95,13 @@ export const homeSections = [
 ];
 
 // What the home screen looks like once the onboarding question is answered.
-// One question with three answers replaces a screen full of equally-weighted
+// One question with two answers replaces a screen full of equally-weighted
 // choices: the same Choice Overload the law warns about is not solved by
 // hiding features, but by cutting the number of decisions taken at once.
 // Nothing is lost — every feature stays in the menu, this is only the desk.
 export const HOME_PRESETS = {
-  // One person, their own jobs and their own invoices.
+  // Legacy: "I work on my own" is no longer offered (the question asks the
+  // web's two), but anyone who answered it before keeps their layout.
   solo: {
     buttons: ["shifts", "projects", "offer", "invoice"],
     sections: ["my-work", "notes"],

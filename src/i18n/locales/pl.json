@@ -1363,8 +1363,8 @@
     },
     "focus": {
       "question": "Co jest teraz najważniejsze?",
-      "fieldwork": "Mam zespół",
-      "billing": "Głównie oferty i faktury",
+      "fieldwork": "Zarządzaj projektami lub ekipami",
+      "billing": "Wyślij fakturę lub ofertę",
       "skip": "Pomiń",
       "change": "Zmień fokus",
       "solo": "Pracuję sam"

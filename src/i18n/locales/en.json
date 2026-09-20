@@ -1363,8 +1363,8 @@
     },
     "focus": {
       "question": "What matters most right now?",
-      "fieldwork": "I have a team",
-      "billing": "Mostly quotes and invoices",
+      "fieldwork": "Manage projects or crews",
+      "billing": "Send an invoice or offer",
       "skip": "Skip",
       "change": "Change focus",
       "solo": "I work on my own"

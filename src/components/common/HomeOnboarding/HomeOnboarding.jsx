@@ -11,10 +11,10 @@ import { createStyles } from "./HomeOnboarding.styles";
 
 // "Kom igång" first-run checklist.
 // - Worker: fixed 4-step flow; the time step opens a chooser sheet.
-// - Admin: one question with three answers — work alone, have a team, mostly
-//   paperwork. The answer picks the step list AND lays the home screen out, so
-//   a first run is one decision rather than a wall of equal choices. Nothing is
-//   removed: every feature stays in the menu.
+// - Admin: one question with the web's two answers — manage projects/crews, or
+//   send invoices and offers. The answer picks the step list AND lays the home
+//   screen out, so a first run is one decision rather than a wall of equal
+//   choices. Nothing is removed: every feature stays in the menu.
 const STEP_ICON = {
   project: "folder",
   team: "user-plus",
@@ -197,18 +197,9 @@ export function HomeOnboarding({
       {/* Admin routing question (mirrors web): pick a direction. */}
       {needsFocus ? (
         <View style={styles.focusChoices}>
-          {/* Three answers, not a screen of equal options: one decision sets
-              the home screen up, and everything else stays in the menu. */}
-          <TouchableOpacity
-            style={styles.focusBtn}
-            activeOpacity={0.85}
-            onPress={() => onChooseFocus?.("solo")}
-          >
-            <Icon name="user" size={16} color={btnFg} />
-            <Text style={[styles.focusBtnText, { color: btnFg }]}>
-              {t("onboarding.focus.solo", "Jag jobbar själv")}
-            </Text>
-          </TouchableOpacity>
+          {/* Two answers, the same two the web asks: run the work, or bill for
+              it. One decision lays the home screen out; everything else stays
+              in the menu. */}
           <TouchableOpacity
             style={styles.focusBtn}
             activeOpacity={0.85}
@@ -216,7 +207,10 @@ export function HomeOnboarding({
           >
             <Icon name="users" size={16} color={btnFg} />
             <Text style={[styles.focusBtnText, { color: btnFg }]}>
-              {t("onboarding.focus.fieldwork", "Jag har ett team")}
+              {t(
+                "onboarding.focus.fieldwork",
+                "Hantera projekt eller arbetslag",
+              )}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -226,7 +220,7 @@ export function HomeOnboarding({
           >
             <Icon name="file-text" size={16} color={btnFg} />
             <Text style={[styles.focusBtnText, { color: btnFg }]}>
-              {t("onboarding.focus.billing", "Skicka offert eller faktura")}
+              {t("onboarding.focus.billing", "Skicka faktura eller offert")}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -345,8 +339,11 @@ export function HomeOnboarding({
           />
           <Text style={[styles.footerCtaText, { color: btnFg }]}>
             {otherFocus === "billing"
-              ? t("onboarding.focus.billing", "Skicka offert eller faktura")
-              : t("onboarding.focus.fieldwork", "Hantera projekt och team")}
+              ? t("onboarding.focus.billing", "Skicka faktura eller offert")
+              : t(
+                  "onboarding.focus.fieldwork",
+                  "Hantera projekt eller arbetslag",
+                )}
           </Text>
           <Icon name="chevron-right" size={18} color={btnFg} />
         </TouchableOpacity>
