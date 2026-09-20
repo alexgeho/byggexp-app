@@ -162,7 +162,21 @@ export default function CreateOfferScreen() {
           />
         </TouchableOpacity>
         <Text style={styles.title}>{t("billing.newOfferTitle")}</Text>
-        <View style={{ width: 44 }} />
+        {/* Save the draft straight from the header — the buttons at the end
+            of the form are a long scroll away. */}
+        <TouchableOpacity
+          style={styles.headerSave}
+          onPress={handleSaveDraft}
+          disabled={saving}
+          accessibilityRole="button"
+          accessibilityLabel={t("billing.saveDraft", "Spara utkast")}
+        >
+          {saving ? (
+            <ActivityIndicator color="#FFFFFF" size="small" />
+          ) : (
+            <Icon name="check" size={22} color="#FFFFFF" />
+          )}
+        </TouchableOpacity>
       </View>
 
       <ScrollView

@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   Modal,
   View,
@@ -12,6 +18,7 @@ import {
 import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import { projectService } from "../../../services";
+import AuthContext from "../../../contexts/AuthContext";
 import { createStyles, PRIMARY, MUTED } from "./billingForm.styles";
 import { useTheme } from "../../../theme/ThemeContext";
 import { ProjectListCard } from "../../../components/common/ProjectListCard/ProjectListCard";
@@ -22,15 +29,23 @@ import { ProjectListCard } from "../../../components/common/ProjectListCard/Proj
 export default function ProjectPickerModal({ visible, onClose, onSelect }) {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { user } = useContext(AuthContext);
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const isSuperAdmin = user?.role === "superadmin";
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await projectService.getAll();
+      // GET /projects is superadmin-only; everyone else lists their company's
+      // projects through /projects/my. Asking for the wrong one answered 403
+      // and the picker showed "no projects" to admins whose company is full
+      // of them. (The web form picks the endpoint the same way.)
+      const data = isSuperAdmin
+        ? await projectService.getAll()
+        : await projectService.getMyProjects();
       setProjects(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Failed to load projects:", error);
@@ -38,7 +53,7 @@ export default function ProjectPickerModal({ visible, onClose, onSelect }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isSuperAdmin]);
 
   useEffect(() => {
     if (visible) {

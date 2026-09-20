@@ -11,6 +11,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { useTranslation } from "react-i18next";
+import Icon from "react-native-vector-icons/Feather";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 
@@ -118,7 +119,19 @@ export default function CreateArticleScreen() {
         <Text style={styles.headerTitle}>
           {t("articleForm.addTitle", "Ny artikel")}
         </Text>
-        <View style={{ width: 44 }} />
+        <TouchableOpacity
+          style={styles.headerSave}
+          onPress={handleSave}
+          disabled={saving}
+          accessibilityRole="button"
+          accessibilityLabel={t("common.save", "Spara")}
+        >
+          {saving ? (
+            <ActivityIndicator color="#FFFFFF" size="small" />
+          ) : (
+            <Icon name="check" size={22} color="#FFFFFF" />
+          )}
+        </TouchableOpacity>
       </View>
 
       <KeyboardAvoidingView
@@ -226,6 +239,15 @@ function createStyles(theme) {
   const c = theme.content;
   return StyleSheet.create({
     safe: { flex: 1, backgroundColor: c.background },
+    // Save without scrolling: the same round check the other forms carry.
+    headerSave: {
+      width: 44,
+      height: 44,
+      borderRadius: 999,
+      backgroundColor: theme.colors.primary,
+      alignItems: "center",
+      justifyContent: "center",
+    },
     flex: { flex: 1 },
     header: {
       flexDirection: "row",

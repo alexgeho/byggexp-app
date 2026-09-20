@@ -31,6 +31,15 @@ export const createStyles = (c) => {
       marginHorizontal: 16,
       marginBottom: 20,
     },
+    // Round check in the header: save without reaching the end of the form.
+    headerSave: {
+      width: 44,
+      height: 44,
+      borderRadius: 999,
+      backgroundColor: PRIMARY,
+      alignItems: "center",
+      justifyContent: "center",
+    },
     headerBtn: {
       width: 44,
       height: 44,
