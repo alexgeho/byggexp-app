@@ -6,13 +6,19 @@ export function createStyles(theme) {
   const buttonBackground =
     theme.colors.homeButtonBackground || theme.colors.card;
   const buttonBorder = theme.colors.homeButtonBorder || theme.colors.border;
-  // Same ink as the text inside the blocks below the grid ("Inga arbetspass
-  // hittades ännu."): the label colour at 70%. Full-strength ink made every
-  // card shout; at 70% the grid reads as one calm block.
-  const labelColor = hexToRgba(
-    theme.colors.homeButtonText || theme.colors.textBtn || theme.colors.text,
-    0.7,
-  );
+  const baseLabelColor =
+    theme.colors.homeButtonText || theme.colors.textBtn || theme.colors.text;
+  // On the light themes the label takes the ink of the text inside the blocks
+  // below the grid ("Inga arbetspass hittades ännu.") — the label colour at
+  // 70%, which keeps the grid from shouting. White labels over a gradient or
+  // a near-black page stay at full strength: dimming them there only makes
+  // them hard to read.
+  const isWhiteInk =
+    String(baseLabelColor).trim().toUpperCase() === "#FFFFFF" ||
+    String(baseLabelColor).trim().toUpperCase() === "#FFF";
+  const labelColor = isWhiteInk
+    ? baseLabelColor
+    : hexToRgba(baseLabelColor, 0.7);
 
   return StyleSheet.create({
     container: {

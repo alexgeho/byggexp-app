@@ -1203,25 +1203,35 @@ export default function HomeVariant2() {
         pointerEvents={isEditingHours ? "none" : "auto"}
       >
         <BottomBar
-          // The bar IS a card: the buttons' fill, hairline and corner glow.
-          // The fill is flattened onto the page colour first — the card
-          // surface is a translucent wash, and left translucent the card
-          // edges under the bar showed through it as broken lines.
-          pillColor={flattenColor(
-            theme.colors.homeButtonBackground || theme.colors.card,
-            gradientColors[gradientColors.length - 1],
-          )}
-          pillGlowColor={theme.colors.cardGlow}
-          pillBorderColor={
-            theme.colors.homeButtonBorder &&
-            theme.colors.homeButtonBorder !== "transparent"
-              ? theme.colors.homeButtonBorder
-              : theme.colors.border
-          }
+          // Only the dark theme gets the card treatment: the buttons' fill,
+          // hairline and corner glow, with the fill flattened onto the page
+          // colour (a translucent one let the card edges under the bar show
+          // through as broken lines). Every other theme keeps the frosted
+          // pill it has always had.
+          {...(themeName === "black"
+            ? {
+                pillColor: flattenColor(
+                  theme.colors.homeButtonBackground || theme.colors.card,
+                  gradientColors[gradientColors.length - 1],
+                ),
+                pillGlowColor: theme.colors.cardGlow,
+                pillBorderColor:
+                  theme.colors.homeButtonBorder &&
+                  theme.colors.homeButtonBorder !== "transparent"
+                    ? theme.colors.homeButtonBorder
+                    : theme.colors.border,
+              }
+            : { glass: true })}
           darkOverride={themeName === "black"}
+          // Dark: white on the dark pill. Light themes: their own text
+          // colour. The blue/green/orange gradients keep the dark-navy icons
+          // they have always had over the light frosted pill.
           iconColor={
-            theme.colors.homeButtonText ||
-            (isLightBlueTheme ? theme.colors.text : "#FFFFFF")
+            themeName === "black"
+              ? "#FFFFFF"
+              : isLightBlueTheme
+                ? theme.colors.text
+                : "#052D50"
           }
           onLeftPress={() => navigation.navigate("Main")}
           onRightPress={() => navigation.navigate("Menu")}
