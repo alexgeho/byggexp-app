@@ -289,7 +289,7 @@ export function TasksPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
                     >
                       <Icon
                         name="bell"
-                        size={16}
+                        size={20}
                         color={
                           hasReminder(task) ? iconColor : secondaryIconColor
                         }
@@ -382,12 +382,13 @@ const extraStyles = StyleSheet.create({
     lineHeight: 16,
     fontFamily: "DMSans-Bold",
   },
-  // An empty square drawn in the same stroke as the bell beside it — a white
-  // fill read as a solid tile, not as something to tick.
+  // An empty square drawn in the same stroke as the bell beside it, and at the
+  // bell's size — they are one pair, so they match in colour, weight and
+  // footprint. A white fill read as a solid tile, not as something to tick.
   checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 7,
+    width: 20,
+    height: 20,
+    borderRadius: 6,
     borderWidth: 2,
     backgroundColor: "transparent",
   },
