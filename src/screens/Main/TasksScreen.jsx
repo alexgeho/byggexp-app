@@ -12,7 +12,16 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { View, Text, SectionList, ActivityIndicator } from "react-native";
+import {
+  Alert,
+  View,
+  Text,
+  SectionList,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
+import { Swipeable } from "react-native-gesture-handler";
+import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import AuthContext from "../../contexts/AuthContext";
 import { useTheme } from "../../theme/ThemeContext";
@@ -24,7 +33,7 @@ import { ProjectFilterSelector } from "../../components/common/ProjectFilterSele
 import { createStyles } from "./TasksScreen.styles";
 import { resolveNewestTimestamp, sortByNewest } from "../../utils/sortByNewest";
 import { cardStyles } from "../../styles/cards";
-import { canCreateTasks } from "../../utils/userRoles";
+import { canCreateTasks, canManageTasks } from "../../utils/userRoles";
 
 export default function TasksScreen() {
   const navigation = useNavigation();
@@ -141,6 +150,48 @@ export default function TasksScreen() {
 
   // Personal tasks first, then one section per project — the same order the
   // screen rendered before, now as SectionList data so long lists virtualize.
+  // Swipe a task left to delete it, like every other list. Only for roles that
+  // may manage tasks; the deliberate left-swipe is the safeguard.
+  const canDeleteTasks = canManageTasks(user?.role);
+
+  const handleDeleteTask = useCallback(
+    async (task) => {
+      const id = task._id || task.id;
+      try {
+        await taskService.remove(id);
+        // Tasks live inside projects and in the personal list, so refetch
+        // rather than trying to splice both shapes.
+        await fetchProjectsWithTasks();
+      } catch (error) {
+        const status = error?.response?.status;
+        const raw = error?.response?.data?.message ?? error?.message;
+        const detail = Array.isArray(raw) ? raw.join(", ") : raw;
+        console.error("Failed to delete task:", status, detail, error);
+        Alert.alert(
+          t("common.error"),
+          `${t("task.deleteFailed")}\n[${status ?? "?"}] ${detail ?? ""}`,
+        );
+      }
+    },
+    [fetchProjectsWithTasks, t],
+  );
+
+  const renderTaskDeleteAction = useCallback(
+    (task) => (
+      <TouchableOpacity
+        style={styles.swipeDeleteAction}
+        activeOpacity={0.85}
+        onPress={() => handleDeleteTask(task)}
+        accessibilityRole="button"
+        accessibilityLabel={t("common.delete")}
+      >
+        <Icon name="trash-2" size={22} color="#FFFFFF" />
+        <Text style={styles.swipeDeleteText}>{t("common.delete")}</Text>
+      </TouchableOpacity>
+    ),
+    [handleDeleteTask, styles, t],
+  );
+
   const sections = useMemo(() => {
     const result = [];
     if (visiblePersonalTasks.length > 0) {
@@ -255,14 +306,31 @@ export default function TasksScreen() {
             </Text>
           </View>
         )}
-        renderItem={({ item, section, index }) => (
-          <View style={styles.taskCardSpacing}>
-            {renderTaskCard(item, {
-              project: section.project,
-              key: item._id || `${section.title}-${index}`,
-            })}
-          </View>
-        )}
+        renderItem={({ item, section, index }) => {
+          const card = (
+            <View style={styles.taskCardSpacing}>
+              {renderTaskCard(item, {
+                project: section.project,
+                key: item._id || `${section.title}-${index}`,
+              })}
+            </View>
+          );
+
+          if (!canDeleteTasks) {
+            return card;
+          }
+
+          return (
+            <Swipeable
+              renderRightActions={() => renderTaskDeleteAction(item)}
+              overshootRight={false}
+              friction={2}
+              rightThreshold={40}
+            >
+              {card}
+            </Swipeable>
+          );
+        }}
         ListEmptyComponent={
           <Text style={styles.emptyText}>{t("task.emptyAll")}</Text>
         }

@@ -245,7 +245,8 @@
     "statusUpdateError": "Det gick inte att uppdatera uppgiftsstatus just nu.",
     "noDocsTitle": "Inga dokument än",
     "noDocsText": "Uppgiftsfiler visas här.",
-    "noWorkersText": "Projektets arbetare visas här."
+    "noWorkersText": "Projektets arbetare visas här.",
+    "deleteFailed": "Kunde inte ta bort uppgiften."
   },
   "createEmployee": {
     "addTitle": "Lägg till anställd",
@@ -1141,7 +1142,8 @@
     "newInvoice": "Ny faktura",
     "createSoon": "Skapa kommer i nästa steg.",
     "allCustomers": "Alla kunder",
-    "filterByCustomer": "Filtrera på kund"
+    "filterByCustomer": "Filtrera på kund",
+    "deleteFailed": "Kunde inte ta bort dokumentet."
   },
   "billing": {
     "itemDescription": "Beskrivning",
@@ -1493,7 +1495,8 @@
     "existing": "Dina artiklar",
     "emptyList": "Inga artiklar än.",
     "nameRequired": "Ange artikelnamn",
-    "addTitle": "Ny artikel"
+    "addTitle": "Ny artikel",
+    "deleteFailed": "Kunde inte ta bort artikeln."
   },
   "clientForm": {
     "title": "Klienter",

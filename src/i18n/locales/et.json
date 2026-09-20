@@ -245,7 +245,8 @@
     "statusUpdateError": "Ülesande olekut ei saa praegu uuendada.",
     "noDocsTitle": "Dokumente pole veel",
     "noDocsText": "Ülesande failid ilmuvad siia.",
-    "noWorkersText": "Projekti töötajad ilmuvad siia."
+    "noWorkersText": "Projekti töötajad ilmuvad siia.",
+    "deleteFailed": "Ülesande kustutamine ebaõnnestus."
   },
   "createEmployee": {
     "addTitle": "Lisa töötaja",
@@ -1141,7 +1142,8 @@
     "newInvoice": "Uus arve",
     "createSoon": "Loomine tuleb järgmises sammus.",
     "allCustomers": "Kõik kliendid",
-    "filterByCustomer": "Filtreeri kliendi järgi"
+    "filterByCustomer": "Filtreeri kliendi järgi",
+    "deleteFailed": "Dokumendi kustutamine ebaõnnestus."
   },
   "billing": {
     "itemDescription": "Kirjeldus",
@@ -1493,7 +1495,8 @@
     "existing": "Sinu artiklid",
     "emptyList": "Artikleid pole veel.",
     "nameRequired": "Sisesta artikli nimi",
-    "addTitle": "Uus artikkel"
+    "addTitle": "Uus artikkel",
+    "deleteFailed": "Artikli kustutamine ebaõnnestus."
   },
   "clientForm": {
     "title": "Kliendid",

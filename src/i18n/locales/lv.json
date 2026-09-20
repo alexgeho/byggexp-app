@@ -245,7 +245,8 @@
     "statusUpdateError": "Šobrīd nevar atjaunināt uzdevuma statusu.",
     "noDocsTitle": "Vēl nav dokumentu",
     "noDocsText": "Uzdevuma faili tiks parādīti šeit.",
-    "noWorkersText": "Projekta darbinieki tiks parādīti šeit."
+    "noWorkersText": "Projekta darbinieki tiks parādīti šeit.",
+    "deleteFailed": "Neizdevās dzēst uzdevumu."
   },
   "createEmployee": {
     "addTitle": "Pievienot darbinieku",
@@ -1141,7 +1142,8 @@
     "newInvoice": "Jauns rēķins",
     "createSoon": "Izveide būs pieejama nākamajā solī.",
     "allCustomers": "Visi klienti",
-    "filterByCustomer": "Filtrēt pēc klienta"
+    "filterByCustomer": "Filtrēt pēc klienta",
+    "deleteFailed": "Neizdevās dzēst dokumentu."
   },
   "billing": {
     "itemDescription": "Apraksts",
@@ -1493,7 +1495,8 @@
     "existing": "Jūsu artikuli",
     "emptyList": "Vēl nav artikulu.",
     "nameRequired": "Ievadiet artikula nosaukumu",
-    "addTitle": "Jauns artikuls"
+    "addTitle": "Jauns artikuls",
+    "deleteFailed": "Neizdevās dzēst artikulu."
   },
   "clientForm": {
     "title": "Klienti",

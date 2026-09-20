@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  Alert,
   View,
   Text,
   ScrollView,
@@ -8,6 +9,7 @@ import {
   ActivityIndicator,
   Modal,
 } from "react-native";
+import { Swipeable } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -207,6 +209,43 @@ export default function EconomyScreen() {
     navigation.navigate(isOffers ? "CreateOffer" : "CreateInvoice");
   };
 
+  // Swipe a document left to delete it, like every other list in the app. The
+  // deliberate left-swipe is the safeguard, so no confirm; the row leaves only
+  // once the backend confirms.
+  const handleDeleteDocument = async (item) => {
+    const id = item._id || item.id;
+    const service = isOffers ? offerService : invoiceService;
+    try {
+      await service.remove(id);
+      const drop = (list) =>
+        list.filter((entry) => (entry._id || entry.id) !== id);
+      if (isOffers) setOffers(drop);
+      else setInvoices(drop);
+    } catch (error) {
+      const status = error?.response?.status;
+      const raw = error?.response?.data?.message ?? error?.message;
+      const detail = Array.isArray(raw) ? raw.join(", ") : raw;
+      console.error("Failed to delete document:", status, detail, error);
+      Alert.alert(
+        t("common.error"),
+        `${t("economy.deleteFailed")}\n[${status ?? "?"}] ${detail ?? ""}`,
+      );
+    }
+  };
+
+  const renderDeleteAction = (item) => (
+    <TouchableOpacity
+      style={styles.swipeDeleteAction}
+      activeOpacity={0.85}
+      onPress={() => handleDeleteDocument(item)}
+      accessibilityRole="button"
+      accessibilityLabel={t("common.delete")}
+    >
+      <Icon name="trash-2" size={22} color="#FFFFFF" />
+      <Text style={styles.swipeDeleteText}>{t("common.delete")}</Text>
+    </TouchableOpacity>
+  );
+
   const renderCard = (item) => {
     const id = item._id || item.id;
     const number = isOffers ? item.offerNumber : item.invoiceNumber;
@@ -223,27 +262,36 @@ export default function EconomyScreen() {
         : "";
 
     return (
-      <TouchableOpacity key={id} style={styles.card} activeOpacity={0.85}>
-        <View style={styles.cardInfo}>
-          <Text style={styles.cardNo}>
-            {isOffers ? t("economy.offerNo") : t("economy.invoiceNo")} #{number}
-          </Text>
-          <Text style={styles.cardCustomer} numberOfLines={1}>
-            {customer}
-          </Text>
-          <Text style={styles.cardMeta} numberOfLines={1}>
-            {dateLabel}
-          </Text>
-        </View>
-        <View style={styles.cardRight}>
-          <View style={[styles.badge, styles[`badge_${tone}`]]}>
-            <Text style={[styles.badgeText, styles[`badgeText_${tone}`]]}>
-              {t(`economy.${statusNs}.${status}`, status)}
+      <Swipeable
+        key={id}
+        renderRightActions={() => renderDeleteAction(item)}
+        overshootRight={false}
+        friction={2}
+        rightThreshold={40}
+      >
+        <TouchableOpacity style={styles.card} activeOpacity={0.85}>
+          <View style={styles.cardInfo}>
+            <Text style={styles.cardNo}>
+              {isOffers ? t("economy.offerNo") : t("economy.invoiceNo")} #
+              {number}
+            </Text>
+            <Text style={styles.cardCustomer} numberOfLines={1}>
+              {customer}
+            </Text>
+            <Text style={styles.cardMeta} numberOfLines={1}>
+              {dateLabel}
             </Text>
           </View>
-          <Text style={styles.cardAmount}>{formatAmount(amount)}</Text>
-        </View>
-      </TouchableOpacity>
+          <View style={styles.cardRight}>
+            <View style={[styles.badge, styles[`badge_${tone}`]]}>
+              <Text style={[styles.badgeText, styles[`badgeText_${tone}`]]}>
+                {t(`economy.${statusNs}.${status}`, status)}
+              </Text>
+            </View>
+            <Text style={styles.cardAmount}>{formatAmount(amount)}</Text>
+          </View>
+        </TouchableOpacity>
+      </Swipeable>
     );
   };
 

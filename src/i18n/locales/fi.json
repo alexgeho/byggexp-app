@@ -245,7 +245,8 @@
     "statusUpdateError": "Tehtävän tilaa ei voi päivittää juuri nyt.",
     "noDocsTitle": "Ei vielä asiakirjoja",
     "noDocsText": "Tehtävän tiedostot näkyvät täällä.",
-    "noWorkersText": "Projektin työntekijät näkyvät täällä."
+    "noWorkersText": "Projektin työntekijät näkyvät täällä.",
+    "deleteFailed": "Tehtävän poistaminen epäonnistui."
   },
   "createEmployee": {
     "addTitle": "Lisää työntekijä",
@@ -1141,7 +1142,8 @@
     "newInvoice": "Uusi lasku",
     "createSoon": "Luonti tulee seuraavassa vaiheessa.",
     "allCustomers": "Kaikki asiakkaat",
-    "filterByCustomer": "Suodata asiakkaan mukaan"
+    "filterByCustomer": "Suodata asiakkaan mukaan",
+    "deleteFailed": "Asiakirjan poistaminen epäonnistui."
   },
   "billing": {
     "itemDescription": "Kuvaus",
@@ -1493,7 +1495,8 @@
     "existing": "Artikkelisi",
     "emptyList": "Ei vielä artikkeleita.",
     "nameRequired": "Anna artikkelin nimi",
-    "addTitle": "Uusi artikkeli"
+    "addTitle": "Uusi artikkeli",
+    "deleteFailed": "Artikkelin poistaminen epäonnistui."
   },
   "clientForm": {
     "title": "Asiakkaat",

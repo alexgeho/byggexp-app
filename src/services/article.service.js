@@ -13,6 +13,10 @@ export const articleService = {
     const { data } = await api.post("/articles", payload);
     return data;
   },
+  remove: async (id) => {
+    const { data } = await api.delete(`/articles/${id}`);
+    return data;
+  },
 };
 
 export default articleService;

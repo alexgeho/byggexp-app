@@ -245,7 +245,8 @@
     "statusUpdateError": "Kan ikke oppdatere oppgavestatus akkurat nå.",
     "noDocsTitle": "Ingen dokumenter ennå",
     "noDocsText": "Oppgavefiler vises her.",
-    "noWorkersText": "Prosjektets arbeidere vises her."
+    "noWorkersText": "Prosjektets arbeidere vises her.",
+    "deleteFailed": "Kunne ikke slette oppgaven."
   },
   "createEmployee": {
     "addTitle": "Legg til ansatt",
@@ -1141,7 +1142,8 @@
     "newInvoice": "Ny faktura",
     "createSoon": "Opprettelse kommer i neste steg.",
     "allCustomers": "Alle kunder",
-    "filterByCustomer": "Filtrer på kunde"
+    "filterByCustomer": "Filtrer på kunde",
+    "deleteFailed": "Kunne ikke slette dokumentet."
   },
   "billing": {
     "itemDescription": "Beskrivelse",
@@ -1493,7 +1495,8 @@
     "existing": "Artiklene dine",
     "emptyList": "Ingen artikler ennå.",
     "nameRequired": "Angi artikkelnavn",
-    "addTitle": "Ny artikkel"
+    "addTitle": "Ny artikkel",
+    "deleteFailed": "Kunne ikke slette artikkelen."
   },
   "clientForm": {
     "title": "Klienter",

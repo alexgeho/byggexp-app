@@ -36,6 +36,22 @@ export const createStyles = (c) =>
     taskCardSpacing: {
       marginBottom: 12,
     },
+    // Red slab behind a swiped task card — same as every other list.
+    swipeDeleteAction: {
+      backgroundColor: "#FF3B30",
+      width: 92,
+      borderRadius: 16,
+      alignItems: "center",
+      justifyContent: "center",
+      marginLeft: 8,
+      marginBottom: 12,
+    },
+    swipeDeleteText: {
+      color: "#FFFFFF",
+      fontSize: 12,
+      fontWeight: "600",
+      marginTop: 4,
+    },
     projectGroup: {
       width: "100%",
       gap: 12,

@@ -55,6 +55,11 @@ export const taskService = {
     return data;
   },
 
+  remove: async (id) => {
+    const { data } = await api.delete(`/tasks/${id}`);
+    return data;
+  },
+
   complete: async (id) => {
     const { data } = await api.patch(`/tasks/${id}/complete`);
     return data;

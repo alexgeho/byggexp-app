@@ -245,7 +245,8 @@
     "statusUpdateError": "Šiuo metu nepavyksta atnaujinti užduoties būsenos.",
     "noDocsTitle": "Dar nėra dokumentų",
     "noDocsText": "Užduoties failai bus rodomi čia.",
-    "noWorkersText": "Projekto darbuotojai bus rodomi čia."
+    "noWorkersText": "Projekto darbuotojai bus rodomi čia.",
+    "deleteFailed": "Nepavyko ištrinti užduoties."
   },
   "createEmployee": {
     "addTitle": "Pridėti darbuotoją",
@@ -1141,7 +1142,8 @@
     "newInvoice": "Nauja sąskaita",
     "createSoon": "Kūrimas bus kitame etape.",
     "allCustomers": "Visi klientai",
-    "filterByCustomer": "Filtruoti pagal klientą"
+    "filterByCustomer": "Filtruoti pagal klientą",
+    "deleteFailed": "Nepavyko ištrinti dokumento."
   },
   "billing": {
     "itemDescription": "Aprašymas",
@@ -1493,7 +1495,8 @@
     "existing": "Jūsų prekės",
     "emptyList": "Dar nėra prekių.",
     "nameRequired": "Įveskite prekės pavadinimą",
-    "addTitle": "Naujas artikulas"
+    "addTitle": "Naujas artikulas",
+    "deleteFailed": "Nepavyko ištrinti artikulo."
   },
   "clientForm": {
     "title": "Klientai",

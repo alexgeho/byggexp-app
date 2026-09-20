@@ -245,7 +245,8 @@
     "statusUpdateError": "Nie można teraz zaktualizować statusu zadania.",
     "noDocsTitle": "Brak dokumentów",
     "noDocsText": "Pliki zadania pojawią się tutaj.",
-    "noWorkersText": "Pracownicy projektu pojawią się tutaj."
+    "noWorkersText": "Pracownicy projektu pojawią się tutaj.",
+    "deleteFailed": "Nie udało się usunąć zadania."
   },
   "createEmployee": {
     "addTitle": "Dodaj pracownika",
@@ -1141,7 +1142,8 @@
     "newInvoice": "Nowa faktura",
     "createSoon": "Tworzenie pojawi się w kolejnym kroku.",
     "allCustomers": "Wszyscy klienci",
-    "filterByCustomer": "Filtruj według klienta"
+    "filterByCustomer": "Filtruj według klienta",
+    "deleteFailed": "Nie udało się usunąć dokumentu."
   },
   "billing": {
     "itemDescription": "Opis",
@@ -1493,7 +1495,8 @@
     "existing": "Twoje artykuły",
     "emptyList": "Brak artykułów.",
     "nameRequired": "Podaj nazwę artykułu",
-    "addTitle": "Nowy artykuł"
+    "addTitle": "Nowy artykuł",
+    "deleteFailed": "Nie udało się usunąć artykułu."
   },
   "clientForm": {
     "title": "Klienci",

@@ -245,7 +245,8 @@
     "statusUpdateError": "Сейчас не удаётся обновить статус задачи.",
     "noDocsTitle": "Пока нет документов",
     "noDocsText": "Файлы задачи появятся здесь.",
-    "noWorkersText": "Здесь появятся работники проекта."
+    "noWorkersText": "Здесь появятся работники проекта.",
+    "deleteFailed": "Не удалось удалить задачу."
   },
   "createEmployee": {
     "addTitle": "Добавить сотрудника",
@@ -1141,7 +1142,8 @@
     "newInvoice": "Новый счёт",
     "createSoon": "Создание появится на следующем шаге.",
     "allCustomers": "Все клиенты",
-    "filterByCustomer": "Фильтр по клиенту"
+    "filterByCustomer": "Фильтр по клиенту",
+    "deleteFailed": "Не удалось удалить документ."
   },
   "billing": {
     "itemDescription": "Описание",
@@ -1493,7 +1495,8 @@
     "existing": "Ваши артикулы",
     "emptyList": "Пока нет артикулов.",
     "nameRequired": "Введите название артикула",
-    "addTitle": "Новый артикул"
+    "addTitle": "Новый артикул",
+    "deleteFailed": "Не удалось удалить артикул."
   },
   "clientForm": {
     "title": "Клиенты",

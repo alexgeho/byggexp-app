@@ -245,7 +245,8 @@
     "statusUpdateError": "Trenutno nije moguće ažurirati status zadatka.",
     "noDocsTitle": "Još nema dokumenata",
     "noDocsText": "Datoteke zadatka prikazat će se ovdje.",
-    "noWorkersText": "Radnici projekta prikazat će se ovdje."
+    "noWorkersText": "Radnici projekta prikazat će se ovdje.",
+    "deleteFailed": "Nije moguće obrisati zadatak."
   },
   "createEmployee": {
     "addTitle": "Dodaj zaposlenog",
@@ -1141,7 +1142,8 @@
     "newInvoice": "Nova faktura",
     "createSoon": "Kreiranje stiže u sljedećem koraku.",
     "allCustomers": "Svi kupci",
-    "filterByCustomer": "Filtriraj po kupcu"
+    "filterByCustomer": "Filtriraj po kupcu",
+    "deleteFailed": "Nije moguće obrisati dokument."
   },
   "billing": {
     "itemDescription": "Opis",
@@ -1493,7 +1495,8 @@
     "existing": "Vaši artikli",
     "emptyList": "Još nema artikala.",
     "nameRequired": "Unesite naziv artikla",
-    "addTitle": "Novi artikal"
+    "addTitle": "Novi artikal",
+    "deleteFailed": "Nije moguće obrisati artikal."
   },
   "clientForm": {
     "title": "Klijenti",

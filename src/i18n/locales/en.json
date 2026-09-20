@@ -245,7 +245,8 @@
     "statusUpdateError": "Unable to update task status right now.",
     "noDocsTitle": "No documents yet",
     "noDocsText": "Task files will appear here.",
-    "noWorkersText": "Project workers will appear here."
+    "noWorkersText": "Project workers will appear here.",
+    "deleteFailed": "Could not delete the task."
   },
   "createEmployee": {
     "addTitle": "Add employee",
@@ -1141,7 +1142,8 @@
     "newInvoice": "New invoice",
     "createSoon": "Creating is coming in the next step.",
     "allCustomers": "All customers",
-    "filterByCustomer": "Filter by customer"
+    "filterByCustomer": "Filter by customer",
+    "deleteFailed": "Could not delete the document."
   },
   "billing": {
     "itemDescription": "Description",
@@ -1493,7 +1495,8 @@
     "existing": "Your articles",
     "emptyList": "No articles yet.",
     "nameRequired": "Enter an article name",
-    "addTitle": "New article"
+    "addTitle": "New article",
+    "deleteFailed": "Could not delete the article."
   },
   "clientForm": {
     "title": "Clients",

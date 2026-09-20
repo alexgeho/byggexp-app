@@ -1,11 +1,15 @@
 import React, { useCallback, useMemo, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   Text,
+  TouchableOpacity,
   View,
   StyleSheet,
 } from "react-native";
+import { Swipeable } from "react-native-gesture-handler";
+import Icon from "react-native-vector-icons/Feather";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 
@@ -50,6 +54,45 @@ export default function ArticlesScreen() {
     }, [load]),
   );
 
+  // Swipe an article left to delete it, like every other list in the app.
+  const handleDelete = useCallback(
+    async (article) => {
+      const id = getEntityId(article);
+      try {
+        await articleService.remove(id);
+        setArticles((previous) =>
+          previous.filter((item) => getEntityId(item) !== id),
+        );
+      } catch (error) {
+        const status = error?.response?.status;
+        const raw = error?.response?.data?.message ?? error?.message;
+        const detail = Array.isArray(raw) ? raw.join(", ") : raw;
+        console.error("Failed to delete article:", status, detail, error);
+        Alert.alert(
+          t("common.error"),
+          `${t("articleForm.deleteFailed")}\n[${status ?? "?"}] ${detail ?? ""}`,
+        );
+      }
+    },
+    [t],
+  );
+
+  const renderDeleteAction = useCallback(
+    (article) => (
+      <TouchableOpacity
+        style={styles.swipeDeleteAction}
+        activeOpacity={0.85}
+        onPress={() => handleDelete(article)}
+        accessibilityRole="button"
+        accessibilityLabel={t("common.delete")}
+      >
+        <Icon name="trash-2" size={22} color="#FFFFFF" />
+        <Text style={styles.swipeDeleteText}>{t("common.delete")}</Text>
+      </TouchableOpacity>
+    ),
+    [handleDelete, styles, t],
+  );
+
   return (
     <View style={styles.screen}>
       <View style={styles.pageContainer}>
@@ -83,17 +126,24 @@ export default function ArticlesScreen() {
               </View>
             }
             renderItem={({ item: article }) => (
-              <ListCard title={article.name || t("common.noName")}>
-                <Text style={styles.cardMeta} numberOfLines={1}>
-                  {[
-                    article.articleNumber,
-                    article.unit || "st",
-                    `${article.momsPercent ?? 25}%`,
-                  ]
-                    .filter(Boolean)
-                    .join(" · ")}
-                </Text>
-              </ListCard>
+              <Swipeable
+                renderRightActions={() => renderDeleteAction(article)}
+                overshootRight={false}
+                friction={2}
+                rightThreshold={40}
+              >
+                <ListCard title={article.name || t("common.noName")}>
+                  <Text style={styles.cardMeta} numberOfLines={1}>
+                    {[
+                      article.articleNumber,
+                      article.unit || "st",
+                      `${article.momsPercent ?? 25}%`,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </Text>
+                </ListCard>
+              </Swipeable>
             )}
           />
         )}
@@ -143,6 +193,21 @@ const createStyles = (c) =>
     },
     listContent: {
       paddingBottom: 140,
+    },
+    swipeDeleteAction: {
+      backgroundColor: "#FF3B30",
+      width: 92,
+      borderRadius: 16,
+      alignItems: "center",
+      justifyContent: "center",
+      marginLeft: 8,
+      marginBottom: 12,
+    },
+    swipeDeleteText: {
+      color: "#FFFFFF",
+      fontSize: 12,
+      fontWeight: "600",
+      marginTop: 4,
     },
     cardMeta: {
       color: c.textMuted,
