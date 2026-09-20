@@ -9,7 +9,7 @@ import { Oswald_500Medium } from "@expo-google-fonts/oswald";
 import AppNavigator from "./src/navigation/AppNavigator";
 import { AuthProvider } from "./src/contexts/AuthContext";
 import { FeedbackProvider } from "./src/contexts/FeedbackContext";
-import { ThemeProvider } from "./src/theme/ThemeContext";
+import { ThemeProvider, useTheme } from "./src/theme/ThemeContext";
 import NotificationBootstrap from "./src/components/NotificationBootstrap";
 import ShiftLocationMonitor from "./src/components/ShiftLocationMonitor";
 import LocationConsentBootstrap from "./src/components/LocationConsentBootstrap";
@@ -48,6 +48,16 @@ Text.defaultProps.style = mergeDefaultStyle(Text.defaultProps.style);
 
 TextInput.defaultProps = TextInput.defaultProps || {};
 TextInput.defaultProps.style = mergeDefaultStyle(TextInput.defaultProps.style);
+
+// The phone's own clock and icons: dark on the light themes, light on the
+// dark one. They were pinned to dark and vanished into the black theme's
+// background.
+function ThemedStatusBar() {
+  const { theme } = useTheme();
+  return (
+    <StatusBar style={theme?.content?.scheme === "dark" ? "light" : "dark"} />
+  );
+}
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -121,7 +131,7 @@ export default function App() {
         <ThemeProvider>
           <AuthProvider>
             <SafeAreaProvider>
-              <StatusBar style="dark" />
+              <ThemedStatusBar />
               <FeedbackProvider>
                 <NotificationBootstrap />
                 <ShiftLocationMonitor />

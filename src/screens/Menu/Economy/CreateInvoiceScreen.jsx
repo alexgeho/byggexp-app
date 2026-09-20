@@ -264,6 +264,9 @@ export default function CreateInvoiceScreen() {
     if (!validate() || submittingRef.current) return;
     submittingRef.current = true;
     if (!email.trim()) {
+      // Release the double-tap guard before bailing out — leaving it set left
+      // BOTH buttons dead for the rest of the screen's life.
+      submittingRef.current = false;
       Alert.alert(t("billing.missingEmailTitle"), t("billing.missingEmail"));
       return;
     }

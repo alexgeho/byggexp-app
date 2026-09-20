@@ -9,11 +9,7 @@ import {
   Modal,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
-import {
-  useNavigation,
-  useFocusEffect,
-  useRoute,
-} from "@react-navigation/native";
+import { useFocusEffect, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { offerService, invoiceService, clientService } from "../../../services";
 import { FilterSelector } from "../../../components/common/FilterSelector/FilterSelector";
@@ -61,7 +57,6 @@ const formatDate = (value) => {
 };
 
 export default function EconomyScreen() {
-  const navigation = useNavigation();
   const route = useRoute();
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -82,21 +77,10 @@ export default function EconomyScreen() {
   const [clientTypeFilter, setClientTypeFilter] = useState("all");
   const [clients, setClients] = useState([]);
   const [customerModalVisible, setCustomerModalVisible] = useState(false);
-  const [registersModalVisible, setRegistersModalVisible] = useState(false);
 
-  // Reference registers shared by BOTH offers and invoices (not a filter of the
-  // current tab) — so they live behind the header's "•••" menu, out of the
-  // document canvas, instead of sitting under the Offers/Invoices switch where
-  // they read as offer sub-filters.
-  const registers = [
-    { icon: "users", label: t("clientForm.title"), route: "Clients" },
-    { icon: "package", label: t("articleForm.title"), route: "Articles" },
-    {
-      icon: "briefcase",
-      label: t("companyDetails.title"),
-      route: "CompanyDetails",
-    },
-  ];
+  // Clients, articles and the company's own details are entities of their
+  // own, each with a screen in the menu. This screen makes one thing: a
+  // document — so it carries one action, "new invoice"/"new offer".
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -307,16 +291,6 @@ export default function EconomyScreen() {
           (isOffers ? t("economy.emptyOffers") : t("economy.emptyInvoices"))
         }
         addScreen={isOffers ? "CreateOffer" : "CreateInvoice"}
-        headerRight={
-          <TouchableOpacity
-            style={styles.headerBtn}
-            onPress={() => setRegistersModalVisible(true)}
-            accessibilityRole="button"
-            accessibilityLabel={t("economy.registers", "Register")}
-          >
-            <Icon name="more-horizontal" size={22} color="#030303" />
-          </TouchableOpacity>
-        }
         beforeList={
           <>
             <View style={styles.clientTypeFilter}>
@@ -384,48 +358,6 @@ export default function EconomyScreen() {
         }
         renderCard={renderCard}
       />
-
-      <Modal
-        visible={registersModalVisible}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setRegistersModalVisible(false)}
-      >
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setRegistersModalVisible(false)}
-        >
-          <Pressable style={styles.modalSheet} onPress={() => {}}>
-            <View style={styles.grab} />
-            <Text style={styles.modalTitle}>
-              {t("economy.registers", "Register")}
-            </Text>
-            {registers.map((reg) => (
-              <TouchableOpacity
-                key={reg.route}
-                style={styles.registerRow}
-                activeOpacity={0.8}
-                onPress={() => {
-                  setRegistersModalVisible(false);
-                  navigation.navigate(reg.route);
-                }}
-              >
-                <View style={styles.registerRowLeft}>
-                  <Icon
-                    name={reg.icon}
-                    size={20}
-                    color={theme.colors.primary}
-                  />
-                  <Text style={styles.registerRowText} numberOfLines={1}>
-                    {reg.label}
-                  </Text>
-                </View>
-                <Icon name="chevron-right" size={20} color="#9AA6B2" />
-              </TouchableOpacity>
-            ))}
-          </Pressable>
-        </Pressable>
-      </Modal>
 
       <Modal
         visible={customerModalVisible}
