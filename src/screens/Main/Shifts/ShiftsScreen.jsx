@@ -1378,7 +1378,12 @@ export default function ShiftsScreen() {
                         {/* When the declared hours replace the clocked ones,
                             show what the clock caught so the difference is
                             visible rather than silently overwritten. */}
+                        {/* Only for a day that was actually clocked. A day
+                            entered by hand never had a GPS shift, so "0 h"
+                            there would read as a failed clock rather than as
+                            "nobody clocked in". */}
                         {shift.manualDurationMs &&
+                        shift.durationMs > 0 &&
                         shift.manualDurationMs !== shift.durationMs ? (
                           <View style={styles.shiftDetailRow}>
                             <Text
