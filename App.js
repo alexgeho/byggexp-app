@@ -4,6 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Font from "expo-font";
+import * as Updates from "expo-updates";
 import { Oswald_500Medium } from "@expo-google-fonts/oswald";
 import AppNavigator from "./src/navigation/AppNavigator";
 import { AuthProvider } from "./src/contexts/AuthContext";
@@ -50,6 +51,38 @@ TextInput.defaultProps.style = mergeDefaultStyle(TextInput.defaultProps.style);
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
+
+  // An over-the-air update downloads in the background and, with
+  // fallbackToCacheTimeout at 0, only takes effect on the NEXT launch — so a
+  // fix looks like it never shipped until the app is restarted twice. Check on
+  // start and reload straight into the new bundle instead.
+  useEffect(() => {
+    if (__DEV__ || !Updates.isEnabled) {
+      return;
+    }
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const { isAvailable } = await Updates.checkForUpdateAsync();
+        if (!isAvailable || cancelled) {
+          return;
+        }
+        await Updates.fetchUpdateAsync();
+        if (cancelled) {
+          return;
+        }
+        await Updates.reloadAsync();
+      } catch {
+        // No network, or the check failed — the app simply runs what it has.
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     async function bootstrap() {
