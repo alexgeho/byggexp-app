@@ -118,9 +118,12 @@ export function createStyles(theme, colorMode = "dark") {
       gap: 14,
       paddingRight: 4,
     },
+    // The × lives in the card's top-right corner, so the rows start below it
+    // instead of squeezing past it. That buys the row the card's full inner
+    // width, so the hours end on exactly the line the tasks card's checkbox
+    // ends on — one right edge down the whole screen.
     listWithClose: {
-      paddingTop: 6,
-      paddingRight: 26,
+      paddingTop: 14,
     },
     item: {
       gap: 8,
