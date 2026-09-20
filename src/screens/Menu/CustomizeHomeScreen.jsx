@@ -1,4 +1,4 @@
-import React, { useState, useContext, useMemo } from "react";
+import React, { useCallback, useState, useContext, useMemo } from "react";
 
 import { ScrollView, View, Text, TouchableOpacity } from "react-native";
 
@@ -41,6 +41,7 @@ import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { createStyles } from "./CustomizeHomeScreen.styles";
 import { DraggablePillList } from "./DraggablePillList";
 import { isHomeButtonCustomizable } from "../../utils/userRoles";
+import { setOnboardingCustomizeOpened } from "../../utils/onboardingStorage";
 
 // `embedded` renders the panel without its own BottomBar and routes the header
 // button to `onClose` — used by the 70% slide-in drawer over Home, so theme
@@ -57,6 +58,13 @@ export default function CustomizeHomeScreen({
   const navigation = useNavigation();
   const { t } = useTranslation();
   const handleClose = embedded ? onClose : navigation.goBack;
+
+  // "Anpassa startsidan" counts as done once the user actually changes
+  // something here — merely opening the drawer to look is not customising it.
+  const markCustomized = useCallback((patch) => {
+    setOnboardingCustomizeOpened();
+    return patch;
+  }, []);
 
   const { selectedProject, user } = useContext(AuthContext);
 
@@ -136,7 +144,7 @@ export default function CustomizeHomeScreen({
       });
 
       setEnabledButtons(updatedButtons);
-      onLiveChange?.({ enabledButtons: updatedButtons });
+      onLiveChange?.(markCustomized({ enabledButtons: updatedButtons }));
 
       await saveEnabledButtons(updatedButtons);
 
@@ -146,14 +154,14 @@ export default function CustomizeHomeScreen({
     const updatedButtons = [...enabledButtons, buttonId];
 
     setEnabledButtons(updatedButtons);
-    onLiveChange?.({ enabledButtons: updatedButtons });
+    onLiveChange?.(markCustomized({ enabledButtons: updatedButtons }));
 
     await saveEnabledButtons(updatedButtons);
   }
 
   async function handlePickSecondary(action) {
     setSecondaryAction(action);
-    onLiveChange?.({ secondaryAction: action });
+    onLiveChange?.(markCustomized({ secondaryAction: action }));
     await saveSecondaryAction(action);
   }
 
@@ -161,7 +169,7 @@ export default function CustomizeHomeScreen({
   // order — persist it as-is.
   function commitSectionsOrder(nextOrder) {
     setSectionsOrder(nextOrder);
-    onLiveChange?.({ sectionsOrder: nextOrder });
+    onLiveChange?.(markCustomized({ sectionsOrder: nextOrder }));
     saveSectionsOrder(nextOrder);
   }
 
@@ -181,7 +189,7 @@ export default function CustomizeHomeScreen({
       nextOrder[slot] = nextVisibleIds[k];
     });
     setButtonsOrder(nextOrder);
-    onLiveChange?.({ buttonsOrder: nextOrder });
+    onLiveChange?.(markCustomized({ buttonsOrder: nextOrder }));
     saveButtonsOrder(nextOrder);
   }
 
@@ -196,7 +204,7 @@ export default function CustomizeHomeScreen({
       );
 
       setEnabledSections(updatedSections);
-      onLiveChange?.({ enabledSections: updatedSections });
+      onLiveChange?.(markCustomized({ enabledSections: updatedSections }));
 
       await saveEnabledSections(updatedSections);
 
@@ -206,7 +214,7 @@ export default function CustomizeHomeScreen({
     const updatedSections = [...enabledSections, sectionId];
 
     setEnabledSections(updatedSections);
-    onLiveChange?.({ enabledSections: updatedSections });
+    onLiveChange?.(markCustomized({ enabledSections: updatedSections }));
 
     await saveEnabledSections(updatedSections);
 
@@ -261,6 +269,7 @@ export default function CustomizeHomeScreen({
                     isActive && styles.activeThemeButton,
                   ]}
                   onPress={function handleThemePress() {
+                    markCustomized();
                     changeTheme(item.id);
                   }}
                 >

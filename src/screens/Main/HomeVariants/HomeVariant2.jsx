@@ -88,7 +88,6 @@ import { HomeOnboarding } from "../../../components/common/HomeOnboarding/HomeOn
 import { useOnboardingProgress } from "../../../hooks/useOnboardingProgress";
 import {
   setOnboardingDismissed,
-  setOnboardingCustomizeOpened,
   getOnboardingFocus,
   setOnboardingFocus,
 } from "../../../utils/onboardingStorage";
@@ -234,9 +233,8 @@ export default function HomeVariant2() {
   const backdropOpacity = useRef(new Animated.Value(0)).current;
 
   const openCustomize = useCallback(() => {
-    // Mark the onboarding "Anpassa startsidan" step done — opening the drawer is
-    // the signal (there's no server-side "customised the home" flag).
-    setOnboardingCustomizeOpened();
+    // Opening the drawer is NOT the signal — the step is marked done inside the
+    // drawer, once the user actually changes a theme/button/section.
     setCustomizeMounted(true);
     drawerX.setValue(-CUSTOMIZE_WIDTH);
     requestAnimationFrame(() => {
