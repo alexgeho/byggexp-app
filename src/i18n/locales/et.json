@@ -1363,10 +1363,11 @@
     },
     "focus": {
       "question": "Mis on praegu kõige tähtsam?",
-      "fieldwork": "Halda projekte või meeskondi",
-      "billing": "Saada arve või pakkumine",
+      "fieldwork": "Mul on meeskond",
+      "billing": "Peamiselt pakkumised ja arved",
       "skip": "Jäta vahele",
-      "change": "Muuda fookust"
+      "change": "Muuda fookust",
+      "solo": "Töötan üksi"
     }
   },
   "welcome": {

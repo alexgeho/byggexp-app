@@ -1363,10 +1363,11 @@
     },
     "focus": {
       "question": "Vad är viktigast just nu?",
-      "fieldwork": "Hantera projekt och team",
-      "billing": "Skicka offert eller faktura",
+      "fieldwork": "Jag har ett team",
+      "billing": "Mest offerter och fakturor",
       "skip": "Hoppa över",
-      "change": "Byt fokus"
+      "change": "Byt fokus",
+      "solo": "Jag jobbar själv"
     }
   },
   "welcome": {

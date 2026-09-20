@@ -1363,10 +1363,11 @@
     },
     "focus": {
       "question": "Kas šobrīd ir vissvarīgākais?",
-      "fieldwork": "Pārvaldīt projektus vai brigādes",
-      "billing": "Nosūtīt rēķinu vai piedāvājumu",
+      "fieldwork": "Man ir komanda",
+      "billing": "Galvenokārt piedāvājumi un rēķini",
       "skip": "Izlaist",
-      "change": "Mainīt fokusu"
+      "change": "Mainīt fokusu",
+      "solo": "Strādāju viens"
     }
   },
   "welcome": {

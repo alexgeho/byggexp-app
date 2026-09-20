@@ -94,26 +94,39 @@ export const homeSections = [
   },
 ];
 
+// What the home screen looks like once the onboarding question is answered.
+// One question with three answers replaces a screen full of equally-weighted
+// choices: the same Choice Overload the law warns about is not solved by
+// hiding features, but by cutting the number of decisions taken at once.
+// Nothing is lost — every feature stays in the menu, this is only the desk.
+export const HOME_PRESETS = {
+  // One person, their own jobs and their own invoices.
+  solo: {
+    buttons: ["shifts", "projects", "offer", "invoice"],
+    sections: ["my-work", "notes"],
+  },
+  // A crew: who works where, and what they have to do.
+  team: {
+    buttons: ["shifts", "employees", "projects", "tasks"],
+    sections: ["shift-history", "tasks-history"],
+  },
+  // Mostly paperwork.
+  billing: {
+    buttons: ["offer", "invoice", "projects", "tasks"],
+    sections: ["my-work", "shift-history"],
+  },
+};
+
 // Admin default (company-admin / admin first launch): the six square buttons
 // per the 1.1.1 spec — Anställda, Verktyg, Chattar, Arbetspass, Projekt,
 // Uppgifter. Camera stays available as the round secondary action + in Customize,
 // it's just not one of the default grid buttons. Also the fallback for any
 // non-worker role. Admins can add/remove the rest from Customize.
-export const defaultEnabledButtons = [
-  "employees",
-  "tools",
-  "chats",
-  "shifts",
-  "projects",
-  "tasks",
-];
+// First launch, before the question is answered: the three things every role
+// starts from. The rest arrives with the answer, or from Customize.
+export const defaultEnabledButtons = ["shifts", "projects", "tasks"];
 
-export const defaultEnabledSections = [
-  "shift-history",
-  "tasks-history",
-  "project-files",
-  "notes",
-];
+export const defaultEnabledSections = ["shift-history", "notes"];
 
 // Worker default: a lean home — Play + Camera round buttons (Camera is the
 // default secondary action), Shifts + Tasks square buttons, and the Project

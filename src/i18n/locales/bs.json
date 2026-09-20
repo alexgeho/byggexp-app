@@ -1363,10 +1363,11 @@
     },
     "focus": {
       "question": "Šta je najvažnije upravo sada?",
-      "fieldwork": "Upravljanje projektima ili ekipama",
-      "billing": "Slanje fakture ili ponude",
+      "fieldwork": "Imam tim",
+      "billing": "Uglavnom ponude i fakture",
       "skip": "Preskoči",
-      "change": "Promijeni fokus"
+      "change": "Promijeni fokus",
+      "solo": "Radim sam"
     }
   },
   "welcome": {

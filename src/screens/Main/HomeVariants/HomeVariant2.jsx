@@ -72,6 +72,7 @@ import {
   getDefaultEnabledButtons,
   getDefaultEnabledSections,
   homeSections,
+  HOME_PRESETS,
 } from "../../../constants/mainButtons";
 import {
   getEnabledButtons,
@@ -80,6 +81,7 @@ import {
   getSectionsOrder,
   getButtonsOrder,
   getSecondaryAction,
+  applyHomePreset,
 } from "../../../utils/homeButtonsStorage";
 import ShiftHistoryPreview from "../../../components/common/ShiftHistoryPreview/ShiftHistoryPreview";
 import TasksPreview from "../../../components/common/TasksPreview/TasksPreview";
@@ -173,11 +175,25 @@ export default function HomeVariant2() {
   useEffect(() => {
     getOnboardingFocus().then(setOnboardingFocusState);
   }, []);
-  const chooseFocus = useCallback((value) => {
-    setOnboardingFocusState(value);
-    setOnboardingFocus(value);
-    track("onboarding_focus_chosen", { focus: value });
-  }, []);
+  const chooseFocus = useCallback(
+    async (value) => {
+      setOnboardingFocusState(value);
+      setOnboardingFocus(value);
+      track("onboarding_focus_chosen", { focus: value });
+
+      // The answer lays the home screen out, so the person lands on the three
+      // or four things their answer implies instead of everything at once.
+      // Skipped when they already arranged it themselves.
+      const preset =
+        HOME_PRESETS[value === "fieldwork" ? "team" : value] || null;
+      const applied = await applyHomePreset(preset);
+      if (applied) {
+        setEnabledButtons(preset.buttons);
+        setEnabledSections(preset.sections);
+      }
+    },
+    [setEnabledButtons, setEnabledSections],
+  );
   const changeFocus = useCallback(() => {
     setOnboardingFocusState(null);
     setOnboardingFocus(null);

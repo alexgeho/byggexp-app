@@ -1363,10 +1363,11 @@
     },
     "focus": {
       "question": "Kas šiuo metu svarbiausia?",
-      "fieldwork": "Valdyti projektus ar komandas",
-      "billing": "Siųsti sąskaitą ar pasiūlymą",
+      "fieldwork": "Turiu komandą",
+      "billing": "Daugiausia pasiūlymai ir sąskaitos",
       "skip": "Praleisti",
-      "change": "Keisti fokusą"
+      "change": "Keisti fokusą",
+      "solo": "Dirbu vienas"
     }
   },
   "welcome": {

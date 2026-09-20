@@ -257,7 +257,20 @@ export function useOnboardingProgress({
   let needsFocus = false;
   if (focus === "fieldwork") steps = fieldwork;
   else if (focus === "billing") steps = billing;
-  else {
+  else if (focus === "solo") {
+    // Working alone means own jobs and own invoices, and never "invite a team".
+    steps = [
+      { key: "project", done: state.hasProject, screen: "CreateProject" },
+      {
+        key: "companyDetails",
+        done: state.hasCompanyDetails,
+        screen: "CompanyDetails",
+      },
+      { key: "client", done: state.hasClient, screen: "Clients" },
+      { key: "billing", done: state.hasBilling, screen: "Economy" },
+      customizeStep,
+    ];
+  } else {
     // No valid focus yet (null) — or a legacy "skip" value persisted by the old
     // build. ALWAYS show the routing question here; never dump all 8 steps at
     // once (that broke the focus hierarchy — one clear choice, not a wall). The

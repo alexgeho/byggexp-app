@@ -38,6 +38,29 @@ export async function saveSecondaryAction(action) {
   await AsyncStorage.setItem(SECONDARY_ACTION_KEY, action);
 }
 
+// Applies a home preset picked in onboarding — but never over a layout the
+// person already arranged themselves. Their arrangement outranks our guess.
+export async function applyHomePreset(preset) {
+  if (!preset) return false;
+  try {
+    const [buttons, sections] = await Promise.all([
+      AsyncStorage.getItem(STORAGE_KEY),
+      AsyncStorage.getItem(ENABLED_SECTIONS_KEY),
+    ]);
+    if (buttons || sections) {
+      return false;
+    }
+    await AsyncStorage.multiSet([
+      [STORAGE_KEY, JSON.stringify(preset.buttons)],
+      [ENABLED_SECTIONS_KEY, JSON.stringify(preset.sections)],
+    ]);
+    return true;
+  } catch {
+    // A preset that fails to save just leaves the defaults in place.
+    return false;
+  }
+}
+
 export async function saveEnabledButtons(buttons) {
   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(buttons));
 }
