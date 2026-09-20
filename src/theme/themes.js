@@ -74,8 +74,9 @@ const common = {
     alignItems: "stretch",
     iconAlignSelf: "flex-start",
     contentGap: 8,
-    // Matches the section headings under the grid — regular, not bold.
-    textWeight: "400",
+    textWeight: "600",
+    labelSize: 16,
+    labelFamily: "regular",
   },
 };
 
@@ -93,11 +94,27 @@ export const blackTheme = {
 
 export const lightBlueTheme = {
   ...common,
+  homeButton: {
+    ...common.homeButton,
+    // Asked for on the pale-blue home: the label reads like the section
+    // headings under the grid — 15px, regular weight.
+    textWeight: "400",
+    labelSize: 15,
+    labelFamily: "medium",
+  },
   colors: withIconBadgeBackground(lightBlueColors),
 };
 
 export const lightGrayTheme = {
   ...common,
+  homeButton: {
+    ...common.homeButton,
+    // Asked for on the pale-blue home: the label reads like the section
+    // headings under the grid — 15px, regular weight.
+    textWeight: "400",
+    labelSize: 15,
+    labelFamily: "medium",
+  },
   colors: withIconBadgeBackground(lightGrayColors),
 };
 

@@ -88,14 +88,14 @@ export function createStyles(theme) {
       tintColor: labelColor,
     },
 
-    // Same type as the section headings under the grid ("Dagsrapport",
-    // "Uppgifter"): 15px, regular weight. The card is already a big tap target
-    // — it doesn't need bold on top, and matching the headings keeps one voice
-    // down the screen.
+    // Label type comes from the theme: the pale-blue and grey homes read like
+    // the section headings under the grid (15px, regular), the rest keep the
+    // bolder 16px label.
     buttonText: {
       color: labelColor,
-      fontFamily: theme.text.fontFamily.medium,
-      fontSize: 15,
+      fontFamily:
+        theme.text.fontFamily[theme.homeButton.labelFamily || "regular"],
+      fontSize: theme.homeButton.labelSize || theme.text.sizes.medium,
       fontWeight: theme.homeButton.textWeight,
     },
   });
