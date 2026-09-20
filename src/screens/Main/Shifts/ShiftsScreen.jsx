@@ -22,7 +22,11 @@ import {
 import { Image as ExpoImage } from "expo-image";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../theme/ThemeContext";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { ProjectFilterSelector } from "../../../components/common/ProjectFilterSelector/ProjectFilterSelector";
@@ -266,6 +270,20 @@ export default function ShiftsScreen() {
     refreshHistory,
     loadHistory,
   } = useShiftHistory({ filterProjectId, workerIdsParam });
+
+  // Coming back from the day report (or the manual-hours sheet on another
+  // screen) has to show what was just saved. The hook loads on mount, so the
+  // first focus is skipped and only returns refetch.
+  const hasFocusedRef = useRef(false);
+  useFocusEffect(
+    useCallback(() => {
+      if (!hasFocusedRef.current) {
+        hasFocusedRef.current = true;
+        return;
+      }
+      loadHistory(selectedMonth);
+    }, [loadHistory, selectedMonth]),
+  );
 
   // Load projects for everyone (admins filter the export by project; workers
   // pick one when logging manual hours) and colleagues for admins' people filter.
