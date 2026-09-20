@@ -480,7 +480,7 @@
     "attested": "Подтверждена",
     "attestAction": "Подтвердить",
     "approveFailed": "Не удалось подтвердить смену.",
-    "clocked": "По GPS-отметкам"
+    "clocked": "Время по GPS"
   },
   "shiftHistory": {
     "title": "Дневной отчёт",

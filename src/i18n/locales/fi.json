@@ -480,7 +480,7 @@
     "attested": "Hyväksytty",
     "attestAction": "Hyväksy",
     "approveFailed": "Vuoron hyväksyminen epäonnistui.",
-    "clocked": "GPS-leimattu"
+    "clocked": "GPS-leimattu aika"
   },
   "shiftHistory": {
     "title": "Päiväraportti",

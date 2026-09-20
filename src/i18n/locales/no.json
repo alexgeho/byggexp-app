@@ -480,7 +480,7 @@
     "attested": "Attestert",
     "attestAction": "Attester",
     "approveFailed": "Kunne ikke attestere vakten.",
-    "clocked": "GPS-stemplet"
+    "clocked": "GPS-stemplet tid"
   },
   "shiftHistory": {
     "title": "Dagsrapport",
