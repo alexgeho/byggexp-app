@@ -124,12 +124,12 @@ export default function MenuScreen() {
     }, [profileId]),
   );
 
-  // Collapsible categories: the page was one long scroll, so every category
-  // except the primary "Projekt & arbete" starts collapsed. Tap a header to
-  // expand/collapse.
+  // Collapsible categories: the page was one long scroll, so it opens on
+  // "Inställningar" alone and every other category starts collapsed — one open
+  // section is what the screen is for, the rest are a tap away.
   const [collapsedSections, setCollapsedSections] = useState({
+    projects: true,
     economy: true,
-    settings: true,
     information: true,
     support: true,
   });
