@@ -1243,7 +1243,20 @@
     "rotPersonalNumberPlaceholder": "ÅÅÅÅMMDD-XXXX",
     "rotProperty": "Eiendomsbetegnelse / BRF",
     "rotPropertyPlaceholder": "Kommune Gård 1:23",
-    "contactRole": "Rolle"
+    "contactRole": "Rolle",
+    "selectArticle": "Velg artikkel",
+    "searchArticle": "Søk artikkel",
+    "noArticles": "Ingen artikler — legg til under Artikler",
+    "article": "Artikkel",
+    "pickArticle": "Velg artikkel",
+    "discount": "Rabatt %",
+    "vatRate": "Mva",
+    "textRow": "Tekstrad",
+    "textRowPlaceholder": "Overskrift eller notat",
+    "addTextRow": "Legg til tekstrad",
+    "paymentTerms": "Betalingsbetingelser (dager)",
+    "lateInterest": "Forsinkelsesrente",
+    "lateInterestPlaceholder": "f.eks. 8% + referanserente"
   },
   "tasksPreview": {
     "noDate": "Ingen dato",

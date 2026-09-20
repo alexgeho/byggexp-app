@@ -1243,7 +1243,20 @@
     "rotPersonalNumberPlaceholder": "GGGGMMDD-XXXX",
     "rotProperty": "Īpašuma apzīmējums / BRF",
     "rotPropertyPlaceholder": "Novads Saimniecība 1:23",
-    "contactRole": "Loma"
+    "contactRole": "Loma",
+    "selectArticle": "Izvēlēties artikulu",
+    "searchArticle": "Meklēt artikulu",
+    "noArticles": "Nav artikulu — pievienojiet sadaļā «Artikuli»",
+    "article": "Artikuls",
+    "pickArticle": "Izvēlēties artikulu",
+    "discount": "Atlaide %",
+    "vatRate": "PVN",
+    "textRow": "Teksta rinda",
+    "textRowPlaceholder": "Virsraksts vai piezīme",
+    "addTextRow": "Pievienot teksta rindu",
+    "paymentTerms": "Apmaksas termiņš (dienas)",
+    "lateInterest": "Kavējuma procenti",
+    "lateInterestPlaceholder": "piem. 8% + bāzes likme"
   },
   "tasksPreview": {
     "noDate": "Nav datuma",

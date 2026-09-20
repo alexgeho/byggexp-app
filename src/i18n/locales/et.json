@@ -1243,7 +1243,20 @@
     "rotPersonalNumberPlaceholder": "AAAAKKPP-XXXX",
     "rotProperty": "Kinnistu tähis / BRF",
     "rotPropertyPlaceholder": "Vald Talu 1:23",
-    "contactRole": "Roll"
+    "contactRole": "Roll",
+    "selectArticle": "Vali artikkel",
+    "searchArticle": "Otsi artiklit",
+    "noArticles": "Artikleid pole — lisa Artiklite all",
+    "article": "Artikkel",
+    "pickArticle": "Vali artikkel",
+    "discount": "Allahindlus %",
+    "vatRate": "KM",
+    "textRow": "Tekstirida",
+    "textRowPlaceholder": "Pealkiri või märkus",
+    "addTextRow": "Lisa tekstirida",
+    "paymentTerms": "Maksetähtaeg (päeva)",
+    "lateInterest": "Viivis",
+    "lateInterestPlaceholder": "nt 8% + viitemäär"
   },
   "tasksPreview": {
     "noDate": "Kuupäev puudub",

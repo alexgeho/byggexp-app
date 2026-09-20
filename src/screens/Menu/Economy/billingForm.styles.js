@@ -261,6 +261,33 @@ export const createStyles = (c) => {
     typeText: { fontSize: 14, fontFamily: F_MED, color: MUTED },
     typeTextOn: { color: INK },
 
+    /* article button + discount/VAT cells on an invoice row */
+    articleBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+      paddingVertical: 8,
+    },
+    articleBtnText: {
+      flex: 1,
+      fontSize: 14,
+      fontFamily: F_MED,
+      color: PRIMARY,
+    },
+    vatRow: {
+      flexDirection: "row",
+      gap: 6,
+    },
+    vatChip: {
+      paddingHorizontal: 10,
+      paddingVertical: 6,
+      borderRadius: 71,
+      backgroundColor: INPUT_BG,
+    },
+    vatChipOn: { backgroundColor: PRIMARY },
+    vatChipText: { fontSize: 13, fontFamily: F_MED, color: MUTED },
+    vatChipTextOn: { color: "#FFFFFF" },
+
     /* client picker modal */
     modalOverlay: {
       flex: 1,

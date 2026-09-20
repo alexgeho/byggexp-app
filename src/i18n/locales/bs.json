@@ -1243,7 +1243,20 @@
     "rotPersonalNumberPlaceholder": "GGGGMMDD-XXXX",
     "rotProperty": "Oznaka nekretnine / BRF",
     "rotPropertyPlaceholder": "Općina Imanje 1:23",
-    "contactRole": "Uloga"
+    "contactRole": "Uloga",
+    "selectArticle": "Odaberi artikal",
+    "searchArticle": "Pretraži artikal",
+    "noArticles": "Nema artikala — dodajte ih pod Artikli",
+    "article": "Artikal",
+    "pickArticle": "Odaberi artikal",
+    "discount": "Popust %",
+    "vatRate": "PDV",
+    "textRow": "Tekstualni red",
+    "textRowPlaceholder": "Naslov ili bilješka",
+    "addTextRow": "Dodaj tekstualni red",
+    "paymentTerms": "Uslovi plaćanja (dana)",
+    "lateInterest": "Zatezna kamata",
+    "lateInterestPlaceholder": "npr. 8% + referentna stopa"
   },
   "tasksPreview": {
     "noDate": "Bez datuma",

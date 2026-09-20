@@ -25,6 +25,7 @@ import {
   toIsoDate,
   addDaysIso,
   emptyLineItem,
+  isHourRow,
 } from "../../../utils/billingTotals";
 import { createStyles, PRIMARY, PLACEHOLDER } from "./billingForm.styles";
 import { useTheme } from "../../../theme/ThemeContext";
@@ -67,6 +68,11 @@ export default function CreateInvoiceScreen() {
   const [project, setProject] = useState(null);
   // Order reference (littera). Auto-filled from the chosen project, editable.
   const [orderReference, setOrderReference] = useState("");
+  // Payment terms in days: prefilled from the client, and editing it moves the
+  // due date with it — the same pair the web form keeps in step.
+  const [paymentTerms, setPaymentTerms] = useState(String(DEFAULT_TERMS_DAYS));
+  // Late-payment interest printed on the invoice ("8% + referensränta").
+  const [lateInterest, setLateInterest] = useState("");
 
   const [clientPickerVisible, setClientPickerVisible] = useState(false);
   const isPrivateClient = client?.clientType === "private";
@@ -110,8 +116,51 @@ export default function CreateInvoiceScreen() {
     setCompanyName(picked.companyName || "");
     setEmail(picked.email || "");
     const termDays = Number(picked.paymentTerms) || DEFAULT_TERMS_DAYS;
+    setPaymentTerms(String(termDays));
     setDueDate(addDaysIso(toIsoDate(new Date()), termDays));
+    // Repeat invoices to this client carry the agreed labour article and the
+    // agreed hourly rate onto the labour rows, exactly as the web form does.
+    const labourArticle = String(picked?.labourArticleNumber || "").trim();
+    const hourlyRate = Number(picked?.hourlyRate) || 0;
+    if (labourArticle || hourlyRate) {
+      setItems((prev) =>
+        prev.map((item) => {
+          if (!isHourRow(item)) return item;
+          const next = { ...item };
+          if (labourArticle && !String(item.articleNumber || "").trim()) {
+            next.articleNumber = labourArticle;
+          }
+          if (hourlyRate && !(Number(item.price) > 0)) {
+            next.price = hourlyRate;
+          }
+          return next;
+        }),
+      );
+    }
     setClientPickerVisible(false);
+  };
+
+  // Typing "tim" into a row's unit drops the client's agreed hourly rate into
+  // its price — unless the row already has one.
+  const onRowUnitChange = (index, unit) => {
+    const rate = Number(client?.hourlyRate) || 0;
+    if (!rate || !isHourRow({ unit })) return;
+    setItems((prev) =>
+      prev.map((item, i) =>
+        i === index && !(Number(item.price) > 0)
+          ? { ...item, price: rate }
+          : item,
+      ),
+    );
+  };
+
+  // Payment terms drive the due date: N days from today, like the web form.
+  const onChangePaymentTerms = (value) => {
+    setPaymentTerms(value);
+    const days = Number(String(value).replace(/[^0-9]/g, ""));
+    if (Number.isFinite(days) && days > 0) {
+      setDueDate(addDaysIso(toIsoDate(new Date()), days));
+    }
   };
 
   // Mirrors the admin InvoiceForm: selecting a project drops its name into the
@@ -140,7 +189,12 @@ export default function CreateInvoiceScreen() {
     customerNumber: client?.customerNumber || "",
     vatNumber: client?.vatNumber || "",
     address: client?.address || "",
-    postalCode: client?.postalCode || "",
+    // The PDF prints one line under the street: postcode, town, country. The
+    // web packs all three into `postalCode` (the template never reads `city`),
+    // so an app-made invoice used to show the postcode with no town.
+    postalCode: [client?.postalCode, client?.city, client?.country]
+      .filter(Boolean)
+      .join(" "),
     phone: client?.phone || "",
     email: email.trim(),
     date: toIsoDate(new Date()),
@@ -150,9 +204,11 @@ export default function CreateInvoiceScreen() {
     status: "draft",
     // The backend stores reverseVAT as a string, like the admin form sends it.
     reverseVAT: reverseVAT ? "true" : "false",
-    ...(client?.paymentTerms
-      ? { paymentTerms: String(client.paymentTerms) }
-      : {}),
+    ...(paymentTerms.trim() ? { paymentTerms: paymentTerms.trim() } : {}),
+    ...(lateInterest.trim() ? { lateInterest: lateInterest.trim() } : {}),
+    // The client's contact person, as the web sends it; the PDF falls back to
+    // it when "Er referens" is empty.
+    ...(client?.contactPerson ? { representative: client.contactPerson } : {}),
     ...(ourReference.trim() ? { ourReference: ourReference.trim() } : {}),
     ...(yourReference.trim() ? { yourReference: yourReference.trim() } : {}),
     // Belt and braces: a company customer never carries ROT, whatever the
@@ -283,6 +339,19 @@ export default function CreateInvoiceScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* Payment terms (days) — moves the due date with it. */}
+        <View style={styles.field}>
+          <Text style={styles.label}>{t("billing.paymentTerms")}</Text>
+          <TextInput
+            style={styles.input}
+            value={paymentTerms}
+            onChangeText={onChangePaymentTerms}
+            keyboardType="number-pad"
+            placeholder={String(DEFAULT_TERMS_DAYS)}
+            placeholderTextColor={PLACEHOLDER}
+          />
+        </View>
+
         {/* Due date */}
         <View style={styles.field}>
           <Text style={styles.label}>{t("billing.dueDate")}</Text>
@@ -356,11 +425,23 @@ export default function CreateInvoiceScreen() {
           />
         </View>
 
+        <View style={styles.field}>
+          <Text style={styles.label}>{t("billing.lateInterest")}</Text>
+          <TextInput
+            style={styles.input}
+            value={lateInterest}
+            onChangeText={setLateInterest}
+            placeholder={t("billing.lateInterestPlaceholder")}
+            placeholderTextColor={PLACEHOLDER}
+          />
+        </View>
+
         {/* Invoice rows */}
         <LineItemsEditor
           items={items}
           onChange={setItems}
           label={t("billing.invoiceRows")}
+          onUnitChange={onRowUnitChange}
         />
 
         {/* ROT deduction — private customers only. */}

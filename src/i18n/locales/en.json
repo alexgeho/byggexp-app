@@ -1243,7 +1243,20 @@
     "rotPersonalNumberPlaceholder": "YYYYMMDD-XXXX",
     "rotProperty": "Property designation / BRF",
     "rotPropertyPlaceholder": "Municipality Farm 1:23 · or BRF org.no + apt no",
-    "contactRole": "Role"
+    "contactRole": "Role",
+    "selectArticle": "Select article",
+    "searchArticle": "Search article",
+    "noArticles": "No articles — add one under Articles",
+    "article": "Article",
+    "pickArticle": "Select article",
+    "discount": "Discount %",
+    "vatRate": "VAT",
+    "textRow": "Text row",
+    "textRowPlaceholder": "Heading or note",
+    "addTextRow": "Add text row",
+    "paymentTerms": "Payment terms (days)",
+    "lateInterest": "Late-payment interest",
+    "lateInterestPlaceholder": "e.g. 8% + reference rate"
   },
   "tasksPreview": {
     "noDate": "No date",

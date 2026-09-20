@@ -1243,7 +1243,20 @@
     "rotPersonalNumberPlaceholder": "ГГГГММДД-XXXX",
     "rotProperty": "Обозначение недвижимости / BRF",
     "rotPropertyPlaceholder": "Коммуна Усадьба 1:23",
-    "contactRole": "Роль"
+    "contactRole": "Роль",
+    "selectArticle": "Выбрать артикул",
+    "searchArticle": "Поиск артикула",
+    "noArticles": "Артикулов нет — добавьте в разделе «Артикулы»",
+    "article": "Артикул",
+    "pickArticle": "Выбрать артикул",
+    "discount": "Скидка %",
+    "vatRate": "НДС",
+    "textRow": "Текстовая строка",
+    "textRowPlaceholder": "Заголовок или примечание",
+    "addTextRow": "Добавить текстовую строку",
+    "paymentTerms": "Срок оплаты (дней)",
+    "lateInterest": "Пеня за просрочку",
+    "lateInterestPlaceholder": "напр. 8% + ключевая ставка"
   },
   "tasksPreview": {
     "noDate": "Без даты",

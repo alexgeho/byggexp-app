@@ -1243,7 +1243,20 @@
     "rotPersonalNumberPlaceholder": "РРРРММДД-XXXX",
     "rotProperty": "Позначення нерухомості / BRF",
     "rotPropertyPlaceholder": "Громада Садиба 1:23",
-    "contactRole": "Роль"
+    "contactRole": "Роль",
+    "selectArticle": "Обрати артикул",
+    "searchArticle": "Пошук артикулу",
+    "noArticles": "Немає артикулів — додайте в розділі «Артикули»",
+    "article": "Артикул",
+    "pickArticle": "Обрати артикул",
+    "discount": "Знижка %",
+    "vatRate": "ПДВ",
+    "textRow": "Текстовий рядок",
+    "textRowPlaceholder": "Заголовок або примітка",
+    "addTextRow": "Додати текстовий рядок",
+    "paymentTerms": "Умови оплати (днів)",
+    "lateInterest": "Пеня за прострочення",
+    "lateInterestPlaceholder": "напр. 8% + облікова ставка"
   },
   "tasksPreview": {
     "noDate": "Без дати",

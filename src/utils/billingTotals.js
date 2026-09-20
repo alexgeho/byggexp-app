@@ -23,7 +23,44 @@ export const emptyLineItem = () => ({
   vatRate: DEFAULT_VAT_RATE,
 });
 
+// A text-only row: a heading or a note printed between the priced rows. It
+// carries no amount and never reaches the totals — same shape as the web's
+// TEXT_ITEM so both ends read each other's documents.
+export const emptyTextRow = () => ({
+  _key: `li_${(lineItemSeq += 1)}`,
+  isText: true,
+  description: "",
+  quantity: 0,
+  unit: "",
+  price: 0,
+  discount: 0,
+  vatRate: 0,
+});
+
+// Units that mark a row as labour, so the client's agreed hourly rate and
+// labour article can be dropped onto it. Same list as the web form.
+const HOUR_UNITS = new Set([
+  "tim",
+  "timme",
+  "timmar",
+  "timma",
+  "h",
+  "hr",
+  "hrs",
+  "hour",
+  "hours",
+  "t",
+]);
+
+export const isHourRow = (item) =>
+  HOUR_UNITS.has(
+    String(item?.unit || "")
+      .trim()
+      .toLowerCase(),
+  );
+
 export const lineNet = (item) => {
+  if (item?.isText) return 0;
   const quantity = Number(item?.quantity) || 0;
   const price = Number(item?.price) || 0;
   const discount = Number(item?.discount) || 0;
@@ -36,6 +73,7 @@ export const computeTotals = (items = [], { reverseVAT = false } = {}) => {
   let vat = 0;
 
   items.forEach((item) => {
+    if (item?.isText) return;
     const net = lineNet(item);
     subtotal += net;
     if (!reverseVAT) {

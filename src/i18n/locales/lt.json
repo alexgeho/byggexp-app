@@ -1243,7 +1243,20 @@
     "rotPersonalNumberPlaceholder": "MMMMMMDD-XXXX",
     "rotProperty": "Nekilnojamojo turto žymuo / BRF",
     "rotPropertyPlaceholder": "Savivaldybė Ūkis 1:23",
-    "contactRole": "Vaidmuo"
+    "contactRole": "Vaidmuo",
+    "selectArticle": "Pasirinkti prekę",
+    "searchArticle": "Ieškoti prekės",
+    "noArticles": "Prekių nėra — pridėkite skiltyje „Prekės“",
+    "article": "Prekė",
+    "pickArticle": "Pasirinkti prekę",
+    "discount": "Nuolaida %",
+    "vatRate": "PVM",
+    "textRow": "Teksto eilutė",
+    "textRowPlaceholder": "Antraštė arba pastaba",
+    "addTextRow": "Pridėti teksto eilutę",
+    "paymentTerms": "Mokėjimo terminas (dienos)",
+    "lateInterest": "Delspinigiai",
+    "lateInterestPlaceholder": "pvz. 8% + bazinė norma"
   },
   "tasksPreview": {
     "noDate": "Nėra datos",

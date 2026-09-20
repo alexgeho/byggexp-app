@@ -1243,7 +1243,20 @@
     "rotPersonalNumberPlaceholder": "VVVVKKPP-XXXX",
     "rotProperty": "Kiinteistötunnus / BRF",
     "rotPropertyPlaceholder": "Kunta Tila 1:23",
-    "contactRole": "Rooli"
+    "contactRole": "Rooli",
+    "selectArticle": "Valitse tuote",
+    "searchArticle": "Hae tuotetta",
+    "noArticles": "Ei tuotteita — lisää Tuotteet-näkymässä",
+    "article": "Tuote",
+    "pickArticle": "Valitse tuote",
+    "discount": "Alennus %",
+    "vatRate": "ALV",
+    "textRow": "Tekstirivi",
+    "textRowPlaceholder": "Otsikko tai muistiinpano",
+    "addTextRow": "Lisää tekstirivi",
+    "paymentTerms": "Maksuehto (päivää)",
+    "lateInterest": "Viivästyskorko",
+    "lateInterestPlaceholder": "esim. 8% + viitekorko"
   },
   "tasksPreview": {
     "noDate": "Ei päivämäärää",

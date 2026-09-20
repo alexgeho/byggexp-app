@@ -1243,7 +1243,20 @@
     "rotPersonalNumberPlaceholder": "ÅÅÅÅMMDD-XXXX",
     "rotProperty": "Fastighetsbeteckning / BRF",
     "rotPropertyPlaceholder": "Kommun Gård 1:23 · eller BRF org.nr + lgh nr",
-    "contactRole": "Roll"
+    "contactRole": "Roll",
+    "selectArticle": "Välj artikel",
+    "searchArticle": "Sök artikel",
+    "noArticles": "Inga artiklar — lägg till under Artiklar",
+    "article": "Artikel",
+    "pickArticle": "Välj artikel",
+    "discount": "Rabatt %",
+    "vatRate": "Moms",
+    "textRow": "Textrad",
+    "textRowPlaceholder": "Rubrik eller notering",
+    "addTextRow": "Lägg till textrad",
+    "paymentTerms": "Betalningsvillkor (dagar)",
+    "lateInterest": "Dröjsmålsränta",
+    "lateInterestPlaceholder": "t.ex. 8% + referensränta"
   },
   "tasksPreview": {
     "noDate": "Inget datum",

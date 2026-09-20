@@ -1243,7 +1243,20 @@
     "rotPersonalNumberPlaceholder": "RRRRMMDD-XXXX",
     "rotProperty": "Oznaczenie nieruchomości / BRF",
     "rotPropertyPlaceholder": "Gmina Gospodarstwo 1:23",
-    "contactRole": "Rola"
+    "contactRole": "Rola",
+    "selectArticle": "Wybierz artykuł",
+    "searchArticle": "Szukaj artykułu",
+    "noArticles": "Brak artykułów — dodaj w Artykułach",
+    "article": "Artykuł",
+    "pickArticle": "Wybierz artykuł",
+    "discount": "Rabat %",
+    "vatRate": "VAT",
+    "textRow": "Wiersz tekstowy",
+    "textRowPlaceholder": "Nagłówek lub notatka",
+    "addTextRow": "Dodaj wiersz tekstowy",
+    "paymentTerms": "Termin płatności (dni)",
+    "lateInterest": "Odsetki za zwłokę",
+    "lateInterestPlaceholder": "np. 8% + stopa referencyjna"
   },
   "tasksPreview": {
     "noDate": "Brak daty",

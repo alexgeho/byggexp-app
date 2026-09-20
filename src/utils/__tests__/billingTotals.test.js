@@ -5,6 +5,7 @@ import {
   toIsoDate,
   addDaysIso,
   lineNet,
+  isHourRow,
 } from "../billingTotals";
 
 describe("computeTotals", () => {
@@ -100,5 +101,36 @@ describe("formatMoney", () => {
   it("renders Swedish money with two decimals and kr", () => {
     // Normalise whitespace to avoid NBSP vs space mismatches.
     expect(formatMoney(40200, "sv").replace(/\s/g, "")).toBe("40200,00kr");
+  });
+});
+
+describe("text rows", () => {
+  it("never reach the totals", () => {
+    const rows = [
+      { quantity: 2, price: 100, vatRate: 25 },
+      { isText: true, description: "Rivning", quantity: 9, price: 999 },
+    ];
+    expect(computeTotals(rows)).toEqual({
+      subtotal: 200,
+      vat: 50,
+      total: 250,
+    });
+  });
+
+  it("carry no amount of their own", () => {
+    expect(lineNet({ isText: true, quantity: 3, price: 500 })).toBe(0);
+  });
+});
+
+describe("isHourRow", () => {
+  it("recognises the labour units the web form uses", () => {
+    ["tim", "Timmar", " h ", "hours"].forEach((unit) => {
+      expect(isHourRow({ unit })).toBe(true);
+    });
+  });
+
+  it("is false for goods", () => {
+    expect(isHourRow({ unit: "st" })).toBe(false);
+    expect(isHourRow({})).toBe(false);
   });
 });
