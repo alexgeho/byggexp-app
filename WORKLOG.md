@@ -67,6 +67,14 @@
 - [x] Anteckning: отступ снизу 28→20 = как у всех блоков (сверху/снизу одинаково) — ✅ OTA `60e55866`
 - [i] Процесс: при «сделай цвет как X» — СНАЧАЛА замерять пиксели+код, не на глаз; сохранено в память `feedback_color_match_sample_pixels`
 
+## Раунд 6 (фидбэк 08:36)
+
+- [x] Убрал кнопку «Avtal» на Skapa projekt (Ekonomi теперь единственная строка в блоке) + карточку AVTAL/Avtalsnr из окна Ekonomi; выпилил `ContractSection`, стейт `contractNumber` и его append в submit
+- [x] Ekonomi: поля из 2-колоночных пилюль → полноширинные СТРОКИ
+- [x] Ekonomi: 3 блока по 2 строки (budget/timmar · planerat/förbrukat material · självkostnad/debiteras)
+- [x] Строки = новый `FloatingField` (floating label + hairline sep, безрамочный) — точь-в-точь как Projektnamn/Orderreferens, без звёздочки (не обязательные)
+- [i] Заголовок «EKONOMI» внутри убрал — шапка экрана уже «Ekonomi» (дубль)
+
 ## Открытые / след. шаги
 
 - iOS геозона realtime-push при выходе (ограничение iOS region-monitoring) — ждёт решения (больший радиус трогает закреплённый gps-конфиг; syslog по кабелю на iOS 26 недоступен без pymobiledevice3+tunnel)

@@ -1,5 +1,6 @@
-import { memo, useMemo, useState } from "react";
+import { Fragment, memo, useEffect, useMemo, useRef, useState } from "react";
 import {
+  Animated,
   View,
   Text,
   TextInput,
@@ -22,12 +23,7 @@ import { AppIcon } from "../../../components/common/AppIcon";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { PersonListItem } from "../../../components/common/PersonListItem/PersonListItem";
-import {
-  Card,
-  FieldInput,
-  HeaderCheckButton,
-  SectionTitle,
-} from "../../../components/common/ui";
+import { HeaderCheckButton } from "../../../components/common/ui";
 import { getWorkerStatusBadge } from "../../../utils/workerStatusBadge";
 import { createStyles } from "./CreateProjectScreen.styles";
 import { LocationMapPicker } from "./LocationMapPicker";
@@ -689,8 +685,59 @@ export const LocationPickerModal = ({
   );
 };
 
-// Optional economy card: budget / hours / material-cost / rate fields, laid
-// out in three two-up rows.
+// One borderless line with a floating label — the same row the project name
+// and order reference use, so the Ekonomi rows read identically. Nothing here
+// is required, so no asterisk.
+const FloatingField = ({ label, value, onChangeText, last }) => {
+  const styles = useThemedStyles();
+  const [focused, setFocused] = useState(false);
+  const anim = useRef(new Animated.Value(value ? 1 : 0)).current;
+
+  useEffect(() => {
+    Animated.timing(anim, {
+      toValue: focused || !!value ? 1 : 0,
+      duration: 150,
+      useNativeDriver: false,
+    }).start();
+  }, [focused, value, anim]);
+
+  return (
+    <View
+      style={[
+        styles.projectNameField,
+        styles.groupedField,
+        last ? styles.groupRowLast : null,
+      ]}
+    >
+      <Animated.Text
+        pointerEvents="none"
+        style={[
+          styles.floatingLabel,
+          {
+            top: anim.interpolate({ inputRange: [0, 1], outputRange: [18, 8] }),
+            fontSize: anim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [16, 12],
+            }),
+          },
+        ]}
+      >
+        {label}
+      </Animated.Text>
+      <TextInput
+        style={styles.floatingInput}
+        keyboardType="numeric"
+        value={value}
+        onChangeText={onChangeText}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+      />
+    </View>
+  );
+};
+
+// Optional economy fields as full-width lines, grouped into three cards of two
+// rows each (budget/hours, planned/spent material, cost/bill rate).
 export const EconomySection = ({
   budget,
   setBudget,
@@ -707,92 +754,47 @@ export const EconomySection = ({
 }) => {
   const styles = useThemedStyles();
   const { t } = useTranslation();
-  return (
-    <Card style={styles.fieldCardPad}>
-      <SectionTitle style={styles.ecoSectionTitleBlack}>
-        {t("createProject.economySection")}
-      </SectionTitle>
-      <View style={styles.fieldRow}>
-        <FieldInput
-          half
-          keyboardType="numeric"
-          borderless
-          labelStyle={styles.ecoFieldLabelBlack}
-          label={t("createProject.budget")}
-          value={budget}
-          onChangeText={setBudget}
-        />
-        <FieldInput
-          half
-          keyboardType="numeric"
-          borderless
-          labelStyle={styles.ecoFieldLabelBlack}
-          label={t("createProject.plannedHours")}
-          value={plannedHours}
-          onChangeText={setPlannedHours}
-        />
-      </View>
-      <View style={styles.fieldRow}>
-        <FieldInput
-          half
-          keyboardType="numeric"
-          borderless
-          labelStyle={styles.ecoFieldLabelBlack}
-          label={t("createProject.plannedMaterials")}
-          value={plannedMaterialsCost}
-          onChangeText={setPlannedMaterialsCost}
-        />
-        <FieldInput
-          half
-          keyboardType="numeric"
-          borderless
-          labelStyle={styles.ecoFieldLabelBlack}
-          label={t("createProject.spentMaterials")}
-          value={spentMaterialsCost}
-          onChangeText={setSpentMaterialsCost}
-        />
-      </View>
-      <View style={styles.fieldRow}>
-        <FieldInput
-          half
-          keyboardType="numeric"
-          borderless
-          labelStyle={styles.ecoFieldLabelBlack}
-          label={t("createProject.costRate")}
-          value={costRatePerHour}
-          onChangeText={setCostRatePerHour}
-        />
-        <FieldInput
-          half
-          keyboardType="numeric"
-          borderless
-          labelStyle={styles.ecoFieldLabelBlack}
-          label={t("createProject.billRate")}
-          value={billRatePerHour}
-          onChangeText={setBillRatePerHour}
-        />
-      </View>
-    </Card>
-  );
-};
 
-// Contract card: contract number. (The order reference / littera moved to the
-// main form, right under the project name — it and the name feed the invoice.)
-export const ContractSection = ({ contractNumber, setContractNumber }) => {
-  const styles = useThemedStyles();
-  const { t } = useTranslation();
+  const groups = [
+    [
+      [t("createProject.budget"), budget, setBudget],
+      [t("createProject.plannedHours"), plannedHours, setPlannedHours],
+    ],
+    [
+      [
+        t("createProject.plannedMaterials"),
+        plannedMaterialsCost,
+        setPlannedMaterialsCost,
+      ],
+      [
+        t("createProject.spentMaterials"),
+        spentMaterialsCost,
+        setSpentMaterialsCost,
+      ],
+    ],
+    [
+      [t("createProject.costRate"), costRatePerHour, setCostRatePerHour],
+      [t("createProject.billRate"), billRatePerHour, setBillRatePerHour],
+    ],
+  ];
+
   return (
-    <Card style={styles.fieldCardPad}>
-      <SectionTitle style={styles.ecoSectionTitleBlack}>
-        {t("createProject.contractSection")}
-      </SectionTitle>
-      <FieldInput
-        borderless
-        labelStyle={styles.ecoFieldLabelBlack}
-        label={t("createProject.contractNumber")}
-        value={contractNumber}
-        onChangeText={setContractNumber}
-      />
-    </Card>
+    <>
+      {groups.map((rows, gi) => (
+        <View key={gi} style={styles.groupCard}>
+          {rows.map(([label, value, onChangeText], ri) => (
+            <Fragment key={label}>
+              {ri > 0 ? <View style={styles.rowSep} /> : null}
+              <FloatingField
+                label={label}
+                value={value}
+                onChangeText={onChangeText}
+                last={ri === rows.length - 1}
+              />
+            </Fragment>
+          ))}
+        </View>
+      ))}
+    </>
   );
 };

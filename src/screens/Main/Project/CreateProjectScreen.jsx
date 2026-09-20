@@ -63,7 +63,6 @@ import {
   WorkTimePickerModal,
   LocationPickerModal,
   EconomySection,
-  ContractSection,
 } from "./CreateProjectScreen.parts";
 import {
   getDocumentTypeMeta,
@@ -84,7 +83,6 @@ export default function CreateProjectScreen() {
 
   const [projectName, setProjectName] = useState("");
   // Contract / economy fields (mirrors the admin project form).
-  const [contractNumber, setContractNumber] = useState("");
   const [littera, setLittera] = useState("");
   const [budget, setBudget] = useState("");
   const [plannedHours, setPlannedHours] = useState("");
@@ -518,9 +516,6 @@ export default function CreateProjectScreen() {
         projectData.append("description", note);
       }
 
-      if (contractNumber.trim()) {
-        projectData.append("contractNumber", contractNumber.trim());
-      }
       if (littera.trim()) {
         projectData.append("littera", littera.trim());
       }
@@ -1323,7 +1318,11 @@ export default function CreateProjectScreen() {
           {canSeeFinance ? (
             <View style={styles.groupCard}>
               <TouchableOpacity
-                style={[styles.locationField, styles.groupedField]}
+                style={[
+                  styles.locationField,
+                  styles.groupedField,
+                  styles.groupRowLast,
+                ]}
                 onPress={() => setShowEconomySheet(true)}
                 activeOpacity={0.85}
               >
@@ -1338,37 +1337,6 @@ export default function CreateProjectScreen() {
                     ]}
                   >
                     {t("createProject.economySection")}
-                  </Text>
-                </View>
-                <Icon
-                  name="chevron-right"
-                  size={18}
-                  color={theme.content.textPrimary}
-                />
-              </TouchableOpacity>
-
-              <View style={styles.rowSepIcon} />
-
-              <TouchableOpacity
-                style={[
-                  styles.locationField,
-                  styles.groupedField,
-                  styles.groupRowLast,
-                ]}
-                onPress={() => setShowEconomySheet(true)}
-                activeOpacity={0.85}
-              >
-                <View style={styles.locationFieldContent}>
-                  <View style={styles.locationFieldIconContainer}>
-                    <FieldIcon name="file-text" color="#007AFF" />
-                  </View>
-                  <Text
-                    style={[
-                      styles.locationFieldText,
-                      styles.locationFieldPlaceholder,
-                    ]}
-                  >
-                    {t("createProject.contractSection")}
                   </Text>
                 </View>
                 <Icon
@@ -1412,11 +1380,6 @@ export default function CreateProjectScreen() {
                 setBillRatePerHour={setBillRatePerHour}
               />
             ) : null}
-
-            <ContractSection
-              contractNumber={contractNumber}
-              setContractNumber={setContractNumber}
-            />
           </ScrollView>
         </View>
       </Modal>
