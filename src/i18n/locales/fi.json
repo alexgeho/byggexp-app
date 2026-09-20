@@ -1615,6 +1615,12 @@
     "ata": "Lisätyö",
     "noAta": "Ei",
     "addPhoto": "Lisää kuva",
-    "photoFailed": "Kuvan lisääminen epäonnistui."
+    "photoFailed": "Kuvan lisääminen epäonnistui.",
+    "expenses": "Päivän kulut",
+    "addReceipt": "Lisää kuitti",
+    "amount": "Summa",
+    "supplier": "Toimittaja",
+    "saveExpense": "Tallenna kulu",
+    "expenseFailed": "Kulun tallentaminen epäonnistui."
   }
 }

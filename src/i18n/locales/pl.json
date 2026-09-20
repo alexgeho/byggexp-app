@@ -1615,6 +1615,12 @@
     "ata": "Zlecenie dodatkowe",
     "noAta": "Brak",
     "addPhoto": "Dodaj zdjęcie",
-    "photoFailed": "Nie udało się dodać zdjęcia."
+    "photoFailed": "Nie udało się dodać zdjęcia.",
+    "expenses": "Dzisiejsze wydatki",
+    "addReceipt": "Dodaj paragon",
+    "amount": "Kwota",
+    "supplier": "Dostawca",
+    "saveExpense": "Zapisz wydatek",
+    "expenseFailed": "Nie udało się zapisać wydatku."
   }
 }

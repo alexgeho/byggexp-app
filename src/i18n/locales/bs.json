@@ -1615,6 +1615,12 @@
     "ata": "Dodatni radovi",
     "noAta": "Nema",
     "addPhoto": "Dodaj fotografiju",
-    "photoFailed": "Nije moguće dodati fotografiju."
+    "photoFailed": "Nije moguće dodati fotografiju.",
+    "expenses": "Današnji troškovi",
+    "addReceipt": "Dodaj račun",
+    "amount": "Iznos",
+    "supplier": "Dobavljač",
+    "saveExpense": "Sačuvaj trošak",
+    "expenseFailed": "Nije moguće sačuvati trošak."
   }
 }

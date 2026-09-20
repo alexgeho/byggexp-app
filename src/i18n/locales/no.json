@@ -1615,6 +1615,12 @@
     "ata": "Endringsordre",
     "noAta": "Ingen",
     "addPhoto": "Legg til foto",
-    "photoFailed": "Kunne ikke legge til bildet."
+    "photoFailed": "Kunne ikke legge til bildet.",
+    "expenses": "Dagens utlegg",
+    "addReceipt": "Legg til kvittering",
+    "amount": "Beløp",
+    "supplier": "Leverandør",
+    "saveExpense": "Lagre utlegg",
+    "expenseFailed": "Kunne ikke lagre utlegget."
   }
 }

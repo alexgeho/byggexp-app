@@ -1615,6 +1615,12 @@
     "ata": "Papildu darbi",
     "noAta": "Nav",
     "addPhoto": "Pievienot foto",
-    "photoFailed": "Neizdevās pievienot fotoattēlu."
+    "photoFailed": "Neizdevās pievienot fotoattēlu.",
+    "expenses": "Dienas izdevumi",
+    "addReceipt": "Pievienot čeku",
+    "amount": "Summa",
+    "supplier": "Piegādātājs",
+    "saveExpense": "Saglabāt izdevumu",
+    "expenseFailed": "Neizdevās saglabāt izdevumu."
   }
 }

@@ -1615,6 +1615,12 @@
     "ata": "Papildomi darbai",
     "noAta": "Nėra",
     "addPhoto": "Pridėti nuotrauką",
-    "photoFailed": "Nepavyko pridėti nuotraukos."
+    "photoFailed": "Nepavyko pridėti nuotraukos.",
+    "expenses": "Dienos išlaidos",
+    "addReceipt": "Pridėti kvitą",
+    "amount": "Suma",
+    "supplier": "Tiekėjas",
+    "saveExpense": "Išsaugoti išlaidas",
+    "expenseFailed": "Nepavyko išsaugoti išlaidų."
   }
 }

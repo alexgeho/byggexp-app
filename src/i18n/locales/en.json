@@ -1615,6 +1615,12 @@
     "ata": "Variation order",
     "noAta": "None",
     "addPhoto": "Add photo",
-    "photoFailed": "Could not add the photo."
+    "photoFailed": "Could not add the photo.",
+    "expenses": "Today's expenses",
+    "addReceipt": "Add receipt",
+    "amount": "Amount",
+    "supplier": "Supplier",
+    "saveExpense": "Save expense",
+    "expenseFailed": "Could not save the expense."
   }
 }

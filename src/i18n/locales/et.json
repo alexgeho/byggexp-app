@@ -1615,6 +1615,12 @@
     "ata": "Lisatöö",
     "noAta": "Puudub",
     "addPhoto": "Lisa foto",
-    "photoFailed": "Foto lisamine ebaõnnestus."
+    "photoFailed": "Foto lisamine ebaõnnestus.",
+    "expenses": "Päeva kulud",
+    "addReceipt": "Lisa tšekk",
+    "amount": "Summa",
+    "supplier": "Tarnija",
+    "saveExpense": "Salvesta kulu",
+    "expenseFailed": "Kulu salvestamine ebaõnnestus."
   }
 }

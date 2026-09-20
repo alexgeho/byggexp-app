@@ -1615,6 +1615,12 @@
     "ata": "ÄTA",
     "noAta": "Ingen ÄTA",
     "addPhoto": "Lägg till foto",
-    "photoFailed": "Kunde inte lägga till fotot."
+    "photoFailed": "Kunde inte lägga till fotot.",
+    "expenses": "Dagens utlägg",
+    "addReceipt": "Lägg till kvitto",
+    "amount": "Belopp",
+    "supplier": "Leverantör",
+    "saveExpense": "Spara utlägg",
+    "expenseFailed": "Kunde inte spara utlägget."
   }
 }
