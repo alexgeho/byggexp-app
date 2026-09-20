@@ -57,6 +57,7 @@ export default function CreateInvoiceScreen() {
   const [orderReference, setOrderReference] = useState("");
 
   const [clientPickerVisible, setClientPickerVisible] = useState(false);
+  const isPrivateClient = client?.clientType === "private";
   const [projectPickerVisible, setProjectPickerVisible] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -66,14 +67,21 @@ export default function CreateInvoiceScreen() {
   const settlement = useMemo(
     () =>
       deriveSettlement(totals.total, {
-        rotEnabled,
+        rotEnabled: isPrivateClient && rotEnabled,
         rotLaborAmount: Number(String(rotLaborAmount).replace(",", ".")) || 0,
       }),
-    [totals.total, rotEnabled, rotLaborAmount],
+    [totals.total, rotEnabled, rotLaborAmount, isPrivateClient],
   );
 
   const onSelectClient = (picked) => {
     setClient(picked);
+    // ROT is a deduction on a private person's labour cost — a company customer
+    // can't have it. Same rule the admin InvoiceForm applies: switching to a
+    // company clears the flag so a stale toggle can't ride along.
+    if (picked?.clientType !== "private") {
+      setRotEnabled(false);
+      setRotLaborAmount("");
+    }
     setCompanyName(picked.companyName || "");
     setEmail(picked.email || "");
     const termDays = Number(picked.paymentTerms) || DEFAULT_TERMS_DAYS;
@@ -113,8 +121,13 @@ export default function CreateInvoiceScreen() {
     date: toIsoDate(new Date()),
     dueDate,
     reverseVAT: "false",
-    rotEnabled,
-    rotLaborAmount: Number(String(rotLaborAmount).replace(",", ".")) || 0,
+    // Belt and braces: a company customer never carries ROT, whatever the
+    // toggle happened to be before the customer was switched.
+    rotEnabled: isPrivateClient && rotEnabled,
+    rotLaborAmount:
+      isPrivateClient && rotEnabled
+        ? Number(String(rotLaborAmount).replace(",", ".")) || 0
+        : 0,
     // Optional: link to a project so it counts toward the project economy.
     ...(project?._id || project?.id
       ? { projectId: project._id || project.id }
@@ -283,33 +296,35 @@ export default function CreateInvoiceScreen() {
           label={t("billing.invoiceRows")}
         />
 
-        {/* ROT deduction */}
-        <View style={styles.field}>
-          <Text style={styles.label}>{t("billing.rot")}</Text>
-          <TouchableOpacity
-            style={styles.toggleRow}
-            activeOpacity={0.85}
-            onPress={() => setRotEnabled((prev) => !prev)}
-          >
-            <View style={{ flex: 1 }}>
-              <Text style={styles.toggleTitle}>{t("billing.rotApply")}</Text>
-              <Text style={styles.toggleSub}>{t("billing.rotHint")}</Text>
-            </View>
-            <View
-              style={[
-                styles.toggleTrack,
-                {
-                  backgroundColor: rotEnabled ? PRIMARY : "#E2E5EA",
-                  alignItems: rotEnabled ? "flex-end" : "flex-start",
-                },
-              ]}
+        {/* ROT deduction — private customers only. */}
+        {isPrivateClient ? (
+          <View style={styles.field}>
+            <Text style={styles.label}>{t("billing.rot")}</Text>
+            <TouchableOpacity
+              style={styles.toggleRow}
+              activeOpacity={0.85}
+              onPress={() => setRotEnabled((prev) => !prev)}
             >
-              <View style={styles.toggleKnob} />
-            </View>
-          </TouchableOpacity>
-        </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.toggleTitle}>{t("billing.rotApply")}</Text>
+                <Text style={styles.toggleSub}>{t("billing.rotHint")}</Text>
+              </View>
+              <View
+                style={[
+                  styles.toggleTrack,
+                  {
+                    backgroundColor: rotEnabled ? PRIMARY : "#E2E5EA",
+                    alignItems: rotEnabled ? "flex-end" : "flex-start",
+                  },
+                ]}
+              >
+                <View style={styles.toggleKnob} />
+              </View>
+            </TouchableOpacity>
+          </View>
+        ) : null}
 
-        {rotEnabled && (
+        {isPrivateClient && rotEnabled && (
           <View style={styles.field}>
             <Text style={styles.label}>{t("billing.rotLabor")}</Text>
             <TextInput
