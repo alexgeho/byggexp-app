@@ -309,10 +309,23 @@ export default function EconomyScreen() {
           </Text>
         </View>
         <View style={styles.cardRight}>
-          <View style={[styles.badge, styles[`badge_${tone}`]]}>
-            <Text style={[styles.badgeText, styles[`badgeText_${tone}`]]}>
-              {t(`economy.${statusNs}.${status}`, status)}
-            </Text>
+          <View style={styles.cardStatusRow}>
+            <View style={[styles.badge, styles[`badge_${tone}`]]}>
+              <Text style={[styles.badgeText, styles[`badgeText_${tone}`]]}>
+                {t(`economy.${statusNs}.${status}`, status)}
+              </Text>
+            </View>
+            {/* A visible handle for the actions — nobody should have to guess
+                that the card can be tapped. */}
+            <TouchableOpacity
+              style={styles.cardMore}
+              onPress={() => setActionItem(item)}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              accessibilityRole="button"
+              accessibilityLabel={t("common.more", "Mer")}
+            >
+              <Icon name="more-horizontal" size={20} color="#9AA6B2" />
+            </TouchableOpacity>
           </View>
           <Text style={styles.cardAmount}>{formatAmount(amount)}</Text>
         </View>

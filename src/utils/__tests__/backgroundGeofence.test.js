@@ -57,6 +57,7 @@ jest.mock("../shiftGeofenceDebug", () => ({
 // problem only; nothing in the app touches Sharing on this path.
 jest.mock("../geofenceRunner", () => ({
   clearGeofenceState: jest.fn().mockResolvedValue(undefined),
+  SHIFT_LOCATION_HEARTBEAT_KEY: "shiftLocationHeartbeat",
 }));
 
 jest.mock("../../config/shiftLocationPolicy", () => ({
@@ -180,4 +181,40 @@ test("does not restart in the background where the foreground service cannot sta
 
   expect(Location.stopLocationUpdatesAsync).not.toHaveBeenCalled();
   expect(Location.startLocationUpdatesAsync).not.toHaveBeenCalled();
+});
+
+test("a live stream is left alone, so the location notice isn't re-posted", async () => {
+  Location.hasStartedLocationUpdatesAsync.mockResolvedValue(true);
+  AsyncStorage.getItem.mockImplementation(async (key) => {
+    if (key === "shiftLocationTarget") {
+      return JSON.stringify(STORED_TARGET);
+    }
+    // Ticked half a minute ago: the stream is doing its job.
+    if (key === "shiftLocationHeartbeat") return String(Date.now() - 30000);
+    return null;
+  });
+
+  const mod = loadModule();
+  const active = await sync(mod);
+
+  expect(active).toBe(true);
+  expect(Location.stopLocationUpdatesAsync).not.toHaveBeenCalled();
+  expect(Location.startLocationUpdatesAsync).not.toHaveBeenCalled();
+});
+
+test("a frozen stream is re-registered so it gets a foreground service", async () => {
+  Location.hasStartedLocationUpdatesAsync.mockResolvedValue(true);
+  AsyncStorage.getItem.mockImplementation(async (key) => {
+    if (key === "shiftLocationTarget") {
+      return JSON.stringify(STORED_TARGET);
+    }
+    // Silent for twenty minutes: Doze froze it.
+    if (key === "shiftLocationHeartbeat") return String(Date.now() - 1200000);
+    return null;
+  });
+
+  const mod = loadModule();
+  await sync(mod);
+
+  expect(Location.startLocationUpdatesAsync).toHaveBeenCalledTimes(1);
 });

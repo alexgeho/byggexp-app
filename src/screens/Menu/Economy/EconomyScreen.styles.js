@@ -150,6 +150,9 @@ export const createStyles = (c) => {
     badge_bad: { backgroundColor: "#FDECEC" },
     badgeText_bad: { color: "#E5484D" },
 
+    cardStatusRow: { flexDirection: "row", alignItems: "center", gap: 6 },
+    cardMore: { padding: 2 },
+
     /* Active status pill: the status colour, solid */
     pillOn_draft: { backgroundColor: "#9AA6B2" },
     pillOn_sent: { backgroundColor: "#0C77FD" },

@@ -5,6 +5,7 @@ import * as TaskManager from "expo-task-manager";
 import { calculateDistanceMeters } from "../utils/shiftLocationGuard";
 import { emitShiftLocationCheckError } from "../utils/shiftExitAutoCompleteEvents";
 import {
+  SHIFT_LOCATION_HEARTBEAT_KEY,
   SHIFT_LOCATION_INSIDE_KEY,
   SHIFT_LOCATION_TARGET_KEY,
   runGeofenceObservation,
@@ -81,6 +82,13 @@ TaskManager.defineTask(SHIFT_LOCATION_TASK, async ({ data, error }) => {
   ) {
     return;
   }
+
+  // Mark the stream alive on every tick, payload or not. The foreground sync
+  // reads this instead of restarting the service to find out.
+  await AsyncStorage.setItem(
+    SHIFT_LOCATION_HEARTBEAT_KEY,
+    String(Date.now()),
+  ).catch(() => {});
 
   const locations = data?.locations;
   let latest = locations?.[locations.length - 1];

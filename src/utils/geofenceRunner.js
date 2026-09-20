@@ -41,6 +41,11 @@ import {
 // referenced from backgroundGeofence.js and the task; keep them stable.
 export const SHIFT_LOCATION_TARGET_KEY = "shiftLocationTarget";
 export const SHIFT_LOCATION_INSIDE_KEY = "shiftLocationInside";
+// When the background stream last delivered a tick. It lets the app tell a
+// live stream from a frozen one without restarting it — a restart re-posts
+// Android's foreground-service notification, which is what made the notice
+// pop on every app launch.
+export const SHIFT_LOCATION_HEARTBEAT_KEY = "shiftLocationHeartbeat";
 
 const readState = async () =>
   parseGeofenceState(

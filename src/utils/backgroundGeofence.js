@@ -18,7 +18,10 @@ import {
   reportBackgroundMonitorStale,
 } from "./shiftGeofenceDebug";
 import { parseGeofenceState } from "./geofenceEvaluation";
-import { clearGeofenceState } from "./geofenceRunner";
+import {
+  clearGeofenceState,
+  SHIFT_LOCATION_HEARTBEAT_KEY,
+} from "./geofenceRunner";
 
 // AsyncStorage key: timestamp of when we last showed the consent priming
 // screen, so it is offered at most once automatically.
@@ -76,6 +79,19 @@ const ANDROID_LOCATION_STREAM_OPTIONS = {
 
 // Start the location stream and remember whether its foreground service could
 // have started (only possible while foregrounded, see above).
+// A stream that ticked recently is doing its job, whatever process started
+// it. Updates arrive every 15s, so six minutes of silence means frozen.
+const STREAM_STALE_MS = 6 * 60 * 1000;
+
+const isLocationStreamAlive = async () => {
+  const raw = await AsyncStorage.getItem(SHIFT_LOCATION_HEARTBEAT_KEY).catch(
+    () => null,
+  );
+  const beat = Number(raw);
+  if (!Number.isFinite(beat) || beat <= 0) return false;
+  return Date.now() - beat < STREAM_STALE_MS;
+};
+
 const startAndroidLocationStream = async () => {
   await Location.startLocationUpdatesAsync(SHIFT_LOCATION_TASK, {
     ...ANDROID_LOCATION_STREAM_OPTIONS,
@@ -304,15 +320,16 @@ const syncAndroidLocationUpdates = async (region) => {
       existing?.longitude === target.longitude &&
       existing?.radius === target.radius
     ) {
-      // Region unchanged. If we started the stream in the foreground this
-      // process its foreground service is up — nothing to do. Otherwise the
-      // stream is running without one (persisted task revived in the
-      // background), so re-register now while foregrounded to promote it to a
-      // foreground service. Preserve the inside/outside state so the transition
-      // detector isn't reset while the target is unchanged.
+      // Region unchanged. Leave a working stream alone: restarting it makes
+      // Android post the foreground-service notification again, which is why
+      // the notice appeared on every single app launch. Re-register only when
+      // the stream is actually frozen — no tick for STREAM_STALE_MS — which is
+      // the case the promotion was written for (a task revived in the
+      // background runs through JobScheduler, and Doze freezes it).
       if (
         androidForegroundServiceStarted ||
-        AppState.currentState !== "active"
+        AppState.currentState !== "active" ||
+        (await isLocationStreamAlive())
       ) {
         return true;
       }
