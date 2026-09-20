@@ -27,6 +27,7 @@ import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { ProjectListCard } from "../../components/common/ProjectListCard/ProjectListCard";
 import { PersonListItem } from "../../components/common/PersonListItem/PersonListItem";
 import FloatingActionButton from "../../components/common/FloatingActionButton/FloatingActionButton";
+import { QrScannerModal } from "../../components/common/QrScannerModal/QrScannerModal";
 import { standardScreenHeaderPlaceholder } from "../../styles/screenLayout";
 import { createStyles } from "./CreateToolScreen.styles";
 import { pickUploadAssets } from "../../utils/uploadPicker";
@@ -128,6 +129,10 @@ export default function CreateToolScreen() {
   const [loadingData, setLoadingData] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState("");
+  // Code read off the label already stuck to the tool. Empty = the server
+  // generates one on save.
+  const [qrId, setQrId] = useState("");
+  const [showScanner, setShowScanner] = useState(false);
 
   const selectedWorkersLabel = useMemo(() => {
     if (selectedWorkerIds.length === 0) {
@@ -165,19 +170,34 @@ export default function CreateToolScreen() {
     const loadData = async () => {
       try {
         setLoadingData(true);
-        const [workersData, projectsData] = await Promise.all([
-          userService.getWorkers(),
+        // `/users/role/:role` is superadmin-only — for a company/project admin it
+        // 403s, and a single Promise.all rejection blanked the projects too. Load
+        // the company roster instead and keep the two loads independent.
+        const [workersResult, projectsResult] = await Promise.allSettled([
+          userService.getMyCompanyUsers(),
           user?.role === "superadmin"
             ? projectService.getAll()
             : projectService.getMyProjects(),
         ]);
 
-        setWorkers(Array.isArray(workersData) ? workersData : []);
-        setProjects(Array.isArray(projectsData) ? projectsData : []);
-      } catch (error) {
-        console.error("Failed to load tool form data:", error);
-        setWorkers([]);
-        setProjects([]);
+        if (workersResult.status === "fulfilled") {
+          const companyUsers = Array.isArray(workersResult.value)
+            ? workersResult.value
+            : [];
+          setWorkers(companyUsers.filter((item) => item?.role === "worker"));
+        } else {
+          console.error("Failed to load tool workers:", workersResult.reason);
+          setWorkers([]);
+        }
+
+        if (projectsResult.status === "fulfilled") {
+          setProjects(
+            Array.isArray(projectsResult.value) ? projectsResult.value : [],
+          );
+        } else {
+          console.error("Failed to load tool projects:", projectsResult.reason);
+          setProjects([]);
+        }
       } finally {
         setLoadingData(false);
       }
@@ -243,6 +263,10 @@ export default function CreateToolScreen() {
         formData.append("notes", notes.trim());
       }
 
+      if (qrId.trim()) {
+        formData.append("qrId", qrId.trim());
+      }
+
       if (selectedWorkerIds.length > 0) {
         formData.append("workerIds", JSON.stringify(selectedWorkerIds));
       }
@@ -267,6 +291,12 @@ export default function CreateToolScreen() {
       navigation.goBack();
     } catch (error) {
       console.error("Failed to create tool:", error);
+      // 409 = the scanned code is already on another tool; say so in the user's
+      // language instead of relaying the server's English text.
+      if (error?.response?.status === 409) {
+        setFormError(t("tools.qrTaken"));
+        return;
+      }
       const message = error?.response?.data?.message;
       setFormError(
         Array.isArray(message)
@@ -385,6 +415,41 @@ export default function CreateToolScreen() {
             </TouchableOpacity>
           </View>
 
+          {/* Register the tool straight off its own QR label: scan the code and
+              it becomes the tool's code, so scanning it later finds this tool. */}
+          <View style={styles.groupCard}>
+            <TouchableOpacity
+              style={[styles.selectRow, styles.groupRowLast]}
+              onPress={() => setShowScanner(true)}
+              activeOpacity={0.85}
+            >
+              <View style={styles.fieldRowContent}>
+                <FieldIcon name="maximize" theme={theme} styles={styles} />
+                <View style={styles.fieldInputWrap}>
+                  <Text style={styles.fieldLabel}>{t("tools.qrLabel")}</Text>
+                  <Text
+                    style={[
+                      styles.selectValue,
+                      !qrId && styles.selectPlaceholder,
+                    ]}
+                  >
+                    {qrId || t("tools.qrPlaceholder")}
+                  </Text>
+                </View>
+              </View>
+              {qrId ? (
+                <TouchableOpacity
+                  onPress={() => setQrId("")}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                  <Icon name="x" size={18} color="#052D50" />
+                </TouchableOpacity>
+              ) : (
+                <Icon name="chevron-right" size={18} color="#052D50" />
+              )}
+            </TouchableOpacity>
+          </View>
+
           <View style={styles.groupCard}>
             <SelectRow
               styles={styles}
@@ -431,6 +496,17 @@ export default function CreateToolScreen() {
           showAddButton={false}
         />
       </View>
+
+      <QrScannerModal
+        visible={showScanner}
+        onClose={() => setShowScanner(false)}
+        title={t("tools.qrLabel")}
+        hint={t("tools.qrScanHint")}
+        onScanned={(code) => {
+          setQrId(code.toUpperCase());
+          setShowScanner(false);
+        }}
+      />
 
       <Modal
         visible={showWorkerModal}

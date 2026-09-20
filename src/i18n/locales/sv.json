@@ -91,14 +91,13 @@
     "signUp": "Registrera dig",
     "noAccount": "Har du inget konto? ",
     "createHere": "Skapa här →",
-    "loginWithCode": "Logga in med kod",
+    "loginWithCode": "Logga in med mejlkod →",
     "alreadyMember": "Redan medlem? ",
     "loginHere": "Logga in här →",
     "fillAllFields": "Fyll i alla fält.",
     "invalidEmail": "Ange en giltig e-postadress.",
     "loginFailedTitle": "Inloggning misslyckades",
     "loginFailedMessage": "Fel e-post eller lösenord.",
-    "loginWithCode": "Logga in med mejlkod →",
     "emailSentTitle": "Mejl skickat",
     "alreadyPendingTitle": "Kontot väntar redan på bekräftelse",
     "alreadyPendingMessage": "Den här e-postadressen är redan registrerad och väntar på bekräftelse. Vi har skickat länken igen till {{email}} — kolla din inkorg.",
@@ -596,7 +595,11 @@
     "addedMessage": "Verktygen kopplades till projektet.",
     "addFailed": "Det gick inte att koppla verktyg.",
     "loading": "Laddar verktyg...",
-    "noneAvailable": "Inga fler verktyg tillgängliga."
+    "noneAvailable": "Inga fler verktyg tillgängliga.",
+    "qrLabel": "QR-kod",
+    "qrPlaceholder": "Skanna verktygets kod",
+    "qrScanHint": "Rikta kameran mot verktygets QR-etikett",
+    "qrTaken": "Koden tillhör redan ett annat verktyg"
   },
   "language": {
     "title": "Språk"

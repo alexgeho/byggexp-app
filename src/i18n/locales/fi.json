@@ -91,14 +91,13 @@
     "signUp": "Rekisteröidy",
     "noAccount": "Eikö sinulla ole tiliä? ",
     "createHere": "Luo tästä →",
-    "loginWithCode": "Kirjaudu koodilla",
+    "loginWithCode": "Kirjaudu sähköpostikoodilla →",
     "alreadyMember": "Oletko jo jäsen? ",
     "loginHere": "Kirjaudu tästä →",
     "fillAllFields": "Täytä kaikki kentät.",
     "invalidEmail": "Anna kelvollinen sähköpostiosoite.",
     "loginFailedTitle": "Kirjautuminen epäonnistui",
     "loginFailedMessage": "Väärä sähköposti tai salasana.",
-    "loginWithCode": "Kirjaudu sähköpostikoodilla →",
     "emailSentTitle": "Sähköposti lähetetty",
     "alreadyPendingTitle": "Tili odottaa jo vahvistusta",
     "alreadyPendingMessage": "Tämä sähköpostiosoite on jo rekisteröity ja odottaa vahvistusta. Lähetimme linkin uudelleen osoitteeseen {{email}} — tarkista postilaatikkosi.",
@@ -596,7 +595,11 @@
     "addedMessage": "Työkalut liitettiin projektiin.",
     "addFailed": "Työkaluja ei voitu liittää.",
     "loading": "Ladataan työkaluja...",
-    "noneAvailable": "Ei enää työkaluja käytettävissä."
+    "noneAvailable": "Ei enää työkaluja käytettävissä.",
+    "qrLabel": "QR-koodi",
+    "qrPlaceholder": "Skannaa työkalun koodi",
+    "qrScanHint": "Suuntaa kamera työkalun QR-tarraan",
+    "qrTaken": "Koodi kuuluu jo toiselle työkalulle"
   },
   "language": {
     "title": "Kieli"

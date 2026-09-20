@@ -91,14 +91,13 @@
     "signUp": "Registreeru",
     "noAccount": "Pole veel kontot? ",
     "createHere": "Loo siin →",
-    "loginWithCode": "Logi sisse koodiga",
+    "loginWithCode": "Logi sisse e-posti koodiga →",
     "alreadyMember": "Juba liige? ",
     "loginHere": "Logi siin sisse →",
     "fillAllFields": "Palun täida kõik väljad.",
     "invalidEmail": "Sisesta kehtiv e-posti aadress.",
     "loginFailedTitle": "Sisselogimine ebaõnnestus",
     "loginFailedMessage": "Vale e-post või parool.",
-    "loginWithCode": "Logi sisse e-posti koodiga →",
     "emailSentTitle": "E-kiri saadetud",
     "alreadyPendingTitle": "Konto ootab juba kinnitamist",
     "alreadyPendingMessage": "See e-posti aadress on juba registreeritud ja ootab kinnitamist. Saatsime lingi uuesti aadressile {{email}} — kontrolli oma postkasti.",
@@ -596,7 +595,11 @@
     "addedMessage": "Tööriistad seoti projektiga.",
     "addFailed": "Tööriistu ei õnnestunud siduda.",
     "loading": "Tööriistade laadimine...",
-    "noneAvailable": "Rohkem tööriistu pole saadaval."
+    "noneAvailable": "Rohkem tööriistu pole saadaval.",
+    "qrLabel": "QR-kood",
+    "qrPlaceholder": "Skaneeri tööriista kood",
+    "qrScanHint": "Suuna kaamera tööriista QR-sildile",
+    "qrTaken": "See kood kuulub juba teisele tööriistale"
   },
   "language": {
     "title": "Keel"

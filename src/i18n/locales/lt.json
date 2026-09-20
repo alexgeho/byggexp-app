@@ -91,14 +91,13 @@
     "signUp": "Registruotis",
     "noAccount": "Neturite paskyros? ",
     "createHere": "Sukurkite čia →",
-    "loginWithCode": "Prisijungti su kodu",
+    "loginWithCode": "Prisijungti su el. pašto kodu →",
     "alreadyMember": "Jau užsiregistravę? ",
     "loginHere": "Prisijunkite čia →",
     "fillAllFields": "Užpildykite visus laukus.",
     "invalidEmail": "Įveskite galiojantį el. pašto adresą.",
     "loginFailedTitle": "Prisijungti nepavyko",
     "loginFailedMessage": "Neteisingas el. paštas arba slaptažodis.",
-    "loginWithCode": "Prisijungti su el. pašto kodu →",
     "emailSentTitle": "El. laiškas išsiųstas",
     "alreadyPendingTitle": "Paskyra jau laukia patvirtinimo",
     "alreadyPendingMessage": "Šis el. pašto adresas jau užregistruotas ir laukia patvirtinimo. Nuorodą iš naujo išsiuntėme adresu {{email}} — patikrinkite savo pašto dėžutę.",
@@ -596,7 +595,11 @@
     "addedMessage": "Įrankiai susieti su projektu.",
     "addFailed": "Nepavyko susieti įrankių.",
     "loading": "Įkeliami įrankiai...",
-    "noneAvailable": "Nebėra prieinamų įrankių."
+    "noneAvailable": "Nebėra prieinamų įrankių.",
+    "qrLabel": "QR kodas",
+    "qrPlaceholder": "Nuskaitykite įrankio kodą",
+    "qrScanHint": "Nukreipkite kamerą į įrankio QR etiketę",
+    "qrTaken": "Šis kodas jau priklauso kitam įrankiui"
   },
   "language": {
     "title": "Kalba"

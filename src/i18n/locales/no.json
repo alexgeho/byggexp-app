@@ -91,14 +91,13 @@
     "signUp": "Registrer deg",
     "noAccount": "Har du ingen konto? ",
     "createHere": "Opprett her →",
-    "loginWithCode": "Logg inn med kode",
+    "loginWithCode": "Logg inn med en e-postkode →",
     "alreadyMember": "Allerede medlem? ",
     "loginHere": "Logg inn her →",
     "fillAllFields": "Fyll ut alle feltene.",
     "invalidEmail": "Oppgi en gyldig e-postadresse.",
     "loginFailedTitle": "Innlogging mislyktes",
     "loginFailedMessage": "Feil e-post eller passord.",
-    "loginWithCode": "Logg inn med en e-postkode →",
     "emailSentTitle": "E-post sendt",
     "alreadyPendingTitle": "Kontoen venter allerede på bekreftelse",
     "alreadyPendingMessage": "Denne e-postadressen er allerede registrert og venter på bekreftelse. Vi har sendt lenken på nytt til {{email}} — sjekk innboksen din.",
@@ -596,7 +595,11 @@
     "addedMessage": "Verktøyene ble knyttet til prosjektet.",
     "addFailed": "Kunne ikke knytte til verktøy.",
     "loading": "Laster verktøy...",
-    "noneAvailable": "Ingen flere verktøy tilgjengelig."
+    "noneAvailable": "Ingen flere verktøy tilgjengelig.",
+    "qrLabel": "QR-kode",
+    "qrPlaceholder": "Skann verktøyets kode",
+    "qrScanHint": "Rett kameraet mot verktøyets QR-etikett",
+    "qrTaken": "Koden tilhører allerede et annet verktøy"
   },
   "language": {
     "title": "Språk"

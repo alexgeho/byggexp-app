@@ -91,14 +91,13 @@
     "signUp": "Zarejestruj się",
     "noAccount": "Nie masz konta? ",
     "createHere": "Utwórz tutaj →",
-    "loginWithCode": "Zaloguj się kodem",
+    "loginWithCode": "Zaloguj się kodem e-mail →",
     "alreadyMember": "Masz już konto? ",
     "loginHere": "Zaloguj się tutaj →",
     "fillAllFields": "Wypełnij wszystkie pola.",
     "invalidEmail": "Podaj prawidłowy adres e-mail.",
     "loginFailedTitle": "Logowanie nie powiodło się",
     "loginFailedMessage": "Nieprawidłowy e-mail lub hasło.",
-    "loginWithCode": "Zaloguj się kodem e-mail →",
     "emailSentTitle": "E-mail wysłany",
     "alreadyPendingTitle": "Konto oczekuje już na potwierdzenie",
     "alreadyPendingMessage": "Ten adres e-mail jest już zarejestrowany i oczekuje na potwierdzenie. Wysłaliśmy link ponownie na {{email}} — sprawdź skrzynkę.",
@@ -596,7 +595,11 @@
     "addedMessage": "Narzędzia przypisano do projektu.",
     "addFailed": "Nie udało się przypisać narzędzi.",
     "loading": "Ładowanie narzędzi...",
-    "noneAvailable": "Brak dostępnych narzędzi."
+    "noneAvailable": "Brak dostępnych narzędzi.",
+    "qrLabel": "Kod QR",
+    "qrPlaceholder": "Zeskanuj kod narzędzia",
+    "qrScanHint": "Skieruj aparat na etykietę QR narzędzia",
+    "qrTaken": "Ten kod należy już do innego narzędzia"
   },
   "language": {
     "title": "Język"

@@ -91,14 +91,13 @@
     "signUp": "Reģistrēties",
     "noAccount": "Vai jums nav konta? ",
     "createHere": "Izveidojiet šeit →",
-    "loginWithCode": "Pieteikties ar kodu",
+    "loginWithCode": "Pierakstīties ar e-pasta kodu →",
     "alreadyMember": "Jau esat dalībnieks? ",
     "loginHere": "Pierakstieties šeit →",
     "fillAllFields": "Lūdzu, aizpildiet visus laukus.",
     "invalidEmail": "Lūdzu, ievadiet derīgu e-pasta adresi.",
     "loginFailedTitle": "Pierakstīšanās neizdevās",
     "loginFailedMessage": "Nepareizs e-pasts vai parole.",
-    "loginWithCode": "Pierakstīties ar e-pasta kodu →",
     "emailSentTitle": "E-pasts nosūtīts",
     "alreadyPendingTitle": "Konts jau gaida apstiprinājumu",
     "alreadyPendingMessage": "Šī e-pasta adrese jau ir reģistrēta un gaida apstiprinājumu. Mēs atkārtoti nosūtījām saiti uz {{email}} — pārbaudiet savu iesūtni.",
@@ -596,7 +595,11 @@
     "addedMessage": "Instrumenti tika piesaistīti projektam.",
     "addFailed": "Nevarēja piesaistīt instrumentus.",
     "loading": "Notiek instrumentu ielāde...",
-    "noneAvailable": "Nav vairāk pieejamu instrumentu."
+    "noneAvailable": "Nav vairāk pieejamu instrumentu.",
+    "qrLabel": "QR kods",
+    "qrPlaceholder": "Skenējiet instrumenta kodu",
+    "qrScanHint": "Pavērsiet kameru pret instrumenta QR uzlīmi",
+    "qrTaken": "Šis kods jau pieder citam instrumentam"
   },
   "language": {
     "title": "Valoda"

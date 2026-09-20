@@ -91,14 +91,13 @@
     "signUp": "Registracija",
     "noAccount": "Nemate nalog? ",
     "createHere": "Kreirajte ovdje →",
-    "loginWithCode": "Prijava putem koda",
+    "loginWithCode": "Prijavite se putem koda iz e-pošte →",
     "alreadyMember": "Već ste član? ",
     "loginHere": "Prijavite se ovdje →",
     "fillAllFields": "Popunite sva polja.",
     "invalidEmail": "Unesite ispravnu e-mail adresu.",
     "loginFailedTitle": "Prijava nije uspjela",
     "loginFailedMessage": "Pogrešna e-pošta ili lozinka.",
-    "loginWithCode": "Prijavite se putem koda iz e-pošte →",
     "emailSentTitle": "E-pošta poslana",
     "alreadyPendingTitle": "Nalog već čeka potvrdu",
     "alreadyPendingMessage": "Ova e-mail adresa već je registrovana i čeka potvrdu. Ponovo smo poslali link na {{email}} — provjerite svoj sandučić.",
@@ -596,7 +595,11 @@
     "addedMessage": "Alati su povezani s projektom.",
     "addFailed": "Nije moguće povezati alate.",
     "loading": "Učitavanje alata...",
-    "noneAvailable": "Nema više dostupnih alata."
+    "noneAvailable": "Nema više dostupnih alata.",
+    "qrLabel": "QR kod",
+    "qrPlaceholder": "Skenirajte kod alata",
+    "qrScanHint": "Usmjerite kameru na QR naljepnicu alata",
+    "qrTaken": "Taj kod već pripada drugom alatu"
   },
   "language": {
     "title": "Jezik"

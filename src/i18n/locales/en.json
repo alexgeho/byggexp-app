@@ -91,14 +91,13 @@
     "signUp": "Sign Up",
     "noAccount": "Don't have an account? ",
     "createHere": "Create here →",
-    "loginWithCode": "Log in with a code",
+    "loginWithCode": "Sign in with an email code →",
     "alreadyMember": "Already a member? ",
     "loginHere": "Login here →",
     "fillAllFields": "Please fill in all fields.",
     "invalidEmail": "Please enter a valid email address.",
     "loginFailedTitle": "Login failed",
     "loginFailedMessage": "Invalid email or password.",
-    "loginWithCode": "Sign in with an email code →",
     "emailSentTitle": "Email sent",
     "alreadyPendingTitle": "Account already awaiting confirmation",
     "alreadyPendingMessage": "This email is already registered and waiting for confirmation. We've re-sent the link to {{email}} — check your inbox.",
@@ -596,7 +595,11 @@
     "addedMessage": "The tools were attached to the project.",
     "addFailed": "Could not attach tools.",
     "loading": "Loading tools...",
-    "noneAvailable": "No more tools available."
+    "noneAvailable": "No more tools available.",
+    "qrLabel": "QR code",
+    "qrPlaceholder": "Scan the tool's code",
+    "qrScanHint": "Point the camera at the tool's QR label",
+    "qrTaken": "That code already belongs to another tool"
   },
   "language": {
     "title": "Language"
