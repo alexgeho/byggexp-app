@@ -48,6 +48,10 @@ export default function CreateOfferScreen() {
     addDaysIso(toIsoDate(new Date()), 30),
   );
   const [items, setItems] = useState([emptyLineItem()]);
+  // Contact person shown on the offer — same single default row the admin
+  // OfferForm starts with (role "Projektledare", empty name).
+  const [contactRole, setContactRole] = useState("Projektledare");
+  const [contactName, setContactName] = useState("");
 
   const [clientPickerVisible, setClientPickerVisible] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -59,6 +63,8 @@ export default function CreateOfferScreen() {
   const onSelectClient = (client) => {
     setCompanyName(client.companyName || "");
     setEmail(client.email || "");
+    // The client's contact person is the natural "your reference" on the offer.
+    setContactName((prev) => client.contactPerson || prev);
     setClientPickerVisible(false);
   };
 
@@ -70,6 +76,11 @@ export default function CreateOfferScreen() {
     clarifications: clarifications.trim(),
     validUntil,
     date: toIsoDate(new Date()),
+    status: "draft",
+    // Empty rows are dropped, like the admin form does.
+    contactPersons: [
+      { role: contactRole.trim(), name: contactName.trim() },
+    ].filter((contact) => contact.role || contact.name),
     items: items.map(({ _key, ...item }) => item),
   });
 
@@ -242,6 +253,29 @@ export default function CreateOfferScreen() {
               multiline
             />
           </View>
+        </View>
+
+        {/* Contact person printed on the offer. */}
+        <View style={styles.field}>
+          <Text style={styles.label}>{t("billing.contactPerson")}</Text>
+          <TextInput
+            style={styles.input}
+            value={contactName}
+            onChangeText={setContactName}
+            placeholder={t("billing.contactPerson")}
+            placeholderTextColor={PLACEHOLDER}
+          />
+        </View>
+
+        <View style={styles.field}>
+          <Text style={styles.label}>{t("billing.contactRole")}</Text>
+          <TextInput
+            style={styles.input}
+            value={contactRole}
+            onChangeText={setContactRole}
+            placeholder={t("billing.contactRole")}
+            placeholderTextColor={PLACEHOLDER}
+          />
         </View>
 
         {/* Totals */}

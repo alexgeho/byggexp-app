@@ -1226,7 +1226,14 @@
     "noProject": "Bez projekta",
     "noProjects": "Nema projekata",
     "orderReference": "Referenca narudžbe",
-    "orderReferencePlaceholder": "npr. broj projekta"
+    "orderReferencePlaceholder": "npr. broj projekta",
+    "ourReference": "Naša referenca",
+    "yourReference": "Vaša referenca",
+    "rotPersonalNumber": "Matični broj (kupac)",
+    "rotPersonalNumberPlaceholder": "GGGGMMDD-XXXX",
+    "rotProperty": "Oznaka nekretnine / BRF",
+    "rotPropertyPlaceholder": "Općina Imanje 1:23",
+    "contactRole": "Uloga"
   },
   "tasksPreview": {
     "noDate": "Bez datuma",
@@ -1485,7 +1492,8 @@
     "savedTitle": "Artikl sačuvan",
     "existing": "Vaši artikli",
     "emptyList": "Još nema artikala.",
-    "nameRequired": "Unesite naziv artikla"
+    "nameRequired": "Unesite naziv artikla",
+    "addTitle": "Novi artikal"
   },
   "clientForm": {
     "title": "Klijenti",

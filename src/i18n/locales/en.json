@@ -1226,7 +1226,14 @@
     "noProject": "No project",
     "noProjects": "No projects",
     "orderReference": "Order reference",
-    "orderReferencePlaceholder": "e.g. project number"
+    "orderReferencePlaceholder": "e.g. project number",
+    "ourReference": "Our reference",
+    "yourReference": "Your reference",
+    "rotPersonalNumber": "Personal number (buyer)",
+    "rotPersonalNumberPlaceholder": "YYYYMMDD-XXXX",
+    "rotProperty": "Property designation / BRF",
+    "rotPropertyPlaceholder": "Municipality Farm 1:23 · or BRF org.no + apt no",
+    "contactRole": "Role"
   },
   "tasksPreview": {
     "noDate": "No date",
@@ -1485,7 +1492,8 @@
     "savedTitle": "Article saved",
     "existing": "Your articles",
     "emptyList": "No articles yet.",
-    "nameRequired": "Enter an article name"
+    "nameRequired": "Enter an article name",
+    "addTitle": "New article"
   },
   "clientForm": {
     "title": "Clients",

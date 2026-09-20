@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { invoiceService } from "../../../services";
+import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import { getDateLocale, formatDisplayDate } from "../../../utils/dateLocale";
 import {
@@ -39,6 +40,7 @@ export default function CreateInvoiceScreen() {
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const { t } = useTranslation();
   const { showSuccess } = useFeedback();
+  const { user } = useContext(AuthContext);
   const insets = useSafeAreaInsets();
 
   const [client, setClient] = useState(null);
@@ -50,6 +52,16 @@ export default function CreateInvoiceScreen() {
   const [items, setItems] = useState([emptyLineItem()]);
   const [rotEnabled, setRotEnabled] = useState(false);
   const [rotLaborAmount, setRotLaborAmount] = useState("");
+  // Skatteverket needs the buyer's personnummer and the property designation on
+  // a ROT invoice — without them the deduction can't be claimed.
+  const [rotPersonalNumber, setRotPersonalNumber] = useState("");
+  const [rotProperty, setRotProperty] = useState("");
+  // Byggmoms (reverse charge): carried from the client, like the admin form.
+  const [reverseVAT, setReverseVAT] = useState(false);
+  // References printed on the invoice: ours defaults to the person issuing it,
+  // yours to the client's contact person.
+  const [ourReference, setOurReference] = useState(() => user?.name || "");
+  const [yourReference, setYourReference] = useState("");
   // Optional link to a project — makes the invoice roll up into that project's
   // economy ("Fakturerat"). null = not linked.
   const [project, setProject] = useState(null);
@@ -63,7 +75,10 @@ export default function CreateInvoiceScreen() {
   const [saving, setSaving] = useState(false);
 
   const locale = getDateLocale();
-  const totals = useMemo(() => computeTotals(items), [items]);
+  const totals = useMemo(
+    () => computeTotals(items, { reverseVAT }),
+    [items, reverseVAT],
+  );
   const settlement = useMemo(
     () =>
       deriveSettlement(totals.total, {
@@ -75,12 +90,17 @@ export default function CreateInvoiceScreen() {
 
   const onSelectClient = (picked) => {
     setClient(picked);
+    // Same carry-over the admin InvoiceForm does when a client is picked.
+    setReverseVAT(Boolean(picked?.reverseVAT));
+    setYourReference((prev) => picked?.contactPerson || prev);
     // ROT is a deduction on a private person's labour cost — a company customer
     // can't have it. Same rule the admin InvoiceForm applies: switching to a
     // company clears the flag so a stale toggle can't ride along.
     if (picked?.clientType !== "private") {
       setRotEnabled(false);
       setRotLaborAmount("");
+      setRotPersonalNumber("");
+      setRotProperty("");
     }
     setCompanyName(picked.companyName || "");
     setEmail(picked.email || "");
@@ -120,7 +140,16 @@ export default function CreateInvoiceScreen() {
     email: email.trim(),
     date: toIsoDate(new Date()),
     dueDate,
-    reverseVAT: "false",
+    city: client?.city || "",
+    deliveryDate: toIsoDate(new Date()),
+    status: "draft",
+    // The backend stores reverseVAT as a string, like the admin form sends it.
+    reverseVAT: reverseVAT ? "true" : "false",
+    ...(client?.paymentTerms
+      ? { paymentTerms: String(client.paymentTerms) }
+      : {}),
+    ...(ourReference.trim() ? { ourReference: ourReference.trim() } : {}),
+    ...(yourReference.trim() ? { yourReference: yourReference.trim() } : {}),
     // Belt and braces: a company customer never carries ROT, whatever the
     // toggle happened to be before the customer was switched.
     rotEnabled: isPrivateClient && rotEnabled,
@@ -128,6 +157,12 @@ export default function CreateInvoiceScreen() {
       isPrivateClient && rotEnabled
         ? Number(String(rotLaborAmount).replace(",", ".")) || 0
         : 0,
+    ...(isPrivateClient && rotEnabled
+      ? {
+          rotPersonalNumber: rotPersonalNumber.trim(),
+          rotProperty: rotProperty.trim(),
+        }
+      : {}),
     // Optional: link to a project so it counts toward the project economy.
     ...(project?._id || project?.id
       ? { projectId: project._id || project.id }
@@ -289,6 +324,29 @@ export default function CreateInvoiceScreen() {
           />
         </View>
 
+        {/* References printed on the invoice, like the admin form. */}
+        <View style={styles.field}>
+          <Text style={styles.label}>{t("billing.ourReference")}</Text>
+          <TextInput
+            style={styles.input}
+            value={ourReference}
+            onChangeText={setOurReference}
+            placeholder={t("billing.ourReference")}
+            placeholderTextColor={PLACEHOLDER}
+          />
+        </View>
+
+        <View style={styles.field}>
+          <Text style={styles.label}>{t("billing.yourReference")}</Text>
+          <TextInput
+            style={styles.input}
+            value={yourReference}
+            onChangeText={setYourReference}
+            placeholder={t("billing.yourReference")}
+            placeholderTextColor={PLACEHOLDER}
+          />
+        </View>
+
         {/* Invoice rows */}
         <LineItemsEditor
           items={items}
@@ -323,6 +381,33 @@ export default function CreateInvoiceScreen() {
             </TouchableOpacity>
           </View>
         ) : null}
+
+        {isPrivateClient && rotEnabled && (
+          <View style={styles.field}>
+            <Text style={styles.label}>{t("billing.rotPersonalNumber")}</Text>
+            <TextInput
+              style={styles.input}
+              value={rotPersonalNumber}
+              onChangeText={setRotPersonalNumber}
+              placeholder={t("billing.rotPersonalNumberPlaceholder")}
+              placeholderTextColor={PLACEHOLDER}
+              keyboardType="numbers-and-punctuation"
+            />
+          </View>
+        )}
+
+        {isPrivateClient && rotEnabled && (
+          <View style={styles.field}>
+            <Text style={styles.label}>{t("billing.rotProperty")}</Text>
+            <TextInput
+              style={styles.input}
+              value={rotProperty}
+              onChangeText={setRotProperty}
+              placeholder={t("billing.rotPropertyPlaceholder")}
+              placeholderTextColor={PLACEHOLDER}
+            />
+          </View>
+        )}
 
         {isPrivateClient && rotEnabled && (
           <View style={styles.field}>

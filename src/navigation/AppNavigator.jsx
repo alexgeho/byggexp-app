@@ -298,6 +298,12 @@ export default function AppNavigator() {
               }
             />
             <Stack.Screen
+              name="CreateArticle"
+              getComponent={() =>
+                require("../screens/Menu/Economy/CreateArticleScreen").default
+              }
+            />
+            <Stack.Screen
               name="CreateClient"
               getComponent={() =>
                 require("../screens/Menu/Economy/CreateClientScreen").default
