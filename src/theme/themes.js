@@ -82,6 +82,11 @@ const common = {
 
 export const blueTheme = {
   ...common,
+  homeButton: {
+    ...common.homeButton,
+    // Plain label, not semibold — same 16px as before, just not shouting.
+    textWeight: "400",
+  },
   colors: withIconBadgeBackground(blueColors),
 };
 
