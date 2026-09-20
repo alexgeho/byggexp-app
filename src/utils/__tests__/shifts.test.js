@@ -136,34 +136,34 @@ describe("formatShiftListProjectName", () => {
 
 describe("formatDuration", () => {
   it("combines hours and minutes", () => {
-    expect(formatDuration(HOUR + 30 * MIN)).toBe("1h 30m");
-    expect(formatDuration(2 * HOUR + 5 * MIN)).toBe("2h 5m");
+    expect(formatDuration(HOUR + 30 * MIN)).toBe("1,5 h");
+    expect(formatDuration(2 * HOUR + 5 * MIN)).toBe("2,1 h");
   });
 
   it("shows only the non-zero unit", () => {
-    expect(formatDuration(HOUR)).toBe("1h");
-    expect(formatDuration(45 * MIN)).toBe("45m");
-    expect(formatDuration(0)).toBe("0m");
+    expect(formatDuration(HOUR)).toBe("1 h");
+    expect(formatDuration(45 * MIN)).toBe("0,8 h");
+    expect(formatDuration(0)).toBe("0 h");
   });
 });
 
 describe("formatDurationShort", () => {
-  it("rounds to whole hours at or above an hour", () => {
-    expect(formatDurationShort(2 * HOUR)).toBe("2h");
-    expect(formatDurationShort(HOUR + 30 * MIN)).toBe("2h");
+  it("gives decimal hours without a unit, for the narrow calendar cell", () => {
+    expect(formatDurationShort(2 * HOUR)).toBe("2");
+    expect(formatDurationShort(HOUR + 30 * MIN)).toBe("1,5");
   });
 
   it("shows at least one minute below an hour", () => {
-    expect(formatDurationShort(45 * MIN)).toBe("45m");
-    expect(formatDurationShort(0)).toBe("1m");
+    expect(formatDurationShort(45 * MIN)).toBe("0,8");
+    expect(formatDurationShort(0)).toBe("0");
   });
 });
 
 describe("formatDurationCompact", () => {
-  it("matches the hours/minutes breakdown", () => {
-    expect(formatDurationCompact(2 * HOUR + 5 * MIN)).toBe("2h 5m");
-    expect(formatDurationCompact(HOUR)).toBe("1h");
-    expect(formatDurationCompact(20 * MIN)).toBe("20m");
+  it("reads in decimal hours, like every other duration", () => {
+    expect(formatDurationCompact(2 * HOUR + 5 * MIN)).toBe("2,1 h");
+    expect(formatDurationCompact(HOUR)).toBe("1 h");
+    expect(formatDurationCompact(20 * MIN)).toBe("0,3 h");
   });
 });
 

@@ -24,47 +24,26 @@ const getDateFormatter = (options) => {
   return formatter;
 };
 
+// Worked time reads in hours, the way hours are reported and paid — "7,5 h",
+// not "7h 30m". Nobody on a site counts a day in minutes, and the decimal is
+// the same number that ends up on the payslip. Rounded to one decimal, so a
+// stray second never shows up as 7,4999.
 export const formatDuration = (durationMs = 0) => {
-  const totalMinutes = Math.floor(durationMs / 60000);
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-
-  if (hours && minutes) {
-    return `${hours}h ${minutes}m`;
-  }
-
-  if (hours) {
-    return `${hours}h`;
-  }
-
-  return `${minutes}m`;
+  const hours = Math.round((durationMs / 3600000) * 10) / 10;
+  return `${String(hours).replace(".", ",")} h`;
 };
 
+// Calendar cells are tiny, so the unit is dropped — the column is hours and
+// nothing else. Still decimal hours, never minutes.
 export const formatDurationShort = (durationMs = 0) => {
-  const hours = durationMs / (60 * 60 * 1000);
-  if (hours >= 1) {
-    return `${Math.round(hours)}h`;
-  }
-
-  const minutes = Math.max(1, Math.round(durationMs / 60000));
-  return `${minutes}m`;
+  const hours = Math.round((durationMs / 3600000) * 10) / 10;
+  return String(hours).replace(".", ",");
 };
 
-export const formatDurationCompact = (durationMs = 0) => {
-  const totalMinutes = Math.floor(durationMs / 60000);
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-
-  if (hours && minutes) {
-    return `${hours}h ${minutes}m`;
-  }
-
-  if (hours) {
-    return `${hours}h`;
-  }
-
-  return `${minutes}m`;
-};
+// The month total at the top of the shifts screen. Same rule as everywhere
+// else: hours with one decimal, because that is the number that gets paid.
+export const formatDurationCompact = (durationMs = 0) =>
+  formatDuration(durationMs);
 
 export const formatShiftDayLabel = (dateString) => {
   if (!dateString) return "—";

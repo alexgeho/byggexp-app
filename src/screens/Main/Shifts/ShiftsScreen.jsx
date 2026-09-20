@@ -1372,7 +1372,7 @@ export default function ShiftsScreen() {
                             >
                               {shift.manualDurationMs != null
                                 ? formatDuration(shift.manualDurationMs)
-                                : t("shifts.manualHoursAdd")}
+                                : `＋ ${t("shifts.manualHoursAdd")}`}
                             </Text>
                           </TouchableOpacity>
                         ) : null}
@@ -1446,7 +1446,7 @@ export default function ShiftsScreen() {
                             >
                               {shift.reportedAt
                                 ? t("dayReport.reported")
-                                : t("dayReport.add")}
+                                : `＋ ${t("dayReport.add")}`}
                             </Text>
                           </TouchableOpacity>
                         ) : null}
@@ -1486,6 +1486,8 @@ export default function ShiftsScreen() {
                             {t("createProject.location")}
                           </Text>
                           <Text
+                            numberOfLines={1}
+                            ellipsizeMode="tail"
                             style={[
                               styles.shiftDetailValue,
                               {
