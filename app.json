@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.anonymous.totbygghubmobileapp",
-      "buildNumber": "189",
+      "buildNumber": "190",
       "associatedDomains": ["applinks:api.byggexp.se"],
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
