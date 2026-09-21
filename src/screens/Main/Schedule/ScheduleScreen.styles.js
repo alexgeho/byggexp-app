@@ -53,7 +53,7 @@ export const createStyles = (c) =>
       borderRadius: 999,
       backgroundColor: c.surface,
       borderWidth: 1,
-      borderColor: "rgba(5, 45, 80, 0.12)",
+      borderColor: c.divider,
     },
     segmentActive: {
       backgroundColor: "#1877F2",
@@ -91,7 +91,7 @@ export const createStyles = (c) =>
       fontFamily: "DMSans-Medium",
     },
     filterChipPlaceholder: {
-      color: "rgba(5, 45, 80, 0.5)",
+      color: c.textMuted,
     },
     timelineCard: {
       flex: 1,
@@ -196,7 +196,7 @@ export const createStyles = (c) =>
     timelineRow: {
       height: ROW_HEIGHT,
       borderBottomWidth: 1,
-      borderBottomColor: "rgba(5, 45, 80, 0.05)",
+      borderBottomColor: c.divider,
     },
     bar: {
       position: "absolute",
@@ -254,7 +254,7 @@ export const createStyles = (c) =>
       position: "absolute",
       top: 0,
       width: 1,
-      backgroundColor: "rgba(5, 45, 80, 0.05)",
+      backgroundColor: c.surfaceMuted,
     },
     todayLine: {
       position: "absolute",
@@ -287,7 +287,7 @@ export const createStyles = (c) =>
       backgroundColor: c.surface,
       borderRadius: 10,
       borderWidth: 1,
-      borderColor: "rgba(5, 45, 80, 0.1)",
+      borderColor: c.divider,
       paddingHorizontal: 18,
       paddingVertical: 9,
     },
@@ -331,7 +331,7 @@ export const createStyles = (c) =>
       height: 24,
       borderRadius: 6,
       borderWidth: 1.5,
-      borderColor: "rgba(5, 45, 80, 0.3)",
+      borderColor: c.divider,
       alignItems: "center",
       justifyContent: "center",
     },
@@ -345,7 +345,7 @@ export const createStyles = (c) =>
       justifyContent: "space-between",
       height: 52,
       borderBottomWidth: 1,
-      borderBottomColor: "rgba(5, 45, 80, 0.06)",
+      borderBottomColor: c.divider,
     },
     optionName: {
       color: c.textPrimary,
@@ -362,7 +362,7 @@ export const createStyles = (c) =>
       justifyContent: "space-between",
       paddingVertical: 14,
       borderBottomWidth: 1,
-      borderBottomColor: "rgba(5, 45, 80, 0.06)",
+      borderBottomColor: c.divider,
     },
     dateRowLabel: {
       color: c.textPrimary,

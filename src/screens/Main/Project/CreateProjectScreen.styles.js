@@ -395,7 +395,7 @@ export const createStyles = (c) =>
     },
     datePickerOverlay: {
       flex: 1,
-      backgroundColor: "rgba(5, 45, 80, 0.28)",
+      backgroundColor: c.divider,
       justifyContent: "center",
       alignItems: "center",
       paddingHorizontal: 20,

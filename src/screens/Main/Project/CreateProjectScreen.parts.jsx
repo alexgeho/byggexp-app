@@ -152,16 +152,15 @@ export const WorkTimePickerModal = ({
   );
 };
 
-export const FieldIcon = ({
-  library = "feather",
-  name,
-  size = 20,
-  color = "rgba(5, 45, 80, 1)",
-}) => {
+export const FieldIcon = ({ library = "feather", name, size = 20, color }) => {
+  // Without an explicit colour the glyph takes the theme's text colour — a
+  // fixed navy disappeared into the dark theme's background.
+  const { theme } = useTheme();
+  const tint = color || theme.content.textPrimary;
   // iOS-style: no filled badge behind the glyph, so a white glyph would vanish —
   // render it in systemBlue instead, and keep glyphs at a readable size.
-  const isWhite = /^#f{3}$|^#f{6}$/i.test(String(color).replace(/\s/g, ""));
-  const resolved = isWhite ? "#007AFF" : color;
+  const isWhite = /^#f{3}$|^#f{6}$/i.test(String(tint).replace(/\s/g, ""));
+  const resolved = isWhite ? "#007AFF" : tint;
   const s = size < 28 ? 28 : size;
   if (library === "material-community") {
     return <MaterialCommunityIcons name={name} size={s} color={resolved} />;
@@ -211,12 +210,12 @@ export const ToolsListModal = memo(function ToolsListModal({
         </View>
 
         <View style={styles.workersSearchBar}>
-          <Icon name="search" size={18} color="rgba(5, 45, 80, 0.5)" />
+          <Icon name="search" size={18} color={theme.content.textMuted} />
           <TextInput
             value={toolSearch}
             onChangeText={onToolSearchChange}
             placeholder={t("createProject.searchInstruments")}
-            placeholderTextColor="rgba(5, 45, 80, 0.5)"
+            placeholderTextColor={theme.content.placeholder}
             style={styles.workersSearchInput}
           />
         </View>
@@ -313,12 +312,12 @@ export const WorkersListModal = memo(function WorkersListModal({
         </View>
 
         <View style={styles.workersSearchBar}>
-          <Icon name="search" size={18} color="rgba(5, 45, 80, 0.5)" />
+          <Icon name="search" size={18} color={theme.content.textMuted} />
           <TextInput
             value={workerSearch}
             onChangeText={onWorkerSearchChange}
             placeholder={t("createProject.searchWorkers")}
-            placeholderTextColor="rgba(5, 45, 80, 0.5)"
+            placeholderTextColor={theme.content.placeholder}
             style={styles.workersSearchInput}
           />
         </View>
@@ -436,12 +435,12 @@ export const SingleUserPickerModal = ({
         </View>
 
         <View style={styles.workersSearchBar}>
-          <Icon name="search" size={18} color="rgba(5, 45, 80, 0.5)" />
+          <Icon name="search" size={18} color={theme.content.textMuted} />
           <TextInput
             value={searchValue}
             onChangeText={onSearchChange}
             placeholder={t("createProject.searchWorkers")}
-            placeholderTextColor="rgba(5, 45, 80, 0.5)"
+            placeholderTextColor={theme.content.placeholder}
             style={styles.workersSearchInput}
           />
         </View>
@@ -543,14 +542,14 @@ export const LocationPickerModal = ({
           scrollEnabled={!isSlidingRadius && !isMapInteracting}
         >
           <View style={styles.mapSearchInputCard}>
-            <Icon name="search" size={18} color="rgba(5, 45, 80, 0.55)" />
+            <Icon name="search" size={18} color={theme.content.textMuted} />
             <TextInput
               ref={searchInputRef}
               autoFocus
               value={locationSearch}
               onChangeText={setLocationSearch}
               placeholder={t("createProject.searchAddress")}
-              placeholderTextColor="rgba(5, 45, 80, 0.45)"
+              placeholderTextColor={theme.content.placeholder}
               style={styles.mapSearchInput}
               returnKeyType="search"
             />
@@ -658,7 +657,7 @@ export const LocationPickerModal = ({
                 }}
                 onSlidingComplete={() => setIsSlidingRadius(false)}
                 minTrackColor={theme.colors.primary}
-                maxTrackColor="rgba(5, 45, 80, 0.22)"
+                maxTrackColor={theme.content.divider}
                 thumbSize={44}
               />
             </View>

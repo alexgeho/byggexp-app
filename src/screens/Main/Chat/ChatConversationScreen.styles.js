@@ -180,7 +180,7 @@ export const createStyles = (c) =>
       paddingHorizontal: 8,
       paddingVertical: 3,
       borderRadius: 999,
-      backgroundColor: "rgba(5, 45, 80, 0.45)",
+      backgroundColor: c.divider,
     },
     mediaTimeText: {
       color: "#FFFFFF",
@@ -316,7 +316,7 @@ export const createStyles = (c) =>
       width: 40,
       height: 5,
       borderRadius: 999,
-      backgroundColor: "rgba(5, 45, 80, 0.18)",
+      backgroundColor: c.divider,
       marginBottom: 14,
     },
     sheetTitle: {
@@ -344,7 +344,7 @@ export const createStyles = (c) =>
     sheetDivider: {
       height: 1,
       marginLeft: 72,
-      backgroundColor: "rgba(5, 45, 80, 0.07)",
+      backgroundColor: c.surfaceMuted,
     },
     sheetIcon: {
       width: 44,

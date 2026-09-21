@@ -133,7 +133,7 @@ export const createStyles = (c) =>
       color: c.textPrimary,
     },
     selectPlaceholder: {
-      color: "rgba(5, 45, 80, 0.35)",
+      color: c.placeholder,
     },
     formError: {
       color: "#c62828",
@@ -204,6 +204,6 @@ export const createStyles = (c) =>
     },
     pickerEmptyStateText: {
       fontSize: 16,
-      color: "rgba(5, 45, 80, 0.55)",
+      color: c.textMuted,
     },
   });

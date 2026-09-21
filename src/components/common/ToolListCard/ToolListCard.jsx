@@ -58,8 +58,13 @@ export function ToolListCard({ tool, onPress, selected = false }) {
         photoUrl ? (
           <Image source={{ uri: photoUrl }} style={styles.toolPhoto} />
         ) : (
-          <View style={styles.toolPhotoPlaceholder}>
-            <Icon name="tool" size={14} color="rgba(5, 45, 80, 0.35)" />
+          <View
+            style={[
+              styles.toolPhotoPlaceholder,
+              { backgroundColor: theme.content.surfaceMuted },
+            ]}
+          >
+            <Icon name="tool" size={14} color={theme.content.placeholder} />
           </View>
         )
       }
@@ -93,7 +98,6 @@ const styles = StyleSheet.create({
     height: 28,
     borderRadius: 8,
     marginRight: 12,
-    backgroundColor: "rgba(5, 45, 80, 0.06)",
     alignItems: "center",
     justifyContent: "center",
   },

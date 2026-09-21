@@ -150,7 +150,7 @@ export default function ReportBugScreen() {
             value={message}
             onChangeText={setMessage}
             placeholder={t("reportBug.descriptionPlaceholder")}
-            placeholderTextColor="rgba(5, 45, 80, 0.45)"
+            placeholderTextColor={theme.content.placeholder}
             style={styles.textArea}
             textAlignVertical="top"
           />

@@ -64,7 +64,7 @@ export function createStyles(c) {
       color: c.textPrimary,
     },
     placeholder: {
-      color: "rgba(5, 45, 80, 0.35)",
+      color: c.placeholder,
     },
     // hairline divider, inset past the icon (30 badge + 12 gap + 16 pad = 58)
     sepIcon: {

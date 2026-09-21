@@ -148,7 +148,7 @@ export const createStyles = (c) =>
       bottom: 0,
       paddingHorizontal: 6,
       paddingVertical: 4,
-      backgroundColor: "rgba(5, 45, 80, 0.55)",
+      backgroundColor: c.divider,
     },
     receiptAmountText: {
       color: "#FFFFFF",
@@ -192,7 +192,7 @@ export const createStyles = (c) =>
     // Receipt scan overlay
     scanOverlay: {
       ...StyleSheet.absoluteFillObject,
-      backgroundColor: "rgba(5, 45, 80, 0.55)",
+      backgroundColor: c.divider,
       alignItems: "center",
       justifyContent: "center",
       gap: 12,

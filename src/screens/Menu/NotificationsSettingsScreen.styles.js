@@ -23,7 +23,7 @@ export const createStyles = (c) =>
       marginBottom: 8,
     },
     introText: {
-      color: "rgba(5, 45, 80, 0.7)",
+      color: c.textMuted,
       fontSize: 14,
       lineHeight: 22,
     },
@@ -55,7 +55,7 @@ export const createStyles = (c) =>
       marginBottom: 6,
     },
     settingDescription: {
-      color: "rgba(5, 45, 80, 0.62)",
+      color: c.textMuted,
       fontSize: 13,
       lineHeight: 20,
     },
@@ -67,7 +67,7 @@ export const createStyles = (c) =>
       paddingVertical: 22,
     },
     loadingText: {
-      color: "rgba(5, 45, 80, 0.72)",
+      color: c.textMuted,
       fontSize: 14,
     },
     saveButtonText: {

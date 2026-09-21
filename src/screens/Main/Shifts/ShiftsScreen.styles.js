@@ -883,7 +883,7 @@ export const createStyles = (c) =>
     },
     manualSheetBackdrop: {
       ...StyleSheet.absoluteFillObject,
-      backgroundColor: "rgba(5, 45, 80, 0.28)",
+      backgroundColor: c.divider,
     },
     manualSheet: {
       backgroundColor: c.surface,

@@ -795,7 +795,7 @@ export default function CreateTaskScreen() {
                   value={taskTitle}
                   onChangeText={setTaskTitle}
                   placeholder={t("createTask.taskTitlePlaceholder")}
-                  placeholderTextColor="rgba(5, 45, 80, 0.45)"
+                  placeholderTextColor={theme.content.placeholder}
                 />
               </View>
             </GroupRow>
@@ -814,7 +814,7 @@ export default function CreateTaskScreen() {
                   value={taskDescription}
                   onChangeText={setTaskDescription}
                   placeholder={t("createTask.descriptionPlaceholder")}
-                  placeholderTextColor="rgba(5, 45, 80, 0.45)"
+                  placeholderTextColor={theme.content.placeholder}
                 />
               </View>
             </GroupRow>
@@ -1190,7 +1190,7 @@ export default function CreateTaskScreen() {
                       }}
                       keyboardType="number-pad"
                       placeholder={String(defaultRepeatIntervalMinutes)}
-                      placeholderTextColor="rgba(5, 45, 80, 0.45)"
+                      placeholderTextColor={theme.content.placeholder}
                     />
                   </View>
                 ) : null}
@@ -1213,7 +1213,7 @@ export default function CreateTaskScreen() {
                       }}
                       keyboardType="number-pad"
                       placeholder="3"
-                      placeholderTextColor="rgba(5, 45, 80, 0.45)"
+                      placeholderTextColor={theme.content.placeholder}
                     />
                   </View>
                 ) : null}
@@ -1266,7 +1266,7 @@ export default function CreateTaskScreen() {
                       })
                     }
                     placeholder={t("createTask.customReminderPlaceholder")}
-                    placeholderTextColor="rgba(5, 45, 80, 0.45)"
+                    placeholderTextColor={theme.content.placeholder}
                   />
                 </View>
               </View>
