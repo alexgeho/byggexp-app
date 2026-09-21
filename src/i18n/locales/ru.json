@@ -1154,7 +1154,8 @@
     "deleteFailed": "Не удалось удалить документ.",
     "sendByEmail": "Отправить по почте",
     "shareDocument": "Скачать / поделиться",
-    "markPaid": "Отметить оплаченным"
+    "markPaid": "Отметить оплаченным",
+    "copyDocument": "Копировать"
   },
   "billing": {
     "itemDescription": "Описание",

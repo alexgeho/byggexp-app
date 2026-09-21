@@ -1154,7 +1154,8 @@
     "deleteFailed": "Nije moguće obrisati dokument.",
     "sendByEmail": "Pošalji e-poštom",
     "shareDocument": "Preuzmi / podijeli",
-    "markPaid": "Označi kao plaćeno"
+    "markPaid": "Označi kao plaćeno",
+    "copyDocument": "Kopiraj"
   },
   "billing": {
     "itemDescription": "Opis",

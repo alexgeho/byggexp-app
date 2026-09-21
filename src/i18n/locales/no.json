@@ -1154,7 +1154,8 @@
     "deleteFailed": "Kunne ikke slette dokumentet.",
     "sendByEmail": "Send på e-post",
     "shareDocument": "Last ned / del",
-    "markPaid": "Merk som betalt"
+    "markPaid": "Merk som betalt",
+    "copyDocument": "Kopier"
   },
   "billing": {
     "itemDescription": "Beskrivelse",

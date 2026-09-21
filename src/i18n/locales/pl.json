@@ -1154,7 +1154,8 @@
     "deleteFailed": "Nie udało się usunąć dokumentu.",
     "sendByEmail": "Wyślij e-mailem",
     "shareDocument": "Pobierz / udostępnij",
-    "markPaid": "Oznacz jako opłaconą"
+    "markPaid": "Oznacz jako opłaconą",
+    "copyDocument": "Kopiuj"
   },
   "billing": {
     "itemDescription": "Opis",

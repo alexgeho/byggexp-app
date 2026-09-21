@@ -1154,7 +1154,8 @@
     "deleteFailed": "Kunde inte ta bort dokumentet.",
     "sendByEmail": "Skicka via e-post",
     "shareDocument": "Ladda ner / dela",
-    "markPaid": "Markera som betald"
+    "markPaid": "Markera som betald",
+    "copyDocument": "Kopiera"
   },
   "billing": {
     "itemDescription": "Beskrivning",

@@ -1154,7 +1154,8 @@
     "deleteFailed": "Не вдалося видалити документ.",
     "sendByEmail": "Надіслати e-поштою",
     "shareDocument": "Завантажити / поділитися",
-    "markPaid": "Позначити оплаченим"
+    "markPaid": "Позначити оплаченим",
+    "copyDocument": "Копіювати"
   },
   "billing": {
     "itemDescription": "Опис",

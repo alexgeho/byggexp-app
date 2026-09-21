@@ -1154,7 +1154,8 @@
     "deleteFailed": "Nepavyko ištrinti dokumento.",
     "sendByEmail": "Siųsti el. paštu",
     "shareDocument": "Atsisiųsti / dalintis",
-    "markPaid": "Pažymėti apmokėta"
+    "markPaid": "Pažymėti apmokėta",
+    "copyDocument": "Kopijuoti"
   },
   "billing": {
     "itemDescription": "Aprašymas",

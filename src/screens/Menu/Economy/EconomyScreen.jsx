@@ -190,9 +190,15 @@ export default function EconomyScreen() {
     return counts;
   }, [byClientType]);
 
+  // The whole status row is always shown — "Skickade", "Förfallna",
+  // "Betalda" are where a document can be, so they stay put instead of
+  // appearing and vanishing with the data. Cancelled is the exception: it
+  // only shows up once something has been cancelled.
   const filterOptions = useMemo(() => {
     const order = isOffers ? OFFER_FILTER_ORDER : INVOICE_FILTER_ORDER;
-    return order.filter((status) => statusCounts[status]);
+    return order.filter(
+      (status) => status !== "cancelled" || statusCounts[status],
+    );
   }, [isOffers, statusCounts]);
 
   // Swipe a document left to delete it, like every other list in the app. The
@@ -266,6 +272,19 @@ export default function EconomyScreen() {
       },
       "billing.shareFailedTitle",
       isOffers ? "billing.offerShareFailed" : "billing.invoiceSendFailed",
+    );
+
+  // Same customer, same rows, new draft — the monthly bill without typing it
+  // again.
+  const copyDocument = (item) =>
+    runAction(
+      async () => {
+        const id = documentId(item);
+        if (isOffers) await offerService.copy(id);
+        else await invoiceService.copy(id);
+      },
+      "billing.saveFailedTitle",
+      isOffers ? "billing.offerSaveFailed" : "billing.invoiceSaveFailed",
     );
 
   const markPaid = (item) =>
@@ -388,7 +407,7 @@ export default function EconomyScreen() {
                           ]}
                         >
                           {t(`economy.${statusNs}.${status}`, status)} (
-                          {statusCounts[status]})
+                          {statusCounts[status] || 0})
                         </Text>
                       </TouchableOpacity>
                     );
@@ -445,6 +464,17 @@ export default function EconomyScreen() {
                   <Icon name="share-2" size={20} color={theme.colors.primary} />
                   <Text style={styles.actionRowText}>
                     {t("economy.shareDocument", "Ladda ner / dela")}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.actionRow}
+                  onPress={() => copyDocument(actionItem)}
+                  activeOpacity={0.8}
+                >
+                  <Icon name="copy" size={20} color={theme.colors.primary} />
+                  <Text style={styles.actionRowText}>
+                    {t("economy.copyDocument", "Kopiera")}
                   </Text>
                 </TouchableOpacity>
 

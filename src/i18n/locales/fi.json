@@ -1154,7 +1154,8 @@
     "deleteFailed": "Asiakirjan poistaminen epäonnistui.",
     "sendByEmail": "Lähetä sähköpostilla",
     "shareDocument": "Lataa / jaa",
-    "markPaid": "Merkitse maksetuksi"
+    "markPaid": "Merkitse maksetuksi",
+    "copyDocument": "Kopioi"
   },
   "billing": {
     "itemDescription": "Kuvaus",

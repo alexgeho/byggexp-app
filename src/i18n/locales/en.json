@@ -1154,7 +1154,8 @@
     "deleteFailed": "Could not delete the document.",
     "sendByEmail": "Send by email",
     "shareDocument": "Download / share",
-    "markPaid": "Mark as paid"
+    "markPaid": "Mark as paid",
+    "copyDocument": "Duplicate"
   },
   "billing": {
     "itemDescription": "Description",

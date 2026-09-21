@@ -1154,7 +1154,8 @@
     "deleteFailed": "Dokumendi kustutamine ebaõnnestus.",
     "sendByEmail": "Saada e-postiga",
     "shareDocument": "Laadi alla / jaga",
-    "markPaid": "Märgi makstuks"
+    "markPaid": "Märgi makstuks",
+    "copyDocument": "Kopeeri"
   },
   "billing": {
     "itemDescription": "Kirjeldus",

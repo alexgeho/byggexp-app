@@ -1154,7 +1154,8 @@
     "deleteFailed": "Neizdevās dzēst dokumentu.",
     "sendByEmail": "Nosūtīt pa e-pastu",
     "shareDocument": "Lejupielādēt / kopīgot",
-    "markPaid": "Atzīmēt kā apmaksātu"
+    "markPaid": "Atzīmēt kā apmaksātu",
+    "copyDocument": "Kopēt"
   },
   "billing": {
     "itemDescription": "Apraksts",
