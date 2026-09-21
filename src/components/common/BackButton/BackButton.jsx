@@ -3,6 +3,7 @@ import { TouchableOpacity, Image } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { useTheme } from "../../../theme/ThemeContext";
+import { isLightColor } from "../../../theme/colorUtils";
 import { createStyles } from "./BackButton.styles";
 
 // Glass palettes for the round back button. Light = the original frosted-white
@@ -55,6 +56,16 @@ export function BackButton({
       theme.colors.homeButtonBorder !== "transparent"
         ? theme.colors.homeButtonBorder
         : theme.colors.border;
+    // The home surface is white-on-glass with a white glyph — right over the
+    // home gradient, invisible on an inner page, where the same surface
+    // flattens to near-white. There the button keeps its own light glass.
+    const washedOut =
+      theme.content.scheme !== "dark" &&
+      isLightColor(surface, theme.colors.background) &&
+      isLightColor(theme.colors.homeButtonText || base.icon);
+    if (washedOut) {
+      return { ...base, border: theme.colors.border };
+    }
     return {
       ...base,
       bg: surface,

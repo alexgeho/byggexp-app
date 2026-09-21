@@ -41,8 +41,10 @@ export const createStyles = (c) =>
       fontWeight: "700",
     },
     searchContainer: {
+      // No margin of its own: the list already leaves one gap under the
+      // controls, and a second one here made the space above the first card
+      // twice the gap between two cards.
       width: "100%",
-      marginBottom: 12,
     },
     loadingContainer: {
       flex: 1,

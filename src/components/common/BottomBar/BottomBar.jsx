@@ -17,7 +17,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
 import { useTheme } from "../../../theme/ThemeContext";
-import { flattenColor, hexToRgba } from "../../../theme/colorUtils";
+import {
+  flattenColor,
+  hexToRgba,
+  isLightColor,
+} from "../../../theme/colorUtils";
 
 import { createStyles } from "./BottomBar.styles";
 import { FooterHomeIcon, FooterMenuIcon } from "./BottomBarIcons";
@@ -137,9 +141,21 @@ export function BottomBar({
       ? theme.colors.homeButtonBorder
       : theme.colors.border;
   const usesDefaultLook = !pillColor && !glass && showBackground;
+  // The home treatment is white-on-glass, which works over home's gradient.
+  // On an inner page that same surface flattens to near-white, so white icons
+  // and a white hairline vanish — there the bar keeps its own light look.
+  const pillReadsLight =
+    usesDefaultLook &&
+    theme.content.scheme !== "dark" &&
+    isLightColor(themedPill, theme.colors.background);
   const effectivePillColor = pillColor || (usesDefaultLook ? themedPill : null);
   const effectivePillBorder =
-    pillBorderColor || (usesDefaultLook ? themedBorder : null);
+    pillBorderColor ||
+    (usesDefaultLook
+      ? pillReadsLight
+        ? theme.colors.border
+        : themedBorder
+      : null);
   const effectiveGlow =
     pillGlowColor || (usesDefaultLook ? theme.colors.cardGlow : null);
 
@@ -175,7 +191,10 @@ export function BottomBar({
   // Icons/text: keep the original (untinted) navy look in light themes; in dark
   // tint the icons light so they read on the dark pill.
   const resolvedIconColor =
-    iconColor ?? (usesDefaultLook ? theme.colors.homeButtonText : undefined);
+    iconColor ??
+    (usesDefaultLook && !pillReadsLight
+      ? theme.colors.homeButtonText
+      : undefined);
   const activeIconColor =
     resolvedIconColor ?? (dark ? "#FFFFFF" : ACTIVE_ICON_COLOR);
   const iconColorFor = (isActive) => {

@@ -90,3 +90,22 @@ export function flattenColor(color, backdrop) {
 export function onDark(content, darkValue, lightValue) {
   return content?.scheme === "dark" ? darkValue : lightValue;
 }
+
+// Is this colour light enough that dark ink reads on it? Used by the nav bar
+// and the back button: both wear the home screen's surface, which on the blue
+// theme is white-at-30% with white icons — fine over the home gradient, but on
+// an inner page that surface flattens to near-white and the white icons
+// disappear. Asking the flattened colour how light it is settles it.
+export function isLightColor(color, backdrop = "#FFFFFF") {
+  const flat = flattenColor(color, backdrop);
+  const rgb = String(flat).match(/\d+(\.\d+)?/g);
+  if (!rgb || rgb.length < 3) {
+    // A hex value: reuse the parser above by flattening it onto itself.
+    const hex = String(flat).replace("#", "");
+    if (hex.length < 6) return true;
+    const [r, g, b] = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16));
+    return (r * 299 + g * 587 + b * 114) / 1000 > 150;
+  }
+  const [r, g, b] = rgb.slice(0, 3).map(Number);
+  return (r * 299 + g * 587 + b * 114) / 1000 > 150;
+}
