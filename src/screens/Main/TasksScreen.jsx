@@ -251,7 +251,7 @@ export default function TasksScreen() {
       sections={sections}
       keyExtractor={(item, index) => item._id || `task-${index}`}
       renderSectionHeader={({ section }) => (
-        <View style={[styles.projectGroupHeader, styles.sectionHeaderSpacing]}>
+        <View style={styles.projectGroupHeader}>
           <Text
             style={[
               styles.projectTitle,
@@ -277,14 +277,9 @@ export default function TasksScreen() {
           />
         </View>
       }
-      renderCard={(task) => (
-        <View style={styles.taskCardSpacing}>
-          {renderTaskCard(task, {
-            project: task.project,
-            key: task._id,
-          })}
-        </View>
-      )}
+      renderCard={(task) =>
+        renderTaskCard(task, { project: task.project, key: task._id })
+      }
     />
   );
 }

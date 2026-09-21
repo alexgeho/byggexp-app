@@ -48,6 +48,9 @@ import {
 //   onAdd        function alternative to addScreen
 //   leftAction   { icon, label, color, onPress } revealed by swiping RIGHT —
 //                the Mail-style counterpart to the delete swipe
+// The single gap between anything in a list.
+const ROW_GAP = 12;
+
 export function EntityListScreen({
   title,
   data,
@@ -127,7 +130,7 @@ export function EntityListScreen({
     (item) => {
       const card = renderCard(item);
       if (!onDelete && !leftAction) {
-        return card;
+        return <View style={styles.rowGap}>{card}</View>;
       }
       return (
         <Swipeable
@@ -143,11 +146,18 @@ export function EntityListScreen({
           rightThreshold={40}
           leftThreshold={40}
         >
-          {card}
+          <View style={styles.rowGap}>{card}</View>
         </Swipeable>
       );
     },
-    [onDelete, leftAction, renderCard, renderDeleteAction, renderLeftAction],
+    [
+      onDelete,
+      leftAction,
+      renderCard,
+      renderDeleteAction,
+      renderLeftAction,
+      styles.rowGap,
+    ],
   );
 
   const emptyComponent = (
@@ -206,7 +216,15 @@ export function EntityListScreen({
             showsVerticalScrollIndicator={false}
             sections={sections}
             keyExtractor={keyExtractor}
-            renderSectionHeader={renderSectionHeader}
+            renderSectionHeader={
+              renderSectionHeader
+                ? (info) => (
+                    <View style={styles.sectionHeaderGap}>
+                      {renderSectionHeader(info)}
+                    </View>
+                  )
+                : undefined
+            }
             ListEmptyComponent={emptyComponent}
             ListHeaderComponent={headerComponent}
             renderItem={({ item }) => renderRow(item)}
@@ -298,8 +316,18 @@ const createStyles = (c) =>
     listContent: {
       paddingBottom: 140,
     },
+    // ONE gap for the whole app's lists: between two cards, under the list
+    // header, and above and below a section heading. Anything that sets its
+    // own margin on a card makes the screen look hand-assembled.
+    rowGap: {
+      marginBottom: ROW_GAP,
+    },
+    sectionHeaderGap: {
+      marginTop: ROW_GAP,
+      marginBottom: ROW_GAP,
+    },
     listHeaderWrap: {
-      marginBottom: 10,
+      marginBottom: ROW_GAP,
     },
     // Red slab revealed behind a swiped card.
     swipeDeleteAction: {
@@ -309,7 +337,7 @@ const createStyles = (c) =>
       alignItems: "center",
       justifyContent: "center",
       marginLeft: 8,
-      marginBottom: 12,
+      marginBottom: ROW_GAP,
     },
     swipeDeleteText: {
       color: "#FFFFFF",
