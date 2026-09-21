@@ -17,7 +17,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
 import { useTheme } from "../../../theme/ThemeContext";
-import { hexToRgba } from "../../../theme/colorUtils";
+import { flattenColor, hexToRgba } from "../../../theme/colorUtils";
 
 import { createStyles } from "./BottomBar.styles";
 import { FooterHomeIcon, FooterMenuIcon } from "./BottomBarIcons";
@@ -123,6 +123,26 @@ export function BottomBar({
   // dimezisBlurView blurs its children, which paints a soft dark halo/"glow"
   // around each icon (worst on the solid filled icon). Keeping them as later
   // siblings, above the blur, renders them crisp with no halo.
+  // A screen that asks for nothing gets the home screen's bar: the cards'
+  // own surface, their hairline and their corner glow, flattened onto the
+  // page colour so nothing shows through. Home passes the same values
+  // explicitly because its page is a gradient, not a flat colour.
+  const themedPill = flattenColor(
+    theme.colors.homeButtonBackground || theme.colors.card,
+    theme.colors.background,
+  );
+  const themedBorder =
+    theme.colors.homeButtonBorder &&
+    theme.colors.homeButtonBorder !== "transparent"
+      ? theme.colors.homeButtonBorder
+      : theme.colors.border;
+  const usesDefaultLook = !pillColor && !glass && showBackground;
+  const effectivePillColor = pillColor || (usesDefaultLook ? themedPill : null);
+  const effectivePillBorder =
+    pillBorderColor || (usesDefaultLook ? themedBorder : null);
+  const effectiveGlow =
+    pillGlowColor || (usesDefaultLook ? theme.colors.cardGlow : null);
+
   const isTransparent = !glass && !showBackground;
   const dark =
     typeof darkOverride === "boolean"
@@ -147,17 +167,20 @@ export function BottomBar({
       : "rgba(44,44,46,0.78)";
   const fillColor = isTransparent
     ? "transparent"
-    : pillColor
-      ? pillColor
+    : effectivePillColor
+      ? effectivePillColor
       : dark
         ? darkFill
         : lightFill;
   // Icons/text: keep the original (untinted) navy look in light themes; in dark
   // tint the icons light so they read on the dark pill.
-  const activeIconColor = iconColor ?? (dark ? "#FFFFFF" : ACTIVE_ICON_COLOR);
+  const resolvedIconColor =
+    iconColor ?? (usesDefaultLook ? theme.colors.homeButtonText : undefined);
+  const activeIconColor =
+    resolvedIconColor ?? (dark ? "#FFFFFF" : ACTIVE_ICON_COLOR);
   const iconColorFor = (isActive) => {
-    if (iconColor) {
-      return isActive ? iconColor : hexToRgba(iconColor, 0.55);
+    if (resolvedIconColor) {
+      return isActive ? resolvedIconColor : hexToRgba(resolvedIconColor, 0.55);
     }
     return dark ? (isActive ? "#FFFFFF" : "rgba(255,255,255,0.55)") : undefined;
   };
@@ -165,9 +188,9 @@ export function BottomBar({
   const wrapperStyle = [
     styles.menuWrapper,
     isTransparent && styles.menuWrapperTransparent,
-    glass && !pillColor && styles.menuWrapperGlass,
-    dark && !isTransparent && !pillColor && styles.menuWrapperDark,
-    pillColor && styles.menuWrapperOpaque,
+    glass && !effectivePillColor && styles.menuWrapperGlass,
+    dark && !isTransparent && !effectivePillColor && styles.menuWrapperDark,
+    effectivePillColor && styles.menuWrapperOpaque,
   ];
 
   return (
@@ -178,7 +201,9 @@ export function BottomBar({
         }
       >
         <View style={wrapperStyle}>
-          {!isTransparent && !pillColor && Platform.OS !== "android" ? (
+          {!isTransparent &&
+          !effectivePillColor &&
+          Platform.OS !== "android" ? (
             <BlurView
               pointerEvents="none"
               intensity={glass ? 45 : 40}
@@ -192,7 +217,7 @@ export function BottomBar({
             pointerEvents="none"
             style={[StyleSheet.absoluteFill, { backgroundColor: fillColor }]}
           />
-          {pillColor && pillGlowColor ? (
+          {effectivePillColor && effectiveGlow ? (
             // Same fixed-size glow as a home card: a blurred ellipse anchored
             // to the bottom-right corner, clipped by the pill's own radius.
             <Svg
@@ -225,7 +250,7 @@ export function BottomBar({
               />
             </Svg>
           ) : null}
-          {!isTransparent && !pillColor && dark ? (
+          {!isTransparent && !effectivePillColor && dark ? (
             <>
               <LinearGradient
                 colors={pillGlass.base}
@@ -247,10 +272,10 @@ export function BottomBar({
               />
             </>
           ) : null}
-          {pillColor && pillBorderColor ? (
+          {effectivePillColor && effectivePillBorder ? (
             <View
               pointerEvents="none"
-              style={[styles.pillRing, { borderColor: pillBorderColor }]}
+              style={[styles.pillRing, { borderColor: effectivePillBorder }]}
             />
           ) : null}
           <Pressable

@@ -45,7 +45,24 @@ export function BackButton({
 }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const glass = theme.content.scheme === "dark" ? DARK_GLASS : LIGHT_GLASS;
+  // The round button wears the same surface as the nav bar and the cards, so
+  // a screen reads as one set of objects: the card fill, the card hairline,
+  // the card's icon colour.
+  const glass = useMemo(() => {
+    const base = theme.content.scheme === "dark" ? DARK_GLASS : LIGHT_GLASS;
+    const surface = theme.colors.homeButtonBackground || theme.colors.card;
+    const border =
+      theme.colors.homeButtonBorder &&
+      theme.colors.homeButtonBorder !== "transparent"
+        ? theme.colors.homeButtonBorder
+        : theme.colors.border;
+    return {
+      ...base,
+      bg: surface,
+      border,
+      icon: theme.colors.homeButtonText || base.icon,
+    };
+  }, [theme]);
   const styles = useMemo(() => createStyles(glass), [glass]);
 
   return (
