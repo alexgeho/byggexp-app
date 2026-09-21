@@ -39,6 +39,7 @@
     "success": "Izdevās",
     "ok": "Labi",
     "tryAgain": "Lūdzu, mēģiniet vēlreiz.",
+    "edit": "Rediģēt",
     "delete": "Dzēst"
   },
   "locationConsent": {
@@ -1169,6 +1170,7 @@
     "deleteFailed": "Neizdevās dzēst dokumentu.",
     "sendByEmail": "Nosūtīt pa e-pastu",
     "shareDocument": "Lejupielādēt / kopīgot",
+    "creditInvoice": "Kreditēt",
     "markPaid": "Atzīmēt kā apmaksātu",
     "copyDocument": "Kopēt",
     "deleteTitle": "Dzēst?",
@@ -1197,6 +1199,7 @@
     "saveClient": "Saglabāt klientu",
     "searchClient": "Meklēt klientus",
     "noClients": "Vēl nav klientu",
+    "editOfferTitle": "Rediģēt piedāvājumu",
     "newOfferTitle": "Jauns piedāvājums",
     "customer": "Klients / uzņēmums",
     "subtitle": "Nosaukums",
@@ -1221,6 +1224,7 @@
     "offerShareFailed": "Nevarēja izveidot vai kopīgot piedāvājumu.",
     "missingCustomerTitle": "Trūkst klienta",
     "missingCustomer": "Vispirms izvēlieties vai ievadiet klientu.",
+    "editInvoiceTitle": "Rediģēt rēķinu",
     "newInvoiceTitle": "Jauns rēķins",
     "dueDate": "Termiņa datums",
     "invoiceRows": "Rēķina rindas",

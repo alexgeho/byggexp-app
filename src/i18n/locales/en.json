@@ -39,6 +39,7 @@
     "success": "Success",
     "ok": "OK",
     "tryAgain": "Please try again.",
+    "edit": "Edit",
     "delete": "Delete"
   },
   "locationConsent": {
@@ -1169,6 +1170,7 @@
     "deleteFailed": "Could not delete the document.",
     "sendByEmail": "Send by email",
     "shareDocument": "Download / share",
+    "creditInvoice": "Credit",
     "markPaid": "Mark as paid",
     "copyDocument": "Duplicate",
     "deleteTitle": "Delete?",
@@ -1197,6 +1199,7 @@
     "saveClient": "Save customer",
     "searchClient": "Search customers",
     "noClients": "No customers yet",
+    "editOfferTitle": "Edit quote",
     "newOfferTitle": "New offer",
     "customer": "Customer / company",
     "subtitle": "Title",
@@ -1221,6 +1224,7 @@
     "offerShareFailed": "Could not create or share the offer.",
     "missingCustomerTitle": "Customer missing",
     "missingCustomer": "Select or enter a customer first.",
+    "editInvoiceTitle": "Edit invoice",
     "newInvoiceTitle": "New invoice",
     "dueDate": "Due date",
     "invoiceRows": "Invoice rows",

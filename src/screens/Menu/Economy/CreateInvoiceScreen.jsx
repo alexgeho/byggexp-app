@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/Feather";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { invoiceService } from "../../../services";
 import AuthContext from "../../../contexts/AuthContext";
@@ -39,6 +39,12 @@ const DEFAULT_TERMS_DAYS = 20;
 
 export default function CreateInvoiceScreen() {
   const navigation = useNavigation();
+  const route = useRoute();
+  // A draft opened from the list arrives whole, so the form fills itself in
+  // and saving updates it instead of writing a second invoice. Maria could
+  // only look at a draft before — never correct one.
+  const editingInvoice = route.params?.invoice || null;
+  const editingId = editingInvoice?._id || editingInvoice?.id || null;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const { t } = useTranslation();
@@ -84,6 +90,62 @@ export default function CreateInvoiceScreen() {
   // React re-renders the disabled button and creates a second document. A ref
   // blocks the re-entrant call synchronously (same fix the admin forms use).
   const submittingRef = useRef(false);
+
+  // Fill the form from the invoice we were handed. The stored document is flat
+  // (it keeps the customer's details, not a client reference), so the client
+  // object is rebuilt from those fields — enough for ROT, byggmoms and the
+  // addresses to come back exactly as they were saved.
+  useEffect(
+    function prefillFromInvoice() {
+      if (!editingInvoice) return;
+      setClient({
+        clientType: editingInvoice.rotEnabled ? "private" : "company",
+        companyName: editingInvoice.companyName || "",
+        customerNumber: editingInvoice.customerNumber || "",
+        vatNumber: editingInvoice.vatNumber || "",
+        address: editingInvoice.address || "",
+        postalCode: editingInvoice.postalCode || "",
+        city: editingInvoice.city || "",
+        phone: editingInvoice.phone || "",
+        email: editingInvoice.email || "",
+        contactPerson: editingInvoice.representative || "",
+        reverseVAT: String(editingInvoice.reverseVAT) === "true",
+      });
+      setCompanyName(editingInvoice.companyName || "");
+      setEmail(editingInvoice.email || "");
+      if (editingInvoice.dueDate) setDueDate(editingInvoice.dueDate);
+      if (editingInvoice.paymentTerms) {
+        setPaymentTerms(String(editingInvoice.paymentTerms));
+      }
+      setItems(
+        Array.isArray(editingInvoice.items) && editingInvoice.items.length
+          ? editingInvoice.items.map((item) => ({
+              ...emptyLineItem(),
+              ...item,
+            }))
+          : [emptyLineItem()],
+      );
+      setReverseVAT(String(editingInvoice.reverseVAT) === "true");
+      setRotEnabled(Boolean(editingInvoice.rotEnabled));
+      setRotLaborAmount(
+        editingInvoice.rotLaborAmount
+          ? String(editingInvoice.rotLaborAmount)
+          : "",
+      );
+      setRotPersonalNumber(editingInvoice.rotPersonalNumber || "");
+      setRotProperty(editingInvoice.rotProperty || "");
+      setOurReference(editingInvoice.ourReference || "");
+      setYourReference(editingInvoice.yourReference || "");
+      setOrderReference(editingInvoice.orderReference || "");
+      if (editingInvoice.projectId) {
+        setProject({
+          _id: editingInvoice.projectId,
+          name: editingInvoice.projectName || "",
+        });
+      }
+    },
+    [editingInvoice],
+  );
 
   const locale = getDateLocale();
   const totals = useMemo(
@@ -252,7 +314,11 @@ export default function CreateInvoiceScreen() {
     submittingRef.current = true;
     try {
       setSaving(true);
-      await invoiceService.create(buildPayload());
+      if (editingId) {
+        await invoiceService.update(editingId, buildPayload());
+      } else {
+        await invoiceService.create(buildPayload());
+      }
       showSuccess({ title: t("billing.invoiceSaved") });
       navigation.goBack();
     } catch (error) {
@@ -271,7 +337,9 @@ export default function CreateInvoiceScreen() {
     submittingRef.current = true;
     try {
       setSaving(true);
-      const created = await invoiceService.create(buildPayload());
+      const created = editingId
+        ? await invoiceService.update(editingId, buildPayload())
+        : await invoiceService.create(buildPayload());
       const id = created?._id || created?.id;
       const number = created?.invoiceNumber;
       if (id) {
@@ -312,7 +380,9 @@ export default function CreateInvoiceScreen() {
     }
     try {
       setSaving(true);
-      const created = await invoiceService.create(buildPayload());
+      const created = editingId
+        ? await invoiceService.update(editingId, buildPayload())
+        : await invoiceService.create(buildPayload());
       const id = created?._id || created?.id;
       const result = await invoiceService.send(id, { email: email.trim() });
       if (result?.sent) {
@@ -343,7 +413,11 @@ export default function CreateInvoiceScreen() {
             color={theme.content.textPrimary}
           />
         </TouchableOpacity>
-        <Text style={styles.title}>{t("billing.newInvoiceTitle")}</Text>
+        <Text style={styles.title}>
+          {editingId
+            ? t("billing.editInvoiceTitle")
+            : t("billing.newInvoiceTitle")}
+        </Text>
         {/* Save the draft straight from the header — the buttons at the end
             of the form are a long scroll away. */}
         <TouchableOpacity

@@ -39,6 +39,7 @@
     "success": "Готово",
     "ok": "ОК",
     "tryAgain": "Попробуйте снова.",
+    "edit": "Редактировать",
     "delete": "Удалить"
   },
   "locationConsent": {
@@ -1171,6 +1172,7 @@
     "deleteFailed": "Не удалось удалить документ.",
     "sendByEmail": "Отправить по почте",
     "shareDocument": "Скачать / поделиться",
+    "creditInvoice": "Кредитовать",
     "markPaid": "Отметить оплаченным",
     "copyDocument": "Копировать",
     "deleteTitle": "Удалить?",
@@ -1199,6 +1201,7 @@
     "saveClient": "Сохранить клиента",
     "searchClient": "Поиск клиентов",
     "noClients": "Пока нет клиентов",
+    "editOfferTitle": "Редактировать оферту",
     "newOfferTitle": "Новое предложение",
     "customer": "Клиент / компания",
     "subtitle": "Название",
@@ -1223,6 +1226,7 @@
     "offerShareFailed": "Не удалось создать или отправить предложение.",
     "missingCustomerTitle": "Клиент не указан",
     "missingCustomer": "Сначала выберите или укажите клиента.",
+    "editInvoiceTitle": "Редактировать фактуру",
     "newInvoiceTitle": "Новый счёт",
     "dueDate": "Срок оплаты",
     "invoiceRows": "Строки счёта",

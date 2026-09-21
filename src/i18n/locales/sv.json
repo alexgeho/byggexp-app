@@ -39,6 +39,7 @@
     "success": "Klart",
     "ok": "OK",
     "tryAgain": "Försök igen.",
+    "edit": "Redigera",
     "delete": "Ta bort"
   },
   "locationConsent": {
@@ -1169,6 +1170,7 @@
     "deleteFailed": "Kunde inte ta bort dokumentet.",
     "sendByEmail": "Skicka via e-post",
     "shareDocument": "Ladda ner / dela",
+    "creditInvoice": "Kreditera",
     "markPaid": "Markera som betald",
     "copyDocument": "Kopiera",
     "deleteTitle": "Ta bort?",
@@ -1197,6 +1199,7 @@
     "saveClient": "Spara kund",
     "searchClient": "Sök kunder",
     "noClients": "Inga kunder än",
+    "editOfferTitle": "Redigera offert",
     "newOfferTitle": "Ny offert",
     "customer": "Kund / företag",
     "subtitle": "Titel",
@@ -1221,6 +1224,7 @@
     "offerShareFailed": "Kunde inte skapa eller dela offerten.",
     "missingCustomerTitle": "Kund saknas",
     "missingCustomer": "Välj eller ange en kund först.",
+    "editInvoiceTitle": "Redigera faktura",
     "newInvoiceTitle": "Ny faktura",
     "dueDate": "Förfallodatum",
     "invoiceRows": "Fakturarader",

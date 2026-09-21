@@ -39,6 +39,7 @@
     "success": "Gotowe",
     "ok": "OK",
     "tryAgain": "Spróbuj ponownie.",
+    "edit": "Edytuj",
     "delete": "Usuń"
   },
   "locationConsent": {
@@ -1171,6 +1172,7 @@
     "deleteFailed": "Nie udało się usunąć dokumentu.",
     "sendByEmail": "Wyślij e-mailem",
     "shareDocument": "Pobierz / udostępnij",
+    "creditInvoice": "Koryguj",
     "markPaid": "Oznacz jako opłaconą",
     "copyDocument": "Kopiuj",
     "deleteTitle": "Usunąć?",
@@ -1199,6 +1201,7 @@
     "saveClient": "Zapisz klienta",
     "searchClient": "Szukaj klientów",
     "noClients": "Brak klientów",
+    "editOfferTitle": "Edytuj ofertę",
     "newOfferTitle": "Nowa oferta",
     "customer": "Klient / firma",
     "subtitle": "Tytuł",
@@ -1223,6 +1226,7 @@
     "offerShareFailed": "Nie udało się utworzyć ani udostępnić oferty.",
     "missingCustomerTitle": "Brak klienta",
     "missingCustomer": "Najpierw wybierz lub podaj klienta.",
+    "editInvoiceTitle": "Edytuj fakturę",
     "newInvoiceTitle": "Nowa faktura",
     "dueDate": "Termin płatności",
     "invoiceRows": "Wiersze faktury",

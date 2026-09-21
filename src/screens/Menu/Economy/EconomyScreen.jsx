@@ -10,7 +10,11 @@ import {
   Modal,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
-import { useFocusEffect, useRoute } from "@react-navigation/native";
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { offerService, invoiceService, clientService } from "../../../services";
 import { EntityListScreen } from "../../../components/common/EntityListScreen/EntityListScreen";
@@ -60,6 +64,7 @@ const formatDate = (value) => {
 
 export default function EconomyScreen() {
   const route = useRoute();
+  const navigation = useNavigation();
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
@@ -287,6 +292,26 @@ export default function EconomyScreen() {
       isOffers ? "billing.offerSaveFailed" : "billing.invoiceSaveFailed",
     );
 
+  // A draft is the only thing that may still change — a sent invoice is a
+  // booked record. Editing opens the same form that created it, filled in.
+  const editDocument = (item) => {
+    setActionItem(null);
+    navigation.navigate(isOffers ? "CreateOffer" : "CreateInvoice", {
+      [isOffers ? "offer" : "invoice"]: item,
+    });
+  };
+
+  // A booked invoice is corrected by reversing it, not by editing or deleting
+  // it. The credit note comes back as a draft to check and send.
+  const creditDocument = (item) =>
+    runAction(
+      async () => {
+        await invoiceService.credit(documentId(item));
+      },
+      "billing.saveFailedTitle",
+      "billing.invoiceSaveFailed",
+    );
+
   // Deleting from a menu is one tap, where the swipe is a deliberate gesture
   // — so this one asks first.
   const confirmDelete = (item) => {
@@ -502,16 +527,56 @@ export default function EconomyScreen() {
                   </Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={styles.actionRow}
-                  onPress={() => confirmDelete(actionItem)}
-                  activeOpacity={0.8}
-                >
-                  <Icon name="trash-2" size={20} color="#E5484D" />
-                  <Text style={[styles.actionRowText, styles.actionRowDanger]}>
-                    {t("common.delete", "Ta bort")}
-                  </Text>
-                </TouchableOpacity>
+                {actionItem?.status === "draft" ? (
+                  <TouchableOpacity
+                    style={styles.actionRow}
+                    onPress={() => editDocument(actionItem)}
+                    activeOpacity={0.8}
+                  >
+                    <Icon
+                      name="edit-2"
+                      size={20}
+                      color={theme.colors.primary}
+                    />
+                    <Text style={styles.actionRowText}>
+                      {t("common.edit", "Redigera")}
+                    </Text>
+                  </TouchableOpacity>
+                ) : null}
+
+                {!isOffers &&
+                actionItem?.status !== "draft" &&
+                !actionItem?.creditOfNumber ? (
+                  <TouchableOpacity
+                    style={styles.actionRow}
+                    onPress={() => creditDocument(actionItem)}
+                    activeOpacity={0.8}
+                  >
+                    <Icon
+                      name="rotate-ccw"
+                      size={20}
+                      color={theme.colors.primary}
+                    />
+                    <Text style={styles.actionRowText}>
+                      {t("economy.creditInvoice", "Kreditera")}
+                    </Text>
+                  </TouchableOpacity>
+                ) : null}
+
+                {actionItem?.status === "draft" ? (
+                  <TouchableOpacity
+                    style={styles.actionRow}
+                    onPress={() => confirmDelete(actionItem)}
+                    activeOpacity={0.8}
+                  >
+                    <Icon name="trash-2" size={20} color="#E5484D" />
+                    <Text
+                      style={[styles.actionRowText, styles.actionRowDanger]}
+                    >
+                      {t("common.delete", "Ta bort")}
+                    </Text>
+                  </TouchableOpacity>
+                ) : null}
 
                 {!isOffers && actionItem?.status !== "paid" ? (
                   <TouchableOpacity

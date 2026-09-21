@@ -39,6 +39,7 @@
     "success": "Fullført",
     "ok": "OK",
     "tryAgain": "Prøv igjen.",
+    "edit": "Rediger",
     "delete": "Slett"
   },
   "locationConsent": {
@@ -1169,6 +1170,7 @@
     "deleteFailed": "Kunne ikke slette dokumentet.",
     "sendByEmail": "Send på e-post",
     "shareDocument": "Last ned / del",
+    "creditInvoice": "Krediter",
     "markPaid": "Merk som betalt",
     "copyDocument": "Kopier",
     "deleteTitle": "Slette?",
@@ -1197,6 +1199,7 @@
     "saveClient": "Lagre kunde",
     "searchClient": "Søk kunder",
     "noClients": "Ingen kunder ennå",
+    "editOfferTitle": "Rediger tilbud",
     "newOfferTitle": "Nytt tilbud",
     "customer": "Kunde / firma",
     "subtitle": "Tittel",
@@ -1221,6 +1224,7 @@
     "offerShareFailed": "Kunne ikke opprette eller dele tilbudet.",
     "missingCustomerTitle": "Kunde mangler",
     "missingCustomer": "Velg eller oppgi en kunde først.",
+    "editInvoiceTitle": "Rediger faktura",
     "newInvoiceTitle": "Ny faktura",
     "dueDate": "Forfallsdato",
     "invoiceRows": "Fakturalinjer",

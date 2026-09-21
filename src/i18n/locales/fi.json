@@ -39,6 +39,7 @@
     "success": "Valmis",
     "ok": "OK",
     "tryAgain": "Yritä uudelleen.",
+    "edit": "Muokkaa",
     "delete": "Poista"
   },
   "locationConsent": {
@@ -1169,6 +1170,7 @@
     "deleteFailed": "Asiakirjan poistaminen epäonnistui.",
     "sendByEmail": "Lähetä sähköpostilla",
     "shareDocument": "Lataa / jaa",
+    "creditInvoice": "Hyvitä",
     "markPaid": "Merkitse maksetuksi",
     "copyDocument": "Kopioi",
     "deleteTitle": "Poistetaanko?",
@@ -1197,6 +1199,7 @@
     "saveClient": "Tallenna asiakas",
     "searchClient": "Hae asiakkaita",
     "noClients": "Ei vielä asiakkaita",
+    "editOfferTitle": "Muokkaa tarjousta",
     "newOfferTitle": "Uusi tarjous",
     "customer": "Asiakas / yritys",
     "subtitle": "Otsikko",
@@ -1221,6 +1224,7 @@
     "offerShareFailed": "Tarjousta ei voitu luoda tai jakaa.",
     "missingCustomerTitle": "Asiakas puuttuu",
     "missingCustomer": "Valitse tai anna ensin asiakas.",
+    "editInvoiceTitle": "Muokkaa laskua",
     "newInvoiceTitle": "Uusi lasku",
     "dueDate": "Eräpäivä",
     "invoiceRows": "Laskurivit",

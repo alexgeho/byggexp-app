@@ -39,6 +39,7 @@
     "success": "Готово",
     "ok": "OK",
     "tryAgain": "Спробуйте ще раз.",
+    "edit": "Редагувати",
     "delete": "Видалити"
   },
   "locationConsent": {
@@ -1171,6 +1172,7 @@
     "deleteFailed": "Не вдалося видалити документ.",
     "sendByEmail": "Надіслати e-поштою",
     "shareDocument": "Завантажити / поділитися",
+    "creditInvoice": "Кредитувати",
     "markPaid": "Позначити оплаченим",
     "copyDocument": "Копіювати",
     "deleteTitle": "Видалити?",
@@ -1199,6 +1201,7 @@
     "saveClient": "Зберегти клієнта",
     "searchClient": "Пошук клієнтів",
     "noClients": "Поки що немає клієнтів",
+    "editOfferTitle": "Редагувати пропозицію",
     "newOfferTitle": "Нова пропозиція",
     "customer": "Клієнт / компанія",
     "subtitle": "Назва",
@@ -1223,6 +1226,7 @@
     "offerShareFailed": "Не вдалося створити пропозицію або поділитися нею.",
     "missingCustomerTitle": "Відсутній клієнт",
     "missingCustomer": "Спочатку виберіть або введіть клієнта.",
+    "editInvoiceTitle": "Редагувати рахунок",
     "newInvoiceTitle": "Новий рахунок",
     "dueDate": "Термін оплати",
     "invoiceRows": "Рядки рахунку",

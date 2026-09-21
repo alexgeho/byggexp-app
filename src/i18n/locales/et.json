@@ -39,6 +39,7 @@
     "success": "Valmis",
     "ok": "OK",
     "tryAgain": "Palun proovi uuesti.",
+    "edit": "Muuda",
     "delete": "Kustuta"
   },
   "locationConsent": {
@@ -1169,6 +1170,7 @@
     "deleteFailed": "Dokumendi kustutamine ebaõnnestus.",
     "sendByEmail": "Saada e-postiga",
     "shareDocument": "Laadi alla / jaga",
+    "creditInvoice": "Krediteeri",
     "markPaid": "Märgi makstuks",
     "copyDocument": "Kopeeri",
     "deleteTitle": "Kustutada?",
@@ -1197,6 +1199,7 @@
     "saveClient": "Salvesta klient",
     "searchClient": "Otsi kliente",
     "noClients": "Kliente pole veel",
+    "editOfferTitle": "Muuda pakkumist",
     "newOfferTitle": "Uus pakkumine",
     "customer": "Klient / ettevõte",
     "subtitle": "Pealkiri",
@@ -1221,6 +1224,7 @@
     "offerShareFailed": "Pakkumist ei õnnestunud luua ega jagada.",
     "missingCustomerTitle": "Klient puudub",
     "missingCustomer": "Vali või sisesta esmalt klient.",
+    "editInvoiceTitle": "Muuda arvet",
     "newInvoiceTitle": "Uus arve",
     "dueDate": "Maksetähtaeg",
     "invoiceRows": "Arveread",

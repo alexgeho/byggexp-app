@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/Feather";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { offerService } from "../../../services";
 import { useFeedback } from "../../../contexts/FeedbackContext";
@@ -33,6 +33,10 @@ import ClientPickerModal from "./ClientPickerModal";
 
 export default function CreateOfferScreen() {
   const navigation = useNavigation();
+  const route = useRoute();
+  // A draft opened from the list fills the form in, and saving updates it.
+  const editingOffer = route.params?.offer || null;
+  const editingId = editingOffer?._id || editingOffer?.id || null;
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const { t } = useTranslation();
@@ -105,8 +109,35 @@ export default function CreateOfferScreen() {
     return true;
   };
 
+  useEffect(
+    function prefillFromOffer() {
+      if (!editingOffer) return;
+      setCompanyName(editingOffer.companyName || "");
+      setEmail(editingOffer.email || "");
+      setSubtitle(editingOffer.subtitle || "");
+      setDescription(editingOffer.description || "");
+      setClarifications(editingOffer.clarifications || "");
+      if (editingOffer.validUntil) setValidUntil(editingOffer.validUntil);
+      setItems(
+        Array.isArray(editingOffer.items) && editingOffer.items.length
+          ? editingOffer.items.map((item) => ({ ...emptyLineItem(), ...item }))
+          : [emptyLineItem()],
+      );
+      const contact = Array.isArray(editingOffer.contactPersons)
+        ? editingOffer.contactPersons[0]
+        : null;
+      if (contact) {
+        setContactRole(contact.role || "Projektledare");
+        setContactName(contact.name || "");
+      }
+    },
+    [editingOffer],
+  );
+
   const createOffer = async () => {
-    const created = await offerService.create(buildPayload());
+    const created = editingId
+      ? await offerService.update(editingId, buildPayload())
+      : await offerService.create(buildPayload());
     return created;
   };
 
@@ -166,7 +197,9 @@ export default function CreateOfferScreen() {
             color={theme.content.textPrimary}
           />
         </TouchableOpacity>
-        <Text style={styles.title}>{t("billing.newOfferTitle")}</Text>
+        <Text style={styles.title}>
+          {editingId ? t("billing.editOfferTitle") : t("billing.newOfferTitle")}
+        </Text>
         {/* Save the draft straight from the header — the buttons at the end
             of the form are a long scroll away. */}
         <TouchableOpacity

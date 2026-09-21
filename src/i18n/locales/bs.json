@@ -39,6 +39,7 @@
     "success": "Uspješno",
     "ok": "U redu",
     "tryAgain": "Pokušajte ponovo.",
+    "edit": "Uredi",
     "delete": "Obriši"
   },
   "locationConsent": {
@@ -1171,6 +1172,7 @@
     "deleteFailed": "Nije moguće obrisati dokument.",
     "sendByEmail": "Pošalji e-poštom",
     "shareDocument": "Preuzmi / podijeli",
+    "creditInvoice": "Storniraj",
     "markPaid": "Označi kao plaćeno",
     "copyDocument": "Kopiraj",
     "deleteTitle": "Obrisati?",
@@ -1199,6 +1201,7 @@
     "saveClient": "Sačuvaj kupca",
     "searchClient": "Pretraži kupce",
     "noClients": "Još nema kupaca",
+    "editOfferTitle": "Uredi ponudu",
     "newOfferTitle": "Nova ponuda",
     "customer": "Kupac / firma",
     "subtitle": "Naslov",
@@ -1223,6 +1226,7 @@
     "offerShareFailed": "Ponudu nije moguće kreirati ni podijeliti.",
     "missingCustomerTitle": "Nedostaje kupac",
     "missingCustomer": "Prvo odaberite ili unesite kupca.",
+    "editInvoiceTitle": "Uredi fakturu",
     "newInvoiceTitle": "Nova faktura",
     "dueDate": "Datum dospijeća",
     "invoiceRows": "Redovi fakture",

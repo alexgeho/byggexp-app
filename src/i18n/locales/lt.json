@@ -39,6 +39,7 @@
     "success": "Atlikta",
     "ok": "Gerai",
     "tryAgain": "Bandykite dar kartą.",
+    "edit": "Redaguoti",
     "delete": "Ištrinti"
   },
   "locationConsent": {
@@ -1171,6 +1172,7 @@
     "deleteFailed": "Nepavyko ištrinti dokumento.",
     "sendByEmail": "Siųsti el. paštu",
     "shareDocument": "Atsisiųsti / dalintis",
+    "creditInvoice": "Kredituoti",
     "markPaid": "Pažymėti apmokėta",
     "copyDocument": "Kopijuoti",
     "deleteTitle": "Ištrinti?",
@@ -1199,6 +1201,7 @@
     "saveClient": "Išsaugoti klientą",
     "searchClient": "Ieškoti klientų",
     "noClients": "Dar nėra klientų",
+    "editOfferTitle": "Redaguoti pasiūlymą",
     "newOfferTitle": "Naujas pasiūlymas",
     "customer": "Klientas / įmonė",
     "subtitle": "Pavadinimas",
@@ -1223,6 +1226,7 @@
     "offerShareFailed": "Nepavyko sukurti ar dalytis pasiūlymu.",
     "missingCustomerTitle": "Trūksta kliento",
     "missingCustomer": "Pirmiausia pasirinkite arba įveskite klientą.",
+    "editInvoiceTitle": "Redaguoti sąskaitą",
     "newInvoiceTitle": "Nauja sąskaita",
     "dueDate": "Mokėjimo terminas",
     "invoiceRows": "Sąskaitos eilutės",
