@@ -309,6 +309,21 @@ export default function ShiftsScreen() {
     };
   }, [isAdmin, user?.role]);
 
+  // The people filter starts on the admin themselves, but getColleagues()
+  // returns everyone ELSE — so their own name was missing from the list: one
+  // tick shown, two people counted. Put them at the top of their own list.
+  const pickerEmployees = useMemo(() => {
+    if (!currentUserId) return employees;
+    const known = employees.some(
+      (person) => String(person._id || person.id) === String(currentUserId),
+    );
+    if (known) return employees;
+    return [
+      { _id: currentUserId, name: user?.name || user?.email || "" },
+      ...employees,
+    ];
+  }, [employees, currentUserId, user?.name, user?.email]);
+
   const dayMap = useMemo(() => {
     const map = new Map();
     days.forEach((day) => map.set(day.date, day));
@@ -1680,7 +1695,7 @@ export default function ShiftsScreen() {
 
       <EmployeePickerModal
         visible={employeePickerOpen}
-        employees={employees}
+        employees={pickerEmployees}
         filterWorkerIds={filterWorkerIds}
         setFilterWorkerIds={setFilterWorkerIds}
         onClose={() => setEmployeePickerOpen(false)}

@@ -463,6 +463,8 @@
     "allEmployees": "Visi darbuotojai",
     "selectEmployees": "Pasirinkite darbuotojus",
     "employeesSelected_one": "{{count}} darbuotojas",
+    "employeesSelected_few": "{{count}} darbuotojai",
+    "employeesSelected_many": "{{count}} darbuotojų",
     "employeesSelected_other": "{{count}} darbuotojų",
     "photos": "Nuotraukos",
     "noPhotos": "Nepridėta nuotraukų",

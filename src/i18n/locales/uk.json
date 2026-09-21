@@ -463,6 +463,8 @@
     "allEmployees": "Усі співробітники",
     "selectEmployees": "Виберіть співробітників",
     "employeesSelected_one": "{{count}} співробітник",
+    "employeesSelected_few": "{{count}} працівники",
+    "employeesSelected_many": "{{count}} працівників",
     "employeesSelected_other": "{{count}} співробітників",
     "photos": "Фото",
     "noPhotos": "Фото не додано",

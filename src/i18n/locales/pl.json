@@ -463,6 +463,8 @@
     "allEmployees": "Wszyscy pracownicy",
     "selectEmployees": "Wybierz pracowników",
     "employeesSelected_one": "{{count}} pracownik",
+    "employeesSelected_few": "{{count}} pracownicy",
+    "employeesSelected_many": "{{count}} pracowników",
     "employeesSelected_other": "{{count}} pracowników",
     "photos": "Zdjęcia",
     "noPhotos": "Brak dołączonych zdjęć",

@@ -439,7 +439,7 @@
   "shifts": {
     "shiftPhoto": "Фото смены",
     "selectPeriod": "Выберите период",
-    "hoursSourcePlanned": "Плановые",
+    "hoursSourcePlanned": "Запланированные",
     "hoursSourceGps": "GPS",
     "hoursSourceManual": "Вручную",
     "noPeriods": "Нет периодов",
@@ -463,6 +463,8 @@
     "allEmployees": "Все сотрудники",
     "selectEmployees": "Выберите сотрудников",
     "employeesSelected_one": "{{count}} сотрудник",
+    "employeesSelected_few": "{{count}} сотрудника",
+    "employeesSelected_many": "{{count}} сотрудников",
     "employeesSelected_other": "{{count}} сотрудников",
     "photos": "Фото",
     "noPhotos": "Фото не прикреплены",

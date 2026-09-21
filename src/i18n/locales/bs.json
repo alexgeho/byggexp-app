@@ -463,6 +463,8 @@
     "allEmployees": "Svi zaposleni",
     "selectEmployees": "Odaberi zaposlene",
     "employeesSelected_one": "{{count}} zaposleni",
+    "employeesSelected_few": "{{count}} zaposlena",
+    "employeesSelected_many": "{{count}} zaposlenih",
     "employeesSelected_other": "{{count}} zaposlenih",
     "photos": "Fotografije",
     "noPhotos": "Nema priloženih fotografija",

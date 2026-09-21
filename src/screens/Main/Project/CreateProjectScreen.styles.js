@@ -212,7 +212,11 @@ export const createStyles = (c) =>
     },
     switchField: {
       width: "100%",
-      height: 56,
+      // A long label (it wraps to two lines in Russian and German) used to push
+      // the switch past the card's right edge, where it could barely be hit.
+      // The row grows instead, and the label gets the space that is left.
+      minHeight: 56,
+      paddingVertical: 8,
       backgroundColor: c.surface,
       borderRadius: 20,
       paddingHorizontal: 16,
@@ -239,6 +243,8 @@ export const createStyles = (c) =>
     switchLabel: {
       color: c.textPrimary,
       fontSize: 16,
+      flex: 1,
+      marginRight: 12,
     },
     switchControl: {
       width: 51,
