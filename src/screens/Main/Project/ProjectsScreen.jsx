@@ -74,7 +74,13 @@ export default function ProjectsScreen() {
   } = useContext(AuthContext);
   const isSelectionMode = route.params?.mode === "select";
   const isLocalSelectionMode = route.params?.mode === "select-local";
-  const allowAllProjectsOption = isLocalSelectionMode && route.params?.allowAll;
+  // "All projects" is offered only when a single project is currently
+  // filtering the caller — that's when it means something. Arriving from the
+  // "Alla projekt" state, it would just repeat what you tapped.
+  const allowAllProjectsOption =
+    isLocalSelectionMode &&
+    route.params?.allowAll &&
+    Boolean(route.params?.currentProjectId);
   const cacheKey = `${user?.role || "user"}:${userId || "anonymous"}`;
   const [projects, setProjects] = useState(
     () => projectsCache.get(cacheKey) || [],
@@ -330,8 +336,10 @@ export default function ProjectsScreen() {
         showCreateProject ? () => navigateSafely("CreateProject") : undefined
       }
       beforeList={
-        /* Search only earns its space once the list is long enough to scan. */
-        projects.length > SEARCH_MIN_PROJECTS ? (
+        /* Search only earns its space once the list is long enough to scan —
+           and not at all when the screen is just "pick one project": there
+           the whole job is one tap on a name. */
+        !isLocalSelectionMode && projects.length > SEARCH_MIN_PROJECTS ? (
           <View style={styles.searchContainer}>
             <View style={styles.searchInputWrapper}>
               <TextInput
