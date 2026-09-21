@@ -93,6 +93,18 @@ export const createStyles = (c) =>
       fontSize: 12,
       marginBottom: 2,
     },
+    // The edit tab's inputs sit exactly where the read-only values used to,
+    // so switching between reading and editing doesn't move the page around.
+    rowInput: {
+      padding: 0,
+      margin: 0,
+    },
+    rowValueLine: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 8,
+    },
     rowValue: {
       color: c.textPrimary,
       fontSize: 16,

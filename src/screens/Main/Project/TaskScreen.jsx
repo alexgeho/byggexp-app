@@ -8,6 +8,7 @@ import {
   Linking,
   ScrollView,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -18,7 +19,13 @@ import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { useTheme } from "../../../theme/ThemeContext";
 import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
-import { taskService } from "../../../services";
+import { projectService, taskService } from "../../../services";
+import { HeaderCheckButton } from "../../../components/common/ui/HeaderCheckButton";
+import {
+  DateTimeFieldModal,
+  ProjectPickerModal,
+  ScheduleDateRow,
+} from "./CreateTaskScreen.parts";
 import {
   getDocumentName,
   getDocumentTypeMeta,
@@ -33,6 +40,7 @@ import { pickUploadAssets } from "../../../utils/uploadPicker";
 import {
   canCompleteTasks,
   canManageDocuments,
+  canManageTasks,
   canReopenTasks,
 } from "../../../utils/userRoles";
 
@@ -131,6 +139,7 @@ export default function TaskScreen() {
   const startDate = formatDateParts(currentTask?.startDate);
   const endDate = formatDateParts(currentTask?.dueDate);
   const taskStatus = getTaskDisplayStatus(currentTask);
+  const canEditTask = canManageTasks(user?.role);
   const canUploadDocuments = canManageDocuments(user?.role);
   const canComplete = canCompleteTasks(user?.role);
   const canReopen = canReopenTasks(user?.role);
@@ -181,6 +190,115 @@ export default function TaskScreen() {
         : [],
     [project?.workers],
   );
+
+  // "Redigera" used to be a tab that showed the task and let you change
+  // nothing — not the time, not the description. It is a form now: the draft
+  // below mirrors the task, and the check in the header saves it.
+  const [draft, setDraft] = useState({
+    taskTitle: "",
+    taskDescription: "",
+    startDate: null,
+    dueDate: null,
+    projectId: null,
+  });
+  const [projects, setProjects] = useState([]);
+  const [openPicker, setOpenPicker] = useState(null);
+  const [savingTask, setSavingTask] = useState(false);
+
+  useEffect(
+    function syncDraftWithTask() {
+      if (!currentTask) return;
+      setDraft({
+        taskTitle: currentTask.taskTitle || "",
+        taskDescription: currentTask.taskDescription || "",
+        startDate: currentTask.startDate
+          ? new Date(currentTask.startDate)
+          : null,
+        dueDate: currentTask.dueDate ? new Date(currentTask.dueDate) : null,
+        projectId: currentTask.projectId || null,
+      });
+    },
+    [currentTask],
+  );
+
+  // The project list is only needed to attach a task that was created without
+  // one — the case where a task never showed up under its project.
+  useEffect(
+    function loadProjectsForPicker() {
+      if (!canEditTask) return;
+      let active = true;
+      projectService
+        .getMyProjects()
+        .then((list) => {
+          if (active) setProjects(Array.isArray(list) ? list : []);
+        })
+        .catch(() => {});
+      return () => {
+        active = false;
+      };
+    },
+    [canEditTask],
+  );
+
+  const sameDate = (a, b) => {
+    const left = a ? new Date(a).getTime() : null;
+    const right = b ? new Date(b).getTime() : null;
+    return left === right;
+  };
+
+  const draftChanged =
+    Boolean(currentTask) &&
+    (draft.taskTitle !== (currentTask.taskTitle || "") ||
+      draft.taskDescription !== (currentTask.taskDescription || "") ||
+      !sameDate(draft.startDate, currentTask.startDate) ||
+      !sameDate(draft.dueDate, currentTask.dueDate) ||
+      String(draft.projectId || "") !== String(currentTask.projectId || ""));
+
+  const selectedProjectName =
+    projects.find(
+      (item) => String(item._id || item.id) === String(draft.projectId),
+    )?.name ||
+    (String(draft.projectId || "") === String(project?._id || project?.id || "")
+      ? project?.name
+      : null);
+
+  const handleSaveTask = async () => {
+    const id = currentTask?._id || currentTask?.id;
+    if (!id) {
+      Alert.alert(t("task.taskUnavailableTitle"), t("task.idMissing"));
+      return;
+    }
+    if (!draft.taskTitle.trim()) {
+      Alert.alert(t("common.error"), t("createTask.taskTitleLabel"));
+      return;
+    }
+
+    try {
+      setSavingTask(true);
+      const updated = await taskService.update(id, {
+        taskTitle: draft.taskTitle.trim(),
+        taskDescription: draft.taskDescription.trim(),
+        startDate: draft.startDate ? draft.startDate.toISOString() : null,
+        dueDate: draft.dueDate ? draft.dueDate.toISOString() : null,
+        ...(draft.projectId ? { projectId: String(draft.projectId) } : {}),
+      });
+      setCurrentTask(updated);
+      notifyProjectTaskUpdated(updated);
+      notifyTasksListUpdated(updated);
+      showSuccess({
+        title: t("task.savedTitle"),
+        message: t("task.savedMessage"),
+      });
+    } catch (error) {
+      console.error("Failed to save task:", error);
+      Alert.alert(
+        t("common.error"),
+        error?.response?.data?.message || error?.message || t("task.saveError"),
+      );
+    } finally {
+      setSavingTask(false);
+    }
+  };
 
   const notifyProjectTaskUpdated = (updatedTask) => {
     if (!projectRouteKey || !project) {
@@ -370,7 +488,15 @@ export default function TaskScreen() {
         <Text numberOfLines={1} style={styles.headerTitle}>
           {t("task.fallbackTitle")}
         </Text>
-        <View style={styles.placeholder} />
+        {canEditTask && tab === "Edit" && draftChanged ? (
+          <HeaderCheckButton
+            onPress={handleSaveTask}
+            loading={savingTask}
+            accessibilityLabel={t("common.save")}
+          />
+        ) : (
+          <View style={styles.placeholder} />
+        )}
       </View>
 
       <View style={styles.tabContainer}>
@@ -417,9 +543,24 @@ export default function TaskScreen() {
               <GroupRow>
                 <View style={styles.rowTextContainer}>
                   <Text style={styles.rowLabel}>{t("task.titleLabel")}</Text>
-                  <Text style={styles.rowValue}>
-                    {currentTask?.taskTitle || t("task.noTitle")}
-                  </Text>
+                  {canEditTask ? (
+                    <TextInput
+                      style={[styles.rowValue, styles.rowInput]}
+                      value={draft.taskTitle}
+                      onChangeText={(value) =>
+                        setDraft((previous) => ({
+                          ...previous,
+                          taskTitle: value,
+                        }))
+                      }
+                      placeholder={t("createTask.taskTitlePlaceholder")}
+                      placeholderTextColor={theme.content.placeholder}
+                    />
+                  ) : (
+                    <Text style={styles.rowValue}>
+                      {currentTask?.taskTitle || t("task.noTitle")}
+                    </Text>
+                  )}
                 </View>
               </GroupRow>
               <GroupRow>
@@ -427,68 +568,143 @@ export default function TaskScreen() {
                   <Text style={styles.rowLabel}>
                     {t("createTask.descriptionLabel")}
                   </Text>
-                  <Text style={[styles.rowValue, styles.multilineValue]}>
-                    {currentTask?.taskDescription ||
-                      t("task.noDescriptionProvided")}
-                  </Text>
-                </View>
-              </GroupRow>
-              <GroupRow>
-                <View style={styles.rowTextContainer}>
-                  <Text style={styles.rowLabel}>
-                    {project
-                      ? t("createTask.projectLabel")
-                      : t("task.assignee")}
-                  </Text>
-                  <Text style={styles.rowValue}>
-                    {project?.name ||
-                      currentTask?.assigneeUserName ||
-                      t("task.noAssignee")}
-                  </Text>
-                </View>
-              </GroupRow>
-              <GroupRow>
-                <View style={styles.scheduleRowContent}>
-                  <Text style={styles.scheduleLabel}>
-                    {t("createTask.starts")}
-                  </Text>
-                  {startDate ? (
-                    <View style={styles.dateChips}>
-                      <View style={styles.dateChip}>
-                        <Text style={styles.dateChipText}>
-                          {startDate.date}
-                        </Text>
-                      </View>
-                      <View style={styles.dateChip}>
-                        <Text style={styles.dateChipText}>
-                          {startDate.time}
-                        </Text>
-                      </View>
-                    </View>
+                  {canEditTask ? (
+                    <TextInput
+                      style={[
+                        styles.rowValue,
+                        styles.multilineValue,
+                        styles.rowInput,
+                      ]}
+                      value={draft.taskDescription}
+                      onChangeText={(value) =>
+                        setDraft((previous) => ({
+                          ...previous,
+                          taskDescription: value,
+                        }))
+                      }
+                      placeholder={t("createTask.descriptionPlaceholder")}
+                      placeholderTextColor={theme.content.placeholder}
+                      multiline
+                    />
                   ) : (
-                    <Text style={styles.rowValue}>{t("project.noDate")}</Text>
+                    <Text style={[styles.rowValue, styles.multilineValue]}>
+                      {currentTask?.taskDescription ||
+                        t("task.noDescriptionProvided")}
+                    </Text>
                   )}
                 </View>
               </GroupRow>
-              <GroupRow isLast={true}>
-                <View style={styles.scheduleRowContent}>
-                  <Text style={styles.scheduleLabel}>
-                    {t("createTask.ends")}
-                  </Text>
-                  {endDate ? (
-                    <View style={styles.dateChips}>
-                      <View style={styles.dateChip}>
-                        <Text style={styles.dateChipText}>{endDate.date}</Text>
-                      </View>
-                      <View style={styles.dateChip}>
-                        <Text style={styles.dateChipText}>{endDate.time}</Text>
-                      </View>
+              {canEditTask ? (
+                <GroupRow>
+                  <TouchableOpacity
+                    style={styles.rowTextContainer}
+                    onPress={() => setOpenPicker("project")}
+                    activeOpacity={0.85}
+                  >
+                    <Text style={styles.rowLabel}>
+                      {t("createTask.projectLabel")}
+                    </Text>
+                    <View style={styles.rowValueLine}>
+                      <Text style={styles.rowValue} numberOfLines={1}>
+                        {selectedProjectName || t("createTask.selectProject")}
+                      </Text>
+                      <Icon
+                        name="chevron-right"
+                        size={18}
+                        color={theme.content.textMuted}
+                      />
                     </View>
-                  ) : (
-                    <Text style={styles.rowValue}>{t("project.noDate")}</Text>
-                  )}
-                </View>
-              </GroupRow>
+                  </TouchableOpacity>
+                </GroupRow>
+              ) : (
+                <GroupRow>
+                  <View style={styles.rowTextContainer}>
+                    <Text style={styles.rowLabel}>
+                      {project
+                        ? t("createTask.projectLabel")
+                        : t("task.assignee")}
+                    </Text>
+                    <Text style={styles.rowValue}>
+                      {project?.name ||
+                        currentTask?.assigneeUserName ||
+                        t("task.noAssignee")}
+                    </Text>
+                  </View>
+                </GroupRow>
+              )}
+              {canEditTask && currentTask?.assigneeUserName ? (
+                <GroupRow>
+                  <View style={styles.rowTextContainer}>
+                    <Text style={styles.rowLabel}>{t("task.assignee")}</Text>
+                    <Text style={styles.rowValue}>
+                      {currentTask.assigneeUserName}
+                    </Text>
+                  </View>
+                </GroupRow>
+              ) : null}
+              {canEditTask ? (
+                <ScheduleDateRow
+                  label={t("createTask.starts")}
+                  value={draft.startDate}
+                  onPress={() => setOpenPicker("start")}
+                />
+              ) : (
+                <GroupRow>
+                  <View style={styles.scheduleRowContent}>
+                    <Text style={styles.scheduleLabel}>
+                      {t("createTask.starts")}
+                    </Text>
+                    {startDate ? (
+                      <View style={styles.dateChips}>
+                        <View style={styles.dateChip}>
+                          <Text style={styles.dateChipText}>
+                            {startDate.date}
+                          </Text>
+                        </View>
+                        <View style={styles.dateChip}>
+                          <Text style={styles.dateChipText}>
+                            {startDate.time}
+                          </Text>
+                        </View>
+                      </View>
+                    ) : (
+                      <Text style={styles.rowValue}>{t("project.noDate")}</Text>
+                    )}
+                  </View>
+                </GroupRow>
+              )}
+              {canEditTask ? (
+                <ScheduleDateRow
+                  label={t("createTask.ends")}
+                  value={draft.dueDate}
+                  onPress={() => setOpenPicker("end")}
+                  isLast={true}
+                />
+              ) : (
+                <GroupRow isLast={true}>
+                  <View style={styles.scheduleRowContent}>
+                    <Text style={styles.scheduleLabel}>
+                      {t("createTask.ends")}
+                    </Text>
+                    {endDate ? (
+                      <View style={styles.dateChips}>
+                        <View style={styles.dateChip}>
+                          <Text style={styles.dateChipText}>
+                            {endDate.date}
+                          </Text>
+                        </View>
+                        <View style={styles.dateChip}>
+                          <Text style={styles.dateChipText}>
+                            {endDate.time}
+                          </Text>
+                        </View>
+                      </View>
+                    ) : (
+                      <Text style={styles.rowValue}>{t("project.noDate")}</Text>
+                    )}
+                  </View>
+                </GroupRow>
+              )}
             </GroupCard>
           </>
         ) : null}
@@ -583,6 +799,40 @@ export default function TaskScreen() {
           )
         ) : null}
       </ScrollView>
+
+      <DateTimeFieldModal
+        visible={openPicker === "start"}
+        title={t("createTask.starts")}
+        value={draft.startDate}
+        onChange={(value) =>
+          setDraft((previous) => ({ ...previous, startDate: value }))
+        }
+        onClose={() => setOpenPicker(null)}
+      />
+
+      <DateTimeFieldModal
+        visible={openPicker === "end"}
+        title={t("createTask.ends")}
+        value={draft.dueDate}
+        onChange={(value) =>
+          setDraft((previous) => ({ ...previous, dueDate: value }))
+        }
+        onClose={() => setOpenPicker(null)}
+      />
+
+      <ProjectPickerModal
+        visible={openPicker === "project"}
+        projects={projects}
+        selectedProjectId={draft.projectId}
+        onSelect={(picked) => {
+          setDraft((previous) => ({
+            ...previous,
+            projectId: picked ? picked._id || picked.id : null,
+          }));
+          setOpenPicker(null);
+        }}
+        onClose={() => setOpenPicker(null)}
+      />
 
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
