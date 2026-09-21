@@ -124,6 +124,9 @@ export const createStyles = (c) => {
       backgroundColor: CARD,
       borderRadius: 20,
       padding: 20,
+      // The ⋮ column is reserved on the right, so the badge and the amount
+      // end where it begins instead of crowding it.
+      paddingRight: 20 + 36,
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "stretch",
@@ -135,7 +138,6 @@ export const createStyles = (c) => {
     cardRight: {
       alignItems: "flex-end",
       justifyContent: "space-between",
-      paddingRight: 26,
     },
     cardAmount: { fontSize: 17, fontFamily: F_MED, color: INK },
 
@@ -163,10 +165,10 @@ export const createStyles = (c) => {
     // it asks for. The right column is padded so nothing sits under it.
     cardMore: {
       position: "absolute",
-      top: 4,
-      right: 4,
+      top: 0,
+      right: 0,
+      bottom: 0,
       width: 48,
-      height: 48,
       alignItems: "center",
       justifyContent: "center",
     },
