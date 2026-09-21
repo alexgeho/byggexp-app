@@ -1,5 +1,7 @@
 import { StyleSheet } from "react-native";
 
+import { onDark } from "../../theme/colorUtils";
+
 // Extracted from ToolActionSheet.jsx. The sheet used to be a fixed white card
 // with navy text, which slammed up over the dark tools/scanner screen; it takes
 // the theme now.
@@ -11,7 +13,7 @@ export const createStyles = (c) =>
       justifyContent: "flex-end",
     },
     sheet: {
-      backgroundColor: c.surface,
+      backgroundColor: onDark(c, c.surface, "#fff"),
       borderTopLeftRadius: 24,
       borderTopRightRadius: 24,
       padding: 20,
@@ -23,10 +25,14 @@ export const createStyles = (c) =>
       width: 40,
       height: 4,
       borderRadius: 2,
-      backgroundColor: c.divider,
+      backgroundColor: onDark(c, c.divider, "#CBD5E1"),
       marginBottom: 14,
     },
-    name: { fontSize: 20, fontWeight: "700", color: c.textPrimary },
+    name: {
+      fontSize: 20,
+      fontWeight: "700",
+      color: onDark(c, c.textPrimary, "#052D50"),
+    },
     metaRow: {
       flexDirection: "row",
       alignItems: "center",
@@ -38,11 +44,23 @@ export const createStyles = (c) =>
     badge_occupied: { backgroundColor: "rgba(7,133,244,0.14)" },
     badge_broken: { backgroundColor: "rgba(220,38,38,0.14)" },
     badge_in_repair: { backgroundColor: "rgba(234,166,35,0.16)" },
-    badgeText: { fontSize: 13, fontWeight: "600", color: c.textPrimary },
-    holder: { color: c.textSecondary, fontSize: 14, fontWeight: "600" },
-    location: { color: c.textSecondary, fontSize: 14, marginTop: 8 },
+    badgeText: {
+      fontSize: 13,
+      fontWeight: "600",
+      color: onDark(c, c.textPrimary, "#052D50"),
+    },
+    holder: {
+      color: onDark(c, c.textSecondary, "#5F7588"),
+      fontSize: 14,
+      fontWeight: "600",
+    },
+    location: {
+      color: onDark(c, c.textSecondary, "#5F7588"),
+      fontSize: 14,
+      marginTop: 8,
+    },
     qr: {
-      color: c.textMuted,
+      color: onDark(c, c.textMuted, "#94A3B8"),
       fontSize: 13,
       fontFamily: "Courier",
       marginTop: 4,
@@ -62,27 +80,39 @@ export const createStyles = (c) =>
       height: 52,
       borderRadius: 16,
       borderWidth: 1,
-      borderColor: c.border,
+      borderColor: onDark(c, c.border, "#D8E0E8"),
       alignItems: "center",
       justifyContent: "center",
     },
     secondaryText: { color: "#0785F4", fontSize: 15, fontWeight: "600" },
     historyBox: { marginTop: 14, maxHeight: 200 },
-    historyEmpty: { color: c.textMuted, fontSize: 14 },
+    historyEmpty: { color: onDark(c, c.textMuted, "#94A3B8"), fontSize: 14 },
     historyItem: {
       paddingVertical: 8,
       borderTopWidth: 1,
-      borderTopColor: c.divider,
+      borderTopColor: onDark(c, c.divider, "#e9e9e9"),
     },
-    historyType: { color: c.textPrimary, fontSize: 14, fontWeight: "600" },
-    historyDate: { color: c.textMuted, fontSize: 12, marginTop: 2 },
+    historyType: {
+      color: onDark(c, c.textPrimary, "#052D50"),
+      fontSize: 14,
+      fontWeight: "600",
+    },
+    historyDate: {
+      color: onDark(c, c.textMuted, "#94A3B8"),
+      fontSize: 12,
+      marginTop: 2,
+    },
     closeBtn: {
       marginTop: 18,
       height: 48,
       borderRadius: 14,
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: c.surfaceMuted,
+      backgroundColor: onDark(c, c.surfaceMuted, "#F1F5F9"),
     },
-    closeText: { color: c.textPrimary, fontSize: 15, fontWeight: "600" },
+    closeText: {
+      color: onDark(c, c.textPrimary, "#5F7588"),
+      fontSize: 15,
+      fontWeight: "600",
+    },
   });

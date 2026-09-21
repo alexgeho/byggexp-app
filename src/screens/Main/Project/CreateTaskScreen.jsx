@@ -54,6 +54,7 @@ import {
   getDocumentTypeMeta,
   isImageDocument,
 } from "../../../utils/documentPreview";
+import { onDark } from "../../../theme/colorUtils";
 
 // Same values the admin form and the backend enum use.
 const PRIORITY_VALUES = ["low", "normal", "high"];
@@ -738,7 +739,15 @@ export default function CreateTaskScreen() {
                   style={styles.clearInlineButton}
                   onPress={clearSelectedUser}
                 >
-                  <Icon name="x" size={16} color={theme.content.textMuted} />
+                  <Icon
+                    name="x"
+                    size={16}
+                    color={onDark(
+                      theme.content,
+                      theme.content.textMuted,
+                      "#052D50",
+                    )}
+                  />
                 </TouchableOpacity>
               ) : (
                 <Icon
@@ -811,7 +820,11 @@ export default function CreateTaskScreen() {
                   value={taskTitle}
                   onChangeText={setTaskTitle}
                   placeholder={t("createTask.taskTitlePlaceholder")}
-                  placeholderTextColor={theme.content.placeholder}
+                  placeholderTextColor={onDark(
+                    theme.content,
+                    theme.content.placeholder,
+                    "rgba(5, 45, 80, 0.45)",
+                  )}
                 />
               </View>
             </GroupRow>
@@ -830,7 +843,11 @@ export default function CreateTaskScreen() {
                   value={taskDescription}
                   onChangeText={setTaskDescription}
                   placeholder={t("createTask.descriptionPlaceholder")}
-                  placeholderTextColor={theme.content.placeholder}
+                  placeholderTextColor={onDark(
+                    theme.content,
+                    theme.content.placeholder,
+                    "rgba(5, 45, 80, 0.45)",
+                  )}
                 />
               </View>
             </GroupRow>
@@ -1104,7 +1121,15 @@ export default function CreateTaskScreen() {
                 style={styles.sheetCloseButton}
                 onPress={closeNotificationsSheet}
               >
-                <Icon name="x" size={20} color={theme.content.textMuted} />
+                <Icon
+                  name="x"
+                  size={20}
+                  color={onDark(
+                    theme.content,
+                    theme.content.textMuted,
+                    "#052D50",
+                  )}
+                />
               </TouchableOpacity>
             </View>
 
@@ -1222,7 +1247,11 @@ export default function CreateTaskScreen() {
                       }}
                       keyboardType="number-pad"
                       placeholder={String(defaultRepeatIntervalMinutes)}
-                      placeholderTextColor={theme.content.placeholder}
+                      placeholderTextColor={onDark(
+                        theme.content,
+                        theme.content.placeholder,
+                        "rgba(5, 45, 80, 0.45)",
+                      )}
                     />
                   </View>
                 ) : null}
@@ -1245,7 +1274,11 @@ export default function CreateTaskScreen() {
                       }}
                       keyboardType="number-pad"
                       placeholder="3"
-                      placeholderTextColor={theme.content.placeholder}
+                      placeholderTextColor={onDark(
+                        theme.content,
+                        theme.content.placeholder,
+                        "rgba(5, 45, 80, 0.45)",
+                      )}
                     />
                   </View>
                 ) : null}
@@ -1298,7 +1331,11 @@ export default function CreateTaskScreen() {
                       })
                     }
                     placeholder={t("createTask.customReminderPlaceholder")}
-                    placeholderTextColor={theme.content.placeholder}
+                    placeholderTextColor={onDark(
+                      theme.content,
+                      theme.content.placeholder,
+                      "rgba(5, 45, 80, 0.45)",
+                    )}
                   />
                 </View>
               </View>

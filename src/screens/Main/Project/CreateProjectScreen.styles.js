@@ -4,6 +4,7 @@ import {
   standardScreenHeader,
   standardScreenHeaderPlaceholder,
 } from "../../../styles/screenLayout";
+import { onDark } from "../../../theme/colorUtils";
 
 export const createStyles = (c) =>
   StyleSheet.create({
@@ -26,13 +27,10 @@ export const createStyles = (c) =>
     // "Loading…" under the spinner: without a colour it renders RN's default
     // black, which disappears on the dark page.
     emptyListText: {
-      color: c.textMuted,
-      textAlign: "center",
-      paddingVertical: 12,
+      color: onDark(c, c.textMuted, "#000000"),
     },
     loadingText: {
-      color: c.textMuted,
-      marginTop: 8,
+      color: onDark(c, c.textMuted, "#000000"),
     },
     loadingContainer: {
       flex: 1,
@@ -406,7 +404,7 @@ export const createStyles = (c) =>
     },
     datePickerOverlay: {
       flex: 1,
-      backgroundColor: c.divider,
+      backgroundColor: onDark(c, c.divider, "rgba(5, 45, 80, 0.28)"),
       justifyContent: "center",
       alignItems: "center",
       paddingHorizontal: 20,

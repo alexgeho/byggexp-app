@@ -29,6 +29,7 @@ import { createStyles } from "./CreateProjectScreen.styles";
 import { LocationMapPicker } from "./LocationMapPicker";
 import { RadiusSlider } from "./RadiusSlider";
 import { useTheme } from "../../../theme/ThemeContext";
+import { onDark } from "../../../theme/colorUtils";
 
 const useThemedStyles = () => {
   const { theme } = useTheme();
@@ -156,7 +157,9 @@ export const FieldIcon = ({ library = "feather", name, size = 20, color }) => {
   // Without an explicit colour the glyph takes the theme's text colour — a
   // fixed navy disappeared into the dark theme's background.
   const { theme } = useTheme();
-  const tint = color || theme.content.textPrimary;
+  const tint =
+    color ||
+    onDark(theme.content, theme.content.textPrimary, "rgba(5, 45, 80, 1)");
   // iOS-style: no filled badge behind the glyph, so a white glyph would vanish —
   // render it in systemBlue instead, and keep glyphs at a readable size.
   const isWhite = /^#f{3}$|^#f{6}$/i.test(String(tint).replace(/\s/g, ""));
@@ -210,12 +213,24 @@ export const ToolsListModal = memo(function ToolsListModal({
         </View>
 
         <View style={styles.workersSearchBar}>
-          <Icon name="search" size={18} color={theme.content.textMuted} />
+          <Icon
+            name="search"
+            size={18}
+            color={onDark(
+              theme.content,
+              theme.content.textMuted,
+              "rgba(5, 45, 80, 0.5)",
+            )}
+          />
           <TextInput
             value={toolSearch}
             onChangeText={onToolSearchChange}
             placeholder={t("createProject.searchInstruments")}
-            placeholderTextColor={theme.content.placeholder}
+            placeholderTextColor={onDark(
+              theme.content,
+              theme.content.placeholder,
+              "rgba(5, 45, 80, 0.5)",
+            )}
             style={styles.workersSearchInput}
           />
         </View>
@@ -312,12 +327,24 @@ export const WorkersListModal = memo(function WorkersListModal({
         </View>
 
         <View style={styles.workersSearchBar}>
-          <Icon name="search" size={18} color={theme.content.textMuted} />
+          <Icon
+            name="search"
+            size={18}
+            color={onDark(
+              theme.content,
+              theme.content.textMuted,
+              "rgba(5, 45, 80, 0.5)",
+            )}
+          />
           <TextInput
             value={workerSearch}
             onChangeText={onWorkerSearchChange}
             placeholder={t("createProject.searchWorkers")}
-            placeholderTextColor={theme.content.placeholder}
+            placeholderTextColor={onDark(
+              theme.content,
+              theme.content.placeholder,
+              "rgba(5, 45, 80, 0.5)",
+            )}
             style={styles.workersSearchInput}
           />
         </View>
@@ -439,12 +466,24 @@ export const SingleUserPickerModal = ({
         </View>
 
         <View style={styles.workersSearchBar}>
-          <Icon name="search" size={18} color={theme.content.textMuted} />
+          <Icon
+            name="search"
+            size={18}
+            color={onDark(
+              theme.content,
+              theme.content.textMuted,
+              "rgba(5, 45, 80, 0.5)",
+            )}
+          />
           <TextInput
             value={searchValue}
             onChangeText={onSearchChange}
             placeholder={t("createProject.searchWorkers")}
-            placeholderTextColor={theme.content.placeholder}
+            placeholderTextColor={onDark(
+              theme.content,
+              theme.content.placeholder,
+              "rgba(5, 45, 80, 0.5)",
+            )}
             style={styles.workersSearchInput}
           />
         </View>
@@ -546,14 +585,26 @@ export const LocationPickerModal = ({
           scrollEnabled={!isSlidingRadius && !isMapInteracting}
         >
           <View style={styles.mapSearchInputCard}>
-            <Icon name="search" size={18} color={theme.content.textMuted} />
+            <Icon
+              name="search"
+              size={18}
+              color={onDark(
+                theme.content,
+                theme.content.textMuted,
+                "rgba(5, 45, 80, 0.55)",
+              )}
+            />
             <TextInput
               ref={searchInputRef}
               autoFocus
               value={locationSearch}
               onChangeText={setLocationSearch}
               placeholder={t("createProject.searchAddress")}
-              placeholderTextColor={theme.content.placeholder}
+              placeholderTextColor={onDark(
+                theme.content,
+                theme.content.placeholder,
+                "rgba(5, 45, 80, 0.45)",
+              )}
               style={styles.mapSearchInput}
               returnKeyType="search"
             />
@@ -661,7 +712,11 @@ export const LocationPickerModal = ({
                 }}
                 onSlidingComplete={() => setIsSlidingRadius(false)}
                 minTrackColor={theme.colors.primary}
-                maxTrackColor={theme.content.divider}
+                maxTrackColor={onDark(
+                  theme.content,
+                  theme.content.divider,
+                  "rgba(5, 45, 80, 0.22)",
+                )}
                 thumbSize={44}
               />
             </View>

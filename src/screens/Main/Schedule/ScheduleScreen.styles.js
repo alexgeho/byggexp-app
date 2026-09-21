@@ -3,6 +3,7 @@ import {
   standardScreenContainer,
   standardScreenHeader,
 } from "../../../styles/screenLayout";
+import { onDark } from "../../../theme/colorUtils";
 
 export const ROW_HEIGHT = 64;
 export const WEEK_HEADER_HEIGHT = 32;
@@ -53,7 +54,7 @@ export const createStyles = (c) =>
       borderRadius: 999,
       backgroundColor: c.surface,
       borderWidth: 1,
-      borderColor: c.divider,
+      borderColor: onDark(c, c.divider, "rgba(5, 45, 80, 0.12)"),
     },
     segmentActive: {
       backgroundColor: "#1877F2",
@@ -91,7 +92,7 @@ export const createStyles = (c) =>
       fontFamily: "DMSans-Medium",
     },
     filterChipPlaceholder: {
-      color: c.textMuted,
+      color: onDark(c, c.textMuted, "rgba(5, 45, 80, 0.5)"),
     },
     timelineCard: {
       flex: 1,
@@ -115,7 +116,7 @@ export const createStyles = (c) =>
       flexDirection: "row",
       height: HEADER_HEIGHT,
       borderBottomWidth: 1,
-      borderBottomColor: c.divider,
+      borderBottomColor: onDark(c, c.divider, "#F0F2F4"),
     },
     corner: {
       width: SIDEBAR_WIDTH,
@@ -124,7 +125,7 @@ export const createStyles = (c) =>
       paddingLeft: 12,
       paddingBottom: 8,
       borderRightWidth: 1,
-      borderRightColor: c.divider,
+      borderRightColor: onDark(c, c.divider, "#F0F2F4"),
     },
     cornerText: {
       color: c.textPrimary,
@@ -176,7 +177,7 @@ export const createStyles = (c) =>
     sidebar: {
       width: SIDEBAR_WIDTH,
       borderRightWidth: 1,
-      borderRightColor: c.divider,
+      borderRightColor: onDark(c, c.divider, "#F0F2F4"),
     },
     sidebarCell: {
       height: ROW_HEIGHT,
@@ -196,7 +197,7 @@ export const createStyles = (c) =>
     timelineRow: {
       height: ROW_HEIGHT,
       borderBottomWidth: 1,
-      borderBottomColor: c.divider,
+      borderBottomColor: onDark(c, c.divider, "rgba(5, 45, 80, 0.05)"),
     },
     bar: {
       position: "absolute",
@@ -254,7 +255,7 @@ export const createStyles = (c) =>
       position: "absolute",
       top: 0,
       width: 1,
-      backgroundColor: c.surfaceMuted,
+      backgroundColor: onDark(c, c.surfaceMuted, "rgba(5, 45, 80, 0.05)"),
     },
     todayLine: {
       position: "absolute",
@@ -272,7 +273,7 @@ export const createStyles = (c) =>
     zoomGroup: {
       flexDirection: "row",
       alignItems: "center",
-      backgroundColor: c.surfaceMuted,
+      backgroundColor: onDark(c, c.surfaceMuted, "#E6E7EE"),
       borderRadius: 16,
       padding: 4,
       gap: 4,
@@ -287,7 +288,7 @@ export const createStyles = (c) =>
       backgroundColor: c.surface,
       borderRadius: 10,
       borderWidth: 1,
-      borderColor: c.divider,
+      borderColor: onDark(c, c.divider, "rgba(5, 45, 80, 0.1)"),
       paddingHorizontal: 18,
       paddingVertical: 9,
     },
@@ -331,7 +332,7 @@ export const createStyles = (c) =>
       height: 24,
       borderRadius: 6,
       borderWidth: 1.5,
-      borderColor: c.divider,
+      borderColor: onDark(c, c.divider, "rgba(5, 45, 80, 0.3)"),
       alignItems: "center",
       justifyContent: "center",
     },
@@ -345,7 +346,7 @@ export const createStyles = (c) =>
       justifyContent: "space-between",
       height: 52,
       borderBottomWidth: 1,
-      borderBottomColor: c.divider,
+      borderBottomColor: onDark(c, c.divider, "rgba(5, 45, 80, 0.06)"),
     },
     optionName: {
       color: c.textPrimary,
@@ -362,7 +363,7 @@ export const createStyles = (c) =>
       justifyContent: "space-between",
       paddingVertical: 14,
       borderBottomWidth: 1,
-      borderBottomColor: c.divider,
+      borderBottomColor: onDark(c, c.divider, "rgba(5, 45, 80, 0.06)"),
     },
     dateRowLabel: {
       color: c.textPrimary,

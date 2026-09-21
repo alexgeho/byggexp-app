@@ -44,6 +44,7 @@ import {
 import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import { useTheme } from "../../../theme/ThemeContext";
+import { onDark } from "../../../theme/colorUtils";
 import {
   projectService,
   shiftService,
@@ -616,7 +617,11 @@ export const ProjectScreen = () => {
                         <Icon
                           name={typeMeta.icon}
                           size={24}
-                          color={theme.content.textSecondary}
+                          color={onDark(
+                            theme.content,
+                            theme.content.textSecondary,
+                            "#052D50",
+                          )}
                         />
                         <Text style={styles.documentFileType}>
                           {typeMeta.label}

@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { onDark } from "../../../theme/colorUtils";
 
 // Shared styling for the grouped "info field row" — extracted 1:1 from the
 // Redigera anställd (edit employee) form, the design source of truth. Every
@@ -64,7 +65,7 @@ export function createStyles(c) {
       color: c.textPrimary,
     },
     placeholder: {
-      color: c.placeholder,
+      color: onDark(c, c.placeholder, "rgba(5, 45, 80, 0.35)"),
     },
     // hairline divider, inset past the icon (30 badge + 12 gap + 16 pad = 58)
     sepIcon: {

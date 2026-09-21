@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { onDark } from "../../../theme/colorUtils";
 
 // Extracted from ChatListScreen.jsx — themed style factory (c = theme.content).
 export const createStyles = (c) =>
@@ -84,7 +85,7 @@ export const createStyles = (c) =>
       width: 44,
       height: 44,
       borderRadius: 22,
-      backgroundColor: c.inputSurface,
+      backgroundColor: onDark(c, c.inputSurface, "#D9D9D9"),
     },
     avatarFallback: {
       alignItems: "center",
@@ -100,7 +101,7 @@ export const createStyles = (c) =>
       gap: 2,
     },
     rowName: {
-      color: c.textPrimary,
+      color: onDark(c, c.textPrimary, "#052D50"),
       fontSize: 17,
       fontWeight: "500",
     },
@@ -137,7 +138,7 @@ export const createStyles = (c) =>
       marginRight: 4,
     },
     checkCircleOn: {
-      backgroundColor: c.surface,
+      backgroundColor: onDark(c, c.surface, "#FFFFFF"),
       borderColor: "#FFFFFF",
     },
     // "Select people" hint / live count shown above the list in select mode.

@@ -24,6 +24,7 @@ import {
   isVideoAsset,
   pickUploadAssets,
 } from "../../utils/uploadPicker";
+import { onDark } from "../../theme/colorUtils";
 
 export default function ReportBugScreen() {
   const navigation = useNavigation();
@@ -150,7 +151,11 @@ export default function ReportBugScreen() {
             value={message}
             onChangeText={setMessage}
             placeholder={t("reportBug.descriptionPlaceholder")}
-            placeholderTextColor={theme.content.placeholder}
+            placeholderTextColor={onDark(
+              theme.content,
+              theme.content.placeholder,
+              "rgba(5, 45, 80, 0.45)",
+            )}
             style={styles.textArea}
             textAlignVertical="top"
           />

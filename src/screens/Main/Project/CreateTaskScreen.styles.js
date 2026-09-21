@@ -3,6 +3,7 @@ import {
   standardScreenContainer,
   standardScreenHeader,
 } from "../../../styles/screenLayout";
+import { onDark } from "../../../theme/colorUtils";
 
 export const createStyles = (c) =>
   StyleSheet.create({
@@ -153,7 +154,7 @@ export const createStyles = (c) =>
       borderRadius: 16,
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: c.surfaceMuted,
+      backgroundColor: onDark(c, c.surfaceMuted, "rgba(5, 45, 80, 0.06)"),
     },
     inputWrapper: {
       width: "100%",
@@ -193,7 +194,7 @@ export const createStyles = (c) =>
     documentCard: {
       width: "23%",
       height: 84,
-      backgroundColor: c.surfaceMuted,
+      backgroundColor: onDark(c, c.surfaceMuted, "#EFEFF0"),
       borderRadius: 12,
       overflow: "hidden",
     },
@@ -220,7 +221,11 @@ export const createStyles = (c) =>
     },
     projectPickerOverlay: {
       flex: 1,
-      backgroundColor: "rgba(0, 0, 0, 0.35)",
+      backgroundColor: onDark(
+        c,
+        "rgba(0, 0, 0, 0.35)",
+        "rgba(5, 45, 80, 0.28)",
+      ),
       justifyContent: "center",
       alignItems: "center",
       paddingHorizontal: 20,
@@ -252,7 +257,7 @@ export const createStyles = (c) =>
       borderRadius: 18,
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: c.surfaceMuted,
+      backgroundColor: onDark(c, c.surfaceMuted, "rgba(5, 45, 80, 0.06)"),
     },
     projectPickerList: {
       width: "100%",
@@ -271,9 +276,9 @@ export const createStyles = (c) =>
       borderRadius: 16,
       paddingHorizontal: 14,
       paddingVertical: 10,
-      backgroundColor: c.surfaceMuted,
+      backgroundColor: onDark(c, c.surfaceMuted, "rgba(5, 45, 80, 0.04)"),
       borderWidth: 1,
-      borderColor: c.divider,
+      borderColor: onDark(c, c.divider, "rgba(5, 45, 80, 0.06)"),
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
@@ -315,7 +320,7 @@ export const createStyles = (c) =>
     },
     datePickerOverlay: {
       flex: 1,
-      backgroundColor: c.divider,
+      backgroundColor: onDark(c, c.divider, "rgba(5, 45, 80, 0.28)"),
       justifyContent: "center",
       alignItems: "center",
       paddingHorizontal: 20,
@@ -389,7 +394,11 @@ export const createStyles = (c) =>
     },
     sheetOverlay: {
       flex: 1,
-      backgroundColor: "rgba(0, 0, 0, 0.35)",
+      backgroundColor: onDark(
+        c,
+        "rgba(0, 0, 0, 0.35)",
+        "rgba(5, 45, 80, 0.32)",
+      ),
       justifyContent: "flex-end",
     },
     sheetBackdrop: {
@@ -397,7 +406,7 @@ export const createStyles = (c) =>
     },
     sheetCard: {
       maxHeight: "88%",
-      backgroundColor: c.background,
+      backgroundColor: onDark(c, c.background, "#EEF5FB"),
       borderTopLeftRadius: 28,
       borderTopRightRadius: 28,
       paddingHorizontal: 16,
@@ -408,7 +417,7 @@ export const createStyles = (c) =>
       width: 42,
       height: 5,
       borderRadius: 999,
-      backgroundColor: c.divider,
+      backgroundColor: onDark(c, c.divider, "rgba(5, 45, 80, 0.22)"),
       alignSelf: "center",
       marginBottom: 12,
     },
@@ -430,7 +439,7 @@ export const createStyles = (c) =>
       borderRadius: 18,
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: c.surfaceMuted,
+      backgroundColor: onDark(c, c.surfaceMuted, "rgba(5, 45, 80, 0.06)"),
     },
     sheetScroll: {
       width: "100%",
@@ -448,7 +457,7 @@ export const createStyles = (c) =>
       marginBottom: 8,
     },
     sheetGroupCard: {
-      backgroundColor: c.surface,
+      backgroundColor: onDark(c, c.surface, "rgba(255, 255, 255, 0.7)"),
       borderRadius: 22,
       overflow: "hidden",
       borderWidth: 1,
@@ -518,7 +527,7 @@ export const createStyles = (c) =>
       width: 42,
       height: 42,
       borderRadius: 21,
-      backgroundColor: c.inputSurface,
+      backgroundColor: onDark(c, c.inputSurface, "#D9E8F5"),
       alignItems: "center",
       justifyContent: "center",
     },
@@ -545,7 +554,7 @@ export const createStyles = (c) =>
       height: 24,
       borderRadius: 7,
       borderWidth: 1.5,
-      borderColor: c.divider,
+      borderColor: onDark(c, c.divider, "rgba(5, 45, 80, 0.18)"),
       alignItems: "center",
       justifyContent: "center",
       backgroundColor: c.surface,
@@ -555,7 +564,7 @@ export const createStyles = (c) =>
       borderColor: "#0091FF",
     },
     messageBox: {
-      backgroundColor: c.surface,
+      backgroundColor: onDark(c, c.surface, "rgba(255, 255, 255, 0.7)"),
       borderRadius: 22,
       padding: 16,
       marginTop: 10,
@@ -572,7 +581,7 @@ export const createStyles = (c) =>
       marginBottom: 8,
     },
     repeatCard: {
-      backgroundColor: c.surface,
+      backgroundColor: onDark(c, c.surface, "rgba(255, 255, 255, 0.7)"),
       borderRadius: 22,
       overflow: "hidden",
       borderWidth: 1,
@@ -602,14 +611,14 @@ export const createStyles = (c) =>
       lineHeight: 17,
     },
     repeatOptionHintDisabled: {
-      color: c.textMuted,
+      color: onDark(c, c.textMuted, "rgba(105, 129, 150, 0.8)"),
     },
     radioOuter: {
       width: 22,
       height: 22,
       borderRadius: 999,
       borderWidth: 2,
-      borderColor: c.border,
+      borderColor: onDark(c, c.border, "#C5D4E2"),
       alignItems: "center",
       justifyContent: "center",
     },
@@ -626,7 +635,7 @@ export const createStyles = (c) =>
       backgroundColor: "#0091FF",
     },
     intervalBox: {
-      backgroundColor: c.surface,
+      backgroundColor: onDark(c, c.surface, "rgba(255, 255, 255, 0.7)"),
       borderRadius: 22,
       padding: 16,
       marginTop: 10,
@@ -639,7 +648,7 @@ export const createStyles = (c) =>
       borderRadius: 14,
       backgroundColor: c.surface,
       borderWidth: 1,
-      borderColor: c.divider,
+      borderColor: onDark(c, c.divider, "rgba(5, 45, 80, 0.12)"),
       paddingHorizontal: 14,
       color: c.textPrimary,
       fontSize: 16,

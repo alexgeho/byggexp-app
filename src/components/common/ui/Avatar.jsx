@@ -4,6 +4,7 @@ import { Image } from "expo-image";
 import { useTheme } from "../../../theme/ThemeContext";
 import { resolveUploadUrl } from "../../../utils/shifts";
 import { getInitials } from "../../../utils/initials";
+import { onDark } from "../../../theme/colorUtils";
 
 // Circular avatar: shows the image when available, otherwise the person's
 // initials on a neutral disc. `uri` may be a raw/relative upload path.
@@ -40,7 +41,7 @@ const createStyles = (c) =>
   StyleSheet.create({
     base: {
       // No-photo placeholder: a step off the card, in whatever theme is on.
-      backgroundColor: c.surfaceMuted,
+      backgroundColor: onDark(c, c.surfaceMuted, c.background),
     },
     fallback: {
       alignItems: "center",

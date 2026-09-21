@@ -78,3 +78,15 @@ export function flattenColor(color, backdrop) {
 
   return `rgb(${mix(top.r, bottom.r)}, ${mix(top.g, bottom.g)}, ${mix(top.b, bottom.b)})`;
 }
+
+// Use a colour ONLY on the dark theme, and leave the light themes exactly as
+// they were drawn. The dark-theme sweep would otherwise drag every screen's
+// hand-picked light value onto the blue and light themes too, which is not
+// what the fix was about.
+//
+//   color: onDark(c, c.textMuted, "rgba(5, 45, 80, 0.55)")
+//
+// `c` is theme.content (or theme.content itself in JSX).
+export function onDark(content, darkValue, lightValue) {
+  return content?.scheme === "dark" ? darkValue : lightValue;
+}

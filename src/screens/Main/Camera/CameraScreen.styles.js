@@ -3,6 +3,7 @@ import {
   standardScreenContainer,
   standardScreenHeader,
 } from "../../../styles/screenLayout";
+import { onDark } from "../../../theme/colorUtils";
 
 const H_PAD = 16; // matches standardScreenContainer paddingHorizontal (16px)
 const GAP = 10;
@@ -19,9 +20,9 @@ export const createStyles = (c) =>
     },
     centered: {
       ...standardScreenContainer,
-      // The shared container carries a light page colour; the loading state is
-      // a full page, so it has to take the theme's.
-      backgroundColor: c.background,
+      // The shared container carries a fixed light page colour, which the
+      // loading state showed as a light page in the dark app.
+      backgroundColor: onDark(c, c.background, "#EEEEEE"),
     },
     header: {
       ...standardScreenHeader,
@@ -52,7 +53,7 @@ export const createStyles = (c) =>
       marginTop: 12,
       paddingHorizontal: 14,
       borderRadius: 16,
-      backgroundColor: c.inputSurface,
+      backgroundColor: onDark(c, c.inputSurface, "#052D500D"),
     },
     searchInput: {
       flex: 1,
@@ -68,7 +69,7 @@ export const createStyles = (c) =>
       padding: 4,
       // Figma: segmented control uses a soft 10px radius, not a full pill.
       borderRadius: 10,
-      backgroundColor: c.inputSurface,
+      backgroundColor: onDark(c, c.inputSurface, "#052D500D"),
     },
     tab: {
       flex: 1,
@@ -130,7 +131,7 @@ export const createStyles = (c) =>
       height: THUMB,
       // Figma: photo thumbnails use a 6px radius.
       borderRadius: 6,
-      backgroundColor: c.inputSurface,
+      backgroundColor: onDark(c, c.inputSurface, "#E5E9ED"),
       overflow: "hidden",
       alignItems: "center",
       justifyContent: "center",
@@ -152,7 +153,11 @@ export const createStyles = (c) =>
       paddingHorizontal: 6,
       paddingVertical: 4,
       // Sits on the receipt photo: it has to darken, not wash out.
-      backgroundColor: "rgba(0, 0, 0, 0.45)",
+      backgroundColor: onDark(
+        c,
+        "rgba(0, 0, 0, 0.45)",
+        "rgba(5, 45, 80, 0.55)",
+      ),
     },
     receiptAmountText: {
       color: "#FFFFFF",
@@ -196,7 +201,11 @@ export const createStyles = (c) =>
     // Receipt scan overlay
     scanOverlay: {
       ...StyleSheet.absoluteFillObject,
-      backgroundColor: "rgba(0, 0, 0, 0.35)",
+      backgroundColor: onDark(
+        c,
+        "rgba(0, 0, 0, 0.35)",
+        "rgba(5, 45, 80, 0.55)",
+      ),
       alignItems: "center",
       justifyContent: "center",
       gap: 12,

@@ -3,6 +3,7 @@ import {
   standardScreenContainer,
   standardScreenHeader,
 } from "../../../styles/screenLayout";
+import { onDark } from "../../../theme/colorUtils";
 
 const PHOTO_GAP = 10;
 const PHOTO_THUMB = Math.floor(
@@ -51,7 +52,7 @@ export const createStyles = (c) =>
       width: 120,
       height: 120,
       borderRadius: 60,
-      backgroundColor: c.inputSurface,
+      backgroundColor: onDark(c, c.inputSurface, "#D9D9D9"),
     },
     avatarFallback: {
       alignItems: "center",
@@ -123,6 +124,6 @@ export const createStyles = (c) =>
       width: PHOTO_THUMB,
       height: PHOTO_THUMB,
       borderRadius: 6,
-      backgroundColor: c.inputSurface,
+      backgroundColor: onDark(c, c.inputSurface, "#D9D9D9"),
     },
   });

@@ -5,6 +5,7 @@ import {
   standardScreenContainer,
   standardScreenHeader,
 } from "../../../styles/screenLayout";
+import { onDark } from "../../../theme/colorUtils";
 
 // Extracted from TaskScreen.jsx — themed style factory (c = theme.content).
 export const createStyles = (c) =>
@@ -76,7 +77,7 @@ export const createStyles = (c) =>
       paddingHorizontal: 16,
       paddingVertical: 10,
       borderBottomWidth: 1,
-      borderBottomColor: c.divider,
+      borderBottomColor: onDark(c, c.divider, "#e9e9e9"),
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",

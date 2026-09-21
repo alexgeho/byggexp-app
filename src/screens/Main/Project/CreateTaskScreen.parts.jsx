@@ -15,6 +15,7 @@ import { AppIcon } from "../../../components/common/AppIcon";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { createStyles } from "./CreateTaskScreen.styles";
 import { useTheme } from "../../../theme/ThemeContext";
+import { onDark } from "../../../theme/colorUtils";
 
 const useThemedStyles = () => {
   const { theme } = useTheme();
@@ -27,7 +28,8 @@ export const FieldIcon = ({ library = "feather", name, size = 20, color }) => {
   // Without an explicit colour the glyph takes the theme's text colour; it
   // used to be a fixed navy that vanished into the dark theme.
   const { theme } = useTheme();
-  const tint = color || theme.content.textPrimary;
+  const tint =
+    color || onDark(theme.content, theme.content.textPrimary, "#052D50");
   // iOS-style: no filled badge behind the glyph, so a white glyph would vanish —
   // render it in systemBlue instead, and keep glyphs at a readable size.
   const isWhite = /^#f{3}$|^#f{6}$/i.test(String(tint).replace(/\s/g, ""));
@@ -252,7 +254,15 @@ export const ProjectPickerModal = ({
               onPress={onClose}
               style={styles.projectPickerClose}
             >
-              <Icon name="x" size={20} color={theme.content.textMuted} />
+              <Icon
+                name="x"
+                size={20}
+                color={onDark(
+                  theme.content,
+                  theme.content.textMuted,
+                  "#8A97A6",
+                )}
+              />
             </TouchableOpacity>
           </View>
 
@@ -333,7 +343,15 @@ export const UserPickerModal = ({
               onPress={onClose}
               style={styles.projectPickerClose}
             >
-              <Icon name="x" size={20} color={theme.content.textMuted} />
+              <Icon
+                name="x"
+                size={20}
+                color={onDark(
+                  theme.content,
+                  theme.content.textMuted,
+                  "#8A97A6",
+                )}
+              />
             </TouchableOpacity>
           </View>
 
@@ -413,7 +431,15 @@ export const OptionPickerModal = ({
               onPress={onClose}
               activeOpacity={0.85}
             >
-              <Icon name="x" size={18} color={theme.content.textMuted} />
+              <Icon
+                name="x"
+                size={18}
+                color={onDark(
+                  theme.content,
+                  theme.content.textMuted,
+                  "#052D50",
+                )}
+              />
             </TouchableOpacity>
           </View>
           <ScrollView

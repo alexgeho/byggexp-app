@@ -1,4 +1,6 @@
 import { StyleSheet } from "react-native";
+
+import { onDark } from "../../../theme/colorUtils";
 import {
   standardScreenContainer,
   standardScreenHeader,
@@ -16,8 +18,7 @@ export const createStyles = (c) =>
     // "Loading…" under the spinner: without a colour it renders RN's default
     // black, which disappears on the dark page.
     loadingText: {
-      color: c.textMuted,
-      marginTop: 8,
+      color: onDark(c, c.textMuted, "#000000"),
     },
     centeredContainer: {
       flex: 1,

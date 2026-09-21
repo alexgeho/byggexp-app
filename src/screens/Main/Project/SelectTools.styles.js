@@ -3,6 +3,7 @@ import {
   standardScreenContainer,
   standardScreenHeader,
 } from "../../../styles/screenLayout";
+import { onDark } from "../../../theme/colorUtils";
 
 // Extracted from SelectTools.jsx.
 export const createStyles = (c) =>
@@ -16,8 +17,7 @@ export const createStyles = (c) =>
     // "Loading…" under the spinner: without a colour it renders RN's default
     // black, which disappears on the dark page.
     loadingText: {
-      color: c.textMuted,
-      marginTop: 8,
+      color: onDark(c, c.textMuted, "#000000"),
     },
     centeredContainer: {
       flex: 1,
@@ -51,7 +51,7 @@ export const createStyles = (c) =>
       width: 46,
       height: 46,
       borderRadius: 9999,
-      backgroundColor: c.accentSoft,
+      backgroundColor: onDark(c, c.accentSoft, "#E8F2FE"),
       alignItems: "center",
       justifyContent: "center",
     },

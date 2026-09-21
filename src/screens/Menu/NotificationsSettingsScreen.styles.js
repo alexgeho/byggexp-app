@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { onDark } from "../../theme/colorUtils";
 
 // Extracted from NotificationsSettingsScreen.jsx — themed style factory (c = theme.content).
 export const createStyles = (c) =>
@@ -23,7 +24,7 @@ export const createStyles = (c) =>
       marginBottom: 8,
     },
     introText: {
-      color: c.textMuted,
+      color: onDark(c, c.textMuted, "rgba(5, 45, 80, 0.7)"),
       fontSize: 14,
       lineHeight: 22,
     },
@@ -55,7 +56,7 @@ export const createStyles = (c) =>
       marginBottom: 6,
     },
     settingDescription: {
-      color: c.textMuted,
+      color: onDark(c, c.textMuted, "rgba(5, 45, 80, 0.62)"),
       fontSize: 13,
       lineHeight: 20,
     },
@@ -67,7 +68,7 @@ export const createStyles = (c) =>
       paddingVertical: 22,
     },
     loadingText: {
-      color: c.textMuted,
+      color: onDark(c, c.textMuted, "rgba(5, 45, 80, 0.72)"),
       fontSize: 14,
     },
     saveButtonText: {

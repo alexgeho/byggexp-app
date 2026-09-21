@@ -1,5 +1,7 @@
 import { StyleSheet } from "react-native";
 
+import { onDark } from "../../theme/colorUtils";
+
 // Extracted from ToolScanScreen.jsx. The scanning view lies on the camera feed
 // and is white-on-black whatever the theme is; the permission view is an
 // ordinary page, so it takes the theme — it used to be a fixed light screen
@@ -12,9 +14,13 @@ export const createStyles = (c) =>
       alignItems: "center",
       justifyContent: "center",
       paddingHorizontal: 24,
-      backgroundColor: c.background,
+      backgroundColor: onDark(c, c.background, "transparent"),
     },
-    centerScreen: { flex: 1, backgroundColor: c.background, paddingTop: 48 },
+    centerScreen: {
+      flex: 1,
+      backgroundColor: onDark(c, c.background, "#f2f1f6"),
+      paddingTop: 48,
+    },
     overlay: { ...StyleSheet.absoluteFillObject, paddingTop: 48 },
     header: {
       flexDirection: "row",
@@ -26,7 +32,7 @@ export const createStyles = (c) =>
     title: {
       flex: 1,
       textAlign: "center",
-      color: c.textPrimary,
+      color: onDark(c, c.textPrimary, "#052D50"),
       fontSize: 17,
       fontWeight: "600",
     },
@@ -56,10 +62,14 @@ export const createStyles = (c) =>
     permTitle: {
       fontSize: 20,
       fontWeight: "700",
-      color: c.textPrimary,
+      color: onDark(c, c.textPrimary, "#052D50"),
       marginBottom: 8,
     },
-    permText: { color: c.textSecondary, textAlign: "center", marginBottom: 20 },
+    permText: {
+      color: onDark(c, c.textSecondary, "#5F7588"),
+      textAlign: "center",
+      marginBottom: 20,
+    },
     permBtn: {
       backgroundColor: "#0785F4",
       paddingHorizontal: 24,

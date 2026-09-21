@@ -1,4 +1,5 @@
 import { Dimensions, StyleSheet } from "react-native";
+import { onDark } from "../../../theme/colorUtils";
 
 // Photo grid metrics (3-up thumbnails) used by the style factory below.
 const PHOTO_GAP = 10;
@@ -110,7 +111,7 @@ export const createStyles = (c) =>
       width: PHOTO_THUMB,
       height: PHOTO_THUMB,
       borderRadius: 14,
-      backgroundColor: c.inputSurface,
+      backgroundColor: onDark(c, c.inputSurface, "#E5E9ED"),
     },
     receiptTag: {
       position: "absolute",
@@ -168,7 +169,7 @@ export const createStyles = (c) =>
       height: 80,
       borderRadius: 12,
       overflow: "hidden",
-      backgroundColor: c.inputSurface,
+      backgroundColor: onDark(c, c.inputSurface, "#EFF3F8"),
     },
     documentPreviewImage: {
       width: "100%",
@@ -211,7 +212,7 @@ export const createStyles = (c) =>
       backgroundColor: c.surface,
       borderWidth: 1,
       // Same admin card look as the Employees / Chat lists.
-      borderColor: c.border,
+      borderColor: onDark(c, c.border, "#E6EAF1"),
       gap: 16,
       marginBottom: 12,
     },

@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { onDark } from "../../../theme/colorUtils";
 
 // Extracted from ChatConversationScreen.jsx — themed style factory (c = theme.content).
 export const createStyles = (c) => {
@@ -184,7 +185,7 @@ export const createStyles = (c) => {
       paddingHorizontal: 8,
       paddingVertical: 3,
       borderRadius: 999,
-      backgroundColor: c.divider,
+      backgroundColor: onDark(c, c.divider, "rgba(5, 45, 80, 0.45)"),
     },
     mediaTimeText: {
       color: "#FFFFFF",
@@ -243,7 +244,7 @@ export const createStyles = (c) => {
       marginTop: 4,
     },
     otherMessageDate: {
-      color: c.textMuted,
+      color: onDark(c, c.textMuted, "#ADB5BD"),
       fontSize: 10,
       textAlign: "right",
       marginTop: 4,
@@ -320,14 +321,14 @@ export const createStyles = (c) => {
       width: 40,
       height: 5,
       borderRadius: 999,
-      backgroundColor: c.divider,
+      backgroundColor: onDark(c, c.divider, "rgba(5, 45, 80, 0.18)"),
       marginBottom: 14,
     },
     sheetTitle: {
       textAlign: "center",
       fontSize: 13,
       letterSpacing: 0.3,
-      color: c.textMuted,
+      color: onDark(c, c.textMuted, "#8895A7"),
       fontFamily: "DMSans-SemiBold",
       marginBottom: 12,
     },
@@ -348,7 +349,7 @@ export const createStyles = (c) => {
     sheetDivider: {
       height: 1,
       marginLeft: 72,
-      backgroundColor: c.surfaceMuted,
+      backgroundColor: onDark(c, c.surfaceMuted, "rgba(5, 45, 80, 0.07)"),
     },
     sheetIcon: {
       width: 44,
@@ -373,7 +374,7 @@ export const createStyles = (c) => {
     },
     sheetOptionHint: {
       fontSize: 13,
-      color: c.textMuted,
+      color: onDark(c, c.textMuted, "#8895A7"),
       marginTop: 2,
     },
     sheetCancel: {

@@ -20,6 +20,7 @@ import {
   normalizeNotificationPreferences,
   NOTIFICATION_PREFERENCE_ITEMS,
 } from "../../utils/notificationPreferences";
+import { onDark } from "../../theme/colorUtils";
 
 export default function NotificationsSettingsScreen() {
   const navigation = useNavigation();
@@ -189,11 +190,19 @@ export default function NotificationsSettingsScreen() {
                   value={item.value}
                   onValueChange={(value) => handleToggle(item.key, value)}
                   trackColor={{
-                    false: theme.content.divider,
+                    false: onDark(
+                      theme.content,
+                      theme.content.divider,
+                      "rgba(5, 45, 80, 0.18)",
+                    ),
                     true: "#34C759",
                   }}
                   thumbColor="#FFFFFF"
-                  ios_backgroundColor={theme.content.divider}
+                  ios_backgroundColor={onDark(
+                    theme.content,
+                    theme.content.divider,
+                    "rgba(5, 45, 80, 0.18)",
+                  )}
                 />
               </View>
             ))

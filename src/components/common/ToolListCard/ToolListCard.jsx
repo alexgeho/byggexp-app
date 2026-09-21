@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { ListCard } from "../ListCard/ListCard";
 import { useCardStyles } from "../../../styles/cards";
 import { useTheme } from "../../../theme/ThemeContext";
+import { onDark } from "../../../theme/colorUtils";
 import { API_BASE_URL } from "../../../services/api";
 import { getToolStatusMeta } from "../../../constants/toolStatus";
 
@@ -62,10 +63,24 @@ export function ToolListCard({ tool, onPress, selected = false }) {
           <View
             style={[
               styles.toolPhotoPlaceholder,
-              { backgroundColor: theme.content.surfaceMuted },
+              {
+                backgroundColor: onDark(
+                  theme.content,
+                  theme.content.surfaceMuted,
+                  "rgba(5, 45, 80, 0.06)",
+                ),
+              },
             ]}
           >
-            <Icon name="tool" size={14} color={theme.content.placeholder} />
+            <Icon
+              name="tool"
+              size={14}
+              color={onDark(
+                theme.content,
+                theme.content.placeholder,
+                "rgba(5, 45, 80, 0.35)",
+              )}
+            />
           </View>
         )
       }

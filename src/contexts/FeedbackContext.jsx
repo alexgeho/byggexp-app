@@ -126,8 +126,10 @@ export function FeedbackProvider({ children }) {
   const isDarkTheme = c.scheme === "dark";
   const popupBackground = c.surface;
   const popupBorder = isDarkTheme ? c.border : "#FFFFFF";
-  const popupTextColor = c.textPrimary;
-  const popupSubtextColor = c.textSecondary;
+  const popupTextColor = isDarkTheme ? c.textPrimary : "#052D50";
+  const popupSubtextColor = isDarkTheme
+    ? c.textSecondary
+    : "rgba(5, 45, 80, 0.65)";
   const isError = popup?.variant === "error";
   return (
     <FeedbackContext.Provider value={value}>

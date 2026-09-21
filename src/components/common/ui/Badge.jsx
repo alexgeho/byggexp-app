@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { spacing, fontSize } from "../../../theme/tokens";
 import { useTheme } from "../../../theme/ThemeContext";
+import { onDark } from "../../../theme/colorUtils";
 
 // Status pill. `tone` picks a semantic colour pair; or pass explicit
 // backgroundColor/color to override (e.g. from getWorkerStatusBadge).
@@ -10,7 +11,10 @@ const buildTones = (c) => ({
   success: { bg: c.successSoft, fg: c.success },
   warning: { bg: c.warningSoft, fg: c.warning },
   accent: { bg: c.accentSoft, fg: c.accent },
-  neutral: { bg: c.statusOffDutySoft, fg: c.textSecondary },
+  neutral: {
+    bg: onDark(c, c.statusOffDutySoft, "#EAF0F5"),
+    fg: onDark(c, c.textSecondary, c.textMuted),
+  },
 });
 
 export const Badge = ({ label, tone = "neutral", backgroundColor, color }) => {

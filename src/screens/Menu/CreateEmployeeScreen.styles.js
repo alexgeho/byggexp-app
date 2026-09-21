@@ -3,6 +3,7 @@ import {
   standardScreenContainer,
   standardScreenHeader,
 } from "../../styles/screenLayout";
+import { onDark } from "../../theme/colorUtils";
 
 // Extracted from CreateEmployeeScreen.jsx — themed style factory (c = theme.content).
 export const createStyles = (c) =>
@@ -133,7 +134,7 @@ export const createStyles = (c) =>
       color: c.textPrimary,
     },
     selectPlaceholder: {
-      color: c.placeholder,
+      color: onDark(c, c.placeholder, "rgba(5, 45, 80, 0.35)"),
     },
     formError: {
       color: "#c62828",
@@ -204,6 +205,6 @@ export const createStyles = (c) =>
     },
     pickerEmptyStateText: {
       fontSize: 16,
-      color: c.textMuted,
+      color: onDark(c, c.textMuted, "rgba(5, 45, 80, 0.55)"),
     },
   });
