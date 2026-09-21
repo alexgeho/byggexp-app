@@ -1,5 +1,7 @@
 import { StyleSheet } from "react-native";
 
+import { layout } from "../../../theme/spacing";
+
 /* Finance list — pixel-matched to Figma "offers" / "invoices". */
 const F_MED = "DMSans-Medium";
 const F_SEMI = "DMSans-SemiBold";
@@ -59,9 +61,11 @@ export const createStyles = (c) => {
     // Single horizontally-scrollable row of filter pills.
     clientTypeFilter: {
       width: "100%",
-      marginBottom: 12,
+      marginBottom: layout.betweenCards,
     },
-    pillsWrap: { position: "relative", marginBottom: 20 },
+    // Same 12 as between two cards: the row above it, the row below it and
+    // the list all breathe alike.
+    pillsWrap: { position: "relative", marginBottom: layout.betweenCards },
     pillsRow: { flexGrow: 0 },
     pillsFade: {
       position: "absolute",
@@ -71,7 +75,8 @@ export const createStyles = (c) => {
       width: 36,
     },
     pillsContent: {
-      paddingLeft: 16,
+      // Starts on the screen's gutter, like the chips above it.
+      paddingLeft: 0,
       paddingRight: 24,
       gap: 10,
       alignItems: "center",

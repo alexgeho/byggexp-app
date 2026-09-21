@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 
 import { useTheme } from "../../../theme/ThemeContext";
 import { BackButton } from "../BackButton/BackButton";
+import { layout, space } from "../../../theme/spacing";
 import { BottomBar } from "../BottomBar/BottomBar";
 import {
   standardScreenContainer,
@@ -48,8 +49,8 @@ import {
 //   onAdd        function alternative to addScreen
 //   leftAction   { icon, label, color, onPress } revealed by swiping RIGHT —
 //                the Mail-style counterpart to the delete swipe
-// The single gap between anything in a list.
-const ROW_GAP = 12;
+// The single gap between anything in a list — from the app's one scale.
+const ROW_GAP = layout.betweenCards;
 
 export function EntityListScreen({
   title,
@@ -203,7 +204,9 @@ export function EntityListScreen({
           </View>
         ) : null}
 
-        {beforeList}
+        {beforeList ? (
+          <View style={styles.beforeListGap}>{beforeList}</View>
+        ) : null}
 
         {loading ? (
           <View style={styles.loadingContainer}>
@@ -282,8 +285,8 @@ const createStyles = (c) =>
     },
     filterRow: {
       flexDirection: "row",
-      gap: 8,
-      marginBottom: 12,
+      gap: space.sm,
+      marginBottom: ROW_GAP,
     },
     filterChip: {
       paddingHorizontal: 16,
@@ -314,7 +317,10 @@ const createStyles = (c) =>
       width: "100%",
     },
     listContent: {
-      paddingBottom: 140,
+      paddingBottom: layout.listBottom,
+    },
+    beforeListGap: {
+      marginBottom: ROW_GAP,
     },
     // ONE gap for the whole app's lists: between two cards, under the list
     // header, and above and below a section heading. Anything that sets its

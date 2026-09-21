@@ -1,4 +1,6 @@
 import { StyleSheet } from "react-native";
+
+import { layout } from "../../../theme/spacing";
 import {
   standardScreenContainer,
   standardScreenHeader,
@@ -32,6 +34,8 @@ export const createStyles = (c) =>
       flexDirection: "row",
       justifyContent: "space-between",
       gap: 12,
+      // Equal air above and below — both sides come from the one scale.
+      marginBottom: layout.betweenCards,
     },
     tabButton: {
       padding: 4,

@@ -1,3 +1,5 @@
+import { layout, space } from "../theme/spacing";
+
 import { Platform } from "react-native";
 
 /** Gap between screen header and the first block below (search, form, scroll, etc.). */
@@ -20,8 +22,9 @@ export const standardScreenContainer = {
 };
 
 export const standardScreenHeaderSpacing = {
-  paddingTop: 20,
-  paddingBottom: 10,
+  paddingTop: space.xl,
+  // The same gap the lists keep between anything: header → first control.
+  paddingBottom: layout.headerToContent,
 };
 
 export const standardScreenHeader = {

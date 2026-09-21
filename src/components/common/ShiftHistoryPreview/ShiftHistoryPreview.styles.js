@@ -1,5 +1,7 @@
 import { StyleSheet } from "react-native";
 
+import { layout } from "../../../theme/spacing";
+
 export function createStyles(theme, colorMode = "dark") {
   const isLightMode = colorMode === "light";
   // Only the pure black theme wants a solid dark card; other coloured themes
@@ -29,7 +31,8 @@ export function createStyles(theme, colorMode = "dark") {
 
   return StyleSheet.create({
     section: {
-      gap: 10,
+      // Heading → its card: the same gap the lists use between two cards.
+      gap: layout.betweenCards,
     },
     // The heading lines up with the text INSIDE the card below it (screen
     // gutter 20 + card padding 20), not with the card's edge — one vertical
