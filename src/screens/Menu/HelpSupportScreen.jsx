@@ -15,7 +15,14 @@ import { createStyles } from "./HelpSupportScreen.styles";
 import { useTheme } from "../../theme/ThemeContext";
 
 const SUPPORT_PHONE = "+46 812 410 276";
-const SUPPORT_WHATSAPP_URL = `https://wa.me/${SUPPORT_PHONE.replace(/[^0-9]/g, "")}`;
+// WhatsApp answers on the mobile, not on the office line — the landline has no
+// WhatsApp account, so wa.me turned every tap into "the number is not on
+// WhatsApp".
+const SUPPORT_WHATSAPP_PHONE = "+46 70 757 75 75";
+const SUPPORT_WHATSAPP_URL = `https://wa.me/${SUPPORT_WHATSAPP_PHONE.replace(
+  /[^0-9]/g,
+  "",
+)}`;
 const SUPPORT_EMAIL = "support@byggexp.se";
 
 async function openExternalUrl(url) {
@@ -156,6 +163,7 @@ export default function HelpSupportScreen() {
           iconName="message-circle"
           iconColor={theme.colors.primary}
           title={t("help.chatTitle")}
+          value={SUPPORT_WHATSAPP_PHONE}
           description={t("help.chatDescription")}
           onPress={() => openExternalUrl(SUPPORT_WHATSAPP_URL)}
           theme={theme}
