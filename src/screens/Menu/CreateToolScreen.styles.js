@@ -82,7 +82,7 @@ export const createStyles = (c) =>
     fieldLabel: {
       fontSize: 13,
       fontWeight: "600",
-      color: "#6C6C70",
+      color: onDark(c, c.textSecondary, "#6C6C70"),
     },
     fieldInput: {
       fontSize: 16,
@@ -126,7 +126,7 @@ export const createStyles = (c) =>
     accessDeniedText: {
       fontSize: 18,
       fontWeight: "600",
-      color: "#151515",
+      color: onDark(c, c.textPrimary, "#151515"),
     },
     pickerModalContainer: {
       flex: 1,

@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next";
 import { articleService } from "../../../services/article.service";
 import { formatMoney } from "../../../utils/billingTotals";
 import { getDateLocale } from "../../../utils/dateLocale";
-import { createStyles, PRIMARY, MUTED } from "./billingForm.styles";
+import { createStyles, PRIMARY, mutedInk } from "./billingForm.styles";
 import { useTheme } from "../../../theme/ThemeContext";
 
 // Pick an article from the company catalogue onto an invoice/offer row — the
@@ -79,13 +79,13 @@ export default function ArticlePickerModal({ visible, onClose, onSelect }) {
           <Text style={styles.modalTitle}>{t("billing.selectArticle")}</Text>
 
           <View style={styles.searchBar}>
-            <Icon name="search" size={18} color={MUTED} />
+            <Icon name="search" size={18} color={mutedInk(theme.content)} />
             <TextInput
               style={styles.searchInput}
               value={search}
               onChangeText={setSearch}
               placeholder={t("billing.searchArticle")}
-              placeholderTextColor={MUTED}
+              placeholderTextColor={mutedInk(theme.content)}
             />
           </View>
 
@@ -125,7 +125,11 @@ export default function ArticlePickerModal({ visible, onClose, onSelect }) {
                           .join(" · ")}
                       </Text>
                     </View>
-                    <Icon name="chevron-right" size={20} color={MUTED} />
+                    <Icon
+                      name="chevron-right"
+                      size={20}
+                      color={mutedInk(theme.content)}
+                    />
                   </TouchableOpacity>
                 ))
               )}

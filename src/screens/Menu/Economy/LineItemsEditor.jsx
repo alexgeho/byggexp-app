@@ -10,7 +10,7 @@ import {
 } from "../../../utils/billingTotals";
 import ArticlePickerModal from "./ArticlePickerModal";
 import { getDateLocale } from "../../../utils/dateLocale";
-import { createStyles, PRIMARY, PLACEHOLDER } from "./billingForm.styles";
+import { createStyles, PRIMARY, placeholderInk } from "./billingForm.styles";
 import { useTheme } from "../../../theme/ThemeContext";
 
 // The VAT rate is not edited here: it belongs to the article and is fixed in
@@ -148,7 +148,7 @@ export default function LineItemsEditor({
                   ? t("billing.textRowPlaceholder")
                   : t("billing.itemDescriptionPlaceholder")
               }
-              placeholderTextColor={PLACEHOLDER}
+              placeholderTextColor={placeholderInk(theme.content)}
               multiline
             />
           </View>

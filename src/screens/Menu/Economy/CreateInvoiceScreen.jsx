@@ -27,7 +27,7 @@ import {
   emptyLineItem,
   isHourRow,
 } from "../../../utils/billingTotals";
-import { createStyles, PRIMARY, PLACEHOLDER } from "./billingForm.styles";
+import { createStyles, PRIMARY, placeholderInk } from "./billingForm.styles";
 import { downloadAndShareDocument } from "../../../utils/documentPreview";
 import { API_BASE_URL } from "../../../config/env";
 import { useTheme } from "../../../theme/ThemeContext";
@@ -406,7 +406,7 @@ export default function CreateInvoiceScreen() {
             keyboardType="number-pad"
             selectTextOnFocus
             placeholder={String(DEFAULT_TERMS_DAYS)}
-            placeholderTextColor={PLACEHOLDER}
+            placeholderTextColor={placeholderInk(theme.content)}
           />
         </View>
 
@@ -456,7 +456,7 @@ export default function CreateInvoiceScreen() {
             value={orderReference}
             onChangeText={setOrderReference}
             placeholder={t("billing.orderReferencePlaceholder")}
-            placeholderTextColor={PLACEHOLDER}
+            placeholderTextColor={placeholderInk(theme.content)}
           />
         </View>
 
@@ -468,7 +468,7 @@ export default function CreateInvoiceScreen() {
             value={ourReference}
             onChangeText={setOurReference}
             placeholder={t("billing.ourReference")}
-            placeholderTextColor={PLACEHOLDER}
+            placeholderTextColor={placeholderInk(theme.content)}
           />
         </View>
 
@@ -479,7 +479,7 @@ export default function CreateInvoiceScreen() {
             value={yourReference}
             onChangeText={setYourReference}
             placeholder={t("billing.yourReference")}
-            placeholderTextColor={PLACEHOLDER}
+            placeholderTextColor={placeholderInk(theme.content)}
           />
         </View>
 
@@ -527,7 +527,7 @@ export default function CreateInvoiceScreen() {
               value={rotPersonalNumber}
               onChangeText={setRotPersonalNumber}
               placeholder={t("billing.rotPersonalNumberPlaceholder")}
-              placeholderTextColor={PLACEHOLDER}
+              placeholderTextColor={placeholderInk(theme.content)}
               keyboardType="numbers-and-punctuation"
             />
           </View>
@@ -541,7 +541,7 @@ export default function CreateInvoiceScreen() {
               value={rotProperty}
               onChangeText={setRotProperty}
               placeholder={t("billing.rotPropertyPlaceholder")}
-              placeholderTextColor={PLACEHOLDER}
+              placeholderTextColor={placeholderInk(theme.content)}
             />
           </View>
         )}
@@ -554,7 +554,7 @@ export default function CreateInvoiceScreen() {
               value={String(rotLaborAmount)}
               onChangeText={setRotLaborAmount}
               placeholder="0"
-              placeholderTextColor={PLACEHOLDER}
+              placeholderTextColor={placeholderInk(theme.content)}
               keyboardType="decimal-pad"
               selectTextOnFocus
             />

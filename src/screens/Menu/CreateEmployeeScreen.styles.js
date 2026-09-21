@@ -74,7 +74,7 @@ export const createStyles = (c) =>
       width: 32,
       height: 32,
       borderRadius: 8,
-      backgroundColor: "#E8F2FE",
+      backgroundColor: onDark(c, c.accentSoft, "#E8F2FE"),
       alignItems: "center",
       justifyContent: "center",
     },
@@ -111,7 +111,7 @@ export const createStyles = (c) =>
     fieldLabel: {
       fontSize: 13,
       fontWeight: "600",
-      color: "#6C6C70",
+      color: onDark(c, c.textSecondary, "#6C6C70"),
     },
     fieldInput: {
       fontSize: 16,
@@ -155,7 +155,7 @@ export const createStyles = (c) =>
     accessDeniedText: {
       fontSize: 18,
       fontWeight: "600",
-      color: "#151515",
+      color: onDark(c, c.textPrimary, "#151515"),
     },
     pickerModalContainer: {
       flex: 1,

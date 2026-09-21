@@ -80,6 +80,10 @@ export function ReminderSheet({
               value={when}
               mode="datetime"
               display="inline"
+              // The native picker follows the phone's appearance, not the
+              // app's, so on a light phone it drew black digits on our dark
+              // sheet.
+              themeVariant={theme.content.scheme}
               onChange={(_event, date) => date && setWhen(date)}
               minimumDate={new Date()}
             />

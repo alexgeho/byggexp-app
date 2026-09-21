@@ -1,11 +1,11 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-export default function UnreadBadge({
-  count = 0,
-  style,
-  textStyle,
-}) {
+import { useTheme } from "../../../theme/ThemeContext";
+import { onDark } from "../../../theme/colorUtils";
+
+export default function UnreadBadge({ count = 0, style, textStyle }) {
+  const { theme } = useTheme();
   if (!count) {
     return null;
   }
@@ -13,10 +13,18 @@ export default function UnreadBadge({
   const label = count > 99 ? "99+" : String(count);
 
   return (
-    <View style={[styles.badge, style]}>
-      <Text style={[styles.badgeText, textStyle]}>
-        {label}
-      </Text>
+    <View
+      style={[
+        styles.badge,
+        // The ring punches the badge out of whatever it sits on, so it has to
+        // BE that surface — white was a halo on the dark theme.
+        {
+          borderColor: onDark(theme.content, theme.content.surface, "#FFFFFF"),
+        },
+        style,
+      ]}
+    >
+      <Text style={[styles.badgeText, textStyle]}>{label}</Text>
     </View>
   );
 }
@@ -34,7 +42,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#FF3B30",
     borderWidth: 2,
-    borderColor: "#FFFFFF",
     zIndex: 5,
   },
   badgeText: {

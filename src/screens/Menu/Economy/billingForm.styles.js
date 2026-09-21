@@ -1,5 +1,7 @@
 import { StyleSheet } from "react-native";
 
+import { onDark } from "../../../theme/colorUtils";
+
 /* Finance forms — pixel-matched to Figma "new invoice" / "new offer".
    Palette and metrics come straight from the Figma nodes. */
 export const PAGE = "#F2F1F6";
@@ -9,6 +11,11 @@ export const PRIMARY = "#0785F4";
 export const MUTED = "#667E93";
 export const INPUT_BG = "#EEEEEE";
 export const PLACEHOLDER = "#9AA6B2";
+
+// The same two inks, but readable on the dark theme. Light themes keep the
+// exact values above.
+export const mutedInk = (c) => onDark(c, c.textMuted, MUTED);
+export const placeholderInk = (c) => onDark(c, c.placeholder, PLACEHOLDER);
 
 const F_MED = "DMSans-Medium"; // Figma weight 500
 const F_SEMI = "DMSans-SemiBold"; // Figma weight 600

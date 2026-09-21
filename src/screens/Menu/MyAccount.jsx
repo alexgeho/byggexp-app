@@ -1,6 +1,7 @@
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../theme/ThemeContext";
+import { onDark } from "../../theme/colorUtils";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import AuthContext from "../../contexts/AuthContext";
 import { useFeedback } from "../../contexts/FeedbackContext";
@@ -628,7 +629,15 @@ export const MyAccount = () => {
                       />
                     ) : (
                       <View style={styles.documentFileContent}>
-                        <Icon name={typeMeta.icon} size={18} color="#052D50" />
+                        <Icon
+                          name={typeMeta.icon}
+                          size={18}
+                          color={onDark(
+                            theme.content,
+                            theme.content.textSecondary,
+                            "#052D50",
+                          )}
+                        />
                         <Text numberOfLines={2} style={styles.documentName}>
                           {getDocumentName(document, index)}
                         </Text>

@@ -21,6 +21,7 @@ import {
 import AuthContext from "../../contexts/AuthContext";
 import { useFeedback } from "../../contexts/FeedbackContext";
 import { useTheme } from "../../theme/ThemeContext";
+import { onDark } from "../../theme/colorUtils";
 import { projectService, toolService, userService } from "../../services";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
@@ -410,7 +411,15 @@ export default function CreateToolScreen() {
                   style={styles.photoPreview}
                 />
               ) : (
-                <Icon name="chevron-right" size={18} color="#052D50" />
+                <Icon
+                  name="chevron-right"
+                  size={18}
+                  color={onDark(
+                    theme.content,
+                    theme.content.textMuted,
+                    "#052D50",
+                  )}
+                />
               )}
             </TouchableOpacity>
           </View>
@@ -442,10 +451,26 @@ export default function CreateToolScreen() {
                   onPress={() => setQrId("")}
                   hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 >
-                  <Icon name="x" size={18} color="#052D50" />
+                  <Icon
+                    name="x"
+                    size={18}
+                    color={onDark(
+                      theme.content,
+                      theme.content.textMuted,
+                      "#052D50",
+                    )}
+                  />
                 </TouchableOpacity>
               ) : (
-                <Icon name="chevron-right" size={18} color="#052D50" />
+                <Icon
+                  name="chevron-right"
+                  size={18}
+                  color={onDark(
+                    theme.content,
+                    theme.content.textMuted,
+                    "#052D50",
+                  )}
+                />
               )}
             </TouchableOpacity>
           </View>

@@ -28,6 +28,7 @@ import { useCardStyles } from "../../styles/cards";
 import { standardScreenHeaderPlaceholder } from "../../styles/screenLayout";
 import { createStyles } from "./EmployeeProfileScreen.styles";
 import { useTheme } from "../../theme/ThemeContext";
+import { onDark } from "../../theme/colorUtils";
 import { getToolStatusMeta } from "../../constants/toolStatus";
 import { getRoleLabel } from "../../utils/userRoles";
 import {
@@ -113,7 +114,11 @@ function ActionButton({
       <Icon
         name={icon}
         size={15}
-        color={tone === "danger" ? "#C62828" : theme.content.textPrimary}
+        color={
+          tone === "danger"
+            ? onDark(theme.content, theme.content.danger, "#C62828")
+            : theme.content.textPrimary
+        }
       />
       <Text
         style={[
@@ -658,7 +663,15 @@ export default function EmployeeProfileScreen() {
                   </View>
                   {canComment ? (
                     <TouchableOpacity onPress={() => handleDeleteNote(note.id)}>
-                      <Icon name="trash-2" size={16} color="#C62828" />
+                      <Icon
+                        name="trash-2"
+                        size={16}
+                        color={onDark(
+                          theme.content,
+                          theme.content.danger,
+                          "#C62828",
+                        )}
+                      />
                     </TouchableOpacity>
                   ) : null}
                 </View>

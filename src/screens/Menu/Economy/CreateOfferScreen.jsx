@@ -26,7 +26,7 @@ import {
   addDaysIso,
   emptyLineItem,
 } from "../../../utils/billingTotals";
-import { createStyles, PRIMARY, PLACEHOLDER } from "./billingForm.styles";
+import { createStyles, PRIMARY, placeholderInk } from "./billingForm.styles";
 import { useTheme } from "../../../theme/ThemeContext";
 import LineItemsEditor from "./LineItemsEditor";
 import ClientPickerModal from "./ClientPickerModal";
@@ -227,7 +227,7 @@ export default function CreateOfferScreen() {
             value={subtitle}
             onChangeText={setSubtitle}
             placeholder={t("billing.subtitlePlaceholder")}
-            placeholderTextColor={PLACEHOLDER}
+            placeholderTextColor={placeholderInk(theme.content)}
           />
         </View>
 
@@ -240,7 +240,7 @@ export default function CreateOfferScreen() {
               value={description}
               onChangeText={setDescription}
               placeholder={t("billing.offerDescriptionPlaceholder")}
-              placeholderTextColor={PLACEHOLDER}
+              placeholderTextColor={placeholderInk(theme.content)}
               multiline
             />
           </View>
@@ -277,7 +277,7 @@ export default function CreateOfferScreen() {
               value={clarifications}
               onChangeText={setClarifications}
               placeholder={t("billing.clarificationsPlaceholder")}
-              placeholderTextColor={PLACEHOLDER}
+              placeholderTextColor={placeholderInk(theme.content)}
               multiline
             />
           </View>
@@ -291,7 +291,7 @@ export default function CreateOfferScreen() {
             value={contactName}
             onChangeText={setContactName}
             placeholder={t("billing.contactPerson")}
-            placeholderTextColor={PLACEHOLDER}
+            placeholderTextColor={placeholderInk(theme.content)}
           />
         </View>
 
@@ -302,7 +302,7 @@ export default function CreateOfferScreen() {
             value={contactRole}
             onChangeText={setContactRole}
             placeholder={t("billing.contactRole")}
-            placeholderTextColor={PLACEHOLDER}
+            placeholderTextColor={placeholderInk(theme.content)}
           />
         </View>
 

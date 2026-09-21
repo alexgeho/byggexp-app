@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 
 import { layout } from "../../../theme/spacing";
+import { onDark } from "../../../theme/colorUtils";
 
 /* Finance list — pixel-matched to Figma "offers" / "invoices". */
 const F_MED = "DMSans-Medium";
@@ -96,10 +97,24 @@ export const createStyles = (c) => {
       borderWidth: 1,
       borderColor: "transparent",
     },
-    pillTone_draft: { backgroundColor: "#E2E8F0", borderColor: "#B9C4D2" },
-    pillTone_sent: { backgroundColor: "#DCEBFE", borderColor: "#7FB4FB" },
-    pillTone_ok: { backgroundColor: "#D6F2DF", borderColor: "#6FCF97" },
-    pillTone_bad: { backgroundColor: "#FBDDDE", borderColor: "#F09A9C" },
+    // Light themes keep the Figma pastels; on dark those read as pale slabs,
+    // so the status tints take over there.
+    pillTone_draft: {
+      backgroundColor: onDark(c, c.statusOffDutySoft, "#E2E8F0"),
+      borderColor: onDark(c, c.border, "#B9C4D2"),
+    },
+    pillTone_sent: {
+      backgroundColor: onDark(c, c.statusWaitingSoft, "#DCEBFE"),
+      borderColor: onDark(c, c.border, "#7FB4FB"),
+    },
+    pillTone_ok: {
+      backgroundColor: onDark(c, c.statusAtWorkSoft, "#D6F2DF"),
+      borderColor: onDark(c, c.border, "#6FCF97"),
+    },
+    pillTone_bad: {
+      backgroundColor: onDark(c, c.statusNotAtWorkSoft, "#FBDDDE"),
+      borderColor: onDark(c, c.border, "#F09A9C"),
+    },
     pillOn: { backgroundColor: PRIMARY },
     pillText: { fontSize: 15, fontFamily: F_SEMI, color: INK },
     pillTextOn: { color: "#FFFFFF" },
@@ -183,14 +198,16 @@ export const createStyles = (c) => {
       fontFamily: F_MED,
       textTransform: "uppercase",
     },
-    badge_draft: { backgroundColor: "#EDF0F5" },
-    badgeText_draft: { color: MUTED },
-    badge_sent: { backgroundColor: "#EBF4FE" },
-    badgeText_sent: { color: "#0C77FD" },
-    badge_ok: { backgroundColor: "#E5F7EA" },
-    badgeText_ok: { color: "#04B251" },
-    badge_bad: { backgroundColor: "#FDECEC" },
-    badgeText_bad: { color: "#E5484D" },
+    badge_draft: {
+      backgroundColor: onDark(c, c.statusOffDutySoft, "#EDF0F5"),
+    },
+    badgeText_draft: { color: onDark(c, c.textSecondary, MUTED) },
+    badge_sent: { backgroundColor: onDark(c, c.statusWaitingSoft, "#EBF4FE") },
+    badgeText_sent: { color: onDark(c, c.statusWaiting, "#0C77FD") },
+    badge_ok: { backgroundColor: onDark(c, c.statusAtWorkSoft, "#E5F7EA") },
+    badgeText_ok: { color: onDark(c, c.statusAtWork, "#04B251") },
+    badge_bad: { backgroundColor: onDark(c, c.statusNotAtWorkSoft, "#FDECEC") },
+    badgeText_bad: { color: onDark(c, c.statusNotAtWork, "#E5484D") },
 
     // 48×48 target in the corner — the size Material asks for, and the place
     // it asks for. The right column is padded so nothing sits under it.
@@ -248,7 +265,7 @@ export const createStyles = (c) => {
       width: 42,
       height: 5,
       borderRadius: 3,
-      backgroundColor: "#d5dee7",
+      backgroundColor: onDark(c, c.divider, "#d5dee7"),
       alignSelf: "center",
       marginBottom: 12,
     },
@@ -264,7 +281,7 @@ export const createStyles = (c) => {
       justifyContent: "space-between",
       paddingVertical: 14,
       borderBottomWidth: 1,
-      borderBottomColor: "#f0f3f6",
+      borderBottomColor: onDark(c, c.divider, "#f0f3f6"),
       gap: 10,
     },
     customerRowText: {
@@ -281,7 +298,7 @@ export const createStyles = (c) => {
       justifyContent: "space-between",
       paddingVertical: 16,
       borderBottomWidth: 1,
-      borderBottomColor: "#f0f3f6",
+      borderBottomColor: onDark(c, c.divider, "#f0f3f6"),
     },
     registerRowLeft: {
       flexDirection: "row",

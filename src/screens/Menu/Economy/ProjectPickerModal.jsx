@@ -19,8 +19,9 @@ import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import { projectService } from "../../../services";
 import AuthContext from "../../../contexts/AuthContext";
-import { createStyles, PRIMARY, MUTED } from "./billingForm.styles";
+import { createStyles, PRIMARY, MUTED, mutedInk } from "./billingForm.styles";
 import { useTheme } from "../../../theme/ThemeContext";
+import { onDark } from "../../../theme/colorUtils";
 import { ProjectListCard } from "../../../components/common/ProjectListCard/ProjectListCard";
 
 // Optional project picker for the invoice form. Linking an invoice to a project
@@ -87,13 +88,17 @@ export default function ProjectPickerModal({ visible, onClose, onSelect }) {
           <Text style={styles.modalTitle}>{t("billing.selectProject")}</Text>
 
           <View style={styles.searchBar}>
-            <Icon name="search" size={18} color={MUTED} />
+            <Icon name="search" size={18} color={mutedInk(theme.content)} />
             <TextInput
               style={styles.searchInput}
               value={search}
               onChangeText={setSearch}
               placeholder={t("billing.searchProject")}
-              placeholderTextColor="#9fb0c4"
+              placeholderTextColor={onDark(
+                theme.content,
+                theme.content.placeholder,
+                "#9fb0c4",
+              )}
             />
           </View>
 
@@ -102,7 +107,7 @@ export default function ProjectPickerModal({ visible, onClose, onSelect }) {
             style={styles.newClientBtn}
             onPress={() => onSelect(null)}
           >
-            <Icon name="slash" size={18} color={MUTED} />
+            <Icon name="slash" size={18} color={mutedInk(theme.content)} />
             <Text style={[styles.newClientText, { color: MUTED }]}>
               {t("billing.noProject")}
             </Text>

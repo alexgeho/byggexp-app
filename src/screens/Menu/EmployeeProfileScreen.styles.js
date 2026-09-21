@@ -1,4 +1,6 @@
 import { StyleSheet } from "react-native";
+
+import { onDark } from "../../theme/colorUtils";
 import {
   standardScreenContainer,
   standardScreenHeader,
@@ -88,8 +90,8 @@ export const createStyles = (c) =>
       borderColor: c.border,
     },
     actionButtonDanger: {
-      backgroundColor: "rgba(198, 40, 40, 0.08)",
-      borderColor: "rgba(198, 40, 40, 0.2)",
+      backgroundColor: onDark(c, c.dangerSoft, "rgba(198, 40, 40, 0.08)"),
+      borderColor: onDark(c, c.danger, "rgba(198, 40, 40, 0.2)"),
     },
     actionButtonDisabled: {
       opacity: 0.55,
@@ -101,7 +103,7 @@ export const createStyles = (c) =>
       flexShrink: 1,
     },
     actionButtonTextDanger: {
-      color: "#C62828",
+      color: onDark(c, c.danger, "#C62828"),
     },
     groupCard: {
       backgroundColor: c.surfaceMuted,

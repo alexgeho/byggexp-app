@@ -13,8 +13,9 @@ import {
 import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import { clientService } from "../../../services";
-import { createStyles, PRIMARY, MUTED } from "./billingForm.styles";
+import { createStyles, PRIMARY, MUTED, mutedInk } from "./billingForm.styles";
 import { useTheme } from "../../../theme/ThemeContext";
+import { onDark } from "../../../theme/colorUtils";
 
 const NEW_CLIENT = {
   clientType: "company",
@@ -266,13 +267,17 @@ export default function ClientPickerModal({ visible, onClose, onSelect }) {
           ) : (
             <>
               <View style={styles.searchBar}>
-                <Icon name="search" size={18} color={MUTED} />
+                <Icon name="search" size={18} color={mutedInk(theme.content)} />
                 <TextInput
                   style={styles.searchInput}
                   value={search}
                   onChangeText={setSearch}
                   placeholder={t("billing.searchClient")}
-                  placeholderTextColor="#9fb0c4"
+                  placeholderTextColor={onDark(
+                    theme.content,
+                    theme.content.placeholder,
+                    "#9fb0c4",
+                  )}
                 />
               </View>
 

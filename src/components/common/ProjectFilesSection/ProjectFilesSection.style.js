@@ -1,5 +1,7 @@
 import { StyleSheet } from "react-native";
 
+import { onDark } from "../../../theme/colorUtils";
+
 export function createStyles(theme, colorMode = "dark") {
   const isLightMode = colorMode === "light";
   const headerTextColor = isLightMode ? theme.colors.text : "#FFFFFF";
@@ -165,7 +167,11 @@ export function createStyles(theme, colorMode = "dark") {
 
     fileFallback: {
       flex: 1,
-      backgroundColor: "rgba(255,255,255,0.75)",
+      backgroundColor: onDark(
+        theme.content,
+        theme.content.surfaceMuted,
+        "rgba(255,255,255,0.75)",
+      ),
       alignItems: "center",
       justifyContent: "center",
       paddingHorizontal: 10,
@@ -173,7 +179,7 @@ export function createStyles(theme, colorMode = "dark") {
     },
 
     fileFallbackText: {
-      color: "#052D50",
+      color: onDark(theme.content, theme.content.textPrimary, "#052D50"),
       fontSize: 12,
       textAlign: "center",
       fontFamily: theme.text.fontFamily.medium,

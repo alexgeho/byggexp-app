@@ -1,5 +1,7 @@
 import { StyleSheet } from "react-native";
 
+import { onDark } from "../../theme/colorUtils";
+
 // Extracted from MyAccount.jsx — themed style factory (c = theme.content).
 // Container + header now come from the shared <Screen> scaffold.
 export const createStyles = (c) =>
@@ -84,7 +86,7 @@ export const createStyles = (c) =>
       color: c.textMuted,
     },
     requiredAsterisk: {
-      color: "#ff0000ff",
+      color: onDark(c, c.danger, "#ff0000ff"),
     },
     textInput: {
       marginTop: 6,
@@ -153,7 +155,7 @@ export const createStyles = (c) =>
     documentCard: {
       width: "23%",
       height: 84,
-      backgroundColor: "#EFEFF0",
+      backgroundColor: onDark(c, c.surfaceMuted, "#EFEFF0"),
       borderRadius: 12,
       overflow: "hidden",
     },
@@ -204,11 +206,11 @@ export const createStyles = (c) =>
       height: 48,
       borderRadius: 14,
       borderWidth: 1,
-      borderColor: "#F0C4C4",
-      backgroundColor: "#FDECEC",
+      borderColor: onDark(c, c.danger, "#F0C4C4"),
+      backgroundColor: onDark(c, c.dangerSoft, "#FDECEC"),
     },
     deleteAccountText: {
-      color: "#D64545",
+      color: onDark(c, c.danger, "#D64545"),
       fontSize: 15,
       fontFamily: "DMSans-SemiBold",
     },

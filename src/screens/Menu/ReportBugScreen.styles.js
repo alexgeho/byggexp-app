@@ -1,5 +1,7 @@
 import { StyleSheet } from "react-native";
 
+import { onDark } from "../../theme/colorUtils";
+
 // Extracted from ReportBugScreen.jsx — themed style factory (c = theme.content).
 export const createStyles = (c) =>
   StyleSheet.create({
@@ -82,7 +84,7 @@ export const createStyles = (c) =>
       width: 96,
       height: 96,
       borderRadius: 16,
-      backgroundColor: "#EFEFF0",
+      backgroundColor: onDark(c, c.surfaceMuted, "#EFEFF0"),
     },
     attachmentInfo: {
       flex: 1,
@@ -93,7 +95,7 @@ export const createStyles = (c) =>
       marginBottom: 6,
     },
     removeAttachmentText: {
-      color: "#D92D20",
+      color: onDark(c, c.danger, "#D92D20"),
       fontSize: 13,
       fontWeight: "600",
     },
