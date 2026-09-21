@@ -1710,6 +1710,9 @@
     "attach": "Liitä kuva laskusta",
     "savedTitle": "Lasku tallennettu",
     "attachedCount_one": "{{count}} liite",
-    "attachedCount_other": "{{count}} liitettä"
+    "attachedCount_other": "{{count}} liitettä",
+    "creditFull": "Hyvitä kokonaan",
+    "creditPartly": "Hyvitä osittain",
+    "actionFailed": "Toiminto epäonnistui."
   }
 }

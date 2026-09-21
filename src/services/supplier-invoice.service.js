@@ -37,6 +37,15 @@ export const supplierInvoiceService = {
     return data;
   },
 
+  // Reverse a received bill: the whole thing, or `amountExclVat` of it.
+  credit: async (id, amountExclVat) => {
+    const { data } = await api.post(
+      `/supplier-invoices/${id}/credit`,
+      amountExclVat == null ? {} : { amountExclVat },
+    );
+    return data;
+  },
+
   // registered | approved | paid — marking one paid stops its reminders.
   setStatus: async (id, status) => {
     const { data } = await api.patch(`/supplier-invoices/${id}/status`, {

@@ -1712,6 +1712,9 @@
     "attach": "Dołącz zdjęcie faktury",
     "savedTitle": "Faktura zapisana",
     "attachedCount_one": "{{count}} załącznik",
-    "attachedCount_other": "{{count}} załączników"
+    "attachedCount_other": "{{count}} załączników",
+    "creditFull": "Koryguj całość",
+    "creditPartly": "Koryguj częściowo",
+    "actionFailed": "Operacja nie powiodła się."
   }
 }

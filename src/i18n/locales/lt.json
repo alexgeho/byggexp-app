@@ -1712,6 +1712,9 @@
     "attach": "Pridėti sąskaitos nuotrauką",
     "savedTitle": "Sąskaita išsaugota",
     "attachedCount_one": "{{count}} priedas",
-    "attachedCount_other": "{{count}} priedų"
+    "attachedCount_other": "{{count}} priedų",
+    "creditFull": "Kredituoti visą",
+    "creditPartly": "Kredituoti dalį",
+    "actionFailed": "Veiksmas nepavyko."
   }
 }

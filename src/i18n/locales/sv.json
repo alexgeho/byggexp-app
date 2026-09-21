@@ -1710,6 +1710,9 @@
     "attach": "Bifoga foto av fakturan",
     "savedTitle": "Fakturan sparad",
     "attachedCount_one": "{{count}} bilaga",
-    "attachedCount_other": "{{count}} bilagor"
+    "attachedCount_other": "{{count}} bilagor",
+    "creditFull": "Kreditera hela",
+    "creditPartly": "Kreditera delvis",
+    "actionFailed": "Åtgärden misslyckades."
   }
 }

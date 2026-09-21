@@ -1710,6 +1710,9 @@
     "attach": "Legg ved bilde av fakturaen",
     "savedTitle": "Fakturaen er lagret",
     "attachedCount_one": "{{count}} vedlegg",
-    "attachedCount_other": "{{count}} vedlegg"
+    "attachedCount_other": "{{count}} vedlegg",
+    "creditFull": "Krediter alt",
+    "creditPartly": "Krediter delvis",
+    "actionFailed": "Handlingen mislyktes."
   }
 }

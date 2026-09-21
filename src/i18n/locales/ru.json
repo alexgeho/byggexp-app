@@ -1712,6 +1712,9 @@
     "attach": "Прикрепить фото счёта",
     "savedTitle": "Счёт сохранён",
     "attachedCount_one": "{{count}} вложение",
-    "attachedCount_other": "{{count}} вложений"
+    "attachedCount_other": "{{count}} вложений",
+    "creditFull": "Кредитовать полностью",
+    "creditPartly": "Кредитовать частично",
+    "actionFailed": "Не удалось выполнить действие."
   }
 }

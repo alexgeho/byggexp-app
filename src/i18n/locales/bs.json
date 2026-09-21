@@ -1712,6 +1712,9 @@
     "attach": "Priloži fotografiju fakture",
     "savedTitle": "Faktura sačuvana",
     "attachedCount_one": "{{count}} prilog",
-    "attachedCount_other": "{{count}} priloga"
+    "attachedCount_other": "{{count}} priloga",
+    "creditFull": "Storniraj u cijelosti",
+    "creditPartly": "Storniraj djelimično",
+    "actionFailed": "Radnja nije uspjela."
   }
 }

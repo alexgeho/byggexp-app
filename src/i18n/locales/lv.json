@@ -1710,6 +1710,9 @@
     "attach": "Pievienot rēķina foto",
     "savedTitle": "Rēķins saglabāts",
     "attachedCount_one": "{{count}} pielikums",
-    "attachedCount_other": "{{count}} pielikumi"
+    "attachedCount_other": "{{count}} pielikumi",
+    "creditFull": "Kreditēt pilnībā",
+    "creditPartly": "Kreditēt daļēji",
+    "actionFailed": "Darbība neizdevās."
   }
 }

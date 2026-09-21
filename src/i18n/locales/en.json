@@ -1710,6 +1710,9 @@
     "attach": "Attach a photo of the invoice",
     "savedTitle": "Invoice saved",
     "attachedCount_one": "{{count}} attachment",
-    "attachedCount_other": "{{count}} attachments"
+    "attachedCount_other": "{{count}} attachments",
+    "creditFull": "Credit in full",
+    "creditPartly": "Credit part of it",
+    "actionFailed": "The action failed."
   }
 }

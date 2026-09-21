@@ -1710,6 +1710,9 @@
     "attach": "Lisa arve foto",
     "savedTitle": "Arve salvestatud",
     "attachedCount_one": "{{count}} manus",
-    "attachedCount_other": "{{count}} manust"
+    "attachedCount_other": "{{count}} manust",
+    "creditFull": "Krediteeri täielikult",
+    "creditPartly": "Krediteeri osaliselt",
+    "actionFailed": "Toiming ebaõnnestus."
   }
 }

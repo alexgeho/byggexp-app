@@ -1712,6 +1712,9 @@
     "attach": "Додати фото рахунка",
     "savedTitle": "Рахунок збережено",
     "attachedCount_one": "{{count}} вкладення",
-    "attachedCount_other": "{{count}} вкладень"
+    "attachedCount_other": "{{count}} вкладень",
+    "creditFull": "Кредитувати повністю",
+    "creditPartly": "Кредитувати частково",
+    "actionFailed": "Не вдалося виконати дію."
   }
 }
