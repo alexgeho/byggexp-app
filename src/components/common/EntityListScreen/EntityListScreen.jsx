@@ -285,7 +285,8 @@ const createStyles = (c) =>
     },
     filterRow: {
       flexDirection: "row",
-      gap: space.sm,
+      // Between two chips, the same gap as between two cards.
+      gap: ROW_GAP,
       marginBottom: ROW_GAP,
     },
     filterChip: {

@@ -65,7 +65,9 @@ export const createStyles = (c) => {
     },
     // Same 12 as between two cards: the row above it, the row below it and
     // the list all breathe alike.
-    pillsWrap: { position: "relative", marginBottom: layout.betweenCards },
+    // No margin of its own: EntityListScreen already keeps one gap above
+    // (under the chips) and one below (before the list).
+    pillsWrap: { position: "relative" },
     pillsRow: { flexGrow: 0 },
     pillsFade: {
       position: "absolute",
@@ -78,7 +80,7 @@ export const createStyles = (c) => {
       // Starts on the screen's gutter, like the chips above it.
       paddingLeft: 0,
       paddingRight: 24,
-      gap: 10,
+      gap: layout.betweenCards,
       alignItems: "center",
     },
     pill: {
@@ -141,7 +143,7 @@ export const createStyles = (c) => {
     },
     cardNo: { fontSize: 13, fontFamily: F_MED, color: MUTED },
     cardCustomer: {
-      fontSize: 17,
+      fontSize: 16,
       fontFamily: F_MED,
       color: INK,
       flexShrink: 1,
