@@ -36,6 +36,10 @@ const FIELDS = [
   { key: "address", labelKey: "companyDetails.address", keyboard: "default" },
   { key: "email", labelKey: "companyDetails.email", keyboard: "email-address" },
   { key: "phone", labelKey: "companyDetails.phone", keyboard: "phone-pad" },
+  // Where the customer actually pays. Without these the invoice printed an
+  // empty Bankgiro box and there was nowhere in the app to fill it in.
+  { key: "bankgiro", labelKey: "companyDetails.bankgiro", keyboard: "default" },
+  { key: "plusgiro", labelKey: "companyDetails.plusgiro", keyboard: "default" },
 ];
 
 export default function CompanyDetailsScreen() {
@@ -53,6 +57,8 @@ export default function CompanyDetailsScreen() {
     address: "",
     email: "",
     phone: "",
+    bankgiro: "",
+    plusgiro: "",
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -70,6 +76,8 @@ export default function CompanyDetailsScreen() {
           address: company.address || "",
           email: company.email || "",
           phone: company.phone || "",
+          bankgiro: company.bankgiro || "",
+          plusgiro: company.plusgiro || "",
         });
       } catch (error) {
         console.error("Failed to load company:", error);
@@ -95,6 +103,8 @@ export default function CompanyDetailsScreen() {
         address: form.address.trim(),
         email: form.email.trim(),
         phone: form.phone.trim(),
+        bankgiro: form.bankgiro.trim(),
+        plusgiro: form.plusgiro.trim(),
       });
       showSuccess({
         title: t("companyDetails.savedTitle", "Sparat"),

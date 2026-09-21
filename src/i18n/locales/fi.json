@@ -1530,6 +1530,8 @@
     "address": "Osoite",
     "email": "Sähköposti",
     "phone": "Puhelin",
+    "bankgiro": "Bankgiro",
+    "plusgiro": "Plusgiro",
     "hint": "Käytetään jokaisessa tarjouksessa ja laskussa.",
     "savedTitle": "Tallennettu",
     "savedMessage": "Yrityksen tiedot tallennettiin."
@@ -1690,6 +1692,24 @@
     "status": {
       "paid": "Maksettu",
       "unpaid": "Maksamaton"
-    }
+    },
+    "addTitle": "Uusi ostolasku",
+    "editTitle": "Muokkaa ostolaskua",
+    "supplier": "Toimittaja",
+    "supplierRequired": "Anna toimittaja.",
+    "invoiceNumber": "Laskunro",
+    "ocr": "Viitenumero",
+    "invoiceDate": "Laskun päivä",
+    "dueDate": "Eräpäivä",
+    "amountExclVat": "Summa ilman alv",
+    "vat": "Alv",
+    "totalLabel": "Yhteensä",
+    "bankgiro": "Bankgiro",
+    "category": "Kategoria",
+    "notes": "Muistiinpanot",
+    "attach": "Liitä kuva laskusta",
+    "savedTitle": "Lasku tallennettu",
+    "attachedCount_one": "{{count}} liite",
+    "attachedCount_other": "{{count}} liitettä"
   }
 }

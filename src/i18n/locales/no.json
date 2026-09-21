@@ -1530,6 +1530,8 @@
     "address": "Adresse",
     "email": "E-post",
     "phone": "Telefon",
+    "bankgiro": "Bankgiro",
+    "plusgiro": "Plusgiro",
     "hint": "Brukes på hvert tilbud og faktura.",
     "savedTitle": "Lagret",
     "savedMessage": "Firmaopplysningene ble lagret."
@@ -1690,6 +1692,24 @@
     "status": {
       "paid": "Betalt",
       "unpaid": "Ubetalt"
-    }
+    },
+    "addTitle": "Ny leverandørfaktura",
+    "editTitle": "Rediger leverandørfaktura",
+    "supplier": "Leverandør",
+    "supplierRequired": "Angi leverandør.",
+    "invoiceNumber": "Fakturanr",
+    "ocr": "OCR",
+    "invoiceDate": "Fakturadato",
+    "dueDate": "Forfallsdato",
+    "amountExclVat": "Beløp eks. mva",
+    "vat": "Mva",
+    "totalLabel": "Totalt",
+    "bankgiro": "Bankgiro",
+    "category": "Kategori",
+    "notes": "Notater",
+    "attach": "Legg ved bilde av fakturaen",
+    "savedTitle": "Fakturaen er lagret",
+    "attachedCount_one": "{{count}} vedlegg",
+    "attachedCount_other": "{{count}} vedlegg"
   }
 }

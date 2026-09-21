@@ -318,6 +318,13 @@ export default function AppNavigator() {
               }
             />
             <Stack.Screen
+              name="CreateSupplierInvoice"
+              getComponent={() =>
+                require("../screens/Menu/Economy/CreateSupplierInvoiceScreen")
+                  .default
+              }
+            />
+            <Stack.Screen
               name="Articles"
               getComponent={() =>
                 require("../screens/Menu/Economy/ArticlesScreen").default

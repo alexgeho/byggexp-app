@@ -1530,6 +1530,8 @@
     "address": "Address",
     "email": "Email",
     "phone": "Phone",
+    "bankgiro": "Bankgiro",
+    "plusgiro": "Plusgiro",
     "hint": "Used on every offer and invoice.",
     "savedTitle": "Saved",
     "savedMessage": "Company details saved."
@@ -1690,6 +1692,24 @@
     "status": {
       "paid": "Paid",
       "unpaid": "Unpaid"
-    }
+    },
+    "addTitle": "New supplier invoice",
+    "editTitle": "Edit supplier invoice",
+    "supplier": "Supplier",
+    "supplierRequired": "Enter a supplier.",
+    "invoiceNumber": "Invoice no.",
+    "ocr": "OCR",
+    "invoiceDate": "Invoice date",
+    "dueDate": "Due date",
+    "amountExclVat": "Amount excl. VAT",
+    "vat": "VAT",
+    "totalLabel": "Total",
+    "bankgiro": "Bankgiro",
+    "category": "Category",
+    "notes": "Notes",
+    "attach": "Attach a photo of the invoice",
+    "savedTitle": "Invoice saved",
+    "attachedCount_one": "{{count}} attachment",
+    "attachedCount_other": "{{count}} attachments"
   }
 }

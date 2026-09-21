@@ -1532,6 +1532,8 @@
     "address": "Adresa",
     "email": "E-pošta",
     "phone": "Telefon",
+    "bankgiro": "Bankgiro",
+    "plusgiro": "Plusgiro",
     "hint": "Koristi se na svakoj ponudi i fakturi.",
     "savedTitle": "Sačuvano",
     "savedMessage": "Podaci o firmi su sačuvani."
@@ -1692,6 +1694,24 @@
     "status": {
       "paid": "Plaćena",
       "unpaid": "Neplaćena"
-    }
+    },
+    "addTitle": "Nova dobavljačka faktura",
+    "editTitle": "Uredi dobavljačku fakturu",
+    "supplier": "Dobavljač",
+    "supplierRequired": "Unesite dobavljača.",
+    "invoiceNumber": "Broj fakture",
+    "ocr": "OCR",
+    "invoiceDate": "Datum fakture",
+    "dueDate": "Rok plaćanja",
+    "amountExclVat": "Iznos bez PDV-a",
+    "vat": "PDV",
+    "totalLabel": "Ukupno",
+    "bankgiro": "Bankgiro",
+    "category": "Kategorija",
+    "notes": "Bilješke",
+    "attach": "Priloži fotografiju fakture",
+    "savedTitle": "Faktura sačuvana",
+    "attachedCount_one": "{{count}} prilog",
+    "attachedCount_other": "{{count}} priloga"
   }
 }

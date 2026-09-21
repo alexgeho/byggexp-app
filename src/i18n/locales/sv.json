@@ -1530,6 +1530,8 @@
     "address": "Adress",
     "email": "E-post",
     "phone": "Telefon",
+    "bankgiro": "Bankgiro",
+    "plusgiro": "Plusgiro",
     "hint": "Används på varje offert och faktura.",
     "savedTitle": "Sparat",
     "savedMessage": "Företagsuppgifterna sparades."
@@ -1690,6 +1692,24 @@
     "status": {
       "paid": "Betald",
       "unpaid": "Obetald"
-    }
+    },
+    "addTitle": "Ny leverantörsfaktura",
+    "editTitle": "Redigera leverantörsfaktura",
+    "supplier": "Leverantör",
+    "supplierRequired": "Ange leverantör.",
+    "invoiceNumber": "Fakturanr",
+    "ocr": "OCR",
+    "invoiceDate": "Fakturadatum",
+    "dueDate": "Förfallodatum",
+    "amountExclVat": "Belopp exkl. moms",
+    "vat": "Moms",
+    "totalLabel": "Totalt",
+    "bankgiro": "Bankgiro",
+    "category": "Kategori",
+    "notes": "Anteckningar",
+    "attach": "Bifoga foto av fakturan",
+    "savedTitle": "Fakturan sparad",
+    "attachedCount_one": "{{count}} bilaga",
+    "attachedCount_other": "{{count}} bilagor"
   }
 }

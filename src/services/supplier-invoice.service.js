@@ -10,6 +10,33 @@ export const supplierInvoiceService = {
     return data;
   },
 
+  create: async (payload) => {
+    const { data } = await api.post("/supplier-invoices", payload);
+    return data;
+  },
+
+  update: async (id, payload) => {
+    const { data } = await api.put(`/supplier-invoices/${id}`, payload);
+    return data;
+  },
+
+  remove: async (id) => {
+    const { data } = await api.delete(`/supplier-invoices/${id}`);
+    return data;
+  },
+
+  // Attach the photographed or scanned bill to an invoice already registered.
+  addAttachments: async (id, formData) => {
+    const { data } = await api.post(
+      `/supplier-invoices/${id}/attachments`,
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      },
+    );
+    return data;
+  },
+
   // registered | approved | paid — marking one paid stops its reminders.
   setStatus: async (id, status) => {
     const { data } = await api.patch(`/supplier-invoices/${id}/status`, {

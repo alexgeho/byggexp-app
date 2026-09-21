@@ -1532,6 +1532,8 @@
     "address": "Адрес",
     "email": "Эл. почта",
     "phone": "Телефон",
+    "bankgiro": "Bankgiro",
+    "plusgiro": "Plusgiro",
     "hint": "Используется в каждом предложении и счёте.",
     "savedTitle": "Сохранено",
     "savedMessage": "Данные компании сохранены."
@@ -1692,6 +1694,24 @@
     "status": {
       "paid": "Оплачен",
       "unpaid": "Не оплачен"
-    }
+    },
+    "addTitle": "Новый счёт поставщика",
+    "editTitle": "Редактировать счёт",
+    "supplier": "Поставщик",
+    "supplierRequired": "Укажите поставщика.",
+    "invoiceNumber": "Номер счёта",
+    "ocr": "OCR",
+    "invoiceDate": "Дата счёта",
+    "dueDate": "Срок оплаты",
+    "amountExclVat": "Сумма без НДС",
+    "vat": "НДС",
+    "totalLabel": "Итого",
+    "bankgiro": "Bankgiro",
+    "category": "Категория",
+    "notes": "Заметки",
+    "attach": "Прикрепить фото счёта",
+    "savedTitle": "Счёт сохранён",
+    "attachedCount_one": "{{count}} вложение",
+    "attachedCount_other": "{{count}} вложений"
   }
 }

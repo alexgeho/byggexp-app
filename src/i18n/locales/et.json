@@ -1530,6 +1530,8 @@
     "address": "Aadress",
     "email": "E-post",
     "phone": "Telefon",
+    "bankgiro": "Bankgiro",
+    "plusgiro": "Plusgiro",
     "hint": "Kasutatakse igal pakkumisel ja arvel.",
     "savedTitle": "Salvestatud",
     "savedMessage": "Ettevõtte andmed salvestati."
@@ -1690,6 +1692,24 @@
     "status": {
       "paid": "Makstud",
       "unpaid": "Maksmata"
-    }
+    },
+    "addTitle": "Uus tarnija arve",
+    "editTitle": "Muuda tarnija arvet",
+    "supplier": "Tarnija",
+    "supplierRequired": "Sisesta tarnija.",
+    "invoiceNumber": "Arve nr",
+    "ocr": "Viitenumber",
+    "invoiceDate": "Arve kuupäev",
+    "dueDate": "Maksetähtaeg",
+    "amountExclVat": "Summa ilma km-ta",
+    "vat": "Käibemaks",
+    "totalLabel": "Kokku",
+    "bankgiro": "Bankgiro",
+    "category": "Kategooria",
+    "notes": "Märkmed",
+    "attach": "Lisa arve foto",
+    "savedTitle": "Arve salvestatud",
+    "attachedCount_one": "{{count}} manus",
+    "attachedCount_other": "{{count}} manust"
   }
 }

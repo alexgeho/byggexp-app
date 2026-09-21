@@ -1530,6 +1530,8 @@
     "address": "Adrese",
     "email": "E-pasts",
     "phone": "Tālrunis",
+    "bankgiro": "Bankgiro",
+    "plusgiro": "Plusgiro",
     "hint": "Izmanto katrā piedāvājumā un rēķinā.",
     "savedTitle": "Saglabāts",
     "savedMessage": "Uzņēmuma informācija saglabāta."
@@ -1690,6 +1692,24 @@
     "status": {
       "paid": "Apmaksāts",
       "unpaid": "Neapmaksāts"
-    }
+    },
+    "addTitle": "Jauns piegādātāja rēķins",
+    "editTitle": "Rediģēt piegādātāja rēķinu",
+    "supplier": "Piegādātājs",
+    "supplierRequired": "Norādiet piegādātāju.",
+    "invoiceNumber": "Rēķina nr.",
+    "ocr": "OCR",
+    "invoiceDate": "Rēķina datums",
+    "dueDate": "Apmaksas termiņš",
+    "amountExclVat": "Summa bez PVN",
+    "vat": "PVN",
+    "totalLabel": "Kopā",
+    "bankgiro": "Bankgiro",
+    "category": "Kategorija",
+    "notes": "Piezīmes",
+    "attach": "Pievienot rēķina foto",
+    "savedTitle": "Rēķins saglabāts",
+    "attachedCount_one": "{{count}} pielikums",
+    "attachedCount_other": "{{count}} pielikumi"
   }
 }

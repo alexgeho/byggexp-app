@@ -1532,6 +1532,8 @@
     "address": "Adresas",
     "email": "El. paštas",
     "phone": "Telefonas",
+    "bankgiro": "Bankgiro",
+    "plusgiro": "Plusgiro",
     "hint": "Naudojama kiekviename pasiūlyme ir sąskaitoje.",
     "savedTitle": "Išsaugota",
     "savedMessage": "Įmonės duomenys išsaugoti."
@@ -1692,6 +1694,24 @@
     "status": {
       "paid": "Apmokėta",
       "unpaid": "Neapmokėta"
-    }
+    },
+    "addTitle": "Nauja tiekėjo sąskaita",
+    "editTitle": "Redaguoti tiekėjo sąskaitą",
+    "supplier": "Tiekėjas",
+    "supplierRequired": "Nurodykite tiekėją.",
+    "invoiceNumber": "Sąskaitos nr.",
+    "ocr": "OCR",
+    "invoiceDate": "Sąskaitos data",
+    "dueDate": "Apmokėti iki",
+    "amountExclVat": "Suma be PVM",
+    "vat": "PVM",
+    "totalLabel": "Iš viso",
+    "bankgiro": "Bankgiro",
+    "category": "Kategorija",
+    "notes": "Pastabos",
+    "attach": "Pridėti sąskaitos nuotrauką",
+    "savedTitle": "Sąskaita išsaugota",
+    "attachedCount_one": "{{count}} priedas",
+    "attachedCount_other": "{{count}} priedų"
   }
 }

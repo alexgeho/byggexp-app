@@ -1532,6 +1532,8 @@
     "address": "Адреса",
     "email": "Ел. пошта",
     "phone": "Телефон",
+    "bankgiro": "Bankgiro",
+    "plusgiro": "Plusgiro",
     "hint": "Використовується в кожній пропозиції та рахунку.",
     "savedTitle": "Збережено",
     "savedMessage": "Дані компанії збережено."
@@ -1692,6 +1694,24 @@
     "status": {
       "paid": "Оплачено",
       "unpaid": "Не оплачено"
-    }
+    },
+    "addTitle": "Новий рахунок постачальника",
+    "editTitle": "Редагувати рахунок",
+    "supplier": "Постачальник",
+    "supplierRequired": "Вкажіть постачальника.",
+    "invoiceNumber": "Номер рахунка",
+    "ocr": "OCR",
+    "invoiceDate": "Дата рахунка",
+    "dueDate": "Термін оплати",
+    "amountExclVat": "Сума без ПДВ",
+    "vat": "ПДВ",
+    "totalLabel": "Разом",
+    "bankgiro": "Bankgiro",
+    "category": "Категорія",
+    "notes": "Нотатки",
+    "attach": "Додати фото рахунка",
+    "savedTitle": "Рахунок збережено",
+    "attachedCount_one": "{{count}} вкладення",
+    "attachedCount_other": "{{count}} вкладень"
   }
 }

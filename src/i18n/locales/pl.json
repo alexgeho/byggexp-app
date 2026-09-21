@@ -1532,6 +1532,8 @@
     "address": "Adres",
     "email": "E-mail",
     "phone": "Telefon",
+    "bankgiro": "Bankgiro",
+    "plusgiro": "Plusgiro",
     "hint": "Używane na każdej ofercie i fakturze.",
     "savedTitle": "Zapisano",
     "savedMessage": "Dane firmy zostały zapisane."
@@ -1692,6 +1694,24 @@
     "status": {
       "paid": "Opłacona",
       "unpaid": "Nieopłacona"
-    }
+    },
+    "addTitle": "Nowa faktura dostawcy",
+    "editTitle": "Edytuj fakturę dostawcy",
+    "supplier": "Dostawca",
+    "supplierRequired": "Podaj dostawcę.",
+    "invoiceNumber": "Nr faktury",
+    "ocr": "OCR",
+    "invoiceDate": "Data faktury",
+    "dueDate": "Termin płatności",
+    "amountExclVat": "Kwota netto",
+    "vat": "VAT",
+    "totalLabel": "Razem",
+    "bankgiro": "Bankgiro",
+    "category": "Kategoria",
+    "notes": "Notatki",
+    "attach": "Dołącz zdjęcie faktury",
+    "savedTitle": "Faktura zapisana",
+    "attachedCount_one": "{{count}} załącznik",
+    "attachedCount_other": "{{count}} załączników"
   }
 }
