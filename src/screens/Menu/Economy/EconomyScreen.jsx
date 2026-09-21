@@ -320,11 +320,11 @@ export default function EconomyScreen() {
           <Text style={styles.cardNo}>
             {isOffers ? t("economy.offerNo") : t("economy.invoiceNo")} #{number}
           </Text>
-          <Text style={styles.cardCustomer} numberOfLines={1}>
-            {customer}
-          </Text>
           <Text style={styles.cardMeta} numberOfLines={1}>
             {dateLabel}
+          </Text>
+          <Text style={styles.cardCustomer} numberOfLines={1}>
+            {customer}
           </Text>
         </View>
         <View style={styles.cardRight}>
