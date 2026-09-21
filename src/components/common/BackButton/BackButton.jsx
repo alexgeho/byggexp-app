@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
-import { TouchableOpacity, Image, View } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import { TouchableOpacity, Image } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { useTheme } from "../../../theme/ThemeContext";
@@ -73,28 +72,9 @@ export function BackButton({
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel || t("a11y.back")}
     >
-      {/* Clipped glass layers (kept in an inner view so the button's own drop
-          shadow is not clipped by overflow:hidden). */}
-      <View style={styles.inner} pointerEvents="none">
-        <LinearGradient
-          colors={glass.base}
-          start={{ x: 0.1, y: 0 }}
-          end={{ x: 0.9, y: 1 }}
-          style={styles.baseGradient}
-        />
-
-        <LinearGradient
-          colors={glass.highlight}
-          start={{ x: 0.2, y: 0 }}
-          end={{ x: 0.8, y: 0.85 }}
-          style={styles.highlight}
-        />
-
-        <View style={styles.innerRing} />
-
-        <View style={styles.hardLightGlow} />
-      </View>
-
+      {/* No glass layers any more: the button is the same flat card surface
+          the nav bar and the cards use, with the same hairline. Stacked
+          gradients on top made it a third material on the screen. */}
       <Image style={[styles.backIcon, iconStyle]} source={iconSource} />
     </TouchableOpacity>
   );

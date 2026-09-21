@@ -45,6 +45,9 @@ export const createStyles = (c) => {
       height: 44,
       borderRadius: 22,
       backgroundColor: CARD,
+      // Same hairline as the shared back button and the nav bar.
+      borderWidth: 1,
+      borderColor: c.border,
       alignItems: "center",
       justifyContent: "center",
     },
