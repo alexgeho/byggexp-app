@@ -8,7 +8,7 @@ import { EntityListScreen } from "../../../components/common/EntityListScreen/En
 import { ListCard } from "../../../components/common/ListCard/ListCard";
 import { getDateLocale } from "../../../utils/dateLocale";
 import { sortByNewest } from "../../../utils/sortByNewest";
-import { cardStyles } from "../../../styles/cards";
+import { useCardStyles } from "../../../styles/cards";
 import { useTheme } from "../../../theme/ThemeContext";
 
 // The bills the company has to PAY (leverantörsfakturor) — the other side of
@@ -29,6 +29,7 @@ const dueDays = (invoice) => {
 export default function SupplierInvoicesScreen() {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const cardStyles = useCardStyles();
   const route = useRoute();
   const highlightId = route.params?.entityId || null;
 

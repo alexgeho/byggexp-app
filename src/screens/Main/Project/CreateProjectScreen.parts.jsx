@@ -332,7 +332,7 @@ export const WorkersListModal = memo(function WorkersListModal({
             <PersonListItem
               person={item}
               subtitle={item.profession || t("employees.noProfession")}
-              statusBadge={getWorkerStatusBadge(item, null, t)}
+              statusBadge={getWorkerStatusBadge(item, null, t, theme.content)}
               selectable
               selected={selectedWorkers.includes(item._id)}
               onPress={() => toggleSelection(item._id)}
@@ -453,7 +453,7 @@ export const SingleUserPickerModal = ({
             <PersonListItem
               person={item}
               subtitle={item.profession || t("employees.noProfession")}
-              statusBadge={getWorkerStatusBadge(item, null, t)}
+              statusBadge={getWorkerStatusBadge(item, null, t, theme.content)}
               selectable
               selected={selectedUserId === item._id}
               onPress={() => onSelect(item._id)}

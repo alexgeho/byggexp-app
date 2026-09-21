@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
   StyleSheet,
 } from "react-native";
-import { content, radius, spacing, fontSize } from "../../../theme/tokens";
+import { radius, spacing, fontSize } from "../../../theme/tokens";
+import { useTheme } from "../../../theme/ThemeContext";
 
 // Primary/secondary action button. Shows a spinner while `loading`.
 export const Button = ({
@@ -17,6 +18,8 @@ export const Button = ({
   size = "md",
   style,
 }) => {
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const isDisabled = disabled || loading;
   return (
     <TouchableOpacity
@@ -33,7 +36,11 @@ export const Button = ({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === "secondary" ? content.accent : content.onAccent}
+          color={
+            variant === "secondary"
+              ? theme.content.accent
+              : theme.content.onAccent
+          }
           size="small"
         />
       ) : (
@@ -50,40 +57,41 @@ export const Button = ({
   );
 };
 
-const styles = StyleSheet.create({
-  base: {
-    borderRadius: radius.full,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  sizeMd: {
-    height: 48,
-    paddingHorizontal: spacing.xxl,
-  },
-  sizeSm: {
-    height: 38,
-    paddingHorizontal: spacing.xl,
-    minWidth: 88,
-  },
-  primary: {
-    backgroundColor: content.accent,
-  },
-  secondary: {
-    backgroundColor: content.surface,
-  },
-  disabled: {
-    opacity: 0.6,
-  },
-  text: {
-    fontSize: fontSize.callout,
-    fontWeight: "600",
-  },
-  textPrimary: {
-    color: content.onAccent,
-  },
-  textSecondary: {
-    color: content.accent,
-  },
-});
+const createStyles = (c) =>
+  StyleSheet.create({
+    base: {
+      borderRadius: radius.full,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    sizeMd: {
+      height: 48,
+      paddingHorizontal: spacing.xxl,
+    },
+    sizeSm: {
+      height: 38,
+      paddingHorizontal: spacing.xl,
+      minWidth: 88,
+    },
+    primary: {
+      backgroundColor: c.accent,
+    },
+    secondary: {
+      backgroundColor: c.surface,
+    },
+    disabled: {
+      opacity: 0.6,
+    },
+    text: {
+      fontSize: fontSize.callout,
+      fontWeight: "600",
+    },
+    textPrimary: {
+      color: c.onAccent,
+    },
+    textSecondary: {
+      color: c.accent,
+    },
+  });
 
 export default Button;

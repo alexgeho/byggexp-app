@@ -74,7 +74,7 @@ export const SelectWorkers = () => {
       <PersonListItem
         person={worker}
         subtitle={worker.profession || t("employees.noProfession")}
-        statusBadge={getWorkerStatusBadge(worker, projectId, t)}
+        statusBadge={getWorkerStatusBadge(worker, projectId, t, theme.content)}
         selectable
         selected={selectedWorkers.includes(worker._id)}
         onPress={() => toggleWorkerSelection(worker._id)}

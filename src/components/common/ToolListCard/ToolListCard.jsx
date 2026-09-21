@@ -3,16 +3,16 @@ import { Image, StyleSheet, Text, View } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import { ListCard } from "../ListCard/ListCard";
-import { cardStyles } from "../../../styles/cards";
+import { useCardStyles } from "../../../styles/cards";
 import { useTheme } from "../../../theme/ThemeContext";
 import { API_BASE_URL } from "../../../services/api";
 import { getToolStatusMeta } from "../../../constants/toolStatus";
 
-const TOOL_STATUS_BADGE_STYLES = {
-  available: cardStyles.cardBadgeAvailable,
-  broken: cardStyles.cardBadgeBroken,
-  in_repair: cardStyles.cardBadgeInRepair,
-  occupied: cardStyles.cardBadgeOccupied,
+const TOOL_STATUS_BADGE_KEYS = {
+  available: "cardBadgeAvailable",
+  broken: "cardBadgeBroken",
+  in_repair: "cardBadgeInRepair",
+  occupied: "cardBadgeOccupied",
 };
 
 // Maintenance states (broken / in repair) are set manually and take priority.
@@ -43,6 +43,7 @@ const resolvePhotoUrl = (value) => {
 export function ToolListCard({ tool, onPress, selected = false }) {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const cardStyles = useCardStyles();
 
   const photoUrl = resolvePhotoUrl(tool.photoUrl);
   const statusMeta = getToolStatusMeta(getEffectiveToolStatus(tool));
@@ -53,7 +54,7 @@ export function ToolListCard({ tool, onPress, selected = false }) {
       onPress={onPress}
       selected={selected}
       badgeLabel={t(`tools.status.${statusMeta.value}`, statusMeta.label)}
-      badgeStyle={TOOL_STATUS_BADGE_STYLES[statusMeta.tone]}
+      badgeStyle={cardStyles[TOOL_STATUS_BADGE_KEYS[statusMeta.tone]]}
       leading={
         photoUrl ? (
           <Image source={{ uri: photoUrl }} style={styles.toolPhoto} />

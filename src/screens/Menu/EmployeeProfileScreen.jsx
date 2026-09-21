@@ -24,7 +24,7 @@ import { FieldCard, FieldRow } from "../../components/common/FieldRow/FieldRow";
 import AuthContext from "../../contexts/AuthContext";
 import { useFeedback } from "../../contexts/FeedbackContext";
 import { chatService, userService } from "../../services";
-import { cardStyles } from "../../styles/cards";
+import { useCardStyles } from "../../styles/cards";
 import { standardScreenHeaderPlaceholder } from "../../styles/screenLayout";
 import { createStyles } from "./EmployeeProfileScreen.styles";
 import { useTheme } from "../../theme/ThemeContext";
@@ -81,11 +81,11 @@ const getWorkStatusLabel = (workPresence, t) => {
   return t("employeeProfile.offDuty");
 };
 
-const TOOL_STATUS_BADGE_STYLES = {
-  available: cardStyles.cardBadgeAvailable,
-  broken: cardStyles.cardBadgeBroken,
-  in_repair: cardStyles.cardBadgeInRepair,
-  occupied: cardStyles.cardBadgeOccupied,
+const TOOL_STATUS_BADGE_KEYS = {
+  available: "cardBadgeAvailable",
+  broken: "cardBadgeBroken",
+  in_repair: "cardBadgeInRepair",
+  occupied: "cardBadgeOccupied",
 };
 
 function ActionButton({
@@ -134,6 +134,7 @@ export default function EmployeeProfileScreen() {
   const route = useRoute();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const cardStyles = useCardStyles();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const { userId } = useContext(AuthContext);
   const { showSuccess } = useFeedback();
@@ -568,7 +569,7 @@ export default function EmployeeProfileScreen() {
                     statusMeta.label,
                   )}
                   badgeStyle={
-                    TOOL_STATUS_BADGE_STYLES[statusMeta.tone] ||
+                    cardStyles[TOOL_STATUS_BADGE_KEYS[statusMeta.tone]] ||
                     cardStyles.cardBadgeNeutral
                   }
                   leading={

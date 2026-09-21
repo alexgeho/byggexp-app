@@ -61,7 +61,7 @@ import {
 import { sortByNewest } from "../../../utils/sortByNewest";
 import { normalizeRefId } from "../../../utils/entityId";
 import { getTaskDisplayStatus } from "../../../utils/taskStatus";
-import { cardStyles } from "../../../styles/cards";
+import { useCardStyles } from "../../../styles/cards";
 import { pickUploadAssets } from "../../../utils/uploadPicker";
 import {
   canCreateTasks,
@@ -110,10 +110,10 @@ const formatDate = (value, withTime = false, t = null) => {
       });
 };
 
-const taskBadgeStyles = {
-  open: cardStyles.cardBadgeOpen,
-  overdue: cardStyles.cardBadgeOverdue,
-  completed: cardStyles.cardBadgeCompleted,
+const TASK_BADGE_KEYS = {
+  open: "cardBadgeOpen",
+  overdue: "cardBadgeOverdue",
+  completed: "cardBadgeCompleted",
 };
 
 // A worker counts as "at work" when their live status is working on this
@@ -161,6 +161,7 @@ export const ProjectScreen = () => {
   const { user, hasPermission } = useContext(AuthContext);
   const { showSuccess } = useFeedback();
   const { theme } = useTheme();
+  const cardStyles = useCardStyles();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const { id, initialTab, refreshKey } = route.params || {};
   const [modal, setModal] = useState(initialTab || "Tasks");
@@ -562,7 +563,7 @@ export const ProjectScreen = () => {
                   }
                   title={task.taskTitle || t("task.untitled")}
                   badgeLabel={t(`task.status.${status.tone}`, status.label)}
-                  badgeStyle={taskBadgeStyles[status.tone]}
+                  badgeStyle={cardStyles[TASK_BADGE_KEYS[status.tone]]}
                 >
                   <Text
                     style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}

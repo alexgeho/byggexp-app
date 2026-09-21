@@ -118,13 +118,16 @@ export function FeedbackProvider({ children }) {
     [showSuccess, showError, hideSuccess, hidePopup],
   );
 
-  const isDarkTheme = theme.colors.background === "#121212";
-  const popupBackground = isDarkTheme ? "#1C1C1C" : "#FFFFFF";
-  const popupBorder = isDarkTheme ? "rgba(255, 255, 255, 0.12)" : "#FFFFFF";
-  const popupTextColor = isDarkTheme ? "#FFFFFF" : "#052D50";
-  const popupSubtextColor = isDarkTheme
-    ? "rgba(255, 255, 255, 0.72)"
-    : "rgba(5, 45, 80, 0.65)";
+  // The dark theme was detected by comparing the background to "#121212" — a
+  // value no theme has carried for months — so the popup always took the light
+  // branch and flashed a white card with navy text over the dark app. The
+  // theme says outright which scheme it is; ask it.
+  const c = theme.content;
+  const isDarkTheme = c.scheme === "dark";
+  const popupBackground = c.surface;
+  const popupBorder = isDarkTheme ? c.border : "#FFFFFF";
+  const popupTextColor = c.textPrimary;
+  const popupSubtextColor = c.textSecondary;
   const isError = popup?.variant === "error";
   return (
     <FeedbackContext.Provider value={value}>
@@ -139,7 +142,7 @@ export function FeedbackProvider({ children }) {
         <View style={styles.overlay}>
           <BlurView
             intensity={50}
-            tint="light"
+            tint={isDarkTheme ? "dark" : "light"}
             style={StyleSheet.absoluteFill}
             pointerEvents="none"
           />

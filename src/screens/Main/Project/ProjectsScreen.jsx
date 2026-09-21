@@ -36,7 +36,7 @@ import {
   sortByFavourite,
 } from "../../../utils/favouriteProjects";
 import { resolveLocalProjectSelection } from "../../../utils/localProjectSelection";
-import { cardStyles } from "../../../styles/cards";
+import { useCardStyles } from "../../../styles/cards";
 import { createStyles } from "./ProjectsScreen.styles";
 import { canCreateProjects } from "../../../utils/userRoles";
 import {
@@ -71,6 +71,7 @@ export default function ProjectsScreen() {
   const route = useRoute();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const cardStyles = useCardStyles();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const {
     userId,

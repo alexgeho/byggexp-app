@@ -3,7 +3,7 @@ import { Text } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { ListCard } from "../ListCard/ListCard";
-import { cardStyles } from "../../../styles/cards";
+import { useCardStyles } from "../../../styles/cards";
 import { useTheme } from "../../../theme/ThemeContext";
 import { formatDateOrNull } from "../../../utils/dateLocale";
 import {
@@ -17,6 +17,7 @@ import {
 export function ProjectListCard({ project, onPress, selected = false }) {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const cardStyles = useCardStyles();
   const startDate = formatDateOrNull(project.beginningDate);
 
   return (
@@ -28,7 +29,7 @@ export function ProjectListCard({ project, onPress, selected = false }) {
         `projects.status.${project.status}`,
         formatProjectStatus(project.status),
       )}
-      badgeStyle={getProjectStatusBadgeStyle(project.status)}
+      badgeStyle={getProjectStatusBadgeStyle(project.status, theme.content)}
     >
       {startDate ? (
         <Text

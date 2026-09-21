@@ -11,6 +11,7 @@ import Icon from "react-native-vector-icons/Feather";
 import { formatShiftDayLabel, resolveUploadUrl } from "../../../utils/shifts";
 import { PersonListItem } from "../../../components/common/PersonListItem/PersonListItem";
 import { getWorkerStatusBadge } from "../../../utils/workerStatusBadge";
+import { useTheme } from "../../../theme/ThemeContext";
 
 // The project detail tabs. Data-driven so the six near-identical TouchableOpacity
 // blocks become one map; the Economy tab is finance-gated. Behaviour and order
@@ -136,6 +137,7 @@ export function ProjectWorkersTab({
   styles,
   t,
 }) {
+  const { theme } = useTheme();
   if (!workers.length) {
     return (
       <View style={styles.emptyState}>
@@ -154,7 +156,7 @@ export function ProjectWorkersTab({
       subtitle={
         worker.profession || worker.email || t("employees.noProfession")
       }
-      statusBadge={getWorkerStatusBadge(worker, projectId, t)}
+      statusBadge={getWorkerStatusBadge(worker, projectId, t, theme.content)}
       onPress={() => onOpenWorker(worker._id || worker.id)}
     />
   ));

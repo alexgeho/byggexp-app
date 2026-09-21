@@ -10,7 +10,7 @@ const buildTones = (c) => ({
   success: { bg: c.successSoft, fg: c.success },
   warning: { bg: c.warningSoft, fg: c.warning },
   accent: { bg: c.accentSoft, fg: c.accent },
-  neutral: { bg: "#EAF0F5", fg: c.textMuted },
+  neutral: { bg: c.statusOffDutySoft, fg: c.textSecondary },
 });
 
 export const Badge = ({ label, tone = "neutral", backgroundColor, color }) => {

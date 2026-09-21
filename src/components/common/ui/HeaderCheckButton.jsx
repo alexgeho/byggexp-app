@@ -1,7 +1,7 @@
 import React from "react";
 import { TouchableOpacity, ActivityIndicator, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
-import { content, radius } from "../../../theme/tokens";
+import { radius } from "../../../theme/tokens";
 import { useTheme } from "../../../theme/ThemeContext";
 
 // Round confirm/save action for a screen header (top-right). Replaces the
@@ -30,9 +30,9 @@ export const HeaderCheckButton = ({
       accessibilityState={{ disabled: disabled || loading, busy: loading }}
     >
       {loading ? (
-        <ActivityIndicator color={content.onAccent} size="small" />
+        <ActivityIndicator color={theme.content.onAccent} size="small" />
       ) : (
-        <Icon name="check" size={22} color={content.onAccent} />
+        <Icon name="check" size={22} color={theme.content.onAccent} />
       )}
     </TouchableOpacity>
   );

@@ -103,16 +103,16 @@ export const darkContent = {
   // Text
   textPrimary: "#FFFFFF",
   textSecondary: "#AEB9C6",
-  textMuted: "#8A97A6",
-  placeholder: "#6B7683",
+  textMuted: "#9AA6B2",
+  placeholder: "#8E9BA8",
   onAccent: "#FFFFFF",
 
   // Surfaces — card sits a step above the near-black background for separation.
-  surface: "#2C2C2E",
-  card: "#2C2C2E", // dark: keep the card == surface (light uses #F8F8F8)
+  surface: "#232323",
+  card: "#232323", // dark: keep the card == surface (light uses #F8F8F8)
   surfaceMuted: "rgba(255,255,255,0.10)",
   inputSurface: "rgba(255,255,255,0.08)",
-  background: "#141414",
+  background: "#1C1C1C",
 
   // Lines
   divider: "rgba(255,255,255,0.10)",
@@ -139,7 +139,7 @@ export const darkContent = {
   statusNotAtWorkSoft: "rgba(252,29,44,0.22)",
   statusWaiting: "#4DA3FF",
   statusWaitingSoft: "rgba(12,119,253,0.24)",
-  statusOffDuty: "#8A97A6",
+  statusOffDuty: "#9AA6B2",
   statusOffDutySoft: "rgba(255,255,255,0.10)",
 };
 

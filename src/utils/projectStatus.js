@@ -14,7 +14,21 @@ const DEFAULT_STATUS_BADGE = {
   backgroundColor: "#69819624",
 };
 
-export function getProjectStatusBadgeStyle(status) {
+// Dark theme: the same semantics, but the bright foreground + translucent
+// tint the dark tokens define. The light pairs above are tuned for a white
+// card and go muddy on a near-black one.
+const darkStatusBadges = (c) => ({
+  planning: { color: c.accent, backgroundColor: c.accentSoft },
+  in_progress: { color: c.success, backgroundColor: c.successSoft },
+  completed: { color: c.textSecondary, backgroundColor: c.statusOffDutySoft },
+  on_hold: { color: c.warning, backgroundColor: c.warningSoft },
+});
+
+export function getProjectStatusBadgeStyle(status, content) {
+  if (content?.scheme === "dark") {
+    const badges = darkStatusBadges(content);
+    return badges[status] || badges.completed;
+  }
   return PROJECT_STATUS_BADGES[status] || DEFAULT_STATUS_BADGE;
 }
 

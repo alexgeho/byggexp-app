@@ -1,6 +1,6 @@
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import { cardStyles } from "../../../styles/cards";
+import { useCardStyles } from "../../../styles/cards";
 import { useTheme } from "../../../theme/ThemeContext";
 
 /* Shared "projects list" style card, used for every entity list (projects, tasks, employees, tools). */
@@ -17,6 +17,7 @@ export function ListCard({
   titleStyle,
 }) {
   const { theme } = useTheme();
+  const cardStyles = useCardStyles();
   const Container = onPress ? TouchableOpacity : View;
 
   return (

@@ -7,7 +7,7 @@ import { useTheme } from "../../../theme/ThemeContext";
 import { clientService } from "../../../services/client.service";
 import { EntityListScreen } from "../../../components/common/EntityListScreen/EntityListScreen";
 import { ListCard } from "../../../components/common/ListCard/ListCard";
-import { cardStyles } from "../../../styles/cards";
+import { useCardStyles } from "../../../styles/cards";
 import { getEntityId } from "../../../utils/entityId";
 
 // Kundtyp filter, "all" first so the list opens on every client.
@@ -20,6 +20,7 @@ const clientName = (client) =>
 export default function ClientsScreen() {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const cardStyles = useCardStyles();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
 
   const [clients, setClients] = useState([]);

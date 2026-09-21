@@ -29,7 +29,7 @@ import { ListCard } from "../../components/common/ListCard/ListCard";
 import { ProjectFilterSelector } from "../../components/common/ProjectFilterSelector/ProjectFilterSelector";
 import { createStyles } from "./TasksScreen.styles";
 import { resolveNewestTimestamp } from "../../utils/sortByNewest";
-import { cardStyles } from "../../styles/cards";
+import { useCardStyles } from "../../styles/cards";
 import { canCreateTasks, canManageTasks } from "../../utils/userRoles";
 
 export default function TasksScreen() {
@@ -37,6 +37,7 @@ export default function TasksScreen() {
   const route = useRoute();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const cardStyles = useCardStyles();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const { user, isLoading: authLoading } = useContext(AuthContext);
   const { refreshKey } = route.params || {};
