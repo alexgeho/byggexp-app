@@ -137,8 +137,15 @@ export const createStyles = (c) => {
     cardMeta: { fontSize: 13, fontFamily: F_MED, color: MUTED },
     cardRight: {
       alignItems: "flex-end",
-      justifyContent: "space-between",
+      // The amount sits at the top of the right column, where the badge was.
+      justifyContent: "flex-start",
     },
+    // The status now speaks through the amount's colour instead of a badge:
+    // grey while it is a draft, blue once sent, green paid, red overdue.
+    amount_draft: { color: MUTED },
+    amount_sent: { color: "#0C77FD" },
+    amount_ok: { color: "#04B251" },
+    amount_bad: { color: "#E5484D" },
     cardAmount: { fontSize: 17, fontFamily: F_MED, color: INK },
 
     badge: {

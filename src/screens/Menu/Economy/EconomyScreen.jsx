@@ -328,12 +328,9 @@ export default function EconomyScreen() {
           </Text>
         </View>
         <View style={styles.cardRight}>
-          <View style={[styles.badge, styles[`badge_${tone}`]]}>
-            <Text style={[styles.badgeText, styles[`badgeText_${tone}`]]}>
-              {t(`economy.${statusNs}.${status}`, status)}
-            </Text>
-          </View>
-          <Text style={styles.cardAmount}>{formatAmount(amount)}</Text>
+          <Text style={[styles.cardAmount, styles[`amount_${tone}`]]}>
+            {formatAmount(amount)}
+          </Text>
         </View>
 
         {/* Overflow menu: a vertical ⋮ in the card's top-right corner, where
@@ -434,9 +431,6 @@ export default function EconomyScreen() {
         >
           <Pressable style={styles.modalSheet} onPress={() => {}}>
             <View style={styles.grab} />
-            <Text style={styles.modalTitle} numberOfLines={1}>
-              {actionItem?.companyName || t("economy.noCustomer")}
-            </Text>
 
             {busyAction ? (
               <ActivityIndicator
