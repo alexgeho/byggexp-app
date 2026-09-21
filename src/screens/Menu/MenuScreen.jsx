@@ -46,6 +46,8 @@ const MENU_ICONS = {
   projects: "folder",
   offers: "file-text",
   invoices: "file",
+  // The bills that come in — the inbox, next to the ones we send out.
+  "supplier-invoices": "inbox",
   clients: "users",
   articles: "package",
   company: "briefcase",
