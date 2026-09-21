@@ -82,7 +82,7 @@ export default function CreateTaskScreen() {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const { showSuccess } = useFeedback();
-  const { user } = useContext(AuthContext);
+  const { user, selectedProject: activeProject } = useContext(AuthContext);
   const isWorkerCreator = user?.role === "worker";
   const { projectId: initialProjectId, projectName: initialProjectName } =
     route.params || {};
@@ -94,11 +94,22 @@ export default function CreateTaskScreen() {
     initialTaskDraft.returnTarget || (initialProjectId ? "project" : "tasks");
   const allowedToCreate = canCreateTasks(user?.role);
 
+  // Opened from somewhere with no project of its own (home, the task list),
+  // the form starts on the project the app is currently working in. A task
+  // saved without one never appears under any project, and nobody noticed
+  // until it was missing.
   const [selectedProjectId, setSelectedProjectId] = useState(
-    initialTaskDraft.selectedProjectId || initialProjectId || "",
+    initialTaskDraft.selectedProjectId ||
+      initialProjectId ||
+      activeProject?._id ||
+      activeProject?.id ||
+      "",
   );
   const [projectName, setProjectName] = useState(
-    initialTaskDraft.projectName || initialProjectName || "",
+    initialTaskDraft.projectName ||
+      initialProjectName ||
+      activeProject?.name ||
+      "",
   );
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
