@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { styles } from "./ToolActionSheet.styles";
+import { createStyles } from "./ToolActionSheet.styles";
+import { useTheme } from "../../theme/ThemeContext";
 import { useTranslation } from "react-i18next";
 import AuthContext from "../../contexts/AuthContext";
 import { toolService } from "../../services";
@@ -20,6 +21,8 @@ const idOf = (v) => (v && typeof v === "object" ? v._id || v.id : v);
 // endpoint the admin uses.
 export default function ToolActionSheet({ visible, tool, onClose, onUpdated }) {
   const { t } = useTranslation();
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const { userId, user } = useContext(AuthContext);
   const myId = userId || user?._id || user?.id || null;
   const [busy, setBusy] = useState(false);

@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Linking,
@@ -12,7 +12,8 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { useTranslation } from "react-i18next";
 
 import { BackButton } from "../BackButton/BackButton";
-import { styles } from "../../../screens/Menu/ToolScanScreen.styles";
+import { createStyles } from "../../../screens/Menu/ToolScanScreen.styles";
+import { useTheme } from "../../../theme/ThemeContext";
 
 // Camera sheet that reads one QR code and hands the raw string back. Same
 // framing/permission flow as ToolScanScreen — that screen looks the scanned
@@ -20,6 +21,8 @@ import { styles } from "../../../screens/Menu/ToolScanScreen.styles";
 // the label already stuck on it).
 export function QrScannerModal({ visible, onClose, onScanned, title, hint }) {
   const { t } = useTranslation();
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const [permission, requestPermission] = useCameraPermissions();
   const lockRef = useRef(false);
   const [scanning, setScanning] = useState(false);

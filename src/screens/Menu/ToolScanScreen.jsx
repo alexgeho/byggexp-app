@@ -1,22 +1,26 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Linking,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import { styles } from "./ToolScanScreen.styles";
+import { createStyles } from "./ToolScanScreen.styles";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { BackButton } from "../../components/common/BackButton/BackButton";
+import { useTheme } from "../../theme/ThemeContext";
 import { toolService } from "../../services";
 import ToolActionSheet from "./ToolActionSheet";
 
 export default function ToolScanScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const [permission, requestPermission] = useCameraPermissions();
   const [tool, setTool] = useState(null);
   const [looking, setLooking] = useState(false);

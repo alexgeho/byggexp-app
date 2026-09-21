@@ -13,7 +13,8 @@ import {
 } from "react-native";
 import AuthContext from "../../../contexts/AuthContext";
 import { expenseService, projectService } from "../../../services";
-import { styles } from "./ExpenseReviewSheet.styles";
+import { createStyles } from "./ExpenseReviewSheet.styles";
+import { useTheme } from "../../../theme/ThemeContext";
 
 const toNumber = (v) => {
   const n = parseFloat(String(v ?? "").replace(",", "."));
@@ -31,6 +32,8 @@ export default function ExpenseReviewSheet({
   onSaved,
 }) {
   const { t } = useTranslation();
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const { selectedProject } = useContext(AuthContext);
   const selectedProjectId = selectedProject?._id || selectedProject?.id || null;
   const [supplier, setSupplier] = useState("");
