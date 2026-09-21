@@ -64,7 +64,9 @@ export function BackButton({
       isLightColor(surface, theme.colors.background) &&
       isLightColor(theme.colors.homeButtonText || base.icon);
     if (washedOut) {
-      return { ...base, border: theme.colors.border };
+      // Exactly the button that was here before: frosted white, its own soft
+      // hairline, navy glyph. No new ring around it.
+      return base;
     }
     return {
       ...base,

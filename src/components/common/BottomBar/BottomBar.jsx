@@ -140,22 +140,19 @@ export function BottomBar({
     theme.colors.homeButtonBorder !== "transparent"
       ? theme.colors.homeButtonBorder
       : theme.colors.border;
-  const usesDefaultLook = !pillColor && !glass && showBackground;
   // The home treatment is white-on-glass, which works over home's gradient.
-  // On an inner page that same surface flattens to near-white, so white icons
-  // and a white hairline vanish — there the bar keeps its own light look.
-  const pillReadsLight =
-    usesDefaultLook &&
+  // On an inner page that same surface flattens to near-white, so the white
+  // icons and the white hairline vanish. There the bar keeps exactly the bar
+  // it always had: the frosted fill, no outline, navy glyphs.
+  const homeLookWouldVanish =
     theme.content.scheme !== "dark" &&
-    isLightColor(themedPill, theme.colors.background);
+    isLightColor(themedPill, theme.colors.background) &&
+    isLightColor(theme.colors.homeButtonText || "#FFFFFF");
+  const usesDefaultLook =
+    !pillColor && !glass && showBackground && !homeLookWouldVanish;
   const effectivePillColor = pillColor || (usesDefaultLook ? themedPill : null);
   const effectivePillBorder =
-    pillBorderColor ||
-    (usesDefaultLook
-      ? pillReadsLight
-        ? theme.colors.border
-        : themedBorder
-      : null);
+    pillBorderColor || (usesDefaultLook ? themedBorder : null);
   const effectiveGlow =
     pillGlowColor || (usesDefaultLook ? theme.colors.cardGlow : null);
 
@@ -191,10 +188,7 @@ export function BottomBar({
   // Icons/text: keep the original (untinted) navy look in light themes; in dark
   // tint the icons light so they read on the dark pill.
   const resolvedIconColor =
-    iconColor ??
-    (usesDefaultLook && !pillReadsLight
-      ? theme.colors.homeButtonText
-      : undefined);
+    iconColor ?? (usesDefaultLook ? theme.colors.homeButtonText : undefined);
   const activeIconColor =
     resolvedIconColor ?? (dark ? "#FFFFFF" : ACTIVE_ICON_COLOR);
   const iconColorFor = (isActive) => {
