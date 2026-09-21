@@ -316,21 +316,25 @@ export default function EconomyScreen() {
         activeOpacity={0.85}
         onPress={() => setActionItem(item)}
       >
+        {/* Two lines: who it is on top, when and how much under it. */}
         <View style={styles.cardInfo}>
-          <Text style={styles.cardNo}>
-            {isOffers ? t("economy.offerNo") : t("economy.invoiceNo")} #{number}
-          </Text>
-          <Text style={styles.cardMeta} numberOfLines={1}>
-            {dateLabel}
-          </Text>
-          <Text style={styles.cardCustomer} numberOfLines={1}>
-            {customer}
-          </Text>
-        </View>
-        <View style={styles.cardRight}>
-          <Text style={[styles.cardAmount, styles[`amount_${tone}`]]}>
-            {formatAmount(amount)}
-          </Text>
+          <View style={styles.cardLine}>
+            <Text style={styles.cardNo}>
+              {isOffers ? t("economy.offerNo") : t("economy.invoiceNo")} #
+              {number}
+            </Text>
+            <Text style={styles.cardCustomer} numberOfLines={1}>
+              {customer}
+            </Text>
+          </View>
+          <View style={styles.cardLine}>
+            <Text style={styles.cardMeta} numberOfLines={1}>
+              {dateLabel}
+            </Text>
+            <Text style={[styles.cardAmount, styles[`amount_${tone}`]]}>
+              {formatAmount(amount)}
+            </Text>
+          </View>
         </View>
 
         {/* Overflow menu: a vertical ⋮ in the card's top-right corner, where
@@ -342,7 +346,7 @@ export default function EconomyScreen() {
           accessibilityRole="button"
           accessibilityLabel={t("common.more", "Mer")}
         >
-          <Icon name="more-vertical" size={22} color="#9AA6B2" />
+          <Icon name="more-vertical" size={26} color="#9AA6B2" />
         </TouchableOpacity>
       </TouchableOpacity>
     );

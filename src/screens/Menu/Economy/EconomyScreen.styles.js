@@ -131,9 +131,22 @@ export const createStyles = (c) => {
       justifyContent: "space-between",
       alignItems: "stretch",
     },
-    cardInfo: { gap: 14, flexShrink: 1, paddingRight: 12 },
+    cardInfo: { flex: 1, gap: 10 },
+    // One line of the card: label on the left, value pushed to the right.
+    cardLine: {
+      flexDirection: "row",
+      alignItems: "baseline",
+      justifyContent: "space-between",
+      gap: 10,
+    },
     cardNo: { fontSize: 13, fontFamily: F_MED, color: MUTED },
-    cardCustomer: { fontSize: 17, fontFamily: F_MED, color: INK },
+    cardCustomer: {
+      fontSize: 17,
+      fontFamily: F_MED,
+      color: INK,
+      flexShrink: 1,
+      textAlign: "right",
+    },
     cardMeta: { fontSize: 13, fontFamily: F_MED, color: MUTED },
     cardRight: {
       alignItems: "flex-end",
@@ -175,7 +188,7 @@ export const createStyles = (c) => {
       top: 0,
       right: 0,
       bottom: 0,
-      width: 48,
+      width: 44,
       alignItems: "center",
       justifyContent: "center",
     },
