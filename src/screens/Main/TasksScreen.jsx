@@ -12,7 +12,14 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { Alert, View, Text, ActivityIndicator } from "react-native";
+import {
+  Alert,
+  View,
+  Text,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
+import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import AuthContext from "../../contexts/AuthContext";
 import { useTheme } from "../../theme/ThemeContext";
@@ -41,6 +48,9 @@ export default function TasksScreen() {
   // their own chip instead of burying the open ones, which is how every
   // task app people already use behaves.
   const [statusFilter, setStatusFilter] = useState("open");
+  // Folded project groups, by section title. A long list of projects is
+  // easier to scan when the ones you are not working on today are closed.
+  const [collapsed, setCollapsed] = useState({});
   const showCreateTask = canCreateTasks(user?.role);
 
   const fetchProjectsWithTasks = useCallback(async () => {
@@ -183,26 +193,37 @@ export default function TasksScreen() {
     [fetchProjectsWithTasks, t],
   );
 
+  const toggleSection = useCallback((title) => {
+    setCollapsed((previous) => ({ ...previous, [title]: !previous[title] }));
+  }, []);
+
   const sections = useMemo(() => {
     const result = [];
     if (visiblePersonalTasks.length > 0) {
+      const title = t("task.personal");
       result.push({
-        title: t("task.personal"),
+        title,
         project: null,
+        count: visiblePersonalTasks.length,
         // The shared list renders a row without section context, so each task
         // carries its project with it.
-        data: visiblePersonalTasks.map((task) => ({ ...task, project: null })),
+        data: collapsed[title]
+          ? []
+          : visiblePersonalTasks.map((task) => ({ ...task, project: null })),
       });
     }
     groupedTasks.forEach((project) => {
       result.push({
         title: project.name,
         project,
-        data: project.visibleTasks.map((task) => ({ ...task, project })),
+        count: project.visibleTasks.length,
+        data: collapsed[project.name]
+          ? []
+          : project.visibleTasks.map((task) => ({ ...task, project })),
       });
     });
     return result;
-  }, [visiblePersonalTasks, groupedTasks, t]);
+  }, [visiblePersonalTasks, groupedTasks, t, collapsed]);
 
   const formatTaskDate = (date) => {
     if (!date) return t("task.noDueDate");
@@ -267,21 +288,35 @@ export default function TasksScreen() {
       loading={false}
       sections={sections}
       keyExtractor={(item, index) => item._id || `task-${index}`}
-      renderSectionHeader={({ section }) => (
-        <View style={styles.projectGroupHeader}>
-          <Text
-            style={[
-              styles.projectTitle,
-              { fontFamily: theme.text.fontFamily["bold"] },
-            ]}
+      renderSectionHeader={({ section }) => {
+        const isCollapsed = Boolean(collapsed[section.title]);
+        return (
+          <TouchableOpacity
+            style={styles.projectGroupHeader}
+            onPress={() => toggleSection(section.title)}
+            activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityState={{ expanded: !isCollapsed }}
           >
-            {section.title}
-          </Text>
-          <Text style={styles.projectCount}>
-            {t("task.count", { count: section.data.length })}
-          </Text>
-        </View>
-      )}
+            <Icon
+              name={isCollapsed ? "chevron-right" : "chevron-down"}
+              size={18}
+              color={theme.content.textMuted}
+            />
+            <Text
+              style={[
+                styles.projectTitle,
+                { fontFamily: theme.text.fontFamily["bold"] },
+              ]}
+            >
+              {section.title}
+            </Text>
+            <Text style={styles.projectCount}>
+              {t("task.count", { count: section.count })}
+            </Text>
+          </TouchableOpacity>
+        );
+      }}
       filters={["open", "overdue", "completed", "all"].map((value) => ({
         value,
         label: t(`task.filter.${value}`),

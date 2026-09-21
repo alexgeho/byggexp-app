@@ -56,10 +56,12 @@ export const createStyles = (c) =>
       width: "100%",
       gap: 12,
     },
+    // Tap anywhere on it to fold the group: chevron, name, count.
     projectGroupHeader: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
+      gap: 8,
     },
     projectTitle: {
       color: c.textPrimary,

@@ -329,9 +329,18 @@ const createStyles = (c) =>
     rowGap: {
       marginBottom: ROW_GAP,
     },
+    // Only a bottom gap: the card above it already leaves ROW_GAP under
+    // itself, and the controls above the first heading leave the same. A top
+    // margin here stacked with those and doubled the space.
+    //
+    // The page colour behind it matters: a section heading sticks to the top
+    // while its group scrolls, and a transparent one let the cards run
+    // through the text.
     sectionHeaderGap: {
-      marginTop: ROW_GAP,
       marginBottom: ROW_GAP,
+      paddingTop: space.xs,
+      paddingBottom: space.xs,
+      backgroundColor: c.background,
     },
     listHeaderWrap: {
       marginBottom: ROW_GAP,
