@@ -117,6 +117,12 @@ export function EntityListScreen({
   );
 
   // One row, wrapped in the swipe action when the screen allows deleting.
+  // A list header ("All projects") is a row like any other, so it keeps the
+  // same gap to the first card instead of sitting glued to it.
+  const headerComponent = listHeader ? (
+    <View style={styles.listHeaderWrap}>{listHeader}</View>
+  ) : null;
+
   const renderRow = useCallback(
     (item) => {
       const card = renderCard(item);
@@ -202,7 +208,7 @@ export function EntityListScreen({
             keyExtractor={keyExtractor}
             renderSectionHeader={renderSectionHeader}
             ListEmptyComponent={emptyComponent}
-            ListHeaderComponent={listHeader}
+            ListHeaderComponent={headerComponent}
             renderItem={({ item }) => renderRow(item)}
           />
         ) : (
@@ -213,7 +219,7 @@ export function EntityListScreen({
             data={data}
             keyExtractor={keyExtractor}
             ListEmptyComponent={emptyComponent}
-            ListHeaderComponent={listHeader}
+            ListHeaderComponent={headerComponent}
             renderItem={({ item }) => renderRow(item)}
           />
         )}
@@ -291,6 +297,9 @@ const createStyles = (c) =>
     },
     listContent: {
       paddingBottom: 140,
+    },
+    listHeaderWrap: {
+      marginBottom: 10,
     },
     // Red slab revealed behind a swiped card.
     swipeDeleteAction: {

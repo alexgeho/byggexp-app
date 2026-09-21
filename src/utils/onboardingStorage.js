@@ -116,6 +116,9 @@ export async function resetOnboardingForNewUser(userId) {
   try {
     const previous = await AsyncStorage.getItem(LAST_ONBOARDED_USER_KEY);
     if (previous === id) return; // same user — keep their progress
+    // NB: only the shared flags are cleared. The welcome tour also writes a
+    // per-user flag (`<key>:<userId>`), which stays — a person coming back to
+    // their own account has seen it already.
     await AsyncStorage.multiRemove([
       WELCOME_SLIDES_SEEN_KEY,
       ONBOARDING_DISMISSED_KEY,

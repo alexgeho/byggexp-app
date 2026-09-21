@@ -35,6 +35,9 @@ import { WELCOME_SLIDES_SEEN_KEY } from "../../../utils/onboardingStorage";
 // everyone when the content changes — which is why users who saw the old slides
 // get this redesigned set a single time.
 const SEEN_KEY = WELCOME_SLIDES_SEEN_KEY;
+
+// Older than this and the account is not new any more — no auto-tour.
+const ESTABLISHED_MS = 14 * 24 * 60 * 60 * 1000;
 // Event that any screen can emit to re-open the tour on demand (e.g. from the
 // in-app guide) — separate from the one-time auto-show gated by SEEN_KEY.
 const OPEN_EVENT = "welcome-slides:open";
@@ -320,17 +323,29 @@ export function WelcomeSlides() {
         active = false;
       };
     }
-    AsyncStorage.getItem(SEEN_KEY)
-      .then((seen) => {
-        if (active && seen !== "1") {
-          setVisible(true);
-        }
-      })
-      .catch(() => {});
+    (async () => {
+      // An account that has been in use for a while never gets the tour
+      // pushed at it: it is a first-run explainer, not a monthly greeting.
+      // (The Help guide still opens it on demand.)
+      const created = Date.parse(user?.createdAt || "");
+      if (Number.isFinite(created) && Date.now() - created > ESTABLISHED_MS) {
+        return;
+      }
+      // Per user: "seen" belongs to the person, not the device, so switching
+      // accounts and back doesn't replay it.
+      const userKey = user?._id || user?.id || "";
+      const [perUser, legacy] = await Promise.all([
+        AsyncStorage.getItem(`${SEEN_KEY}:${userKey}`).catch(() => null),
+        AsyncStorage.getItem(SEEN_KEY).catch(() => null),
+      ]);
+      if (!active) return;
+      if (perUser === "1" || legacy === "1") return;
+      setVisible(true);
+    })();
     return () => {
       active = false;
     };
-  }, [role]);
+  }, [role, user]);
 
   // Manual re-open (from the Help guide): reset to the first slide and show,
   // regardless of the SEEN_KEY flag. Only meaningful once we know the role.
@@ -361,6 +376,8 @@ export function WelcomeSlides() {
   }
 
   const finish = (reason) => {
+    const userKey = user?._id || user?.id || "";
+    AsyncStorage.setItem(`${SEEN_KEY}:${userKey}`, "1").catch(() => {});
     AsyncStorage.setItem(SEEN_KEY, "1").catch(() => {});
     track(reason === "skipped" ? "welcome_skipped" : "welcome_completed", {
       role: roleKey,
