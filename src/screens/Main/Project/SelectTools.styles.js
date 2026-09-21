@@ -13,6 +13,12 @@ export const createStyles = (c) =>
       justifyContent: "space-between",
       alignItems: "center",
     },
+    // "Loading…" under the spinner: without a colour it renders RN's default
+    // black, which disappears on the dark page.
+    loadingText: {
+      color: c.textMuted,
+      marginTop: 8,
+    },
     centeredContainer: {
       flex: 1,
       justifyContent: "center",
@@ -45,7 +51,7 @@ export const createStyles = (c) =>
       width: 46,
       height: 46,
       borderRadius: 9999,
-      backgroundColor: "#E8F2FE",
+      backgroundColor: c.accentSoft,
       alignItems: "center",
       justifyContent: "center",
     },

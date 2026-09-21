@@ -23,6 +23,17 @@ export const createStyles = (c) =>
       paddingBottom: 140,
       gap: 12,
     },
+    // "Loading…" under the spinner: without a colour it renders RN's default
+    // black, which disappears on the dark page.
+    emptyListText: {
+      color: c.textMuted,
+      textAlign: "center",
+      paddingVertical: 12,
+    },
+    loadingText: {
+      color: c.textMuted,
+      marginTop: 8,
+    },
     loadingContainer: {
       flex: 1,
       justifyContent: "center",

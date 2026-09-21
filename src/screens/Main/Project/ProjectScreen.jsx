@@ -613,7 +613,11 @@ export const ProjectScreen = () => {
                       />
                     ) : (
                       <View style={styles.documentFilePreview}>
-                        <Icon name={typeMeta.icon} size={24} color="#052D50" />
+                        <Icon
+                          name={typeMeta.icon}
+                          size={24}
+                          color={theme.content.textSecondary}
+                        />
                         <Text style={styles.documentFileType}>
                           {typeMeta.label}
                         </Text>

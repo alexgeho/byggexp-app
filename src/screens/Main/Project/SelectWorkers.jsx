@@ -139,7 +139,7 @@ export const SelectWorkers = () => {
     return (
       <View style={styles.centeredContainer}>
         <ActivityIndicator size="large" color="#0091FF" />
-        <Text>{t("workers.loading")}</Text>
+        <Text style={styles.loadingText}>{t("workers.loading")}</Text>
       </View>
     );
   }

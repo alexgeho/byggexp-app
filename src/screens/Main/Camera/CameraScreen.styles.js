@@ -19,6 +19,9 @@ export const createStyles = (c) =>
     },
     centered: {
       ...standardScreenContainer,
+      // The shared container carries a light page colour; the loading state is
+      // a full page, so it has to take the theme's.
+      backgroundColor: c.background,
     },
     header: {
       ...standardScreenHeader,
@@ -49,7 +52,7 @@ export const createStyles = (c) =>
       marginTop: 12,
       paddingHorizontal: 14,
       borderRadius: 16,
-      backgroundColor: "#052D500D",
+      backgroundColor: c.inputSurface,
     },
     searchInput: {
       flex: 1,
@@ -65,7 +68,7 @@ export const createStyles = (c) =>
       padding: 4,
       // Figma: segmented control uses a soft 10px radius, not a full pill.
       borderRadius: 10,
-      backgroundColor: "#052D500D",
+      backgroundColor: c.inputSurface,
     },
     tab: {
       flex: 1,
@@ -127,7 +130,7 @@ export const createStyles = (c) =>
       height: THUMB,
       // Figma: photo thumbnails use a 6px radius.
       borderRadius: 6,
-      backgroundColor: "#E5E9ED",
+      backgroundColor: c.inputSurface,
       overflow: "hidden",
       alignItems: "center",
       justifyContent: "center",
@@ -148,7 +151,8 @@ export const createStyles = (c) =>
       bottom: 0,
       paddingHorizontal: 6,
       paddingVertical: 4,
-      backgroundColor: c.divider,
+      // Sits on the receipt photo: it has to darken, not wash out.
+      backgroundColor: "rgba(0, 0, 0, 0.45)",
     },
     receiptAmountText: {
       color: "#FFFFFF",
@@ -192,7 +196,7 @@ export const createStyles = (c) =>
     // Receipt scan overlay
     scanOverlay: {
       ...StyleSheet.absoluteFillObject,
-      backgroundColor: c.divider,
+      backgroundColor: "rgba(0, 0, 0, 0.35)",
       alignItems: "center",
       justifyContent: "center",
       gap: 12,

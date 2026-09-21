@@ -695,7 +695,11 @@ export default function CreateTaskScreen() {
                   </Text>
                 </View>
               </View>
-              <Icon name="chevron-right" size={18} color="#052D50" />
+              <Icon
+                name="chevron-right"
+                size={18}
+                color={theme.content.textMuted}
+              />
             </TouchableOpacity>
             <View style={styles.rowSepIcon} />
             <TouchableOpacity
@@ -734,10 +738,14 @@ export default function CreateTaskScreen() {
                   style={styles.clearInlineButton}
                   onPress={clearSelectedUser}
                 >
-                  <Icon name="x" size={16} color="#052D50" />
+                  <Icon name="x" size={16} color={theme.content.textMuted} />
                 </TouchableOpacity>
               ) : (
-                <Icon name="chevron-right" size={18} color="#052D50" />
+                <Icon
+                  name="chevron-right"
+                  size={18}
+                  color={theme.content.textMuted}
+                />
               )}
             </TouchableOpacity>
             {selectedProjectId && !selectedAssigneeUserId ? (
@@ -775,10 +783,18 @@ export default function CreateTaskScreen() {
                       style={styles.clearInlineButton}
                       onPress={() => setAssigneeIds([])}
                     >
-                      <Icon name="x" size={16} color="#052D50" />
+                      <Icon
+                        name="x"
+                        size={16}
+                        color={theme.content.textMuted}
+                      />
                     </TouchableOpacity>
                   ) : (
-                    <Icon name="chevron-right" size={18} color="#052D50" />
+                    <Icon
+                      name="chevron-right"
+                      size={18}
+                      color={theme.content.textMuted}
+                    />
                   )}
                 </TouchableOpacity>
               </>
@@ -861,7 +877,11 @@ export default function CreateTaskScreen() {
                   </Text>
                 </View>
               </View>
-              <Icon name="chevron-right" size={18} color="#052D50" />
+              <Icon
+                name="chevron-right"
+                size={18}
+                color={theme.content.textMuted}
+              />
             </TouchableOpacity>
           </GroupCard>
 
@@ -885,7 +905,11 @@ export default function CreateTaskScreen() {
                   </Text>
                 </View>
               </View>
-              <Icon name="chevron-right" size={18} color="#052D50" />
+              <Icon
+                name="chevron-right"
+                size={18}
+                color={theme.content.textMuted}
+              />
             </TouchableOpacity>
 
             <View style={styles.rowSepIcon} />
@@ -912,7 +936,11 @@ export default function CreateTaskScreen() {
                   </Text>
                 </View>
               </View>
-              <Icon name="chevron-right" size={18} color="#052D50" />
+              <Icon
+                name="chevron-right"
+                size={18}
+                color={theme.content.textMuted}
+              />
             </TouchableOpacity>
           </GroupCard>
 
@@ -945,7 +973,11 @@ export default function CreateTaskScreen() {
                   </Text>
                 </View>
               </View>
-              <Icon name="chevron-right" size={18} color="#052D50" />
+              <Icon
+                name="chevron-right"
+                size={18}
+                color={theme.content.textMuted}
+              />
             </TouchableOpacity>
           </GroupCard>
 
@@ -1072,7 +1104,7 @@ export default function CreateTaskScreen() {
                 style={styles.sheetCloseButton}
                 onPress={closeNotificationsSheet}
               >
-                <Icon name="x" size={20} color="#052D50" />
+                <Icon name="x" size={20} color={theme.content.textMuted} />
               </TouchableOpacity>
             </View>
 

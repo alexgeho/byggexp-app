@@ -115,7 +115,7 @@ export const createStyles = (c) =>
       flexDirection: "row",
       height: HEADER_HEIGHT,
       borderBottomWidth: 1,
-      borderBottomColor: "#F0F2F4",
+      borderBottomColor: c.divider,
     },
     corner: {
       width: SIDEBAR_WIDTH,
@@ -124,7 +124,7 @@ export const createStyles = (c) =>
       paddingLeft: 12,
       paddingBottom: 8,
       borderRightWidth: 1,
-      borderRightColor: "#F0F2F4",
+      borderRightColor: c.divider,
     },
     cornerText: {
       color: c.textPrimary,
@@ -176,7 +176,7 @@ export const createStyles = (c) =>
     sidebar: {
       width: SIDEBAR_WIDTH,
       borderRightWidth: 1,
-      borderRightColor: "#F0F2F4",
+      borderRightColor: c.divider,
     },
     sidebarCell: {
       height: ROW_HEIGHT,
@@ -272,7 +272,7 @@ export const createStyles = (c) =>
     zoomGroup: {
       flexDirection: "row",
       alignItems: "center",
-      backgroundColor: "#E6E7EE",
+      backgroundColor: c.surfaceMuted,
       borderRadius: 16,
       padding: 4,
       gap: 4,

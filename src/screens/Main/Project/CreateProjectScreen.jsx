@@ -664,7 +664,7 @@ export default function CreateProjectScreen() {
 
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#0091FF" />
-            <Text>{t("common.loading")}</Text>
+            <Text style={styles.loadingText}>{t("common.loading")}</Text>
           </View>
         </View>
       </View>

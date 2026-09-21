@@ -193,7 +193,7 @@ export const createStyles = (c) =>
     documentCard: {
       width: "23%",
       height: 84,
-      backgroundColor: "#EFEFF0",
+      backgroundColor: c.surfaceMuted,
       borderRadius: 12,
       overflow: "hidden",
     },
@@ -220,7 +220,7 @@ export const createStyles = (c) =>
     },
     projectPickerOverlay: {
       flex: 1,
-      backgroundColor: c.divider,
+      backgroundColor: "rgba(0, 0, 0, 0.35)",
       justifyContent: "center",
       alignItems: "center",
       paddingHorizontal: 20,
@@ -389,7 +389,7 @@ export const createStyles = (c) =>
     },
     sheetOverlay: {
       flex: 1,
-      backgroundColor: c.divider,
+      backgroundColor: "rgba(0, 0, 0, 0.35)",
       justifyContent: "flex-end",
     },
     sheetBackdrop: {
@@ -397,7 +397,7 @@ export const createStyles = (c) =>
     },
     sheetCard: {
       maxHeight: "88%",
-      backgroundColor: "#EEF5FB",
+      backgroundColor: c.background,
       borderTopLeftRadius: 28,
       borderTopRightRadius: 28,
       paddingHorizontal: 16,
@@ -448,7 +448,7 @@ export const createStyles = (c) =>
       marginBottom: 8,
     },
     sheetGroupCard: {
-      backgroundColor: "rgba(255, 255, 255, 0.7)",
+      backgroundColor: c.surface,
       borderRadius: 22,
       overflow: "hidden",
       borderWidth: 1,
@@ -518,7 +518,7 @@ export const createStyles = (c) =>
       width: 42,
       height: 42,
       borderRadius: 21,
-      backgroundColor: "#D9E8F5",
+      backgroundColor: c.inputSurface,
       alignItems: "center",
       justifyContent: "center",
     },
@@ -555,7 +555,7 @@ export const createStyles = (c) =>
       borderColor: "#0091FF",
     },
     messageBox: {
-      backgroundColor: "rgba(255, 255, 255, 0.7)",
+      backgroundColor: c.surface,
       borderRadius: 22,
       padding: 16,
       marginTop: 10,
@@ -572,7 +572,7 @@ export const createStyles = (c) =>
       marginBottom: 8,
     },
     repeatCard: {
-      backgroundColor: "rgba(255, 255, 255, 0.7)",
+      backgroundColor: c.surface,
       borderRadius: 22,
       overflow: "hidden",
       borderWidth: 1,
@@ -602,14 +602,14 @@ export const createStyles = (c) =>
       lineHeight: 17,
     },
     repeatOptionHintDisabled: {
-      color: "rgba(105, 129, 150, 0.8)",
+      color: c.textMuted,
     },
     radioOuter: {
       width: 22,
       height: 22,
       borderRadius: 999,
       borderWidth: 2,
-      borderColor: "#C5D4E2",
+      borderColor: c.border,
       alignItems: "center",
       justifyContent: "center",
     },
@@ -626,7 +626,7 @@ export const createStyles = (c) =>
       backgroundColor: "#0091FF",
     },
     intervalBox: {
-      backgroundColor: "rgba(255, 255, 255, 0.7)",
+      backgroundColor: c.surface,
       borderRadius: 22,
       padding: 16,
       marginTop: 10,

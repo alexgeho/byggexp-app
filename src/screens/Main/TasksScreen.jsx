@@ -235,7 +235,7 @@ export default function TasksScreen() {
     return (
       <View style={styles.centeredContainer}>
         <ActivityIndicator size="large" color="#0091FF" />
-        <Text>{t("task.loading")}</Text>
+        <Text style={styles.loadingText}>{t("task.loading")}</Text>
       </View>
     );
   }

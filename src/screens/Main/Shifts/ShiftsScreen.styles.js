@@ -49,7 +49,7 @@ export const createStyles = (c) =>
       paddingVertical: 15,
       marginBottom: 12,
       borderWidth: 1,
-      borderColor: "#EAEDF1",
+      borderColor: c.border,
       flexDirection: "row",
       alignItems: "flex-end",
       justifyContent: "space-between",
@@ -94,7 +94,7 @@ export const createStyles = (c) =>
     heroStatDivider: {
       width: 1,
       height: 24,
-      backgroundColor: "#EAEDF1",
+      backgroundColor: c.border,
     },
 
     /* Hours-by source toggle (Planned / GPS / Manual) */
@@ -142,7 +142,7 @@ export const createStyles = (c) =>
       backgroundColor: "#0785F4",
     },
     headerSelectButtonActive: {
-      backgroundColor: "#E8F1FB",
+      backgroundColor: c.accentSoft,
     },
     headerSelectText: {
       fontSize: 14,
@@ -278,7 +278,7 @@ export const createStyles = (c) =>
       gap: 1,
       paddingVertical: 5,
       borderRadius: 6,
-      backgroundColor: "rgba(255, 255, 255, 0.4)",
+      backgroundColor: c.surfaceMuted,
       borderWidth: 1,
       borderColor: c.border,
     },
@@ -320,7 +320,7 @@ export const createStyles = (c) =>
     },
     calendarHoursInput: {
       fontFamily: "DMSans-Bold",
-      color: "#B8760A",
+      color: c.warning,
       fontSize: 12,
       textAlign: "center",
       width: 36,
@@ -353,7 +353,7 @@ export const createStyles = (c) =>
     },
     manualHintText: {
       fontFamily: "DMSans-Medium",
-      color: "#B8760A",
+      color: c.warning,
       fontSize: 13,
     },
     calendarPlus: {
@@ -452,21 +452,21 @@ export const createStyles = (c) =>
       gap: 12,
     },
     shiftTimeText: {
-      color: "rgba(122, 148, 168, 1)",
+      color: c.textMuted,
       fontSize: 15,
       lineHeight: 22,
       fontWeight: "400",
       flex: 1,
     },
     shiftDurationText: {
-      color: "rgba(95, 117, 136, 1)",
+      color: c.textSecondary,
       fontSize: 14,
       lineHeight: 24,
       fontWeight: "500",
       textAlign: "right",
     },
     shiftProjectName: {
-      color: "rgba(122, 148, 168, 1)",
+      color: c.textMuted,
       fontSize: 14,
       lineHeight: 20,
       fontWeight: "400",
@@ -483,13 +483,13 @@ export const createStyles = (c) =>
       gap: 12,
     },
     shiftDetailLabel: {
-      color: "rgba(122, 148, 168, 1)",
+      color: c.textMuted,
       fontSize: 15,
       lineHeight: 22,
       fontWeight: "400",
     },
     shiftDetailValue: {
-      color: "rgba(122, 148, 168, 1)",
+      color: c.textMuted,
       fontSize: 13,
       lineHeight: 22,
       fontWeight: "400",
@@ -579,7 +579,7 @@ export const createStyles = (c) =>
     },
     handleIndicator: {
       alignSelf: "center",
-      backgroundColor: "#CCCCCC",
+      backgroundColor: c.divider,
       width: 40,
       height: 4,
       borderRadius: 2,
@@ -668,7 +668,7 @@ export const createStyles = (c) =>
     },
     dateValueCard: {
       width: "100%",
-      backgroundColor: "rgba(245, 245, 245, 1)",
+      backgroundColor: c.inputSurface,
       borderRadius: 20,
       paddingHorizontal: 12,
       height: 44,
@@ -809,7 +809,7 @@ export const createStyles = (c) =>
     // this screen says what you can DO (blue) or what is WRONG (red), never
     // where a number came from — the label already says that.
     manualHoursValue: {
-      color: "rgba(122, 148, 168, 1)",
+      color: c.textMuted,
       fontSize: 13,
       lineHeight: 22,
       textAlign: "right",
@@ -826,7 +826,7 @@ export const createStyles = (c) =>
     },
     // Where the headline number came from, said quietly beside it.
     durationSource: {
-      color: "rgba(122, 148, 168, 1)",
+      color: c.textMuted,
       fontSize: 12,
       fontWeight: "400",
     },
@@ -839,7 +839,7 @@ export const createStyles = (c) =>
       fontWeight: "600",
     },
     manualHoursHint: {
-      color: "rgba(122, 148, 168, 1)",
+      color: c.textMuted,
       fontSize: 13,
       lineHeight: 18,
       marginBottom: 14,
@@ -866,7 +866,7 @@ export const createStyles = (c) =>
       textAlign: "center",
     },
     manualHoursUnit: {
-      color: "rgba(122, 148, 168, 1)",
+      color: c.textMuted,
       fontSize: 15,
       fontWeight: "600",
     },
@@ -959,7 +959,7 @@ export const createStyles = (c) =>
       paddingVertical: 6,
     },
     manualHoursCancelText: {
-      color: "rgba(122, 148, 168, 1)",
+      color: c.textMuted,
       fontSize: 15,
       fontWeight: "600",
     },
@@ -980,7 +980,7 @@ export const createStyles = (c) =>
       marginBottom: 16,
     },
     manualProjectLabel: {
-      color: "rgba(122, 148, 168, 1)",
+      color: c.textMuted,
       fontSize: 13,
       fontWeight: "600",
       marginBottom: 8,
@@ -989,7 +989,7 @@ export const createStyles = (c) =>
       maxHeight: 150,
     },
     manualProjectEmpty: {
-      color: "rgba(122, 148, 168, 1)",
+      color: c.textMuted,
       fontSize: 14,
       paddingVertical: 8,
     },
@@ -1012,7 +1012,7 @@ export const createStyles = (c) =>
       fontWeight: "600",
     },
     manualProjectOptionTextActive: {
-      color: "#B8760A",
+      color: c.warning,
     },
     exportMainButtonDisabled: {
       opacity: 0.7,

@@ -520,14 +520,14 @@ export default function ScheduleScreen() {
           <Text style={styles.monthLabel}>
             {formatMonthLabel(visibleMonth)}
           </Text>
-          <Icon name="chevron-down" size={18} color="#052D50" />
+          <Icon name="chevron-down" size={18} color={theme.content.textMuted} />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.todayButton}
           onPress={goToday}
           activeOpacity={0.85}
         >
-          <Icon name="calendar" size={20} color="#052D50" />
+          <Icon name="calendar" size={20} color={theme.content.textMuted} />
         </TouchableOpacity>
       </View>
 
@@ -568,7 +568,7 @@ export default function ScheduleScreen() {
           >
             {projectChipLabel}
           </Text>
-          <Icon name="chevron-down" size={16} color="#052D50" />
+          <Icon name="chevron-down" size={16} color={theme.content.textMuted} />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.filterChip}
@@ -584,7 +584,7 @@ export default function ScheduleScreen() {
           >
             {statusChipLabel}
           </Text>
-          <Icon name="chevron-down" size={16} color="#052D50" />
+          <Icon name="chevron-down" size={16} color={theme.content.textMuted} />
         </TouchableOpacity>
       </View>
 
@@ -766,7 +766,7 @@ export default function ScheduleScreen() {
             disabled={dayWidth <= MIN_DAY_WIDTH}
             activeOpacity={0.85}
           >
-            <Icon name="minus" size={20} color="#052D50" />
+            <Icon name="minus" size={20} color={theme.content.textMuted} />
           </TouchableOpacity>
           <View style={styles.zoomValueBox}>
             <Text style={styles.zoomValueText}>{zoomPercent}%</Text>
@@ -777,7 +777,7 @@ export default function ScheduleScreen() {
             disabled={dayWidth >= MAX_DAY_WIDTH}
             activeOpacity={0.85}
           >
-            <Icon name="plus" size={20} color="#052D50" />
+            <Icon name="plus" size={20} color={theme.content.textMuted} />
           </TouchableOpacity>
         </View>
       </View>

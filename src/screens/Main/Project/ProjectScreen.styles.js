@@ -110,7 +110,7 @@ export const createStyles = (c) =>
       width: PHOTO_THUMB,
       height: PHOTO_THUMB,
       borderRadius: 14,
-      backgroundColor: "#E5E9ED",
+      backgroundColor: c.inputSurface,
     },
     receiptTag: {
       position: "absolute",
@@ -168,7 +168,7 @@ export const createStyles = (c) =>
       height: 80,
       borderRadius: 12,
       overflow: "hidden",
-      backgroundColor: "#EFF3F8",
+      backgroundColor: c.inputSurface,
     },
     documentPreviewImage: {
       width: "100%",
@@ -211,7 +211,7 @@ export const createStyles = (c) =>
       backgroundColor: c.surface,
       borderWidth: 1,
       // Same admin card look as the Employees / Chat lists.
-      borderColor: "#E6EAF1",
+      borderColor: c.border,
       gap: 16,
       marginBottom: 12,
     },

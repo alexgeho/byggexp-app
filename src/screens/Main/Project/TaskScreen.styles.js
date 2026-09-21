@@ -76,7 +76,7 @@ export const createStyles = (c) =>
       paddingHorizontal: 16,
       paddingVertical: 10,
       borderBottomWidth: 1,
-      borderBottomColor: "#e9e9e9",
+      borderBottomColor: c.divider,
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",

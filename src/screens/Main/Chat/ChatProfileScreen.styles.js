@@ -51,7 +51,7 @@ export const createStyles = (c) =>
       width: 120,
       height: 120,
       borderRadius: 60,
-      backgroundColor: "#D9D9D9",
+      backgroundColor: c.inputSurface,
     },
     avatarFallback: {
       alignItems: "center",
@@ -123,6 +123,6 @@ export const createStyles = (c) =>
       width: PHOTO_THUMB,
       height: PHOTO_THUMB,
       borderRadius: 6,
-      backgroundColor: "#D9D9D9",
+      backgroundColor: c.inputSurface,
     },
   });

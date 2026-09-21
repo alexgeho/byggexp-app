@@ -386,7 +386,11 @@ export const CompaniesListModal = ({
                 <Text style={styles.userName}>{item.name}</Text>
               </TouchableOpacity>
             )}
-            ListEmptyComponent={<Text>{t("createProject.noCompanies")}</Text>}
+            ListEmptyComponent={
+              <Text style={styles.emptyListText}>
+                {t("createProject.noCompanies")}
+              </Text>
+            }
           />
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
             <Text style={styles.closeButtonText}>

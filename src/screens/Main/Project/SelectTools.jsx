@@ -77,7 +77,7 @@ export const SelectTools = () => {
     return (
       <View style={styles.centeredContainer}>
         <ActivityIndicator size="large" color="#0091FF" />
-        <Text>{t("tools.loading")}</Text>
+        <Text style={styles.loadingText}>{t("tools.loading")}</Text>
       </View>
     );
   }

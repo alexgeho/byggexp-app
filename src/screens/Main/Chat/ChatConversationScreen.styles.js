@@ -1,8 +1,12 @@
 import { StyleSheet } from "react-native";
 
 // Extracted from ChatConversationScreen.jsx — themed style factory (c = theme.content).
-export const createStyles = (c) =>
-  StyleSheet.create({
+export const createStyles = (c) => {
+  // A frosted element reads as solid thanks to a white outline on the light
+  // themes; on dark that outline was a hard white line, so it becomes the
+  // theme's hairline there.
+  const frostedBorder = c.scheme === "dark" ? c.border : "#FFFFFF";
+  return StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: c.background,
@@ -52,7 +56,7 @@ export const createStyles = (c) =>
       borderRadius: 9999,
       backgroundColor: c.surfaceMuted,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: frostedBorder,
     },
     avatarImage: {
       width: "100%",
@@ -97,7 +101,7 @@ export const createStyles = (c) =>
       borderRadius: 16,
       padding: 20,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: frostedBorder,
     },
     emptyStateTitle: {
       color: c.textPrimary,
@@ -115,7 +119,7 @@ export const createStyles = (c) =>
       paddingVertical: 6,
       marginBottom: 12,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: frostedBorder,
     },
     translateToggleText: {
       color: c.textPrimary,
@@ -140,7 +144,7 @@ export const createStyles = (c) =>
       paddingVertical: 5,
       marginBottom: 16,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: frostedBorder,
     },
     daySeparatorText: {
       color: c.textPrimary,
@@ -194,7 +198,7 @@ export const createStyles = (c) =>
       backgroundColor: c.surfaceMuted,
       borderBottomLeftRadius: 0,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: frostedBorder,
     },
     senderName: {
       color: c.textMuted,
@@ -239,7 +243,7 @@ export const createStyles = (c) =>
       marginTop: 4,
     },
     otherMessageDate: {
-      color: "#ADB5BD",
+      color: c.textMuted,
       fontSize: 10,
       textAlign: "right",
       marginTop: 4,
@@ -258,7 +262,7 @@ export const createStyles = (c) =>
       borderRadius: 999,
       backgroundColor: c.surfaceMuted,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: frostedBorder,
       alignItems: "center",
       justifyContent: "center",
     },
@@ -273,7 +277,7 @@ export const createStyles = (c) =>
       // Match the "+" attach button on the left.
       backgroundColor: c.surfaceMuted,
       borderWidth: 1,
-      borderColor: "#FFFFFF",
+      borderColor: frostedBorder,
       flexDirection: "row",
       alignItems: "center",
       padding: 12,
@@ -323,7 +327,7 @@ export const createStyles = (c) =>
       textAlign: "center",
       fontSize: 13,
       letterSpacing: 0.3,
-      color: "#8895A7",
+      color: c.textMuted,
       fontFamily: "DMSans-SemiBold",
       marginBottom: 12,
     },
@@ -369,7 +373,7 @@ export const createStyles = (c) =>
     },
     sheetOptionHint: {
       fontSize: 13,
-      color: "#8895A7",
+      color: c.textMuted,
       marginTop: 2,
     },
     sheetCancel: {
@@ -385,3 +389,4 @@ export const createStyles = (c) =>
       fontFamily: "DMSans-SemiBold",
     },
   });
+};

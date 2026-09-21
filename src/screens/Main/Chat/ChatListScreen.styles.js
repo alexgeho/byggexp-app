@@ -84,7 +84,7 @@ export const createStyles = (c) =>
       width: 44,
       height: 44,
       borderRadius: 22,
-      backgroundColor: "#D9D9D9",
+      backgroundColor: c.inputSurface,
     },
     avatarFallback: {
       alignItems: "center",
@@ -100,7 +100,7 @@ export const createStyles = (c) =>
       gap: 2,
     },
     rowName: {
-      color: "#052D50",
+      color: c.textPrimary,
       fontSize: 17,
       fontWeight: "500",
     },
@@ -137,7 +137,7 @@ export const createStyles = (c) =>
       marginRight: 4,
     },
     checkCircleOn: {
-      backgroundColor: "#FFFFFF",
+      backgroundColor: c.surface,
       borderColor: "#FFFFFF",
     },
     // "Select people" hint / live count shown above the list in select mode.
