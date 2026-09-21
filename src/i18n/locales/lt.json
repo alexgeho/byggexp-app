@@ -246,7 +246,19 @@
     "noDocsTitle": "Dar nėra dokumentų",
     "noDocsText": "Užduoties failai bus rodomi čia.",
     "noWorkersText": "Projekto darbuotojai bus rodomi čia.",
-    "deleteFailed": "Nepavyko ištrinti užduoties."
+    "deleteFailed": "Nepavyko ištrinti užduoties.",
+    "filter": {
+      "open": "Atviros",
+      "overdue": "Vėluoja",
+      "completed": "Atliktos",
+      "all": "Visos"
+    },
+    "empty": {
+      "open": "Atvirų užduočių nėra.",
+      "overdue": "Niekas nevėluoja.",
+      "completed": "Dar nieko neatlikta.",
+      "all": "Užduočių dar nėra."
+    }
   },
   "createEmployee": {
     "addTitle": "Pridėti darbuotoją",

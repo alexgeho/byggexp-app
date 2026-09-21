@@ -246,7 +246,19 @@
     "noDocsTitle": "Inga dokument än",
     "noDocsText": "Uppgiftsfiler visas här.",
     "noWorkersText": "Projektets arbetare visas här.",
-    "deleteFailed": "Kunde inte ta bort uppgiften."
+    "deleteFailed": "Kunde inte ta bort uppgiften.",
+    "filter": {
+      "open": "Öppna",
+      "overdue": "Försenade",
+      "completed": "Klara",
+      "all": "Alla"
+    },
+    "empty": {
+      "open": "Inga öppna uppgifter.",
+      "overdue": "Inget är försenat.",
+      "completed": "Inget avklarat ännu.",
+      "all": "Inga uppgifter ännu."
+    }
   },
   "createEmployee": {
     "addTitle": "Lägg till anställd",

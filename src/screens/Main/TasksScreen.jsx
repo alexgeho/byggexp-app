@@ -21,7 +21,7 @@ import { EntityListScreen } from "../../components/common/EntityListScreen/Entit
 import { ListCard } from "../../components/common/ListCard/ListCard";
 import { ProjectFilterSelector } from "../../components/common/ProjectFilterSelector/ProjectFilterSelector";
 import { createStyles } from "./TasksScreen.styles";
-import { resolveNewestTimestamp, sortByNewest } from "../../utils/sortByNewest";
+import { resolveNewestTimestamp } from "../../utils/sortByNewest";
 import { cardStyles } from "../../styles/cards";
 import { canCreateTasks, canManageTasks } from "../../utils/userRoles";
 
@@ -37,6 +37,10 @@ export default function TasksScreen() {
   const [personalTasks, setPersonalTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+  // What the screen is FOR: the work still to do. Done tasks live behind
+  // their own chip instead of burying the open ones, which is how every
+  // task app people already use behaves.
+  const [statusFilter, setStatusFilter] = useState("open");
   const showCreateTask = canCreateTasks(user?.role);
 
   const fetchProjectsWithTasks = useCallback(async () => {
@@ -65,19 +69,36 @@ export default function TasksScreen() {
     }
   }, []);
 
+  // Overdue first, then by due date, then whatever has no date — a list you
+  // can work from top to bottom.
+  const byUrgency = (tasks) =>
+    [...tasks].sort((left, right) => {
+      const leftDue = left?.dueDate ? Date.parse(left.dueDate) : null;
+      const rightDue = right?.dueDate ? Date.parse(right.dueDate) : null;
+      if (leftDue && rightDue) return leftDue - rightDue;
+      if (leftDue) return -1;
+      if (rightDue) return 1;
+      return 0;
+    });
+
+  const matchesStatus = useCallback(
+    (task) => {
+      if (statusFilter === "all") return true;
+      const tone = getTaskDisplayStatus(task).tone;
+      if (statusFilter === "open") return tone !== "completed";
+      return tone === statusFilter;
+    },
+    [statusFilter],
+  );
+
   const visiblePersonalTasks = useMemo(() => {
     // Personal tasks have no project, so only show them under "All projects".
     if (selectedProjectId) {
       return [];
     }
 
-    return sortByNewest(personalTasks, (task) => [
-      task?.createdAt,
-      task?.updatedAt,
-      task?.startDate,
-      task?.dueDate,
-    ]);
-  }, [personalTasks, selectedProjectId]);
+    return byUrgency(personalTasks.filter(matchesStatus));
+  }, [personalTasks, selectedProjectId, matchesStatus]);
 
   useFocusEffect(
     useCallback(() => {
@@ -98,14 +119,10 @@ export default function TasksScreen() {
   const groupedTasks = useMemo(() => {
     return projects
       .map((project) => {
-        const tasks = sortByNewest(
-          Array.isArray(project.tasks) ? project.tasks : [],
-          (task) => [
-            task?.createdAt,
-            task?.updatedAt,
-            task?.startDate,
-            task?.dueDate,
-          ],
+        const tasks = byUrgency(
+          (Array.isArray(project.tasks) ? project.tasks : []).filter(
+            matchesStatus,
+          ),
         );
 
         return {
@@ -136,7 +153,7 @@ export default function TasksScreen() {
           rightProject.newestVisibleTaskTimestamp -
           leftProject.newestVisibleTaskTimestamp,
       );
-  }, [projects, selectedProjectId]);
+  }, [projects, selectedProjectId, matchesStatus]);
 
   // Personal tasks first, then one section per project — the same order the
   // screen rendered before, now as SectionList data so long lists virtualize.
@@ -265,8 +282,14 @@ export default function TasksScreen() {
           </Text>
         </View>
       )}
+      filters={["open", "overdue", "completed", "all"].map((value) => ({
+        value,
+        label: t(`task.filter.${value}`),
+      }))}
+      activeFilter={statusFilter}
+      onFilterChange={setStatusFilter}
       onDelete={canDeleteTasks ? handleDeleteTask : undefined}
-      emptyText={t("task.emptyAll")}
+      emptyText={t(`task.empty.${statusFilter}`, t("task.emptyAll"))}
       addScreen={showCreateTask ? "CreateTask" : undefined}
       beforeList={
         <View style={styles.searchContainer}>

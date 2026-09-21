@@ -246,7 +246,19 @@
     "noDocsTitle": "Ingen dokumenter ennå",
     "noDocsText": "Oppgavefiler vises her.",
     "noWorkersText": "Prosjektets arbeidere vises her.",
-    "deleteFailed": "Kunne ikke slette oppgaven."
+    "deleteFailed": "Kunne ikke slette oppgaven.",
+    "filter": {
+      "open": "Åpne",
+      "overdue": "Forsinket",
+      "completed": "Ferdige",
+      "all": "Alle"
+    },
+    "empty": {
+      "open": "Ingen åpne oppgaver.",
+      "overdue": "Ingenting er forsinket.",
+      "completed": "Ingenting fullført ennå.",
+      "all": "Ingen oppgaver ennå."
+    }
   },
   "createEmployee": {
     "addTitle": "Legg til ansatt",

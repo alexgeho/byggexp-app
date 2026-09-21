@@ -246,7 +246,19 @@
     "noDocsTitle": "Ei vielä asiakirjoja",
     "noDocsText": "Tehtävän tiedostot näkyvät täällä.",
     "noWorkersText": "Projektin työntekijät näkyvät täällä.",
-    "deleteFailed": "Tehtävän poistaminen epäonnistui."
+    "deleteFailed": "Tehtävän poistaminen epäonnistui.",
+    "filter": {
+      "open": "Avoimet",
+      "overdue": "Myöhässä",
+      "completed": "Valmiit",
+      "all": "Kaikki"
+    },
+    "empty": {
+      "open": "Ei avoimia tehtäviä.",
+      "overdue": "Mikään ei ole myöhässä.",
+      "completed": "Ei vielä valmiita.",
+      "all": "Ei tehtäviä vielä."
+    }
   },
   "createEmployee": {
     "addTitle": "Lisää työntekijä",

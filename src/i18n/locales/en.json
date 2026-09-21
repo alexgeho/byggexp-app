@@ -246,7 +246,19 @@
     "noDocsTitle": "No documents yet",
     "noDocsText": "Task files will appear here.",
     "noWorkersText": "Project workers will appear here.",
-    "deleteFailed": "Could not delete the task."
+    "deleteFailed": "Could not delete the task.",
+    "filter": {
+      "open": "Open",
+      "overdue": "Overdue",
+      "completed": "Done",
+      "all": "All"
+    },
+    "empty": {
+      "open": "No open tasks.",
+      "overdue": "Nothing is overdue.",
+      "completed": "Nothing finished yet.",
+      "all": "No tasks yet."
+    }
   },
   "createEmployee": {
     "addTitle": "Add employee",

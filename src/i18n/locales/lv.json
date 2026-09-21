@@ -246,7 +246,19 @@
     "noDocsTitle": "Vēl nav dokumentu",
     "noDocsText": "Uzdevuma faili tiks parādīti šeit.",
     "noWorkersText": "Projekta darbinieki tiks parādīti šeit.",
-    "deleteFailed": "Neizdevās dzēst uzdevumu."
+    "deleteFailed": "Neizdevās dzēst uzdevumu.",
+    "filter": {
+      "open": "Atvērtie",
+      "overdue": "Nokavētie",
+      "completed": "Paveiktie",
+      "all": "Visi"
+    },
+    "empty": {
+      "open": "Nav atvērtu uzdevumu.",
+      "overdue": "Nekas nav nokavēts.",
+      "completed": "Vēl nekas nav paveikts.",
+      "all": "Uzdevumu vēl nav."
+    }
   },
   "createEmployee": {
     "addTitle": "Pievienot darbinieku",

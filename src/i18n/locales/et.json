@@ -246,7 +246,19 @@
     "noDocsTitle": "Dokumente pole veel",
     "noDocsText": "Ülesande failid ilmuvad siia.",
     "noWorkersText": "Projekti töötajad ilmuvad siia.",
-    "deleteFailed": "Ülesande kustutamine ebaõnnestus."
+    "deleteFailed": "Ülesande kustutamine ebaõnnestus.",
+    "filter": {
+      "open": "Avatud",
+      "overdue": "Hilinenud",
+      "completed": "Tehtud",
+      "all": "Kõik"
+    },
+    "empty": {
+      "open": "Avatud ülesandeid pole.",
+      "overdue": "Midagi pole hilinenud.",
+      "completed": "Midagi pole veel tehtud.",
+      "all": "Ülesandeid veel pole."
+    }
   },
   "createEmployee": {
     "addTitle": "Lisa töötaja",

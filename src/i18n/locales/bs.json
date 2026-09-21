@@ -246,7 +246,19 @@
     "noDocsTitle": "Još nema dokumenata",
     "noDocsText": "Datoteke zadatka prikazat će se ovdje.",
     "noWorkersText": "Radnici projekta prikazat će se ovdje.",
-    "deleteFailed": "Nije moguće obrisati zadatak."
+    "deleteFailed": "Nije moguće obrisati zadatak.",
+    "filter": {
+      "open": "Otvoreni",
+      "overdue": "Kasne",
+      "completed": "Završeni",
+      "all": "Svi"
+    },
+    "empty": {
+      "open": "Nema otvorenih zadataka.",
+      "overdue": "Ništa ne kasni.",
+      "completed": "Još ništa nije završeno.",
+      "all": "Još nema zadataka."
+    }
   },
   "createEmployee": {
     "addTitle": "Dodaj zaposlenog",

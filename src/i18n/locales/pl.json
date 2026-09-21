@@ -246,7 +246,19 @@
     "noDocsTitle": "Brak dokumentów",
     "noDocsText": "Pliki zadania pojawią się tutaj.",
     "noWorkersText": "Pracownicy projektu pojawią się tutaj.",
-    "deleteFailed": "Nie udało się usunąć zadania."
+    "deleteFailed": "Nie udało się usunąć zadania.",
+    "filter": {
+      "open": "Otwarte",
+      "overdue": "Po terminie",
+      "completed": "Zrobione",
+      "all": "Wszystkie"
+    },
+    "empty": {
+      "open": "Brak otwartych zadań.",
+      "overdue": "Nic nie jest po terminie.",
+      "completed": "Nic jeszcze nie ukończono.",
+      "all": "Brak zadań."
+    }
   },
   "createEmployee": {
     "addTitle": "Dodaj pracownika",
