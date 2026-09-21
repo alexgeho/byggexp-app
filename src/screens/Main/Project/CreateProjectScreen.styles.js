@@ -247,8 +247,9 @@ export const createStyles = (c) =>
       marginRight: 12,
     },
     switchControl: {
-      width: 51,
-      height: 31,
+      // No fixed frame: iOS draws the switch at its own size and a frame that
+      // disagrees with it pushed the control out past the card's padding —
+      // it ended up ~4pt from the edge where the label sits at 16.
       alignSelf: "center",
       marginVertical: 0,
     },
