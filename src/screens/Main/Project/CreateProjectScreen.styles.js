@@ -293,7 +293,7 @@ export const createStyles = (c) =>
     documentCard: {
       width: "23%",
       height: 67,
-      backgroundColor: "rgba(239, 239, 240, 1)",
+      backgroundColor: c.surfaceMuted,
       borderRadius: 8,
       overflow: "hidden",
     },
@@ -498,7 +498,7 @@ export const createStyles = (c) =>
       width: 48,
       height: 48,
       borderRadius: 10,
-      backgroundColor: "#D9E3EC",
+      backgroundColor: c.surfaceMuted,
       alignItems: "center",
       justifyContent: "center",
     },
@@ -579,10 +579,10 @@ export const createStyles = (c) =>
     userItem: {
       padding: 12,
       borderBottomWidth: 1,
-      borderBottomColor: "#eee",
+      borderBottomColor: c.divider,
     },
     selectedUserItem: {
-      backgroundColor: "#e6f7ff",
+      backgroundColor: c.accentSoft,
     },
     userName: {
       fontSize: 16,
@@ -681,7 +681,8 @@ export const createStyles = (c) =>
       paddingVertical: 16,
     },
     mapSuggestionsCard: {
-      backgroundColor: "rgba(255, 255, 255, 0.94)",
+      // Theme surface: white suggestions on the dark theme hid white text.
+      backgroundColor: c.surface,
       borderRadius: 16,
       paddingHorizontal: 14,
       paddingVertical: 10,
@@ -725,7 +726,9 @@ export const createStyles = (c) =>
       paddingVertical: 10,
     },
     mapBottomPanel: {
-      backgroundColor: "rgba(255, 255, 255, 0.96)",
+      // Was a hardcoded near-white: on the dark theme it made a light slab
+      // with white text on it.
+      backgroundColor: c.surface,
       borderRadius: 10,
       paddingHorizontal: 16,
       paddingTop: 16,
@@ -777,7 +780,7 @@ export const createStyles = (c) =>
       height: 36,
       paddingHorizontal: 12,
       borderRadius: 10,
-      backgroundColor: "rgba(5, 45, 80, 0.05)",
+      backgroundColor: c.surfaceMuted,
       alignItems: "center",
       justifyContent: "center",
     },

@@ -3,6 +3,22 @@ import { StyleSheet } from "react-native";
 // Extracted from ProjectsScreen.jsx.
 export const createStyles = (c) =>
   StyleSheet.create({
+    // "All projects" as a heading over the list, not a card.
+    allProjectsRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 20,
+      paddingVertical: 4,
+    },
+    allProjectsText: {
+      fontSize: 15,
+      fontFamily: "DMSans-Medium",
+      color: c.textMuted,
+    },
+    allProjectsTextActive: {
+      color: c.textPrimary,
+    },
     screenExtra: {
       justifyContent: "space-between",
       alignItems: "center",

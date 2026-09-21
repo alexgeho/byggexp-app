@@ -14,7 +14,14 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { View, Text, TextInput, InteractionManager, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  InteractionManager,
+  Alert,
+} from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../theme/ThemeContext";
@@ -78,9 +85,7 @@ export default function ProjectsScreen() {
   // filtering the caller — that's when it means something. Arriving from the
   // "Alla projekt" state, it would just repeat what you tapped.
   const allowAllProjectsOption =
-    isLocalSelectionMode &&
-    route.params?.allowAll &&
-    Boolean(route.params?.currentProjectId);
+    isLocalSelectionMode && Boolean(route.params?.allowAll);
   const cacheKey = `${user?.role || "user"}:${userId || "anonymous"}`;
   const [projects, setProjects] = useState(
     () => projectsCache.get(cacheKey) || [],
@@ -358,7 +363,11 @@ export default function ProjectsScreen() {
       }
       listHeader={
         allowAllProjectsOption ? (
-          <ListCard
+          /* Not a card: "All projects" is the heading this list sits under,
+             so it reads as a heading — a slab that size carried more weight
+             than the choice deserves. */
+          <TouchableOpacity
+            style={styles.allProjectsRow}
             onPress={() => {
               if (!beginLeaving()) {
                 return;
@@ -368,9 +377,20 @@ export default function ProjectsScreen() {
                 resolveLocalProjectSelection(null);
               });
             }}
-            selected={!selectedProjectId}
-            title={t("projects.all")}
-          />
+            activeOpacity={0.7}
+          >
+            <Text
+              style={[
+                styles.allProjectsText,
+                !selectedProjectId && styles.allProjectsTextActive,
+              ]}
+            >
+              {t("projects.all")}
+            </Text>
+            {!selectedProjectId ? (
+              <Icon name="check" size={18} color={theme.colors.primary} />
+            ) : null}
+          </TouchableOpacity>
         ) : null
       }
       renderCard={(project) => (
