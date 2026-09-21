@@ -1167,7 +1167,9 @@
     "sendByEmail": "Надіслати e-поштою",
     "shareDocument": "Завантажити / поділитися",
     "markPaid": "Позначити оплаченим",
-    "copyDocument": "Копіювати"
+    "copyDocument": "Копіювати",
+    "deleteTitle": "Видалити?",
+    "deleteMessage": "Документ буде видалено назавжди."
   },
   "billing": {
     "itemDescription": "Опис",

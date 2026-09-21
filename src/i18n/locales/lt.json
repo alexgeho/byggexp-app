@@ -1167,7 +1167,9 @@
     "sendByEmail": "Siųsti el. paštu",
     "shareDocument": "Atsisiųsti / dalintis",
     "markPaid": "Pažymėti apmokėta",
-    "copyDocument": "Kopijuoti"
+    "copyDocument": "Kopijuoti",
+    "deleteTitle": "Ištrinti?",
+    "deleteMessage": "Dokumentas bus ištrintas visam laikui."
   },
   "billing": {
     "itemDescription": "Aprašymas",

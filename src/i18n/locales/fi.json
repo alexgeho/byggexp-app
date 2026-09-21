@@ -1167,7 +1167,9 @@
     "sendByEmail": "Lähetä sähköpostilla",
     "shareDocument": "Lataa / jaa",
     "markPaid": "Merkitse maksetuksi",
-    "copyDocument": "Kopioi"
+    "copyDocument": "Kopioi",
+    "deleteTitle": "Poistetaanko?",
+    "deleteMessage": "Asiakirja poistetaan pysyvästi."
   },
   "billing": {
     "itemDescription": "Kuvaus",

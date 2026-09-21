@@ -1167,7 +1167,9 @@
     "sendByEmail": "Send på e-post",
     "shareDocument": "Last ned / del",
     "markPaid": "Merk som betalt",
-    "copyDocument": "Kopier"
+    "copyDocument": "Kopier",
+    "deleteTitle": "Slette?",
+    "deleteMessage": "Dokumentet slettes permanent."
   },
   "billing": {
     "itemDescription": "Beskrivelse",

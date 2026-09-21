@@ -1167,7 +1167,9 @@
     "sendByEmail": "Pošalji e-poštom",
     "shareDocument": "Preuzmi / podijeli",
     "markPaid": "Označi kao plaćeno",
-    "copyDocument": "Kopiraj"
+    "copyDocument": "Kopiraj",
+    "deleteTitle": "Obrisati?",
+    "deleteMessage": "Dokument se trajno briše."
   },
   "billing": {
     "itemDescription": "Opis",

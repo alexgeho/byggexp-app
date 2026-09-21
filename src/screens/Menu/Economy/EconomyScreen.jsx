@@ -287,6 +287,32 @@ export default function EconomyScreen() {
       isOffers ? "billing.offerSaveFailed" : "billing.invoiceSaveFailed",
     );
 
+  // Deleting from a menu is one tap, where the swipe is a deliberate gesture
+  // — so this one asks first.
+  const confirmDelete = (item) => {
+    Alert.alert(
+      t("economy.deleteTitle", "Ta bort?"),
+      t("economy.deleteMessage", "Dokumentet tas bort permanent."),
+      [
+        { text: t("common.cancel", "Avbryt"), style: "cancel" },
+        {
+          text: t("common.delete", "Ta bort"),
+          style: "destructive",
+          onPress: () =>
+            runAction(
+              async () => {
+                await handleDeleteDocument(item);
+              },
+              "billing.saveFailedTitle",
+              isOffers
+                ? "billing.offerSaveFailed"
+                : "billing.invoiceSaveFailed",
+            ),
+        },
+      ],
+    );
+  };
+
   const markPaid = (item) =>
     runAction(
       () => invoiceService.setStatus(documentId(item), "paid"),
@@ -473,6 +499,17 @@ export default function EconomyScreen() {
                   <Icon name="copy" size={20} color={theme.colors.primary} />
                   <Text style={styles.actionRowText}>
                     {t("economy.copyDocument", "Kopiera")}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.actionRow}
+                  onPress={() => confirmDelete(actionItem)}
+                  activeOpacity={0.8}
+                >
+                  <Icon name="trash-2" size={20} color="#E5484D" />
+                  <Text style={[styles.actionRowText, styles.actionRowDanger]}>
+                    {t("common.delete", "Ta bort")}
                   </Text>
                 </TouchableOpacity>
 

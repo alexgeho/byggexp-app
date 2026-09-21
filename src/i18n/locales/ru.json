@@ -1167,7 +1167,9 @@
     "sendByEmail": "Отправить по почте",
     "shareDocument": "Скачать / поделиться",
     "markPaid": "Отметить оплаченным",
-    "copyDocument": "Копировать"
+    "copyDocument": "Копировать",
+    "deleteTitle": "Удалить?",
+    "deleteMessage": "Документ будет удалён безвозвратно."
   },
   "billing": {
     "itemDescription": "Описание",

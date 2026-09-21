@@ -1167,7 +1167,9 @@
     "sendByEmail": "Saada e-postiga",
     "shareDocument": "Laadi alla / jaga",
     "markPaid": "Märgi makstuks",
-    "copyDocument": "Kopeeri"
+    "copyDocument": "Kopeeri",
+    "deleteTitle": "Kustutada?",
+    "deleteMessage": "Dokument kustutatakse jäädavalt."
   },
   "billing": {
     "itemDescription": "Kirjeldus",

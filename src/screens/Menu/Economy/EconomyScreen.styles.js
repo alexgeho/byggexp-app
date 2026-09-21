@@ -215,6 +215,7 @@ export const createStyles = (c) => {
       paddingVertical: 15,
     },
     actionRowText: { fontSize: 16, fontFamily: F_MED, color: INK },
+    actionRowDanger: { color: "#E5484D" },
 
     /* Customer filter — first pill in the status-filter row */
     customerPill: {

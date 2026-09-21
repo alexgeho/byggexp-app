@@ -1167,7 +1167,9 @@
     "sendByEmail": "Nosūtīt pa e-pastu",
     "shareDocument": "Lejupielādēt / kopīgot",
     "markPaid": "Atzīmēt kā apmaksātu",
-    "copyDocument": "Kopēt"
+    "copyDocument": "Kopēt",
+    "deleteTitle": "Dzēst?",
+    "deleteMessage": "Dokuments tiks dzēsts neatgriezeniski."
   },
   "billing": {
     "itemDescription": "Apraksts",

@@ -1167,7 +1167,9 @@
     "sendByEmail": "Skicka via e-post",
     "shareDocument": "Ladda ner / dela",
     "markPaid": "Markera som betald",
-    "copyDocument": "Kopiera"
+    "copyDocument": "Kopiera",
+    "deleteTitle": "Ta bort?",
+    "deleteMessage": "Dokumentet tas bort permanent."
   },
   "billing": {
     "itemDescription": "Beskrivning",

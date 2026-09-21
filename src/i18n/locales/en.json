@@ -1167,7 +1167,9 @@
     "sendByEmail": "Send by email",
     "shareDocument": "Download / share",
     "markPaid": "Mark as paid",
-    "copyDocument": "Duplicate"
+    "copyDocument": "Duplicate",
+    "deleteTitle": "Delete?",
+    "deleteMessage": "The document is removed for good."
   },
   "billing": {
     "itemDescription": "Description",
