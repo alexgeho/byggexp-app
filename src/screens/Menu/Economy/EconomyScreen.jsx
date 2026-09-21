@@ -394,7 +394,7 @@ export default function EconomyScreen() {
                         key={status}
                         style={[
                           styles.pill,
-                          styles[`badge_${pillTone}`],
+                          styles[`pillTone_${pillTone}`],
                           active && styles[`pillOn_${pillTone}`],
                         ]}
                         onPress={() => setStatusFilter(active ? null : status)}
