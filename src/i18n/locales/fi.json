@@ -1285,7 +1285,8 @@
     "paymentTerms": "Maksuehto (päivää)",
     "lateInterest": "Viivästyskorko",
     "lateInterestPlaceholder": "esim. 8% + viitekorko",
-    "downloadInstead": "Lataa sen sijaan"
+    "downloadInstead": "Lataa sen sijaan",
+    "creditNoteTitle": "Hyvityslasku laskulle #{{number}}"
   },
   "tasksPreview": {
     "noDate": "Ei päivämäärää",

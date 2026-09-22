@@ -235,6 +235,29 @@ export const createStyles = (c) => {
       paddingVertical: 15,
     },
     actionRowText: { fontSize: 16, fontFamily: F_MED, color: INK },
+    modalKeyboard: { flex: 1 },
+    creditTitle: {
+      fontSize: 17,
+      fontFamily: F_SEMI,
+      color: INK,
+      marginBottom: 12,
+    },
+    creditInput: {
+      backgroundColor: c.inputSurface,
+      borderRadius: 14,
+      paddingHorizontal: 16,
+      paddingVertical: 14,
+      fontSize: 17,
+      color: INK,
+      marginBottom: 12,
+    },
+    creditButton: {
+      backgroundColor: PRIMARY,
+      borderRadius: 999,
+      paddingVertical: 15,
+      alignItems: "center",
+    },
+    creditButtonText: { color: "#FFFFFF", fontSize: 16, fontFamily: F_SEMI },
     actionRowDanger: { color: "#E5484D" },
 
     /* Customer filter — first pill in the status-filter row */

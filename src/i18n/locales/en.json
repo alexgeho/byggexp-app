@@ -1285,7 +1285,8 @@
     "paymentTerms": "Payment terms (days)",
     "lateInterest": "Late-payment interest",
     "lateInterestPlaceholder": "e.g. 8% + reference rate",
-    "downloadInstead": "Download instead"
+    "downloadInstead": "Download instead",
+    "creditNoteTitle": "Credit note for #{{number}}"
   },
   "tasksPreview": {
     "noDate": "No date",

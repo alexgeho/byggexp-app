@@ -1285,7 +1285,8 @@
     "paymentTerms": "Betalingsbetingelser (dager)",
     "lateInterest": "Forsinkelsesrente",
     "lateInterestPlaceholder": "f.eks. 8% + referanserente",
-    "downloadInstead": "Last ned i stedet"
+    "downloadInstead": "Last ned i stedet",
+    "creditNoteTitle": "Kreditnota til #{{number}}"
   },
   "tasksPreview": {
     "noDate": "Ingen dato",

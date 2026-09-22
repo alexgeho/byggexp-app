@@ -1285,7 +1285,8 @@
     "paymentTerms": "Betalningsvillkor (dagar)",
     "lateInterest": "Dröjsmålsränta",
     "lateInterestPlaceholder": "t.ex. 8% + referensränta",
-    "downloadInstead": "Ladda ner i stället"
+    "downloadInstead": "Ladda ner i stället",
+    "creditNoteTitle": "Kreditfaktura till #{{number}}"
   },
   "tasksPreview": {
     "noDate": "Inget datum",

@@ -414,9 +414,13 @@ export default function CreateInvoiceScreen() {
           />
         </TouchableOpacity>
         <Text style={styles.title}>
-          {editingId
-            ? t("billing.editInvoiceTitle")
-            : t("billing.newInvoiceTitle")}
+          {editingInvoice?.creditOfNumber
+            ? t("billing.creditNoteTitle", {
+                number: editingInvoice.creditOfNumber,
+              })
+            : editingId
+              ? t("billing.editInvoiceTitle")
+              : t("billing.newInvoiceTitle")}
         </Text>
         {/* Save the draft straight from the header — the buttons at the end
             of the form are a long scroll away. */}

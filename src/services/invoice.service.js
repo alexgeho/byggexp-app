@@ -31,8 +31,12 @@ export const invoiceService = {
     const { data } = await api.post(`/invoices/${id}/copy`);
     return data;
   },
-  credit: async (id) => {
-    const { data } = await api.post(`/invoices/${id}/credit`);
+  // Full credit by default; pass amountExclVat to credit part of the invoice.
+  credit: async (id, amountExclVat) => {
+    const { data } = await api.post(
+      `/invoices/${id}/credit`,
+      amountExclVat == null ? {} : { amountExclVat },
+    );
     return data;
   },
   // Emails the customer with the PDF attached; flips draft -> sent.

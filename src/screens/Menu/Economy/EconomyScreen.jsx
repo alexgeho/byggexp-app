@@ -2,8 +2,11 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
   View,
   Text,
+  TextInput,
   ScrollView,
   TouchableOpacity,
   Pressable,
@@ -81,6 +84,10 @@ export default function EconomyScreen() {
   const [statusFilter, setStatusFilter] = useState(null);
   // The document whose action sheet is open, and whether one is running.
   const [actionItem, setActionItem] = useState(null);
+  // The credit step inside the sheet: null = the normal action list,
+  // "choose" = full or partial, "partial" = the amount field.
+  const [creditMode, setCreditMode] = useState(null);
+  const [creditAmount, setCreditAmount] = useState("");
   const [busyAction, setBusyAction] = useState(false);
   // Kundtyp filter — "all" | "company" | "private".
   const [clientTypeFilter, setClientTypeFilter] = useState("all");
@@ -302,15 +309,38 @@ export default function EconomyScreen() {
   };
 
   // A booked invoice is corrected by reversing it, not by editing or deleting
-  // it. The credit note comes back as a draft to check and send.
-  const creditDocument = (item) =>
-    runAction(
-      async () => {
-        await invoiceService.credit(documentId(item));
-      },
-      "billing.saveFailedTitle",
-      "billing.invoiceSaveFailed",
-    );
+  // it. The credit note comes back as a draft, and it opens straight away in
+  // the invoice form: the whole point is to check it and send it to the same
+  // customer. Before, the sheet just closed and the list reloaded — the screen
+  // "blinked" and the new credit note sat somewhere in the drafts.
+  const closeSheet = () => {
+    setActionItem(null);
+    setCreditMode(null);
+    setCreditAmount("");
+  };
+
+  const creditDocument = async (item, amountExclVat) => {
+    setBusyAction(true);
+    try {
+      const creditNote = await invoiceService.credit(
+        documentId(item),
+        amountExclVat,
+      );
+      closeSheet();
+      await load();
+      if (creditNote) {
+        navigation.navigate("CreateInvoice", { invoice: creditNote });
+      }
+    } catch (error) {
+      console.error("Failed to credit invoice:", error);
+      Alert.alert(
+        t("billing.saveFailedTitle"),
+        error?.response?.data?.message || t("billing.invoiceSaveFailed"),
+      );
+    } finally {
+      setBusyAction(false);
+    }
+  };
 
   // Deleting from a menu is one tap, where the swipe is a deliberate gesture
   // — so this one asks first.
@@ -478,75 +508,23 @@ export default function EconomyScreen() {
         visible={Boolean(actionItem)}
         transparent
         animationType="slide"
-        onRequestClose={() => setActionItem(null)}
+        onRequestClose={closeSheet}
       >
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setActionItem(null)}
+        <KeyboardAvoidingView
+          style={styles.modalKeyboard}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
-          <Pressable style={styles.modalSheet} onPress={() => {}}>
-            <View style={styles.grab} />
+          <Pressable style={styles.modalOverlay} onPress={closeSheet}>
+            <Pressable style={styles.modalSheet} onPress={() => {}}>
+              <View style={styles.grab} />
 
-            {busyAction ? (
-              <ActivityIndicator
-                color={theme.colors.primary}
-                style={{ marginVertical: 18 }}
-              />
-            ) : (
-              <>
-                <TouchableOpacity
-                  style={styles.actionRow}
-                  onPress={() => sendByEmail(actionItem)}
-                  activeOpacity={0.8}
-                >
-                  <Icon name="mail" size={20} color={theme.colors.primary} />
-                  <Text style={styles.actionRowText}>
-                    {t("economy.sendByEmail", "Skicka via e-post")}
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.actionRow}
-                  onPress={() => shareDocument(actionItem)}
-                  activeOpacity={0.8}
-                >
-                  <Icon name="share-2" size={20} color={theme.colors.primary} />
-                  <Text style={styles.actionRowText}>
-                    {t("economy.shareDocument", "Ladda ner / dela")}
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.actionRow}
-                  onPress={() => copyDocument(actionItem)}
-                  activeOpacity={0.8}
-                >
-                  <Icon name="copy" size={20} color={theme.colors.primary} />
-                  <Text style={styles.actionRowText}>
-                    {t("economy.copyDocument", "Kopiera")}
-                  </Text>
-                </TouchableOpacity>
-
-                {actionItem?.status === "draft" ? (
-                  <TouchableOpacity
-                    style={styles.actionRow}
-                    onPress={() => editDocument(actionItem)}
-                    activeOpacity={0.8}
-                  >
-                    <Icon
-                      name="edit-2"
-                      size={20}
-                      color={theme.colors.primary}
-                    />
-                    <Text style={styles.actionRowText}>
-                      {t("common.edit", "Redigera")}
-                    </Text>
-                  </TouchableOpacity>
-                ) : null}
-
-                {!isOffers &&
-                actionItem?.status !== "draft" &&
-                !actionItem?.creditOfNumber ? (
+              {busyAction ? (
+                <ActivityIndicator
+                  color={theme.colors.primary}
+                  style={{ marginVertical: 18 }}
+                />
+              ) : creditMode === "choose" ? (
+                <>
                   <TouchableOpacity
                     style={styles.actionRow}
                     onPress={() => creditDocument(actionItem)}
@@ -558,42 +536,160 @@ export default function EconomyScreen() {
                       color={theme.colors.primary}
                     />
                     <Text style={styles.actionRowText}>
-                      {t("economy.creditInvoice", "Kreditera")}
+                      {t("supplierInvoices.creditFull")}
                     </Text>
                   </TouchableOpacity>
-                ) : null}
-
-                {actionItem?.status === "draft" ? (
                   <TouchableOpacity
                     style={styles.actionRow}
-                    onPress={() => confirmDelete(actionItem)}
+                    onPress={() => setCreditMode("partial")}
                     activeOpacity={0.8}
                   >
-                    <Icon name="trash-2" size={20} color="#E5484D" />
-                    <Text
-                      style={[styles.actionRowText, styles.actionRowDanger]}
-                    >
-                      {t("common.delete", "Ta bort")}
-                    </Text>
-                  </TouchableOpacity>
-                ) : null}
-
-                {!isOffers && actionItem?.status !== "paid" ? (
-                  <TouchableOpacity
-                    style={styles.actionRow}
-                    onPress={() => markPaid(actionItem)}
-                    activeOpacity={0.8}
-                  >
-                    <Icon name="check-circle" size={20} color="#04B251" />
+                    <Icon
+                      name="divide-circle"
+                      size={20}
+                      color={theme.colors.primary}
+                    />
                     <Text style={styles.actionRowText}>
-                      {t("economy.markPaid", "Markera som betald")}
+                      {t("supplierInvoices.creditPartly")}
                     </Text>
                   </TouchableOpacity>
-                ) : null}
-              </>
-            )}
+                </>
+              ) : creditMode === "partial" ? (
+                <>
+                  <Text style={styles.creditTitle}>
+                    {t("supplierInvoices.creditPartly")}
+                  </Text>
+                  <TextInput
+                    style={styles.creditInput}
+                    value={creditAmount}
+                    onChangeText={setCreditAmount}
+                    keyboardType="decimal-pad"
+                    placeholder={t("supplierInvoices.amountExclVat")}
+                    placeholderTextColor={theme.content.placeholder}
+                    autoFocus
+                  />
+                  <TouchableOpacity
+                    style={styles.creditButton}
+                    onPress={() =>
+                      creditDocument(
+                        actionItem,
+                        Number(String(creditAmount).replace(",", ".")) || 0,
+                      )
+                    }
+                    activeOpacity={0.85}
+                  >
+                    <Text style={styles.creditButtonText}>
+                      {t("economy.creditInvoice")}
+                    </Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <>
+                  <TouchableOpacity
+                    style={styles.actionRow}
+                    onPress={() => sendByEmail(actionItem)}
+                    activeOpacity={0.8}
+                  >
+                    <Icon name="mail" size={20} color={theme.colors.primary} />
+                    <Text style={styles.actionRowText}>
+                      {t("economy.sendByEmail", "Skicka via e-post")}
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.actionRow}
+                    onPress={() => shareDocument(actionItem)}
+                    activeOpacity={0.8}
+                  >
+                    <Icon
+                      name="share-2"
+                      size={20}
+                      color={theme.colors.primary}
+                    />
+                    <Text style={styles.actionRowText}>
+                      {t("economy.shareDocument", "Ladda ner / dela")}
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.actionRow}
+                    onPress={() => copyDocument(actionItem)}
+                    activeOpacity={0.8}
+                  >
+                    <Icon name="copy" size={20} color={theme.colors.primary} />
+                    <Text style={styles.actionRowText}>
+                      {t("economy.copyDocument", "Kopiera")}
+                    </Text>
+                  </TouchableOpacity>
+
+                  {actionItem?.status === "draft" ? (
+                    <TouchableOpacity
+                      style={styles.actionRow}
+                      onPress={() => editDocument(actionItem)}
+                      activeOpacity={0.8}
+                    >
+                      <Icon
+                        name="edit-2"
+                        size={20}
+                        color={theme.colors.primary}
+                      />
+                      <Text style={styles.actionRowText}>
+                        {t("common.edit", "Redigera")}
+                      </Text>
+                    </TouchableOpacity>
+                  ) : null}
+
+                  {!isOffers &&
+                  actionItem?.status !== "draft" &&
+                  !actionItem?.creditOfNumber ? (
+                    <TouchableOpacity
+                      style={styles.actionRow}
+                      onPress={() => setCreditMode("choose")}
+                      activeOpacity={0.8}
+                    >
+                      <Icon
+                        name="rotate-ccw"
+                        size={20}
+                        color={theme.colors.primary}
+                      />
+                      <Text style={styles.actionRowText}>
+                        {t("economy.creditInvoice", "Kreditera")}
+                      </Text>
+                    </TouchableOpacity>
+                  ) : null}
+
+                  {actionItem?.status === "draft" ? (
+                    <TouchableOpacity
+                      style={styles.actionRow}
+                      onPress={() => confirmDelete(actionItem)}
+                      activeOpacity={0.8}
+                    >
+                      <Icon name="trash-2" size={20} color="#E5484D" />
+                      <Text
+                        style={[styles.actionRowText, styles.actionRowDanger]}
+                      >
+                        {t("common.delete", "Ta bort")}
+                      </Text>
+                    </TouchableOpacity>
+                  ) : null}
+
+                  {!isOffers && actionItem?.status !== "paid" ? (
+                    <TouchableOpacity
+                      style={styles.actionRow}
+                      onPress={() => markPaid(actionItem)}
+                      activeOpacity={0.8}
+                    >
+                      <Icon name="check-circle" size={20} color="#04B251" />
+                      <Text style={styles.actionRowText}>
+                        {t("economy.markPaid", "Markera som betald")}
+                      </Text>
+                    </TouchableOpacity>
+                  ) : null}
+                </>
+              )}
+            </Pressable>
           </Pressable>
-        </Pressable>
+        </KeyboardAvoidingView>
       </Modal>
     </>
   );

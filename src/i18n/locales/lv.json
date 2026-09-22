@@ -1285,7 +1285,8 @@
     "paymentTerms": "Apmaksas termiņš (dienas)",
     "lateInterest": "Kavējuma procenti",
     "lateInterestPlaceholder": "piem. 8% + bāzes likme",
-    "downloadInstead": "Lejupielādēt tā vietā"
+    "downloadInstead": "Lejupielādēt tā vietā",
+    "creditNoteTitle": "Kredītrēķins #{{number}}"
   },
   "tasksPreview": {
     "noDate": "Nav datuma",

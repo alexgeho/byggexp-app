@@ -2,7 +2,9 @@ import React, { useCallback, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -246,126 +248,138 @@ export default function SupplierInvoicesScreen() {
         animationType="slide"
         onRequestClose={() => setActionItem(null)}
       >
-        <Pressable
-          style={styles.overlay}
-          onPress={() => {
-            setActionItem(null);
-            setCreditingPartly(false);
-          }}
+        {/* The amount field opens a number pad that has no "done" key, and it
+            covered the Kreditera button — an amount could be typed but never
+            sent. The sheet now rides up above the keyboard. */}
+        <KeyboardAvoidingView
+          style={styles.keyboardWrap}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
-          <Pressable style={styles.sheet} onPress={() => {}}>
-            <View style={styles.grab} />
+          <Pressable
+            style={styles.overlay}
+            onPress={() => {
+              setActionItem(null);
+              setCreditingPartly(false);
+            }}
+          >
+            <Pressable style={styles.sheet} onPress={() => {}}>
+              <View style={styles.grab} />
 
-            {busyAction ? (
-              <ActivityIndicator
-                color={theme.colors.primary}
-                style={{ marginVertical: 18 }}
-              />
-            ) : creditingPartly ? (
-              <>
-                <Text style={styles.sheetTitle}>
-                  {t("supplierInvoices.creditPartly")}
-                </Text>
-                <TextInput
-                  style={styles.amountInput}
-                  value={creditAmount}
-                  onChangeText={setCreditAmount}
-                  keyboardType="decimal-pad"
-                  placeholder={t("supplierInvoices.amountExclVat")}
-                  placeholderTextColor={theme.content.placeholder}
-                  autoFocus
+              {busyAction ? (
+                <ActivityIndicator
+                  color={theme.colors.primary}
+                  style={{ marginVertical: 18 }}
                 />
-                <TouchableOpacity
-                  style={styles.primaryBtn}
-                  onPress={() =>
-                    creditInvoice(
-                      actionItem,
-                      Number(String(creditAmount).replace(",", ".")) || 0,
-                    )
-                  }
-                  activeOpacity={0.85}
-                >
-                  <Text style={styles.primaryBtnText}>
-                    {t("economy.creditInvoice")}
+              ) : creditingPartly ? (
+                <>
+                  <Text style={styles.sheetTitle}>
+                    {t("supplierInvoices.creditPartly")}
                   </Text>
-                </TouchableOpacity>
-              </>
-            ) : (
-              <>
-                <TouchableOpacity
-                  style={styles.row}
-                  onPress={() => {
-                    const invoice = actionItem;
-                    setActionItem(null);
-                    navigation.navigate("CreateSupplierInvoice", { invoice });
-                  }}
-                  activeOpacity={0.8}
-                >
-                  <Icon name="edit-2" size={20} color={theme.colors.primary} />
-                  <Text style={styles.rowText}>{t("common.edit")}</Text>
-                </TouchableOpacity>
-
-                {String(actionItem?.status || "") !== "paid" ? (
+                  <TextInput
+                    style={styles.amountInput}
+                    value={creditAmount}
+                    onChangeText={setCreditAmount}
+                    keyboardType="decimal-pad"
+                    placeholder={t("supplierInvoices.amountExclVat")}
+                    placeholderTextColor={theme.content.placeholder}
+                    autoFocus
+                  />
                   <TouchableOpacity
-                    style={styles.row}
-                    onPress={() => runAction(() => markPaid(actionItem))}
-                    activeOpacity={0.8}
+                    style={styles.primaryBtn}
+                    onPress={() =>
+                      creditInvoice(
+                        actionItem,
+                        Number(String(creditAmount).replace(",", ".")) || 0,
+                      )
+                    }
+                    activeOpacity={0.85}
                   >
-                    <Icon name="check-circle" size={20} color="#04B251" />
-                    <Text style={styles.rowText}>
-                      {t("supplierInvoices.markPaid")}
+                    <Text style={styles.primaryBtnText}>
+                      {t("economy.creditInvoice")}
                     </Text>
                   </TouchableOpacity>
-                ) : null}
+                </>
+              ) : (
+                <>
+                  <TouchableOpacity
+                    style={styles.row}
+                    onPress={() => {
+                      const invoice = actionItem;
+                      setActionItem(null);
+                      navigation.navigate("CreateSupplierInvoice", { invoice });
+                    }}
+                    activeOpacity={0.8}
+                  >
+                    <Icon
+                      name="edit-2"
+                      size={20}
+                      color={theme.colors.primary}
+                    />
+                    <Text style={styles.rowText}>{t("common.edit")}</Text>
+                  </TouchableOpacity>
 
-                {!actionItem?.creditOfId ? (
-                  <>
+                  {String(actionItem?.status || "") !== "paid" ? (
                     <TouchableOpacity
                       style={styles.row}
-                      onPress={() => creditInvoice(actionItem, null)}
+                      onPress={() => runAction(() => markPaid(actionItem))}
                       activeOpacity={0.8}
                     >
-                      <Icon
-                        name="rotate-ccw"
-                        size={20}
-                        color={theme.colors.primary}
-                      />
+                      <Icon name="check-circle" size={20} color="#04B251" />
                       <Text style={styles.rowText}>
-                        {t("supplierInvoices.creditFull")}
+                        {t("supplierInvoices.markPaid")}
                       </Text>
                     </TouchableOpacity>
+                  ) : null}
 
-                    <TouchableOpacity
-                      style={styles.row}
-                      onPress={() => setCreditingPartly(true)}
-                      activeOpacity={0.8}
-                    >
-                      <Icon
-                        name="divide-circle"
-                        size={20}
-                        color={theme.colors.primary}
-                      />
-                      <Text style={styles.rowText}>
-                        {t("supplierInvoices.creditPartly")}
-                      </Text>
-                    </TouchableOpacity>
-                  </>
-                ) : null}
+                  {!actionItem?.creditOfId ? (
+                    <>
+                      <TouchableOpacity
+                        style={styles.row}
+                        onPress={() => creditInvoice(actionItem, null)}
+                        activeOpacity={0.8}
+                      >
+                        <Icon
+                          name="rotate-ccw"
+                          size={20}
+                          color={theme.colors.primary}
+                        />
+                        <Text style={styles.rowText}>
+                          {t("supplierInvoices.creditFull")}
+                        </Text>
+                      </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={styles.row}
-                  onPress={() => confirmDelete(actionItem)}
-                  activeOpacity={0.8}
-                >
-                  <Icon name="trash-2" size={20} color="#E5484D" />
-                  <Text style={[styles.rowText, styles.rowDanger]}>
-                    {t("common.delete")}
-                  </Text>
-                </TouchableOpacity>
-              </>
-            )}
+                      <TouchableOpacity
+                        style={styles.row}
+                        onPress={() => setCreditingPartly(true)}
+                        activeOpacity={0.8}
+                      >
+                        <Icon
+                          name="divide-circle"
+                          size={20}
+                          color={theme.colors.primary}
+                        />
+                        <Text style={styles.rowText}>
+                          {t("supplierInvoices.creditPartly")}
+                        </Text>
+                      </TouchableOpacity>
+                    </>
+                  ) : null}
+
+                  <TouchableOpacity
+                    style={styles.row}
+                    onPress={() => confirmDelete(actionItem)}
+                    activeOpacity={0.8}
+                  >
+                    <Icon name="trash-2" size={20} color="#E5484D" />
+                    <Text style={[styles.rowText, styles.rowDanger]}>
+                      {t("common.delete")}
+                    </Text>
+                  </TouchableOpacity>
+                </>
+              )}
+            </Pressable>
           </Pressable>
-        </Pressable>
+        </KeyboardAvoidingView>
       </Modal>
     </>
   );
@@ -374,6 +388,7 @@ export default function SupplierInvoicesScreen() {
 function createStyles(theme) {
   const c = theme.content;
   return StyleSheet.create({
+    keyboardWrap: { flex: 1 },
     overlay: {
       flex: 1,
       backgroundColor: "rgba(5, 25, 50, 0.45)",

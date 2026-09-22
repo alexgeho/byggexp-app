@@ -1285,7 +1285,8 @@
     "paymentTerms": "Maksetähtaeg (päeva)",
     "lateInterest": "Viivis",
     "lateInterestPlaceholder": "nt 8% + viitemäär",
-    "downloadInstead": "Laadi alla selle asemel"
+    "downloadInstead": "Laadi alla selle asemel",
+    "creditNoteTitle": "Kreeditarve arvele #{{number}}"
   },
   "tasksPreview": {
     "noDate": "Kuupäev puudub",
