@@ -1104,7 +1104,10 @@
     "waitingApproval": "Gaida apstiprinājumu",
     "unnamed": "Nenosaukts",
     "noProfession": "Nav profesijas",
-    "noProjectAssigned": "Nav piešķirta projekta"
+    "noProjectAssigned": "Nav piešķirta projekta",
+    "deleteTitle": "Noņemt darbinieku?",
+    "deleteMessage": "{{name}} tiks noņemts no uzņēmuma. Maiņas un stundas paliks vēsturē.",
+    "deleteFailed": "Neizdevās noņemt darbinieku."
   },
   "notifications": {
     "title": "Paziņojumi",
@@ -1607,7 +1610,8 @@
     "saveError": "Neizdevās saglabāt piezīmi.",
     "deleteError": "Neizdevās izdzēst piezīmi.",
     "quickAdd": "Rakstiet piezīmi…",
-    "add": "Pievienot piezīmi"
+    "add": "Pievienot piezīmi",
+    "deleteFailed": "Neizdevās dzēst piezīmi."
   },
   "notesPreview": {
     "empty": "Vēl nav piezīmju"

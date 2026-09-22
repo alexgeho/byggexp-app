@@ -1,5 +1,14 @@
 import React, { useCallback, useContext, useMemo, useState } from "react";
-import { ActivityIndicator, Alert, FlatList, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { Swipeable } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/Feather";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
@@ -129,6 +138,47 @@ export default function EmployeesScreen() {
     }, [loadEmployees, user?.role]),
   );
 
+  // Swipe left to remove someone, like every other list in the app. A person
+  // carries history (shifts, hours, notes), so unlike a tool or an article the
+  // swipe asks once before it deletes.
+  const currentUserId = getUserId(user);
+  const canDeleteEmployees = canManageEmployees(user?.role);
+
+  const confirmDeleteEmployee = useCallback(
+    (employee) => {
+      const employeeId = getUserId(employee);
+      Alert.alert(
+        t("employees.deleteTitle"),
+        t("employees.deleteMessage", {
+          name: employee.name || employee.email || "",
+        }),
+        [
+          { text: t("common.cancel"), style: "cancel" },
+          {
+            text: t("common.delete"),
+            style: "destructive",
+            onPress: async () => {
+              try {
+                await userService.delete(employeeId);
+                setEmployees((previous) =>
+                  previous.filter(
+                    (item) => String(getUserId(item)) !== String(employeeId),
+                  ),
+                );
+              } catch (error) {
+                Alert.alert(
+                  t("common.error"),
+                  getApiErrorMessage(error, t("employees.deleteFailed")),
+                );
+              }
+            },
+          },
+        ],
+      );
+    },
+    [t],
+  );
+
   // Stable keyExtractor/renderItem so FlatList doesn't re-run every cell when
   // the screen re-renders without the row data changing (pairs with the
   // memoized PersonListItem).
@@ -148,7 +198,7 @@ export default function EmployeesScreen() {
         workedTodayIds,
       );
 
-      return (
+      const row = (
         <PersonListItem
           person={employee}
           subtitle={employee.profession || t("employees.noProfession")}
@@ -156,6 +206,33 @@ export default function EmployeesScreen() {
           statusBadge={statusBadgeFor(statusKind, t, theme.content)}
           onPress={() => navigation.navigate("Employee", { employeeId })}
         />
+      );
+
+      // Nobody deletes themselves from a list row.
+      if (!canDeleteEmployees || String(employeeId) === String(currentUserId)) {
+        return row;
+      }
+
+      return (
+        <Swipeable
+          renderRightActions={() => (
+            <TouchableOpacity
+              style={swipeStyles.deleteAction}
+              activeOpacity={0.85}
+              onPress={() => confirmDeleteEmployee(employee)}
+              accessibilityRole="button"
+              accessibilityLabel={t("common.delete")}
+            >
+              <Icon name="trash-2" size={22} color="#FFFFFF" />
+              <Text style={swipeStyles.deleteText}>{t("common.delete")}</Text>
+            </TouchableOpacity>
+          )}
+          overshootRight={false}
+          friction={2}
+          rightThreshold={40}
+        >
+          {row}
+        </Swipeable>
       );
     },
     [
@@ -166,6 +243,9 @@ export default function EmployeesScreen() {
       t,
       theme.content,
       navigation,
+      canDeleteEmployees,
+      currentUserId,
+      confirmDeleteEmployee,
     ],
   );
 
@@ -266,3 +346,24 @@ export default function EmployeesScreen() {
     </View>
   );
 }
+
+// The same red slab the shared entity list reveals behind a swiped card. The
+// bottom margin matches PersonListItem's own, so the slab lines up with the
+// row it belongs to.
+const swipeStyles = StyleSheet.create({
+  deleteAction: {
+    backgroundColor: "#FF3B30",
+    width: 92,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 8,
+    marginBottom: 10,
+  },
+  deleteText: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "600",
+    marginTop: 4,
+  },
+});

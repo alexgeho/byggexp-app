@@ -186,6 +186,7 @@ export default function SupplierInvoicesScreen() {
         onFilterChange={setFilter}
         emptyText={t("supplierInvoices.empty")}
         addScreen="CreateSupplierInvoice"
+        onDelete={confirmDelete}
         // Swipe right to settle it — the counterpart of the delete swipe, and
         // the same gesture the home card's checkbox does.
         leftAction={{

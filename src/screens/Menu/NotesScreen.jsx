@@ -1,11 +1,15 @@
 import React, { useCallback, useMemo, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { Swipeable } from "react-native-gesture-handler";
+import Icon from "react-native-vector-icons/Feather";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 
@@ -101,28 +105,61 @@ export default function NotesScreen() {
             renderItem={({ item: note }) => {
               const title = (note.title || "").trim();
               const body = (note.body || "").trim();
+              // Swipe left deletes, like every other list in the app.
+              const deleteNote = async () => {
+                const id = getEntityId(note);
+                try {
+                  await notesService.remove(id);
+                  setNotes((previous) =>
+                    previous.filter((item) => getEntityId(item) !== id),
+                  );
+                } catch (error) {
+                  console.error("Failed to delete note:", error);
+                  Alert.alert(t("common.error"), t("notes.deleteFailed"));
+                }
+              };
               return (
-                <TouchableOpacity
-                  style={styles.card}
-                  activeOpacity={0.7}
-                  onPress={() =>
-                    navigation.navigate("CreateNote", {
-                      noteId: getEntityId(note),
-                    })
-                  }
+                <Swipeable
+                  renderRightActions={() => (
+                    <TouchableOpacity
+                      style={swipeStyles.deleteAction}
+                      activeOpacity={0.85}
+                      onPress={deleteNote}
+                      accessibilityRole="button"
+                      accessibilityLabel={t("common.delete")}
+                    >
+                      <Icon name="trash-2" size={22} color="#FFFFFF" />
+                      <Text style={swipeStyles.deleteText}>
+                        {t("common.delete")}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                  overshootRight={false}
+                  friction={2}
+                  rightThreshold={40}
                 >
-                  <Text style={styles.cardDate}>
-                    {formatDate(note.updatedAt || note.createdAt)}
-                  </Text>
-                  <Text style={styles.cardTitle} numberOfLines={1}>
-                    {title || t("notes.untitled")}
-                  </Text>
-                  {body ? (
-                    <Text style={styles.cardBody} numberOfLines={3}>
-                      {body}
+                  <TouchableOpacity
+                    style={styles.card}
+                    activeOpacity={0.7}
+                    onPress={() =>
+                      navigation.navigate("CreateNote", {
+                        noteId: getEntityId(note),
+                      })
+                    }
+                  >
+                    <Text style={styles.cardDate}>
+                      {formatDate(note.updatedAt || note.createdAt)}
                     </Text>
-                  ) : null}
-                </TouchableOpacity>
+                    <Text style={styles.cardTitle} numberOfLines={1}>
+                      {title || t("notes.untitled")}
+                    </Text>
+                    {body ? (
+                      <Text style={styles.cardBody} numberOfLines={3}>
+                        {body}
+                      </Text>
+                    ) : null}
+                  </TouchableOpacity>
+                </Swipeable>
               );
             }}
           />
@@ -138,3 +175,21 @@ export default function NotesScreen() {
     </View>
   );
 }
+
+// The red slab the shared entity list reveals behind a swiped card.
+const swipeStyles = StyleSheet.create({
+  deleteAction: {
+    backgroundColor: "#FF3B30",
+    width: 92,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 8,
+  },
+  deleteText: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "600",
+    marginTop: 4,
+  },
+});

@@ -1104,7 +1104,10 @@
     "waitingApproval": "Väntar på godkännande",
     "unnamed": "Namnlös",
     "noProfession": "Ingen yrkesroll",
-    "noProjectAssigned": "Inget projekt kopplat"
+    "noProjectAssigned": "Inget projekt kopplat",
+    "deleteTitle": "Ta bort anställd?",
+    "deleteMessage": "{{name}} tas bort från företaget. Hens pass och timmar finns kvar i historiken.",
+    "deleteFailed": "Kunde inte ta bort den anställda."
   },
   "notifications": {
     "title": "Aviseringar",
@@ -1607,7 +1610,8 @@
     "saveError": "Kunde inte spara anteckningen.",
     "deleteError": "Kunde inte ta bort anteckningen.",
     "quickAdd": "Skriv en anteckning…",
-    "add": "Lägg till anteckning"
+    "add": "Lägg till anteckning",
+    "deleteFailed": "Kunde inte ta bort anteckningen."
   },
   "notesPreview": {
     "empty": "Inga anteckningar än"

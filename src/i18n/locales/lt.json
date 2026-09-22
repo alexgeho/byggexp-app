@@ -1106,7 +1106,10 @@
     "waitingApproval": "Laukia patvirtinimo",
     "unnamed": "Bevardis",
     "noProfession": "Nėra profesijos",
-    "noProjectAssigned": "Nepriskirtas joks projektas"
+    "noProjectAssigned": "Nepriskirtas joks projektas",
+    "deleteTitle": "Pašalinti darbuotoją?",
+    "deleteMessage": "{{name}} bus pašalintas iš įmonės. Pamainos ir valandos liks istorijoje.",
+    "deleteFailed": "Nepavyko pašalinti darbuotojo."
   },
   "notifications": {
     "title": "Pranešimai",
@@ -1609,7 +1612,8 @@
     "saveError": "Nepavyko išsaugoti užrašo.",
     "deleteError": "Nepavyko ištrinti užrašo.",
     "quickAdd": "Rašykite užrašą…",
-    "add": "Pridėti užrašą"
+    "add": "Pridėti užrašą",
+    "deleteFailed": "Nepavyko ištrinti pastabos."
   },
   "notesPreview": {
     "empty": "Užrašų dar nėra"

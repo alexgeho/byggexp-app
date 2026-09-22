@@ -1104,7 +1104,10 @@
     "waitingApproval": "Odottaa hyväksyntää",
     "unnamed": "Nimetön",
     "noProfession": "Ei ammattiroolia",
-    "noProjectAssigned": "Ei liitettyä projektia"
+    "noProjectAssigned": "Ei liitettyä projektia",
+    "deleteTitle": "Poistetaanko työntekijä?",
+    "deleteMessage": "{{name}} poistetaan yrityksestä. Vuorot ja tunnit jäävät historiaan.",
+    "deleteFailed": "Työntekijän poistaminen epäonnistui."
   },
   "notifications": {
     "title": "Ilmoitukset",
@@ -1607,7 +1610,8 @@
     "saveError": "Muistiinpanon tallennus epäonnistui.",
     "deleteError": "Muistiinpanon poisto epäonnistui.",
     "quickAdd": "Kirjoita muistiinpano…",
-    "add": "Lisää muistiinpano"
+    "add": "Lisää muistiinpano",
+    "deleteFailed": "Muistiinpanon poistaminen epäonnistui."
   },
   "notesPreview": {
     "empty": "Ei muistiinpanoja vielä"

@@ -1104,7 +1104,10 @@
     "waitingApproval": "Ootab kinnitust",
     "unnamed": "Nimetu",
     "noProfession": "Ametikoht puudub",
-    "noProjectAssigned": "Ühtki projekti pole seotud"
+    "noProjectAssigned": "Ühtki projekti pole seotud",
+    "deleteTitle": "Eemaldada töötaja?",
+    "deleteMessage": "{{name}} eemaldatakse ettevõttest. Vahetused ja tunnid jäävad ajalukku.",
+    "deleteFailed": "Töötaja eemaldamine ebaõnnestus."
   },
   "notifications": {
     "title": "Teavitused",
@@ -1607,7 +1610,8 @@
     "saveError": "Märkme salvestamine ebaõnnestus.",
     "deleteError": "Märkme kustutamine ebaõnnestus.",
     "quickAdd": "Kirjuta märge…",
-    "add": "Lisa märge"
+    "add": "Lisa märge",
+    "deleteFailed": "Märkme kustutamine ebaõnnestus."
   },
   "notesPreview": {
     "empty": "Märkmeid veel pole"

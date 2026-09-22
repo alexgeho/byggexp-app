@@ -1104,7 +1104,10 @@
     "waitingApproval": "Waiting for approval",
     "unnamed": "Unnamed",
     "noProfession": "No profession",
-    "noProjectAssigned": "No project assigned"
+    "noProjectAssigned": "No project assigned",
+    "deleteTitle": "Remove employee?",
+    "deleteMessage": "{{name}} will be removed from the company. Their shifts and hours stay in the history.",
+    "deleteFailed": "Could not remove the employee."
   },
   "notifications": {
     "title": "Notifications",
@@ -1607,7 +1610,8 @@
     "saveError": "Couldn't save the note.",
     "deleteError": "Couldn't delete the note.",
     "quickAdd": "Write a note…",
-    "add": "Add note"
+    "add": "Add note",
+    "deleteFailed": "Could not delete the note."
   },
   "notesPreview": {
     "empty": "No notes yet"

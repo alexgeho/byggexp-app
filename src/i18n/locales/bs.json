@@ -1106,7 +1106,10 @@
     "waitingApproval": "Čeka odobrenje",
     "unnamed": "Neimenovan",
     "noProfession": "Nema zanimanja",
-    "noProjectAssigned": "Nema dodijeljenog projekta"
+    "noProjectAssigned": "Nema dodijeljenog projekta",
+    "deleteTitle": "Ukloniti zaposlenog?",
+    "deleteMessage": "{{name}} će biti uklonjen iz firme. Smjene i sati ostaju u historiji.",
+    "deleteFailed": "Nije moguće ukloniti zaposlenog."
   },
   "notifications": {
     "title": "Obavještenja",
@@ -1609,7 +1612,8 @@
     "saveError": "Nije moguće sačuvati bilješku.",
     "deleteError": "Nije moguće obrisati bilješku.",
     "quickAdd": "Napišite bilješku…",
-    "add": "Dodaj bilješku"
+    "add": "Dodaj bilješku",
+    "deleteFailed": "Nije moguće obrisati bilješku."
   },
   "notesPreview": {
     "empty": "Još nema bilješki"

@@ -1104,7 +1104,10 @@
     "waitingApproval": "Venter på godkjenning",
     "unnamed": "Uten navn",
     "noProfession": "Ingen yrke",
-    "noProjectAssigned": "Ingen prosjekt tildelt"
+    "noProjectAssigned": "Ingen prosjekt tildelt",
+    "deleteTitle": "Fjerne ansatt?",
+    "deleteMessage": "{{name}} fjernes fra firmaet. Vakter og timer blir liggende i historikken.",
+    "deleteFailed": "Kunne ikke fjerne den ansatte."
   },
   "notifications": {
     "title": "Varsler",
@@ -1607,7 +1610,8 @@
     "saveError": "Kunne ikke lagre notatet.",
     "deleteError": "Kunne ikke slette notatet.",
     "quickAdd": "Skriv et notat…",
-    "add": "Legg til notat"
+    "add": "Legg til notat",
+    "deleteFailed": "Kunne ikke slette notatet."
   },
   "notesPreview": {
     "empty": "Ingen notater ennå"
