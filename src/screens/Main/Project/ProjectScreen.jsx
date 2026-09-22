@@ -576,9 +576,12 @@ export const ProjectScreen = () => {
                     numberOfLines={1}
                     ellipsizeMode="tail"
                   >
-                    {task.taskDescription ||
-                      task.assigneeUserName ||
-                      t("task.noDescription")}
+                    {/* Who it was given to comes first: the project's
+                        task list is where the foreman checks "Roger has
+                        this, Alex has that". */}
+                    {[task.assigneeUserName, task.taskDescription]
+                      .filter(Boolean)
+                      .join(" · ") || t("task.noDescription")}
                   </Text>
                 </ListCard>
               );

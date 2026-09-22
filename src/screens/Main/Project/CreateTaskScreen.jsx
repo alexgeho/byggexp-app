@@ -405,9 +405,6 @@ export default function CreateTaskScreen() {
     setSelectedProjectId(getProjectId(project) || "");
     setSelectedProject(project || null);
     setProjectName(project?.name || "");
-    setSelectedAssigneeUserId("");
-    setSelectedAssigneeName("");
-    setSelectedAssigneeRole("");
     setShowProjectPicker(false);
     setAssigneeIds([]);
     updateNotificationSettings(createDefaultTaskNotificationSettings());
@@ -418,12 +415,14 @@ export default function CreateTaskScreen() {
       return;
     }
 
+    // The project stays. A task on a project given to one person is still a
+    // project task: it shows under the project, where the foreman checks who
+    // was given what. Clearing the project here is how Maria's tasks ended up
+    // "personal" and missing from the site they belonged to.
     setSelectedAssigneeUserId(getUserId(nextUser) || "");
     setSelectedAssigneeName(nextUser?.name || nextUser?.email || "");
     setSelectedAssigneeRole(nextUser?.profession || nextUser?.role || "");
-    setSelectedProjectId("");
-    setSelectedProject(null);
-    setProjectName("");
+    setAssigneeIds([]);
     setShowUserPicker(false);
     updateNotificationSettings(createDefaultTaskNotificationSettings());
   };
@@ -670,16 +669,11 @@ export default function CreateTaskScreen() {
             <TouchableOpacity
               style={[
                 styles.groupRow,
-                (selectedAssigneeUserId || isWorkerCreator) &&
-                  styles.groupRowDisabled,
+                isWorkerCreator && styles.groupRowDisabled,
               ]}
               onPress={() => !isWorkerCreator && setShowProjectPicker(true)}
               activeOpacity={0.85}
-              disabled={
-                loadingProjects ||
-                Boolean(selectedAssigneeUserId) ||
-                isWorkerCreator
-              }
+              disabled={loadingProjects || isWorkerCreator}
             >
               <View style={styles.rowContent}>
                 <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
@@ -726,7 +720,7 @@ export default function CreateTaskScreen() {
                 </View>
                 <View style={styles.rowTextContainer}>
                   <Text style={styles.rowLabel}>
-                    {isWorkerCreator
+                    {isWorkerCreator || selectedProjectId
                       ? t("createTask.assignedTo")
                       : t("createTask.personalTaskUser")}
                   </Text>
