@@ -443,7 +443,7 @@
   "shifts": {
     "shiftPhoto": "Фото смены",
     "selectPeriod": "Выберите период",
-    "hoursSourcePlanned": "Запланированные",
+    "hoursSourcePlanned": "План",
     "hoursSourceGps": "GPS",
     "hoursSourceManual": "Вручную",
     "noPeriods": "Нет периодов",
