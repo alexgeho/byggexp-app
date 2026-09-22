@@ -506,7 +506,14 @@ export default function TaskScreen() {
             onPress={() => setTab(tabName)}
             style={[styles.tabButton, tab === tabName && styles.activeTab]}
           >
-            <Text style={styles.tabText}>
+            {/* One line: "Редактировать" is wider than a third of the row and
+                broke mid-word ("Редактироват / ь"). It shrinks to fit. */}
+            <Text
+              style={styles.tabText}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.75}
+            >
               {t(`task.tabs.${tabName.toLowerCase()}`, tabName)}
             </Text>
           </TouchableOpacity>

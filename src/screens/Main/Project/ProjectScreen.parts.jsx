@@ -55,6 +55,7 @@ export function ProjectTabBar({
             >
               <Text
                 style={[styles.tabText, isActive && { color: activeColor }]}
+                numberOfLines={1}
               >
                 {t(tab.labelKey)}
               </Text>

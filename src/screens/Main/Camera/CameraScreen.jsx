@@ -517,6 +517,11 @@ export default function CameraScreen() {
                 },
                 active && styles.tabTextActive,
               ]}
+              // Same rule as every segmented bar: one line, shrink to fit,
+              // never a word broken across two lines.
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.75}
             >
               {t(tab.labelKey)}
             </Text>
