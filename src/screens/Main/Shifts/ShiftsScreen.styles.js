@@ -646,6 +646,23 @@ export const createStyles = (c) =>
       justifyContent: "space-between",
       gap: 12,
     },
+    // Month + year wheels, From above To, each pair across the full width so
+    // a month name never gets cut off.
+    monthRangeStack: {
+      gap: 8,
+    },
+    monthYearRow: {
+      flexDirection: "row",
+      gap: 8,
+    },
+    monthYearMonth: {
+      flex: 2,
+      width: undefined,
+    },
+    monthYearYear: {
+      flex: 1,
+      width: undefined,
+    },
     monthDateField: {
       flex: 1,
       alignItems: "center",
@@ -663,7 +680,7 @@ export const createStyles = (c) =>
       overflow: "hidden",
     },
     monthWheel: {
-      height: Platform.OS === "ios" ? 150 : 48,
+      height: Platform.OS === "ios" ? 120 : 48,
       width: "100%",
       backgroundColor: "transparent",
     },

@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import { getDateLocale } from "../../../utils/dateLocale";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Icon from "react-native-vector-icons/Feather";
 
@@ -352,6 +353,72 @@ export function ExportSheet({
 // (From/To with an inline date wheel). Apply confirms. The date picker is
 // rendered inline INSIDE this sheet — a stacked Modal would swallow the wheel's
 // touches on iOS.
+// One month-and-year choice as two wheels, the way a birth date is picked:
+// the month by name on the left, the year on the right. A single wheel of
+// "август 2026 г." was cut off at the column width ("август 202…").
+function MonthYearWheels({ value, onChange, options, styles, prefix }) {
+  const years = [...new Set(options.map((key) => key.slice(0, 4)))];
+  const year = (value || options[0] || "").slice(0, 4);
+  const month = (value || "").slice(5, 7);
+  const monthsForYear = options
+    .filter((key) => key.startsWith(`${year}-`))
+    .map((key) => key.slice(5, 7));
+  const monthName = (mm) => {
+    const label = new Intl.DateTimeFormat(getDateLocale(), {
+      month: "long",
+    }).format(new Date(Number(year) || 2000, Number(mm) - 1, 1));
+    return label.charAt(0).toUpperCase() + label.slice(1);
+  };
+
+  const changeYear = (nextYear) => {
+    const available = options
+      .filter((key) => key.startsWith(`${nextYear}-`))
+      .map((key) => key.slice(5, 7));
+    // Keep the month if that year has it, else the nearest one it does have.
+    const nextMonth = available.includes(month)
+      ? month
+      : available[
+          month > available[available.length - 1] ? available.length - 1 : 0
+        ];
+    if (nextMonth) onChange(`${nextYear}-${nextMonth}`);
+  };
+
+  return (
+    <View style={styles.monthYearRow}>
+      <View style={[styles.monthWheelContainer, styles.monthYearMonth]}>
+        <Picker
+          selectedValue={month}
+          onValueChange={(mm) => onChange(`${year}-${mm}`)}
+          style={styles.monthWheel}
+          itemStyle={styles.monthWheelItem}
+          selectionColor="rgb(245, 245, 245)"
+        >
+          {monthsForYear.map((mm) => (
+            <Picker.Item
+              key={`${prefix}-m-${mm}`}
+              label={monthName(mm)}
+              value={mm}
+            />
+          ))}
+        </Picker>
+      </View>
+      <View style={[styles.monthWheelContainer, styles.monthYearYear]}>
+        <Picker
+          selectedValue={year}
+          onValueChange={changeYear}
+          style={styles.monthWheel}
+          itemStyle={styles.monthWheelItem}
+          selectionColor="rgb(245, 245, 245)"
+        >
+          {years.map((yy) => (
+            <Picker.Item key={`${prefix}-y-${yy}`} label={yy} value={yy} />
+          ))}
+        </Picker>
+      </View>
+    </View>
+  );
+}
+
 export function PeriodSheet({
   visible,
   onClose,
@@ -417,50 +484,30 @@ export function PeriodSheet({
 
             <View style={styles.periodCard}>
               {exportPeriodTab === "Month" ? (
-                <View style={styles.dateContainer}>
-                  <View style={styles.monthDateField}>
+                <View style={styles.monthRangeStack}>
+                  <View>
                     <Text style={styles.monthDateLabel}>
                       {t("shiftHistory.from")}
                     </Text>
-                    <View style={styles.monthWheelContainer}>
-                      <Picker
-                        selectedValue={exportFromMonth}
-                        onValueChange={setExportFromMonth}
-                        style={styles.monthWheel}
-                        itemStyle={styles.monthWheelItem}
-                        selectionColor="rgb(245, 245, 245)"
-                      >
-                        {exportMonthOptions.map((month) => (
-                          <Picker.Item
-                            key={`from-${month}`}
-                            label={formatMonthLabel(month)}
-                            value={month}
-                          />
-                        ))}
-                      </Picker>
-                    </View>
+                    <MonthYearWheels
+                      value={exportFromMonth}
+                      onChange={setExportFromMonth}
+                      options={exportMonthOptions}
+                      styles={styles}
+                      prefix="from"
+                    />
                   </View>
-                  <View style={styles.monthDateField}>
+                  <View>
                     <Text style={styles.monthDateLabel}>
                       {t("shiftHistory.to")}
                     </Text>
-                    <View style={styles.monthWheelContainer}>
-                      <Picker
-                        selectedValue={exportToMonth}
-                        onValueChange={setExportToMonth}
-                        style={styles.monthWheel}
-                        itemStyle={styles.monthWheelItem}
-                        selectionColor="rgb(245, 245, 245)"
-                      >
-                        {exportMonthOptions.map((month) => (
-                          <Picker.Item
-                            key={`to-${month}`}
-                            label={formatMonthLabel(month)}
-                            value={month}
-                          />
-                        ))}
-                      </Picker>
-                    </View>
+                    <MonthYearWheels
+                      value={exportToMonth}
+                      onChange={setExportToMonth}
+                      options={exportMonthOptions}
+                      styles={styles}
+                      prefix="to"
+                    />
                   </View>
                 </View>
               ) : (
