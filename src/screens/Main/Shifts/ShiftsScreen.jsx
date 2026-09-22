@@ -187,15 +187,38 @@ export default function ShiftsScreen() {
   // They can still switch the filter to a colleague or "all" afterwards; the
   // one-shot guard means that manual change is never overridden.
   const didInitPeopleFilterRef = useRef(false);
+  // True while the filter is still that automatic "just me", i.e. nobody has
+  // picked people by hand yet.
+  const peopleFilterIsAutoRef = useRef(false);
   useEffect(() => {
     if (didInitPeopleFilterRef.current) return;
     if (isAdmin && currentUserId) {
       setFilterWorkerIds([currentUserId]);
+      peopleFilterIsAutoRef.current = true;
       didInitPeopleFilterRef.current = true;
     } else if (isAdmin === false) {
       didInitPeopleFilterRef.current = true;
     }
   }, [isAdmin, currentUserId]);
+
+  // "Just me" is right for logging your own hours, wrong for reading the plan:
+  // an admin who isn't on the site's team has no plan of their own, so "План"
+  // showed four stray days instead of the team's working days. On the plan
+  // (and GPS) the automatic filter widens to everyone; a hand-picked filter is
+  // left alone.
+  const pickPeople = useCallback((next) => {
+    peopleFilterIsAutoRef.current = false;
+    setFilterWorkerIds(next);
+  }, []);
+
+  useEffect(() => {
+    if (!peopleFilterIsAutoRef.current) return;
+    if (hoursSource === "manual") {
+      if (currentUserId) setFilterWorkerIds([currentUserId]);
+    } else {
+      setFilterWorkerIds([]);
+    }
+  }, [hoursSource, currentUserId]);
 
   // Manual hours attach ONLY to the explicitly selected project (app-wide
   // selectedProject) — never a silent projects[0] fallback, which let hours be
@@ -1772,7 +1795,7 @@ export default function ShiftsScreen() {
         visible={employeePickerOpen}
         employees={pickerEmployees}
         filterWorkerIds={filterWorkerIds}
-        setFilterWorkerIds={setFilterWorkerIds}
+        setFilterWorkerIds={pickPeople}
         onClose={() => setEmployeePickerOpen(false)}
         styles={styles}
         t={t}
