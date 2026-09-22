@@ -30,3 +30,4 @@ export { default as shiftApi } from "./shift.service";
 export { default as notificationsApi } from "./notifications.service";
 export { default as chatApi } from "./chat.service";
 export { default as userActivityApi } from "./user-activity.service";
+export { hoursService } from "./hours.service";

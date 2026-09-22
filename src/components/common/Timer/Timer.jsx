@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { View, Text, StyleSheet } from "react-native";
+import { Platform, View, Text, StyleSheet } from "react-native";
 
 import { styles } from "./Timer.styles";
 
@@ -10,6 +10,9 @@ import { styles } from "./Timer.styles";
 // the two widest digits, to never clip or jitter) already add breathing room
 // around narrow values, so a large gap on top made the clock look too spread.
 const GROUP_GAP_RATIO = 0.04;
+// Landasans-Medium: hhea descent -200 on a 1000-unit em. Digits never reach
+// into it, so it is trimmed from the bottom of the clock (see the row below).
+const DIGIT_DESCENT_RATIO = 0.2;
 
 const DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
@@ -92,7 +95,20 @@ export function Timer({
         ))}
       </View>
 
-      <View style={styles.row}>
+      {/* Digits sit on the baseline, and below it the font keeps its whole
+          descender zone — 200/1000 of the size in Landasans (hhea descent
+          -200), about 28pt at full size. It is empty for digits but still
+          takes layout, so the gap above the Play button read as spacer + 28
+          while the gap below it was the bare spacer. Trimming the descender
+          makes the clock's box end where the digits end. */}
+      <View
+        style={[
+          styles.row,
+          Platform.OS === "ios" && {
+            marginBottom: -Math.round(fontSize * DIGIT_DESCENT_RATIO),
+          },
+        ]}
+      >
         <Text style={[styles.timerText, textStyle, cell]} numberOfLines={1}>
           {hours}
         </Text>

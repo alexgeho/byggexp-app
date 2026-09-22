@@ -31,7 +31,12 @@ import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { ProjectFilterSelector } from "../../../components/common/ProjectFilterSelector/ProjectFilterSelector";
 import AuthContext from "../../../contexts/AuthContext";
-import { projectService, shiftService, userService } from "../../../services";
+import {
+  hoursService,
+  projectService,
+  shiftService,
+  userService,
+} from "../../../services";
 import { useShiftHistory } from "../../../hooks/useShiftHistory";
 import Icon from "react-native-vector-icons/Feather";
 import {
@@ -243,11 +248,15 @@ export default function ShiftsScreen() {
   // Duration for a day entry under the current source. GPS = tracked timer;
   // planned/manual read their own field once the backend provides it.
   const daySourceMs = useCallback(
-    (entry) =>
-      hoursSource === "gps"
-        ? Number(entry?.totalDurationMs) || 0
-        : Number(entry?.[`${hoursSource}DurationMs`]) || 0,
-    [hoursSource],
+    (entry, date) => {
+      if (hoursSource === "gps") return Number(entry?.totalDurationMs) || 0;
+      if (hoursSource === "planned" && plannedByDate) {
+        const key = date || entry?.date;
+        return key ? plannedByDate.get(key) || 0 : 0;
+      }
+      return Number(entry?.[`${hoursSource}DurationMs`]) || 0;
+    },
+    [hoursSource, plannedByDate],
   );
 
   const workerIdsParam = filterWorkerIds.length
@@ -270,6 +279,58 @@ export default function ShiftsScreen() {
     refreshHistory,
     loadHistory,
   } = useShiftHistory({ filterProjectId, workerIdsParam });
+
+  // "Planned" under the shift history only counted days that already had a
+  // shift, so someone with no check-ins yet showed 0 h even though the project
+  // says 07:00–16:00 with an hour's lunch. The admin's Hours grid plans every
+  // working day for everyone on the project team from that schedule (plus
+  // corrections, minus approved leave); the app now reads that same grid, so
+  // phone and web show the same planned hours.
+  const [plannedByDate, setPlannedByDate] = useState(null);
+
+  useEffect(() => {
+    if (!isAdmin || hoursSource !== "planned" || !selectedMonth) {
+      setPlannedByDate(null);
+      return undefined;
+    }
+    let active = true;
+    const [year, month] = selectedMonth.split("-").map(Number);
+    const lastDay = new Date(year, month, 0).getDate();
+    const from = `${selectedMonth}-01`;
+    const to = `${selectedMonth}-${String(lastDay).padStart(2, "0")}`;
+
+    hoursService
+      .getGrid({
+        from,
+        to,
+        ...(filterProjectId ? { projectId: filterProjectId } : {}),
+      })
+      .then((grid) => {
+        if (!active) return;
+        const wanted = filterWorkerIds.length
+          ? new Set(filterWorkerIds.map(String))
+          : null;
+        const byDate = new Map();
+        (grid?.workers || []).forEach((worker) => {
+          if (wanted && !wanted.has(String(worker.workerId))) return;
+          Object.entries(worker.cells || {}).forEach(([date, cell]) => {
+            const hours = Number(cell?.planned);
+            if (!Number.isFinite(hours) || hours <= 0) return;
+            byDate.set(date, (byDate.get(date) || 0) + hours * 3600000);
+          });
+        });
+        setPlannedByDate(byDate);
+      })
+      .catch((error) => {
+        // Fall back to the per-shift planned value the history carries.
+        console.warn("Failed to load planned hours:", error?.message);
+        if (active) setPlannedByDate(null);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [isAdmin, hoursSource, selectedMonth, filterProjectId, filterWorkerIds]);
 
   // Coming back from the day report (or the manual-hours sheet on another
   // screen) has to show what was just saved. The hook loads on mount, so the
@@ -375,7 +436,7 @@ export default function ShiftsScreen() {
   const heroValueMs = useMemo(() => {
     if (selectedDates.length) {
       return selectedDates.reduce(
-        (sum, date) => sum + daySourceMs(dayMap.get(date)),
+        (sum, date) => sum + daySourceMs(dayMap.get(date), date),
         0,
       );
     }
@@ -383,9 +444,15 @@ export default function ShiftsScreen() {
       return currentMonthDuration;
     }
     let sum = 0;
+    if (hoursSource === "planned" && plannedByDate) {
+      plannedByDate.forEach((ms, key) => {
+        if (selectedMonth && key.startsWith(selectedMonth)) sum += ms;
+      });
+      return sum;
+    }
     dayMap.forEach((entry, key) => {
       if (selectedMonth && key.startsWith(selectedMonth)) {
-        sum += daySourceMs(entry);
+        sum += daySourceMs(entry, key);
       }
     });
     return sum;
@@ -396,6 +463,7 @@ export default function ShiftsScreen() {
     hoursSource,
     currentMonthDuration,
     selectedMonth,
+    plannedByDate,
   ]);
 
   const toggleDateGroup = useCallback(

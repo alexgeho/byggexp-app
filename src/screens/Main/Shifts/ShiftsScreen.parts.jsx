@@ -723,7 +723,7 @@ export function ShiftCalendar({
 
             const day = Number(dateStr.split("-")[2]);
             const shiftDay = dayMap.get(dateStr);
-            const savedMs = daySourceMs(shiftDay);
+            const savedMs = daySourceMs(shiftDay, dateStr);
             const pendingHours = pendingManual[dateStr];
             const hasPending = hoursSource === "manual" && pendingHours != null;
             const displayMs = hasPending
