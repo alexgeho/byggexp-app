@@ -15,3 +15,25 @@ export const getTaskDisplayStatus = (task) => {
 
   return { label: "Open", tone: "open" };
 };
+
+// Who a task is for, as one short label: the single assignee, or else the
+// first of the chosen recipients ("Adam", "Adam +1"). A task sent through the
+// recipient picker has no assigneeUserName, so reading only that field showed
+// nobody. Returns "" for a whole-team task.
+export function taskAssigneeLabel(task) {
+  if (task?.assigneeUserName) return task.assigneeUserName;
+  let settings = task?.notificationSettings;
+  if (typeof settings === "string") {
+    try {
+      settings = JSON.parse(settings);
+    } catch {
+      settings = null;
+    }
+  }
+  const group = Array.isArray(settings?.assignees) ? settings.assignees : [];
+  const named = group.filter((person) => person?.name);
+  if (!named.length) return "";
+  return named.length > 1
+    ? `${named[0].name} +${named.length - 1}`
+    : named[0].name;
+}

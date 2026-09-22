@@ -61,7 +61,10 @@ import {
 } from "../../../utils/documentPreview";
 import { sortByNewest } from "../../../utils/sortByNewest";
 import { normalizeRefId } from "../../../utils/entityId";
-import { getTaskDisplayStatus } from "../../../utils/taskStatus";
+import {
+  getTaskDisplayStatus,
+  taskAssigneeLabel,
+} from "../../../utils/taskStatus";
 import { useCardStyles } from "../../../styles/cards";
 import { pickUploadAssets } from "../../../utils/uploadPicker";
 import {
@@ -579,7 +582,7 @@ export const ProjectScreen = () => {
                     {/* Who it was given to comes first: the project's
                         task list is where the foreman checks "Roger has
                         this, Alex has that". */}
-                    {[task.assigneeUserName, task.taskDescription]
+                    {[taskAssigneeLabel(task), task.taskDescription]
                       .filter(Boolean)
                       .join(" · ") || t("task.noDescription")}
                   </Text>

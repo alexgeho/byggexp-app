@@ -4,7 +4,10 @@ import {
   useRoute,
 } from "@react-navigation/native";
 import { getDateLocale } from "../../utils/dateLocale";
-import { getTaskDisplayStatus } from "../../utils/taskStatus";
+import {
+  getTaskDisplayStatus,
+  taskAssigneeLabel,
+} from "../../utils/taskStatus";
 import React, {
   useCallback,
   useContext,
@@ -275,9 +278,9 @@ export default function TasksScreen() {
           numberOfLines={1}
           ellipsizeMode="tail"
         >
-          {task.taskDescription ||
-            task.assigneeUserName ||
-            t("task.noDescription")}
+          {[taskAssigneeLabel(task), task.taskDescription]
+            .filter(Boolean)
+            .join(" · ") || t("task.noDescription")}
         </Text>
       </ListCard>
     );
