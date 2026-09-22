@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Modal,
   FlatList,
+  KeyboardAvoidingView,
   Platform,
   ScrollView,
   ActivityIndicator,
@@ -577,167 +578,177 @@ export const LocationPickerModal = ({
           />
         </View>
 
-        <ScrollView
-          style={styles.mapModalScroll}
-          contentContainerStyle={styles.mapModalScrollContent}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-          scrollEnabled={!isSlidingRadius && !isMapInteracting}
+        {/* The search field opens the keyboard on arrival, and the list never
+            knew: the map and its "my position" button sat under the keyboard
+            with nothing to scroll to. The scroll area now shrinks above the
+            keyboard, and a drag down puts the keyboard away. */}
+        <KeyboardAvoidingView
+          style={styles.mapModalKeyboard}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
-          <View style={styles.mapSearchInputCard}>
-            <Icon
-              name="search"
-              size={18}
-              color={onDark(
-                theme.content,
-                theme.content.textMuted,
-                "rgba(5, 45, 80, 0.55)",
-              )}
-            />
-            <TextInput
-              ref={searchInputRef}
-              autoFocus
-              value={locationSearch}
-              onChangeText={setLocationSearch}
-              placeholder={t("createProject.searchAddress")}
-              placeholderTextColor={onDark(
-                theme.content,
-                theme.content.placeholder,
-                "rgba(5, 45, 80, 0.45)",
-              )}
-              style={styles.mapSearchInput}
-              returnKeyType="search"
-            />
-          </View>
-
-          {showSearchHint ? (
-            <View style={styles.mapSuggestionsEmptyState}>
-              <Text style={styles.mapSuggestionsEmptyText}>
-                {searchEmptyText}
-              </Text>
-            </View>
-          ) : (
-            <View style={styles.mapSuggestionsCard}>
-              {isLocationLoading || isSearchLoading ? (
-                <View style={styles.mapSuggestionsLoadingRow}>
-                  <ActivityIndicator
-                    size="small"
-                    color={theme.colors.primary}
-                  />
-                  <Text style={styles.mapSuggestionsLoadingText}>
-                    {isLocationLoading
-                      ? t("createProject.loadingLocation")
-                      : t("createProject.searchingAddresses")}
-                  </Text>
-                </View>
-              ) : suggestions.length ? (
-                suggestions.map((item, index) => (
-                  <TouchableOpacity
-                    key={item.id}
-                    activeOpacity={0.85}
-                    style={[
-                      styles.mapSuggestionItem,
-                      index === suggestions.length - 1 &&
-                        styles.mapSuggestionItemLast,
-                    ]}
-                    onPress={() => {
-                      Keyboard.dismiss();
-                      onSelectSuggestion(item);
-                    }}
-                  >
-                    <Icon
-                      name="map-pin"
-                      size={16}
-                      color={theme.content.textPrimary}
-                    />
-                    <Text style={styles.mapSuggestionText}>{item.label}</Text>
-                  </TouchableOpacity>
-                ))
-              ) : (
-                <View style={styles.mapSuggestionsEmptyState}>
-                  <Text style={styles.mapSuggestionsEmptyText}>
-                    {searchEmptyText}
-                  </Text>
-                </View>
-              )}
-            </View>
-          )}
-
-          <View style={styles.mapBottomPanel}>
-            <Text style={styles.mapBottomPanelTitle}>
-              {t("createProject.selectedLocation")}
-            </Text>
-            <Text
-              numberOfLines={2}
-              style={[
-                styles.mapBottomLocationText,
-                !location && styles.mapBottomLocationPlaceholder,
-              ]}
-            >
-              {location || t("createProject.chooseLocationHint")}
-            </Text>
-
-            {/* Radius selector ABOVE the map so the on-screen keyboard can't
-                cover it (Android). */}
-            <View style={styles.activationAreaRow}>
-              <View style={styles.activationAreaTextWrap}>
-                <Text style={styles.activationAreaTitle}>
-                  {t("createProject.activationArea")}
-                </Text>
-                <Text style={styles.activationAreaSubtitle}>
-                  {t("createProject.activationAreaHint")}
-                </Text>
-              </View>
-
-              <View style={styles.activationAreaBadge}>
-                <Text style={styles.activationAreaBadgeText}>
-                  {t("createProject.metersShort", { meters: radiusMeters })}
-                </Text>
-              </View>
-            </View>
-
-            {/* Custom PanResponder slider — claims the touch so the ScrollView
-                can't steal the horizontal drag on Android; big white knob with
-                an even all-around shadow. */}
-            <View style={styles.activationAreaSliderWrap}>
-              <RadiusSlider
-                min={50}
-                max={1500}
-                step={50}
-                value={radiusMeters}
-                onChange={setRadiusMeters}
-                onSlidingStart={() => {
-                  setIsSlidingRadius(true);
-                  Keyboard.dismiss();
-                }}
-                onSlidingComplete={() => setIsSlidingRadius(false)}
-                minTrackColor={theme.colors.primary}
-                maxTrackColor={onDark(
+          <ScrollView
+            style={styles.mapModalScroll}
+            contentContainerStyle={styles.mapModalScrollContent}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
+            showsVerticalScrollIndicator={false}
+            scrollEnabled={!isSlidingRadius && !isMapInteracting}
+          >
+            <View style={styles.mapSearchInputCard}>
+              <Icon
+                name="search"
+                size={18}
+                color={onDark(
                   theme.content,
-                  theme.content.divider,
-                  "rgba(5, 45, 80, 0.22)",
+                  theme.content.textMuted,
+                  "rgba(5, 45, 80, 0.55)",
                 )}
-                thumbSize={44}
+              />
+              <TextInput
+                ref={searchInputRef}
+                autoFocus
+                value={locationSearch}
+                onChangeText={setLocationSearch}
+                placeholder={t("createProject.searchAddress")}
+                placeholderTextColor={onDark(
+                  theme.content,
+                  theme.content.placeholder,
+                  "rgba(5, 45, 80, 0.45)",
+                )}
+                style={styles.mapSearchInput}
+                returnKeyType="search"
               />
             </View>
 
-            <LocationMapPicker
-              latitude={selectedCoordinate?.latitude}
-              longitude={selectedCoordinate?.longitude}
-              radiusMeters={radiusMeters}
-              onPickCoordinate={onPickCoordinate}
-              onInteractionChange={(interacting) => {
-                if (interacting) {
-                  Keyboard.dismiss();
-                }
-                setIsMapInteracting(interacting);
-              }}
-            />
-            <Text style={styles.mapDragHint}>
-              {t("createProject.mapDragHint")}
-            </Text>
-          </View>
-        </ScrollView>
+            {showSearchHint ? (
+              <View style={styles.mapSuggestionsEmptyState}>
+                <Text style={styles.mapSuggestionsEmptyText}>
+                  {searchEmptyText}
+                </Text>
+              </View>
+            ) : (
+              <View style={styles.mapSuggestionsCard}>
+                {isLocationLoading || isSearchLoading ? (
+                  <View style={styles.mapSuggestionsLoadingRow}>
+                    <ActivityIndicator
+                      size="small"
+                      color={theme.colors.primary}
+                    />
+                    <Text style={styles.mapSuggestionsLoadingText}>
+                      {isLocationLoading
+                        ? t("createProject.loadingLocation")
+                        : t("createProject.searchingAddresses")}
+                    </Text>
+                  </View>
+                ) : suggestions.length ? (
+                  suggestions.map((item, index) => (
+                    <TouchableOpacity
+                      key={item.id}
+                      activeOpacity={0.85}
+                      style={[
+                        styles.mapSuggestionItem,
+                        index === suggestions.length - 1 &&
+                          styles.mapSuggestionItemLast,
+                      ]}
+                      onPress={() => {
+                        Keyboard.dismiss();
+                        onSelectSuggestion(item);
+                      }}
+                    >
+                      <Icon
+                        name="map-pin"
+                        size={16}
+                        color={theme.content.textPrimary}
+                      />
+                      <Text style={styles.mapSuggestionText}>{item.label}</Text>
+                    </TouchableOpacity>
+                  ))
+                ) : (
+                  <View style={styles.mapSuggestionsEmptyState}>
+                    <Text style={styles.mapSuggestionsEmptyText}>
+                      {searchEmptyText}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            )}
+
+            <View style={styles.mapBottomPanel}>
+              <Text style={styles.mapBottomPanelTitle}>
+                {t("createProject.selectedLocation")}
+              </Text>
+              <Text
+                numberOfLines={2}
+                style={[
+                  styles.mapBottomLocationText,
+                  !location && styles.mapBottomLocationPlaceholder,
+                ]}
+              >
+                {location || t("createProject.chooseLocationHint")}
+              </Text>
+
+              {/* Radius selector ABOVE the map so the on-screen keyboard can't
+                cover it (Android). */}
+              <View style={styles.activationAreaRow}>
+                <View style={styles.activationAreaTextWrap}>
+                  <Text style={styles.activationAreaTitle}>
+                    {t("createProject.activationArea")}
+                  </Text>
+                  <Text style={styles.activationAreaSubtitle}>
+                    {t("createProject.activationAreaHint")}
+                  </Text>
+                </View>
+
+                <View style={styles.activationAreaBadge}>
+                  <Text style={styles.activationAreaBadgeText}>
+                    {t("createProject.metersShort", { meters: radiusMeters })}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Custom PanResponder slider — claims the touch so the ScrollView
+                can't steal the horizontal drag on Android; big white knob with
+                an even all-around shadow. */}
+              <View style={styles.activationAreaSliderWrap}>
+                <RadiusSlider
+                  min={50}
+                  max={1500}
+                  step={50}
+                  value={radiusMeters}
+                  onChange={setRadiusMeters}
+                  onSlidingStart={() => {
+                    setIsSlidingRadius(true);
+                    Keyboard.dismiss();
+                  }}
+                  onSlidingComplete={() => setIsSlidingRadius(false)}
+                  minTrackColor={theme.colors.primary}
+                  maxTrackColor={onDark(
+                    theme.content,
+                    theme.content.divider,
+                    "rgba(5, 45, 80, 0.22)",
+                  )}
+                  thumbSize={44}
+                />
+              </View>
+
+              <LocationMapPicker
+                latitude={selectedCoordinate?.latitude}
+                longitude={selectedCoordinate?.longitude}
+                radiusMeters={radiusMeters}
+                onPickCoordinate={onPickCoordinate}
+                onInteractionChange={(interacting) => {
+                  if (interacting) {
+                    Keyboard.dismiss();
+                  }
+                  setIsMapInteracting(interacting);
+                }}
+              />
+              <Text style={styles.mapDragHint}>
+                {t("createProject.mapDragHint")}
+              </Text>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </View>
     </Modal>
   );

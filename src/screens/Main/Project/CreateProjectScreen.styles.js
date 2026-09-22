@@ -664,6 +664,9 @@ export const createStyles = (c) =>
       backgroundColor: c.background,
       gap: 0,
     },
+    mapModalKeyboard: {
+      flex: 1,
+    },
     mapModalScroll: {
       flex: 1,
     },
