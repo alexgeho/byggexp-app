@@ -566,12 +566,18 @@ export function HoursSourceToggle({
             onPress={() => setHoursSource(s.key)}
             activeOpacity={0.85}
           >
+            {/* One line, always: "Запланированные" is wider than a third of
+                the bar and broke mid-word onto a second line. It shrinks to
+                fit instead. */}
             <Text
               style={[
                 styles.sourceBtnText,
                 { fontFamily: mediumFontFamily },
                 on && { color: s.color },
               ]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.75}
             >
               {t(
                 `shifts.hoursSource${s.key.charAt(0).toUpperCase()}${s.key.slice(1)}`,

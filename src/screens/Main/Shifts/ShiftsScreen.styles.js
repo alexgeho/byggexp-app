@@ -122,6 +122,9 @@ export const createStyles = (c) =>
       borderRadius: 10,
       alignItems: "center",
       justifyContent: "center",
+      // Room either side, so a label that shrinks to fit never touches the
+      // edge of its segment.
+      paddingHorizontal: 6,
     },
     sourceBtnOn: {
       backgroundColor: c.surface,
@@ -544,7 +547,8 @@ export const createStyles = (c) =>
       fontSize: 16,
       fontWeight: "bold",
       textAlign: "center",
-      lineHeight: 16,
+      lineHeight: 18,
+      paddingHorizontal: 8,
     },
     loadingContainer: {
       flex: 1,

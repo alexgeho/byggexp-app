@@ -1652,7 +1652,14 @@ export default function ShiftsScreen() {
         onAddPress={openExportSheet}
         showAddButton
         renderAddContent={() => (
-          <Text style={styles.exportFabText}>{t("shiftHistory.export")}</Text>
+          <Text
+            style={styles.exportFabText}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.7}
+          >
+            {t("shiftHistory.export")}
+          </Text>
         )}
         addButtonStyle={styles.exportFabButton}
       />
