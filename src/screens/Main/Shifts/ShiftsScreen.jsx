@@ -273,6 +273,12 @@ export default function ShiftsScreen() {
     });
   }, [inlineManualDate, keyboardHeight]);
 
+  // Declared above daySourceMs on purpose: its deps read plannedByDate during
+  // render, and further down it was still undefined there (const → var), so
+  // the callback froze on "no plan" and the calendar never showed the grid
+  // while the month total (declared later) did.
+  const [plannedByDate, setPlannedByDate] = useState(null);
+
   const sourceMeta =
     HOURS_SOURCES.find((s) => s.key === hoursSource) || HOURS_SOURCES[1];
   // Duration for a day entry under the current source. GPS = tracked timer;
@@ -318,7 +324,6 @@ export default function ShiftsScreen() {
   // phone and web show the same planned hours.
   // Workers read it too: the backend hands them only their own row, so their
   // plan covers every working day of their site, not just the shift days.
-  const [plannedByDate, setPlannedByDate] = useState(null);
 
   useEffect(() => {
     if (hoursSource !== "planned" || !selectedMonth) {
