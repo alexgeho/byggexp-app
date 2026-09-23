@@ -138,7 +138,14 @@ export default function ShiftsScreen() {
   // Admin filters: scope the calendar + export to a project and/or people.
   const [projects, setProjects] = useState([]);
   const [employees, setEmployees] = useState([]);
-  const [filterProjectId, setFilterProjectId] = useState(null);
+  // The project picked on the home screen is the source of truth: shifts,
+  // plan and export open on it. An admin can switch the filter; a worker
+  // (who has no filter) always follows the home pick.
+  const homeProjectId = selectedProject?._id || selectedProject?.id || null;
+  const [filterProjectId, setFilterProjectId] = useState(homeProjectId);
+  useEffect(() => {
+    if (!isAdmin) setFilterProjectId(homeProjectId);
+  }, [isAdmin, homeProjectId]);
   const [filterWorkerIds, setFilterWorkerIds] = useState([]);
   const [employeePickerOpen, setEmployeePickerOpen] = useState(false);
   // Multi-select mode for export. Off (default): a tap focuses one day (view).
