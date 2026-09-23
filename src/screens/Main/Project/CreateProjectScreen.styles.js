@@ -693,6 +693,18 @@ export const createStyles = (c) =>
       backgroundColor: c.surface,
       paddingHorizontal: 16,
     },
+    mapUseCurrentRow: {
+      minHeight: 44,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+      paddingHorizontal: 16,
+      marginTop: 4,
+    },
+    mapUseCurrentText: {
+      fontSize: 15,
+      fontWeight: "500",
+    },
     mapSearchInput: {
       flex: 1,
       color: c.textPrimary,

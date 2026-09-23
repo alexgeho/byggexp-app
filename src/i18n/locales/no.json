@@ -338,6 +338,7 @@
     "note": "Notat",
     "projectAddress": "Prosjektadresse",
     "searchAddress": "Søk adresse",
+    "useCurrentLocation": "Bruk min nåværende posisjon",
     "loadingLocation": "Laster sted...",
     "searchingAddresses": "Søker adresser...",
     "selectedLocation": "Valgt sted",

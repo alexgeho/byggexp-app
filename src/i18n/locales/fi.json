@@ -338,6 +338,7 @@
     "note": "Muistiinpano",
     "projectAddress": "Projektin osoite",
     "searchAddress": "Hae osoite",
+    "useCurrentLocation": "Käytä nykyistä sijaintiani",
     "loadingLocation": "Ladataan sijaintia...",
     "searchingAddresses": "Haetaan osoitteita...",
     "selectedLocation": "Valittu sijainti",

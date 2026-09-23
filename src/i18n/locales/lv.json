@@ -338,6 +338,7 @@
     "note": "Piezīme",
     "projectAddress": "Projekta adrese",
     "searchAddress": "Meklēt adresi",
+    "useCurrentLocation": "Izmantot manu pašreizējo atrašanās vietu",
     "loadingLocation": "Notiek atrašanās vietas ielāde...",
     "searchingAddresses": "Notiek adrešu meklēšana...",
     "selectedLocation": "Izvēlētā atrašanās vieta",

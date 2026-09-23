@@ -338,6 +338,7 @@
     "note": "Napomena",
     "projectAddress": "Adresa projekta",
     "searchAddress": "Pretraži adresu",
+    "useCurrentLocation": "Koristi moju trenutnu lokaciju",
     "loadingLocation": "Učitavanje lokacije...",
     "searchingAddresses": "Pretraga adresa...",
     "selectedLocation": "Odabrana lokacija",

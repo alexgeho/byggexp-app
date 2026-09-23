@@ -338,6 +338,7 @@
     "note": "Заметка",
     "projectAddress": "Адрес проекта",
     "searchAddress": "Поиск адреса",
+    "useCurrentLocation": "Использовать моё текущее местоположение",
     "loadingLocation": "Загрузка местоположения...",
     "searchingAddresses": "Поиск адресов...",
     "selectedLocation": "Выбранное местоположение",

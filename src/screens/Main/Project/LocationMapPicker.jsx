@@ -103,6 +103,23 @@ const buildHtml = ({
 </body>
 </html>`;
 
+// The device's current position, or null when location is refused. Same
+// expo-location + emulator fallback as the shift geofence guard. Shared by
+// the map's crosshair and the "Use my current location" row under the search
+// field (which the keyboard can't cover, unlike the map).
+export async function getDeviceCoordinate() {
+  if (!Device.isDevice) return DEFAULT_CENTER;
+  let { status } = await Location.getForegroundPermissionsAsync();
+  if (status !== "granted") {
+    status = (await Location.requestForegroundPermissionsAsync()).status;
+  }
+  if (status !== "granted") return null;
+  const pos = await Location.getCurrentPositionAsync({
+    accuracy: Location.Accuracy.Balanced,
+  });
+  return { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
+}
+
 // Interactive map for the project location picker: a draggable pin plus a
 // radius circle that tracks the activation-area slider. Tapping the map or
 // dragging the pin reports a new coordinate to the parent.
@@ -120,34 +137,17 @@ export const LocationMapPicker = ({
   // echoes our own drag doesn't recenter and fight the user.
   const lastEmittedRef = useRef(null);
 
-  // "Locate me" — drop the pin on the device's current GPS position. Reuses the
-  // same expo-location + emulator-fallback approach as the shift geofence guard;
-  // the resolved coordinate flows through onPickCoordinate, so the parent sets
-  // "Vald plats" (reverse-geocode) and the map recenters via the prop round-trip.
+  // "Locate me" — drop the pin on the device's current GPS position; the
+  // coordinate flows through onPickCoordinate, so the parent sets "Vald plats"
+  // (reverse-geocode) and the map recenters via the prop round-trip.
   const handleLocateMe = async () => {
     if (locating) {
       return;
     }
     try {
       setLocating(true);
-      let coord = DEFAULT_CENTER;
-      if (Device.isDevice) {
-        let { status } = await Location.getForegroundPermissionsAsync();
-        if (status !== "granted") {
-          status = (await Location.requestForegroundPermissionsAsync()).status;
-        }
-        if (status !== "granted") {
-          return;
-        }
-        const pos = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.Balanced,
-        });
-        coord = {
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
-        };
-      }
-      onPickCoordinate?.(coord.latitude, coord.longitude);
+      const coord = await getDeviceCoordinate();
+      if (coord) onPickCoordinate?.(coord.latitude, coord.longitude);
     } catch (error) {
       console.error("Locate me failed:", error);
     } finally {

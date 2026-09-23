@@ -27,7 +27,7 @@ import { PersonListItem } from "../../../components/common/PersonListItem/Person
 import { HeaderCheckButton } from "../../../components/common/ui";
 import { getWorkerStatusBadge } from "../../../utils/workerStatusBadge";
 import { createStyles } from "./CreateProjectScreen.styles";
-import { LocationMapPicker } from "./LocationMapPicker";
+import { LocationMapPicker, getDeviceCoordinate } from "./LocationMapPicker";
 import { RadiusSlider } from "./RadiusSlider";
 import { useTheme } from "../../../theme/ThemeContext";
 import { onDark } from "../../../theme/colorUtils";
@@ -553,6 +553,7 @@ export const LocationPickerModal = ({
   // Same freeze while panning the map or dragging the pin, so the outer
   // ScrollView doesn't steal the gesture.
   const [isMapInteracting, setIsMapInteracting] = useState(false);
+  const [locatingMe, setLocatingMe] = useState(false);
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
       <View style={[styles.mapModalScreen, { paddingTop: insets.top }]}>
@@ -619,6 +620,41 @@ export const LocationPickerModal = ({
                 returnKeyType="search"
               />
             </View>
+
+            {/* As in the admin: "Use my current location" right under the
+                search. The map's own crosshair sat low enough for the keyboard
+                to cover it. */}
+            <TouchableOpacity
+              style={styles.mapUseCurrentRow}
+              activeOpacity={0.8}
+              disabled={locatingMe}
+              onPress={async () => {
+                Keyboard.dismiss();
+                try {
+                  setLocatingMe(true);
+                  const coord = await getDeviceCoordinate();
+                  if (coord) onPickCoordinate(coord.latitude, coord.longitude);
+                } catch (error) {
+                  console.error("Use current location failed:", error);
+                } finally {
+                  setLocatingMe(false);
+                }
+              }}
+            >
+              {locatingMe ? (
+                <ActivityIndicator size="small" color={theme.colors.primary} />
+              ) : (
+                <Icon name="crosshair" size={18} color={theme.colors.primary} />
+              )}
+              <Text
+                style={[
+                  styles.mapUseCurrentText,
+                  { color: theme.colors.primary },
+                ]}
+              >
+                {t("createProject.useCurrentLocation")}
+              </Text>
+            </TouchableOpacity>
 
             {showSearchHint ? (
               <View style={styles.mapSuggestionsEmptyState}>

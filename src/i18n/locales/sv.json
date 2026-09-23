@@ -338,6 +338,7 @@
     "note": "Anteckning",
     "projectAddress": "Projektadress",
     "searchAddress": "Sök adress",
+    "useCurrentLocation": "Använd min nuvarande plats",
     "loadingLocation": "Laddar plats...",
     "searchingAddresses": "Söker adresser...",
     "selectedLocation": "Vald plats",

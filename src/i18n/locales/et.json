@@ -338,6 +338,7 @@
     "note": "Märkus",
     "projectAddress": "Projekti aadress",
     "searchAddress": "Otsi aadressi",
+    "useCurrentLocation": "Kasuta minu praegust asukohta",
     "loadingLocation": "Asukoha laadimine...",
     "searchingAddresses": "Aadresside otsimine...",
     "selectedLocation": "Valitud asukoht",

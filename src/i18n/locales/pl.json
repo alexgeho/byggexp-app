@@ -338,6 +338,7 @@
     "note": "Notatka",
     "projectAddress": "Adres projektu",
     "searchAddress": "Szukaj adresu",
+    "useCurrentLocation": "Użyj mojej bieżącej lokalizacji",
     "loadingLocation": "Ładowanie lokalizacji...",
     "searchingAddresses": "Wyszukiwanie adresów...",
     "selectedLocation": "Wybrana lokalizacja",
