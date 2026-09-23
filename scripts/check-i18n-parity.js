@@ -44,13 +44,23 @@ for (const [locale, keys] of Object.entries(keySets)) {
   }
 
   const missing = [...referenceKeys].filter((key) => !keys.has(key));
-  const extra = [...keys].filter((key) => !referenceKeys.has(key));
+  // Locale-specific CLDR plural forms (e.g. _few/_many in pl/ru/uk) are
+  // allowed as long as the reference defines the same plural key (_other).
+  const isExtraPluralForm = (key) => {
+    const match = key.match(/^(.*)_(zero|two|few|many)$/);
+    return match && referenceKeys.has(`${match[1]}_other`);
+  };
+  const extra = [...keys].filter(
+    (key) => !referenceKeys.has(key) && !isExtraPluralForm(key),
+  );
 
   if (missing.length || extra.length) {
     hasMismatch = true;
     console.error(`\n✗ ${locale}.json is out of sync with ${REFERENCE}.json:`);
     if (missing.length) {
-      console.error(`  Missing ${missing.length} key(s): ${missing.join(", ")}`);
+      console.error(
+        `  Missing ${missing.length} key(s): ${missing.join(", ")}`,
+      );
     }
     if (extra.length) {
       console.error(`  Extra ${extra.length} key(s): ${extra.join(", ")}`);
