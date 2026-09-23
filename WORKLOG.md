@@ -6,6 +6,7 @@
 
 | Получено | Что                                                                                            | Итог                                                                                 |
 | -------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| 15:57    | Play: 28 в «Internt test» → «Flytta upp version → Produktion»?                                 | да                                                                                   |
 | 15:48    | iOS отправлен; «теперь в Google давай»                                                         | [ ]                                                                                  |
 | 15:46    | «Promotional Text тоже — дай все тексты»                                                       | Subtitle, Keywords, Promotional, Description — в чате и `docs/STORE_LISTING_COPY.md` |
 | 15:43    | «Топовые ключи должны быть в проекте byggexp.se»                                               | ключи из `ByggExp-NextJs/docs/seo/keywords-master.md` — в чате                       |
