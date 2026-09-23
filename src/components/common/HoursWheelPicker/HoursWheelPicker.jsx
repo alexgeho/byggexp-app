@@ -7,6 +7,14 @@ import { View, Text, Animated, StyleSheet } from "react-native";
 // The wheel overflows its fixed one-row slot, so showing the peek never shifts
 // the layout below (the round buttons stay put).
 
+// The wheel goes round: after 59 comes 00 again (Alexander: "не крутить
+// обратно, чтобы поставить ноль"). The values are laid out CYCLES times and
+// the wheel starts in the middle lap; whenever it comes to rest it jumps,
+// without animation, back to the same value in the middle lap, so there is
+// always a full lap of room in either direction.
+const CYCLES = 3;
+const MIDDLE_LAP = Math.floor(CYCLES / 2);
+
 function WheelColumn({
   values,
   selected,
@@ -17,22 +25,47 @@ function WheelColumn({
   peek,
   letterSpacing,
 }) {
+  const lapLength = values.length;
+  const rows = React.useMemo(
+    () =>
+      Array.from(
+        { length: lapLength * CYCLES },
+        (_, i) => values[i % lapLength],
+      ),
+    [values, lapLength],
+  );
+  const middleIndexOf = (value) =>
+    MIDDLE_LAP * lapLength + Math.max(0, values.indexOf(value));
+
+  const scrollRef = useRef(null);
   const scrollY = useRef(
-    new Animated.Value(Math.max(0, values.indexOf(selected)) * itemHeight),
+    new Animated.Value(middleIndexOf(selected) * itemHeight),
   ).current;
 
-  const commitFromOffset = (event) => {
+  const commitFromOffset = (event, recentre = true) => {
     const y = event.nativeEvent.contentOffset.y;
-    const index = Math.round(y / itemHeight);
-    const clamped = Math.max(0, Math.min(values.length - 1, index));
-    if (values[clamped] !== selected) {
-      onSelect(values[clamped]);
+    const index = Math.max(
+      0,
+      Math.min(rows.length - 1, Math.round(y / itemHeight)),
+    );
+    const value = rows[index];
+    // Back to the middle lap, same value — invisible, the digits are identical.
+    const recentred = middleIndexOf(value);
+    if (recentre && recentred !== index) {
+      scrollRef.current?.scrollTo({
+        y: recentred * itemHeight,
+        animated: false,
+      });
+    }
+    if (value !== selected) {
+      onSelect(value);
     }
   };
 
   return (
     <View style={{ height: itemHeight + peek * 2, overflow: "hidden" }}>
       <Animated.ScrollView
+        ref={scrollRef}
         showsVerticalScrollIndicator={false}
         snapToInterval={itemHeight}
         snapToAlignment="start"
@@ -40,7 +73,7 @@ function WheelColumn({
         decelerationRate="fast"
         contentOffset={{
           x: 0,
-          y: Math.max(0, values.indexOf(selected)) * itemHeight,
+          y: middleIndexOf(selected) * itemHeight,
         }}
         contentContainerStyle={{ paddingVertical: peek }}
         scrollEventThrottle={16}
@@ -49,9 +82,11 @@ function WheelColumn({
           { useNativeDriver: true },
         )}
         onMomentumScrollEnd={commitFromOffset}
-        onScrollEndDrag={commitFromOffset}
+        // A slow release may never start a momentum phase: take the value, but
+        // leave the recentring to the momentum end so it can't cut a snap short.
+        onScrollEndDrag={(event) => commitFromOffset(event, false)}
       >
-        {values.map((value, index) => {
+        {rows.map((value, index) => {
           // Fade neighbours out to fully transparent by ±1.5 rows so the
           // peeking digits dissolve smoothly toward the edges (no hard cut).
           const opacity = scrollY.interpolate({
@@ -67,7 +102,7 @@ function WheelColumn({
           });
           return (
             <Animated.View
-              key={value}
+              key={index}
               style={[styles.itemRow, { height: itemHeight, opacity }]}
             >
               <Text
