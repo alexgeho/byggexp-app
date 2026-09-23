@@ -309,10 +309,12 @@ export default function ShiftsScreen() {
   // working day for everyone on the project team from that schedule (plus
   // corrections, minus approved leave); the app now reads that same grid, so
   // phone and web show the same planned hours.
+  // Workers read it too: the backend hands them only their own row, so their
+  // plan covers every working day of their site, not just the shift days.
   const [plannedByDate, setPlannedByDate] = useState(null);
 
   useEffect(() => {
-    if (!isAdmin || hoursSource !== "planned" || !selectedMonth) {
+    if (hoursSource !== "planned" || !selectedMonth) {
       setPlannedByDate(null);
       return undefined;
     }
@@ -353,7 +355,7 @@ export default function ShiftsScreen() {
     return () => {
       active = false;
     };
-  }, [isAdmin, hoursSource, selectedMonth, filterProjectId, filterWorkerIds]);
+  }, [hoursSource, selectedMonth, filterProjectId, filterWorkerIds]);
 
   // Coming back from the day report (or the manual-hours sheet on another
   // screen) has to show what was just saved. The hook loads on mount, so the
