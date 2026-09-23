@@ -60,3 +60,52 @@ Play Console / App Store Connect (в коде эти тексты не живу�
 
 Важно: после смены текста в Play описание уходит на ревью вместе со следующим
 релизом.
+
+## App Store 1.1.2 — итоговый набор (sv, 2026-09-23)
+
+Ключи — из SEO-банка сайта (`ByggExp-NextJs/docs/seo/keywords-master.md`): tidrapporteringssystem bygg 5400,
+projekthantering bygg 2900, tidrapportering hantverkare 2400, schemaläggningssystem 2400, app för tidrapportering 1900,
+stämpelklocka 720. Apple склеивает слова из названия, подзаголовка и ключей, поэтому «bygg» стоит в подзаголовке,
+а слова не повторяются. «personalliggare» (1000) не взят — модуля в приложении ещё нет.
+
+- **Subtitle** (29/30): `Tidrapport & projekt för bygg`
+- **Keywords** (96/100): `tidrapporteringssystem,tidrapportering,hantverkare,projekthantering,schemaläggning,stämpelklocka`
+- **Promotional Text** (145/170): Tidrapportering för hantverkare: tiden räknas med GPS eller fylls i för hand. Projekt, planering och fakturor i samma app – nu även i mörkt läge.
+
+**Description** (1748/4000):
+
+```
+Stämpla in när du kommer till bygget – ByggExp räknar tiden åt dig med GPS, och du fyller i den för hand när det passar bättre. Samma app håller ordning på projekten, uppgifterna, planeringen och fakturorna, så timmarna blir underlag för både lön och faktura utan att någon skriver av dem en gång till.
+
+Byggd för hantverkare och byggföretag – från enmansföretaget till laget med tjugo man på flera byggen.
+
+TIDRAPPORTERING
+• Automatisk stämpelklocka med GPS: kommer du till projektets adress startar tiden, lämnar du platsen pausas den
+• Manuell tidrapport när GPS inte behövs – fyll i timmarna direkt i kalendern
+• Planerade timmar per projekt utifrån arbetsdagen, så du ser plan mot utfall
+• Påminnelse när timmar saknas, och en tydlig logg över in- och utstämplingar
+• Export av tidrapporten till PDF och Excel – färdigt löneunderlag
+
+PROJEKTHANTERING
+• Alla byggprojekt med adress, datum, team, dokument och foton på ett ställe
+• Kvitton fotograferas och läses av automatiskt – kostnaden hamnar på projektet
+• Verktyg kopplas till projekt och anställda
+• Projektets ekonomi: timmar, kostnad och marginal
+
+UPPGIFTER OCH PLANERING
+• Ge uppgifter till en person eller hela laget, med datum, påminnelser och foton
+• Schemaläggning av pass och personal i kalendern
+
+FAKTURERING
+• Offerter och fakturor med ROT-avdrag och omvänd byggmoms
+• Kreditfakturor, helt eller delvis
+• Leverantörsfakturor med påminnelse när de förfaller
+• Kunder, artiklar, Bankgiro och Plusgiro
+
+FÖR HELA FÖRETAGET
+• Roller för administratör, arbetsledare och anställd – var och en ser det som gäller dem
+• Mörkt tema och 11 språk, bland annat svenska, engelska, polska, ukrainska och estniska
+• Samma konto i appen och i webbversionen för kontoret
+
+Prova gratis i 14 dagar.
+```
