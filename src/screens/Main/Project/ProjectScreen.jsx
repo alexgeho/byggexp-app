@@ -66,10 +66,13 @@ import {
   taskAssigneeLabel,
 } from "../../../utils/taskStatus";
 import { useCardStyles } from "../../../styles/cards";
-import { pickUploadAssets } from "../../../utils/uploadPicker";
+import {
+  IMAGE_DOCUMENT_TYPES,
+  pickUploadAssets,
+} from "../../../utils/uploadPicker";
 import {
   canCreateTasks,
-  canManageDocuments,
+  canAddProjectContent,
   canManageWorkers,
   shouldShowAccountStatus,
 } from "../../../utils/userRoles";
@@ -226,8 +229,25 @@ export const ProjectScreen = () => {
         isReceipt: true,
       }));
 
-    setPhotoSections(groupPhotoItemsByDate([...shiftPhotos, ...receiptPhotos]));
-  }, [id]);
+    const isImage = (doc) =>
+      /^image\//.test(doc?.mimeType || "") ||
+      /\.(jpe?g|png|heic|heif|webp)$/i.test(doc?.name || doc?.url || "");
+    const documentPhotos = (project?.documents || [])
+      .filter((doc) => typeof doc === "object" && doc?.url && isImage(doc))
+      .map((doc) => ({
+        url: doc.url,
+        date: String(doc.uploadedAt || "").slice(0, 10),
+        isReceipt: false,
+      }));
+
+    setPhotoSections(
+      groupPhotoItemsByDate([
+        ...shiftPhotos,
+        ...receiptPhotos,
+        ...documentPhotos,
+      ]),
+    );
+  }, [id, project?.documents]);
 
   const fetchProject = useCallback(async () => {
     if (!id) {
@@ -431,8 +451,9 @@ export const ProjectScreen = () => {
     [project?.workers, id],
   );
   const canCreateProjectTasks = canCreateTasks(user?.role);
-  const canUploadDocuments = canManageDocuments(user?.role);
   const canEditWorkers = canManageWorkers(user?.role);
+  // Documents, photos and tools: workers on the project may add them too.
+  const canAddContent = canAddProjectContent(user?.role);
 
   const handleOpenDocument = async (document) => {
     if (!document?.url) {
@@ -456,7 +477,9 @@ export const ProjectScreen = () => {
     }
   };
 
-  const handleAddDocuments = async () => {
+  // Photos go in as project files as well — no running shift needed — and the
+  // Photos tab shows every image file of the project next to shift photos.
+  const handleAddDocuments = async ({ photos = false } = {}) => {
     if (!id) {
       Alert.alert(
         t("project.projectUnavailableTitle"),
@@ -467,7 +490,8 @@ export const ProjectScreen = () => {
 
     try {
       const pickedAssets = await pickUploadAssets({
-        fileNamePrefix: "project-document",
+        fileNamePrefix: photos ? "project-photo" : "project-document",
+        ...(photos ? { documentTypes: IMAGE_DOCUMENT_TYPES } : {}),
       });
 
       if (!pickedAssets.length) {
@@ -491,7 +515,11 @@ export const ProjectScreen = () => {
         setProject(updatedProject);
       }
 
-      setModal("Documents");
+      if (photos) {
+        setPhotoSections(null); // re-gather with the new photo
+      } else {
+        setModal("Documents");
+      }
       showSuccess({
         title: t("project.documentsAddedTitle"),
         message: t("project.documentsAddedMessage", {
@@ -829,13 +857,19 @@ export const ProjectScreen = () => {
         onRightPress={() => navigation.navigate("Menu")}
         showAddButton={
           (modal === "Tasks" && canCreateProjectTasks) ||
-          (modal === "Documents" && canUploadDocuments) ||
+          (modal === "Documents" && canAddContent) ||
+          (modal === "Photos" && canAddContent) ||
           (modal === "Workers" && canEditWorkers) ||
-          (modal === "Tools" && canEditWorkers)
+          (modal === "Tools" && canAddContent)
         }
         onAddPress={() => {
           if (modal === "Documents") {
             handleAddDocuments();
+            return;
+          }
+
+          if (modal === "Photos") {
+            handleAddDocuments({ photos: true });
             return;
           }
 

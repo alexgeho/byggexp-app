@@ -32,7 +32,7 @@ export const SelectTools = () => {
   const fetchTools = async () => {
     try {
       setLoading(true);
-      const all = await toolService.getAll();
+      const all = await toolService.getRegister();
       // Only tools not already attached to this project.
       const available = (all || []).filter(
         (tool) =>

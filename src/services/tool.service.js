@@ -1,8 +1,15 @@
-import api from './api';
+import api from "./api";
 
 export const toolService = {
   getAll: async () => {
-    const { data } = await api.get('/tools');
+    const { data } = await api.get("/tools");
+    return data;
+  },
+
+  // The company's whole register — for attaching tools to a project. A
+  // worker's getAll() only holds tools already on their projects.
+  getRegister: async () => {
+    const { data } = await api.get("/tools/register");
     return data;
   },
 
@@ -12,26 +19,36 @@ export const toolService = {
   },
 
   create: async (toolData) => {
-    const isFormData = typeof FormData !== 'undefined' && toolData instanceof FormData;
-    const { data } = await api.post('/tools', toolData, isFormData
-      ? {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      : undefined);
+    const isFormData =
+      typeof FormData !== "undefined" && toolData instanceof FormData;
+    const { data } = await api.post(
+      "/tools",
+      toolData,
+      isFormData
+        ? {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        : undefined,
+    );
     return data;
   },
 
   update: async (id, toolData) => {
-    const isFormData = typeof FormData !== 'undefined' && toolData instanceof FormData;
-    const { data } = await api.put(`/tools/${id}`, toolData, isFormData
-      ? {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      : undefined);
+    const isFormData =
+      typeof FormData !== "undefined" && toolData instanceof FormData;
+    const { data } = await api.put(
+      `/tools/${id}`,
+      toolData,
+      isFormData
+        ? {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        : undefined,
+    );
     return data;
   },
 
@@ -41,7 +58,7 @@ export const toolService = {
   },
 
   attachToWorker: async (workerId, toolIds) => {
-    const { data } = await api.post('/tools/attach-to-worker', {
+    const { data } = await api.post("/tools/attach-to-worker", {
       workerId,
       toolIds,
     });
@@ -57,7 +74,7 @@ export const toolService = {
   },
 
   attachToProject: async (projectId, toolIds) => {
-    const { data } = await api.post('/tools/attach-to-project', {
+    const { data } = await api.post("/tools/attach-to-project", {
       projectId,
       toolIds,
     });

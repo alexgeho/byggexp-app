@@ -91,6 +91,12 @@ export function canManageWorkers(role) {
   ]);
 }
 
+/** Add documents, photos and tools to a project the user works on — workers
+ * too (backend limits them to their own projects). */
+export function canAddProjectContent(role) {
+  return hasRole(role, [...MANAGEMENT_ROLES, USER_ROLES.WORKER]);
+}
+
 export function canManageDocuments(role) {
   return hasRole(role, MANAGEMENT_ROLES);
 }
