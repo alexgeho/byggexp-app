@@ -4,7 +4,9 @@ import {
   ActivityIndicator,
   Image,
   Keyboard,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   ScrollView,
   Text,
   TextInput,
@@ -127,14 +129,29 @@ export default function ExpenseReviewSheet({
       transparent
       onRequestClose={onClose}
     >
-      <View style={styles.backdrop}>
+      {/* The keyboard covered half the sheet and the field being typed in
+          (Maria, worker account). The sheet rides up above it, and the list
+          scrolls the focused field into view. */}
+      <KeyboardAvoidingView
+        style={styles.backdrop}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
         <View style={styles.sheet}>
           <View style={styles.handle} />
-          <ScrollView showsVerticalScrollIndicator={false}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            automaticallyAdjustKeyboardInsets
+          >
             <Text style={styles.title}>{t("camera.expense.title")}</Text>
 
             {asset?.uri ? (
-              <Image source={{ uri: asset.uri }} style={styles.preview} />
+              // The whole receipt, not a cropped strip of it.
+              <Image
+                source={{ uri: asset.uri }}
+                style={styles.preview}
+                resizeMode="contain"
+              />
             ) : null}
 
             <Text style={styles.label}>{t("camera.expense.supplier")}</Text>
@@ -237,7 +254,7 @@ export default function ExpenseReviewSheet({
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

@@ -37,7 +37,7 @@ export const createStyles = (c) =>
     },
     preview: {
       width: "100%",
-      height: 160,
+      height: 220,
       borderRadius: 14,
       backgroundColor: onDark(c, c.surfaceMuted, "#EEE"),
       marginBottom: 14,

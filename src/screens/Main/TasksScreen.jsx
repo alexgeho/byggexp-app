@@ -61,19 +61,41 @@ export default function TasksScreen() {
     try {
       setLoading(true);
 
-      // One request for every accessible project (populated incl. tasks),
-      // instead of getMyProjects + a getPopulatedById per project (N+1).
+      // Tasks come from /tasks — the same list the home screen shows, already
+      // cut to what this user may see (a worker: tasks given to them or the
+      // whole team). Projects only lend their names. Reading project.tasks
+      // instead showed a worker every task on the site, and lost a task that
+      // wasn't in that array: the home card listed it, "Задачи" said "none".
       const [populatedProjects, accessibleTasks] = await Promise.all([
         projectService.getMyPopulated(),
         taskService.getAll(),
       ]);
-
-      setProjects(Array.isArray(populatedProjects) ? populatedProjects : []);
-      setPersonalTasks(
-        Array.isArray(accessibleTasks)
-          ? accessibleTasks.filter((task) => !task?.projectId)
-          : [],
+      const tasks = Array.isArray(accessibleTasks) ? accessibleTasks : [];
+      const projectList = Array.isArray(populatedProjects)
+        ? populatedProjects
+        : [];
+      const projectById = new Map(
+        projectList.map((project) => [String(project._id), project]),
       );
+      const tasksByProject = new Map();
+      tasks.forEach((task) => {
+        const projectId = task?.projectId?._id || task?.projectId;
+        if (!projectId) return;
+        const key = String(projectId);
+        if (!tasksByProject.has(key)) tasksByProject.set(key, []);
+        tasksByProject.get(key).push(task);
+      });
+
+      setProjects(
+        [...tasksByProject.entries()].map(([projectId, projectTasks]) => ({
+          ...(projectById.get(projectId) || {
+            _id: projectId,
+            name: projectTasks[0]?.projectId?.name || "—",
+          }),
+          tasks: projectTasks,
+        })),
+      );
+      setPersonalTasks(tasks.filter((task) => !task?.projectId));
     } catch (error) {
       console.error("Failed to fetch tasks:", error);
       setProjects([]);
