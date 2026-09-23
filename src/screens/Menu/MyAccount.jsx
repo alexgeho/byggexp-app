@@ -664,14 +664,7 @@ export const MyAccount = () => {
                 );
               })}
             </View>
-          ) : (
-            <Text style={styles.emptyDocumentsText}>
-              {t("myAccount.noDocs")}
-            </Text>
-          )}
-          <Text style={styles.documentsHint}>
-            {t("myAccount.docsCount", { count: documents.length })}
-          </Text>
+          ) : null}
         </View>
 
         <View style={styles.dangerZone}>

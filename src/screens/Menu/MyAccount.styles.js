@@ -120,6 +120,9 @@ export const createStyles = (c) =>
     },
     documentsContainer: {
       width: "100%",
+      // Room for the round "+" that sits absolutely in the corner.
+      minHeight: 72,
+      justifyContent: "center",
       padding: 12,
       backgroundColor: c.surface,
       borderRadius: 12,
@@ -179,15 +182,6 @@ export const createStyles = (c) =>
       color: c.textPrimary,
       fontSize: 10,
       fontWeight: "700",
-    },
-    emptyDocumentsText: {
-      color: onDark(c, c.textSecondary, c.textMuted),
-      marginTop: 4,
-    },
-    documentsHint: {
-      color: onDark(c, c.textSecondary, c.textMuted),
-      fontSize: 12,
-      marginTop: 4,
     },
     saveButtonText: {
       color: "#ffffff",
