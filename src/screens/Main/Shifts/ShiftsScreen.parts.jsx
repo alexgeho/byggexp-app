@@ -925,7 +925,11 @@ export function ShiftCalendar({
             disabled={!canGoBackMonth}
             activeOpacity={0.85}
           >
-            <Icon name="chevron-left" size={16} color="#0177DE" />
+            <Icon
+              name="chevron-left"
+              size={styles.calendarNavIcon?.fontSize || 16}
+              color={styles.calendarNavIcon?.color || "#0177DE"}
+            />
           </TouchableOpacity>
           <Text
             style={[
@@ -944,7 +948,11 @@ export function ShiftCalendar({
             disabled={!canGoForwardMonth}
             activeOpacity={0.85}
           >
-            <Icon name="chevron-right" size={16} color="#0177DE" />
+            <Icon
+              name="chevron-right"
+              size={styles.calendarNavIcon?.fontSize || 16}
+              color={styles.calendarNavIcon?.color || "#0177DE"}
+            />
           </TouchableOpacity>
         </View>
       </View>

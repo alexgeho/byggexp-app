@@ -210,10 +210,16 @@ export const createStyles = (c) =>
       gap: 12,
     },
     calendarNavButton: {
-      width: 16,
-      height: 16,
+      // Dark: the dim blue 16px chevrons were hard to see — white, larger,
+      // with a thumb-sized target.
+      width: onDark(c, 40, 16),
+      height: onDark(c, 40, 16),
       alignItems: "center",
       justifyContent: "center",
+    },
+    calendarNavIcon: {
+      color: onDark(c, c.textPrimary, "#0177DE"),
+      fontSize: onDark(c, 28, 16),
     },
     calendarNavButtonDisabled: {
       opacity: 0.45,
