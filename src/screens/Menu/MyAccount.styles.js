@@ -83,7 +83,7 @@ export const createStyles = (c) =>
       flexDirection: "row",
     },
     inputLabel: {
-      color: c.textMuted,
+      color: onDark(c, c.textSecondary, c.textMuted),
     },
     requiredAsterisk: {
       color: onDark(c, c.danger, "#ff0000ff"),
@@ -127,7 +127,7 @@ export const createStyles = (c) =>
       position: "relative",
     },
     documentsLabel: {
-      color: c.textMuted,
+      color: onDark(c, c.textSecondary, c.textMuted),
     },
     addButton: {
       width: 48,
@@ -135,7 +135,7 @@ export const createStyles = (c) =>
       borderRadius: 999,
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: c.background,
+      backgroundColor: onDark(c, c.surfaceMuted, c.background),
       position: "absolute",
       top: 12,
       right: 12,
@@ -181,11 +181,11 @@ export const createStyles = (c) =>
       fontWeight: "700",
     },
     emptyDocumentsText: {
-      color: c.textMuted,
+      color: onDark(c, c.textSecondary, c.textMuted),
       marginTop: 4,
     },
     documentsHint: {
-      color: c.textMuted,
+      color: onDark(c, c.textSecondary, c.textMuted),
       fontSize: 12,
       marginTop: 4,
     },

@@ -88,6 +88,12 @@ export const MyAccount = () => {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
+  // Dark only: the system placeholder grey vanishes on the dark cards.
+  const placeholderColor = onDark(
+    theme.content,
+    theme.content.textMuted,
+    undefined,
+  );
   const { showSuccess } = useFeedback();
   const navigation = useNavigation();
   const { user, userId, updateStoredUser, logout } = useContext(AuthContext);
@@ -537,6 +543,7 @@ export const MyAccount = () => {
           <TextInput
             style={styles.textInput}
             placeholder={t("myAccount.typePlaceholder")}
+            placeholderTextColor={placeholderColor}
             value={form.name}
             onChangeText={(value) => handleChange("name", value)}
           />
@@ -575,6 +582,7 @@ export const MyAccount = () => {
           <TextInput
             style={styles.textInput}
             placeholder={t("myAccount.typePlaceholder")}
+            placeholderTextColor={placeholderColor}
             value={form.profession}
             onChangeText={(value) => handleChange("profession", value)}
           />
@@ -588,6 +596,7 @@ export const MyAccount = () => {
             <TextInput
               style={styles.textInput}
               placeholder={t("myAccount.typePlaceholder")}
+              placeholderTextColor={placeholderColor}
               value={form.phoneNumber}
               onChangeText={(value) => handleChange("phoneNumber", value)}
               keyboardType="phone-pad"
@@ -604,7 +613,12 @@ export const MyAccount = () => {
             onPress={handleUploadDocuments}
           >
             <Image
-              style={styles.addIcon}
+              style={[
+                styles.addIcon,
+                theme.content.scheme === "dark" && {
+                  tintColor: theme.content.textPrimary,
+                },
+              ]}
               source={require("../../assets/PlusBlack.png")}
             />
           </TouchableOpacity>
