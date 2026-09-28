@@ -42,7 +42,7 @@ export const useAddressSearch = (query, enabled) => {
       setLoading(true);
 
       try {
-        const matches = await searchAddressesWithNominatim(normalizedQuery, 2);
+        const matches = await searchAddressesWithNominatim(normalizedQuery, 5);
         const nextSuggestions = normalizeLocationSuggestions(matches).map(
           function enrichSuggestion(suggestion) {
             return {
