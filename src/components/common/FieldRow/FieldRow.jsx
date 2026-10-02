@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Switch } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 
 import { AppIcon } from "../AppIcon";
@@ -15,6 +15,7 @@ import { createStyles } from "./FieldRow.styles";
 //   - "input"    editable TextInput (forms)
 //   - "select"   tappable, shows a chevron (navigates / opens a picker)
 //   - "readonly" static value (detail / profile); tappable if onPress is given
+//   - "toggle"   label + optional hint with a Switch on the right
 const BADGE_BLUE = "#007AFF";
 
 export function FieldCard({ children, style }) {
@@ -35,6 +36,9 @@ export function FieldRow({
   autoCapitalize,
   multiline = false,
   isLast = false,
+  hint,
+  switchValue,
+  onSwitchChange,
 }) {
   const { theme } = useTheme();
   const c = theme.content;
@@ -71,6 +75,29 @@ export function FieldRow({
               />
             </View>
           </View>
+        </View>
+        {sep}
+      </>
+    );
+  }
+
+  if (variant === "toggle") {
+    return (
+      <>
+        <View style={styles.tapRow}>
+          <View style={styles.rowContent}>
+            {badge}
+            <View style={styles.body}>
+              <Text style={styles.label}>{label}</Text>
+              {hint ? <Text style={styles.hint}>{hint}</Text> : null}
+            </View>
+          </View>
+          <Switch
+            style={styles.switch}
+            value={switchValue}
+            onValueChange={onSwitchChange}
+            trackColor={{ true: "#34C759", false: "#D1D9E0" }}
+          />
         </View>
         {sep}
       </>

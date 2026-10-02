@@ -444,9 +444,24 @@ export default function CreateTaskScreen() {
     if (!id) {
       return;
     }
-    setAssigneeIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
+    // A prefilled single assignee (e.g. from an employee profile) joins the
+    // multi selection the first time the picker is used.
+    const prefilled = selectedAssigneeUserId;
+    if (prefilled) {
+      setSelectedAssigneeUserId("");
+      setSelectedAssigneeName("");
+      setSelectedAssigneeRole("");
+    }
+    setAssigneeIds((prev) => {
+      const base =
+        prefilled && !prev.includes(prefilled) ? [...prev, prefilled] : prev;
+      return base.includes(id) ? base.filter((x) => x !== id) : [...base, id];
+    });
+  };
+
+  const clearAssignees = () => {
+    setAssigneeIds([]);
+    clearSelectedUser();
   };
 
   // O(1) id → user lookup so the assignee derivations below don't do an
@@ -456,6 +471,9 @@ export default function CreateTaskScreen() {
     users.forEach((item) => map.set(getUserId(item), item));
     return map;
   }, [users]);
+
+  // Admin creating a project task: pick any subset of the team (none = all).
+  const isProjectMulti = Boolean(selectedProjectId) && !isWorkerCreator;
 
   const assigneeSummary = useMemo(
     () =>
@@ -710,7 +728,16 @@ export default function CreateTaskScreen() {
             <View style={styles.rowSepIcon} />
             <TouchableOpacity
               style={styles.groupRow}
-              onPress={() => !isWorkerCreator && setShowUserPicker(true)}
+              onPress={() => {
+                if (isWorkerCreator) {
+                  return;
+                }
+                if (isProjectMulti) {
+                  setShowAssigneePicker(true);
+                } else {
+                  setShowUserPicker(true);
+                }
+              }}
               activeOpacity={0.85}
               disabled={loadingUsers || isWorkerCreator}
             >
@@ -727,22 +754,31 @@ export default function CreateTaskScreen() {
                   <Text
                     style={[
                       styles.rowValue,
-                      !selectedAssigneeName && styles.rowPlaceholder,
+                      !selectedAssigneeName &&
+                        !(isProjectMulti && assigneeIds.length) &&
+                        styles.rowPlaceholder,
                     ]}
+                    numberOfLines={1}
                   >
                     {loadingUsers
                       ? t("createTask.loadingUsers")
-                      : selectedAssigneeName ||
-                        (isWorkerCreator
-                          ? t("createTask.currentUser")
-                          : t("createTask.selectWorkerOrForeman"))}
+                      : isProjectMulti
+                        ? selectedAssigneeName ||
+                          assigneeSummary ||
+                          t("createTask.wholeProjectTeam")
+                        : selectedAssigneeName ||
+                          (isWorkerCreator
+                            ? t("createTask.currentUser")
+                            : t("createTask.selectWorkerOrForeman"))}
                   </Text>
                 </View>
               </View>
-              {selectedAssigneeUserId && !isWorkerCreator ? (
+              {(selectedAssigneeUserId ||
+                (isProjectMulti && assigneeIds.length)) &&
+              !isWorkerCreator ? (
                 <TouchableOpacity
                   style={styles.clearInlineButton}
-                  onPress={clearSelectedUser}
+                  onPress={clearAssignees}
                 >
                   <Icon
                     name="x"
@@ -762,57 +798,6 @@ export default function CreateTaskScreen() {
                 />
               )}
             </TouchableOpacity>
-            {selectedProjectId && !selectedAssigneeUserId ? (
-              <>
-                <View style={styles.rowSepIcon} />
-                <TouchableOpacity
-                  style={styles.groupRow}
-                  onPress={() => setShowAssigneePicker(true)}
-                  activeOpacity={0.85}
-                  disabled={loadingUsers}
-                >
-                  <View style={styles.rowContent}>
-                    <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
-                      <FieldIcon name="users" size={14} color="#FFFFFF" />
-                    </View>
-                    <View style={styles.rowTextContainer}>
-                      <Text style={styles.rowLabel}>
-                        {t("createTask.assignToLabel")}
-                      </Text>
-                      <Text
-                        style={[
-                          styles.rowValue,
-                          assigneeIds.length === 0 && styles.rowPlaceholder,
-                        ]}
-                        numberOfLines={1}
-                      >
-                        {assigneeIds.length
-                          ? assigneeSummary
-                          : t("createTask.wholeProjectTeam")}
-                      </Text>
-                    </View>
-                  </View>
-                  {assigneeIds.length ? (
-                    <TouchableOpacity
-                      style={styles.clearInlineButton}
-                      onPress={() => setAssigneeIds([])}
-                    >
-                      <Icon
-                        name="x"
-                        size={16}
-                        color={theme.content.textMuted}
-                      />
-                    </TouchableOpacity>
-                  ) : (
-                    <Icon
-                      name="chevron-right"
-                      size={18}
-                      color={theme.content.textMuted}
-                    />
-                  )}
-                </TouchableOpacity>
-              </>
-            ) : null}
 
             <View style={styles.rowSep} />
             <GroupRow>
@@ -1097,7 +1082,12 @@ export default function CreateTaskScreen() {
             visible={showAssigneePicker}
             users={users}
             multiple
-            selectedUserIds={assigneeIds}
+            selectedUserIds={
+              selectedAssigneeUserId &&
+              !assigneeIds.includes(selectedAssigneeUserId)
+                ? [...assigneeIds, selectedAssigneeUserId]
+                : assigneeIds
+            }
             onSelect={toggleAssignee}
             onClose={() => setShowAssigneePicker(false)}
           />

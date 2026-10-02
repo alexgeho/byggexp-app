@@ -7,6 +7,8 @@ import {
   Modal,
   ScrollView,
   Platform,
+  Pressable,
+  StyleSheet,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -245,6 +247,7 @@ export const ProjectPickerModal = ({
       onRequestClose={onClose}
     >
       <View style={styles.projectPickerOverlay}>
+        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
         <View style={styles.projectPickerCard}>
           <View style={styles.projectPickerHeader}>
             <Text style={styles.projectPickerTitle}>
@@ -334,6 +337,7 @@ export const UserPickerModal = ({
       onRequestClose={onClose}
     >
       <View style={styles.projectPickerOverlay}>
+        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
         <View style={styles.projectPickerCard}>
           <View style={styles.projectPickerHeader}>
             <Text style={styles.projectPickerTitle}>
@@ -341,16 +345,19 @@ export const UserPickerModal = ({
             </Text>
             <TouchableOpacity
               onPress={onClose}
-              style={styles.projectPickerClose}
+              style={[
+                styles.projectPickerClose,
+                multiple && styles.projectPickerDone,
+              ]}
             >
               <Icon
-                name="x"
+                name={multiple ? "check" : "x"}
                 size={20}
-                color={onDark(
-                  theme.content,
-                  theme.content.textMuted,
-                  "#8A97A6",
-                )}
+                color={
+                  multiple
+                    ? "#FFFFFF"
+                    : onDark(theme.content, theme.content.textMuted, "#8A97A6")
+                }
               />
             </TouchableOpacity>
           </View>
@@ -423,6 +430,7 @@ export const OptionPickerModal = ({
       onRequestClose={onClose}
     >
       <View style={styles.projectPickerOverlay}>
+        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
         <View style={styles.projectPickerCard}>
           <View style={styles.projectPickerHeader}>
             <Text style={styles.projectPickerTitle}>{title}</Text>

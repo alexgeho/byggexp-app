@@ -64,6 +64,14 @@ export function createStyles(c) {
       fontSize: 16,
       color: c.textPrimary,
     },
+    hint: {
+      fontSize: 14,
+      lineHeight: 18,
+      color: onDark(c, c.placeholder, "rgba(5, 45, 80, 0.35)"),
+    },
+    switch: {
+      marginLeft: 12,
+    },
     placeholder: {
       color: onDark(c, c.placeholder, "rgba(5, 45, 80, 0.35)"),
     },

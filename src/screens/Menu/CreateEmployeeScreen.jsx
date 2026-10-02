@@ -3,7 +3,6 @@ import {
   ActivityIndicator,
   Modal,
   ScrollView,
-  Switch,
   Text,
   TouchableOpacity,
   View,
@@ -579,24 +578,15 @@ export default function CreateEmployeeScreen() {
               />
             ) : null}
             {showFinanceToggle ? (
-              <View style={styles.financeRow}>
-                <View style={styles.financeIcon}>
-                  <Icon name="dollar-sign" size={16} color="#0785F4" />
-                </View>
-                <View style={styles.financeCopy}>
-                  <Text style={styles.financeLabel}>
-                    {t("createEmployee.financeAccessLabel")}
-                  </Text>
-                  <Text style={styles.financeHint}>
-                    {t("createEmployee.financeAccessHint")}
-                  </Text>
-                </View>
-                <Switch
-                  value={financeAccess}
-                  onValueChange={setFinanceAccess}
-                  trackColor={{ true: "#34C759", false: "#D1D9E0" }}
-                />
-              </View>
+              <FieldRow
+                variant="toggle"
+                icon="dollar-sign"
+                label={t("createEmployee.financeAccessLabel")}
+                hint={t("createEmployee.financeAccessHint")}
+                switchValue={financeAccess}
+                onSwitchChange={setFinanceAccess}
+                isLast
+              />
             ) : null}
           </FieldCard>
         </ScrollView>

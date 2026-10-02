@@ -259,6 +259,10 @@ export const createStyles = (c) =>
       justifyContent: "center",
       backgroundColor: onDark(c, c.surfaceMuted, "rgba(5, 45, 80, 0.06)"),
     },
+    // Multi-select picker: the header button confirms the choice.
+    projectPickerDone: {
+      backgroundColor: "#3183FF",
+    },
     projectPickerList: {
       width: "100%",
     },

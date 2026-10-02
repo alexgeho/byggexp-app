@@ -63,34 +63,6 @@ export const createStyles = (c) =>
       backgroundColor: c.divider,
       marginLeft: 58,
     },
-    financeRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 12,
-      paddingVertical: 14,
-      paddingHorizontal: 4,
-    },
-    financeIcon: {
-      width: 32,
-      height: 32,
-      borderRadius: 8,
-      backgroundColor: onDark(c, c.accentSoft, "#E8F2FE"),
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    financeCopy: {
-      flex: 1,
-    },
-    financeLabel: {
-      fontSize: 15,
-      color: c.textPrimary,
-      fontWeight: "500",
-    },
-    financeHint: {
-      fontSize: 12,
-      color: "#8A96A3",
-      marginTop: 2,
-    },
     fieldRowContent: {
       flexDirection: "row",
       alignItems: "center",
