@@ -25,6 +25,8 @@ const toNumber = (v) => {
 
 // Light review of a scanned receipt before saving it as an utlägg. Project is
 // taken from the active shift; without a shift the worker picks one.
+const CURRENCIES = ["SEK", "EUR", "USD", "NOK", "DKK"];
+
 export default function ExpenseReviewSheet({
   visible,
   asset,
@@ -41,6 +43,9 @@ export default function ExpenseReviewSheet({
   const [supplier, setSupplier] = useState("");
   const [total, setTotal] = useState("");
   const [vat, setVat] = useState("");
+  // Receipt currency as read by the scanner (a EUR/USD bill stays in EUR/USD);
+  // tap the chip to change it.
+  const [currency, setCurrency] = useState("SEK");
   const [category, setCategory] = useState("");
   const [projectId, setProjectId] = useState(null);
   const [projects, setProjects] = useState([]);
@@ -57,6 +62,11 @@ export default function ExpenseReviewSheet({
     setSupplier(scanned?.supplierName || "");
     setTotal(scanned?.total ? String(scanned.total) : "");
     setVat(scanned?.vat ? String(scanned.vat) : "");
+    setCurrency(
+      /^[A-Z]{3}$/.test(String(scanned?.currency || "").toUpperCase())
+        ? String(scanned.currency).toUpperCase()
+        : "SEK",
+    );
     setCategory(scanned?.category || "");
     setError("");
     if (shift?.projectId) {
@@ -104,6 +114,7 @@ export default function ExpenseReviewSheet({
         date: scanned?.date || "",
         amount: toNumber(total),
         vat: toNumber(vat),
+        currency,
         paidBy: "own",
         projectId: shift?.projectId || projectId || null,
       });
@@ -164,7 +175,24 @@ export default function ExpenseReviewSheet({
 
             <View style={styles.row}>
               <View style={styles.col}>
-                <Text style={styles.label}>{t("camera.expense.total")}</Text>
+                <View style={styles.labelRow}>
+                  <Text style={styles.label}>
+                    {t("camera.expense.total").replace("SEK", currency)}
+                  </Text>
+                  <TouchableOpacity
+                    style={styles.currencyChip}
+                    onPress={() =>
+                      setCurrency(
+                        (c) =>
+                          CURRENCIES[
+                            (CURRENCIES.indexOf(c) + 1) % CURRENCIES.length
+                          ],
+                      )
+                    }
+                  >
+                    <Text style={styles.currencyChipText}>{currency}</Text>
+                  </TouchableOpacity>
+                </View>
                 <TextInput
                   style={styles.input}
                   value={total}
@@ -174,7 +202,9 @@ export default function ExpenseReviewSheet({
                 />
               </View>
               <View style={styles.col}>
-                <Text style={styles.label}>{t("camera.expense.vat")}</Text>
+                <Text style={styles.label}>
+                  {t("camera.expense.vat").replace("SEK", currency)}
+                </Text>
                 <TextInput
                   style={styles.input}
                   value={vat}

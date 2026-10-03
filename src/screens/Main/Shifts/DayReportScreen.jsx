@@ -102,6 +102,8 @@ export default function DayReportScreen() {
   // crumpled receipt is exactly where a scan gets it wrong (Postel's).
   const [receipt, setReceipt] = useState(null);
   const [expenseAmount, setExpenseAmount] = useState("");
+  // Currency read from the scanned receipt (SEK unless it says otherwise).
+  const [expenseCurrency, setExpenseCurrency] = useState("SEK");
   const [expenseSupplier, setExpenseSupplier] = useState("");
   const [expenseTotal, setExpenseTotal] = useState(0);
   const [savingExpense, setSavingExpense] = useState(false);
@@ -183,6 +185,8 @@ export default function DayReportScreen() {
           (Number(scanned?.amountExclVat) || 0) + (Number(scanned?.vat) || 0);
         if (amount > 0) setExpenseAmount(String(amount));
         if (scanned?.supplierName) setExpenseSupplier(scanned.supplierName);
+        if (/^[A-Z]{3}$/.test(String(scanned?.currency || "")))
+          setExpenseCurrency(scanned.currency);
       } catch {
         /* scanning is optional — the amount can simply be typed */
       }
@@ -201,6 +205,7 @@ export default function DayReportScreen() {
         projectId: projectId || null,
         date: shiftDate,
         amount,
+        currency: expenseCurrency,
         supplierName: expenseSupplier.trim(),
       });
       const id = created?._id || created?.id;
@@ -208,6 +213,7 @@ export default function DayReportScreen() {
       setReceipt(null);
       setExpenseAmount("");
       setExpenseSupplier("");
+      setExpenseCurrency("SEK");
       await loadExpenseTotal();
     } catch (error) {
       console.error("Failed to save expense:", error);

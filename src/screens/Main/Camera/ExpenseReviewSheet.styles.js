@@ -42,6 +42,23 @@ export const createStyles = (c) =>
       backgroundColor: onDark(c, c.surfaceMuted, "#EEE"),
       marginBottom: 14,
     },
+    labelRow: {
+      flexDirection: "row",
+      alignItems: "flex-end",
+      justifyContent: "space-between",
+    },
+    currencyChip: {
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 10,
+      marginBottom: 6,
+      backgroundColor: onDark(c, c.surfaceMuted, "#E8F2FE"),
+    },
+    currencyChipText: {
+      fontSize: 12,
+      fontWeight: "600",
+      color: onDark(c, c.textPrimary, "#0785F4"),
+    },
     label: {
       color: onDark(c, c.textSecondary, "#5F7588"),
       fontSize: 13,
