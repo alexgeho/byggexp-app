@@ -151,7 +151,10 @@ export default function ShiftsScreen() {
   // Multi-select mode for export. Off (default): a tap focuses one day (view).
   // On: taps accumulate days to export (iOS Photos-style "Select").
   const [selectMode, setSelectMode] = useState(false);
-  const [hoursSource, setHoursSource] = useState("manual");
+  // Admins open on the plan, workers on their own manual hours.
+  const [hoursSource, setHoursSource] = useState(
+    isAdmin ? "planned" : "manual",
+  );
   // Worker manual-hours editor: the shift being edited, its hh/mm inputs, and
   // the in-flight save flag.
   const [manualHoursShift, setManualHoursShift] = useState(null);

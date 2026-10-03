@@ -67,6 +67,9 @@ const RECURRENCE_VALUES = [
   "monthly",
 ];
 
+// "Notify the boss after N reminders" choices; 0 = off (admin form: 0–100).
+const ESCALATE_AFTER_VALUES = [0, 1, 2, 3, 5, 10];
+
 // Today at a whole hour — the admin form's default start (08:00) and deadline
 // (17:00) when no time is picked.
 const todayAt = (hour) => {
@@ -153,6 +156,7 @@ export default function CreateTaskScreen() {
   );
   const [showPriorityPicker, setShowPriorityPicker] = useState(false);
   const [showRecurrencePicker, setShowRecurrencePicker] = useState(false);
+  const [showEscalatePicker, setShowEscalatePicker] = useState(false);
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showDueDatePicker, setShowDueDatePicker] = useState(false);
   const [loadingProject, setLoadingProject] = useState(false);
@@ -332,6 +336,12 @@ export default function CreateTaskScreen() {
     () => getTaskNotificationSummary(notificationSettings),
     [notificationSettings],
   );
+
+  // 0 = no escalation; N = the boss is notified after N overdue reminders.
+  const escalateAfter =
+    notificationSettings.remindUntilDone && notificationSettings.escalateToBoss
+      ? Number(notificationSettings.maxReminders) || 0
+      : 0;
 
   const updateNotificationSettings = (updater) => {
     setNotificationSettings((previous) => {
@@ -862,7 +872,7 @@ export default function CreateTaskScreen() {
           <SectionLabel>Notifications</SectionLabel>
           <GroupCard>
             <TouchableOpacity
-              style={[styles.groupRow, styles.groupRowLast]}
+              style={styles.groupRow}
               activeOpacity={0.85}
               onPress={openNotificationsSheet}
             >
@@ -881,6 +891,43 @@ export default function CreateTaskScreen() {
                     ]}
                   >
                     {notificationsSummary}
+                  </Text>
+                </View>
+              </View>
+              <Icon
+                name="chevron-right"
+                size={18}
+                color={theme.content.textMuted}
+              />
+            </TouchableOpacity>
+
+            {/* Escalation — same "notify the boss after N reminders" field the
+                admin task form has, surfaced here instead of inside the sheet. */}
+            <View style={styles.rowSepIcon} />
+            <TouchableOpacity
+              style={[styles.groupRow, styles.groupRowLast]}
+              activeOpacity={0.85}
+              onPress={() => setShowEscalatePicker(true)}
+            >
+              <View style={styles.rowContent}>
+                <View style={[styles.rowIcon, fieldIconBadgeStyle]}>
+                  <FieldIcon name="user-check" size={14} color="#FFFFFF" />
+                </View>
+                <View style={styles.rowTextContainer}>
+                  <Text style={styles.rowLabel}>
+                    {t("createTask.escalateAfterLabel")}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.rowValue,
+                      !escalateAfter && styles.rowPlaceholder,
+                    ]}
+                  >
+                    {escalateAfter
+                      ? t("createTask.escalateAfterValue", {
+                          count: escalateAfter,
+                        })
+                      : t("taskReminders.off")}
                   </Text>
                 </View>
               </View>
@@ -1034,6 +1081,30 @@ export default function CreateTaskScreen() {
               setShowPriorityPicker(false);
             }}
             onClose={() => setShowPriorityPicker(false)}
+          />
+          <OptionPickerModal
+            visible={showEscalatePicker}
+            title={t("createTask.escalateAfterLabel")}
+            options={ESCALATE_AFTER_VALUES.map((value) => ({
+              value,
+              label: value
+                ? t("createTask.escalateAfterValue", { count: value })
+                : t("taskReminders.off"),
+            }))}
+            selectedValue={escalateAfter}
+            onSelect={(value) => {
+              updateNotificationSettings(
+                value
+                  ? {
+                      remindUntilDone: true,
+                      maxReminders: value,
+                      escalateToBoss: true,
+                    }
+                  : { escalateToBoss: false },
+              );
+              setShowEscalatePicker(false);
+            }}
+            onClose={() => setShowEscalatePicker(false)}
           />
           <OptionPickerModal
             visible={showRecurrencePicker}
