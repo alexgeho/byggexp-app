@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "../../theme/ThemeContext";
 import { homeGradientFor, isLightHomeTheme } from "../../theme/homeGradient";
 import { flattenColor } from "../../theme/colorUtils";
-import { checklistService } from "../../services";
+import { checklistService, projectService } from "../../services";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { EntityListScreen } from "../../components/common/EntityListScreen/EntityListScreen";
 import { ListCard } from "../../components/common/ListCard/ListCard";
@@ -22,6 +22,7 @@ import { createStyles as createHomeStyles } from "../Main/HomeVariants/HomeVaria
 import { createStyles as createPreviewStyles } from "../../components/common/ShiftHistoryPreview/ShiftHistoryPreview.styles";
 import { getEntityId } from "../../utils/entityId";
 import { isEgenkontrollOnly } from "../../utils/companyModules";
+import { shortTitle, titleAddress } from "../../utils/egenkontrollTitle";
 import {
   EgenkontrollProgress,
   EgenkontrollStatusBadge,
@@ -47,8 +48,27 @@ export default function EgenkontrollListScreen({ isHome = false }) {
   const load = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await checklistService.getAll();
-      setItems(Array.isArray(data) ? unfinishedFirst(data) : []);
+      // Site address: the part after the dash in the title, else the
+      // project's location (solo: typed at create).
+      const [data, projects] = await Promise.all([
+        checklistService.getAll(),
+        projectService.getMyProjects().catch(() => []),
+      ]);
+      const where = Object.fromEntries(
+        (Array.isArray(projects) ? projects : []).map((p) => [
+          getEntityId(p),
+          p.location || "",
+        ]),
+      );
+      setItems(
+        Array.isArray(data)
+          ? unfinishedFirst(data).map((it) => ({
+              ...it,
+              address:
+                titleAddress(it.title) || where[String(it.projectId)] || "",
+            }))
+          : [],
+      );
       setLoadError(false);
     } catch (error) {
       console.error("Failed to load egenkontroller:", error);
@@ -77,11 +97,12 @@ export default function EgenkontrollListScreen({ isHome = false }) {
         emptyText={t("egenkontroll.emptyTitle")}
         addScreen="NewEgenkontroll"
         renderCard={(item) => (
-          <ListCard
-            onPress={() => open(item)}
-            title={item.title}
-            titleNumberOfLines={2}
-          >
+          <ListCard onPress={() => open(item)} title={shortTitle(item.title)}>
+            {item.address ? (
+              <Text style={cardStyles.cardSecondaryText} numberOfLines={1}>
+                {item.address}
+              </Text>
+            ) : null}
             <Text style={cardStyles.cardSecondaryText}>
               {t("egenkontroll.pointsDone", progressOf(item))}
             </Text>
@@ -160,12 +181,19 @@ function HomeList({
                 activeOpacity={0.85}
                 onPress={() => onOpen(item)}
               >
-                <Text
-                  style={[s.durationText, { textAlign: "left" }]}
-                  numberOfLines={2}
-                >
-                  {item.title}
-                </Text>
+                <View>
+                  <Text
+                    style={[s.durationText, { textAlign: "left" }]}
+                    numberOfLines={1}
+                  >
+                    {shortTitle(item.title)}
+                  </Text>
+                  {item.address ? (
+                    <Text style={s.metaText} numberOfLines={1}>
+                      {item.address}
+                    </Text>
+                  ) : null}
+                </View>
                 <Text style={s.metaText}>
                   {t("egenkontroll.pointsDone", progressOf(item))}
                 </Text>

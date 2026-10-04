@@ -37,6 +37,7 @@ import { useCardStyles } from "../../styles/cards";
 import { layout, space } from "../../theme/spacing";
 import { radius } from "../../theme/tokens";
 import { resolveUploadUrl } from "../../utils/shifts";
+import { shortTitle } from "../../utils/egenkontrollTitle";
 import { downloadAndShareDocument } from "../../utils/documentPreview";
 import { API_BASE_URL } from "../../config/env";
 import {
@@ -45,13 +46,6 @@ import {
   progressOf,
 } from "./egenkontrollStatus";
 import LoadError from "./LoadError";
-
-// Header title: one line; "Egenkontroll" is already the screen's subject.
-const shortTitle = (title = "") =>
-  title
-    .split(/\s[–-]\s/)[0]
-    .replace(/^egenkontroll\s*[-–:]?\s*/i, "")
-    .replace(/^./, (ch) => ch.toUpperCase()) || title;
 
 // Collapsed point text length; the rest opens with "läs mer".
 const PREVIEW_CHARS = 24;
