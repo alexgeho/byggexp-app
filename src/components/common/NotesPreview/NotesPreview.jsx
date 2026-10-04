@@ -280,38 +280,38 @@ export function NotesPreview({
     const editing = editingId === (note._id || note.id);
     const divider = index !== visibleNotes.length - 1 && styles.itemDivider;
     return (
-      <View key={id} style={[extraStyles.item, divider]}>
-        <Text style={styles.dateText}>
-          {formatDate(note.updatedAt || note.createdAt)}
-        </Text>
-        {editing ? (
-          <View style={extraStyles.editRow}>
-            <TextInput
-              style={[
-                extraStyles.input,
-                extraStyles.editInput,
-                { color: styles.projectText.color },
-              ]}
-              value={editDraft}
-              onChangeText={setEditDraft}
-              onFocus={() => onInputFocus?.()}
-              onBlur={saveEdit}
-              placeholderTextColor={styles.emptyText.color}
-              // Enter inserts a newline and keeps the field open (submitBehavior
-              // "newline"); save via the ring or by tapping away.
-              multiline
-              submitBehavior="newline"
-              autoFocus
-            />
-            {/* Send lives right here in the row while editing (the keyboard
+      <View key={id} style={[extraStyles.itemRow, divider]}>
+        <View style={extraStyles.item}>
+          <Text style={styles.dateText}>
+            {formatDate(note.updatedAt || note.createdAt)}
+          </Text>
+          {editing ? (
+            <View style={extraStyles.editRow}>
+              <TextInput
+                style={[
+                  extraStyles.input,
+                  extraStyles.editInput,
+                  { color: styles.projectText.color },
+                ]}
+                value={editDraft}
+                onChangeText={setEditDraft}
+                onFocus={() => onInputFocus?.()}
+                onBlur={saveEdit}
+                placeholderTextColor={styles.emptyText.color}
+                // Enter inserts a newline and keeps the field open (submitBehavior
+                // "newline"); save via the ring or by tapping away.
+                multiline
+                submitBehavior="newline"
+                autoFocus
+              />
+              {/* Send lives right here in the row while editing (the keyboard
                 accessory is unreliable for a 2nd input). */}
-            {renderSendButton(ringAccent, ringIdle, true)}
-          </View>
-        ) : (
-          // Tap the text to edit in place; tap the trash to delete.
-          <View style={extraStyles.noteRow}>
+              {renderSendButton(ringAccent, ringIdle, true)}
+            </View>
+          ) : (
+            // Tap the text to edit in place; bell + trash sit in a column on
+            // the right, sized as real touch targets.
             <TouchableOpacity
-              style={extraStyles.noteTextWrap}
               activeOpacity={0.6}
               onPress={() => startEdit(note)}
             >
@@ -319,25 +319,27 @@ export function NotesPreview({
                 {noteText(note) || t("notes.untitled")}
               </Text>
             </TouchableOpacity>
+          )}
+        </View>
+        {editing ? null : (
+          <View style={extraStyles.actionsColumn}>
             <TouchableOpacity
-              style={extraStyles.deleteBtn}
+              style={extraStyles.actionBtn}
               onPress={() => setReminderNote(note)}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               accessibilityLabel={t("reminder.title")}
             >
               <Icon
                 name="bell"
-                size={16}
+                size={22}
                 color={note.remindAt ? "#0091FF" : secondaryIconColor}
               />
             </TouchableOpacity>
             <TouchableOpacity
-              style={extraStyles.deleteBtn}
+              style={extraStyles.actionBtn}
               onPress={() => confirmDelete(note)}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               accessibilityLabel={t("notes.delete", "Ta bort")}
             >
-              <Icon name="trash-2" size={16} color={secondaryIconColor} />
+              <Icon name="trash-2" size={22} color={secondaryIconColor} />
             </TouchableOpacity>
           </View>
         )}
@@ -550,21 +552,24 @@ const extraStyles = StyleSheet.create({
   editList: {
     marginTop: 12,
   },
-  item: {
-    gap: 4,
-  },
-  // Note text + trash side by side; text takes the room, trash sits at the end.
-  noteRow: {
+  // Note (date + text) on the left, bell/trash column on the right.
+  itemRow: {
     flexDirection: "row",
-    alignItems: "flex-start",
+    alignItems: "center",
     gap: 8,
   },
-  noteTextWrap: {
+  item: {
     flex: 1,
+    gap: 4,
   },
-  deleteBtn: {
-    paddingTop: 1,
-    marginRight: 4,
+  actionsColumn: {
+    alignItems: "center",
+  },
+  actionBtn: {
+    width: 44,
+    height: 44,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 
