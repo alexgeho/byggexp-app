@@ -1779,6 +1779,8 @@
     "onboardingContract": "Last opp kontrakt",
     "onboardingPhotos": "Ta bilder på byggeplassen",
     "address": "Adresse",
-    "addressPlaceholder": "f.eks. Storgata 5, Oslo"
+    "addressPlaceholder": "f.eks. Storgata 5, Oslo",
+    "point": "Punkt",
+    "readMore": "les mer"
   }
 }

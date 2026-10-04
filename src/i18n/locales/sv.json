@@ -1779,6 +1779,8 @@
     "onboardingContract": "Ladda upp avtal",
     "onboardingPhotos": "Fota på bygget",
     "address": "Adress",
-    "addressPlaceholder": "t.ex. Storgatan 5, Uppsala"
+    "addressPlaceholder": "t.ex. Storgatan 5, Uppsala",
+    "point": "Punkt",
+    "readMore": "läs mer"
   }
 }

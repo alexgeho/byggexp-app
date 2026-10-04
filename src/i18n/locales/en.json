@@ -1779,6 +1779,8 @@
     "onboardingContract": "Upload the contract",
     "onboardingPhotos": "Take photos on site",
     "address": "Address",
-    "addressPlaceholder": "e.g. Storgatan 5, Uppsala"
+    "addressPlaceholder": "e.g. Storgatan 5, Uppsala",
+    "point": "Point",
+    "readMore": "read more"
   }
 }

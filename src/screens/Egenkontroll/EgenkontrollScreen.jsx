@@ -33,6 +33,24 @@ import { radius } from "../../theme/tokens";
 import { resolveUploadUrl } from "../../utils/shifts";
 import { EgenkontrollStatusBadge, progressOf } from "./egenkontrollStatus";
 
+// Collapsed point text length; the rest opens with "läs mer".
+const PREVIEW_CHARS = 24;
+
+// Cut at a word boundary so the preview never ends mid-word.
+// Leading "Kontrollera (att/vid)" repeats on every AI point — drop it from
+// the preview so the collapsed line says what is checked.
+const preview = (text) => {
+  const core = text.replace(
+    /^(kontrollera|kontroll av|check)\s+(att|vid|om|that)?\s*/i,
+    "",
+  );
+  const body = core.charAt(0).toUpperCase() + core.slice(1);
+  const cut = body.slice(0, PREVIEW_CHARS);
+  const space = cut.lastIndexOf(" ");
+  if (body.length <= PREVIEW_CHARS) return body;
+  return (space > 10 ? cut.slice(0, space) : cut).trimEnd();
+};
+
 const RESULTS = ["ok", "remark", "na"];
 
 // EXIF "2026:10:04 10:12:00" → ISO; null when absent/unreadable.
@@ -175,7 +193,7 @@ export default function EgenkontrollScreen() {
 
   // Tap a point → the same native chooser for its result.
   const chooseResult = (index) =>
-    Alert.alert(`${index + 1}. ${doc.items[index].text}`, undefined, [
+    Alert.alert(`${t("egenkontroll.point")} ${index + 1}`, undefined, [
       ...RESULTS.map((r) => ({
         text: t(`egenkontroll.result.${r}`),
         onPress: () => setResult(index, r),
@@ -256,11 +274,15 @@ export default function EgenkontrollScreen() {
                     activeOpacity={0.85}
                     onPress={() => toggleOpen(i)}
                   >
-                    <Text
-                      style={rowStyles.value}
-                      numberOfLines={open[i] ? 0 : 1}
-                    >
-                      {`${i + 1}. ${it.text}`}
+                    <Text style={rowStyles.value}>
+                      {open[i] || it.text.length <= PREVIEW_CHARS
+                        ? `${i + 1}. ${it.text}`
+                        : `${i + 1}. ${preview(it.text)}… `}
+                      {!open[i] && it.text.length > PREVIEW_CHARS ? (
+                        <Text style={{ color: c.accent }}>
+                          {t("egenkontroll.readMore")}
+                        </Text>
+                      ) : null}
                     </Text>
                     {ai || it.photoUrls?.length ? (
                       <View style={[styles.row, styles.wrap]}>
@@ -322,7 +344,7 @@ export default function EgenkontrollScreen() {
 
 // Layout glue only — colours and shapes come from the shared components.
 const styles = StyleSheet.create({
-  titleBlock: { gap: space.sm },
+  titleBlock: { gap: space.sm, marginTop: space.xxl, marginBottom: space.xl },
   // cardTitle is a flex:1 row child; here it sits in a column.
   title: { flex: 0 },
   row: { flexDirection: "row", alignItems: "center", gap: space.sm },
