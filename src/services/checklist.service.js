@@ -34,7 +34,8 @@ export const checklistService = {
     return data;
   },
   // file = { uri, name, mimeType } → { title, category, items, sourceDocument }
-  draftFromDocument: async (file) => {
+  // signal = AbortController.signal ("Avbryt" while the AI reads).
+  draftFromDocument: async (file, signal) => {
     const body = new FormData();
     body.append("file", {
       uri: file.uri,
@@ -44,6 +45,7 @@ export const checklistService = {
     const { data } = await api.post("/checklists/draft-from-document", body, {
       headers: { "Content-Type": "multipart/form-data" },
       timeout: 180000,
+      signal,
     });
     return data;
   },

@@ -1749,8 +1749,6 @@
     "new": "Ny egenkontroll",
     "fromContract": "Last opp kontrakt eller arbeidsbeskrivelse",
     "fromContractHint": "PDF eller bilde av kontrakten — kontrollpunktene lages automatisk. Du kan også legge dem til selv.",
-    "reading": "Leser dokumentet…",
-    "readFailed": "Kunne ikke lese dokumentet. Prøv en annen fil eller legg til punktene selv.",
     "saveFailed": "Kunne ikke lagre egenkontrollen.",
     "actionFailed": "Noe gikk galt. Prøv igjen.",
     "project": "Prosjekt",
@@ -1803,6 +1801,10 @@
     "showLess": "vis mindre",
     "pointsLeft_one": "{{count}} punkt igjen",
     "pointsLeft_other": "{{count}} punkter igjen",
-    "sharePdf": "Del PDF"
+    "sharePdf": "Del PDF",
+    "readingContract": "Leser avtalen…",
+    "creatingPoints": "Lager kontrollpunkter…",
+    "readFailedShort": "Kunne ikke lese filen",
+    "tryAgain": "Prøv igjen"
   }
 }

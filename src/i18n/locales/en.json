@@ -1749,8 +1749,6 @@
     "new": "New egenkontroll",
     "fromContract": "Upload contract or work description",
     "fromContractHint": "PDF or photo of the contract — the control points are created automatically. You can also add them by hand.",
-    "reading": "Reading the document…",
-    "readFailed": "Could not read the document. Try another file or add the points by hand.",
     "saveFailed": "Could not save the egenkontroll.",
     "actionFailed": "Something went wrong. Please try again.",
     "project": "Project",
@@ -1803,6 +1801,10 @@
     "showLess": "show less",
     "pointsLeft_one": "{{count}} point left",
     "pointsLeft_other": "{{count}} points left",
-    "sharePdf": "Share PDF"
+    "sharePdf": "Share PDF",
+    "readingContract": "Reading the contract…",
+    "creatingPoints": "Creating control points…",
+    "readFailedShort": "Could not read the file",
+    "tryAgain": "Try again"
   }
 }

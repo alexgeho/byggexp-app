@@ -1,21 +1,11 @@
-import React, { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import Icon from "react-native-vector-icons/Feather";
+import React, { useEffect, useRef, useState } from "react";
+import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { useTheme } from "../../theme/ThemeContext";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 
 import { useFeedback } from "../../contexts/FeedbackContext";
 import { checklistService, projectService } from "../../services";
-import { useCardStyles } from "../../styles/cards";
 import { Screen } from "../../components/common/Screen/Screen";
 import { FieldCard, FieldRow } from "../../components/common/FieldRow/FieldRow";
 import { ListCard } from "../../components/common/ListCard/ListCard";
@@ -29,6 +19,7 @@ import { layout, space } from "../../theme/spacing";
 import { getEntityId } from "../../utils/entityId";
 import { pickUploadAssets } from "../../utils/uploadPicker";
 import { isEgenkontrollOnly } from "../../utils/companyModules";
+import UploadZone from "./UploadZone";
 
 const NEW_PROJECT = "__new__";
 const today = () => new Date().toISOString().slice(0, 10);
@@ -46,9 +37,6 @@ export default function NewEgenkontrollScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const { showSuccess } = useFeedback();
-  const cardStyles = useCardStyles();
-  const { theme } = useTheme();
-  const c = theme.content;
   const [projects, setProjects] = useState([]);
   const [projectId, setProjectId] = useState(NEW_PROJECT);
   const [title, setTitle] = useState("");
@@ -59,7 +47,14 @@ export default function NewEgenkontrollScreen() {
   const [items, setItems] = useState([]);
   const [draft, setDraft] = useState(null);
   const [reading, setReading] = useState(false);
+  // Doherty: reading takes a while — staged text, then "Skapar kontrollpunkter…".
+  const [stage, setStage] = useState(0);
+  const [readError, setReadError] = useState(false);
+  const abortRef = useRef(null);
   const [saving, setSaving] = useState(false);
+
+  // Leaving the screen cancels a running read.
+  useEffect(() => () => abortRef.current?.abort(), []);
 
   useEffect(() => {
     projectService
@@ -86,9 +81,18 @@ export default function NewEgenkontrollScreen() {
       fileNamePrefix: "avtal",
     });
     if (!file) return;
+    const controller = new AbortController();
+    abortRef.current = controller;
+    setReadError(false);
+    setStage(0);
     setReading(true);
+    const timer = setTimeout(() => setStage(1), 6000);
     try {
-      const data = await checklistService.draftFromDocument(file);
+      const data = await checklistService.draftFromDocument(
+        file,
+        controller.signal,
+      );
+      if (controller.signal.aborted) return;
       setDraft(data);
       setTitle((prev) => prev || data.title || "");
       setItems(data.items || []);
@@ -100,11 +104,23 @@ export default function NewEgenkontrollScreen() {
         });
       }
     } catch (error) {
+      if (controller.signal.aborted) return;
       console.error("Draft from document failed:", error);
-      Alert.alert(t("common.error"), t("egenkontroll.readFailed"));
+      setReadError(true);
     } finally {
-      setReading(false);
+      clearTimeout(timer);
+      if (abortRef.current === controller) {
+        abortRef.current = null;
+        setReading(false);
+      }
     }
+  };
+
+  // "Avbryt": drop the request; its result (if any) is ignored.
+  const cancelReading = () => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setReading(false);
   };
 
   const save = async () => {
@@ -182,40 +198,16 @@ export default function NewEgenkontrollScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {/* Upload zone — the app's dashed "add" pattern (see
-            ShiftHistoryPreview addSquare), sized as the main entry point. */}
-        <TouchableOpacity
-          activeOpacity={0.85}
+        <UploadZone
+          status={reading ? "reading" : readError ? "error" : "idle"}
+          stage={t(
+            stage
+              ? "egenkontroll.creatingPoints"
+              : "egenkontroll.readingContract",
+          )}
           onPress={readContract}
-          disabled={reading}
-          style={[
-            styles.dropZone,
-            {
-              borderColor: `${theme.colors.primary}66`,
-              backgroundColor: `${theme.colors.primary}0F`,
-            },
-          ]}
-        >
-          <View
-            style={[styles.dropIcon, { backgroundColor: theme.colors.primary }]}
-          >
-            {reading ? (
-              <ActivityIndicator color={c.onAccent} />
-            ) : (
-              <Icon name="file-text" size={26} color={c.onAccent} />
-            )}
-          </View>
-          <Text style={[styles.dropTitle, { color: theme.colors.primary }]}>
-            {t("egenkontroll.onboardingContract")}
-          </Text>
-          <Text style={cardStyles.cardSecondaryText}>PDF · foto</Text>
-        </TouchableOpacity>
-        {/* Doherty: AI reading takes a while — say what is happening. */}
-        {reading ? (
-          <Text style={[cardStyles.cardSecondaryText, { textAlign: "center" }]}>
-            {t("egenkontroll.reading")}
-          </Text>
-        ) : null}
+          onCancel={cancelReading}
+        />
 
         <FieldCard>
           {solo ? (
@@ -257,7 +249,14 @@ export default function NewEgenkontrollScreen() {
           </View>
         )}
 
-        {items.length ? (
+        {reading ? (
+          <>
+            <SectionTitle style={{ marginBottom: 0 }}>
+              {t("egenkontroll.points")}
+            </SectionTitle>
+            <PointsSkeleton />
+          </>
+        ) : items.length ? (
           <>
             <SectionTitle style={{ marginBottom: 0 }}>
               {t("egenkontroll.points")}
@@ -280,7 +279,7 @@ export default function NewEgenkontrollScreen() {
 
         {/* The upload zone is the one primary entry; adding by hand
             appears once a contract was read (or a point exists). */}
-        {draft || items.length ? (
+        {!reading && (draft || readError || items.length) ? (
           <Button
             variant="primary"
             icon="plus"
@@ -297,23 +296,41 @@ export default function NewEgenkontrollScreen() {
   );
 }
 
-// Layout glue for the upload zone; colours come from the theme.
+// Six grey placeholder rows while the AI drafts the points.
+function PointsSkeleton() {
+  const { theme } = useTheme();
+  const c = theme.content;
+  return (
+    <FieldCard>
+      {[78, 62, 86, 54, 70, 64].map((w, i) => (
+        <View
+          key={i}
+          style={[
+            styles.skeletonRow,
+            i < 5 && {
+              borderBottomWidth: StyleSheet.hairlineWidth,
+              borderBottomColor: c.divider,
+            },
+          ]}
+        >
+          <View
+            style={[
+              styles.skeletonBar,
+              { width: `${w}%`, backgroundColor: c.inputSurface },
+            ]}
+          />
+        </View>
+      ))}
+    </FieldCard>
+  );
+}
+
 const styles = StyleSheet.create({
-  dropZone: {
-    alignItems: "center",
-    gap: space.sm,
-    paddingVertical: space.xxl,
-    borderRadius: 20,
-    borderWidth: 1.5,
-    borderStyle: "dashed",
-  },
-  dropIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    alignItems: "center",
+  // Same height as a point input row (FieldRow tapRow).
+  skeletonRow: {
+    minHeight: 56,
     justifyContent: "center",
-    marginBottom: space.xs,
+    paddingHorizontal: 16,
   },
-  dropTitle: { fontSize: 17, fontWeight: "600" },
+  skeletonBar: { height: 14, borderRadius: 7 },
 });
