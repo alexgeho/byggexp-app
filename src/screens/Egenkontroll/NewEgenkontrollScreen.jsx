@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { useTheme } from "../../theme/ThemeContext";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 
 import { useFeedback } from "../../contexts/FeedbackContext";
@@ -55,6 +55,13 @@ export default function NewEgenkontrollScreen() {
 
   // Leaving the screen cancels a running read.
   useEffect(() => () => abortRef.current?.abort(), []);
+
+  // Opened from the empty home upload zone → the picker is already up.
+  const { params } = useRoute();
+  useEffect(() => {
+    if (params?.autoPick) readContract();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     projectService

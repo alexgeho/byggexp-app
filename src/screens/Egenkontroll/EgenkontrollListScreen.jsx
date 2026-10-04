@@ -28,6 +28,8 @@ import {
   progressOf,
   unfinishedFirst,
 } from "./egenkontrollStatus";
+import LoadError from "./LoadError";
+import UploadZone from "./UploadZone";
 
 // Egenkontroller list. For the solo "Egenkontroll" plan this is the home
 // screen: the home gradient, the home preview cards and the home bottom bar.
@@ -39,6 +41,7 @@ export default function EgenkontrollListScreen({ isHome = false }) {
   const cardStyles = useCardStyles();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const home = isHome || isEgenkontrollOnly();
 
   const load = useCallback(async () => {
@@ -46,9 +49,10 @@ export default function EgenkontrollListScreen({ isHome = false }) {
       setLoading(true);
       const data = await checklistService.getAll();
       setItems(Array.isArray(data) ? unfinishedFirst(data) : []);
+      setLoadError(false);
     } catch (error) {
       console.error("Failed to load egenkontroller:", error);
-      setItems([]);
+      setLoadError(true);
     } finally {
       setLoading(false);
     }
@@ -97,6 +101,7 @@ export default function EgenkontrollListScreen({ isHome = false }) {
     <HomeList
       items={items}
       loading={loading}
+      loadError={loadError}
       onOpen={open}
       onReload={load}
       theme={theme}
@@ -107,7 +112,15 @@ export default function EgenkontrollListScreen({ isHome = false }) {
 
 // Solo home: same container, section header and frosted cards as the home
 // screen's previews (ShiftHistoryPreview / TasksPreview).
-function HomeList({ items, loading, onOpen, onReload, theme, themeName }) {
+function HomeList({
+  items,
+  loading,
+  loadError,
+  onOpen,
+  onReload,
+  theme,
+  themeName,
+}) {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const lightHome = isLightHomeTheme(themeName);
@@ -133,10 +146,12 @@ function HomeList({ items, loading, onOpen, onReload, theme, themeName }) {
             <Text style={s.title}>{t("egenkontroll.title")}</Text>
           </View>
 
-          {loading ? (
+          {loading && !items.length ? (
             <View style={[s.card, { height: undefined }]}>
               <ActivityIndicator color={s.emptyText.color} />
             </View>
+          ) : loadError && !items.length ? (
+            <LoadError onRetry={onReload} textColor={s.durationText.color} />
           ) : items.length ? (
             items.map((item) => (
               <TouchableOpacity
@@ -166,9 +181,15 @@ function HomeList({ items, loading, onOpen, onReload, theme, themeName }) {
               </TouchableOpacity>
             ))
           ) : (
-            <View style={[s.card, s.emptyState]}>
-              <Text style={s.emptyText}>{t("egenkontroll.emptyTitle")}</Text>
-            </View>
+            // Empty: the same upload zone as Ny egenkontroll — opens it with
+            // the file picker already up.
+            <UploadZone
+              tint={s.durationText.color}
+              surface={s.card.backgroundColor}
+              onPress={() =>
+                navigation.navigate("NewEgenkontroll", { autoPick: true })
+              }
+            />
           )}
         </View>
       </ScrollView>

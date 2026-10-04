@@ -18,17 +18,21 @@ import { space } from "../../theme/spacing";
 //   status: "idle" | "reading" | "error"
 //   stage:  text while reading ("Läser avtalet…" → "Skapar kontrollpunkter…")
 //   onCancel: "Avbryt" while reading
+//   tint / surface: text+border colour and fill over the home gradient
+//     (defaults: brand blue on a light blue tint)
 export default function UploadZone({
   status = "idle",
   stage,
   onPress,
   onCancel,
+  tint,
+  surface,
 }) {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const c = theme.content;
   const cardStyles = useCardStyles();
-  const blue = theme.colors.primary;
+  const blue = tint || theme.colors.primary;
   const reading = status === "reading";
   const failed = status === "error";
 
@@ -39,11 +43,14 @@ export default function UploadZone({
       disabled={reading}
       style={[
         styles.zone,
-        { borderColor: `${blue}66`, backgroundColor: `${blue}0F` },
+        { borderColor: `${blue}66`, backgroundColor: surface || `${blue}0F` },
       ]}
     >
       <View
-        style={[styles.icon, { backgroundColor: failed ? c.danger : blue }]}
+        style={[
+          styles.icon,
+          { backgroundColor: failed ? c.danger : theme.colors.primary },
+        ]}
       >
         {reading ? (
           <ActivityIndicator color={c.onAccent} />
@@ -75,7 +82,14 @@ export default function UploadZone({
           {t("egenkontroll.tryAgain")}
         </Text>
       ) : (
-        <Text style={cardStyles.cardSecondaryText}>PDF · foto</Text>
+        <Text
+          style={[
+            cardStyles.cardSecondaryText,
+            tint ? { color: tint, opacity: 0.6 } : null,
+          ]}
+        >
+          PDF · foto
+        </Text>
       )}
     </TouchableOpacity>
   );

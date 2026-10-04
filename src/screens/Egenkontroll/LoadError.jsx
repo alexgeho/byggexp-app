@@ -8,12 +8,19 @@ import { space } from "../../theme/spacing";
 
 // Load failed (network / server): one line + a blue "Försök igen" — never an
 // endless spinner.
-export default function LoadError({ onRetry, loading = false }) {
+// textColor: over the home gradient.
+export default function LoadError({ onRetry, loading = false, textColor }) {
   const { t } = useTranslation();
   const cardStyles = useCardStyles();
   return (
     <View style={styles.wrap}>
-      <Text style={[cardStyles.cardSecondaryText, styles.text]}>
+      <Text
+        style={[
+          cardStyles.cardSecondaryText,
+          styles.text,
+          textColor ? { color: textColor } : null,
+        ]}
+      >
         {t("egenkontroll.loadFailed")}
       </Text>
       <Button
