@@ -1805,6 +1805,8 @@
     "readingContract": "Leser avtalen…",
     "creatingPoints": "Lager kontrollpunkter…",
     "readFailedShort": "Kunne ikke lese filen",
-    "tryAgain": "Prøv igjen"
+    "tryAgain": "Prøv igjen",
+    "loadFailed": "Kunne ikke laste",
+    "retry": "Prøv igjen"
   }
 }

@@ -44,6 +44,7 @@ import {
   EgenkontrollStatusBadge,
   progressOf,
 } from "./egenkontrollStatus";
+import LoadError from "./LoadError";
 
 // Header title: one line; "Egenkontroll" is already the screen's subject.
 const shortTitle = (title = "") =>
@@ -140,14 +141,30 @@ export default function EgenkontrollScreen() {
   const cardY = useRef(0);
   const pointY = useRef({});
 
-  useFocusEffect(
-    useCallback(() => {
+  // Load failed → "Försök igen" instead of an endless spinner.
+  const [loadError, setLoadError] = useState(false);
+  const [retrying, setRetrying] = useState(false);
+  const load = useCallback(
+    () =>
       checklistService
         .getById(id)
-        .then(setDoc)
-        .catch(() => setDoc(null));
-    }, [id]),
+        .then((next) => {
+          setDoc(next);
+          setLoadError(false);
+        })
+        .catch(() => setLoadError(true)),
+    [id],
   );
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [load]),
+  );
+  const retry = async () => {
+    setRetrying(true);
+    await load();
+    setRetrying(false);
+  };
 
   // Returns the updated egenkontroll (or null on failure).
   const run = async (fn, what = null) => {
@@ -309,7 +326,11 @@ export default function EgenkontrollScreen() {
   if (!doc) {
     return (
       <Screen onBack={() => navigation.goBack()}>
-        <ActivityIndicator size="large" color={theme.colors.primary} />
+        {loadError ? (
+          <LoadError onRetry={retry} loading={retrying} />
+        ) : (
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        )}
       </Screen>
     );
   }

@@ -1805,6 +1805,8 @@
     "readingContract": "Läser avtalet…",
     "creatingPoints": "Skapar kontrollpunkter…",
     "readFailedShort": "Kunde inte läsa filen",
-    "tryAgain": "Prova igen"
+    "tryAgain": "Prova igen",
+    "loadFailed": "Kunde inte ladda",
+    "retry": "Försök igen"
   }
 }

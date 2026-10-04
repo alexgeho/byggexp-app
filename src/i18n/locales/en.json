@@ -1805,6 +1805,8 @@
     "readingContract": "Reading the contract…",
     "creatingPoints": "Creating control points…",
     "readFailedShort": "Could not read the file",
-    "tryAgain": "Try again"
+    "tryAgain": "Try again",
+    "loadFailed": "Could not load",
+    "retry": "Try again"
   }
 }
