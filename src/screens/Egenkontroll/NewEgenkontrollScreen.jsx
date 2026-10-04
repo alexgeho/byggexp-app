@@ -136,7 +136,9 @@ export default function NewEgenkontrollScreen() {
   const canSave =
     !saving &&
     !reading &&
-    (items.some((it) => it.text?.trim()) || title.trim());
+    (items.some((it) => it.text?.trim()) ||
+      title.trim() ||
+      (solo && address.trim()));
 
   const setPoint = (i, text) =>
     setItems((prev) => prev.map((p, k) => (k === i ? { ...p, text } : p)));
@@ -149,6 +151,7 @@ export default function NewEgenkontrollScreen() {
         <HeaderCheckButton
           onPress={save}
           loading={saving}
+          disabled={!canSave}
           accessibilityLabel={t("common.save")}
         />
       }
@@ -163,6 +166,7 @@ export default function NewEgenkontrollScreen() {
         showsVerticalScrollIndicator={false}
       >
         <Button
+          icon="upload"
           title={t("egenkontroll.fromContract")}
           onPress={readContract}
           loading={reading}
@@ -239,6 +243,7 @@ export default function NewEgenkontrollScreen() {
 
         <Button
           variant="primary"
+          icon="plus"
           title={t("egenkontroll.addPoint")}
           onPress={() =>
             // Ignored while the AI reads (its points replace the list).
