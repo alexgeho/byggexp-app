@@ -4,6 +4,7 @@ import {
   Alert,
   Image,
   ScrollView,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -21,9 +22,16 @@ import { useTranslation } from "react-i18next";
 import AuthContext from "../../contexts/AuthContext";
 import { useTheme } from "../../theme/ThemeContext";
 import { checklistService } from "../../services";
-import { BackButton } from "../../components/common/BackButton/BackButton";
+import { Screen } from "../../components/common/Screen/Screen";
+import { FieldCard } from "../../components/common/FieldRow/FieldRow";
+import { createStyles as createFieldRowStyles } from "../../components/common/FieldRow/FieldRow.styles";
+import FloatingActionButton from "../../components/common/FloatingActionButton/FloatingActionButton";
+import { Badge, Button } from "../../components/common/ui";
+import { useCardStyles } from "../../styles/cards";
+import { layout, space } from "../../theme/spacing";
+import { radius } from "../../theme/tokens";
 import { resolveUploadUrl } from "../../utils/shifts";
-import { createStyles, statusColors } from "./Egenkontroll.styles";
+import { EgenkontrollStatusBadge, progressOf } from "./egenkontrollStatus";
 
 const RESULTS = ["ok", "remark", "na"];
 
@@ -69,7 +77,8 @@ export default function EgenkontrollScreen() {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const c = theme.content;
-  const styles = useMemo(() => createStyles(c), [c]);
+  const cardStyles = useCardStyles();
+  const rowStyles = useMemo(() => createFieldRowStyles(c), [c]);
   const { user } = useContext(AuthContext);
 
   const [doc, setDoc] = useState(null);
@@ -153,183 +162,153 @@ export default function EgenkontrollScreen() {
       },
     ]);
 
+  // One photo action: the app's native source chooser (as in uploadPicker).
+  const choosePhotoSource = () =>
+    Alert.alert(t("egenkontroll.takePhoto"), undefined, [
+      { text: t("egenkontroll.takePhoto"), onPress: () => addPhotos(true) },
+      { text: t("egenkontroll.fromLibrary"), onPress: () => addPhotos(false) },
+      { text: t("common.cancel"), style: "cancel" },
+    ]);
+
+  // Tap a point → the same native chooser for its result.
+  const chooseResult = (index) =>
+    Alert.alert(`${index + 1}. ${doc.items[index].text}`, undefined, [
+      ...RESULTS.map((r) => ({
+        text: t(`egenkontroll.result.${r}`),
+        onPress: () => setResult(index, r),
+      })),
+      { text: t("common.cancel"), style: "cancel" },
+    ]);
+
   if (!doc) {
     return (
-      <View style={[styles.screen, styles.center]}>
+      <Screen onBack={() => navigation.goBack()}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
-      </View>
+      </Screen>
     );
   }
 
-  const sc = statusColors(c, doc.status);
-  const resultLabel = (r) => t(`egenkontroll.result.${r}`);
+  // Result → one indicator on the right of the row.
+  const indicator = (r) =>
+    r === "ok"
+      ? { name: "check-circle", color: c.success }
+      : r === "remark"
+        ? { name: "alert-circle", color: c.danger }
+        : r === "na"
+          ? { name: "minus-circle", color: c.textMuted }
+          : { name: "circle", color: c.placeholder };
+
+  const points = doc.items || [];
 
   return (
-    <View style={styles.screen}>
-      <View style={styles.pageContainer}>
-        <View style={styles.header}>
-          <BackButton
-            onPress={() => navigation.goBack()}
-            iconSource={require("../../assets/Arrow-left.png")}
+    <Screen
+      onBack={() => navigation.goBack()}
+      right={
+        signed ? null : (
+          <FloatingActionButton
+            onPress={choosePhotoSource}
+            disabled={busy}
+            accessibilityLabel={t("egenkontroll.takePhoto")}
+            renderContent={() =>
+              busy ? (
+                <ActivityIndicator color={c.onAccent} />
+              ) : (
+                <Icon name="camera" size={20} color={c.onAccent} />
+              )
+            }
           />
-          <Text
-            style={[
-              styles.headerTitle,
-              { fontFamily: theme.text.fontFamily.semiBold },
-            ]}
-            numberOfLines={1}
-          >
-            {t("egenkontroll.title")}
+        )
+      }
+    >
+      <View style={styles.titleBlock}>
+        <Text style={[cardStyles.cardTitle, styles.title]} numberOfLines={2}>
+          {doc.title}
+        </Text>
+        <View style={styles.row}>
+          <EgenkontrollStatusBadge status={doc.status} />
+          <Text style={cardStyles.cardSecondaryText}>
+            {busy
+              ? t("egenkontroll.analyzing")
+              : t("egenkontroll.pointsDone", progressOf(doc))}
           </Text>
-          <View style={styles.headerSpacer} />
         </View>
+      </View>
 
-        <ScrollView
-          style={styles.list}
-          contentContainerStyle={styles.listContent}
-        >
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>{doc.title}</Text>
-            <View
-              style={[
-                styles.statusPill,
-                styles.row,
-                { gap: 6, backgroundColor: sc.bg },
-              ]}
-            >
-              <View
-                style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: 3,
-                  backgroundColor: sc.fg,
-                }}
-              />
-              <Text style={[styles.statusText, { color: sc.fg }]}>
-                {t(`egenkontroll.status.${doc.status || "draft"}`)}
-              </Text>
-            </View>
-          </View>
-
-          {!signed ? (
-            <View style={styles.row}>
-              <TouchableOpacity
-                style={styles.secondaryButton}
-                onPress={() => addPhotos(true)}
-                disabled={busy}
-              >
-                <Icon name="camera" size={16} color={c.accent} />
-                <Text style={styles.secondaryButtonText}>
-                  {t("egenkontroll.takePhoto")}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.secondaryButton}
-                onPress={() => addPhotos(false)}
-                disabled={busy}
-              >
-                <Icon name="image" size={16} color={c.accent} />
-                <Text style={styles.secondaryButtonText}>
-                  {t("egenkontroll.fromLibrary")}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          ) : null}
-          {busy ? (
-            <View style={[styles.row, { justifyContent: "center" }]}>
-              <ActivityIndicator color={theme.colors.primary} />
-              <Text style={styles.meta}>{t("egenkontroll.analyzing")}</Text>
-            </View>
-          ) : null}
-
-          {(doc.items || []).map((it, i) => {
-            const s = it.suggestion;
+      <ScrollView
+        style={styles.flex}
+        contentContainerStyle={{ paddingBottom: layout.betweenCards }}
+        showsVerticalScrollIndicator={false}
+      >
+        <FieldCard>
+          {points.map((it, i) => {
+            const sug = it.suggestion;
+            const ai = sug && sug.state === "auto" && !signed;
+            const mark = indicator(it.result);
             return (
-              <View key={i} style={styles.card}>
-                <Text style={styles.body}>
-                  <Text style={styles.meta}>{i + 1}. </Text>
-                  {it.text}
-                </Text>
-
-                {s && s.state === "auto" && !signed ? (
-                  <View style={[styles.row, { gap: 12 }]}>
-                    <Text style={styles.aiTag}>AI</Text>
-                    <TouchableOpacity
-                      onPress={() =>
-                        run(() => checklistService.decide(id, i, false))
-                      }
-                      disabled={busy}
-                    >
-                      <Text style={styles.link}>{t("egenkontroll.undo")}</Text>
-                    </TouchableOpacity>
+              <View key={i}>
+                <TouchableOpacity
+                  style={rowStyles.tapRow}
+                  activeOpacity={0.85}
+                  disabled={signed || busy}
+                  onPress={() => chooseResult(i)}
+                >
+                  <View style={rowStyles.body}>
+                    <Text style={rowStyles.value} numberOfLines={2}>
+                      {`${i + 1}. ${it.text}`}
+                    </Text>
+                    {ai || it.photoUrls?.length ? (
+                      <View style={[styles.row, styles.meta]}>
+                        {it.photoUrls?.map((u) => (
+                          <Image
+                            key={u}
+                            source={{ uri: resolveUploadUrl(u) }}
+                            style={[
+                              styles.thumb,
+                              { backgroundColor: c.inputSurface },
+                            ]}
+                          />
+                        ))}
+                        {ai ? (
+                          <>
+                            <Badge label="AI" tone="accent" />
+                            <Text
+                              style={[rowStyles.label, { color: c.accent }]}
+                              onPress={() =>
+                                run(() => checklistService.decide(id, i, false))
+                              }
+                            >
+                              {t("egenkontroll.undo")}
+                            </Text>
+                          </>
+                        ) : null}
+                      </View>
+                    ) : null}
                   </View>
-                ) : null}
-
-                <View style={[styles.row, { flexWrap: "wrap", marginTop: 4 }]}>
-                  {RESULTS.map((r) => {
-                    const active = it.result === r;
-                    return (
-                      <TouchableOpacity
-                        key={r}
-                        disabled={signed || busy}
-                        onPress={() => setResult(i, r)}
-                        style={[
-                          styles.chip,
-                          active && r === "ok" && styles.chipOk,
-                          active && r === "remark" && styles.chipRemark,
-                          active &&
-                            r === "na" && {
-                              borderWidth: 1,
-                              borderColor: c.textMuted,
-                            },
-                        ]}
-                      >
-                        <Text
-                          style={[
-                            styles.chipText,
-                            active && r === "ok" && styles.chipOkText,
-                            active && r === "remark" && styles.chipRemarkText,
-                          ]}
-                        >
-                          {resultLabel(r)}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  })}
-                  {it.date ? <Text style={styles.meta}>{it.date}</Text> : null}
-                </View>
-
-                {it.photoUrls?.length ? (
-                  <View style={[styles.row, { flexWrap: "wrap" }]}>
-                    {it.photoUrls.map((u) => (
-                      <Image
-                        key={u}
-                        source={{ uri: resolveUploadUrl(u) }}
-                        style={styles.thumb}
-                      />
-                    ))}
-                  </View>
+                  <Icon name={mark.name} size={22} color={mark.color} />
+                </TouchableOpacity>
+                {i < points.length - 1 ? (
+                  <View style={rowStyles.sepPlain} />
                 ) : null}
               </View>
             );
           })}
-        </ScrollView>
+        </FieldCard>
+      </ScrollView>
 
-        {!signed ? (
-          <View style={styles.footer}>
-            <TouchableOpacity
-              style={styles.primaryButton}
-              onPress={sign}
-              disabled={busy}
-            >
-              <Icon name="edit-3" size={18} color={c.onAccent} />
-              <Text style={styles.primaryButtonText}>
-                {t("egenkontroll.sign")}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        ) : null}
-      </View>
-    </View>
+      {!signed ? (
+        <Button title={t("egenkontroll.sign")} onPress={sign} loading={busy} />
+      ) : null}
+    </Screen>
   );
 }
+
+// Layout glue only — colours and shapes come from the shared components.
+const styles = StyleSheet.create({
+  titleBlock: { gap: space.sm },
+  // cardTitle is a flex:1 row child; here it sits in a column.
+  title: { flex: 0 },
+  row: { flexDirection: "row", alignItems: "center", gap: space.sm },
+  meta: { marginTop: space.xs },
+  flex: { flex: 1 },
+  thumb: { width: 32, height: 32, borderRadius: radius.sm },
+});

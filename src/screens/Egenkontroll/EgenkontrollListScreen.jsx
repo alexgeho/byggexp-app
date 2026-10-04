@@ -1,7 +1,7 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
-  FlatList,
+  ScrollView,
   Text,
   TouchableOpacity,
   View,
@@ -14,41 +14,27 @@ import { useTheme } from "../../theme/ThemeContext";
 import { homeGradientFor, isLightHomeTheme } from "../../theme/homeGradient";
 import { flattenColor } from "../../theme/colorUtils";
 import { checklistService } from "../../services";
-import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
+import { EntityListScreen } from "../../components/common/EntityListScreen/EntityListScreen";
+import { ListCard } from "../../components/common/ListCard/ListCard";
+import { useCardStyles } from "../../styles/cards";
+import { createStyles as createHomeStyles } from "../Main/HomeVariants/HomeVariant2.styles";
+import { createStyles as createPreviewStyles } from "../../components/common/ShiftHistoryPreview/ShiftHistoryPreview.styles";
 import { getEntityId } from "../../utils/entityId";
 import { isEgenkontrollOnly } from "../../utils/companyModules";
-import { createStyles, statusColors } from "./Egenkontroll.styles";
+import { EgenkontrollStatusBadge, progressOf } from "./egenkontrollStatus";
 
 // Egenkontroller list. For the solo "Egenkontroll" plan this is the home
-// screen and wears the home look: the theme's gradient, glass cards and the
-// same bottom bar (home · menu · +), so theme switching works here too.
+// screen: the home gradient, the home preview cards and the home bottom bar.
+// Otherwise it is a regular entity list (EntityListScreen + ListCard).
 export default function EgenkontrollListScreen({ isHome = false }) {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const { theme, themeName } = useTheme();
-  const c = theme.content;
-  const styles = useMemo(() => createStyles(c), [c]);
+  const cardStyles = useCardStyles();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const home = isHome || isEgenkontrollOnly();
-
-  const gradient = homeGradientFor(themeName);
-  const lightHome = isLightHomeTheme(themeName);
-  const dark = themeName === "black";
-  // Home look: card fill/border/text from the theme's home buttons.
-  const fg = home ? theme.colors.homeButtonText || "#FFFFFF" : c.textPrimary;
-  const fgMuted = home ? `${fg}B3` : c.textMuted;
-  const cardStyle = home
-    ? {
-        backgroundColor: theme.colors.homeButtonBackground || c.surface,
-        borderColor:
-          theme.colors.homeButtonBorder &&
-          theme.colors.homeButtonBorder !== "transparent"
-            ? theme.colors.homeButtonBorder
-            : "rgba(255,255,255,0.35)",
-      }
-    : null;
 
   const load = useCallback(async () => {
     try {
@@ -69,171 +55,132 @@ export default function EgenkontrollListScreen({ isHome = false }) {
     }, [load]),
   );
 
-  const content = (
-    <View
-      style={[styles.pageContainer, home && { backgroundColor: "transparent" }]}
-    >
-      {home ? (
-        <Text
-          style={{
-            fontSize: 32,
-            fontWeight: "700",
-            color: fg,
-            marginTop: 8,
-            marginBottom: 16,
-          }}
-        >
-          {t("egenkontroll.title")}
-        </Text>
-      ) : (
-        <View style={styles.header}>
-          <BackButton
-            onPress={() => navigation.goBack()}
-            iconSource={require("../../assets/Arrow-left.png")}
-          />
-          <Text
-            style={[
-              styles.headerTitle,
-              { fontFamily: theme.text.fontFamily.semiBold },
-            ]}
+  const open = (item) =>
+    navigation.navigate("Egenkontroll", { id: getEntityId(item) });
+
+  if (!home) {
+    return (
+      <EntityListScreen
+        title={t("egenkontroll.title")}
+        data={items}
+        loading={loading}
+        keyExtractor={(item) => getEntityId(item)}
+        emptyText={t("egenkontroll.emptyTitle")}
+        addScreen="NewEgenkontroll"
+        renderCard={(item) => (
+          <ListCard
+            onPress={() => open(item)}
+            title={item.title}
+            titleNumberOfLines={2}
           >
-            {t("egenkontroll.title")}
-          </Text>
-          <View style={styles.headerSpacer} />
-        </View>
-      )}
-
-      {loading ? (
-        <View style={styles.center}>
-          <ActivityIndicator
-            size="large"
-            color={home ? fg : theme.colors.primary}
-          />
-        </View>
-      ) : (
-        <FlatList
-          style={styles.list}
-          contentContainerStyle={styles.listContent}
-          data={items}
-          keyExtractor={(item) => getEntityId(item)}
-          ListEmptyComponent={
-            <View style={[styles.center, { paddingTop: 48 }]}>
-              <Text style={[styles.emptyTitle, { color: fg }]}>
-                {t("egenkontroll.emptyTitle")}
-              </Text>
+            <Text style={cardStyles.cardSecondaryText}>
+              {t("egenkontroll.pointsDone", progressOf(item))}
+            </Text>
+            <View style={{ alignSelf: "flex-start" }}>
+              <EgenkontrollStatusBadge status={item.status} />
             </View>
-          }
-          renderItem={({ item }) => {
-            const total = item.items?.length || 0;
-            const done = (item.items || []).filter(
-              (it) => it.result && it.result !== "pending",
-            ).length;
-            const sc = statusColors(c, item.status);
-            return (
-              <TouchableOpacity
-                style={[styles.card, cardStyle]}
-                activeOpacity={0.7}
-                onPress={() =>
-                  navigation.navigate("Egenkontroll", { id: getEntityId(item) })
-                }
-              >
-                <Text
-                  style={[styles.cardTitle, { color: fg }]}
-                  numberOfLines={2}
-                >
-                  {item.title}
-                </Text>
-                <View style={[styles.row, { marginTop: 4 }]}>
-                  <View
-                    style={{
-                      flex: 1,
-                      height: 6,
-                      borderRadius: 3,
-                      backgroundColor: home ? `${fg}33` : c.inputSurface,
-                      overflow: "hidden",
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: `${total ? Math.round((done / total) * 100) : 0}%`,
-                        height: "100%",
-                        backgroundColor: c.success,
-                      }}
-                    />
-                  </View>
-                  <Text style={[styles.meta, { color: fgMuted }]}>
-                    {done}/{total}
-                  </Text>
-                </View>
-                <View
-                  style={[
-                    styles.statusPill,
-                    styles.row,
-                    { gap: 6, backgroundColor: sc.bg },
-                  ]}
-                >
-                  <View
-                    style={{
-                      width: 6,
-                      height: 6,
-                      borderRadius: 3,
-                      backgroundColor: sc.fg,
-                    }}
-                  />
-                  <Text style={[styles.statusText, { color: sc.fg }]}>
-                    {t(`egenkontroll.status.${item.status || "draft"}`)}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            );
-          }}
-        />
-      )}
+          </ListCard>
+        )}
+      />
+    );
+  }
 
-      {home ? (
-        // Same bar as the regular home screen.
-        <BottomBar
-          {...(dark
-            ? {
-                pillColor: flattenColor(
-                  theme.colors.homeButtonBackground || theme.colors.card,
-                  gradient[gradient.length - 1],
-                ),
-                pillGlowColor: theme.colors.cardGlow,
-                pillBorderColor:
-                  theme.colors.homeButtonBorder || theme.colors.border,
-              }
-            : { glass: true })}
-          darkOverride={dark}
-          iconColor={
-            dark ? "#FFFFFF" : lightHome ? theme.colors.text : "#052D50"
-          }
-          onLeftPress={load}
-          onRightPress={() => navigation.navigate("Menu")}
-          showAddButton
-          onAddPress={() => navigation.navigate("NewEgenkontroll")}
-        />
-      ) : (
-        <BottomBar
-          onLeftPress={() => navigation.navigate("Main")}
-          onRightPress={() => navigation.navigate("Menu")}
-          showAddButton
-          onAddPress={() => navigation.navigate("NewEgenkontroll")}
-        />
-      )}
-    </View>
+  return (
+    <HomeList
+      items={items}
+      loading={loading}
+      onOpen={open}
+      onReload={load}
+      theme={theme}
+      themeName={themeName}
+    />
   );
+}
 
-  return home ? (
+// Solo home: same container, section header and frosted cards as the home
+// screen's previews (ShiftHistoryPreview / TasksPreview).
+function HomeList({ items, loading, onOpen, onReload, theme, themeName }) {
+  const navigation = useNavigation();
+  const { t } = useTranslation();
+  const lightHome = isLightHomeTheme(themeName);
+  const dark = themeName === "black";
+  const gradient = homeGradientFor(themeName);
+  const homeStyles = createHomeStyles({ theme, isLightBlue: lightHome });
+  const s = createPreviewStyles(theme, lightHome ? "light" : "dark");
+
+  return (
     <LinearGradient
       colors={gradient}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
-      style={styles.screen}
+      style={homeStyles.container}
     >
-      {content}
+      <ScrollView
+        style={homeStyles.scrollView}
+        contentContainerStyle={[homeStyles.main, { paddingBottom: 140 }]}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={s.section}>
+          <View style={s.header}>
+            <Text style={s.title}>{t("egenkontroll.title")}</Text>
+          </View>
+
+          {loading ? (
+            <View style={[s.card, { height: undefined }]}>
+              <ActivityIndicator color={s.emptyText.color} />
+            </View>
+          ) : items.length ? (
+            items.map((item) => (
+              <TouchableOpacity
+                key={getEntityId(item)}
+                style={[s.card, s.item, { height: undefined }]}
+                activeOpacity={0.85}
+                onPress={() => onOpen(item)}
+              >
+                <Text
+                  style={[s.durationText, { textAlign: "left" }]}
+                  numberOfLines={2}
+                >
+                  {item.title}
+                </Text>
+                <Text style={s.metaText}>
+                  {t("egenkontroll.pointsDone", progressOf(item))}
+                </Text>
+                <View style={{ alignSelf: "flex-start" }}>
+                  <EgenkontrollStatusBadge status={item.status} />
+                </View>
+              </TouchableOpacity>
+            ))
+          ) : (
+            <View style={[s.card, s.emptyState]}>
+              <Text style={s.emptyText}>{t("egenkontroll.emptyTitle")}</Text>
+            </View>
+          )}
+        </View>
+      </ScrollView>
+
+      <BottomBar
+        {...(dark
+          ? {
+              pillColor: flattenColor(
+                theme.colors.homeButtonBackground || theme.colors.card,
+                gradient[gradient.length - 1],
+              ),
+              pillGlowColor: theme.colors.cardGlow,
+              pillBorderColor:
+                theme.colors.homeButtonBorder &&
+                theme.colors.homeButtonBorder !== "transparent"
+                  ? theme.colors.homeButtonBorder
+                  : theme.colors.border,
+            }
+          : { glass: true })}
+        darkOverride={dark}
+        iconColor={dark ? "#FFFFFF" : lightHome ? theme.colors.text : "#052D50"}
+        onLeftPress={onReload}
+        onRightPress={() => navigation.navigate("Menu")}
+        showAddButton
+        onAddPress={() => navigation.navigate("NewEgenkontroll")}
+      />
     </LinearGradient>
-  ) : (
-    <View style={styles.screen}>{content}</View>
   );
 }
