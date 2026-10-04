@@ -24,7 +24,7 @@ import { useFeedback } from "../../contexts/FeedbackContext";
 import { useTheme } from "../../theme/ThemeContext";
 import { checklistService } from "../../services";
 import { Screen } from "../../components/common/Screen/Screen";
-import { FieldCard } from "../../components/common/FieldRow/FieldRow";
+import { FieldCard, FieldRow } from "../../components/common/FieldRow/FieldRow";
 import { createStyles as createFieldRowStyles } from "../../components/common/FieldRow/FieldRow.styles";
 import { Badge, Button } from "../../components/common/ui";
 import { useCardStyles } from "../../styles/cards";
@@ -56,6 +56,8 @@ const preview = (text) => {
 };
 
 const RESULTS = ["ok", "remark", "na"];
+
+const todayIso = () => new Date().toISOString().slice(0, 10);
 
 // EXIF "2026:10:04 10:12:00" → ISO; null when absent/unreadable.
 const exifDate = (exif) => {
@@ -111,6 +113,10 @@ export default function EgenkontrollScreen() {
   // Expanded points (index → true); collapsed rows show one line.
   const [open, setOpen] = useState({});
   const toggleOpen = (i) => setOpen((prev) => ({ ...prev, [i]: !prev[i] }));
+  // Typed but unsaved values per point (mätvärde / åtgärd), saved on blur.
+  const [edits, setEdits] = useState({});
+  const edit = (i, key, value) =>
+    setEdits((prev) => ({ ...prev, [i]: { ...prev[i], [key]: value } }));
   const id = params?.id;
   const signed = doc?.status === "signed";
 
@@ -183,20 +189,35 @@ export default function EgenkontrollScreen() {
     }
   };
 
-  const setResult = (index, result) =>
+  const saveItem = (index, patch) =>
     run(() =>
       checklistService.update(id, {
         items: doc.items.map((it, i) =>
-          i === index
-            ? {
-                ...it,
-                result,
-                date: it.date || new Date().toISOString().slice(0, 10),
-              }
-            : it,
+          i === index ? { ...it, ...patch } : it,
         ),
       }),
     );
+
+  // Vem + datum are filled in from whoever sets the result.
+  const setResult = (index, result) =>
+    saveItem(index, {
+      result,
+      date: doc.items[index].date || todayIso(),
+      checkedByName: user?.name || doc.items[index].checkedByName || "",
+    });
+
+  // Blur → save the typed value if it changed.
+  const commit = async (index, key) => {
+    const value = edits[index]?.[key];
+    if (value === undefined || value === (doc.items[index][key] || "")) return;
+    const next = await saveItem(index, { [key]: value.trim() });
+    if (next) {
+      setEdits((prev) => ({
+        ...prev,
+        [index]: { ...prev[index], [key]: undefined },
+      }));
+    }
+  };
 
   // Busy → ignore taps (no double upload/sign), without a pale button.
   const sign = () =>
@@ -259,6 +280,111 @@ export default function EgenkontrollScreen() {
 
   const points = doc.items || [];
   const progress = progressOf(doc);
+
+  // Expanded point: metod, krav, mätvärde, vem + datum, avvikelse → åtgärd.
+  const renderDetails = (it, i) => {
+    const value = (key) => edits[i]?.[key] ?? it[key] ?? "";
+    const remark = it.result === "remark";
+    const answered = it.result && it.result !== "pending";
+    const rows = [];
+    if (it.method) {
+      rows.push({
+        key: "m",
+        label: t("egenkontroll.method"),
+        value: it.method,
+      });
+    }
+    if (it.reference) {
+      rows.push({
+        key: "r",
+        label: t("egenkontroll.requirement"),
+        value: it.reference,
+      });
+    }
+    if (!signed || it.measuredValue) {
+      rows.push({
+        key: "v",
+        variant: signed ? "readonly" : "input",
+        label: it.unit
+          ? `${t("egenkontroll.measured")} (${it.unit})`
+          : t("egenkontroll.measured"),
+        value: signed
+          ? `${it.measuredValue}${it.unit ? ` ${it.unit}` : ""}`
+          : value("measuredValue"),
+        placeholder: t("egenkontroll.measuredPlaceholder"),
+        keyboardType: "decimal-pad",
+        onChangeText: (v) => edit(i, "measuredValue", v),
+        onEndEditing: () => commit(i, "measuredValue"),
+      });
+    }
+    if (answered && (it.checkedByName || it.date)) {
+      rows.push({
+        key: "c",
+        label: t("egenkontroll.checkedBy"),
+        value: [it.checkedByName, it.date].filter(Boolean).join(" · "),
+      });
+    }
+    if (remark && (!signed || it.action)) {
+      rows.push({
+        key: "a",
+        variant: signed || it.actionDoneAt ? "readonly" : "input",
+        label: it.actionDoneAt
+          ? `${t("egenkontroll.actionDone")} · ${it.actionDoneAt}`
+          : t("egenkontroll.action"),
+        value: value("action"),
+        placeholder: t("egenkontroll.actionPlaceholder"),
+        onChangeText: (v) => edit(i, "action", v),
+        onEndEditing: () => commit(i, "action"),
+      });
+    }
+    const openDeviation = remark && !it.actionDoneAt;
+    return (
+      <>
+        <View style={rowStyles.sepPlain} />
+        {rows.map(({ key, ...row }, k) => (
+          <FieldRow
+            key={key}
+            {...row}
+            isLast={k === rows.length - 1 && !openDeviation}
+          />
+        ))}
+        {openDeviation ? (
+          <View style={[rowStyles.tapRow, styles.deviation]}>
+            <Badge
+              label={`• ${t("egenkontroll.openDeviation")}`}
+              tone="danger"
+            />
+            {!signed ? (
+              <Button
+                size="sm"
+                icon="check"
+                title={t("egenkontroll.actionDone")}
+                loading={pending === `fix${i}`}
+                onPress={() =>
+                  busy ||
+                  run(
+                    () =>
+                      checklistService.update(id, {
+                        items: doc.items.map((p, k) =>
+                          k === i
+                            ? {
+                                ...p,
+                                action: (value("action") || "").trim(),
+                                actionDoneAt: todayIso(),
+                              }
+                            : p,
+                        ),
+                      }),
+                    `fix${i}`,
+                  )
+                }
+              />
+            ) : null}
+          </View>
+        ) : null}
+      </>
+    );
+  };
 
   return (
     <Screen onBack={() => navigation.goBack()}>
@@ -347,6 +473,7 @@ export default function EgenkontrollScreen() {
                     <Icon name={mark.name} size={22} color={mark.color} />
                   </TouchableOpacity>
                 </View>
+                {open[i] ? renderDetails(it, i) : null}
                 {i < points.length - 1 ? (
                   <View style={rowStyles.sepPlain} />
                 ) : null}
@@ -400,4 +527,5 @@ const styles = StyleSheet.create({
   actions: { flexDirection: "row", gap: space.sm },
   flex: { flex: 1 },
   thumb: { width: 32, height: 32, borderRadius: radius.sm },
+  deviation: { gap: space.sm },
 });

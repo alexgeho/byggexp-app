@@ -1786,6 +1786,15 @@
     "filledTitle_one": "{{count}} punkt ifylld",
     "filledTitle_other": "{{count}} punkter ifyllda",
     "draftReady_one": "{{count}} punkt klar",
-    "draftReady_other": "{{count}} punkter klara"
+    "draftReady_other": "{{count}} punkter klara",
+    "method": "Metod",
+    "requirement": "Krav",
+    "measured": "Mätvärde",
+    "measuredPlaceholder": "t.ex. 250",
+    "checkedBy": "Kontrollerad av",
+    "action": "Åtgärd",
+    "actionPlaceholder": "t.ex. Tätskikt lagat",
+    "actionDone": "Åtgärdad",
+    "openDeviation": "Öppen avvikelse"
   }
 }

@@ -1786,6 +1786,15 @@
     "filledTitle_one": "{{count}} point filled in",
     "filledTitle_other": "{{count}} points filled in",
     "draftReady_one": "{{count}} point ready",
-    "draftReady_other": "{{count}} points ready"
+    "draftReady_other": "{{count}} points ready",
+    "method": "Method",
+    "requirement": "Requirement",
+    "measured": "Measured value",
+    "measuredPlaceholder": "e.g. 250",
+    "checkedBy": "Checked by",
+    "action": "Action",
+    "actionPlaceholder": "e.g. Membrane repaired",
+    "actionDone": "Fixed",
+    "openDeviation": "Open deviation"
   }
 }

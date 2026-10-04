@@ -1794,6 +1794,15 @@
     "draftReady_one": "Готов {{count}} пункт",
     "draftReady_few": "Готово {{count}} пункта",
     "draftReady_many": "Готово {{count}} пунктов",
-    "draftReady_other": "Готово {{count}} пункта"
+    "draftReady_other": "Готово {{count}} пункта",
+    "method": "Метод",
+    "requirement": "Требование",
+    "measured": "Измерение",
+    "measuredPlaceholder": "напр. 250",
+    "checkedBy": "Проверил",
+    "action": "Мера",
+    "actionPlaceholder": "напр. Гидроизоляция исправлена",
+    "actionDone": "Исправлено",
+    "openDeviation": "Открытое отклонение"
   }
 }

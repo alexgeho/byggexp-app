@@ -1786,6 +1786,15 @@
     "filledTitle_one": "{{count}} punkt utfylt",
     "filledTitle_other": "{{count}} punkter utfylt",
     "draftReady_one": "{{count}} punkt klar",
-    "draftReady_other": "{{count}} punkter klare"
+    "draftReady_other": "{{count}} punkter klare",
+    "method": "Metode",
+    "requirement": "Krav",
+    "measured": "Måleverdi",
+    "measuredPlaceholder": "f.eks. 250",
+    "checkedBy": "Kontrollert av",
+    "action": "Tiltak",
+    "actionPlaceholder": "f.eks. Membran reparert",
+    "actionDone": "Utbedret",
+    "openDeviation": "Åpent avvik"
   }
 }

@@ -31,6 +31,7 @@ export function FieldRow({
   placeholder,
   variant = "readonly",
   onChangeText,
+  onEndEditing,
   onPress,
   keyboardType,
   autoCapitalize,
@@ -66,6 +67,7 @@ export function FieldRow({
                 style={[styles.input, multiline && styles.inputMultiline]}
                 value={value}
                 onChangeText={onChangeText}
+                onEndEditing={onEndEditing}
                 placeholder={placeholder}
                 placeholderTextColor={c.placeholder}
                 keyboardType={keyboardType}

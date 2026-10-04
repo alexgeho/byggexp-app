@@ -128,10 +128,14 @@ export default function NewEgenkontrollScreen() {
         items: points.map((it) => ({
           text: it.text.trim(),
           reference: it.reference || "",
+          method: it.method || "",
+          unit: it.unit || "",
         })),
         ...(draft
           ? {
               category: draft.category,
+              trade: draft.trade || "",
+              tradeInfo: draft.tradeInfo || null,
               sourceDocument: draft.sourceDocument || undefined,
             }
           : {}),
