@@ -783,7 +783,8 @@
       "projects": "Projects",
       "tasks": "Tasks",
       "offer": "Offer",
-      "invoice": "Invoice"
+      "invoice": "Invoice",
+      "egenkontroll": "Egenkontroll"
     },
     "sections": {
       "shift-history": "Daily report",
@@ -1723,5 +1724,44 @@
     "creditFull": "Credit in full",
     "creditPartly": "Credit part of it",
     "actionFailed": "The action failed."
+  },
+  "egenkontroll": {
+    "title": "Egenkontroll",
+    "emptyTitle": "No egenkontroller yet",
+    "emptySubtitle": "Upload the contract and take photos on site — the points are filled in automatically.",
+    "new": "New egenkontroll",
+    "fromContract": "Upload contract or work description",
+    "fromContractHint": "PDF or photo of the contract — the control points are created automatically. You can also add them by hand.",
+    "reading": "Reading the document…",
+    "readFailed": "Could not read the document. Try another file or add the points by hand.",
+    "saveFailed": "Could not save the egenkontroll.",
+    "actionFailed": "Something went wrong. Please try again.",
+    "project": "Project",
+    "newProject": "+ New project",
+    "titleLabel": "Title",
+    "titlePlaceholder": "e.g. Bathroom, Storgatan 5",
+    "points": "Control points",
+    "addPoint": "Add point",
+    "pointsDone": "{{done}}/{{total}} points",
+    "takePhoto": "Take photo",
+    "fromLibrary": "From library",
+    "analyzing": "Uploading and checking the photos…",
+    "photoHint": "Take photos as the work goes on — finished points are ticked off with date and photo.",
+    "undo": "Undo",
+    "contract": "Contract",
+    "sign": "Sign",
+    "signTitle": "Sign egenkontroll?",
+    "signMessage": "Signing locks the egenkontroll.",
+    "status": {
+      "draft": "In progress",
+      "completed": "Done",
+      "signed": "Signed"
+    },
+    "result": {
+      "ok": "Approved",
+      "remark": "Remark",
+      "na": "N/A",
+      "pending": "Not answered"
+    }
   }
 }

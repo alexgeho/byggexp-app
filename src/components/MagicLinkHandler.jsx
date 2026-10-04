@@ -1,6 +1,20 @@
 import { useContext, useEffect, useRef } from "react";
 import { Linking } from "react-native";
 import AuthContext from "../contexts/AuthContext";
+import { navigationRef } from "../navigation/navigationRef";
+
+// Dev builds only: byggexp://dev/open/<Screen>?id=… jumps straight to a screen
+// (lets a simulator be driven without taps). Never active in release builds.
+const openDevScreen = (url) => {
+  if (!__DEV__ || !url) return false;
+  const m = url.match(/dev\/open\/([A-Za-z]+)(?:\?id=([^&]+))?/);
+  if (!m || !navigationRef.isReady()) return false;
+  navigationRef.navigate(
+    m[1],
+    m[2] ? { id: decodeURIComponent(m[2]) } : undefined,
+  );
+  return true;
+};
 
 const extractMagicCode = (url) => {
   // Custom scheme (byggexp://auth/magic?code=…) or Universal/App Link
@@ -23,6 +37,7 @@ export default function MagicLinkHandler() {
 
   useEffect(() => {
     const handleUrl = async (url) => {
+      if (openDevScreen(url)) return;
       const code = extractMagicCode(url);
 
       if (!code || handledCodesRef.current.has(code)) {

@@ -783,7 +783,8 @@
       "projects": "Projekt",
       "tasks": "Uppgifter",
       "offer": "Offert",
-      "invoice": "Faktura"
+      "invoice": "Faktura",
+      "egenkontroll": "Egenkontroll"
     },
     "sections": {
       "shift-history": "Dagsrapport",
@@ -1723,5 +1724,44 @@
     "creditFull": "Kreditera hela",
     "creditPartly": "Kreditera delvis",
     "actionFailed": "Åtgärden misslyckades."
+  },
+  "egenkontroll": {
+    "title": "Egenkontroll",
+    "emptyTitle": "Inga egenkontroller än",
+    "emptySubtitle": "Ladda upp avtalet och fota på bygget — punkterna fylls i automatiskt.",
+    "new": "Ny egenkontroll",
+    "fromContract": "Ladda upp avtal eller arbetsbeskrivning",
+    "fromContractHint": "PDF eller foto av avtalet — kontrollpunkterna skapas automatiskt. Du kan också lägga till dem själv.",
+    "reading": "Läser dokumentet…",
+    "readFailed": "Kunde inte läsa dokumentet. Prova en annan fil eller lägg till punkterna själv.",
+    "saveFailed": "Kunde inte spara egenkontrollen.",
+    "actionFailed": "Något gick fel. Försök igen.",
+    "project": "Projekt",
+    "newProject": "+ Nytt projekt",
+    "titleLabel": "Titel",
+    "titlePlaceholder": "t.ex. Badrum, Storgatan 5",
+    "points": "Kontrollpunkter",
+    "addPoint": "Lägg till punkt",
+    "pointsDone": "{{done}}/{{total}} punkter",
+    "takePhoto": "Ta foto",
+    "fromLibrary": "Från bilder",
+    "analyzing": "Laddar upp och granskar fotona…",
+    "photoHint": "Fota allteftersom arbetet görs — klara punkter bockas av med datum och foto.",
+    "undo": "Ångra",
+    "contract": "Avtal",
+    "sign": "Signera",
+    "signTitle": "Signera egenkontrollen?",
+    "signMessage": "När den är signerad kan den inte ändras.",
+    "status": {
+      "draft": "Pågående",
+      "completed": "Klar",
+      "signed": "Signerad"
+    },
+    "result": {
+      "ok": "Godkänd",
+      "remark": "Anmärkning",
+      "na": "Ej aktuellt",
+      "pending": "Ej besvarad"
+    }
   }
 }

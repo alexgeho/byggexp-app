@@ -8,6 +8,7 @@ import ThemeHomeScreen from "../screens/Main/HomeVariants/ThemeHomeScreen";
 import AuthContext from "../contexts/AuthContext";
 import { useTheme } from "../theme/ThemeContext";
 import { navigationRef } from "./navigationRef";
+import { useCompanyModules } from "../utils/companyModules";
 import { flushPendingNotificationNavigation } from "../services/notifications.service";
 import {
   canCreateProjects as checkCanCreateProjects,
@@ -24,6 +25,19 @@ import {
 // (static require paths); only evaluation is deferred.
 
 const Stack = createNativeStackNavigator();
+
+// Home: the regular dashboard, or — for the solo "Egenkontroll" plan — the
+// egenkontroll list itself (that plan has nothing else to show).
+function MainScreen(props) {
+  const { user } = useContext(AuthContext);
+  const { plan } = useCompanyModules(user?.companyId);
+  if (plan === "egenkontroll") {
+    const EgenkontrollListScreen =
+      require("../screens/Egenkontroll/EgenkontrollListScreen").default;
+    return <EgenkontrollListScreen {...props} isHome />;
+  }
+  return <ThemeHomeScreen {...props} />;
+}
 
 export default function AppNavigator() {
   const { isAuthenticated, isLoading, user } = useContext(AuthContext);
@@ -67,8 +81,27 @@ export default function AppNavigator() {
           <>
             <Stack.Screen
               name="Main"
-              component={ThemeHomeScreen}
+              component={MainScreen}
               options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="EgenkontrollList"
+              getComponent={() =>
+                require("../screens/Egenkontroll/EgenkontrollListScreen")
+                  .default
+              }
+            />
+            <Stack.Screen
+              name="NewEgenkontroll"
+              getComponent={() =>
+                require("../screens/Egenkontroll/NewEgenkontrollScreen").default
+              }
+            />
+            <Stack.Screen
+              name="Egenkontroll"
+              getComponent={() =>
+                require("../screens/Egenkontroll/EgenkontrollScreen").default
+              }
             />
             <Stack.Screen
               name="Camera"

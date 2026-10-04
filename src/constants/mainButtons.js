@@ -1,9 +1,12 @@
 // Icons are the Feather (fi:*) glyphs used in the Figma design, rendered as
 // vectors so they stay crisp at any DPI (the old PNG exports were low-res and
 // pixelated when upscaled on the home grid).
+// `module` = the web module key (company plan / module settings); a button whose
+// module is hidden for the company is not shown (see utils/companyModules).
 export const mainButtons = [
   {
     id: "employees",
+    module: "users",
     title: "Employees",
     vectorIcon: "user-plus",
     screen: "Employees",
@@ -11,12 +14,14 @@ export const mainButtons = [
   },
   {
     id: "tools",
+    module: "tools",
     title: "Tools",
     vectorIcon: "tool",
     screen: "Tools",
   },
   {
     id: "camera",
+    module: "shifts",
     title: "Camera",
     vectorIcon: "camera",
     screen: "Camera",
@@ -29,18 +34,21 @@ export const mainButtons = [
   },
   {
     id: "shifts",
+    module: "shifts",
     title: "Shifts",
     vectorIcon: "clock",
     screen: "Shifts",
   },
   {
     id: "projects",
+    module: "projects",
     title: "Projects",
     vectorIcon: "folder",
     screen: "Projects",
   },
   {
     id: "tasks",
+    module: "tasks",
     title: "Tasks",
     vectorIcon: "check-square",
     screen: "Tasks",
@@ -51,7 +59,16 @@ export const mainButtons = [
   // delegated "office" user gets them without an admin role — and off by
   // default: they are added from Customize like any other button.
   {
+    id: "egenkontroll",
+    module: "kma",
+    title: "Egenkontroll",
+    vectorIcon: "clipboard",
+    screen: "EgenkontrollList",
+    adminOnly: true,
+  },
+  {
     id: "offer",
+    module: "offers",
     title: "Offer",
     vectorIcon: "file-text",
     screen: "Offers",
@@ -59,6 +76,7 @@ export const mainButtons = [
   },
   {
     id: "invoice",
+    module: "invoices",
     title: "Invoice",
     // A money glyph, not a second sheet of paper — an invoice has to read as
     // different from the offer next to it at a glance. Feather has no coins;

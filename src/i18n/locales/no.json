@@ -783,7 +783,8 @@
       "projects": "Prosjekter",
       "tasks": "Oppgaver",
       "offer": "Tilbud",
-      "invoice": "Faktura"
+      "invoice": "Faktura",
+      "egenkontroll": "Egenkontroll"
     },
     "sections": {
       "shift-history": "Dagsrapport",
@@ -1723,5 +1724,44 @@
     "creditFull": "Krediter alt",
     "creditPartly": "Krediter delvis",
     "actionFailed": "Handlingen mislyktes."
+  },
+  "egenkontroll": {
+    "title": "Egenkontroll",
+    "emptyTitle": "Ingen egenkontroller ennå",
+    "emptySubtitle": "Last opp kontrakten og ta bilder på byggeplassen — punktene fylles ut automatisk.",
+    "new": "Ny egenkontroll",
+    "fromContract": "Last opp kontrakt eller arbeidsbeskrivelse",
+    "fromContractHint": "PDF eller bilde av kontrakten — kontrollpunktene lages automatisk. Du kan også legge dem til selv.",
+    "reading": "Leser dokumentet…",
+    "readFailed": "Kunne ikke lese dokumentet. Prøv en annen fil eller legg til punktene selv.",
+    "saveFailed": "Kunne ikke lagre egenkontrollen.",
+    "actionFailed": "Noe gikk galt. Prøv igjen.",
+    "project": "Prosjekt",
+    "newProject": "+ Nytt prosjekt",
+    "titleLabel": "Tittel",
+    "titlePlaceholder": "f.eks. Bad, Storgata 5",
+    "points": "Kontrollpunkter",
+    "addPoint": "Legg til punkt",
+    "pointsDone": "{{done}}/{{total}} punkter",
+    "takePhoto": "Ta bilde",
+    "fromLibrary": "Fra bilder",
+    "analyzing": "Laster opp og sjekker bildene…",
+    "photoHint": "Ta bilder etter hvert som arbeidet gjøres — ferdige punkter hukes av med dato og bilde.",
+    "undo": "Angre",
+    "contract": "Kontrakt",
+    "sign": "Signer",
+    "signTitle": "Signere egenkontrollen?",
+    "signMessage": "Når den er signert kan den ikke endres.",
+    "status": {
+      "draft": "Pågår",
+      "completed": "Ferdig",
+      "signed": "Signert"
+    },
+    "result": {
+      "ok": "Godkjent",
+      "remark": "Anmerkning",
+      "na": "Ikke aktuelt",
+      "pending": "Ikke besvart"
+    }
   }
 }

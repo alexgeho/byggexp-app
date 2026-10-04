@@ -27,6 +27,19 @@ import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { createStyles } from "./MenuScreen.styles";
 import { resolveUploadUrl } from "../../utils/shifts";
+import { isModuleEnabled } from "../../utils/companyModules";
+
+// Menu entry → web module key (company plan / module settings).
+const MENU_MODULES = {
+  tasks: "tasks",
+  shifts: "shifts",
+  employees: "users",
+  tools: "tools",
+  projects: "projects",
+  egenkontroll: "kma",
+  planning: "schedule",
+  economy: "invoices",
+};
 
 // One icon collection for the whole menu (Feather), keyed by item id — replaces
 // the mixed PNG glyphs so every row reads as the same set.
@@ -233,6 +246,14 @@ export default function MenuScreen() {
       color: theme.colors.primary,
     };
 
+    const egenkontrollItem = {
+      id: "egenkontroll",
+      screen: "EgenkontrollList",
+      title: t("egenkontroll.title"),
+      icon: require("../../assets/Tasks.png"),
+      color: theme.colors.primary,
+    };
+
     const toolsItem = {
       id: "tools",
       screen: "Tools",
@@ -285,6 +306,7 @@ export default function MenuScreen() {
           icon: require("../../assets/Projekts.png"),
           color: theme.colors.primary,
         },
+        egenkontrollItem,
         planningItem,
         ...(canFinance ? [economyItem] : []),
       ];
@@ -317,6 +339,7 @@ export default function MenuScreen() {
           icon: require("../../assets/Projekts.png"),
           color: theme.colors.primary,
         },
+        egenkontrollItem,
         planningItem,
         ...(canFinance ? [economyItem] : []),
       ];
@@ -349,6 +372,7 @@ export default function MenuScreen() {
         },
         employeesItem,
         toolsItem,
+        egenkontrollItem,
         planningItem,
         ...(canFinance ? [economyItem] : []),
       ];
@@ -382,6 +406,12 @@ export default function MenuScreen() {
       ...(canFinance ? [economyItem] : []),
     ];
   }, [theme.colors.primary, user?.role, t, canFinance]);
+
+  // Hide entries whose web module is switched off for the company (plan /
+  // module settings) — e.g. the solo Egenkontroll plan shows just that.
+  const visibleMenuItems = menuItems.filter((item) =>
+    isModuleEnabled(MENU_MODULES[item.id]),
+  );
 
   const settingsItems = [
     {
@@ -431,11 +461,11 @@ export default function MenuScreen() {
   // Settings groups the personal + app-configuration entries: My account,
   // Documents, Customize screens, Language and Notifications.
   const settingsSectionItems = [
-    ...menuItems.filter((item) => item.id === "account"),
-    ...menuItems.filter((item) => item.id === "documents"),
-    ...menuItems.filter((item) => item.id === "customizeHome"),
+    ...visibleMenuItems.filter((item) => item.id === "account"),
+    ...visibleMenuItems.filter((item) => item.id === "documents"),
+    ...visibleMenuItems.filter((item) => item.id === "customizeHome"),
     ...settingsItems.filter((item) => item.id === "language"),
-    ...menuItems.filter((item) => item.id === "notifications"),
+    ...visibleMenuItems.filter((item) => item.id === "notifications"),
   ];
 
   // Economy is its own category with every register surfaced directly: offers
@@ -500,9 +530,10 @@ export default function MenuScreen() {
     {
       id: "projects",
       title: t("menu.sectionProjects", "Projekt & arbete"),
-      items: menuItems.filter((item) =>
+      items: visibleMenuItems.filter((item) =>
         [
           "projects",
+          "egenkontroll",
           "planning",
           "tasks",
           "shifts",
@@ -513,7 +544,7 @@ export default function MenuScreen() {
         ].includes(item.id),
       ),
     },
-    ...(canFinance
+    ...(canFinance && isModuleEnabled("invoices")
       ? [
           {
             id: "economy",

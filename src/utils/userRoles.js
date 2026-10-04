@@ -1,3 +1,4 @@
+import { isModuleEnabled } from "./companyModules";
 export const USER_ROLES = {
   SUPERADMIN: "superadmin",
   COMPANY_ADMIN: "companyAdmin",
@@ -232,6 +233,10 @@ export function isHomeButtonVisible(
 }
 
 export function isHomeButtonCustomizable(button, userRole, hasPermission) {
+  if (!isModuleEnabled(button.module)) {
+    return false;
+  }
+
   if (button.adminOnly && !canManageEmployees(userRole)) {
     return false;
   }
