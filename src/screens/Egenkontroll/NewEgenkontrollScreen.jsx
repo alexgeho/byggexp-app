@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Alert, ScrollView, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import Icon from "react-native-vector-icons/Feather";
+import { useTheme } from "../../theme/ThemeContext";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 
@@ -15,7 +25,7 @@ import {
   HeaderCheckButton,
   SectionTitle,
 } from "../../components/common/ui";
-import { layout } from "../../theme/spacing";
+import { layout, space } from "../../theme/spacing";
 import { getEntityId } from "../../utils/entityId";
 import { pickUploadAssets } from "../../utils/uploadPicker";
 import { isEgenkontrollOnly } from "../../utils/companyModules";
@@ -37,6 +47,8 @@ export default function NewEgenkontrollScreen() {
   const { t } = useTranslation();
   const { showSuccess } = useFeedback();
   const cardStyles = useCardStyles();
+  const { theme } = useTheme();
+  const c = theme.content;
   const [projects, setProjects] = useState([]);
   const [projectId, setProjectId] = useState(NEW_PROJECT);
   const [title, setTitle] = useState("");
@@ -165,12 +177,34 @@ export default function NewEgenkontrollScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <Button
-          icon="upload"
-          title={t("egenkontroll.fromContract")}
+        {/* Upload zone — the app's dashed "add" pattern (see
+            ShiftHistoryPreview addSquare), sized as the main entry point. */}
+        <TouchableOpacity
+          activeOpacity={0.85}
           onPress={readContract}
-          loading={reading}
-        />
+          disabled={reading}
+          style={[
+            styles.dropZone,
+            {
+              borderColor: `${theme.colors.primary}66`,
+              backgroundColor: `${theme.colors.primary}0F`,
+            },
+          ]}
+        >
+          <View
+            style={[styles.dropIcon, { backgroundColor: theme.colors.primary }]}
+          >
+            {reading ? (
+              <ActivityIndicator color={c.onAccent} />
+            ) : (
+              <Icon name="file-text" size={26} color={c.onAccent} />
+            )}
+          </View>
+          <Text style={[styles.dropTitle, { color: theme.colors.primary }]}>
+            {t("egenkontroll.onboardingContract")}
+          </Text>
+          <Text style={cardStyles.cardSecondaryText}>PDF · foto</Text>
+        </TouchableOpacity>
         {/* Doherty: AI reading takes a while — say what is happening. */}
         {reading ? (
           <Text style={[cardStyles.cardSecondaryText, { textAlign: "center" }]}>
@@ -255,3 +289,24 @@ export default function NewEgenkontrollScreen() {
     </Screen>
   );
 }
+
+// Layout glue for the upload zone; colours come from the theme.
+const styles = StyleSheet.create({
+  dropZone: {
+    alignItems: "center",
+    gap: space.sm,
+    paddingVertical: space.xxl,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderStyle: "dashed",
+  },
+  dropIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: space.xs,
+  },
+  dropTitle: { fontSize: 17, fontWeight: "600" },
+});
