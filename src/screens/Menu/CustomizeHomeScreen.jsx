@@ -248,7 +248,8 @@ export default function CustomizeHomeScreen({
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      {/* Solo "Teman": a standalone screen — centred title like other headers. */}
+      <View style={[styles.header, themeOnly && styles.headerCentered]}>
         <BackButton
           backgroundColor="#ffffff"
           tint="light"
@@ -257,7 +258,9 @@ export default function CustomizeHomeScreen({
           iconSource={require("../../assets/Arrow-left.png")}
         />
 
-        <Text style={styles.title}>{t("home.customizeTitle")}</Text>
+        <Text style={styles.title}>
+          {themeOnly ? t("home.themes") : t("home.customizeTitle")}
+        </Text>
 
         <View style={styles.placeholder} />
       </View>
@@ -269,48 +272,57 @@ export default function CustomizeHomeScreen({
       >
         {/* THEME SWITCHER */}
         <View style={styles.themeContainer}>
-          <Text style={styles.sectionTitle}>{t("home.themes")}</Text>
+          {themeOnly ? null : (
+            <Text style={styles.sectionTitle}>{t("home.themes")}</Text>
+          )}
 
           <View style={styles.themeRow}>
             {themeOptions.map(function renderTheme(item) {
               const isActive = themeName === item.id;
 
               return (
+                // Ring with a gap around the selected circle — readable even
+                // when the circle itself is the ring's blue.
                 <TouchableOpacity
                   key={item.id}
-                  style={[
-                    styles.themeButton,
-                    {
-                      backgroundColor: item.color,
-                    },
-                    isActive && styles.activeThemeButton,
-                  ]}
+                  style={[styles.themeRing, isActive && styles.themeRingActive]}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: isActive }}
                   onPress={function handleThemePress() {
                     markCustomized();
                     changeTheme(item.id);
                   }}
                 >
-                  {item.secondaryColor ? (
-                    <View style={styles.splitThemePreview}>
-                      <View
-                        style={[
-                          styles.splitThemeHalf,
-                          {
-                            backgroundColor: item.color,
-                          },
-                        ]}
-                      />
+                  <View
+                    style={[
+                      styles.themeButton,
+                      {
+                        backgroundColor: item.color,
+                      },
+                    ]}
+                  >
+                    {item.secondaryColor ? (
+                      <View style={styles.splitThemePreview}>
+                        <View
+                          style={[
+                            styles.splitThemeHalf,
+                            {
+                              backgroundColor: item.color,
+                            },
+                          ]}
+                        />
 
-                      <View
-                        style={[
-                          styles.splitThemeHalf,
-                          {
-                            backgroundColor: item.secondaryColor,
-                          },
-                        ]}
-                      />
-                    </View>
-                  ) : null}
+                        <View
+                          style={[
+                            styles.splitThemeHalf,
+                            {
+                              backgroundColor: item.secondaryColor,
+                            },
+                          ]}
+                        />
+                      </View>
+                    ) : null}
+                  </View>
                 </TouchableOpacity>
               );
             })}

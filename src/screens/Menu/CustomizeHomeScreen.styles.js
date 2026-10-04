@@ -38,6 +38,11 @@ export function createStyles(theme) {
       gap: 16,
     },
 
+    headerCentered: {
+      justifyContent: "space-between",
+      gap: 0,
+    },
+
     title: {
       // Figma: DM Sans 600, 17px.
       fontSize: 17,
@@ -64,8 +69,8 @@ export function createStyles(theme) {
     themeRow: {
       flexDirection: "row",
       flexWrap: "wrap",
-      gap: 14,
-      rowGap: 14,
+      gap: 8,
+      rowGap: 8,
     },
 
     themeButton: {
@@ -88,9 +93,19 @@ export function createStyles(theme) {
       flex: 1,
     },
 
-    activeThemeButton: {
-      // Figma: active dot has a 3px #3A73F0 ring.
-      borderWidth: 3,
+    // 2px ring + 2px gap around the 36pt circle; transparent when idle so
+    // the row never shifts.
+    themeRing: {
+      width: 44,
+      height: 44,
+      borderRadius: 999,
+      borderWidth: 2,
+      borderColor: "transparent",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+
+    themeRingActive: {
       borderColor: accent,
     },
 
