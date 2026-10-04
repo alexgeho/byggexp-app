@@ -70,25 +70,35 @@ export default function EgenkontrollListScreen({ isHome = false }) {
   return (
     <View style={styles.screen}>
       <View style={styles.pageContainer}>
-        <View style={styles.header}>
-          {home ? (
-            <View style={styles.headerSpacer} />
-          ) : (
+        {home ? (
+          <Text
+            style={{
+              fontSize: 32,
+              fontWeight: "700",
+              color: c.textPrimary,
+              marginTop: 8,
+              marginBottom: 14,
+            }}
+          >
+            {t("egenkontroll.title")}
+          </Text>
+        ) : (
+          <View style={styles.header}>
             <BackButton
               onPress={() => navigation.goBack()}
               iconSource={require("../../assets/Arrow-left.png")}
             />
-          )}
-          <Text
-            style={[
-              styles.headerTitle,
-              { fontFamily: theme.text.fontFamily.semiBold },
-            ]}
-          >
-            {t("egenkontroll.title")}
-          </Text>
-          <View style={styles.headerSpacer} />
-        </View>
+            <Text
+              style={[
+                styles.headerTitle,
+                { fontFamily: theme.text.fontFamily.semiBold },
+              ]}
+            >
+              {t("egenkontroll.title")}
+            </Text>
+            <View style={styles.headerSpacer} />
+          </View>
+        )}
 
         {loading ? (
           <View style={styles.center}>
@@ -102,23 +112,26 @@ export default function EgenkontrollListScreen({ isHome = false }) {
             keyExtractor={(item) => getEntityId(item)}
             ListHeaderComponent={
               home && !onboardingDone ? (
-                <View style={[styles.card, { gap: 10 }]}>
+                <View style={[styles.row, { marginBottom: 4 }]}>
                   {onboardingSteps.map((step, i) => (
-                    <View key={step.key} style={styles.row}>
+                    <View
+                      key={step.key}
+                      style={{ flex: 1, alignItems: "center", gap: 6 }}
+                    >
                       <View
                         style={{
-                          width: 24,
-                          height: 24,
-                          borderRadius: 12,
+                          width: 28,
+                          height: 28,
+                          borderRadius: 14,
                           alignItems: "center",
                           justifyContent: "center",
-                          backgroundColor: step.done ? c.success : c.accent,
+                          backgroundColor: step.done ? c.success : c.accentSoft,
                         }}
                       >
                         <Text
                           style={{
-                            color: c.onAccent,
-                            fontSize: 12,
+                            color: step.done ? c.onAccent : c.accent,
+                            fontSize: 13,
                             fontWeight: "700",
                           }}
                         >
@@ -126,11 +139,12 @@ export default function EgenkontrollListScreen({ isHome = false }) {
                         </Text>
                       </View>
                       <Text
-                        style={[
-                          styles.body,
-                          { fontWeight: "600" },
-                          step.done && { color: c.success },
-                        ]}
+                        numberOfLines={1}
+                        style={{
+                          fontSize: 12,
+                          fontWeight: "600",
+                          color: step.done ? c.success : c.textSecondary,
+                        }}
                       >
                         {t(step.label)}
                       </Text>
@@ -173,10 +187,28 @@ export default function EgenkontrollListScreen({ isHome = false }) {
                   <Text style={styles.cardTitle} numberOfLines={2}>
                     {item.title}
                   </Text>
-                  <Text style={styles.meta}>
-                    {t("egenkontroll.pointsDone", { done, total })}
-                    {item.date ? ` · ${item.date}` : ""}
-                  </Text>
+                  <View style={[styles.row, { marginTop: 4 }]}>
+                    <View
+                      style={{
+                        flex: 1,
+                        height: 6,
+                        borderRadius: 3,
+                        backgroundColor: c.inputSurface,
+                        overflow: "hidden",
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: `${total ? Math.round((done / total) * 100) : 0}%`,
+                          height: "100%",
+                          backgroundColor: c.success,
+                        }}
+                      />
+                    </View>
+                    <Text style={styles.meta}>
+                      {done}/{total}
+                    </Text>
+                  </View>
                   <View
                     style={[
                       styles.statusPill,
@@ -203,6 +235,9 @@ export default function EgenkontrollListScreen({ isHome = false }) {
         )}
 
         <BottomBar
+          iconColor={c.textPrimary}
+          pillColor={c.surface}
+          pillBorderColor={c.border}
           onLeftPress={() => (home ? load() : navigation.navigate("Main"))}
           onRightPress={() => navigation.navigate("Menu")}
           showAddButton

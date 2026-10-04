@@ -1768,6 +1768,8 @@
       "pending": "Без ответа"
     },
     "onboardingContract": "Загрузить договор",
-    "onboardingPhotos": "Сфотографировать на объекте"
+    "onboardingPhotos": "Сфотографировать на объекте",
+    "address": "Адрес",
+    "addressPlaceholder": "напр. Storgatan 5, Uppsala"
   }
 }

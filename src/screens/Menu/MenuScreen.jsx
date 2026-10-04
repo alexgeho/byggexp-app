@@ -27,7 +27,10 @@ import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { createStyles } from "./MenuScreen.styles";
 import { resolveUploadUrl } from "../../utils/shifts";
-import { isModuleEnabled } from "../../utils/companyModules";
+import {
+  isEgenkontrollOnly,
+  isModuleEnabled,
+} from "../../utils/companyModules";
 
 // Menu entry → web module key (company plan / module settings).
 const MENU_MODULES = {
@@ -409,8 +412,14 @@ export default function MenuScreen() {
 
   // Hide entries whose web module is switched off for the company (plan /
   // module settings) — e.g. the solo Egenkontroll plan shows just that.
-  const visibleMenuItems = menuItems.filter((item) =>
-    isModuleEnabled(MENU_MODULES[item.id]),
+  const visibleMenuItems = menuItems.filter(
+    (item) =>
+      isModuleEnabled(MENU_MODULES[item.id]) &&
+      // Solo Egenkontroll plan: projects live behind the scenes, no menu entry.
+      !(
+        (item.id === "projects" || item.id === "customizeHome") &&
+        isEgenkontrollOnly()
+      ),
   );
 
   const settingsItems = [

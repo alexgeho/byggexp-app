@@ -1764,6 +1764,8 @@
       "pending": "Ikke besvart"
     },
     "onboardingContract": "Last opp kontrakt",
-    "onboardingPhotos": "Ta bilder på byggeplassen"
+    "onboardingPhotos": "Ta bilder på byggeplassen",
+    "address": "Adresse",
+    "addressPlaceholder": "f.eks. Storgata 5, Oslo"
   }
 }

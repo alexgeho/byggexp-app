@@ -18,6 +18,7 @@ import { BackButton } from "../../components/common/BackButton/BackButton";
 import { getEntityId } from "../../utils/entityId";
 import { pickUploadAssets } from "../../utils/uploadPicker";
 import { createStyles } from "./Egenkontroll.styles";
+import { isEgenkontrollOnly } from "../../utils/companyModules";
 
 const NEW_PROJECT = "__new__";
 const today = () => new Date().toISOString().slice(0, 10);
@@ -35,6 +36,10 @@ export default function NewEgenkontrollScreen() {
   const [projects, setProjects] = useState([]);
   const [projectId, setProjectId] = useState(NEW_PROJECT);
   const [title, setTitle] = useState("");
+  // Solo Egenkontroll plan: no projects — just the site address; a project is
+  // created behind the scenes.
+  const solo = isEgenkontrollOnly();
+  const [address, setAddress] = useState("");
   const [items, setItems] = useState([]);
   const [draft, setDraft] = useState(null);
   const [reading, setReading] = useState(false);
@@ -78,9 +83,10 @@ export default function NewEgenkontrollScreen() {
     setSaving(true);
     try {
       let pid = projectId;
-      if (pid === NEW_PROJECT) {
+      if (solo || pid === NEW_PROJECT) {
         const project = await projectService.create({
-          name: title.trim() || t("egenkontroll.title"),
+          name: address.trim() || title.trim() || t("egenkontroll.title"),
+          location: address.trim() || undefined,
         });
         pid = getEntityId(project);
       }
@@ -173,29 +179,47 @@ export default function NewEgenkontrollScreen() {
           </TouchableOpacity>
 
           <View style={styles.card}>
-            <Text style={styles.meta}>{t("egenkontroll.project")}</Text>
-            <View style={[styles.row, { flexWrap: "wrap" }]}>
-              {[
-                { id: NEW_PROJECT, name: t("egenkontroll.newProject") },
-                ...projects.map((p) => ({ id: getEntityId(p), name: p.name })),
-              ].map((p) => (
-                <TouchableOpacity
-                  key={p.id}
-                  style={[styles.chip, projectId === p.id && styles.chipOk]}
-                  onPress={() => setProjectId(p.id)}
-                >
-                  <Text
-                    style={[
-                      styles.chipText,
-                      projectId === p.id && styles.chipOkText,
-                    ]}
-                    numberOfLines={1}
+            {solo ? (
+              <>
+                <Text style={styles.meta}>{t("egenkontroll.address")}</Text>
+                <TextInput
+                  style={styles.input}
+                  value={address}
+                  onChangeText={setAddress}
+                  placeholder={t("egenkontroll.addressPlaceholder")}
+                  placeholderTextColor={c.placeholder}
+                />
+              </>
+            ) : (
+              <Text style={styles.meta}>{t("egenkontroll.project")}</Text>
+            )}
+            {solo ? null : (
+              <View style={[styles.row, { flexWrap: "wrap" }]}>
+                {[
+                  { id: NEW_PROJECT, name: t("egenkontroll.newProject") },
+                  ...projects.map((p) => ({
+                    id: getEntityId(p),
+                    name: p.name,
+                  })),
+                ].map((p) => (
+                  <TouchableOpacity
+                    key={p.id}
+                    style={[styles.chip, projectId === p.id && styles.chipOk]}
+                    onPress={() => setProjectId(p.id)}
                   >
-                    {p.name}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+                    <Text
+                      style={[
+                        styles.chipText,
+                        projectId === p.id && styles.chipOkText,
+                      ]}
+                      numberOfLines={1}
+                    >
+                      {p.name}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
             <Text style={[styles.meta, { marginTop: 8 }]}>
               {t("egenkontroll.titleLabel")}
             </Text>
