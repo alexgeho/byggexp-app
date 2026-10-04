@@ -61,7 +61,7 @@ export function FieldRow({
           <View style={styles.rowContent}>
             {badge}
             <View style={styles.body}>
-              <Text style={styles.label}>{label}</Text>
+              {label ? <Text style={styles.label}>{label}</Text> : null}
               <TextInput
                 style={[styles.input, multiline && styles.inputMultiline]}
                 value={value}

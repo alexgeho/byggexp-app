@@ -171,7 +171,8 @@ export default function NewEgenkontrollScreen() {
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
-          gap: layout.betweenCards,
+          // One rhythm: the same 24pt between every block as above the first.
+          gap: space.xxl,
           paddingBottom: layout.listBottom,
         }}
         keyboardShouldPersistTaps="handled"
@@ -216,19 +217,17 @@ export default function NewEgenkontrollScreen() {
           {solo ? (
             <FieldRow
               variant="input"
-              label={t("egenkontroll.address")}
               value={address}
               onChangeText={setAddress}
               autoCapitalize="words"
-              placeholder={t("egenkontroll.addressPlaceholder")}
+              placeholder={t("egenkontroll.address")}
             />
           ) : null}
           <FieldRow
             variant="input"
-            label={t("egenkontroll.titleLabel")}
             value={title}
             onChangeText={setTitle}
-            placeholder={t("egenkontroll.titlePlaceholder")}
+            placeholder={t("egenkontroll.titleLabel")}
             isLast
           />
         </FieldCard>
