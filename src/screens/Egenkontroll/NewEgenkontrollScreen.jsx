@@ -171,11 +171,6 @@ export default function NewEgenkontrollScreen() {
                 : t("egenkontroll.fromContract")}
             </Text>
           </TouchableOpacity>
-          {!draft && !reading ? (
-            <Text style={styles.muted}>
-              {t("egenkontroll.fromContractHint")}
-            </Text>
-          ) : null}
 
           <View style={styles.card}>
             <Text style={styles.meta}>{t("egenkontroll.project")}</Text>
@@ -235,9 +230,6 @@ export default function NewEgenkontrollScreen() {
                     )
                   }
                 />
-                {it.reference ? (
-                  <Text style={styles.meta}>{it.reference}</Text>
-                ) : null}
               </View>
               <TouchableOpacity
                 onPress={() =>

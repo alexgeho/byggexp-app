@@ -3,7 +3,6 @@ import {
   ActivityIndicator,
   Alert,
   Image,
-  Linking,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -210,18 +209,6 @@ export default function EgenkontrollScreen() {
                 {t(`egenkontroll.status.${doc.status || "draft"}`)}
               </Text>
             </View>
-            {doc.sourceDocument?.url ? (
-              <TouchableOpacity
-                onPress={() =>
-                  Linking.openURL(resolveUploadUrl(doc.sourceDocument.url))
-                }
-              >
-                <Text style={styles.link}>
-                  <Icon name="file-text" size={13} />{" "}
-                  {doc.sourceDocument.name || t("egenkontroll.contract")}
-                </Text>
-              </TouchableOpacity>
-            ) : null}
           </View>
 
           {!signed ? (
@@ -253,8 +240,6 @@ export default function EgenkontrollScreen() {
               <ActivityIndicator color={theme.colors.primary} />
               <Text style={styles.meta}>{t("egenkontroll.analyzing")}</Text>
             </View>
-          ) : !signed ? (
-            <Text style={styles.muted}>{t("egenkontroll.photoHint")}</Text>
           ) : null}
 
           {(doc.items || []).map((it, i) => {
@@ -265,16 +250,10 @@ export default function EgenkontrollScreen() {
                   <Text style={styles.meta}>{i + 1}. </Text>
                   {it.text}
                 </Text>
-                {it.reference ? (
-                  <Text style={styles.meta}>{it.reference}</Text>
-                ) : null}
 
                 {s && s.state === "auto" && !signed ? (
-                  <View style={styles.aiNote}>
+                  <View style={[styles.row, { gap: 12 }]}>
                     <Text style={styles.aiTag}>AI</Text>
-                    <Text style={styles.aiText} numberOfLines={3}>
-                      {s.reason}
-                    </Text>
                     <TouchableOpacity
                       onPress={() =>
                         run(() => checklistService.decide(id, i, false))

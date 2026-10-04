@@ -86,9 +86,6 @@ export default function EgenkontrollListScreen({ isHome = false }) {
                 <Text style={styles.emptyTitle}>
                   {t("egenkontroll.emptyTitle")}
                 </Text>
-                <Text style={styles.muted}>
-                  {t("egenkontroll.emptySubtitle")}
-                </Text>
                 <TouchableOpacity
                   style={[styles.primaryButton, { marginTop: 20 }]}
                   onPress={() => navigation.navigate("NewEgenkontroll")}
