@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -31,6 +37,8 @@ import { useCardStyles } from "../../styles/cards";
 import { layout, space } from "../../theme/spacing";
 import { radius } from "../../theme/tokens";
 import { resolveUploadUrl } from "../../utils/shifts";
+import { downloadAndShareDocument } from "../../utils/documentPreview";
+import { API_BASE_URL } from "../../config/env";
 import {
   EgenkontrollProgress,
   EgenkontrollStatusBadge,
@@ -127,6 +135,10 @@ export default function EgenkontrollScreen() {
     setEdits((prev) => ({ ...prev, [i]: { ...prev[i], [key]: value } }));
   const id = params?.id;
   const signed = doc?.status === "signed";
+  // "N punkter kvar" scrolls to the first unanswered point.
+  const scrollRef = useRef(null);
+  const cardY = useRef(0);
+  const pointY = useRef({});
 
   useFocusEffect(
     useCallback(() => {
@@ -249,6 +261,21 @@ export default function EgenkontrollScreen() {
       },
     ]);
 
+  // Signed → the protocol PDF to the share sheet ("Badrum-2026-10-04.pdf").
+  const sharePdf = () =>
+    busy ||
+    run(async () => {
+      const name = shortTitle(doc.title)
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+      const day = (doc.signedAt || new Date().toISOString()).slice(0, 10);
+      await downloadAndShareDocument({
+        url: `${API_BASE_URL}/checklists/${id}/pdf`,
+        fileName: `${name}-${day}.pdf`,
+      });
+      return null;
+    }, "pdf");
+
   // One photo action: the app's native source chooser (as in uploadPicker).
   const choosePhotoSource = () =>
     busy ||
@@ -267,6 +294,17 @@ export default function EgenkontrollScreen() {
       })),
       { text: t("common.cancel"), style: "cancel" },
     ]);
+
+  const scrollToFirstOpen = () => {
+    const i = (doc?.items || []).findIndex(
+      (it) => !it.result || it.result === "pending",
+    );
+    if (i < 0) return;
+    scrollRef.current?.scrollTo({
+      y: Math.max(0, cardY.current + (pointY.current[i] || 0) - space.sm),
+      animated: true,
+    });
+  };
 
   if (!doc) {
     return (
@@ -288,6 +326,9 @@ export default function EgenkontrollScreen() {
 
   const points = doc.items || [];
   const progress = progressOf(doc);
+  const left = progress.total - progress.done;
+  // Sign only when every point has an answer (the backend refuses otherwise).
+  const canSign = !signed && progress.total > 0 && left === 0;
 
   // Expanded point: metod, krav, mätvärde, vem + datum, avvikelse → åtgärd.
   const renderDetails = (it, i) => {
@@ -425,107 +466,143 @@ export default function EgenkontrollScreen() {
       </View>
 
       <ScrollView
+        ref={scrollRef}
         style={styles.flex}
         contentContainerStyle={{ paddingBottom: layout.betweenCards }}
         showsVerticalScrollIndicator={false}
       >
-        <FieldCard>
-          {points.map((it, i) => {
-            const sug = it.suggestion;
-            const ai = sug && sug.state === "auto" && !signed;
-            const mark = indicator(it.result);
-            return (
-              <View key={i}>
-                <View style={[rowStyles.tapRow, styles.pointRow]}>
-                  {/* Text: tap to expand / collapse the full point. */}
-                  <TouchableOpacity
-                    style={[rowStyles.body, styles.pointBody]}
-                    activeOpacity={0.85}
-                    onPress={() => toggleOpen(i)}
-                  >
-                    <Text style={rowStyles.value}>
-                      {open[i] || it.text.length <= PREVIEW_CHARS
-                        ? `${i + 1}. ${it.text}`
-                        : `${i + 1}. ${preview(it.text)}… `}
-                      {!open[i] && it.text.length > PREVIEW_CHARS ? (
-                        <Text style={{ color: c.accent }}>
-                          {t("egenkontroll.readMore")}
-                        </Text>
-                      ) : null}
-                      {open[i] ? (
-                        <Text style={{ color: c.accent }}>
-                          {` ${t("egenkontroll.showLess")}`}
-                        </Text>
-                      ) : null}
-                    </Text>
-                    {ai || it.photoUrls?.length ? (
-                      <View style={[styles.row, styles.wrap]}>
-                        {it.photoUrls?.map((u) => (
-                          <Image
-                            key={u}
-                            source={{ uri: resolveUploadUrl(u) }}
-                            style={[
-                              styles.thumb,
-                              { backgroundColor: c.inputSurface },
-                            ]}
-                          />
-                        ))}
-                        {ai ? (
-                          <>
-                            <Badge label="AI" tone="accent" />
-                            <Text
-                              style={[rowStyles.label, { color: c.accent }]}
-                              onPress={() =>
-                                run(() => checklistService.decide(id, i, false))
-                              }
-                            >
-                              {t("egenkontroll.undo")}
-                            </Text>
-                          </>
+        <View
+          onLayout={(e) => {
+            cardY.current = e.nativeEvent.layout.y;
+          }}
+        >
+          <FieldCard>
+            {points.map((it, i) => {
+              const sug = it.suggestion;
+              const ai = sug && sug.state === "auto" && !signed;
+              const mark = indicator(it.result);
+              return (
+                <View
+                  key={i}
+                  onLayout={(e) => {
+                    pointY.current[i] = e.nativeEvent.layout.y;
+                  }}
+                >
+                  <View style={[rowStyles.tapRow, styles.pointRow]}>
+                    {/* Text: tap to expand / collapse the full point. */}
+                    <TouchableOpacity
+                      style={[rowStyles.body, styles.pointBody]}
+                      activeOpacity={0.85}
+                      onPress={() => toggleOpen(i)}
+                    >
+                      <Text style={rowStyles.value}>
+                        {open[i] || it.text.length <= PREVIEW_CHARS
+                          ? `${i + 1}. ${it.text}`
+                          : `${i + 1}. ${preview(it.text)}… `}
+                        {!open[i] && it.text.length > PREVIEW_CHARS ? (
+                          <Text style={{ color: c.accent }}>
+                            {t("egenkontroll.readMore")}
+                          </Text>
                         ) : null}
-                      </View>
-                    ) : null}
-                  </TouchableOpacity>
-                  {/* Status: tap to pick the result. */}
-                  <TouchableOpacity
-                    style={styles.mark}
-                    activeOpacity={0.85}
-                    disabled={signed || busy}
-                    onPress={() => chooseResult(i)}
-                    accessibilityLabel={t(
-                      `egenkontroll.result.${it.result || "pending"}`,
-                    )}
-                  >
-                    <Icon name={mark.name} size={22} color={mark.color} />
-                  </TouchableOpacity>
+                        {open[i] ? (
+                          <Text style={{ color: c.accent }}>
+                            {` ${t("egenkontroll.showLess")}`}
+                          </Text>
+                        ) : null}
+                      </Text>
+                      {ai || it.photoUrls?.length ? (
+                        <View style={[styles.row, styles.wrap]}>
+                          {it.photoUrls?.map((u) => (
+                            <Image
+                              key={u}
+                              source={{ uri: resolveUploadUrl(u) }}
+                              style={[
+                                styles.thumb,
+                                { backgroundColor: c.inputSurface },
+                              ]}
+                            />
+                          ))}
+                          {ai ? (
+                            <>
+                              <Badge label="AI" tone="accent" />
+                              <Text
+                                style={[rowStyles.label, { color: c.accent }]}
+                                onPress={() =>
+                                  run(() =>
+                                    checklistService.decide(id, i, false),
+                                  )
+                                }
+                              >
+                                {t("egenkontroll.undo")}
+                              </Text>
+                            </>
+                          ) : null}
+                        </View>
+                      ) : null}
+                    </TouchableOpacity>
+                    {/* Status: tap to pick the result. */}
+                    <TouchableOpacity
+                      style={styles.mark}
+                      activeOpacity={0.85}
+                      disabled={signed || busy}
+                      onPress={() => chooseResult(i)}
+                      accessibilityLabel={t(
+                        `egenkontroll.result.${it.result || "pending"}`,
+                      )}
+                    >
+                      <Icon name={mark.name} size={22} color={mark.color} />
+                    </TouchableOpacity>
+                  </View>
+                  {open[i] ? renderDetails(it, i) : null}
+                  {i < points.length - 1 ? (
+                    <View style={rowStyles.sepPlain} />
+                  ) : null}
                 </View>
-                {open[i] ? renderDetails(it, i) : null}
-                {i < points.length - 1 ? (
-                  <View style={rowStyles.sepPlain} />
-                ) : null}
-              </View>
-            );
-          })}
-        </FieldCard>
+              );
+            })}
+          </FieldCard>
+        </View>
       </ScrollView>
 
-      {/* Thumb zone: photo + sign side by side at the bottom. */}
+      {/* Thumb zone: photo (+ sign once every point is answered). */}
       {!signed ? (
-        <View style={styles.actions}>
-          <Button
-            style={styles.flex}
-            title={t("egenkontroll.photo")}
-            onPress={choosePhotoSource}
-            loading={pending === "photo"}
-          />
-          <Button
-            style={styles.flex}
-            title={t("egenkontroll.sign")}
-            onPress={sign}
-            loading={pending === "sign"}
-          />
+        <View style={styles.bottom}>
+          {left > 0 ? (
+            <Text
+              style={[cardStyles.cardSecondaryText, styles.left]}
+              onPress={scrollToFirstOpen}
+              suppressHighlighting
+            >
+              {t("egenkontroll.pointsLeft", { count: left })}
+            </Text>
+          ) : null}
+          <View style={styles.actions}>
+            <Button
+              style={styles.flex}
+              icon="camera"
+              title={t("egenkontroll.photo")}
+              onPress={choosePhotoSource}
+              loading={pending === "photo"}
+            />
+            {canSign ? (
+              <Button
+                style={styles.flex}
+                icon="edit-3"
+                title={t("egenkontroll.sign")}
+                onPress={sign}
+                loading={pending === "sign"}
+              />
+            ) : null}
+          </View>
         </View>
-      ) : null}
+      ) : (
+        <Button
+          icon="share"
+          title={t("egenkontroll.sharePdf")}
+          onPress={sharePdf}
+          loading={pending === "pdf"}
+        />
+      )}
     </Screen>
   );
 }
@@ -555,6 +632,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  bottom: { gap: space.lg },
+  left: { textAlign: "center" },
   actions: { flexDirection: "row", gap: space.sm },
   flex: { flex: 1 },
   thumb: { width: 32, height: 32, borderRadius: radius.sm },

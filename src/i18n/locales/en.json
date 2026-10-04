@@ -1799,6 +1799,9 @@
     "actionPlaceholder": "e.g. Membrane repaired",
     "actionDone": "Fixed",
     "openDeviation": "Open deviation",
-    "showLess": "show less"
+    "showLess": "show less",
+    "pointsLeft_one": "{{count}} point left",
+    "pointsLeft_other": "{{count}} points left",
+    "sharePdf": "Share PDF"
   }
 }

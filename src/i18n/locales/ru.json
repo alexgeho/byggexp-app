@@ -1807,6 +1807,11 @@
     "actionPlaceholder": "напр. Гидроизоляция исправлена",
     "actionDone": "Исправлено",
     "openDeviation": "Открытое отклонение",
-    "showLess": "свернуть"
+    "showLess": "свернуть",
+    "pointsLeft_one": "Остался {{count}} пункт",
+    "pointsLeft_few": "Осталось {{count}} пункта",
+    "pointsLeft_many": "Осталось {{count}} пунктов",
+    "pointsLeft_other": "Осталось {{count}} пунктов",
+    "sharePdf": "Поделиться PDF"
   }
 }

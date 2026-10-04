@@ -1799,6 +1799,9 @@
     "actionPlaceholder": "f.eks. Membran reparert",
     "actionDone": "Utbedret",
     "openDeviation": "Åpent avvik",
-    "showLess": "vis mindre"
+    "showLess": "vis mindre",
+    "pointsLeft_one": "{{count}} punkt igjen",
+    "pointsLeft_other": "{{count}} punkter igjen",
+    "sharePdf": "Del PDF"
   }
 }

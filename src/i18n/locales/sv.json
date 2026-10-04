@@ -1799,6 +1799,9 @@
     "actionPlaceholder": "t.ex. Tätskikt lagat",
     "actionDone": "Åtgärdad",
     "openDeviation": "Öppen avvikelse",
-    "showLess": "visa mindre"
+    "showLess": "visa mindre",
+    "pointsLeft_one": "{{count}} punkt kvar",
+    "pointsLeft_other": "{{count}} punkter kvar",
+    "sharePdf": "Dela PDF"
   }
 }
