@@ -28,6 +28,25 @@ export default function EgenkontrollListScreen({ isHome = false }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const home = isHome || isEgenkontrollOnly();
+  // Getting started (solo plan): ticks off from real data, gone when all done.
+  const onboardingSteps = [
+    {
+      key: "avtal",
+      label: "egenkontroll.onboardingContract",
+      done: items.length > 0,
+    },
+    {
+      key: "foto",
+      label: "egenkontroll.onboardingPhotos",
+      done: items.some((it) => it.photos?.length),
+    },
+    {
+      key: "sign",
+      label: "egenkontroll.sign",
+      done: items.some((it) => it.status === "signed"),
+    },
+  ];
+  const onboardingDone = onboardingSteps.every((step) => step.done);
 
   const load = useCallback(async () => {
     try {
@@ -81,6 +100,45 @@ export default function EgenkontrollListScreen({ isHome = false }) {
             contentContainerStyle={styles.listContent}
             data={items}
             keyExtractor={(item) => getEntityId(item)}
+            ListHeaderComponent={
+              home && !onboardingDone ? (
+                <View style={[styles.card, { gap: 10 }]}>
+                  {onboardingSteps.map((step, i) => (
+                    <View key={step.key} style={styles.row}>
+                      <View
+                        style={{
+                          width: 24,
+                          height: 24,
+                          borderRadius: 12,
+                          alignItems: "center",
+                          justifyContent: "center",
+                          backgroundColor: step.done ? c.success : c.accent,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: c.onAccent,
+                            fontSize: 12,
+                            fontWeight: "700",
+                          }}
+                        >
+                          {step.done ? "✓" : i + 1}
+                        </Text>
+                      </View>
+                      <Text
+                        style={[
+                          styles.body,
+                          { fontWeight: "600" },
+                          step.done && { color: c.success },
+                        ]}
+                      >
+                        {t(step.label)}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              ) : null
+            }
             ListEmptyComponent={
               <View style={[styles.center, { paddingTop: 48 }]}>
                 <Text style={styles.emptyTitle}>

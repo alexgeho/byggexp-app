@@ -1762,6 +1762,8 @@
       "remark": "Anmerkning",
       "na": "Ikke aktuelt",
       "pending": "Ikke besvart"
-    }
+    },
+    "onboardingContract": "Last opp kontrakt",
+    "onboardingPhotos": "Ta bilder på byggeplassen"
   }
 }

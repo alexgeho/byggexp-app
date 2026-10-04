@@ -1762,6 +1762,8 @@
       "remark": "Remark",
       "na": "N/A",
       "pending": "Not answered"
-    }
+    },
+    "onboardingContract": "Upload the contract",
+    "onboardingPhotos": "Take photos on site"
   }
 }

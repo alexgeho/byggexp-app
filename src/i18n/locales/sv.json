@@ -1762,6 +1762,8 @@
       "remark": "Anmärkning",
       "na": "Ej aktuellt",
       "pending": "Ej besvarad"
-    }
+    },
+    "onboardingContract": "Ladda upp avtal",
+    "onboardingPhotos": "Fota på bygget"
   }
 }
