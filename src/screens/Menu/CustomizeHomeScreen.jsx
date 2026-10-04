@@ -329,6 +329,11 @@ export default function CustomizeHomeScreen({
               <View style={styles.secondaryRow}>
                 {[
                   {
+                    id: "project",
+                    icon: "folder",
+                    label: t("home.coreProject", "Project"),
+                  },
+                  {
                     id: "timer",
                     icon: "clock",
                     label: t("home.coreTimer", "Clock"),

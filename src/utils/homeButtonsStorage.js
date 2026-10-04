@@ -38,10 +38,11 @@ export async function saveSecondaryAction(action) {
   await AsyncStorage.setItem(SECONDARY_ACTION_KEY, action);
 }
 
-// Top-of-home parts the user can switch off in Customize: "timer" (the clock)
-// and "actions" (the round Play + secondary buttons). Stored as the hidden ids.
+// Top-of-home parts the user can switch off in Customize: "project" (the
+// project selector), "timer" (the clock) and "actions" (the round Play +
+// secondary buttons). Stored as the hidden ids.
 const HIDDEN_CORE_KEY = "home-hidden-core";
-export const CORE_PARTS = ["timer", "actions"];
+export const CORE_PARTS = ["project", "timer", "actions"];
 
 export async function getHiddenCore() {
   const data = await AsyncStorage.getItem(HIDDEN_CORE_KEY);

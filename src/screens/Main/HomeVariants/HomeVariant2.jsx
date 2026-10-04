@@ -307,6 +307,7 @@ export default function HomeVariant2() {
   const [hiddenCore, setHiddenCore] = useState([]);
   const showTimer = !hiddenCore.includes("timer");
   const showActions = !hiddenCore.includes("actions");
+  const showProjectSelector = !hiddenCore.includes("project");
   // Manual-hours edit mode (hours secondary button): the top clock turns into
   // an hours/minutes wheel and the pencil becomes a save checkmark.
   const [isEditingHours, setIsEditingHours] = useState(false);
@@ -1025,31 +1026,33 @@ export default function HomeVariant2() {
         keyboardShouldPersistTaps="handled"
       >
         {/* PROJECT SELECTOR — dimmed & inactive while editing hours */}
-        <View
-          style={isEditingHours && styles.inactiveDimmed}
-          pointerEvents={isEditingHours ? "none" : "auto"}
-        >
-          <ProjectSelector2
-            value={selectedProject}
-            onPress={openProjects}
-            style={[
-              styles.selectorTop,
-              isLightBlueTheme && styles.selectorLightBlue,
-              themeName === "colorful" && styles.selectorColorful,
-              isCompact ? styles.selectorCompact : null,
-            ]}
-            textStyle={[
-              isLightBlueTheme && styles.selectorTextLightBlue,
-              themeName === "colorful" && styles.selectorTextColorful,
-              isCompact ? styles.selectorTextCompact : null,
-            ]}
-            iconStyle={[
-              isLightBlueTheme && styles.selectorIconLightBlue,
-              themeName === "colorful" && styles.selectorIconColorful,
-              isCompact ? styles.selectorIconCompact : null,
-            ]}
-          />
-        </View>
+        {showProjectSelector ? (
+          <View
+            style={isEditingHours && styles.inactiveDimmed}
+            pointerEvents={isEditingHours ? "none" : "auto"}
+          >
+            <ProjectSelector2
+              value={selectedProject}
+              onPress={openProjects}
+              style={[
+                styles.selectorTop,
+                isLightBlueTheme && styles.selectorLightBlue,
+                themeName === "colorful" && styles.selectorColorful,
+                isCompact ? styles.selectorCompact : null,
+              ]}
+              textStyle={[
+                isLightBlueTheme && styles.selectorTextLightBlue,
+                themeName === "colorful" && styles.selectorTextColorful,
+                isCompact ? styles.selectorTextCompact : null,
+              ]}
+              iconStyle={[
+                isLightBlueTheme && styles.selectorIconLightBlue,
+                themeName === "colorful" && styles.selectorIconColorful,
+                isCompact ? styles.selectorIconCompact : null,
+              ]}
+            />
+          </View>
+        ) : null}
 
         <View
           style={[
@@ -1068,6 +1071,11 @@ export default function HomeVariant2() {
                 styles.coreControlsGroup,
                 distributeCoreControlsInternally &&
                   styles.coreControlsGroupEvenlySpaced,
+                // Only the square buttons left: centre them in the free space
+                // instead of pinning them to the top.
+                distributeCoreControlsInternally &&
+                  !showTimer &&
+                  !showActions && { justifyContent: "center" },
               ]}
             >
               {/* The clock stays in the layout (hidden while editing) so nothing
