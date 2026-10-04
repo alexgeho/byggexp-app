@@ -1,12 +1,21 @@
 import { useContext, useEffect, useRef } from "react";
-import { Linking } from "react-native";
+import { DeviceEventEmitter, Linking } from "react-native";
 import AuthContext from "../contexts/AuthContext";
 import { navigationRef } from "../navigation/navigationRef";
+import { openWelcomeTour } from "./common/WelcomeSlides/WelcomeSlides";
 
 // Dev builds only: byggexp://dev/open/<Screen>?id=… jumps straight to a screen
 // (lets a simulator be driven without taps). Never active in release builds.
 const openDevScreen = (url) => {
   if (!__DEV__ || !url) return false;
+  if (url.includes("dev/tour-next")) {
+    DeviceEventEmitter.emit("welcome:dev-next");
+    return true;
+  }
+  if (url.includes("dev/tour")) {
+    openWelcomeTour();
+    return true;
+  }
   const m = url.match(/dev\/open\/([A-Za-z]+)(?:\?id=([^&]+))?/);
   if (!m || !navigationRef.isReady()) return false;
   navigationRef.navigate(

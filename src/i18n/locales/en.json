@@ -1530,6 +1530,19 @@
       "roleManager": "Project manager",
       "roleCarpenter": "Carpenter",
       "roleElectrician": "Electrician"
+    },
+    "egenkontroll": {
+      "slide": {
+        "1": {
+          "title": "Upload the contract or work list"
+        },
+        "2": {
+          "title": "Photograph finished work in the app"
+        },
+        "3": {
+          "title": "Your egenkontroll is filled in – you sign"
+        }
+      }
     }
   },
   "companyDetails": {

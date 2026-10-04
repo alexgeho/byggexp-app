@@ -1530,6 +1530,19 @@
       "roleManager": "Projektledare",
       "roleCarpenter": "Snickare",
       "roleElectrician": "Elektriker"
+    },
+    "egenkontroll": {
+      "slide": {
+        "1": {
+          "title": "Ladda upp avtal eller arbetslista"
+        },
+        "2": {
+          "title": "Fota utfört arbete i appen"
+        },
+        "3": {
+          "title": "Egenkontrollen fylls i – du signerar"
+        }
+      }
     }
   },
   "companyDetails": {

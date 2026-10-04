@@ -7,6 +7,7 @@ import {
   View,
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 
 import { useTheme } from "../../theme/ThemeContext";
@@ -28,25 +29,6 @@ export default function EgenkontrollListScreen({ isHome = false }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const home = isHome || isEgenkontrollOnly();
-  // Getting started (solo plan): ticks off from real data, gone when all done.
-  const onboardingSteps = [
-    {
-      key: "avtal",
-      label: "egenkontroll.onboardingContract",
-      done: items.length > 0,
-    },
-    {
-      key: "foto",
-      label: "egenkontroll.onboardingPhotos",
-      done: items.some((it) => it.photos?.length),
-    },
-    {
-      key: "sign",
-      label: "egenkontroll.sign",
-      done: items.some((it) => it.status === "signed"),
-    },
-  ];
-  const onboardingDone = onboardingSteps.every((step) => step.done);
 
   const load = useCallback(async () => {
     try {
@@ -71,17 +53,39 @@ export default function EgenkontrollListScreen({ isHome = false }) {
     <View style={styles.screen}>
       <View style={styles.pageContainer}>
         {home ? (
-          <Text
-            style={{
-              fontSize: 32,
-              fontWeight: "700",
-              color: c.textPrimary,
-              marginTop: 8,
-              marginBottom: 14,
-            }}
+          <View
+            style={[
+              styles.row,
+              {
+                justifyContent: "space-between",
+                marginTop: 8,
+                marginBottom: 14,
+              },
+            ]}
           >
-            {t("egenkontroll.title")}
-          </Text>
+            <Text
+              style={{ fontSize: 32, fontWeight: "700", color: c.textPrimary }}
+            >
+              {t("egenkontroll.title")}
+            </Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Menu")}
+              accessibilityLabel={t("a11y.menu")}
+              hitSlop={12}
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: 22,
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: c.surface,
+                borderWidth: 1,
+                borderColor: c.border,
+              }}
+            >
+              <Icon name="menu" size={20} color={c.textPrimary} />
+            </TouchableOpacity>
+          </View>
         ) : (
           <View style={styles.header}>
             <BackButton
@@ -110,62 +114,21 @@ export default function EgenkontrollListScreen({ isHome = false }) {
             contentContainerStyle={styles.listContent}
             data={items}
             keyExtractor={(item) => getEntityId(item)}
-            ListHeaderComponent={
-              home && !onboardingDone ? (
-                <View style={[styles.row, { marginBottom: 4 }]}>
-                  {onboardingSteps.map((step, i) => (
-                    <View
-                      key={step.key}
-                      style={{ flex: 1, alignItems: "center", gap: 6 }}
-                    >
-                      <View
-                        style={{
-                          width: 28,
-                          height: 28,
-                          borderRadius: 14,
-                          alignItems: "center",
-                          justifyContent: "center",
-                          backgroundColor: step.done ? c.success : c.accentSoft,
-                        }}
-                      >
-                        <Text
-                          style={{
-                            color: step.done ? c.onAccent : c.accent,
-                            fontSize: 13,
-                            fontWeight: "700",
-                          }}
-                        >
-                          {step.done ? "✓" : i + 1}
-                        </Text>
-                      </View>
-                      <Text
-                        numberOfLines={1}
-                        style={{
-                          fontSize: 12,
-                          fontWeight: "600",
-                          color: step.done ? c.success : c.textSecondary,
-                        }}
-                      >
-                        {t(step.label)}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              ) : null
-            }
             ListEmptyComponent={
               <View style={[styles.center, { paddingTop: 48 }]}>
                 <Text style={styles.emptyTitle}>
                   {t("egenkontroll.emptyTitle")}
                 </Text>
-                <TouchableOpacity
-                  style={[styles.primaryButton, { marginTop: 20 }]}
-                  onPress={() => navigation.navigate("NewEgenkontroll")}
-                >
-                  <Text style={styles.primaryButtonText}>
-                    {t("egenkontroll.new")}
-                  </Text>
-                </TouchableOpacity>
+                {home ? null : (
+                  <TouchableOpacity
+                    style={[styles.primaryButton, { marginTop: 20 }]}
+                    onPress={() => navigation.navigate("NewEgenkontroll")}
+                  >
+                    <Text style={styles.primaryButtonText}>
+                      {t("egenkontroll.new")}
+                    </Text>
+                  </TouchableOpacity>
+                )}
               </View>
             }
             renderItem={({ item }) => {
@@ -234,15 +197,29 @@ export default function EgenkontrollListScreen({ isHome = false }) {
           />
         )}
 
-        <BottomBar
-          iconColor={c.textPrimary}
-          pillColor={c.surface}
-          pillBorderColor={c.border}
-          onLeftPress={() => (home ? load() : navigation.navigate("Main"))}
-          onRightPress={() => navigation.navigate("Menu")}
-          showAddButton
-          onAddPress={() => navigation.navigate("NewEgenkontroll")}
-        />
+        {home ? (
+          <View style={styles.footer}>
+            <TouchableOpacity
+              style={styles.primaryButton}
+              onPress={() => navigation.navigate("NewEgenkontroll")}
+            >
+              <Icon name="plus" size={18} color={c.onAccent} />
+              <Text style={styles.primaryButtonText}>
+                {t("egenkontroll.new")}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <BottomBar
+            iconColor={c.textPrimary}
+            pillColor={c.surface}
+            pillBorderColor={c.border}
+            onLeftPress={() => (home ? load() : navigation.navigate("Main"))}
+            onRightPress={() => navigation.navigate("Menu")}
+            showAddButton
+            onAddPress={() => navigation.navigate("NewEgenkontroll")}
+          />
+        )}
       </View>
     </View>
   );

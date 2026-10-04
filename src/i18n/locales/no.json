@@ -1530,6 +1530,19 @@
       "roleManager": "Prosjektleder",
       "roleCarpenter": "Snekker",
       "roleElectrician": "Elektriker"
+    },
+    "egenkontroll": {
+      "slide": {
+        "1": {
+          "title": "Last opp kontrakt eller arbeidsliste"
+        },
+        "2": {
+          "title": "Ta bilder av utført arbeid i appen"
+        },
+        "3": {
+          "title": "Egenkontrollen fylles ut – du signerer"
+        }
+      }
     }
   },
   "companyDetails": {

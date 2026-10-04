@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 
 import {
+  Image,
   View,
   Text,
   FlatList,
@@ -289,6 +290,12 @@ export function openWelcomeTour() {
 // `illustration` picks the rebuilt RN mockup in ./mockups. One slide per page
 // for both roles (Figma redesign).
 const SLIDES_BY_ROLE = {
+  // Solo Egenkontroll plan: avtal → foto i appen → färdig egenkontroll.
+  egenkontroll: [
+    { key: "1", image: require("../../../assets/egenkontroll/avtal.webp") },
+    { key: "2", image: require("../../../assets/egenkontroll/foto.webp") },
+    { key: "3", image: require("../../../assets/egenkontroll/klar.webp") },
+  ],
   worker: [
     { key: "1", illustration: "workerTime" },
     { key: "2", illustration: "notification" },
@@ -313,9 +320,15 @@ export function WelcomeSlides() {
   const [index, setIndex] = useState(0);
   const listRef = useRef(null);
   const startedRef = useRef(false);
+  const goNextRef = useRef(null);
 
+  const [solo, setSolo] = useState(false);
   const role = user?.role;
-  const roleKey = role === "worker" ? "worker" : "admin";
+  const roleKey = solo
+    ? "egenkontroll"
+    : role === "worker"
+      ? "worker"
+      : "admin";
   const slides = SLIDES_BY_ROLE[roleKey];
 
   // Only decide to show once we actually know the role (i.e. signed in).
@@ -344,10 +357,10 @@ export function WelcomeSlides() {
       ]);
       if (!active) return;
       if (perUser === "1" || legacy === "1") return;
-      // Solo Egenkontroll accounts: the tour is about shifts/invoices they
-      // don't have — skip it.
+      // Solo Egenkontroll accounts get their own three slides.
       await loadCompanyModules(user?.companyId);
-      if (!active || isEgenkontrollOnly()) return;
+      if (!active) return;
+      setSolo(isEgenkontrollOnly());
       setVisible(true);
     })();
     return () => {
@@ -379,6 +392,15 @@ export function WelcomeSlides() {
     }
   }, [visible, roleKey]);
 
+  // Dev builds: byggexp://dev/tour-next steps the tour (simulator without taps).
+  useEffect(() => {
+    if (!__DEV__) return undefined;
+    const sub = DeviceEventEmitter.addListener("welcome:dev-next", () =>
+      goNextRef.current?.(),
+    );
+    return () => sub.remove();
+  }, []);
+
   if (!visible || !slides) {
     return null;
   }
@@ -404,6 +426,8 @@ export function WelcomeSlides() {
     setIndex(next);
     track("welcome_slide_viewed", { role: roleKey, index: next });
   };
+
+  goNextRef.current = goNext;
 
   // Keep dots + CTA label in sync when the user swipes between pages by hand
   // (swiping right also steps back).
@@ -455,7 +479,15 @@ export function WelcomeSlides() {
             <View style={[styles.slide, { width }]}>
               <View style={styles.heroWrap}>
                 <View style={styles.flexSpacer} />
-                <AdminMock name={s.illustration} styles={styles} />
+                {s.image ? (
+                  <Image
+                    source={s.image}
+                    resizeMode="contain"
+                    style={{ width: width * 0.82, height: width * 0.82 }}
+                  />
+                ) : (
+                  <AdminMock name={s.illustration} styles={styles} />
+                )}
                 <View style={styles.flexSpacer} />
                 <Text style={[styles.title, styles.titleAdmin]}>{heading}</Text>
                 <View style={styles.flexSpacer} />
