@@ -13,6 +13,7 @@ export const MenuButton = ({
   icon,
   isLast = false,
   onPress,
+  chevron = true,
 }) => {
   const navigation = useNavigation();
   const { theme } = useTheme();
@@ -42,12 +43,14 @@ export const MenuButton = ({
         <Text style={[styles.menuTitle, { color: c.textPrimary }]}>
           {title}
         </Text>
-        <AppIcon
-          name="chevron-right"
-          size={16}
-          color={c.placeholder}
-          strokeWidth={2}
-        />
+        {chevron ? (
+          <AppIcon
+            name="chevron-right"
+            size={16}
+            color={c.placeholder}
+            strokeWidth={2}
+          />
+        ) : null}
       </View>
     </TouchableOpacity>
   );

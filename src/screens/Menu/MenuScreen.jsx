@@ -701,6 +701,8 @@ export default function MenuScreen() {
                       screen={item.screen ? item.screen : "Menu"}
                       params={item.params}
                       onPress={item.onPress}
+                      // Action rows (Logga ut) don't navigate — no chevron.
+                      chevron={!item.onPress}
                       title={item.title}
                       icon={MENU_ICONS[item.id] || "circle"}
                       isLast={index === section.items.length - 1}

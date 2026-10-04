@@ -43,7 +43,10 @@ export default function UploadZone({
       disabled={reading}
       style={[
         styles.zone,
-        { borderColor: `${blue}66`, backgroundColor: surface || `${blue}0F` },
+        {
+          borderColor: failed ? `${c.danger}88` : `${blue}66`,
+          backgroundColor: surface || `${blue}0F`,
+        },
       ]}
     >
       <View
@@ -85,7 +88,7 @@ export default function UploadZone({
         <Text
           style={[
             cardStyles.cardSecondaryText,
-            tint ? { color: tint, opacity: 0.6 } : null,
+            tint ? { color: tint, opacity: 0.85 } : null,
           ]}
         >
           PDF · foto

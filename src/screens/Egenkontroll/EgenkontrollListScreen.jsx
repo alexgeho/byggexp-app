@@ -189,7 +189,10 @@ function HomeList({
                     {shortTitle(item.title)}
                   </Text>
                   {item.address ? (
-                    <Text style={s.metaText} numberOfLines={1}>
+                    <Text
+                      style={[s.metaText, { opacity: 0.85 }]}
+                      numberOfLines={1}
+                    >
                       {item.address}
                     </Text>
                   ) : null}
@@ -241,7 +244,8 @@ function HomeList({
         iconColor={dark ? "#FFFFFF" : lightHome ? theme.colors.text : "#052D50"}
         onLeftPress={onReload}
         onRightPress={() => navigation.navigate("Menu")}
-        showAddButton
+        // Empty list: the upload zone is the one action — no second "+".
+        showAddButton={!!items.length || loading || !!loadError}
         onAddPress={() => navigation.navigate("NewEgenkontroll")}
       />
     </LinearGradient>
