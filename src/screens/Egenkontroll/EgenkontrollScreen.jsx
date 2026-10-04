@@ -83,6 +83,9 @@ export default function EgenkontrollScreen() {
 
   const [doc, setDoc] = useState(null);
   const [busy, setBusy] = useState(false);
+  // Expanded points (index → true); collapsed rows show one line.
+  const [open, setOpen] = useState({});
+  const toggleOpen = (i) => setOpen((prev) => ({ ...prev, [i]: !prev[i] }));
   const id = params?.id;
   const signed = doc?.status === "signed";
 
@@ -246,18 +249,21 @@ export default function EgenkontrollScreen() {
             const mark = indicator(it.result);
             return (
               <View key={i}>
-                <TouchableOpacity
-                  style={rowStyles.tapRow}
-                  activeOpacity={0.85}
-                  disabled={signed || busy}
-                  onPress={() => chooseResult(i)}
-                >
-                  <View style={rowStyles.body}>
-                    <Text style={rowStyles.value} numberOfLines={2}>
+                <View style={[rowStyles.tapRow, styles.pointRow]}>
+                  {/* Text: tap to expand / collapse the full point. */}
+                  <TouchableOpacity
+                    style={[rowStyles.body, styles.pointBody]}
+                    activeOpacity={0.85}
+                    onPress={() => toggleOpen(i)}
+                  >
+                    <Text
+                      style={rowStyles.value}
+                      numberOfLines={open[i] ? 0 : 1}
+                    >
                       {`${i + 1}. ${it.text}`}
                     </Text>
                     {ai || it.photoUrls?.length ? (
-                      <View style={[styles.row, styles.meta]}>
+                      <View style={[styles.row, styles.wrap]}>
                         {it.photoUrls?.map((u) => (
                           <Image
                             key={u}
@@ -283,9 +289,21 @@ export default function EgenkontrollScreen() {
                         ) : null}
                       </View>
                     ) : null}
-                  </View>
-                  <Icon name={mark.name} size={22} color={mark.color} />
-                </TouchableOpacity>
+                  </TouchableOpacity>
+                  {/* Status: tap to pick the result. */}
+                  <TouchableOpacity
+                    style={styles.mark}
+                    activeOpacity={0.85}
+                    disabled={signed || busy}
+                    onPress={() => chooseResult(i)}
+                    accessibilityLabel={t(
+                      `egenkontroll.result.${it.result || "pending"}`,
+                    )}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Icon name={mark.name} size={22} color={mark.color} />
+                  </TouchableOpacity>
+                </View>
                 {i < points.length - 1 ? (
                   <View style={rowStyles.sepPlain} />
                 ) : null}
@@ -308,7 +326,11 @@ const styles = StyleSheet.create({
   // cardTitle is a flex:1 row child; here it sits in a column.
   title: { flex: 0 },
   row: { flexDirection: "row", alignItems: "center", gap: space.sm },
-  meta: { marginTop: space.xs },
+  wrap: { flexWrap: "wrap" },
+  // 16 above and below the text, 8 between text and its photo/AI row.
+  pointRow: { paddingVertical: space.lg, alignItems: "flex-start" },
+  pointBody: { gap: space.sm },
+  mark: { marginLeft: space.md },
   flex: { flex: 1 },
   thumb: { width: 32, height: 32, borderRadius: radius.sm },
 });
