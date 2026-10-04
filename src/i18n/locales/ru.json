@@ -854,7 +854,8 @@
     "editTitle": "Ваша специальность",
     "editTitleHint": "Напишите, кем вы работаете — напр. Плотник, Электрик или Прораб.",
     "titlePlaceholder": "Напр. Плотник",
-    "economy": "Финансы"
+    "economy": "Финансы",
+    "logOutConfirm": "Выйти из аккаунта?"
   },
   "schedule": {
     "employees": "Сотрудники",

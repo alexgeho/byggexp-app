@@ -224,12 +224,5 @@ export function createStyles(theme) {
       fontSize: 15,
       fontWeight: "700",
     },
-    logoutButtonText: {
-      color: "#ffffff",
-      fontSize: 12,
-      textAlign: "center",
-      paddingHorizontal: 4,
-      fontFamily: theme.text.fontFamily.semiBold,
-    },
   });
 }

@@ -850,7 +850,8 @@
     "editTitle": "Your job title",
     "editTitleHint": "Write what you do – e.g. Carpenter, Electrician or Site manager.",
     "titlePlaceholder": "E.g. Carpenter",
-    "economy": "Finance"
+    "economy": "Finance",
+    "logOutConfirm": "Log out?"
   },
   "schedule": {
     "employees": "Employees",

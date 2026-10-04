@@ -5,7 +5,15 @@ import { AppIcon } from "../AppIcon";
 import { useTheme } from "../../../theme/ThemeContext";
 
 // `icon` is a Feather glyph name (one icon collection across the whole menu).
-export const MenuButton = ({ screen, params, title, icon, isLast = false }) => {
+// `onPress` replaces navigation for action rows (e.g. "Logga ut").
+export const MenuButton = ({
+  screen,
+  params,
+  title,
+  icon,
+  isLast = false,
+  onPress,
+}) => {
   const navigation = useNavigation();
   const { theme } = useTheme();
   const c = theme.content;
@@ -13,7 +21,9 @@ export const MenuButton = ({ screen, params, title, icon, isLast = false }) => {
   return (
     <TouchableOpacity
       style={styles.menuItem}
-      onPress={() => navigation.navigate(screen ? screen : "Menu", params)}
+      onPress={
+        onPress || (() => navigation.navigate(screen ? screen : "Menu", params))
+      }
       accessibilityRole="button"
       accessibilityLabel={title}
     >

@@ -850,7 +850,8 @@
     "editTitle": "Din yrkestittel",
     "editTitleHint": "Skriv hva du jobber som – f.eks. Tømrer, Elektriker eller Byggeleder.",
     "titlePlaceholder": "F.eks. Tømrer",
-    "economy": "Økonomi"
+    "economy": "Økonomi",
+    "logOutConfirm": "Logge ut?"
   },
   "schedule": {
     "employees": "Ansatte",

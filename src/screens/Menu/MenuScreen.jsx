@@ -6,6 +6,7 @@ import React, {
   useRef,
 } from "react";
 import {
+  Alert,
   View,
   Text,
   Image,
@@ -48,6 +49,7 @@ const MENU_MODULES = {
 // the mixed PNG glyphs so every row reads as the same set.
 const MENU_ICONS = {
   customizeHome: "home",
+  logout: "log-out",
   account: "user",
   notifications: "bell",
   documents: "file-text",
@@ -478,6 +480,16 @@ export default function MenuScreen() {
     ...visibleMenuItems.filter((item) => item.id === "customizeHome"),
     ...settingsItems.filter((item) => item.id === "language"),
     ...visibleMenuItems.filter((item) => item.id === "notifications"),
+    // Last row (was the bottom-bar button); confirmed before it runs.
+    {
+      id: "logout",
+      title: t("menu.logOut"),
+      onPress: () =>
+        Alert.alert(t("menu.logOutConfirm"), undefined, [
+          { text: t("common.cancel"), style: "cancel" },
+          { text: t("menu.logOut"), style: "destructive", onPress: logout },
+        ]),
+    },
   ];
 
   // Economy is its own category with every register surfaced directly: offers
@@ -688,6 +700,7 @@ export default function MenuScreen() {
                       key={item.id}
                       screen={item.screen ? item.screen : "Menu"}
                       params={item.params}
+                      onPress={item.onPress}
                       title={item.title}
                       icon={MENU_ICONS[item.id] || "circle"}
                       isLast={index === section.items.length - 1}
@@ -702,16 +715,7 @@ export default function MenuScreen() {
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
-        onActionPress={logout}
-        renderActionContent={() => (
-          <Text
-            style={styles.logoutButtonText}
-            numberOfLines={1}
-            adjustsFontSizeToFit
-          >
-            {t("menu.logOut")}
-          </Text>
-        )}
+        showAddButton={false}
       />
 
       {/* Inline job-title (yrkestitel) editor */}
