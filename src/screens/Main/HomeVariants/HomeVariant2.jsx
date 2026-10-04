@@ -23,6 +23,7 @@ import {
 } from "react-native";
 
 import { LinearGradient } from "expo-linear-gradient";
+import { homeGradientFor } from "../../../theme/homeGradient";
 import { flattenColor } from "../../../theme/colorUtils";
 
 import {
@@ -119,21 +120,7 @@ export default function HomeVariant2() {
     themeName === "lightBlue" ||
     themeName === "colorful" ||
     themeName === "lightGray";
-  const gradientColors = useMemo(
-    () =>
-      ({
-        blue: ["#5BC8FF", "#0D5DB8"],
-        blueDarkText: ["#5BC8FF", "#0D5DB8"],
-        black: ["#1C1C1C", "#1C1C1C"],
-        lightBlue: ["#ECF6FF", "#ECF6FF"],
-        lightGray: ["#EEEEEE", "#EEEEEE"],
-        colorful: ["#EEEEEE", "#EEEEEE"],
-        green: ["#8ED057", "#4C9E3C"],
-        orange: ["#FFAE63", "#F97316"],
-        darkGray: ["#363636", "#121212"],
-      })[themeName] || ["#5BC8FF", "#0D5DB8"],
-    [themeName],
-  );
+  const gradientColors = useMemo(() => homeGradientFor(themeName), [themeName]);
   const { height: screenHeight, width: screenWidth } = useWindowDimensions();
   const isVeryCompact = screenHeight <= 700;
   const isCompact = screenHeight <= 780;

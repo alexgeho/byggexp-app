@@ -205,9 +205,15 @@ export default function MenuScreen() {
         id: "customizeHome",
         // Open Home and slide the customize drawer in over it, so theme /
         // layout changes preview live on the visible part of the home screen.
-        screen: "Main",
-        params: { openCustomize: true },
-        title: t("menu.customizeHome"),
+        // Solo Egenkontroll: home is the list (no drawer) — open the theme
+        // picker as its own screen instead.
+        ...(isEgenkontrollOnly()
+          ? { screen: "CustomizeHomeScreen", title: t("home.themes") }
+          : {
+              screen: "Main",
+              params: { openCustomize: true },
+              title: t("menu.customizeHome"),
+            }),
         icon: require("../../assets/Home.png"),
         color: theme.colors.primary,
       },
@@ -416,10 +422,7 @@ export default function MenuScreen() {
     (item) =>
       isModuleEnabled(MENU_MODULES[item.id]) &&
       // Solo Egenkontroll plan: projects live behind the scenes, no menu entry.
-      !(
-        (item.id === "projects" || item.id === "customizeHome") &&
-        isEgenkontrollOnly()
-      ),
+      !(item.id === "projects" && isEgenkontrollOnly()),
   );
 
   const settingsItems = [

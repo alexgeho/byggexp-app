@@ -42,6 +42,7 @@ import { createStyles } from "./CustomizeHomeScreen.styles";
 import { DraggablePillList } from "./DraggablePillList";
 import { isHomeButtonCustomizable } from "../../utils/userRoles";
 import { setOnboardingCustomizeOpened } from "../../utils/onboardingStorage";
+import { isEgenkontrollOnly } from "../../utils/companyModules";
 
 // `embedded` renders the panel without its own BottomBar and routes the header
 // button to `onClose` — used by the 70% slide-in drawer over Home, so theme
@@ -58,6 +59,7 @@ export default function CustomizeHomeScreen({
   const navigation = useNavigation();
   const { t } = useTranslation();
   const handleClose = embedded ? onClose : navigation.goBack;
+  const themeOnly = isEgenkontrollOnly();
 
   // "Anpassa startsidan" counts as done once the user actually changes
   // something here — merely opening the drawer to look is not customising it.
@@ -300,126 +302,132 @@ export default function CustomizeHomeScreen({
           </View>
         </View>
 
-        {/* SECONDARY ROUND BUTTON */}
-        <View style={styles.themeContainer}>
-          <Text style={styles.sectionTitle}>
-            {t("home.secondaryButton", "Round buttons")}
-          </Text>
+        {/* Solo Egenkontroll plan: only the theme, no home buttons/blocks. */}
+        {themeOnly ? null : (
+          <>
+            {/* SECONDARY ROUND BUTTON */}
+            <View style={styles.themeContainer}>
+              <Text style={styles.sectionTitle}>
+                {t("home.secondaryButton", "Round buttons")}
+              </Text>
 
-          <View style={styles.secondaryRow}>
-            {[
-              {
-                id: "camera",
-                icon: "camera",
-                label: t("home.secondaryCamera", "Camera"),
-              },
-              {
-                id: "hours",
-                icon: "edit-2",
-                label: t("home.secondaryHours", "Hours"),
-              },
-              {
-                id: "play",
-                icon: "play",
-                label: t("home.secondaryPlay", "Play"),
-              },
-            ].map(function renderOption(option) {
-              const active = secondaryAction === option.id;
+              <View style={styles.secondaryRow}>
+                {[
+                  {
+                    id: "camera",
+                    icon: "camera",
+                    label: t("home.secondaryCamera", "Camera"),
+                  },
+                  {
+                    id: "hours",
+                    icon: "edit-2",
+                    label: t("home.secondaryHours", "Hours"),
+                  },
+                  {
+                    id: "play",
+                    icon: "play",
+                    label: t("home.secondaryPlay", "Play"),
+                  },
+                ].map(function renderOption(option) {
+                  const active = secondaryAction === option.id;
 
-              return (
-                <TouchableOpacity
-                  key={option.id}
-                  style={[
-                    styles.secondaryOption,
-                    active && styles.secondaryOptionActive,
-                  ]}
-                  onPress={function pickSecondary() {
-                    handlePickSecondary(option.id);
-                  }}
-                >
-                  <Icon
-                    name={option.icon}
-                    // Figma: 20px icon, white.
-                    size={20}
-                    // Inactive icon: white on the dark theme so it doesn't
-                    // vanish into the dark pill (navy on the light themes).
-                    color={active ? "#FFFFFF" : chevronActiveColor}
-                  />
-                  <Text
-                    style={[
-                      styles.secondaryOptionLabel,
-                      active && styles.secondaryOptionLabelActive,
-                    ]}
-                    numberOfLines={1}
-                    adjustsFontSizeToFit
-                    minimumFontScale={0.75}
-                  >
-                    {option.label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </View>
+                  return (
+                    <TouchableOpacity
+                      key={option.id}
+                      style={[
+                        styles.secondaryOption,
+                        active && styles.secondaryOptionActive,
+                      ]}
+                      onPress={function pickSecondary() {
+                        handlePickSecondary(option.id);
+                      }}
+                    >
+                      <Icon
+                        name={option.icon}
+                        // Figma: 20px icon, white.
+                        size={20}
+                        // Inactive icon: white on the dark theme so it doesn't
+                        // vanish into the dark pill (navy on the light themes).
+                        color={active ? "#FFFFFF" : chevronActiveColor}
+                      />
+                      <Text
+                        style={[
+                          styles.secondaryOptionLabel,
+                          active && styles.secondaryOptionLabelActive,
+                        ]}
+                        numberOfLines={1}
+                        adjustsFontSizeToFit
+                        minimumFontScale={0.75}
+                      >
+                        {option.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
 
-        {/* BUTTON LIST — the square grid buttons (drag to reorder) */}
-        <Text style={styles.sectionTitle}>
-          {t("home.buttonsListTitle", "Buttons")}
-        </Text>
-        <DraggablePillList
-          items={buttonsOrder
-            .map(function toButton(id) {
-              return mainButtons.find(function byId(button) {
-                return button.id === id;
-              });
-            })
-            .filter(Boolean)
-            .filter(function filterButton(button) {
-              return isHomeButtonCustomizable(
-                button,
-                user?.role,
-                hasPermission,
-              );
-            })
-            .map(function toItem(button) {
-              return {
-                id: button.id,
-                label: t(`home.buttons.${button.id}`, button.title),
-                enabled: enabledButtons.includes(button.id),
-                disabled: false,
-              };
-            })}
-          onToggle={toggleButton}
-          onReorderCommit={commitButtonsOrder}
-          styles={styles}
-          handleColor={chevronActiveColor}
-        />
+            {/* BUTTON LIST — the square grid buttons (drag to reorder) */}
+            <Text style={styles.sectionTitle}>
+              {t("home.buttonsListTitle", "Buttons")}
+            </Text>
+            <DraggablePillList
+              items={buttonsOrder
+                .map(function toButton(id) {
+                  return mainButtons.find(function byId(button) {
+                    return button.id === id;
+                  });
+                })
+                .filter(Boolean)
+                .filter(function filterButton(button) {
+                  return isHomeButtonCustomizable(
+                    button,
+                    user?.role,
+                    hasPermission,
+                  );
+                })
+                .map(function toItem(button) {
+                  return {
+                    id: button.id,
+                    label: t(`home.buttons.${button.id}`, button.title),
+                    enabled: enabledButtons.includes(button.id),
+                    disabled: false,
+                  };
+                })}
+              onToggle={toggleButton}
+              onReorderCommit={commitButtonsOrder}
+              styles={styles}
+              handleColor={chevronActiveColor}
+            />
 
-        {/* SECTION LIST — the full-width info blocks (drag to reorder) */}
-        <Text style={styles.sectionTitle}>
-          {t("home.sectionsListTitle", "Blocks")}
-        </Text>
-        <DraggablePillList
-          items={sectionsOrder
-            .map(function toSection(id) {
-              return homeSections.find(function byId(section) {
-                return section.id === id;
-              });
-            })
-            .filter(Boolean)
-            .map(function toItem(section) {
-              return {
-                id: section.id,
-                label: t(`home.sections.${section.id}`, section.title),
-                enabled: enabledSections.includes(section.id),
-                disabled: section.id === "project-files" && !selectedProject,
-              };
-            })}
-          onToggle={toggleSection}
-          onReorderCommit={commitSectionsOrder}
-          styles={styles}
-          handleColor={chevronActiveColor}
-        />
+            {/* SECTION LIST — the full-width info blocks (drag to reorder) */}
+            <Text style={styles.sectionTitle}>
+              {t("home.sectionsListTitle", "Blocks")}
+            </Text>
+            <DraggablePillList
+              items={sectionsOrder
+                .map(function toSection(id) {
+                  return homeSections.find(function byId(section) {
+                    return section.id === id;
+                  });
+                })
+                .filter(Boolean)
+                .map(function toItem(section) {
+                  return {
+                    id: section.id,
+                    label: t(`home.sections.${section.id}`, section.title),
+                    enabled: enabledSections.includes(section.id),
+                    disabled:
+                      section.id === "project-files" && !selectedProject,
+                  };
+                })}
+              onToggle={toggleSection}
+              onReorderCommit={commitSectionsOrder}
+              styles={styles}
+              handleColor={chevronActiveColor}
+            />
+          </>
+        )}
       </ScrollView>
 
       {embedded ? null : (
