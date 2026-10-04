@@ -8,7 +8,7 @@ import ThemeHomeScreen from "../screens/Main/HomeVariants/ThemeHomeScreen";
 import AuthContext from "../contexts/AuthContext";
 import { useTheme } from "../theme/ThemeContext";
 import { navigationRef } from "./navigationRef";
-import { useCompanyModules } from "../utils/companyModules";
+import { isEgenkontrollOnly, useCompanyModules } from "../utils/companyModules";
 import { flushPendingNotificationNavigation } from "../services/notifications.service";
 import {
   canCreateProjects as checkCanCreateProjects,
@@ -30,8 +30,8 @@ const Stack = createNativeStackNavigator();
 // egenkontroll list itself (that plan has nothing else to show).
 function MainScreen(props) {
   const { user } = useContext(AuthContext);
-  const { plan } = useCompanyModules(user?.companyId);
-  if (plan === "egenkontroll") {
+  const modules = useCompanyModules(user?.companyId);
+  if (isEgenkontrollOnly(modules)) {
     const EgenkontrollListScreen =
       require("../screens/Egenkontroll/EgenkontrollListScreen").default;
     return <EgenkontrollListScreen {...props} isHome />;

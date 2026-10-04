@@ -14,7 +14,7 @@ import { checklistService } from "../../services";
 import { BackButton } from "../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../components/common/BottomBar/BottomBar";
 import { getEntityId } from "../../utils/entityId";
-import { getCompanyPlan } from "../../utils/companyModules";
+import { isEgenkontrollOnly } from "../../utils/companyModules";
 import { createStyles, statusColors } from "./Egenkontroll.styles";
 
 // Egenkontroller list. For the solo "Egenkontroll" plan this is the home
@@ -27,7 +27,7 @@ export default function EgenkontrollListScreen({ isHome = false }) {
   const styles = useMemo(() => createStyles(c), [c]);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const home = isHome || getCompanyPlan() === "egenkontroll";
+  const home = isHome || isEgenkontrollOnly();
 
   const load = useCallback(async () => {
     try {

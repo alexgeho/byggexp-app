@@ -23,6 +23,10 @@ import { track } from "../../../utils/analytics";
 import { Mockup } from "./mockups";
 import { createStyles } from "./WelcomeSlides.styles";
 import { WELCOME_SLIDES_SEEN_KEY } from "../../../utils/onboardingStorage";
+import {
+  isEgenkontrollOnly,
+  loadCompanyModules,
+} from "../../../utils/companyModules";
 
 // One-time value tour shown right after the FIRST sign-in — not before it,
 // because the slides are role-specific and the role only exists once the user is
@@ -340,6 +344,10 @@ export function WelcomeSlides() {
       ]);
       if (!active) return;
       if (perUser === "1" || legacy === "1") return;
+      // Solo Egenkontroll accounts: the tour is about shifts/invoices they
+      // don't have — skip it.
+      await loadCompanyModules(user?.companyId);
+      if (!active || isEgenkontrollOnly()) return;
       setVisible(true);
     })();
     return () => {

@@ -13,6 +13,26 @@ export const isModuleEnabled = (key) =>
 
 export const getCompanyPlan = () => state.plan;
 
+// Always-on modules (mirrors backend CORE_MODULES).
+const CORE = [
+  "dashboard",
+  "approvals",
+  "my-tasks",
+  "profile",
+  "billing",
+  "modules",
+];
+
+// Solo "Egenkontroll" mode: the plan itself, or a company whose only enabled
+// modules are egenkontroll (+ projects). The app then shows just that.
+export const isEgenkontrollOnly = (snap = state) =>
+  snap.plan === "egenkontroll" ||
+  (Array.isArray(snap.enabled) &&
+    snap.enabled.includes("kma") &&
+    snap.enabled.every(
+      (k) => CORE.includes(k) || k === "kma" || k === "projects",
+    ));
+
 export async function loadCompanyModules(companyId) {
   if (!companyId) {
     state = { plan: null, enabled: null, loadedFor: null };
