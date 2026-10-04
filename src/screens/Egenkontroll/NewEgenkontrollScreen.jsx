@@ -149,12 +149,12 @@ export default function NewEgenkontrollScreen() {
     }
   };
 
+  // Something to save = at least one point (and the address in solo).
   const canSave =
     !saving &&
     !reading &&
-    (items.some((it) => it.text?.trim()) ||
-      title.trim() ||
-      (solo && address.trim()));
+    items.some((it) => it.text?.trim()) &&
+    (!solo || !!address.trim());
 
   const setPoint = (i, text) =>
     setItems((prev) => prev.map((p, k) => (k === i ? { ...p, text } : p)));
@@ -278,16 +278,20 @@ export default function NewEgenkontrollScreen() {
           </>
         ) : null}
 
-        <Button
-          variant="primary"
-          icon="plus"
-          title={t("egenkontroll.addPoint")}
-          onPress={() =>
-            // Ignored while the AI reads (its points replace the list).
-            reading ||
-            setItems((prev) => [...prev, { text: "", reference: "" }])
-          }
-        />
+        {/* The upload zone is the one primary entry; adding by hand
+            appears once a contract was read (or a point exists). */}
+        {draft || items.length ? (
+          <Button
+            variant="primary"
+            icon="plus"
+            title={t("egenkontroll.addPoint")}
+            onPress={() =>
+              // Ignored while the AI reads (its points replace the list).
+              reading ||
+              setItems((prev) => [...prev, { text: "", reference: "" }])
+            }
+          />
+        ) : null}
       </ScrollView>
     </Screen>
   );
