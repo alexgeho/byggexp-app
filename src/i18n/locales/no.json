@@ -1795,6 +1795,7 @@
     "action": "Tiltak",
     "actionPlaceholder": "f.eks. Membran reparert",
     "actionDone": "Utbedret",
-    "openDeviation": "Åpent avvik"
+    "openDeviation": "Åpent avvik",
+    "showLess": "vis mindre"
   }
 }

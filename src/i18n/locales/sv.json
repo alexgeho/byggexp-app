@@ -1795,6 +1795,7 @@
     "action": "Åtgärd",
     "actionPlaceholder": "t.ex. Tätskikt lagat",
     "actionDone": "Åtgärdad",
-    "openDeviation": "Öppen avvikelse"
+    "openDeviation": "Öppen avvikelse",
+    "showLess": "visa mindre"
   }
 }

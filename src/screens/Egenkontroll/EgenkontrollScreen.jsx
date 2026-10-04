@@ -37,6 +37,13 @@ import {
   progressOf,
 } from "./egenkontrollStatus";
 
+// Header title: one line; "Egenkontroll" is already the screen's subject.
+const shortTitle = (title = "") =>
+  title
+    .split(/\s[–-]\s/)[0]
+    .replace(/^egenkontroll\s*[-–:]?\s*/i, "")
+    .replace(/^./, (ch) => ch.toUpperCase()) || title;
+
 // Collapsed point text length; the rest opens with "läs mer".
 const PREVIEW_CHARS = 24;
 
@@ -112,7 +119,8 @@ export default function EgenkontrollScreen() {
   const [pending, setPending] = useState(null);
   // Expanded points (index → true); collapsed rows show one line.
   const [open, setOpen] = useState({});
-  const toggleOpen = (i) => setOpen((prev) => ({ ...prev, [i]: !prev[i] }));
+  // Accordion: one point open at a time; tap again (or "visa mindre") closes.
+  const toggleOpen = (i) => setOpen((prev) => (prev[i] ? {} : { [i]: true }));
   // Typed but unsaved values per point (mätvärde / åtgärd), saved on blur.
   const [edits, setEdits] = useState({});
   const edit = (i, key, value) =>
@@ -340,14 +348,27 @@ export default function EgenkontrollScreen() {
     const openDeviation = remark && !it.actionDoneAt;
     return (
       <>
-        <View style={rowStyles.sepPlain} />
-        {rows.map(({ key, ...row }, k) => (
-          <FieldRow
-            key={key}
-            {...row}
-            isLast={k === rows.length - 1 && !openDeviation}
-          />
-        ))}
+        {/* Read-only facts: one compact muted line each, inside the point. */}
+        {rows.some((r) => r.variant !== "input") ? (
+          <View style={styles.facts}>
+            {rows
+              .filter((r) => r.variant !== "input")
+              .map((r) => (
+                <Text key={r.key} style={cardStyles.cardSecondaryText}>
+                  {`${r.label}: ${r.value}`}
+                </Text>
+              ))}
+          </View>
+        ) : null}
+        {rows
+          .filter((r) => r.variant === "input")
+          .map(({ key, ...row }, k, arr) => (
+            <FieldRow
+              key={key}
+              {...row}
+              isLast={k === arr.length - 1 && !openDeviation}
+            />
+          ))}
         {openDeviation ? (
           <View style={[rowStyles.tapRow, styles.deviation]}>
             <Badge
@@ -389,8 +410,8 @@ export default function EgenkontrollScreen() {
   return (
     <Screen onBack={() => navigation.goBack()}>
       <View style={styles.titleBlock}>
-        <Text style={[cardStyles.cardTitle, styles.title]} numberOfLines={2}>
-          {doc.title}
+        <Text style={[cardStyles.cardTitle, styles.title]} numberOfLines={1}>
+          {shortTitle(doc.title)}
         </Text>
         <View style={styles.row}>
           <EgenkontrollStatusBadge status={doc.status} />
@@ -429,6 +450,11 @@ export default function EgenkontrollScreen() {
                       {!open[i] && it.text.length > PREVIEW_CHARS ? (
                         <Text style={{ color: c.accent }}>
                           {t("egenkontroll.readMore")}
+                        </Text>
+                      ) : null}
+                      {open[i] ? (
+                        <Text style={{ color: c.accent }}>
+                          {` ${t("egenkontroll.showLess")}`}
                         </Text>
                       ) : null}
                     </Text>
@@ -506,7 +532,12 @@ export default function EgenkontrollScreen() {
 
 // Layout glue only — colours and shapes come from the shared components.
 const styles = StyleSheet.create({
-  titleBlock: { gap: space.sm, marginTop: space.xxl, marginBottom: space.xxl },
+  titleBlock: { gap: space.sm, marginTop: space.md, marginBottom: space.xxl },
+  facts: {
+    gap: space.xs,
+    paddingBottom: space.lg,
+    paddingHorizontal: space.lg,
+  },
   // cardTitle is a flex:1 row child; here it sits in a column.
   title: { flex: 0 },
   row: { flexDirection: "row", alignItems: "center", gap: space.sm },

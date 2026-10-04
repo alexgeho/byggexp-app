@@ -1803,6 +1803,7 @@
     "action": "Мера",
     "actionPlaceholder": "напр. Гидроизоляция исправлена",
     "actionDone": "Исправлено",
-    "openDeviation": "Открытое отклонение"
+    "openDeviation": "Открытое отклонение",
+    "showLess": "свернуть"
   }
 }
