@@ -199,7 +199,6 @@ export default function NewEgenkontrollScreen() {
                   label={`${i + 1}`}
                   value={it.text}
                   onChangeText={(text) => setPoint(i, text)}
-                  placeholder={t("egenkontroll.point")}
                   isLast={i === items.length - 1}
                 />
               ))}
