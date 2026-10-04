@@ -1781,6 +1781,11 @@
     "address": "Address",
     "addressPlaceholder": "e.g. Storgatan 5, Uppsala",
     "point": "Point",
-    "readMore": "read more"
+    "readMore": "read more",
+    "photo": "Photo",
+    "filledTitle_one": "{{count}} point filled in",
+    "filledTitle_other": "{{count}} points filled in",
+    "draftReady_one": "{{count}} point ready",
+    "draftReady_other": "{{count}} points ready"
   }
 }

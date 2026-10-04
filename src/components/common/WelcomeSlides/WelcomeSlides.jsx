@@ -376,6 +376,8 @@ export function WelcomeSlides() {
         return;
       }
       startedRef.current = false;
+      // Solo Egenkontroll accounts reopen their own slides, not the admin tour.
+      setSolo(isEgenkontrollOnly());
       setIndex(0);
       listRef.current?.scrollToOffset?.({ offset: 0, animated: false });
       setVisible(true);
@@ -443,7 +445,8 @@ export function WelcomeSlides() {
   // Light "ghost" CTA on the intermediate slides; the final "get started" slide
   // keeps the solid accent pill so it reads as the primary action. Same for
   // every role.
-  const ghostCta = !isLast;
+  // Solo Egenkontroll: the CTA is always the solid blue pill.
+  const ghostCta = !isLast && roleKey !== "egenkontroll";
 
   return (
     <View style={styles.overlay}>

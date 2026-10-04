@@ -22,7 +22,12 @@ import { createStyles as createHomeStyles } from "../Main/HomeVariants/HomeVaria
 import { createStyles as createPreviewStyles } from "../../components/common/ShiftHistoryPreview/ShiftHistoryPreview.styles";
 import { getEntityId } from "../../utils/entityId";
 import { isEgenkontrollOnly } from "../../utils/companyModules";
-import { EgenkontrollStatusBadge, progressOf } from "./egenkontrollStatus";
+import {
+  EgenkontrollProgress,
+  EgenkontrollStatusBadge,
+  progressOf,
+  unfinishedFirst,
+} from "./egenkontrollStatus";
 
 // Egenkontroller list. For the solo "Egenkontroll" plan this is the home
 // screen: the home gradient, the home preview cards and the home bottom bar.
@@ -40,7 +45,7 @@ export default function EgenkontrollListScreen({ isHome = false }) {
     try {
       setLoading(true);
       const data = await checklistService.getAll();
-      setItems(Array.isArray(data) ? data : []);
+      setItems(Array.isArray(data) ? unfinishedFirst(data) : []);
     } catch (error) {
       console.error("Failed to load egenkontroller:", error);
       setItems([]);
@@ -76,6 +81,9 @@ export default function EgenkontrollListScreen({ isHome = false }) {
             <Text style={cardStyles.cardSecondaryText}>
               {t("egenkontroll.pointsDone", progressOf(item))}
             </Text>
+            {item.status !== "signed" ? (
+              <EgenkontrollProgress item={item} />
+            ) : null}
             <View style={{ alignSelf: "flex-start" }}>
               <EgenkontrollStatusBadge status={item.status} />
             </View>
@@ -146,6 +154,12 @@ function HomeList({ items, loading, onOpen, onReload, theme, themeName }) {
                 <Text style={s.metaText}>
                   {t("egenkontroll.pointsDone", progressOf(item))}
                 </Text>
+                {item.status !== "signed" ? (
+                  <EgenkontrollProgress
+                    item={item}
+                    trackColor={s.card.borderColor}
+                  />
+                ) : null}
                 <View style={{ alignSelf: "flex-start" }}>
                   <EgenkontrollStatusBadge status={item.status} />
                 </View>

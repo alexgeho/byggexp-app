@@ -1781,6 +1781,11 @@
     "address": "Adresse",
     "addressPlaceholder": "f.eks. Storgata 5, Oslo",
     "point": "Punkt",
-    "readMore": "les mer"
+    "readMore": "les mer",
+    "photo": "Ta bilde",
+    "filledTitle_one": "{{count}} punkt utfylt",
+    "filledTitle_other": "{{count}} punkter utfylt",
+    "draftReady_one": "{{count}} punkt klar",
+    "draftReady_other": "{{count}} punkter klare"
   }
 }

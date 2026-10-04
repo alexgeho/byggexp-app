@@ -1785,6 +1785,15 @@
     "address": "Адрес",
     "addressPlaceholder": "напр. Storgatan 5, Uppsala",
     "point": "Пункт",
-    "readMore": "подробнее"
+    "readMore": "подробнее",
+    "photo": "Фото",
+    "filledTitle_one": "Заполнен {{count}} пункт",
+    "filledTitle_few": "Заполнено {{count}} пункта",
+    "filledTitle_many": "Заполнено {{count}} пунктов",
+    "filledTitle_other": "Заполнено {{count}} пункта",
+    "draftReady_one": "Готов {{count}} пункт",
+    "draftReady_few": "Готово {{count}} пункта",
+    "draftReady_many": "Готово {{count}} пунктов",
+    "draftReady_other": "Готово {{count}} пункта"
   }
 }

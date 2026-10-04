@@ -20,18 +20,22 @@ import {
 import { useTranslation } from "react-i18next";
 
 import AuthContext from "../../contexts/AuthContext";
+import { useFeedback } from "../../contexts/FeedbackContext";
 import { useTheme } from "../../theme/ThemeContext";
 import { checklistService } from "../../services";
 import { Screen } from "../../components/common/Screen/Screen";
 import { FieldCard } from "../../components/common/FieldRow/FieldRow";
 import { createStyles as createFieldRowStyles } from "../../components/common/FieldRow/FieldRow.styles";
-import FloatingActionButton from "../../components/common/FloatingActionButton/FloatingActionButton";
 import { Badge, Button } from "../../components/common/ui";
 import { useCardStyles } from "../../styles/cards";
 import { layout, space } from "../../theme/spacing";
 import { radius } from "../../theme/tokens";
 import { resolveUploadUrl } from "../../utils/shifts";
-import { EgenkontrollStatusBadge, progressOf } from "./egenkontrollStatus";
+import {
+  EgenkontrollProgress,
+  EgenkontrollStatusBadge,
+  progressOf,
+} from "./egenkontrollStatus";
 
 // Collapsed point text length; the rest opens with "läs mer".
 const PREVIEW_CHARS = 24;
@@ -98,9 +102,12 @@ export default function EgenkontrollScreen() {
   const cardStyles = useCardStyles();
   const rowStyles = useMemo(() => createFieldRowStyles(c), [c]);
   const { user } = useContext(AuthContext);
+  const { showSuccess } = useFeedback();
 
   const [doc, setDoc] = useState(null);
   const [busy, setBusy] = useState(false);
+  // Which action is waiting (photo upload / signing) — its button spins.
+  const [pending, setPending] = useState(null);
   // Expanded points (index → true); collapsed rows show one line.
   const [open, setOpen] = useState({});
   const toggleOpen = (i) => setOpen((prev) => ({ ...prev, [i]: !prev[i] }));
@@ -116,16 +123,21 @@ export default function EgenkontrollScreen() {
     }, [id]),
   );
 
-  const run = async (fn) => {
+  // Returns the updated egenkontroll (or null on failure).
+  const run = async (fn, what = null) => {
     setBusy(true);
+    setPending(what);
     try {
       const next = await fn();
       if (next) setDoc(next);
+      return next || null;
     } catch (error) {
       console.error("Egenkontroll action failed:", error);
       Alert.alert(t("common.error"), t("egenkontroll.actionFailed"));
+      return null;
     } finally {
       setBusy(false);
+      setPending(null);
     }
   };
 
@@ -156,7 +168,19 @@ export default function EgenkontrollScreen() {
       name: a.fileName || `foto-${Date.now()}-${i + 1}.jpg`,
       mimeType: a.mimeType || "image/jpeg",
     }));
-    await run(() => checklistService.addPhotos(id, photos, meta));
+    const before = progressOf(doc).done;
+    const next = await run(
+      () => checklistService.addPhotos(id, photos, meta),
+      "photo",
+    );
+    // Peak: say how many points the photos ticked off.
+    const filled = next ? progressOf(next).done - before : 0;
+    if (filled > 0) {
+      showSuccess({
+        title: t("egenkontroll.filledTitle", { count: filled }),
+        message: t("egenkontroll.pointsDone", progressOf(next)),
+      });
+    }
   };
 
   const setResult = (index, result) =>
@@ -174,17 +198,31 @@ export default function EgenkontrollScreen() {
       }),
     );
 
+  // Busy → ignore taps (no double upload/sign), without a pale button.
   const sign = () =>
+    busy ||
     Alert.alert(t("egenkontroll.signTitle"), t("egenkontroll.signMessage"), [
       { text: t("common.cancel"), style: "cancel" },
       {
         text: t("egenkontroll.sign"),
-        onPress: () => run(() => checklistService.sign(id, user?.name || "")),
+        onPress: async () => {
+          const next = await run(
+            () => checklistService.sign(id, user?.name || ""),
+            "sign",
+          );
+          if (next) {
+            showSuccess({
+              title: t("egenkontroll.status.signed"),
+              message: next.title || doc.title,
+            });
+          }
+        },
       },
     ]);
 
   // One photo action: the app's native source chooser (as in uploadPicker).
   const choosePhotoSource = () =>
+    busy ||
     Alert.alert(t("egenkontroll.takePhoto"), undefined, [
       { text: t("egenkontroll.takePhoto"), onPress: () => addPhotos(true) },
       { text: t("egenkontroll.fromLibrary"), onPress: () => addPhotos(false) },
@@ -220,27 +258,10 @@ export default function EgenkontrollScreen() {
           : { name: "circle", color: c.placeholder };
 
   const points = doc.items || [];
+  const progress = progressOf(doc);
 
   return (
-    <Screen
-      onBack={() => navigation.goBack()}
-      right={
-        signed ? null : (
-          <FloatingActionButton
-            onPress={choosePhotoSource}
-            disabled={busy}
-            accessibilityLabel={t("egenkontroll.takePhoto")}
-            renderContent={() =>
-              busy ? (
-                <ActivityIndicator color={c.onAccent} />
-              ) : (
-                <Icon name="camera" size={20} color={c.onAccent} />
-              )
-            }
-          />
-        )
-      }
-    >
+    <Screen onBack={() => navigation.goBack()}>
       <View style={styles.titleBlock}>
         <Text style={[cardStyles.cardTitle, styles.title]} numberOfLines={2}>
           {doc.title}
@@ -248,11 +269,12 @@ export default function EgenkontrollScreen() {
         <View style={styles.row}>
           <EgenkontrollStatusBadge status={doc.status} />
           <Text style={cardStyles.cardSecondaryText}>
-            {busy
+            {pending === "photo"
               ? t("egenkontroll.analyzing")
-              : t("egenkontroll.pointsDone", progressOf(doc))}
+              : t("egenkontroll.pointsDone", progress)}
           </Text>
         </View>
+        <EgenkontrollProgress item={doc} />
       </View>
 
       <ScrollView
@@ -321,7 +343,6 @@ export default function EgenkontrollScreen() {
                     accessibilityLabel={t(
                       `egenkontroll.result.${it.result || "pending"}`,
                     )}
-                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                   >
                     <Icon name={mark.name} size={22} color={mark.color} />
                   </TouchableOpacity>
@@ -335,8 +356,22 @@ export default function EgenkontrollScreen() {
         </FieldCard>
       </ScrollView>
 
+      {/* Thumb zone: photo + sign side by side at the bottom. */}
       {!signed ? (
-        <Button title={t("egenkontroll.sign")} onPress={sign} loading={busy} />
+        <View style={styles.actions}>
+          <Button
+            style={styles.flex}
+            title={t("egenkontroll.photo")}
+            onPress={choosePhotoSource}
+            loading={pending === "photo"}
+          />
+          <Button
+            style={styles.flex}
+            title={t("egenkontroll.sign")}
+            onPress={sign}
+            loading={pending === "sign"}
+          />
+        </View>
       ) : null}
     </Screen>
   );
@@ -344,7 +379,7 @@ export default function EgenkontrollScreen() {
 
 // Layout glue only — colours and shapes come from the shared components.
 const styles = StyleSheet.create({
-  titleBlock: { gap: space.sm, marginTop: space.xxl, marginBottom: space.xl },
+  titleBlock: { gap: space.sm, marginTop: space.xxl, marginBottom: space.xxl },
   // cardTitle is a flex:1 row child; here it sits in a column.
   title: { flex: 0 },
   row: { flexDirection: "row", alignItems: "center", gap: space.sm },
@@ -352,7 +387,17 @@ const styles = StyleSheet.create({
   // 16 above and below the text, 8 between text and its photo/AI row.
   pointRow: { paddingVertical: space.lg, alignItems: "flex-start" },
   pointBody: { gap: space.sm },
-  mark: { marginLeft: space.md },
+  // 44pt tap target around the 22pt status circle.
+  mark: {
+    width: 44,
+    height: 44,
+    marginVertical: -11,
+    marginRight: -11,
+    marginLeft: space.xs,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  actions: { flexDirection: "row", gap: space.sm },
   flex: { flex: 1 },
   thumb: { width: 32, height: 32, borderRadius: radius.sm },
 });

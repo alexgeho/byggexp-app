@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Alert, ScrollView, View } from "react-native";
+import { Alert, ScrollView, Text, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 
+import { useFeedback } from "../../contexts/FeedbackContext";
 import { checklistService, projectService } from "../../services";
+import { useCardStyles } from "../../styles/cards";
 import { Screen } from "../../components/common/Screen/Screen";
 import { FieldCard, FieldRow } from "../../components/common/FieldRow/FieldRow";
 import { ListCard } from "../../components/common/ListCard/ListCard";
@@ -20,6 +22,12 @@ import { isEgenkontrollOnly } from "../../utils/companyModules";
 
 const NEW_PROJECT = "__new__";
 const today = () => new Date().toISOString().slice(0, 10);
+// Postel: any spacing / stray commas in a typed address is fine.
+const cleanAddress = (text) =>
+  text
+    .replace(/\s+/g, " ")
+    .replace(/\s*,\s*/g, ", ")
+    .replace(/^[,\s]+|[,\s]+$/g, "");
 
 // New egenkontroll: upload the contract / arbetsbeskrivning → the AI drafts the
 // control points → check them → save. The project can be created right here
@@ -27,6 +35,8 @@ const today = () => new Date().toISOString().slice(0, 10);
 export default function NewEgenkontrollScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
+  const { showSuccess } = useFeedback();
+  const cardStyles = useCardStyles();
   const [projects, setProjects] = useState([]);
   const [projectId, setProjectId] = useState(NEW_PROJECT);
   const [title, setTitle] = useState("");
@@ -44,7 +54,7 @@ export default function NewEgenkontrollScreen() {
       .getMyProjects({ sort: "newest" })
       .then((list) => {
         // Most recent few only — a long project list would bury the form.
-        const arr = (Array.isArray(list) ? list : []).slice(0, 6);
+        const arr = (Array.isArray(list) ? list : []).slice(0, 3);
         setProjects(arr);
         if (arr.length) setProjectId(getEntityId(arr[0]));
       })
@@ -54,7 +64,13 @@ export default function NewEgenkontrollScreen() {
   const readContract = async () => {
     const [file] = await pickUploadAssets({
       allowsMultipleSelection: false,
-      documentTypes: ["application/pdf", "image/*", "text/*"],
+      documentTypes: [
+        "application/pdf",
+        "image/*",
+        "image/heic",
+        "image/heif",
+        "text/*",
+      ],
       fileNamePrefix: "avtal",
     });
     if (!file) return;
@@ -64,6 +80,13 @@ export default function NewEgenkontrollScreen() {
       setDraft(data);
       setTitle((prev) => prev || data.title || "");
       setItems(data.items || []);
+      // Peak: the AI did the work — say so.
+      if (data.items?.length) {
+        showSuccess({
+          title: t("egenkontroll.draftReady", { count: data.items.length }),
+          message: data.title || t("egenkontroll.points"),
+        });
+      }
     } catch (error) {
       console.error("Draft from document failed:", error);
       Alert.alert(t("common.error"), t("egenkontroll.readFailed"));
@@ -75,13 +98,14 @@ export default function NewEgenkontrollScreen() {
   const save = async () => {
     if (!canSave) return;
     const points = items.filter((it) => it.text?.trim());
+    const site = cleanAddress(address);
     setSaving(true);
     try {
       let pid = projectId;
       if (solo || pid === NEW_PROJECT) {
         const project = await projectService.create({
-          name: address.trim() || title.trim() || t("egenkontroll.title"),
-          location: address.trim() || undefined,
+          name: site || title.trim() || t("egenkontroll.title"),
+          location: site || undefined,
         });
         pid = getEntityId(project);
       }
@@ -143,6 +167,12 @@ export default function NewEgenkontrollScreen() {
           onPress={readContract}
           loading={reading}
         />
+        {/* Doherty: AI reading takes a while — say what is happening. */}
+        {reading ? (
+          <Text style={[cardStyles.cardSecondaryText, { textAlign: "center" }]}>
+            {t("egenkontroll.reading")}
+          </Text>
+        ) : null}
 
         <FieldCard>
           {solo ? (
@@ -151,6 +181,7 @@ export default function NewEgenkontrollScreen() {
               label={t("egenkontroll.address")}
               value={address}
               onChangeText={setAddress}
+              autoCapitalize="words"
               placeholder={t("egenkontroll.addressPlaceholder")}
             />
           ) : null}
@@ -210,6 +241,8 @@ export default function NewEgenkontrollScreen() {
           variant="primary"
           title={t("egenkontroll.addPoint")}
           onPress={() =>
+            // Ignored while the AI reads (its points replace the list).
+            reading ||
             setItems((prev) => [...prev, { text: "", reference: "" }])
           }
         />

@@ -30,7 +30,8 @@ export const Button = ({
         styles.base,
         size === "sm" ? styles.sizeSm : styles.sizeMd,
         variant === "secondary" ? styles.secondary : styles.primary,
-        isDisabled && styles.disabled,
+        // Loading keeps the full colour — the spinner is the feedback.
+        disabled && styles.disabled,
         style,
       ]}
     >

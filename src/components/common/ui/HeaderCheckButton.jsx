@@ -23,7 +23,7 @@ export const HeaderCheckButton = ({
       style={[
         styles.button,
         { backgroundColor: theme.colors.primary },
-        (disabled || loading) && styles.disabled,
+        disabled && styles.disabled,
       ]}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}

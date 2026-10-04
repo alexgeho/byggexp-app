@@ -1,7 +1,10 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
+import { View } from "react-native";
+
 import { Badge } from "../../components/common/ui";
+import { radius } from "../../theme/tokens";
 import { useTheme } from "../../theme/ThemeContext";
 
 // Status → the same tinted pill + "•" as the staff live-status badge
@@ -32,3 +35,34 @@ export const progressOf = (item) => {
     total: list.length,
   };
 };
+
+// Unfinished first (they still need the user), signed last; order kept within.
+export const unfinishedFirst = (list) =>
+  [...list].sort((a, b) => (a.status === "signed") - (b.status === "signed"));
+
+// Thin progress track (same as the home "Kom igång" checklist).
+export function EgenkontrollProgress({ item, trackColor }) {
+  const { theme } = useTheme();
+  const c = theme.content;
+  const { done, total } = progressOf(item);
+  const signed = item?.status === "signed";
+  return (
+    <View
+      style={{
+        height: 6,
+        borderRadius: radius.full,
+        overflow: "hidden",
+        backgroundColor: trackColor || c.inputSurface,
+      }}
+    >
+      <View
+        style={{
+          height: "100%",
+          borderRadius: radius.full,
+          width: `${total ? Math.round((done / total) * 100) : 0}%`,
+          backgroundColor: signed ? c.success : c.accent,
+        }}
+      />
+    </View>
+  );
+}
