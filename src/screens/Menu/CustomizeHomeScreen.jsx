@@ -32,6 +32,8 @@ import {
   saveButtonsOrder,
   getSecondaryAction,
   saveSecondaryAction,
+  getHiddenCore,
+  saveHiddenCore,
 } from "../../utils/homeButtonsStorage";
 import Icon from "react-native-vector-icons/Feather";
 
@@ -99,6 +101,8 @@ export default function CustomizeHomeScreen({
 
   const [secondaryAction, setSecondaryAction] = useState("camera");
 
+  const [hiddenCore, setHiddenCore] = useState([]);
+
   useFocusEffect(
     React.useCallback(
       function loadSettings() {
@@ -115,6 +119,8 @@ export default function CustomizeHomeScreen({
 
           const savedSecondary = await getSecondaryAction();
           setSecondaryAction(savedSecondary);
+
+          setHiddenCore(await getHiddenCore());
 
           setEnabledButtons(
             savedButtons ?? getDefaultEnabledButtons(user?.role),
@@ -159,6 +165,15 @@ export default function CustomizeHomeScreen({
     onLiveChange?.(markCustomized({ enabledButtons: updatedButtons }));
 
     await saveEnabledButtons(updatedButtons);
+  }
+
+  async function toggleCore(part) {
+    const updated = hiddenCore.includes(part)
+      ? hiddenCore.filter((id) => id !== part)
+      : [...hiddenCore, part];
+    setHiddenCore(updated);
+    onLiveChange?.(markCustomized({ hiddenCore: updated }));
+    await saveHiddenCore(updated);
   }
 
   async function handlePickSecondary(action) {
@@ -305,31 +320,26 @@ export default function CustomizeHomeScreen({
         {/* Solo Egenkontroll plan: only the theme, no home buttons/blocks. */}
         {themeOnly ? null : (
           <>
-            {/* SECONDARY ROUND BUTTON */}
+            {/* CLOCK + ROUND BUTTONS — each can be switched off */}
             <View style={styles.themeContainer}>
               <Text style={styles.sectionTitle}>
-                {t("home.secondaryButton", "Round buttons")}
+                {t("home.coreTitle", "Show")}
               </Text>
 
               <View style={styles.secondaryRow}>
                 {[
                   {
-                    id: "camera",
-                    icon: "camera",
-                    label: t("home.secondaryCamera", "Camera"),
+                    id: "timer",
+                    icon: "clock",
+                    label: t("home.coreTimer", "Clock"),
                   },
                   {
-                    id: "hours",
-                    icon: "edit-2",
-                    label: t("home.secondaryHours", "Hours"),
+                    id: "actions",
+                    icon: "circle",
+                    label: t("home.secondaryButton", "Round buttons"),
                   },
-                  {
-                    id: "play",
-                    icon: "play",
-                    label: t("home.secondaryPlay", "Play"),
-                  },
-                ].map(function renderOption(option) {
-                  const active = secondaryAction === option.id;
+                ].map(function renderCore(option) {
+                  const active = !hiddenCore.includes(option.id);
 
                   return (
                     <TouchableOpacity
@@ -338,16 +348,13 @@ export default function CustomizeHomeScreen({
                         styles.secondaryOption,
                         active && styles.secondaryOptionActive,
                       ]}
-                      onPress={function pickSecondary() {
-                        handlePickSecondary(option.id);
+                      onPress={function pickCore() {
+                        toggleCore(option.id);
                       }}
                     >
                       <Icon
                         name={option.icon}
-                        // Figma: 20px icon, white.
                         size={20}
-                        // Inactive icon: white on the dark theme so it doesn't
-                        // vanish into the dark pill (navy on the light themes).
                         color={active ? "#FFFFFF" : chevronActiveColor}
                       />
                       <Text
@@ -366,6 +373,70 @@ export default function CustomizeHomeScreen({
                 })}
               </View>
             </View>
+
+            {/* SECONDARY ROUND BUTTON — only while the round buttons show */}
+            {hiddenCore.includes("actions") ? null : (
+              <View style={styles.themeContainer}>
+                <Text style={styles.sectionTitle}>
+                  {t("home.secondaryButton", "Round buttons")}
+                </Text>
+
+                <View style={styles.secondaryRow}>
+                  {[
+                    {
+                      id: "camera",
+                      icon: "camera",
+                      label: t("home.secondaryCamera", "Camera"),
+                    },
+                    {
+                      id: "hours",
+                      icon: "edit-2",
+                      label: t("home.secondaryHours", "Hours"),
+                    },
+                    {
+                      id: "play",
+                      icon: "play",
+                      label: t("home.secondaryPlay", "Play"),
+                    },
+                  ].map(function renderOption(option) {
+                    const active = secondaryAction === option.id;
+
+                    return (
+                      <TouchableOpacity
+                        key={option.id}
+                        style={[
+                          styles.secondaryOption,
+                          active && styles.secondaryOptionActive,
+                        ]}
+                        onPress={function pickSecondary() {
+                          handlePickSecondary(option.id);
+                        }}
+                      >
+                        <Icon
+                          name={option.icon}
+                          // Figma: 20px icon, white.
+                          size={20}
+                          // Inactive icon: white on the dark theme so it doesn't
+                          // vanish into the dark pill (navy on the light themes).
+                          color={active ? "#FFFFFF" : chevronActiveColor}
+                        />
+                        <Text
+                          style={[
+                            styles.secondaryOptionLabel,
+                            active && styles.secondaryOptionLabelActive,
+                          ]}
+                          numberOfLines={1}
+                          adjustsFontSizeToFit
+                          minimumFontScale={0.75}
+                        >
+                          {option.label}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              </View>
+            )}
 
             {/* BUTTON LIST — the square grid buttons (drag to reorder) */}
             <Text style={styles.sectionTitle}>

@@ -38,6 +38,23 @@ export async function saveSecondaryAction(action) {
   await AsyncStorage.setItem(SECONDARY_ACTION_KEY, action);
 }
 
+// Top-of-home parts the user can switch off in Customize: "timer" (the clock)
+// and "actions" (the round Play + secondary buttons). Stored as the hidden ids.
+const HIDDEN_CORE_KEY = "home-hidden-core";
+export const CORE_PARTS = ["timer", "actions"];
+
+export async function getHiddenCore() {
+  const data = await AsyncStorage.getItem(HIDDEN_CORE_KEY);
+  if (!data) {
+    return [];
+  }
+  return JSON.parse(data).filter((id) => CORE_PARTS.includes(id));
+}
+
+export async function saveHiddenCore(hidden) {
+  await AsyncStorage.setItem(HIDDEN_CORE_KEY, JSON.stringify(hidden));
+}
+
 // Applies a home preset picked in onboarding. `force` is for an explicit
 // answer — someone tapping "I work on my own" is asking for that layout, so it
 // replaces what is there. Without it the preset never overwrites a layout the

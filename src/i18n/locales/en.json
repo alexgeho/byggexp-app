@@ -796,6 +796,8 @@
     "customizeTitle": "Customize",
     "projectDocumentsTitle": "Project Documents",
     "themes": "Themes",
+    "coreTitle": "Show",
+    "coreTimer": "Clock",
     "secondaryButton": "Round buttons",
     "secondaryCamera": "Camera",
     "secondaryHours": "Hours",

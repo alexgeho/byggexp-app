@@ -83,6 +83,7 @@ import {
   getSectionsOrder,
   getButtonsOrder,
   getSecondaryAction,
+  getHiddenCore,
   applyHomePreset,
 } from "../../../utils/homeButtonsStorage";
 import ShiftHistoryPreview from "../../../components/common/ShiftHistoryPreview/ShiftHistoryPreview";
@@ -302,6 +303,10 @@ export default function HomeVariant2() {
     getDefaultEnabledButtons(user?.role),
   );
   const [secondaryAction, setSecondaryAction] = useState("camera");
+  // Clock / round buttons switched off in Customize ("timer" | "actions").
+  const [hiddenCore, setHiddenCore] = useState([]);
+  const showTimer = !hiddenCore.includes("timer");
+  const showActions = !hiddenCore.includes("actions");
   // Manual-hours edit mode (hours secondary button): the top clock turns into
   // an hours/minutes wheel and the pencil becomes a save checkmark.
   const [isEditingHours, setIsEditingHours] = useState(false);
@@ -373,6 +378,7 @@ export default function HomeVariant2() {
     if (patch.sectionsOrder) setSectionsOrder(patch.sectionsOrder);
     if (patch.buttonsOrder) setButtonsOrder(patch.buttonsOrder);
     if (patch.secondaryAction) setSecondaryAction(patch.secondaryAction);
+    if (patch.hiddenCore) setHiddenCore(patch.hiddenCore);
   }, []);
 
   // Memoize the drawer content so unrelated Home re-renders (e.g. the 1 Hz
@@ -591,12 +597,14 @@ export default function HomeVariant2() {
             savedSectionsOrder,
             savedButtonsOrder,
             savedSecondary,
+            savedHiddenCore,
           ] = await Promise.all([
             getEnabledButtons(),
             getEnabledSections(),
             getSectionsOrder(),
             getButtonsOrder(),
             getSecondaryAction(),
+            getHiddenCore(),
           ]);
 
           if (fetchId !== focusFetchIdRef.current) {
@@ -622,6 +630,8 @@ export default function HomeVariant2() {
           if (savedSecondary) {
             setSecondaryAction(savedSecondary);
           }
+
+          setHiddenCore(savedHiddenCore);
 
           await Promise.all([
             loadCurrentShift(selectedProjectIdRef.current),
@@ -987,9 +997,13 @@ export default function HomeVariant2() {
           styles.main,
           shouldDistributeBlocksEvenly && styles.mainEvenlyDistributed,
           shouldDistributeBlocksEvenly && scrollViewHeight > 0
-            ? // Distributed (short) layout: fit within the space above the bar
-              // so the last block isn't covered.
-              { minHeight: Math.max(0, scrollViewHeight - bottomBarClearance) }
+            ? // Distributed (short) layout: fill the screen but keep the bar's
+              // space as padding, so the last block never sits under it (a
+              // minHeight alone let a tall bottom block, e.g. notes, run under).
+              {
+                minHeight: scrollViewHeight,
+                paddingBottom: bottomBarClearance,
+              }
             : // Scrolling (tall) layout: pad the bottom so content clears the bar.
               { paddingBottom: bottomBarClearance },
           // While the Android keyboard is open, add its height as extra bottom
@@ -1062,36 +1076,41 @@ export default function HomeVariant2() {
               {/* Tapping the time opens the hours wheel — the discoverable,
                   repeatable way to fill in hours manually (same action the
                   onboarding "Fyll i timmar" guide points to). */}
-              <TouchableOpacity
-                style={styles.timerSlot}
-                activeOpacity={0.75}
-                disabled={isEditingHours}
-                onPress={handleEnterEditHours}
-                accessibilityRole="button"
-                accessibilityLabel={t("home.tapToEnterHours", "Fyll i timmar")}
-              >
-                <Timer
-                  hours={formattedTime.hours}
-                  minutes={formattedTime.minutes}
-                  seconds={formattedTime.seconds}
-                  containerStyle={[
-                    styles.timerContainer,
-                    isEditingHours && styles.timerHidden,
-                  ]}
-                  textStyle={[
-                    isCompact
-                      ? styles.timerTextCompact
-                      : styles.timerTextRegular,
-                    isLightBlueTheme && styles.timerTextLightBlue,
-                  ]}
-                  secondsStyle={[
-                    isCompact ? styles.timerSecondsCompact : null,
-                    isLightBlueTheme && styles.timerSecondsLightBlue,
-                  ]}
-                />
-              </TouchableOpacity>
+              {showTimer ? (
+                <TouchableOpacity
+                  style={styles.timerSlot}
+                  activeOpacity={0.75}
+                  disabled={isEditingHours}
+                  onPress={handleEnterEditHours}
+                  accessibilityRole="button"
+                  accessibilityLabel={t(
+                    "home.tapToEnterHours",
+                    "Fyll i timmar",
+                  )}
+                >
+                  <Timer
+                    hours={formattedTime.hours}
+                    minutes={formattedTime.minutes}
+                    seconds={formattedTime.seconds}
+                    containerStyle={[
+                      styles.timerContainer,
+                      isEditingHours && styles.timerHidden,
+                    ]}
+                    textStyle={[
+                      isCompact
+                        ? styles.timerTextCompact
+                        : styles.timerTextRegular,
+                      isLightBlueTheme && styles.timerTextLightBlue,
+                    ]}
+                    secondsStyle={[
+                      isCompact ? styles.timerSecondsCompact : null,
+                      isLightBlueTheme && styles.timerSecondsLightBlue,
+                    ]}
+                  />
+                </TouchableOpacity>
+              ) : null}
 
-              {showCoreSpacers ? (
+              {showCoreSpacers && showTimer ? (
                 <View style={styles.timerToActionsSpacer} />
               ) : null}
 
@@ -1119,47 +1138,49 @@ export default function HomeVariant2() {
               ) : null}
 
               {/* ACTION BUTTONS */}
-              <MainActionButtons
-                isRunning={isRunning}
-                isPaused={isPaused}
-                loading={loadingShift}
-                onPlayPress={handlePlayPause}
-                onCameraPress={handleCameraPress}
-                secondaryMode={secondaryAction}
-                isEditingHours={isEditingHours}
-                onEnterEditHours={handleEnterEditHours}
-                compact={isCompact}
-                veryCompact={isVeryCompact}
-                // Figma dark home (actionBtn, 124×124): a WHITE disc with the
-                // glyph in #3097F7 — the inverse of the light themes, where
-                // the disc carries the colour and the glyph is white.
-                actionButtonColor={
-                  themeName === "black"
-                    ? "#FFFFFF"
-                    : isLightBlueTheme
-                      ? theme.colors.primary
-                      : undefined
-                }
-                actionIconColor={
-                  themeName === "black"
-                    ? "#3097F7"
-                    : isLightBlueTheme
+              {showActions ? (
+                <MainActionButtons
+                  isRunning={isRunning}
+                  isPaused={isPaused}
+                  loading={loadingShift}
+                  onPlayPress={handlePlayPause}
+                  onCameraPress={handleCameraPress}
+                  secondaryMode={secondaryAction}
+                  isEditingHours={isEditingHours}
+                  onEnterEditHours={handleEnterEditHours}
+                  compact={isCompact}
+                  veryCompact={isVeryCompact}
+                  // Figma dark home (actionBtn, 124×124): a WHITE disc with the
+                  // glyph in #3097F7 — the inverse of the light themes, where
+                  // the disc carries the colour and the glyph is white.
+                  actionButtonColor={
+                    themeName === "black"
                       ? "#FFFFFF"
-                      : undefined
-                }
-                // Figma dark home: soft blue halo behind the play button.
-                actionButtonGlow={
-                  themeName === "black" ? theme.colors.glow : undefined
-                }
-                cameraButtonColor={
-                  isLightBlueTheme ? "#FFFFFF" : "rgba(255,255,255,0.20)"
-                }
-                cameraIconColor={
-                  isLightBlueTheme ? theme.colors.text : "#FFFFFF"
-                }
-              />
+                      : isLightBlueTheme
+                        ? theme.colors.primary
+                        : undefined
+                  }
+                  actionIconColor={
+                    themeName === "black"
+                      ? "#3097F7"
+                      : isLightBlueTheme
+                        ? "#FFFFFF"
+                        : undefined
+                  }
+                  // Figma dark home: soft blue halo behind the play button.
+                  actionButtonGlow={
+                    themeName === "black" ? theme.colors.glow : undefined
+                  }
+                  cameraButtonColor={
+                    isLightBlueTheme ? "#FFFFFF" : "rgba(255,255,255,0.20)"
+                  }
+                  cameraIconColor={
+                    isLightBlueTheme ? theme.colors.text : "#FFFFFF"
+                  }
+                />
+              ) : null}
 
-              {showCoreSpacers ? (
+              {showCoreSpacers && showActions ? (
                 <View style={styles.actionsToQuickActionsSpacer} />
               ) : null}
 
