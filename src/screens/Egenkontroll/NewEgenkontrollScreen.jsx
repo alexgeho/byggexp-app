@@ -73,6 +73,7 @@ export default function NewEgenkontrollScreen() {
   };
 
   const save = async () => {
+    if (!canSave) return;
     const points = items.filter((it) => it.text?.trim());
     setSaving(true);
     try {
@@ -124,7 +125,6 @@ export default function NewEgenkontrollScreen() {
         <HeaderCheckButton
           onPress={save}
           loading={saving}
-          disabled={!canSave}
           accessibilityLabel={t("common.save")}
         />
       }
@@ -207,7 +207,7 @@ export default function NewEgenkontrollScreen() {
         ) : null}
 
         <Button
-          variant="secondary"
+          variant="primary"
           title={t("egenkontroll.addPoint")}
           onPress={() =>
             setItems((prev) => [...prev, { text: "", reference: "" }])
