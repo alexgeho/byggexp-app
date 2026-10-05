@@ -40,6 +40,8 @@ export function FieldRow({
   hint,
   switchValue,
   onSwitchChange,
+  // Short muted prefix on the left (e.g. a point number), centred on the row.
+  prefix,
 }) {
   const { theme } = useTheme();
   const c = theme.content;
@@ -49,6 +51,10 @@ export function FieldRow({
     <View style={styles.iconBadge}>
       <AppIcon name={icon} size={28} color={BADGE_BLUE} strokeWidth={1.5} />
     </View>
+  ) : prefix != null ? (
+    <Text style={[styles.input, { flex: 0, color: c.placeholder }]}>
+      {prefix}
+    </Text>
   ) : null;
 
   const sep = !isLast ? (

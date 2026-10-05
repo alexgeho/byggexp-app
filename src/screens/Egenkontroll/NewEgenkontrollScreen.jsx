@@ -280,7 +280,7 @@ export default function NewEgenkontrollScreen() {
                 <FieldRow
                   key={i}
                   variant="input"
-                  label={`${i + 1}`}
+                  prefix={`${i + 1}.`}
                   value={it.text}
                   onChangeText={(text) => setPoint(i, text)}
                   isLast={i === items.length - 1}
