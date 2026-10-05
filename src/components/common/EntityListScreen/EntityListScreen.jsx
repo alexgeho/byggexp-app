@@ -48,6 +48,7 @@ import {
 //                navigation, for a screen that has to guard leaving
 //   onAdd        function alternative to addScreen
 //   hideBack     no back button (a list that IS the home screen)
+//   addIcon      Feather glyph for the "+" button (default plus)
 //   leftAction   { icon, label, color, onPress } revealed by swiping RIGHT —
 //                the Mail-style counterpart to the delete swipe
 // The single gap between anything in a list — from the app's one scale.
@@ -77,6 +78,7 @@ export function EntityListScreen({
   onAdd,
   leftAction,
   hideBack = false,
+  addIcon,
 }) {
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -255,6 +257,11 @@ export function EntityListScreen({
           onLeftPress={onNavigateHome || (() => navigation.navigate("Main"))}
           onRightPress={onNavigateMenu || (() => navigation.navigate("Menu"))}
           showAddButton={Boolean(addScreen || onAdd)}
+          renderAddContent={
+            addIcon
+              ? () => <Icon name={addIcon} size={28} color="#FFFFFF" />
+              : undefined
+          }
           onAddPress={() =>
             onAdd
               ? onAdd()
