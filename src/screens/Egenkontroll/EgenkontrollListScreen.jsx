@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
+  StyleSheet,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -20,6 +21,7 @@ import { ListCard } from "../../components/common/ListCard/ListCard";
 import { useCardStyles } from "../../styles/cards";
 import { createStyles as createHomeStyles } from "../Main/HomeVariants/HomeVariant2.styles";
 import { createStyles as createPreviewStyles } from "../../components/common/ShiftHistoryPreview/ShiftHistoryPreview.styles";
+import { createStyles as createButtonStyles } from "../../components/common/NavButtonsGrid/MainButtonsGrid.styles";
 import { getEntityId } from "../../utils/entityId";
 import { isEgenkontrollOnly } from "../../utils/companyModules";
 import { shortTitle, titleAddress } from "../../utils/egenkontrollTitle";
@@ -149,6 +151,9 @@ function HomeList({
   const gradient = homeGradientFor(themeName);
   const homeStyles = createHomeStyles({ theme, isLightBlue: lightHome });
   const s = createPreviewStyles(theme, lightHome ? "light" : "dark");
+  // Cards = the home screen's own grid buttons (fill, border, radius, ink).
+  const b = createButtonStyles(theme);
+  const ink = b.buttonText.color;
 
   return (
     <LinearGradient
@@ -177,37 +182,31 @@ function HomeList({
             items.map((item) => (
               <TouchableOpacity
                 key={getEntityId(item)}
-                style={[s.card, s.item, { height: undefined }]}
+                style={[b.button, styles.card]}
                 activeOpacity={0.85}
                 onPress={() => onOpen(item)}
               >
-                <View>
-                  <Text
-                    style={[s.durationText, { textAlign: "left" }]}
-                    numberOfLines={1}
-                  >
+                <View style={[b.buttonInner, styles.cardInner]}>
+                  <Text style={b.buttonText} numberOfLines={1}>
                     {shortTitle(item.title)}
                   </Text>
                   {item.address ? (
                     <Text
-                      style={[s.metaText, { opacity: 0.85 }]}
+                      style={[b.buttonText, styles.meta, { color: ink }]}
                       numberOfLines={1}
                     >
                       {item.address}
                     </Text>
                   ) : null}
-                </View>
-                <Text style={s.metaText}>
-                  {t("egenkontroll.pointsDone", progressOf(item))}
-                </Text>
-                {item.status !== "signed" ? (
-                  <EgenkontrollProgress
-                    item={item}
-                    trackColor={s.card.borderColor}
-                  />
-                ) : null}
-                <View style={{ alignSelf: "flex-start" }}>
-                  <EgenkontrollStatusBadge status={item.status} />
+                  <View style={styles.metaRow}>
+                    <EgenkontrollStatusBadge status={item.status} />
+                    <Text style={[b.buttonText, styles.meta, { color: ink }]}>
+                      {t("egenkontroll.pointsDone", progressOf(item))}
+                    </Text>
+                  </View>
+                  {item.status !== "signed" ? (
+                    <EgenkontrollProgress item={item} trackColor={`${ink}33`} />
+                  ) : null}
                 </View>
               </TouchableOpacity>
             ))
@@ -251,3 +250,11 @@ function HomeList({
     </LinearGradient>
   );
 }
+
+// Layout glue: full-width home button used as a list card.
+const styles = StyleSheet.create({
+  card: { width: "100%", minHeight: undefined },
+  cardInner: { alignItems: "stretch", gap: 8 },
+  meta: { fontSize: 14, opacity: 0.75 },
+  metaRow: { flexDirection: "row", alignItems: "center", gap: 8 },
+});
