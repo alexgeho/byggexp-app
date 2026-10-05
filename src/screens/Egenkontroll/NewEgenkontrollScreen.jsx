@@ -59,7 +59,11 @@ export default function NewEgenkontrollScreen() {
   // Opened from the empty home upload zone → the picker is already up.
   const { params } = useRoute();
   useEffect(() => {
-    if (params?.autoPick) readContract();
+    if (params?.autoPick) {
+      // One-shot: clear it so a later visit doesn't reopen the picker.
+      navigation.setParams({ autoPick: undefined });
+      readContract();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -284,9 +288,8 @@ export default function NewEgenkontrollScreen() {
           </>
         ) : null}
 
-        {/* The upload zone is the one primary entry; adding by hand
-            appears once a contract was read (or a point exists). */}
-        {!reading && (draft || readError || items.length) ? (
+        {/* Points can always be added by hand (with or without a contract). */}
+        {!reading ? (
           <Button
             variant="primary"
             icon="plus"
