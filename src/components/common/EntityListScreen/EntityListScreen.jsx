@@ -47,6 +47,7 @@ import {
 //   onBack / onNavigateHome / onNavigateMenu — override the default
 //                navigation, for a screen that has to guard leaving
 //   onAdd        function alternative to addScreen
+//   hideBack     no back button (a list that IS the home screen)
 //   leftAction   { icon, label, color, onPress } revealed by swiping RIGHT —
 //                the Mail-style counterpart to the delete swipe
 // The single gap between anything in a list — from the app's one scale.
@@ -75,6 +76,7 @@ export function EntityListScreen({
   onNavigateMenu,
   onAdd,
   leftAction,
+  hideBack = false,
 }) {
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -171,10 +173,14 @@ export function EntityListScreen({
     <View style={styles.screen}>
       <View style={styles.pageContainer}>
         <View style={styles.header}>
-          <BackButton
-            onPress={onBack || (() => navigation.goBack())}
-            iconSource={require("../../../assets/Arrow-left.png")}
-          />
+          {hideBack ? (
+            <View style={styles.headerSpacer} />
+          ) : (
+            <BackButton
+              onPress={onBack || (() => navigation.goBack())}
+              iconSource={require("../../../assets/Arrow-left.png")}
+            />
+          )}
           <Text style={styles.headerTitle}>{title}</Text>
           {headerRight || <View style={styles.headerSpacer} />}
         </View>

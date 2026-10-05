@@ -16,6 +16,10 @@ const colorsFor = (c, status) =>
       ? { backgroundColor: c.statusWaitingSoft, color: c.statusWaiting }
       : { backgroundColor: c.warningSoft, color: c.warning };
 
+// ListCard badge props (same pill as the project cards' status badge).
+export const egenkontrollBadgeStyle = (content, status) =>
+  colorsFor(content, status);
+
 export function EgenkontrollStatusBadge({ status }) {
   const { t } = useTranslation();
   const { theme } = useTheme();
