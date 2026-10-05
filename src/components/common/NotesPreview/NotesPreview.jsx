@@ -421,11 +421,21 @@ export function NotesPreview({
             multiline
             submitBehavior="newline"
           />
-          {Platform.OS !== "ios" && focused && !isEditing
-            ? // Same ring as the inline editor (big, themed) so the quick-add and
-              // edit send buttons look identical on Android.
-              renderSendButton(ringAccent, ringIdle, true)
-            : null}
+          {Platform.OS !== "ios" && focused && !isEditing ? (
+            // Same ring as the inline editor (big, themed) so the quick-add and
+            // edit send buttons look identical on Android.
+            renderSendButton(ringAccent, ringIdle, true)
+          ) : (
+            // Pencil in the same column as the notes' bell/trash buttons.
+            <TouchableOpacity
+              style={extraStyles.actionBtn}
+              onPress={() => inputRef.current?.focus()}
+              accessibilityRole="button"
+              accessibilityLabel={t("notes.quickAdd", "Skriv en anteckning…")}
+            >
+              <Icon name="edit-3" size={22} color={secondaryIconColor} />
+            </TouchableOpacity>
+          )}
         </View>
 
         {loading ? null : !notes.length ? null : isEditing ? (
