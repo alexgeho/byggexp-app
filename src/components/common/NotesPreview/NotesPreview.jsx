@@ -425,8 +425,9 @@ export function NotesPreview({
             // Same ring as the inline editor (big, themed) so the quick-add and
             // edit send buttons look identical on Android.
             renderSendButton(ringAccent, ringIdle, true)
-          ) : (
-            // Pencil in the same column as the notes' bell/trash buttons.
+          ) : focused ? null : (
+            // Pencil in the same column as the notes' bell/trash buttons;
+            // hidden while typing.
             <TouchableOpacity
               style={extraStyles.actionBtn}
               onPress={() => inputRef.current?.focus()}
@@ -499,6 +500,9 @@ const extraStyles = StyleSheet.create({
   },
   inputRow: {
     flexDirection: "row",
+    // Same right inset as the notes list (styles.list) so the pencil lines up
+    // with the bell/trash column.
+    paddingRight: 4,
     alignItems: "center",
     gap: 10,
     minHeight: 44,
