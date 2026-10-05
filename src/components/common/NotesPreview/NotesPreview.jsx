@@ -23,10 +23,6 @@ import { getDateLocale } from "../../../utils/dateLocale";
 // Reuse the shift-history preview styles for an identical look.
 import { createStyles } from "../ShiftHistoryPreview/ShiftHistoryPreview.styles";
 
-// The quick-add field puts its send ring on the keyboard (InputAccessoryView).
-// The inline-edit field instead shows the ring right inside the note row —
-// iOS is unreliable moving a keyboard accessory to a second input, so editing a
-// note kept losing the button.
 // Same colour at ~40% opacity (hex #RGB/#RRGGBB[AA], rgb(), rgba()).
 const fadeColor = (color, alpha = 0.4) => {
   const c = String(color || "");
@@ -49,6 +45,10 @@ const fadeColor = (color, alpha = 0.4) => {
   return c;
 };
 
+// The quick-add field puts its send ring on the keyboard (InputAccessoryView).
+// The inline-edit field instead shows the ring right inside the note row —
+// iOS is unreliable moving a keyboard accessory to a second input, so editing a
+// note kept losing the button.
 const ACCESSORY_NEW = "notesQuickAddAccessory";
 
 const noteText = (note) => (note?.body || note?.title || "").trim();

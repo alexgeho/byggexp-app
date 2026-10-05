@@ -98,7 +98,27 @@ export function MyWorkPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
     void load();
   }, [load, refreshKey]);
 
-  // Tick the circle to mark a bill paid — that also stops its reminders. The
+  // Tick the box to complete an overdue task — same optimistic pattern.
+  const completeTask = useCallback(
+    async (task) => {
+      const id = task._id || task.id;
+      if (!id) {
+        return;
+      }
+      setOverdueTasks((prev) =>
+        prev.filter((item) => (item._id || item.id) !== id),
+      );
+      try {
+        await taskService.complete(id);
+      } catch (error) {
+        console.error("Failed to complete task:", error);
+        await load();
+      }
+    },
+    [load],
+  );
+
+  // Tick the box to mark a bill paid — that also stops its reminders. The
   // row leaves the list at once and comes back if the server refuses.
   const markPaid = useCallback(
     async (invoice) => {
@@ -185,9 +205,22 @@ export function MyWorkPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
           defaultValue: "Försenad {{date}}",
         })}
       </Text>
-      <Text style={[styles.projectText, extraStyles.rowText]} numberOfLines={1}>
-        {task.taskTitle || t("tasksPreview.untitled")}
-      </Text>
+      <View style={extraStyles.row}>
+        <Text
+          style={[styles.projectText, extraStyles.rowText]}
+          numberOfLines={1}
+        >
+          {task.taskTitle || t("tasksPreview.untitled")}
+        </Text>
+        <TouchableOpacity
+          style={[extraStyles.checkbox, { borderColor: secondaryIconColor }]}
+          onPress={() => completeTask(task)}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          activeOpacity={0.7}
+          accessibilityRole="checkbox"
+          accessibilityLabel={t("tasksPreview.complete")}
+        />
+      </View>
     </View>
   );
 
@@ -243,7 +276,7 @@ export function MyWorkPreview({ colorMode = "dark", onClose, refreshKey = 0 }) {
           </View>
         ) : (
           <ScrollView
-            style={styles.scrollArea}
+            style={[styles.scrollArea, onClose && extraStyles.scrollBelowClose]}
             contentContainerStyle={styles.list}
             showsVerticalScrollIndicator={false}
             nestedScrollEnabled={true}
@@ -275,9 +308,14 @@ const extraStyles = StyleSheet.create({
   checkbox: {
     width: 22,
     height: 22,
-    borderRadius: 11,
+    borderRadius: 6,
     borderWidth: 1.5,
-    marginRight: 4,
+    // Centre on the notes card's 44pt bell/trash column below.
+    marginRight: 11,
+  },
+  // Rows scroll under the card's × otherwise — start the scroll area below it.
+  scrollBelowClose: {
+    marginTop: 14,
   },
 });
 
