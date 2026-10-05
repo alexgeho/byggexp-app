@@ -304,6 +304,7 @@ const extraStyles = StyleSheet.create({
   },
   amount: {
     fontVariant: ["tabular-nums"],
+    marginRight: 6,
   },
   checkbox: {
     width: 22,
