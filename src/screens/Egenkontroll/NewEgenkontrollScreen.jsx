@@ -221,6 +221,14 @@ export default function NewEgenkontrollScreen() {
         />
 
         <FieldCard>
+          {/* Project (the title) first, then the site address. */}
+          <FieldRow
+            variant="input"
+            value={title}
+            onChangeText={setTitle}
+            placeholder={t("egenkontroll.project")}
+            isLast={!solo}
+          />
           {solo ? (
             <FieldRow
               variant="input"
@@ -228,15 +236,9 @@ export default function NewEgenkontrollScreen() {
               onChangeText={setAddress}
               autoCapitalize="words"
               placeholder={t("egenkontroll.address")}
+              isLast
             />
           ) : null}
-          <FieldRow
-            variant="input"
-            value={title}
-            onChangeText={setTitle}
-            placeholder={t("egenkontroll.titleLabel")}
-            isLast
-          />
         </FieldCard>
 
         {solo ? null : (
