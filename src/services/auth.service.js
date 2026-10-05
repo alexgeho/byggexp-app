@@ -1,4 +1,5 @@
 import api from "./api";
+import i18n from "../i18n";
 
 export const authService = {
   login: async (email, password) => {
@@ -31,7 +32,10 @@ export const authService = {
   // even when the email isn't registered). The link opens a web page where the
   // user picks a new password, then signs in with email + that password.
   requestPasswordReset: async (email) => {
-    const { data } = await api.post("/auth/forgot-password", { email });
+    const { data } = await api.post("/auth/forgot-password", {
+      email,
+      lang: i18n.language,
+    });
     return data;
   },
 
