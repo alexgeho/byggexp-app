@@ -702,7 +702,9 @@
       "selectProject": "Izvēlieties projektu",
       "saveError": "Nevarēja saglabāt izdevumu",
       "save": "Saglabāt izdevumu"
-    }
+    },
+    "deleteReceiptTitle": "Dzēst čeku?",
+    "deleteReceiptLocked": "Čeks jau ir pārbaudīts, un to vairs nevar dzēst."
   },
   "chat": {
     "title": "Tērzēšana",

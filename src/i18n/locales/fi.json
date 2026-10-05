@@ -701,7 +701,9 @@
       "selectProject": "Valitse projekti",
       "saveError": "Kulua ei voitu tallentaa",
       "save": "Tallenna kulu"
-    }
+    },
+    "deleteReceiptTitle": "Poistetaanko kuitti?",
+    "deleteReceiptLocked": "Kuitti on jo tarkistettu, eikä sitä voi enää poistaa."
   },
   "chat": {
     "title": "Keskustelut",

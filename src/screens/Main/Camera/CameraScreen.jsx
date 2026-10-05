@@ -103,6 +103,7 @@ export default function CameraScreen() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [previewPhoto, setPreviewPhoto] = useState(null);
+  const [previewReceipt, setPreviewReceipt] = useState(null);
   const autoLaunchTriggeredRef = useRef(false);
   const cameraLaunchInFlightRef = useRef(false);
 
@@ -150,6 +151,35 @@ export default function CameraScreen() {
       console.error("Failed to load receipts:", error);
     }
   }, [currentUserId]);
+
+  const confirmDeleteReceipt = useCallback(
+    (receipt) => {
+      const id = receipt?._id || receipt?.id;
+      if (!id) return;
+      Alert.alert(t("camera.deleteReceiptTitle"), undefined, [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("common.delete"),
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await expenseService.remove(id);
+              setPreviewReceipt(null);
+              await refreshReceipts();
+            } catch (error) {
+              Alert.alert(
+                t("common.error"),
+                error?.response?.status === 403
+                  ? t("camera.deleteReceiptLocked")
+                  : t("common.tryAgain"),
+              );
+            }
+          },
+        },
+      ]);
+    },
+    [refreshReceipts, t],
+  );
 
   const loadData = useCallback(async () => {
     try {
@@ -674,10 +704,12 @@ export default function CameraScreen() {
                         <TouchableOpacity
                           key={`${receipt._id || receipt.id || index}`}
                           activeOpacity={0.85}
-                          disabled={!receiptUri}
                           onPress={() =>
-                            receiptUri && setPreviewPhoto(receiptUri)
+                            receiptUri
+                              ? setPreviewReceipt(receipt)
+                              : confirmDeleteReceipt(receipt)
                           }
+                          onLongPress={() => confirmDeleteReceipt(receipt)}
                         >
                           <View style={styles.thumb}>
                             {receiptUri ? (
@@ -762,6 +794,15 @@ export default function CameraScreen() {
       <ImagePreviewModal
         uri={previewPhoto}
         onClose={() => setPreviewPhoto(null)}
+      />
+      <ImagePreviewModal
+        uri={
+          previewReceipt?.receiptUrl
+            ? resolveUploadUrl(previewReceipt.receiptUrl)
+            : null
+        }
+        onClose={() => setPreviewReceipt(null)}
+        onDelete={() => confirmDeleteReceipt(previewReceipt)}
       />
     </View>
   );

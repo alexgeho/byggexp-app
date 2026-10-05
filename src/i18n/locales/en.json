@@ -701,7 +701,9 @@
       "selectProject": "Select a project",
       "saveError": "Could not save the expense",
       "save": "Save expense"
-    }
+    },
+    "deleteReceiptTitle": "Delete receipt?",
+    "deleteReceiptLocked": "This receipt has been reviewed and can no longer be deleted."
   },
   "chat": {
     "title": "Chats",

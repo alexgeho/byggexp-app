@@ -701,7 +701,9 @@
       "selectProject": "Vali projekt",
       "saveError": "Kulutust ei õnnestunud salvestada",
       "save": "Salvesta kulutus"
-    }
+    },
+    "deleteReceiptTitle": "Kas kustutada tšekk?",
+    "deleteReceiptLocked": "Tšekk on juba üle vaadatud ja seda ei saa enam kustutada."
   },
   "chat": {
     "title": "Vestlused",

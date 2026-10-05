@@ -704,7 +704,9 @@
       "selectProject": "Odaberi projekt",
       "saveError": "Izdatak nije moguće sačuvati",
       "save": "Sačuvaj izdatak"
-    }
+    },
+    "deleteReceiptTitle": "Obrisati račun?",
+    "deleteReceiptLocked": "Račun je već pregledan i više se ne može obrisati."
   },
   "chat": {
     "title": "Razgovori",

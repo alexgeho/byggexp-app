@@ -701,7 +701,9 @@
       "selectProject": "Välj ett projekt",
       "saveError": "Kunde inte spara utlägg",
       "save": "Spara utlägg"
-    }
+    },
+    "deleteReceiptTitle": "Radera kvitto?",
+    "deleteReceiptLocked": "Kvittot är redan granskat och kan inte längre raderas."
   },
   "chat": {
     "title": "Chattar",

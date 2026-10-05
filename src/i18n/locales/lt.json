@@ -705,7 +705,9 @@
       "selectProject": "Pasirinkite projektą",
       "saveError": "Nepavyko išsaugoti išlaidų",
       "save": "Išsaugoti išlaidas"
-    }
+    },
+    "deleteReceiptTitle": "Ištrinti čekį?",
+    "deleteReceiptLocked": "Čekis jau patikrintas ir jo nebegalima ištrinti."
   },
   "chat": {
     "title": "Pokalbiai",

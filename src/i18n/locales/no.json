@@ -701,7 +701,9 @@
       "selectProject": "Velg et prosjekt",
       "saveError": "Kunne ikke lagre utlegget",
       "save": "Lagre utlegg"
-    }
+    },
+    "deleteReceiptTitle": "Slette kvittering?",
+    "deleteReceiptLocked": "Kvitteringen er allerede behandlet og kan ikke lenger slettes."
   },
   "chat": {
     "title": "Chatter",

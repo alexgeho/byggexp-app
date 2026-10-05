@@ -705,7 +705,9 @@
       "selectProject": "Wybierz projekt",
       "saveError": "Nie udało się zapisać wydatku",
       "save": "Zapisz wydatek"
-    }
+    },
+    "deleteReceiptTitle": "Usunąć paragon?",
+    "deleteReceiptLocked": "Ten paragon został już sprawdzony i nie można go usunąć."
   },
   "chat": {
     "title": "Czaty",

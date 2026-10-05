@@ -705,7 +705,9 @@
       "selectProject": "Выберите проект",
       "saveError": "Не удалось сохранить расход",
       "save": "Сохранить расход"
-    }
+    },
+    "deleteReceiptTitle": "Удалить чек?",
+    "deleteReceiptLocked": "Чек уже проверен, удалить его нельзя."
   },
   "chat": {
     "title": "Чаты",

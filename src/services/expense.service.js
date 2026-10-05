@@ -44,6 +44,11 @@ export const expenseService = {
     return data;
   },
 
+  remove: async (id) => {
+    const { data } = await api.delete(`/expenses/${id}`);
+    return data;
+  },
+
   // Attach the photo to a saved expense as its receipt.
   uploadReceipt: async (id, file) => {
     const formData = new FormData();
