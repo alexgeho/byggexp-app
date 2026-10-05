@@ -27,6 +27,28 @@ import { createStyles } from "../ShiftHistoryPreview/ShiftHistoryPreview.styles"
 // The inline-edit field instead shows the ring right inside the note row —
 // iOS is unreliable moving a keyboard accessory to a second input, so editing a
 // note kept losing the button.
+// Same colour at ~40% opacity (hex #RGB/#RRGGBB[AA], rgb(), rgba()).
+const fadeColor = (color, alpha = 0.4) => {
+  const c = String(color || "");
+  const hex = c.match(/^#([0-9a-f]{3}|[0-9a-f]{6})([0-9a-f]{2})?$/i);
+  if (hex) {
+    const full =
+      hex[1].length === 3
+        ? hex[1]
+            .split("")
+            .map((ch) => ch + ch)
+            .join("")
+        : hex[1];
+    const a = Math.round(alpha * 255)
+      .toString(16)
+      .padStart(2, "0");
+    return `#${full}${a}`;
+  }
+  const rgb = c.match(/^rgba?\(([^,]+),([^,]+),([^,)]+)/i);
+  if (rgb) return `rgba(${rgb[1]},${rgb[2]},${rgb[3]},${alpha})`;
+  return c;
+};
+
 const ACCESSORY_NEW = "notesQuickAddAccessory";
 
 const noteText = (note) => (note?.body || note?.title || "").trim();
@@ -411,7 +433,13 @@ export function NotesPreview({
             // as soon as you type). Toggling it to "" on focus hit an RN quirk
             // where it wouldn't reappear after send until the input re-mounted.
             placeholder={t("notes.quickAdd", "Skriv en anteckning…")}
-            placeholderTextColor={styles.emptyText.color}
+            // Placeholder fades while the field is active (and is gone as soon
+            // as you type), so the caret reads as "ready to write".
+            placeholderTextColor={
+              focused
+                ? fadeColor(styles.emptyText.color)
+                : styles.emptyText.color
+            }
             inputAccessoryViewID={
               Platform.OS === "ios" ? ACCESSORY_NEW : undefined
             }
