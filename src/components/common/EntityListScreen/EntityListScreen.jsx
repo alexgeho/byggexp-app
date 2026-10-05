@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/Feather";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 
@@ -48,7 +49,8 @@ import {
 //                navigation, for a screen that has to guard leaving
 //   onAdd        function alternative to addScreen
 //   hideBack     no back button (a list that IS the home screen)
-//   addIcon      Feather glyph for the "+" button (default plus)
+//   addIcon      Feather glyph for the "+" button (default plus);
+//                "mci:<name>" for a MaterialCommunityIcons glyph
 //   leftAction   { icon, label, color, onPress } revealed by swiping RIGHT —
 //                the Mail-style counterpart to the delete swipe
 // The single gap between anything in a list — from the app's one scale.
@@ -259,7 +261,16 @@ export function EntityListScreen({
           showAddButton={Boolean(addScreen || onAdd)}
           renderAddContent={
             addIcon
-              ? () => <Icon name={addIcon} size={28} color="#FFFFFF" />
+              ? () =>
+                  addIcon.startsWith("mci:") ? (
+                    <MaterialCommunityIcons
+                      name={addIcon.slice(4)}
+                      size={32}
+                      color="#FFFFFF"
+                    />
+                  ) : (
+                    <Icon name={addIcon} size={28} color="#FFFFFF" />
+                  )
               : undefined
           }
           onAddPress={() =>

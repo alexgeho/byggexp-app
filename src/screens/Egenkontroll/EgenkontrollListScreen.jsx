@@ -86,7 +86,7 @@ export default function EgenkontrollListScreen({ isHome = false }) {
       keyExtractor={(item) => getEntityId(item)}
       emptyText={loadError ? undefined : t("egenkontroll.emptyTitle")}
       addScreen="NewEgenkontroll"
-      addIcon="file-plus"
+      addIcon="mci:checkbox-marked-circle-plus-outline"
       // Empty / error: the upload zone (or retry) is the one action.
       listHeader={
         loadError && !items.length ? (
