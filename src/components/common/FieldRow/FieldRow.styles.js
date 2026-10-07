@@ -62,7 +62,7 @@ export function createStyles(c) {
       fontSize: 13,
       lineHeight: 16,
       fontWeight: "600",
-      color: "#6C6C70",
+      color: onDark(c, c.textSecondary, "#6C6C70"),
     },
     input: {
       fontSize: 16,

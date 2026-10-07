@@ -75,6 +75,18 @@ export function ThemeProvider({ children }) {
     });
   }, []);
 
+  // DEV only: `byggexp://dev-theme/<name>` switches the theme for screenshots.
+  useEffect(() => {
+    if (!__DEV__) return undefined;
+
+    const { Linking } = require("react-native");
+    const sub = Linking.addEventListener("url", ({ url }) => {
+      const m = /dev-theme\/(\w+)/.exec(url || "");
+      if (m) changeTheme(m[1]);
+    });
+    return () => sub.remove();
+  }, [changeTheme]);
+
   const value = useMemo(
     () => ({
       theme: themes[themeName],
