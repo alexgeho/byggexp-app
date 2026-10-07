@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { radius } from "../../theme/tokens";
 
 import { onDark } from "../../theme/colorUtils";
 
@@ -16,7 +17,7 @@ export const createStyles = (c) =>
     heroCard: {
       width: "100%",
       backgroundColor: c.surface,
-      borderRadius: 10,
+      borderRadius: radius.card,
       borderWidth: 0,
       padding: 20,
       alignItems: "center",
@@ -24,7 +25,7 @@ export const createStyles = (c) =>
     heroIconWrap: {
       width: 72,
       height: 72,
-      borderRadius: 10,
+      borderRadius: radius.card,
       alignItems: "center",
       justifyContent: "center",
       marginBottom: 16,
@@ -32,7 +33,6 @@ export const createStyles = (c) =>
     heroTitle: {
       color: c.textPrimary,
       fontSize: 24,
-      marginBottom: 8,
       textAlign: "center",
     },
     heroText: {
@@ -44,14 +44,17 @@ export const createStyles = (c) =>
     formCard: {
       width: "100%",
       backgroundColor: c.surface,
-      borderRadius: 10,
+      borderRadius: radius.card,
       borderWidth: 0,
-      padding: 18,
+      padding: 16,
     },
+    // Same as the shared FieldRow label.
     inputLabel: {
-      color: c.textMuted,
-      fontSize: 12,
-      marginBottom: 8,
+      color: c.textSecondary,
+      fontSize: 13,
+      lineHeight: 16,
+      fontWeight: "600",
+      marginBottom: 2,
     },
     textArea: {
       minHeight: 130,
@@ -60,19 +63,7 @@ export const createStyles = (c) =>
       padding: 0,
     },
     attachmentButton: {
-      marginTop: 18,
-      height: 44,
-      borderRadius: 16,
-      backgroundColor: "rgba(0, 145, 255, 0.1)",
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: 8,
-    },
-    attachmentButtonText: {
-      color: c.textPrimary,
-      fontSize: 15,
-      fontWeight: "600",
+      marginTop: 16,
     },
     attachmentPreview: {
       marginTop: 14,
@@ -98,20 +89,5 @@ export const createStyles = (c) =>
       color: onDark(c, c.danger, "#D92D20"),
       fontSize: 13,
       fontWeight: "600",
-    },
-    submitButton: {
-      height: 54,
-      borderRadius: 18,
-      backgroundColor: "#0091FF",
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    submitButtonDisabled: {
-      opacity: 0.7,
-    },
-    submitButtonText: {
-      color: "#FFFFFF",
-      fontSize: 16,
-      fontWeight: "700",
     },
   });

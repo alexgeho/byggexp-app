@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { radius, size } from "../../../theme/tokens";
 import { onDark } from "../../../theme/colorUtils";
 
 // Extracted from ChatListScreen.jsx — themed style factory (c = theme.content).
@@ -207,8 +208,8 @@ export const createStyles = (c) =>
     },
     cancelButton: {
       flex: 1,
-      height: 54,
-      borderRadius: 27,
+      height: size.control,
+      borderRadius: radius.control,
       alignItems: "center",
       justifyContent: "center",
       backgroundColor: "#FFFFFF",
@@ -220,8 +221,8 @@ export const createStyles = (c) =>
     },
     groupButton: {
       flex: 1,
-      height: 54,
-      borderRadius: 27,
+      height: size.control,
+      borderRadius: radius.control,
       alignItems: "center",
       justifyContent: "center",
       backgroundColor: "#0785F4",

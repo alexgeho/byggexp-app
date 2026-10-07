@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { radius, size } from "../../theme/tokens";
 
 import { onDark } from "../../theme/colorUtils";
 
@@ -73,8 +74,8 @@ export const createStyles = (c) =>
     permBtn: {
       backgroundColor: "#0785F4",
       paddingHorizontal: 24,
-      height: 50,
-      borderRadius: 14,
+      height: size.control,
+      borderRadius: radius.control,
       alignItems: "center",
       justifyContent: "center",
     },

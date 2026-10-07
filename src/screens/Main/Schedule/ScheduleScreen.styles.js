@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { radius, size } from "../../../theme/tokens";
 import {
   standardScreenContainer,
   standardScreenHeader,
@@ -389,8 +390,8 @@ export const createStyles = (c) =>
     },
     saveButton: {
       marginTop: 20,
-      height: 56,
-      borderRadius: 999,
+      height: size.control,
+      borderRadius: radius.control,
       backgroundColor: "#1877F2",
       alignItems: "center",
       justifyContent: "center",

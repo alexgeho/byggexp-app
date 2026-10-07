@@ -5,6 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { radius, size } from "../../../theme/tokens";
 import {
   ActivityIndicator,
   Alert,
@@ -649,8 +650,8 @@ const createStyles = (c) =>
       backgroundColor: c.background,
     },
     saveButton: {
-      height: 56,
-      borderRadius: 18,
+      height: size.control,
+      borderRadius: radius.control,
       backgroundColor: "#0785F4",
       alignItems: "center",
       justifyContent: "center",

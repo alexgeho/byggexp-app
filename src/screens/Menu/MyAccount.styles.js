@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { radius, size } from "../../theme/tokens";
 
 import { onDark } from "../../theme/colorUtils";
 
@@ -134,8 +135,8 @@ export const createStyles = (c) =>
     },
     addButton: {
       width: 48,
-      height: 48,
-      borderRadius: 999,
+      height: size.control,
+      borderRadius: radius.control,
       alignItems: "center",
       justifyContent: "center",
       backgroundColor: onDark(c, c.surfaceMuted, c.background),
@@ -197,8 +198,8 @@ export const createStyles = (c) =>
       alignItems: "center",
       justifyContent: "center",
       gap: 8,
-      height: 48,
-      borderRadius: 14,
+      height: size.control,
+      borderRadius: radius.control,
       borderWidth: 1,
       borderColor: onDark(c, c.danger, "#F0C4C4"),
       backgroundColor: onDark(c, c.dangerSoft, "#FDECEC"),

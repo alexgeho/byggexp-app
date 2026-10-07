@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { radius, size } from "../../../theme/tokens";
 
 import { onDark } from "../../../theme/colorUtils";
 
@@ -106,8 +107,8 @@ export const createStyles = (c) =>
     actions: { flexDirection: "row", gap: 12, marginTop: 16 },
     cancelBtn: {
       flex: 1,
-      height: 52,
-      borderRadius: 16,
+      height: size.control,
+      borderRadius: radius.control,
       borderWidth: 1,
       borderColor: onDark(c, c.border, "#D8E0E8"),
       alignItems: "center",
@@ -120,8 +121,8 @@ export const createStyles = (c) =>
     },
     saveBtn: {
       flex: 2,
-      height: 52,
-      borderRadius: 16,
+      height: size.control,
+      borderRadius: radius.control,
       backgroundColor: "#0785F4",
       alignItems: "center",
       justifyContent: "center",

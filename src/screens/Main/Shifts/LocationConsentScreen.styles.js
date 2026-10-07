@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { radius, size } from "../../../theme/tokens";
 
 // Extracted from LocationConsentScreen.jsx — themed style factory (c = theme.content).
 export const createStyles = (c) =>
@@ -88,8 +89,8 @@ export const createStyles = (c) =>
     },
     primaryButton: {
       width: "100%",
-      height: 54,
-      borderRadius: 16,
+      height: size.control,
+      borderRadius: radius.control,
       alignItems: "center",
       justifyContent: "center",
     },

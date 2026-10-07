@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
+import { Button } from "../../components/common/ui";
 import {
-  ActivityIndicator,
   Alert,
   Image,
   ScrollView,
@@ -24,7 +24,6 @@ import {
   isVideoAsset,
   pickUploadAssets,
 } from "../../utils/uploadPicker";
-import { onDark } from "../../theme/colorUtils";
 
 export default function ReportBugScreen() {
   const navigation = useNavigation();
@@ -132,14 +131,6 @@ export default function ReportBugScreen() {
           >
             {t("reportBug.heroTitle")}
           </Text>
-          <Text
-            style={[
-              styles.heroText,
-              { fontFamily: theme.text.fontFamily.medium },
-            ]}
-          >
-            {t("reportBug.heroText")}
-          </Text>
         </View>
 
         <View style={styles.formCard}>
@@ -150,34 +141,23 @@ export default function ReportBugScreen() {
             multiline={true}
             value={message}
             onChangeText={setMessage}
-            placeholder={t("reportBug.descriptionPlaceholder")}
-            placeholderTextColor={onDark(
-              theme.content,
-              theme.content.placeholder,
-              "rgba(5, 45, 80, 0.45)",
-            )}
             style={styles.textArea}
             textAlignVertical="top"
           />
 
-          <TouchableOpacity
-            style={styles.attachmentButton}
-            onPress={pickAttachment}
-            activeOpacity={0.85}
-          >
-            <Icon
-              name={attachmentIsVideo ? "video" : "image"}
-              size={18}
-              color={theme.colors.primary}
-            />
-            <Text style={styles.attachmentButtonText}>
-              {attachment
+          <Button
+            variant="outline"
+            icon={attachmentIsVideo ? "video" : "image"}
+            title={
+              attachment
                 ? attachmentIsVideo
                   ? t("reportBug.changeVideo")
                   : t("reportBug.changeImage")
-                : t("reportBug.attach")}
-            </Text>
-          </TouchableOpacity>
+                : t("reportBug.attach")
+            }
+            onPress={pickAttachment}
+            style={styles.attachmentButton}
+          />
 
           {attachment ? (
             <View style={styles.attachmentPreview}>
@@ -212,18 +192,11 @@ export default function ReportBugScreen() {
           ) : null}
         </View>
 
-        <TouchableOpacity
-          style={[styles.submitButton, saving && styles.submitButtonDisabled]}
+        <Button
+          title={t("reportBug.send")}
           onPress={submitBugReport}
-          disabled={saving}
-          activeOpacity={0.85}
-        >
-          {saving ? (
-            <ActivityIndicator size="small" color="#FFFFFF" />
-          ) : (
-            <Text style={styles.submitButtonText}>{t("reportBug.send")}</Text>
-          )}
-        </TouchableOpacity>
+          loading={saving}
+        />
       </ScrollView>
 
       <BottomBar
