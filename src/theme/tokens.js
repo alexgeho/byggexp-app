@@ -20,6 +20,21 @@ export const radius = {
   lg: 20,
   xl: 24,
   full: 9999,
+  // Roles — what a screen asks for. ONE card radius for every card / field
+  // group / list card, so a form never mixes 10, 16 and 24 again.
+  card: 16,
+  // Bottom sheets / modals (top corners).
+  sheet: 24,
+  // Buttons, inputs, chips, pills.
+  control: 9999,
+};
+
+// Control sizes. Filled and outline buttons share one height (both carry a
+// 1px border — transparent on the filled one) so a pair always lines up.
+export const size = {
+  control: 48, // buttons, single-line inputs
+  headerButton: 44, // round back / save in a screen header
+  border: 1,
 };
 
 // Font sizes on an iOS-ish type scale. Pair with theme.text.fontFamily.*.
@@ -147,6 +162,6 @@ export const darkContent = {
 // they migrate to `theme.content.*`. New code should read `theme.content`.
 export const content = lightContent;
 
-export const tokens = { spacing, radius, fontSize, fontWeight, content };
+export const tokens = { spacing, radius, size, fontSize, fontWeight, content };
 
 export default tokens;

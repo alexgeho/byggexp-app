@@ -6,11 +6,20 @@ import {
   StyleSheet,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
-import { radius, spacing, fontSize } from "../../../theme/tokens";
+import {
+  radius,
+  size as sizes,
+  spacing,
+  fontSize,
+} from "../../../theme/tokens";
 import { useTheme } from "../../../theme/ThemeContext";
 
-// Primary/secondary action button. Shows a spinner while `loading`.
+// THE action button. Shows a spinner while `loading`.
 // `icon` = optional Feather glyph name shown before the title.
+// Variants: "primary" (filled accent), "outline" (transparent + 1px border,
+// dark text), "secondary" (surface fill, accent text). Every variant carries
+// the same 1px border (transparent unless outline), so a filled + outline pair
+// is always exactly the same height.
 export const Button = ({
   title,
   icon,
@@ -24,6 +33,12 @@ export const Button = ({
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const isDisabled = disabled || loading;
+  const fg =
+    variant === "outline"
+      ? theme.content.textPrimary
+      : variant === "secondary"
+        ? theme.content.accent
+        : theme.content.onAccent;
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -32,43 +47,24 @@ export const Button = ({
       style={[
         styles.base,
         size === "sm" ? styles.sizeSm : styles.sizeMd,
-        variant === "secondary" ? styles.secondary : styles.primary,
+        styles[variant] || styles.primary,
+        // Same blue as the header check / FAB on every palette.
+        (variant === "primary" || !styles[variant]) && {
+          backgroundColor: theme.colors.primary,
+        },
         // Loading keeps the full colour — the spinner is the feedback.
         disabled && styles.disabled,
         style,
       ]}
     >
       {loading ? (
-        <ActivityIndicator
-          color={
-            variant === "secondary"
-              ? theme.content.accent
-              : theme.content.onAccent
-          }
-          size="small"
-        />
+        <ActivityIndicator color={fg} size="small" />
       ) : (
         <>
           {icon ? (
-            <Icon
-              name={icon}
-              size={18}
-              color={
-                variant === "secondary"
-                  ? theme.content.accent
-                  : theme.content.onAccent
-              }
-              style={styles.icon}
-            />
+            <Icon name={icon} size={18} color={fg} style={styles.icon} />
           ) : null}
-          <Text
-            style={[
-              styles.text,
-              variant === "secondary"
-                ? styles.textSecondary
-                : styles.textPrimary,
-            ]}
-          >
+          <Text style={[styles.text, { color: fg }]} numberOfLines={1}>
             {title}
           </Text>
         </>
@@ -81,13 +77,15 @@ const createStyles = (c) =>
   StyleSheet.create({
     icon: { marginRight: spacing.sm },
     base: {
-      borderRadius: radius.full,
+      borderRadius: radius.control,
+      borderWidth: sizes.border,
+      borderColor: "transparent",
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
     },
     sizeMd: {
-      height: 48,
+      height: sizes.control,
       paddingHorizontal: spacing.xxl,
     },
     sizeSm: {
@@ -101,18 +99,16 @@ const createStyles = (c) =>
     secondary: {
       backgroundColor: c.surface,
     },
+    outline: {
+      backgroundColor: "transparent",
+      borderColor: c.border,
+    },
     disabled: {
       opacity: 0.6,
     },
     text: {
       fontSize: fontSize.callout,
       fontWeight: "600",
-    },
-    textPrimary: {
-      color: c.onAccent,
-    },
-    textSecondary: {
-      color: c.accent,
     },
   });
 

@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import { onDark } from "../../../theme/colorUtils";
+import { radius } from "../../../theme/tokens";
 
 // Shared styling for the grouped "info field row" — extracted 1:1 from the
 // Redigera anställd (edit employee) form, the design source of truth. Every
@@ -10,7 +11,7 @@ export function createStyles(c) {
     card: {
       width: "100%",
       backgroundColor: c.surface,
-      borderRadius: 10,
+      borderRadius: radius.card,
       overflow: "hidden",
     },
     // padding for the static/input row body

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { StyleSheet } from "react-native";
 
 import { useTheme } from "../theme/ThemeContext";
-import { lightContent } from "../theme/tokens";
+import { lightContent, radius } from "../theme/tokens";
 
 // The shared entity card: projects, employees, tasks, tools, chats, documents.
 // It used to be one fixed light stylesheet, so on the dark theme every status
@@ -24,7 +24,7 @@ export const createCardStyles = (c = lightContent) => {
       backgroundColor: dark ? c.card : "#FFFFFF",
       width: "100%",
       padding: 20,
-      borderRadius: 16,
+      borderRadius: radius.card,
       gap: 8,
       borderWidth: 1,
       // Every entity card shares this one style: on light the border is white,
