@@ -1,17 +1,11 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import {
-  View,
-  Text,
-  TextInput,
   ScrollView,
-  TouchableOpacity,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import Icon from "react-native-vector-icons/Feather";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 
@@ -20,7 +14,12 @@ import { useFeedback } from "../../../contexts/FeedbackContext";
 import { useTheme } from "../../../theme/ThemeContext";
 import { articleService } from "../../../services/article.service";
 import { companyService } from "../../../services/company.service";
-import { BackButton } from "../../../components/common/BackButton/BackButton";
+import {
+  FieldCard,
+  FieldRow,
+} from "../../../components/common/FieldRow/FieldRow";
+import { Button, ChoiceChips, FormHeader } from "../../../components/common/ui";
+import { layout } from "../../../theme/spacing";
 import { getApiErrorMessage } from "../../../utils/apiError";
 
 // New article — mirrors the admin ArticleCreateForm exactly (name, auto art.no.,
@@ -111,28 +110,13 @@ export default function CreateArticleScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
-      <View style={styles.header}>
-        <BackButton
-          onPress={() => navigation.goBack()}
-          iconSource={require("../../../assets/Arrow-left.png")}
-        />
-        <Text style={styles.headerTitle}>
-          {t("articleForm.addTitle", "Ny artikel")}
-        </Text>
-        <TouchableOpacity
-          style={styles.headerSave}
-          onPress={handleSave}
-          disabled={saving}
-          accessibilityRole="button"
-          accessibilityLabel={t("common.save", "Spara")}
-        >
-          {saving ? (
-            <ActivityIndicator color="#FFFFFF" size="small" />
-          ) : (
-            <Icon name="check" size={22} color="#FFFFFF" />
-          )}
-        </TouchableOpacity>
-      </View>
+      <FormHeader
+        title={t("articleForm.addTitle", "Ny artikel")}
+        onBack={() => navigation.goBack()}
+        onSave={handleSave}
+        saving={saving}
+        saveLabel={t("common.save", "Spara")}
+      />
 
       <KeyboardAvoidingView
         style={styles.flex}
@@ -142,96 +126,48 @@ export default function CreateArticleScreen() {
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
         >
-          <Field label={t("articleForm.name", "Artikelnamn")} styles={styles}>
-            <TextInput
-              style={styles.input}
+          <FieldCard>
+            <FieldRow
+              variant="input"
+              floating
+              label={t("articleForm.name", "Artikelnamn")}
               value={form.name}
               onChangeText={(v) => handleChange("name", v)}
-              placeholder={t("articleForm.name", "Artikelnamn")}
-              placeholderTextColor={theme.content.placeholder}
             />
-          </Field>
-
-          <Field
-            label={t("articleForm.articleNumber", "Art.nr")}
-            styles={styles}
-          >
-            <TextInput
-              style={[styles.input, styles.readOnly]}
+            <FieldRow
+              floating
+              label={t("articleForm.articleNumber", "Art.nr")}
               value={String(form.articleNumber || "")}
-              editable={false}
             />
-          </Field>
+            <FieldRow label={t("articleForm.vat", "Moms %")} isLast>
+              <ChoiceChips
+                values={vatOptions}
+                value={form.momsPercent}
+                onChange={(v) => handleChange("momsPercent", v)}
+                format={(v) => `${v}%`}
+              />
+            </FieldRow>
+          </FieldCard>
 
-          <Field label={t("articleForm.vat", "Moms %")} styles={styles}>
-            <View style={styles.chips}>
-              {vatOptions.map((v) => (
-                <Chip
-                  key={v}
-                  label={`${v}%`}
-                  active={form.momsPercent === v}
-                  onPress={() => handleChange("momsPercent", v)}
-                  styles={styles}
-                  accent={theme.colors.primary}
-                />
-              ))}
-            </View>
-          </Field>
-
-          <Field label={t("articleForm.notes", "Anteckningar")} styles={styles}>
-            <TextInput
-              style={[styles.input, styles.textarea]}
+          <FieldCard>
+            <FieldRow
+              variant="input"
+              multiline
+              label={t("articleForm.notes", "Anteckningar")}
               value={form.notes}
               onChangeText={(v) => handleChange("notes", v)}
-              placeholder={t("articleForm.notes", "Anteckningar")}
-              placeholderTextColor={theme.content.placeholder}
-              multiline
+              isLast
             />
-          </Field>
+          </FieldCard>
 
-          <TouchableOpacity
-            style={styles.saveBtn}
+          <Button
+            title={t("articleForm.add", "Lägg till artikel")}
             onPress={handleSave}
-            disabled={saving}
-            activeOpacity={0.85}
-          >
-            {saving ? (
-              <ActivityIndicator color="#FFFFFF" size="small" />
-            ) : (
-              <Text style={styles.saveBtnText}>
-                {t("articleForm.add", "Lägg till artikel")}
-              </Text>
-            )}
-          </TouchableOpacity>
+            loading={saving}
+          />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
-  );
-}
-
-function Field({ label, styles, children }) {
-  return (
-    <View style={styles.fieldBlock}>
-      <Text style={styles.label}>{label}</Text>
-      {children}
-    </View>
-  );
-}
-
-function Chip({ label, active, onPress, styles, accent }) {
-  return (
-    <TouchableOpacity
-      style={[
-        styles.chip,
-        active && { backgroundColor: accent, borderColor: accent },
-      ]}
-      onPress={onPress}
-      activeOpacity={0.8}
-    >
-      <Text style={[styles.chipText, active && { color: "#FFFFFF" }]}>
-        {label}
-      </Text>
-    </TouchableOpacity>
   );
 }
 
@@ -239,97 +175,12 @@ function createStyles(theme) {
   const c = theme.content;
   return StyleSheet.create({
     safe: { flex: 1, backgroundColor: c.background },
-    // Save without scrolling: the same round check the other forms carry.
-    headerSave: {
-      width: 44,
-      height: 44,
-      borderRadius: 999,
-      backgroundColor: theme.colors.primary,
-      alignItems: "center",
-      justifyContent: "center",
-    },
     flex: { flex: 1 },
-    header: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      paddingHorizontal: 16,
-      paddingVertical: 12,
-      gap: 12,
+    content: {
+      paddingHorizontal: layout.formGutter,
+      paddingTop: layout.headerToContent,
+      paddingBottom: 40,
+      gap: layout.betweenCards * 2,
     },
-    headerTitle: {
-      flex: 1,
-      textAlign: "center",
-      color: c.textPrimary,
-      fontSize: 18,
-      fontFamily: theme.text.fontFamily.semiBold,
-    },
-    content: { padding: 16, gap: 14, paddingBottom: 40 },
-    sectionTitle: {
-      color: c.textPrimary,
-      fontSize: 16,
-      fontFamily: theme.text.fontFamily.semiBold,
-    },
-    fieldBlock: { gap: 8 },
-    label: {
-      color: c.textPrimary,
-      fontSize: 13,
-      fontFamily: theme.text.fontFamily.medium,
-    },
-    input: {
-      backgroundColor: c.surface,
-      borderWidth: 1,
-      borderColor: c.border,
-      borderRadius: 14,
-      paddingHorizontal: 16,
-      paddingVertical: 14,
-      color: c.textPrimary,
-      fontSize: 15,
-    },
-    readOnly: { opacity: 0.6 },
-    textarea: { minHeight: 80, textAlignVertical: "top" },
-    chips: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
-    chip: {
-      paddingHorizontal: 14,
-      paddingVertical: 9,
-      borderRadius: 999,
-      borderWidth: 1,
-      borderColor: c.border,
-      backgroundColor: c.surface,
-    },
-    chipText: {
-      color: c.textPrimary,
-      fontSize: 14,
-      fontFamily: theme.text.fontFamily.medium,
-    },
-    saveBtn: {
-      marginTop: 6,
-      backgroundColor: theme.colors.primary,
-      borderRadius: 999,
-      paddingVertical: 15,
-      alignItems: "center",
-    },
-    saveBtnText: {
-      color: "#FFFFFF",
-      fontSize: 16,
-      fontFamily: theme.text.fontFamily.semiBold,
-    },
-    empty: { color: c.textMuted, fontSize: 14 },
-    listRow: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      paddingVertical: 12,
-      borderBottomWidth: 1,
-      borderBottomColor: c.divider,
-      gap: 12,
-    },
-    listName: {
-      flex: 1,
-      color: c.textPrimary,
-      fontSize: 15,
-      fontFamily: theme.text.fontFamily.medium,
-    },
-    listMeta: { color: c.textMuted, fontSize: 13 },
   });
 }

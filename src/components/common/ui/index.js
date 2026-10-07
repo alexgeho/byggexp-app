@@ -7,3 +7,4 @@ export { Button } from "./Button";
 export { Avatar } from "./Avatar";
 export { HeaderCheckButton } from "./HeaderCheckButton";
 export { ChoiceChips } from "./ChoiceChips";
+export { FormHeader } from "./FormHeader";

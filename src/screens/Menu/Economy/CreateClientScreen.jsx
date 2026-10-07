@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import {
   View,
-  Text,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
@@ -16,7 +15,6 @@ import { useFeedback } from "../../../contexts/FeedbackContext";
 import { useTheme } from "../../../theme/ThemeContext";
 import { clientService } from "../../../services/client.service";
 import { companyService } from "../../../services/company.service";
-import { BackButton } from "../../../components/common/BackButton/BackButton";
 import {
   FieldCard,
   FieldRow,
@@ -24,7 +22,7 @@ import {
 import {
   Button,
   ChoiceChips,
-  HeaderCheckButton,
+  FormHeader,
   SectionTitle,
 } from "../../../components/common/ui";
 import { layout } from "../../../theme/spacing";
@@ -168,22 +166,13 @@ export default function CreateClientScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
-      <View style={styles.header}>
-        <BackButton
-          onPress={() => navigation.goBack()}
-          iconSource={require("../../../assets/Arrow-left.png")}
-        />
-        <Text style={styles.headerTitle}>
-          {t("clientForm.addTitle", "Ny klient")}
-        </Text>
-        {/* Save from the header too — the button at the far end of the form
-            is a long scroll away once the company name is all you needed. */}
-        <HeaderCheckButton
-          onPress={handleSave}
-          loading={saving}
-          accessibilityLabel={t("clientForm.add", "Lägg till klient")}
-        />
-      </View>
+      <FormHeader
+        title={t("clientForm.addTitle", "Ny klient")}
+        onBack={() => navigation.goBack()}
+        onSave={handleSave}
+        saving={saving}
+        saveLabel={t("clientForm.add", "Lägg till klient")}
+      />
 
       <KeyboardAvoidingView
         style={styles.flex}
@@ -351,21 +340,6 @@ function createStyles(theme) {
   return StyleSheet.create({
     safe: { flex: 1, backgroundColor: c.background },
     flex: { flex: 1 },
-    header: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      paddingHorizontal: 16,
-      paddingVertical: 12,
-      gap: 12,
-    },
-    headerTitle: {
-      flex: 1,
-      textAlign: "center",
-      color: c.textPrimary,
-      fontSize: 18,
-      fontFamily: theme.text.fontFamily.semiBold,
-    },
     content: {
       paddingHorizontal: layout.formGutter,
       paddingTop: layout.headerToContent,
