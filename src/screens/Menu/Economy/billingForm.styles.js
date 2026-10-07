@@ -2,6 +2,7 @@ import { StyleSheet } from "react-native";
 
 import { onDark } from "../../../theme/colorUtils";
 import { radius, size } from "../../../theme/tokens";
+import { layout } from "../../../theme/spacing";
 
 /* Finance forms — pixel-matched to Figma "new invoice" / "new offer".
    Palette and metrics come straight from the Figma nodes. */
@@ -59,7 +60,11 @@ export const createStyles = (c) => {
     },
     title: { fontSize: 17, fontWeight: "600", color: INK },
 
-    scroll: { paddingHorizontal: 20, paddingBottom: 130, gap: 24 },
+    scroll: {
+      paddingHorizontal: layout.formGutter,
+      paddingBottom: 130,
+      gap: 24,
+    },
     actionBtn: { flex: 1 },
     // The editor's wrapper already spaces its children — drop the title's own
     // bottom margin so heading→card is the same 12 as everywhere.
@@ -240,7 +245,7 @@ export const createStyles = (c) => {
     actions: {
       flexDirection: "row",
       gap: 12,
-      paddingHorizontal: 20,
+      paddingHorizontal: layout.formGutter,
       paddingTop: 12,
       paddingBottom: 30,
       backgroundColor: CARD,

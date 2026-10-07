@@ -812,19 +812,18 @@ export default function CreateTaskScreen() {
             <View style={styles.rowSep} />
             <GroupRow>
               <View style={styles.inputWrapper}>
-                <Text style={styles.inputLabel}>
-                  {t("createTask.taskTitleLabel")}
-                </Text>
+                {/* Floating label: inside the empty field, above it once typed. */}
+                {taskTitle ? (
+                  <Text style={styles.inputLabel}>
+                    {t("createTask.taskTitleLabel")}
+                  </Text>
+                ) : null}
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, styles.inputLine]}
                   value={taskTitle}
                   onChangeText={setTaskTitle}
-                  placeholder={t("createTask.taskTitlePlaceholder")}
-                  placeholderTextColor={onDark(
-                    theme.content,
-                    theme.content.placeholder,
-                    "rgba(5, 45, 80, 0.45)",
-                  )}
+                  placeholder={t("createTask.taskTitleLabel")}
+                  placeholderTextColor={theme.content.placeholder}
                 />
               </View>
             </GroupRow>
@@ -842,12 +841,6 @@ export default function CreateTaskScreen() {
                   style={[styles.input, styles.textArea]}
                   value={taskDescription}
                   onChangeText={setTaskDescription}
-                  placeholder={t("createTask.descriptionPlaceholder")}
-                  placeholderTextColor={onDark(
-                    theme.content,
-                    theme.content.placeholder,
-                    "rgba(5, 45, 80, 0.45)",
-                  )}
                 />
               </View>
             </GroupRow>

@@ -23,6 +23,9 @@ export const space = {
 export const layout = {
   // Side padding of a page, and therefore the left edge of every card.
   screenGutter: space.xl, // 20
+  // Side padding of create/edit forms (standardScreenContainer, Figma 361 in
+  // a 393 frame). Every form screen uses this so card edges line up.
+  formGutter: space.lg, // 16
   // Padding inside a card. Card text therefore starts at 40 from the screen
   // edge, and section headings line up with it (see home screen).
   cardPadding: space.xl, // 20

@@ -367,7 +367,7 @@ function createStyles(theme) {
       fontFamily: theme.text.fontFamily.semiBold,
     },
     content: {
-      paddingHorizontal: layout.screenGutter,
+      paddingHorizontal: layout.formGutter,
       paddingTop: layout.headerToContent,
       paddingBottom: 40,
       gap: layout.betweenCards * 2,

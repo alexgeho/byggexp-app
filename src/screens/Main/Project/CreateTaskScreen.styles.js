@@ -4,6 +4,7 @@ import {
   standardScreenHeader,
 } from "../../../styles/screenLayout";
 import { onDark } from "../../../theme/colorUtils";
+import { radius, size } from "../../../theme/tokens";
 
 export const createStyles = (c) =>
   StyleSheet.create({
@@ -57,7 +58,7 @@ export const createStyles = (c) =>
       backgroundColor: "#0091FF",
       paddingVertical: 12,
       paddingHorizontal: 24,
-      borderRadius: 12,
+      borderRadius: radius.control,
     },
     backButtonText: {
       color: "#ffffff",
@@ -70,7 +71,7 @@ export const createStyles = (c) =>
     headerTitle: {
       color: c.textPrimary,
       fontSize: 17,
-      fontFamily: "DMSans-SemiBold",
+      fontWeight: "600",
     },
     sectionLabel: {
       marginBottom: 8,
@@ -80,18 +81,19 @@ export const createStyles = (c) =>
       fontSize: 13,
       fontWeight: "600",
     },
+    // Same card as the shared FieldCard: white surface, one card radius, no
+    // outline — a task form must not look different from a project form.
     groupCard: {
-      backgroundColor: c.surfaceMuted,
-      borderRadius: 24,
+      backgroundColor: c.surface,
+      borderRadius: radius.card,
       overflow: "hidden",
-      marginBottom: 20,
-      borderWidth: 1,
-      borderColor: c.border,
+      marginBottom: 12,
     },
+    // 62 = FieldRow floating row height (label 16 + 2 + value 20 + 2×12).
     groupRow: {
-      minHeight: 72,
+      minHeight: 62,
       paddingHorizontal: 16,
-      paddingVertical: 14,
+      paddingVertical: 12,
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
@@ -122,8 +124,8 @@ export const createStyles = (c) =>
       gap: 12,
     },
     rowIcon: {
-      width: 27,
-      height: 27,
+      width: 30,
+      height: 30,
       borderRadius: 5,
       alignItems: "center",
       justifyContent: "center",
@@ -132,13 +134,16 @@ export const createStyles = (c) =>
       flex: 1,
     },
     rowLabel: {
-      color: c.textMuted,
+      color: c.textSecondary,
       fontSize: 13,
-      marginBottom: 6,
+      lineHeight: 16,
+      fontWeight: "600",
+      marginBottom: 2,
     },
     rowValue: {
       color: c.textPrimary,
       fontSize: 16,
+      lineHeight: 20,
     },
     rowPlaceholder: {
       color: c.textMuted,
@@ -163,21 +168,26 @@ export const createStyles = (c) =>
       width: "100%",
     },
     inputLabel: {
-      color: c.textMuted,
-      fontSize: 12,
-      marginBottom: 4,
+      color: c.textSecondary,
+      fontSize: 13,
+      lineHeight: 16,
+      fontWeight: "600",
+      marginBottom: 2,
     },
     input: {
       color: c.textPrimary,
       fontSize: 16,
       paddingVertical: 0,
     },
+    inputLine: {
+      lineHeight: 20,
+    },
     textArea: {
       // Short by default — the description is usually one line; it grows as the
       // user types.
-      minHeight: 40,
+      minHeight: 20,
       textAlignVertical: "top",
-      paddingTop: 6,
+      paddingTop: 0,
     },
     textAreaLarge: {
       minHeight: 100,
@@ -235,7 +245,7 @@ export const createStyles = (c) =>
       maxWidth: 420,
       maxHeight: "75%",
       backgroundColor: c.surface,
-      borderRadius: 24,
+      borderRadius: radius.sheet,
       padding: 16,
       borderWidth: 1,
       borderColor: c.border,
@@ -277,7 +287,7 @@ export const createStyles = (c) =>
     },
     projectPickerItem: {
       minHeight: 58,
-      borderRadius: 16,
+      borderRadius: radius.card,
       paddingHorizontal: 14,
       paddingVertical: 10,
       backgroundColor: onDark(c, c.surfaceMuted, "rgba(5, 45, 80, 0.04)"),
@@ -306,10 +316,10 @@ export const createStyles = (c) =>
       marginTop: 2,
     },
     createButton: {
-      height: 56,
+      height: size.control,
       marginTop: 12,
       marginBottom: 16,
-      borderRadius: 18,
+      borderRadius: radius.control,
       backgroundColor: "#0091FF",
       alignItems: "center",
       justifyContent: "center",
@@ -333,7 +343,7 @@ export const createStyles = (c) =>
       width: "100%",
       maxWidth: 360,
       backgroundColor: c.surface,
-      borderRadius: 24,
+      borderRadius: radius.sheet,
       padding: 16,
       borderWidth: 1,
       borderColor: c.border,
@@ -350,7 +360,7 @@ export const createStyles = (c) =>
       alignSelf: "center",
       paddingHorizontal: 18,
       paddingVertical: 10,
-      borderRadius: 14,
+      borderRadius: radius.control,
       backgroundColor: "#0091FF",
     },
     datePickerButtonText: {
@@ -358,7 +368,7 @@ export const createStyles = (c) =>
       fontWeight: "600",
     },
     scheduleRow: {
-      minHeight: 56,
+      minHeight: 62,
       paddingHorizontal: 16,
       paddingVertical: 12,
       flexDirection: "row",
@@ -369,7 +379,7 @@ export const createStyles = (c) =>
     scheduleLabel: {
       color: c.textPrimary,
       fontSize: 16,
-      fontFamily: "DMSans-Regular",
+      fontWeight: "400",
     },
     hintText: {
       color: c.textMuted,
@@ -385,13 +395,13 @@ export const createStyles = (c) =>
       backgroundColor: "#7676801F",
       paddingHorizontal: 12,
       height: 34,
-      borderRadius: 17,
+      borderRadius: radius.control,
       justifyContent: "center",
     },
     dateChipText: {
       color: c.textPrimary,
       fontSize: 14,
-      fontFamily: "DMSans-Regular",
+      fontWeight: "400",
     },
     dateChipPlaceholder: {
       color: c.textMuted,
@@ -435,7 +445,7 @@ export const createStyles = (c) =>
     sheetTitle: {
       color: c.textPrimary,
       fontSize: 20,
-      fontFamily: "DMSans-SemiBold",
+      fontWeight: "600",
     },
     sheetCloseButton: {
       width: 36,
@@ -457,12 +467,12 @@ export const createStyles = (c) =>
     sheetSectionTitle: {
       color: c.textPrimary,
       fontSize: 16,
-      fontFamily: "DMSans-SemiBold",
+      fontWeight: "600",
       marginBottom: 8,
     },
     sheetGroupCard: {
       backgroundColor: onDark(c, c.surface, "rgba(255, 255, 255, 0.7)"),
-      borderRadius: 22,
+      borderRadius: radius.card,
       overflow: "hidden",
       borderWidth: 1,
       borderColor: c.border,
@@ -479,8 +489,8 @@ export const createStyles = (c) =>
       gap: 12,
     },
     sheetSearchBar: {
-      height: 48,
-      borderRadius: 16,
+      height: size.control,
+      borderRadius: radius.control,
       backgroundColor: c.surface,
       flexDirection: "row",
       alignItems: "center",
@@ -517,7 +527,7 @@ export const createStyles = (c) =>
     },
     workerPickerItem: {
       minHeight: 62,
-      borderRadius: 18,
+      borderRadius: radius.card,
       paddingHorizontal: 14,
       paddingVertical: 10,
       backgroundColor: c.surface,
@@ -538,7 +548,7 @@ export const createStyles = (c) =>
     workerAvatarInitials: {
       color: c.textPrimary,
       fontSize: 13,
-      fontFamily: "DMSans-SemiBold",
+      fontWeight: "600",
     },
     workerPickerText: {
       flex: 1,
@@ -546,7 +556,7 @@ export const createStyles = (c) =>
     workerName: {
       color: c.textPrimary,
       fontSize: 15,
-      fontFamily: "DMSans-SemiBold",
+      fontWeight: "600",
       marginBottom: 2,
     },
     workerRole: {
@@ -569,7 +579,7 @@ export const createStyles = (c) =>
     },
     messageBox: {
       backgroundColor: onDark(c, c.surface, "rgba(255, 255, 255, 0.7)"),
-      borderRadius: 22,
+      borderRadius: radius.card,
       padding: 16,
       marginTop: 10,
       borderWidth: 1,
@@ -586,7 +596,7 @@ export const createStyles = (c) =>
     },
     repeatCard: {
       backgroundColor: onDark(c, c.surface, "rgba(255, 255, 255, 0.7)"),
-      borderRadius: 22,
+      borderRadius: radius.card,
       overflow: "hidden",
       borderWidth: 1,
       borderColor: c.border,
@@ -603,7 +613,7 @@ export const createStyles = (c) =>
     repeatOptionTitle: {
       color: c.textPrimary,
       fontSize: 15,
-      fontFamily: "DMSans-SemiBold",
+      fontWeight: "600",
       marginBottom: 4,
     },
     repeatOptionTitleDisabled: {
@@ -640,7 +650,7 @@ export const createStyles = (c) =>
     },
     intervalBox: {
       backgroundColor: onDark(c, c.surface, "rgba(255, 255, 255, 0.7)"),
-      borderRadius: 22,
+      borderRadius: radius.card,
       padding: 16,
       marginTop: 10,
       borderWidth: 1,
@@ -648,19 +658,19 @@ export const createStyles = (c) =>
       gap: 8,
     },
     intervalInput: {
-      height: 46,
-      borderRadius: 14,
+      height: size.control,
+      borderRadius: radius.control,
       backgroundColor: c.surface,
       borderWidth: 1,
       borderColor: onDark(c, c.divider, "rgba(5, 45, 80, 0.12)"),
       paddingHorizontal: 14,
       color: c.textPrimary,
       fontSize: 16,
-      fontFamily: "DMSans-Medium",
+      fontWeight: "500",
     },
     sheetDoneButton: {
-      height: 54,
-      borderRadius: 18,
+      height: size.control,
+      borderRadius: radius.control,
       backgroundColor: "#0091FF",
       alignItems: "center",
       justifyContent: "center",
@@ -670,6 +680,6 @@ export const createStyles = (c) =>
     sheetDoneButtonText: {
       color: "#FFFFFF",
       fontSize: 16,
-      fontFamily: "DMSans-SemiBold",
+      fontWeight: "600",
     },
   });
