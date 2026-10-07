@@ -19,6 +19,14 @@ export function createStyles(c) {
       paddingHorizontal: 16,
       paddingVertical: 12,
     },
+    // Floating-label input: same minimum height as a tap row, content centred,
+    // so empty and filled rows line up with select rows.
+    // 62 = 12 pad + 16 label + 2 gap + 20 value + 12 pad: an empty row is as
+    // tall as a filled one, so the label moving up never makes the row jump.
+    floatingRow: {
+      minHeight: 62,
+      justifyContent: "center",
+    },
     // tappable row (chevron). Same vertical padding as the input row (rowPad)
     // so select/readonly rows are the exact same height as text-field rows —
     // the bottom card must not look shorter than the top one.
@@ -52,6 +60,7 @@ export function createStyles(c) {
     },
     label: {
       fontSize: 13,
+      lineHeight: 16,
       fontWeight: "600",
       color: "#6C6C70",
     },
@@ -60,12 +69,17 @@ export function createStyles(c) {
       color: c.textPrimary,
       paddingVertical: 0,
     },
+    // Single-line only: RN iOS hides a multiline placeholder with lineHeight.
+    inputLine: {
+      lineHeight: 20,
+    },
     inputMultiline: {
       minHeight: 96,
       paddingTop: 4,
     },
     value: {
       fontSize: 16,
+      lineHeight: 20,
       color: c.textPrimary,
     },
     hint: {
@@ -75,6 +89,9 @@ export function createStyles(c) {
     },
     switch: {
       marginLeft: 12,
+    },
+    placeholderFloating: {
+      color: c.placeholder,
     },
     placeholder: {
       color: onDark(c, c.placeholder, "rgba(5, 45, 80, 0.35)"),

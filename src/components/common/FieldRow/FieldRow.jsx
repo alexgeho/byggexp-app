@@ -45,6 +45,10 @@ export function FieldRow({
   // Custom control under the label (chips, segmented choice…) — same row
   // padding and separator as every other row.
   children,
+  // Floating label: while empty the label sits inside the field as its
+  // placeholder (one compact line, like iOS Settings); once there is a value
+  // it moves up as the small grey label. The label is never shown twice.
+  floating = false,
 }) {
   const { theme } = useTheme();
   const c = theme.content;
@@ -82,19 +86,26 @@ export function FieldRow({
   }
 
   if (variant === "input") {
+    // Multiline fields keep the label on top: RN iOS doesn't paint a multiline
+    // placeholder until the field is focused, so it can't carry the label.
+    const float = floating && !multiline;
+    const showLabel = label && (!float || !!value);
     return (
       <>
-        <View style={styles.rowPad}>
+        <View style={[styles.rowPad, float && styles.floatingRow]}>
           <View style={styles.rowContent}>
             {badge}
             <View style={styles.body}>
-              {label ? <Text style={styles.label}>{label}</Text> : null}
+              {showLabel ? <Text style={styles.label}>{label}</Text> : null}
               <TextInput
-                style={[styles.input, multiline && styles.inputMultiline]}
+                style={[
+                  styles.input,
+                  multiline ? styles.inputMultiline : styles.inputLine,
+                ]}
                 value={value}
                 onChangeText={onChangeText}
                 onEndEditing={onEndEditing}
-                placeholder={placeholder}
+                placeholder={float ? placeholder || label : placeholder}
                 placeholderTextColor={c.placeholder}
                 keyboardType={keyboardType}
                 autoCapitalize={autoCapitalize}
@@ -112,11 +123,13 @@ export function FieldRow({
   if (variant === "toggle") {
     return (
       <>
-        <View style={styles.tapRow}>
+        <View style={[styles.tapRow, floating && styles.floatingRow]}>
           <View style={styles.rowContent}>
             {badge}
             <View style={styles.body}>
-              <Text style={styles.label}>{label}</Text>
+              <Text style={floating ? styles.value : styles.label}>
+                {label}
+              </Text>
               {hint ? <Text style={styles.hint}>{hint}</Text> : null}
             </View>
           </View>
@@ -141,20 +154,29 @@ export function FieldRow({
   return (
     <>
       <Container
-        style={isTap ? styles.tapRow : styles.rowPad}
+        style={[
+          isTap ? styles.tapRow : styles.rowPad,
+          floating && styles.floatingRow,
+        ]}
         onPress={onPress}
         activeOpacity={onPress ? 0.85 : 1}
       >
         <View style={styles.rowContent}>
           {badge}
           <View style={styles.body}>
-            <Text style={styles.label}>{label}</Text>
+            {!floating || value ? (
+              <Text style={styles.label}>{label}</Text>
+            ) : null}
             <Text
               numberOfLines={1}
               ellipsizeMode="tail"
-              style={[styles.value, !value && styles.placeholder]}
+              style={[
+                styles.value,
+                !value &&
+                  (floating ? styles.placeholderFloating : styles.placeholder),
+              ]}
             >
-              {value || placeholder}
+              {value || placeholder || (floating ? label : "")}
             </Text>
           </View>
         </View>

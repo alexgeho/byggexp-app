@@ -156,6 +156,7 @@ export default function CreateClientScreen() {
       <FieldRow
         key={k}
         variant={editable ? "input" : "readonly"}
+        floating
         label={label}
         value={String(form[k] ?? "")}
         onChangeText={(v) => set(k, v)}
@@ -248,7 +249,9 @@ export default function CreateClientScreen() {
           </FieldCard>
 
           <View>
-            <SectionTitle>{t("clientForm.address", "Adress")}</SectionTitle>
+            <SectionTitle inset>
+              {t("clientForm.address", "Adress")}
+            </SectionTitle>
             <FieldCard>
               {field("address", t("clientForm.address", "Adress"))}
               {field("postalCode", t("clientForm.postalCode", "Postnummer"))}
@@ -260,7 +263,9 @@ export default function CreateClientScreen() {
           </View>
 
           <View>
-            <SectionTitle>{t("clientForm.contact", "Kontakt")}</SectionTitle>
+            <SectionTitle inset>
+              {t("clientForm.contact", "Kontakt")}
+            </SectionTitle>
             <FieldCard>
               {field("email", t("clientForm.email", "E-post"), {
                 keyboardType: "email-address",
@@ -280,18 +285,17 @@ export default function CreateClientScreen() {
           </View>
 
           <View>
-            <SectionTitle>{t("clientForm.payment", "Betalning")}</SectionTitle>
+            <SectionTitle inset>
+              {t("clientForm.payment", "Betalning")}
+            </SectionTitle>
             <FieldCard>
               <FieldRow
-                label={t("clientForm.paymentTerms", "Betalningsvillkor")}
+                label={`${t("clientForm.paymentTerms", "Betalningsvillkor")} · ${t("clientForm.daysNet", "dagar netto")}`}
               >
                 <ChoiceChips
                   values={PAYMENT_TERMS}
                   value={form.paymentTerms}
                   onChange={(v) => set("paymentTerms", v)}
-                  format={(v) =>
-                    `${v} ${t("clientForm.daysNet", "dagar netto")}`
-                  }
                 />
               </FieldRow>
               <FieldRow label={t("clientForm.currency", "Valuta")}>
@@ -314,6 +318,7 @@ export default function CreateClientScreen() {
               {isCompany ? (
                 <FieldRow
                   variant="toggle"
+                  floating
                   label={t("clientForm.reverseVAT", "Omvänd moms")}
                   switchValue={form.reverseVAT}
                   onSwitchChange={(v) => set("reverseVAT", v)}
