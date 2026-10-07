@@ -52,7 +52,7 @@ import {
 import { canCreateProjects } from "../../../utils/userRoles";
 
 import FloatingActionButton from "../../../components/common/FloatingActionButton/FloatingActionButton";
-import { createStyles } from "./CreateProjectScreen.styles";
+import { createStyles, floatingLabelAnim } from "./CreateProjectScreen.styles";
 import {
   FieldIcon,
   ToolsListModal,
@@ -797,16 +797,11 @@ export default function CreateProjectScreen() {
                 pointerEvents="none"
                 style={[
                   styles.floatingLabel,
-                  {
-                    top: projectNameLabelAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [18, 8],
-                    }),
-                    fontSize: projectNameLabelAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [16, 12],
-                    }),
-                  },
+                  floatingLabelAnim(
+                    projectNameLabelAnim,
+                    theme.content,
+                    isProjectNameFocused || !!projectName,
+                  ),
                 ]}
               >
                 {t("createProject.projectNameLabel")}
@@ -835,16 +830,11 @@ export default function CreateProjectScreen() {
                 pointerEvents="none"
                 style={[
                   styles.floatingLabel,
-                  {
-                    top: litteraLabelAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [18, 8],
-                    }),
-                    fontSize: litteraLabelAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [16, 12],
-                    }),
-                  },
+                  floatingLabelAnim(
+                    litteraLabelAnim,
+                    theme.content,
+                    isLitteraFocused || !!littera,
+                  ),
                 ]}
               >
                 {t("createProject.orderReference", "Orderreferens")}

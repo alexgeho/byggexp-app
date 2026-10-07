@@ -26,7 +26,7 @@ import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { PersonListItem } from "../../../components/common/PersonListItem/PersonListItem";
 import { HeaderCheckButton } from "../../../components/common/ui";
 import { getWorkerStatusBadge } from "../../../utils/workerStatusBadge";
-import { createStyles } from "./CreateProjectScreen.styles";
+import { createStyles, floatingLabelAnim } from "./CreateProjectScreen.styles";
 import { LocationMapPicker, getDeviceCoordinate } from "./LocationMapPicker";
 import { RadiusSlider } from "./RadiusSlider";
 import { useTheme } from "../../../theme/ThemeContext";
@@ -795,6 +795,7 @@ export const LocationPickerModal = ({
 // is required, so no asterisk.
 const FloatingField = ({ label, value, onChangeText, last }) => {
   const styles = useThemedStyles();
+  const { theme } = useTheme();
   const [focused, setFocused] = useState(false);
   const anim = useRef(new Animated.Value(value ? 1 : 0)).current;
 
@@ -818,13 +819,7 @@ const FloatingField = ({ label, value, onChangeText, last }) => {
         pointerEvents="none"
         style={[
           styles.floatingLabel,
-          {
-            top: anim.interpolate({ inputRange: [0, 1], outputRange: [18, 8] }),
-            fontSize: anim.interpolate({
-              inputRange: [0, 1],
-              outputRange: [16, 12],
-            }),
-          },
+          floatingLabelAnim(anim, theme.content, focused || !!value),
         ]}
       >
         {label}

@@ -4,7 +4,22 @@ import {
   standardScreenHeader,
   standardScreenHeaderPlaceholder,
 } from "../../../styles/screenLayout";
+import { radius } from "../../../theme/tokens";
 import { onDark } from "../../../theme/colorUtils";
+
+// Floating label motion for the 62pt field rows (same spec as the shared
+// FieldRow): empty = placeholder grey, centred; filled/focused = small
+// secondary label at the top, value under it.
+export const floatingLabelAnim = (anim, c, floated) => ({
+  // Placeholder = regular, floated label = semibold (FieldRow label weight).
+  fontWeight: floated ? "600" : "400",
+  top: anim.interpolate({ inputRange: [0, 1], outputRange: [21, 12] }),
+  fontSize: anim.interpolate({ inputRange: [0, 1], outputRange: [16, 13] }),
+  color: anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [c.placeholder, c.textSecondary],
+  }),
+});
 
 export const createStyles = (c) =>
   StyleSheet.create({
@@ -46,6 +61,7 @@ export const createStyles = (c) =>
     headerTitle: {
       color: c.textPrimary,
       fontSize: 17,
+      fontWeight: "600",
       textAlign: "center",
     },
     formSectionTitle: {
@@ -59,9 +75,9 @@ export const createStyles = (c) =>
     groupCard: {
       width: "100%",
       backgroundColor: c.surface,
-      borderRadius: 10,
+      borderRadius: radius.card,
       overflow: "hidden",
-      marginBottom: 20,
+      marginBottom: 12,
       borderWidth: 0,
     },
     sheetContainer: {
@@ -142,13 +158,13 @@ export const createStyles = (c) =>
       backgroundColor: "transparent",
       borderRadius: 0,
       marginBottom: 0,
-      minHeight: 56,
+      minHeight: 62,
       borderBottomWidth: 0,
       paddingHorizontal: 16,
     },
     groupedDateRow: {
       width: "100%",
-      minHeight: 56,
+      minHeight: 62,
       backgroundColor: "transparent",
       paddingHorizontal: 16,
       paddingVertical: 10,
@@ -159,12 +175,12 @@ export const createStyles = (c) =>
     noteGroup: {
       width: "100%",
       backgroundColor: c.surface,
-      borderRadius: 10,
+      borderRadius: radius.card,
       paddingHorizontal: 16,
       paddingVertical: 12,
       // Match every other block's gap (groupCard = 20) so the space above and
       // below the Anteckning card is identical.
-      marginBottom: 20,
+      marginBottom: 12,
       borderWidth: 0,
     },
     fieldCardPad: {
@@ -202,7 +218,7 @@ export const createStyles = (c) =>
     },
     projectNameField: {
       width: "100%",
-      height: 56,
+      height: 62,
       position: "relative",
       backgroundColor: c.surface,
       borderRadius: 20,
@@ -215,7 +231,7 @@ export const createStyles = (c) =>
       // A long label (it wraps to two lines in Russian and German) used to push
       // the switch past the card's right edge, where it could barely be hit.
       // The row grows instead, and the label gets the space that is left.
-      minHeight: 56,
+      minHeight: 62,
       paddingVertical: 8,
       backgroundColor: c.surface,
       borderRadius: 20,
@@ -229,13 +245,11 @@ export const createStyles = (c) =>
     floatingLabel: {
       position: "absolute",
       left: 16,
-      color: c.textPrimary,
-      opacity: 0.5,
     },
     floatingInput: {
       width: "100%",
       height: "100%",
-      paddingTop: 22,
+      paddingTop: 18,
       paddingBottom: 0,
       color: c.textPrimary,
       fontSize: 16,
@@ -255,7 +269,7 @@ export const createStyles = (c) =>
     },
     locationField: {
       width: "100%",
-      height: 56,
+      height: 62,
       backgroundColor: c.surface,
       borderRadius: 20,
       paddingHorizontal: 16,
