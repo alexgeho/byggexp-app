@@ -42,6 +42,9 @@ export function FieldRow({
   onSwitchChange,
   // Short muted prefix on the left (e.g. a point number), centred on the row.
   prefix,
+  // Custom control under the label (chips, segmented choice…) — same row
+  // padding and separator as every other row.
+  children,
 }) {
   const { theme } = useTheme();
   const c = theme.content;
@@ -60,6 +63,23 @@ export function FieldRow({
   const sep = !isLast ? (
     <View style={icon ? styles.sepIcon : styles.sepPlain} />
   ) : null;
+
+  if (children) {
+    return (
+      <>
+        <View style={styles.rowPad}>
+          <View style={styles.rowContent}>
+            {badge}
+            <View style={[styles.body, styles.bodyCustom]}>
+              {label ? <Text style={styles.label}>{label}</Text> : null}
+              {children}
+            </View>
+          </View>
+        </View>
+        {sep}
+      </>
+    );
+  }
 
   if (variant === "input") {
     return (

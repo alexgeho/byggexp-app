@@ -47,6 +47,9 @@ export function createStyles(c) {
       flex: 1,
       gap: 2,
     },
+    bodyCustom: {
+      gap: 8,
+    },
     label: {
       fontSize: 13,
       fontWeight: "600",
