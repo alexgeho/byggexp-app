@@ -22,6 +22,7 @@ import {
 import {
   Button,
   ChoiceChips,
+  FormFooter,
   FormHeader,
   SectionTitle,
 } from "../../../components/common/ui";
@@ -165,7 +166,7 @@ export default function CreateClientScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
+    <SafeAreaView style={styles.safe} edges={["top"]}>
       <FormHeader
         title={t("clientForm.addTitle", "Ny klient")}
         onBack={() => navigation.goBack()}
@@ -323,14 +324,16 @@ export default function CreateClientScreen() {
               last: true,
             })}
           </FieldCard>
-
-          <Button
-            title={t("clientForm.add", "Lägg till klient")}
-            onPress={handleSave}
-            loading={saving}
-          />
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <FormFooter>
+        <Button
+          title={t("clientForm.add", "Lägg till klient")}
+          onPress={handleSave}
+          loading={saving}
+        />
+      </FormFooter>
     </SafeAreaView>
   );
 }

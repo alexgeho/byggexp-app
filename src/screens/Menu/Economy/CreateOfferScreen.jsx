@@ -31,7 +31,11 @@ import {
   FieldCard,
   FieldRow,
 } from "../../../components/common/FieldRow/FieldRow";
-import { Button, HeaderCheckButton } from "../../../components/common/ui";
+import {
+  Button,
+  FormFooter,
+  HeaderCheckButton,
+} from "../../../components/common/ui";
 import ClientPickerModal from "./ClientPickerModal";
 
 export default function CreateOfferScreen() {
@@ -307,22 +311,20 @@ export default function CreateOfferScreen() {
         </View>
       </ScrollView>
 
-      <View style={[styles.actions, { paddingBottom: insets.bottom + 12 }]}>
+      <FormFooter>
         <Button
           variant="outline"
           title={t("billing.saveDraft")}
           onPress={handleSaveDraft}
           disabled={saving}
-          style={styles.actionBtn}
         />
         <Button
           icon="share"
           title={t("billing.createAndShare")}
           onPress={handleCreateAndShare}
           loading={saving}
-          style={styles.actionBtn}
         />
-      </View>
+      </FormFooter>
 
       <ClientPickerModal
         visible={clientPickerVisible}

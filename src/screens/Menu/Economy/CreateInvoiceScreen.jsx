@@ -36,7 +36,11 @@ import {
   FieldCard,
   FieldRow,
 } from "../../../components/common/FieldRow/FieldRow";
-import { Button, HeaderCheckButton } from "../../../components/common/ui";
+import {
+  Button,
+  FormFooter,
+  HeaderCheckButton,
+} from "../../../components/common/ui";
 
 const DEFAULT_TERMS_DAYS = 20;
 
@@ -598,22 +602,20 @@ export default function CreateInvoiceScreen() {
         </View>
       </ScrollView>
 
-      <View style={[styles.actions, { paddingBottom: insets.bottom + 12 }]}>
+      <FormFooter>
         <Button
           variant="outline"
           title={t("billing.saveDraft")}
           onPress={handleSaveDraft}
           disabled={saving}
-          style={styles.actionBtn}
         />
         <Button
           icon="mail"
           title={t("billing.createAndSend")}
           onPress={handleCreateAndSend}
           loading={saving}
-          style={styles.actionBtn}
         />
-      </View>
+      </FormFooter>
 
       <ClientPickerModal
         visible={clientPickerVisible}

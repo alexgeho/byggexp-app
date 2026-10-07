@@ -18,7 +18,12 @@ import {
   FieldCard,
   FieldRow,
 } from "../../../components/common/FieldRow/FieldRow";
-import { Button, ChoiceChips, FormHeader } from "../../../components/common/ui";
+import {
+  Button,
+  ChoiceChips,
+  FormFooter,
+  FormHeader,
+} from "../../../components/common/ui";
 import { layout } from "../../../theme/spacing";
 import { getApiErrorMessage } from "../../../utils/apiError";
 
@@ -109,7 +114,7 @@ export default function CreateArticleScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
+    <SafeAreaView style={styles.safe} edges={["top"]}>
       <FormHeader
         title={t("articleForm.addTitle", "Ny artikel")}
         onBack={() => navigation.goBack()}
@@ -159,14 +164,16 @@ export default function CreateArticleScreen() {
               isLast
             />
           </FieldCard>
-
-          <Button
-            title={t("articleForm.add", "Lägg till artikel")}
-            onPress={handleSave}
-            loading={saving}
-          />
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <FormFooter>
+        <Button
+          title={t("articleForm.add", "Lägg till artikel")}
+          onPress={handleSave}
+          loading={saving}
+        />
+      </FormFooter>
     </SafeAreaView>
   );
 }
