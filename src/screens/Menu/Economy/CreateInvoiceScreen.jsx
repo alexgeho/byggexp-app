@@ -2,10 +2,8 @@ import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   ScrollView,
   TouchableOpacity,
-  ActivityIndicator,
   Alert,
   Platform,
 } from "react-native";
@@ -27,13 +25,18 @@ import {
   emptyLineItem,
   isHourRow,
 } from "../../../utils/billingTotals";
-import { createStyles, PRIMARY, placeholderInk } from "./billingForm.styles";
+import { createStyles, PRIMARY } from "./billingForm.styles";
 import { downloadAndShareDocument } from "../../../utils/documentPreview";
 import { API_BASE_URL } from "../../../config/env";
 import { useTheme } from "../../../theme/ThemeContext";
 import LineItemsEditor from "./LineItemsEditor";
 import ClientPickerModal from "./ClientPickerModal";
 import ProjectPickerModal from "./ProjectPickerModal";
+import {
+  FieldCard,
+  FieldRow,
+} from "../../../components/common/FieldRow/FieldRow";
+import { Button, HeaderCheckButton } from "../../../components/common/ui";
 
 const DEFAULT_TERMS_DAYS = 20;
 
@@ -424,19 +427,11 @@ export default function CreateInvoiceScreen() {
         </Text>
         {/* Save the draft straight from the header — the buttons at the end
             of the form are a long scroll away. */}
-        <TouchableOpacity
-          style={styles.headerSave}
+        <HeaderCheckButton
           onPress={handleSaveDraft}
-          disabled={saving}
-          accessibilityRole="button"
+          loading={saving}
           accessibilityLabel={t("billing.saveDraft", "Spara utkast")}
-        >
-          {saving ? (
-            <ActivityIndicator color="#FFFFFF" size="small" />
-          ) : (
-            <Icon name="check" size={22} color="#FFFFFF" />
-          )}
-        </TouchableOpacity>
+        />
       </View>
 
       <ScrollView
@@ -445,121 +440,67 @@ export default function CreateInvoiceScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {/* Customer + add */}
-        <View style={styles.customerRow}>
-          <TouchableOpacity
-            style={[styles.inputRow, styles.customerField]}
+        <FieldCard>
+          <FieldRow
+            variant="select"
+            floating
+            label={t("billing.selectClient")}
+            value={companyName}
             onPress={() => setClientPickerVisible(true)}
-          >
-            <Text
-              style={[
-                styles.inputRowText,
-                !companyName && styles.inputRowPlaceholder,
-              ]}
-              numberOfLines={1}
-            >
-              {companyName || t("billing.selectClient")}
-            </Text>
-            <Icon
-              name="chevron-down"
-              size={16}
-              color={theme.content.textPrimary}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.customerAdd}
-            onPress={() => setClientPickerVisible(true)}
-          >
-            <Icon name="plus" size={20} color={theme.content.textPrimary} />
-          </TouchableOpacity>
-        </View>
-
-        {/* Payment terms (days) — moves the due date with it. */}
-        <View style={styles.field}>
-          <Text style={styles.label}>{t("billing.paymentTerms")}</Text>
-          <TextInput
-            style={styles.input}
+          />
+          {/* Payment terms (days) — moves the due date with it. */}
+          <FieldRow
+            variant="input"
+            floating
+            label={t("billing.paymentTerms")}
             value={paymentTerms}
             onChangeText={onChangePaymentTerms}
             keyboardType="number-pad"
-            selectTextOnFocus
-            placeholder={String(DEFAULT_TERMS_DAYS)}
-            placeholderTextColor={placeholderInk(theme.content)}
+            inputProps={{ selectTextOnFocus: true }}
           />
-        </View>
-
-        {/* Due date */}
-        <View style={styles.field}>
-          <Text style={styles.label}>{t("billing.dueDate")}</Text>
-          <TouchableOpacity
-            style={styles.inputRow}
+          <FieldRow
+            variant="select"
+            floating
+            label={t("billing.dueDate")}
+            value={formatDisplayDate(dueDate)}
             onPress={() => setShowDatePicker(true)}
-          >
-            <Text style={styles.inputRowText}>
-              {formatDisplayDate(dueDate)}
-            </Text>
-            <Icon name="calendar" size={18} color={theme.content.textPrimary} />
-          </TouchableOpacity>
-        </View>
-
-        {/* Project (optional) */}
-        <View style={styles.field}>
-          <Text style={styles.label}>{t("billing.projectOptional")}</Text>
-          <TouchableOpacity
-            style={styles.inputRow}
+          />
+          <FieldRow
+            variant="select"
+            floating
+            label={t("billing.projectOptional")}
+            value={project?.name}
             onPress={() => setProjectPickerVisible(true)}
-          >
-            <Text
-              style={[
-                styles.inputRowText,
-                !project && styles.inputRowPlaceholder,
-              ]}
-              numberOfLines={1}
-            >
-              {project?.name || t("billing.selectProject")}
-            </Text>
-            <Icon
-              name="chevron-down"
-              size={16}
-              color={theme.content.textPrimary}
-            />
-          </TouchableOpacity>
-        </View>
+            isLast
+          />
+        </FieldCard>
 
-        {/* Order reference (littera) — auto-filled from the project, editable */}
-        <View style={styles.field}>
-          <Text style={styles.label}>{t("billing.orderReference")}</Text>
-          <TextInput
-            style={styles.input}
+        {/* Order reference (littera) — auto-filled from the project, editable;
+            then the references printed on the invoice, like the admin form. */}
+        <FieldCard>
+          <FieldRow
+            variant="input"
+            floating
+            label={t("billing.orderReference")}
             value={orderReference}
             onChangeText={setOrderReference}
-            placeholder={t("billing.orderReferencePlaceholder")}
-            placeholderTextColor={placeholderInk(theme.content)}
           />
-        </View>
-
-        {/* References printed on the invoice, like the admin form. */}
-        <View style={styles.field}>
-          <Text style={styles.label}>{t("billing.ourReference")}</Text>
-          <TextInput
-            style={styles.input}
+          <FieldRow
+            variant="input"
+            floating
+            label={t("billing.ourReference")}
             value={ourReference}
             onChangeText={setOurReference}
-            placeholder={t("billing.ourReference")}
-            placeholderTextColor={placeholderInk(theme.content)}
           />
-        </View>
-
-        <View style={styles.field}>
-          <Text style={styles.label}>{t("billing.yourReference")}</Text>
-          <TextInput
-            style={styles.input}
+          <FieldRow
+            variant="input"
+            floating
+            label={t("billing.yourReference")}
             value={yourReference}
             onChangeText={setYourReference}
-            placeholder={t("billing.yourReference")}
-            placeholderTextColor={placeholderInk(theme.content)}
+            isLast
           />
-        </View>
+        </FieldCard>
 
         {/* Invoice rows */}
         <LineItemsEditor
@@ -571,73 +512,46 @@ export default function CreateInvoiceScreen() {
 
         {/* ROT deduction — private customers only. */}
         {isPrivateClient ? (
-          <View style={styles.field}>
-            <Text style={styles.label}>{t("billing.rot")}</Text>
-            <TouchableOpacity
-              style={styles.toggleRow}
-              activeOpacity={0.85}
-              onPress={() => setRotEnabled((prev) => !prev)}
-            >
-              <View style={{ flex: 1 }}>
-                <Text style={styles.toggleTitle}>{t("billing.rotApply")}</Text>
-                <Text style={styles.toggleSub}>{t("billing.rotHint")}</Text>
-              </View>
-              <View
-                style={[
-                  styles.toggleTrack,
-                  {
-                    backgroundColor: rotEnabled ? PRIMARY : "#E2E5EA",
-                    alignItems: rotEnabled ? "flex-end" : "flex-start",
-                  },
-                ]}
-              >
-                <View style={styles.toggleKnob} />
-              </View>
-            </TouchableOpacity>
-          </View>
+          <FieldCard>
+            <FieldRow
+              variant="toggle"
+              floating
+              label={t("billing.rotApply")}
+              switchValue={rotEnabled}
+              onSwitchChange={setRotEnabled}
+              isLast={!rotEnabled}
+            />
+            {rotEnabled ? (
+              <>
+                <FieldRow
+                  variant="input"
+                  floating
+                  label={t("billing.rotPersonalNumber")}
+                  value={rotPersonalNumber}
+                  onChangeText={setRotPersonalNumber}
+                  keyboardType="numbers-and-punctuation"
+                />
+                <FieldRow
+                  variant="input"
+                  floating
+                  label={t("billing.rotProperty")}
+                  value={rotProperty}
+                  onChangeText={setRotProperty}
+                />
+                <FieldRow
+                  variant="input"
+                  floating
+                  label={t("billing.rotLabor")}
+                  value={String(rotLaborAmount)}
+                  onChangeText={setRotLaborAmount}
+                  keyboardType="decimal-pad"
+                  inputProps={{ selectTextOnFocus: true }}
+                  isLast
+                />
+              </>
+            ) : null}
+          </FieldCard>
         ) : null}
-
-        {isPrivateClient && rotEnabled && (
-          <View style={styles.field}>
-            <Text style={styles.label}>{t("billing.rotPersonalNumber")}</Text>
-            <TextInput
-              style={styles.input}
-              value={rotPersonalNumber}
-              onChangeText={setRotPersonalNumber}
-              placeholder={t("billing.rotPersonalNumberPlaceholder")}
-              placeholderTextColor={placeholderInk(theme.content)}
-              keyboardType="numbers-and-punctuation"
-            />
-          </View>
-        )}
-
-        {isPrivateClient && rotEnabled && (
-          <View style={styles.field}>
-            <Text style={styles.label}>{t("billing.rotProperty")}</Text>
-            <TextInput
-              style={styles.input}
-              value={rotProperty}
-              onChangeText={setRotProperty}
-              placeholder={t("billing.rotPropertyPlaceholder")}
-              placeholderTextColor={placeholderInk(theme.content)}
-            />
-          </View>
-        )}
-
-        {isPrivateClient && rotEnabled && (
-          <View style={styles.field}>
-            <Text style={styles.label}>{t("billing.rotLabor")}</Text>
-            <TextInput
-              style={styles.input}
-              value={String(rotLaborAmount)}
-              onChangeText={setRotLaborAmount}
-              placeholder="0"
-              placeholderTextColor={placeholderInk(theme.content)}
-              keyboardType="decimal-pad"
-              selectTextOnFocus
-            />
-          </View>
-        )}
 
         {/* Totals */}
         <View style={styles.totals}>
@@ -685,31 +599,20 @@ export default function CreateInvoiceScreen() {
       </ScrollView>
 
       <View style={[styles.actions, { paddingBottom: insets.bottom + 12 }]}>
-        <TouchableOpacity
-          style={[styles.btn, styles.btnGhost, saving && styles.btnDisabled]}
+        <Button
+          variant="outline"
+          title={t("billing.saveDraft")}
           onPress={handleSaveDraft}
           disabled={saving}
-        >
-          <Text style={[styles.btnText, styles.btnTextGhost]}>
-            {t("billing.saveDraft")}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.btn, styles.btnPrimary, saving && styles.btnDisabled]}
+          style={styles.actionBtn}
+        />
+        <Button
+          icon="mail"
+          title={t("billing.createAndSend")}
           onPress={handleCreateAndSend}
-          disabled={saving}
-        >
-          {saving ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <>
-              <Icon name="mail" size={16} color="#fff" />
-              <Text style={[styles.btnText, styles.btnTextPrimary]}>
-                {t("billing.createAndSend")}
-              </Text>
-            </>
-          )}
-        </TouchableOpacity>
+          loading={saving}
+          style={styles.actionBtn}
+        />
       </View>
 
       <ClientPickerModal

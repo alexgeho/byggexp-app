@@ -2,10 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   ScrollView,
   TouchableOpacity,
-  ActivityIndicator,
   Alert,
   Platform,
 } from "react-native";
@@ -26,9 +24,14 @@ import {
   addDaysIso,
   emptyLineItem,
 } from "../../../utils/billingTotals";
-import { createStyles, PRIMARY, placeholderInk } from "./billingForm.styles";
+import { createStyles, PRIMARY } from "./billingForm.styles";
 import { useTheme } from "../../../theme/ThemeContext";
 import LineItemsEditor from "./LineItemsEditor";
+import {
+  FieldCard,
+  FieldRow,
+} from "../../../components/common/FieldRow/FieldRow";
+import { Button, HeaderCheckButton } from "../../../components/common/ui";
 import ClientPickerModal from "./ClientPickerModal";
 
 export default function CreateOfferScreen() {
@@ -202,19 +205,11 @@ export default function CreateOfferScreen() {
         </Text>
         {/* Save the draft straight from the header — the buttons at the end
             of the form are a long scroll away. */}
-        <TouchableOpacity
-          style={styles.headerSave}
+        <HeaderCheckButton
           onPress={handleSaveDraft}
-          disabled={saving}
-          accessibilityRole="button"
+          loading={saving}
           accessibilityLabel={t("billing.saveDraft", "Spara utkast")}
-        >
-          {saving ? (
-            <ActivityIndicator color="#FFFFFF" size="small" />
-          ) : (
-            <Icon name="check" size={22} color="#FFFFFF" />
-          )}
-        </TouchableOpacity>
+        />
       </View>
 
       <ScrollView
@@ -223,75 +218,37 @@ export default function CreateOfferScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {/* Customer + add */}
-        <View style={styles.customerRow}>
-          <TouchableOpacity
-            style={[styles.inputRow, styles.customerField]}
+        <FieldCard>
+          <FieldRow
+            variant="select"
+            floating
+            label={t("billing.selectClientCompany")}
+            value={companyName}
             onPress={() => setClientPickerVisible(true)}
-          >
-            <Text
-              style={[
-                styles.inputRowText,
-                !companyName && styles.inputRowPlaceholder,
-              ]}
-              numberOfLines={1}
-            >
-              {companyName || t("billing.selectClientCompany")}
-            </Text>
-            <Icon
-              name="chevron-down"
-              size={16}
-              color={theme.content.textPrimary}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.customerAdd}
-            onPress={() => setClientPickerVisible(true)}
-          >
-            <Icon name="plus" size={20} color={theme.content.textPrimary} />
-          </TouchableOpacity>
-        </View>
-
-        {/* Subtitle */}
-        <View style={styles.field}>
-          <Text style={styles.label}>{t("billing.subtitle")}</Text>
-          <TextInput
-            style={styles.input}
+          />
+          <FieldRow
+            variant="input"
+            floating
+            label={t("billing.subtitle")}
             value={subtitle}
             onChangeText={setSubtitle}
-            placeholder={t("billing.subtitlePlaceholder")}
-            placeholderTextColor={placeholderInk(theme.content)}
           />
-        </View>
-
-        {/* Description */}
-        <View style={styles.field}>
-          <Text style={styles.label}>{t("billing.offerDescription")}</Text>
-          <View style={styles.textareaCard}>
-            <TextInput
-              style={styles.textarea}
-              value={description}
-              onChangeText={setDescription}
-              placeholder={t("billing.offerDescriptionPlaceholder")}
-              placeholderTextColor={placeholderInk(theme.content)}
-              multiline
-            />
-          </View>
-        </View>
-
-        {/* Valid until */}
-        <View style={styles.field}>
-          <Text style={styles.label}>{t("billing.validUntil")}</Text>
-          <TouchableOpacity
-            style={styles.inputRow}
+          <FieldRow
+            variant="select"
+            floating
+            label={t("billing.validUntil")}
+            value={formatDisplayDate(validUntil)}
             onPress={() => setShowDatePicker(true)}
-          >
-            <Text style={styles.inputRowText}>
-              {formatDisplayDate(validUntil)}
-            </Text>
-            <Icon name="calendar" size={18} color={theme.content.textPrimary} />
-          </TouchableOpacity>
-        </View>
+          />
+          <FieldRow
+            variant="input"
+            multiline
+            label={t("billing.offerDescription")}
+            value={description}
+            onChangeText={setDescription}
+            isLast
+          />
+        </FieldCard>
 
         {/* Offer rows */}
         <LineItemsEditor
@@ -301,43 +258,31 @@ export default function CreateOfferScreen() {
           rowLabel={t("billing.itemDescription")}
         />
 
-        {/* Clarifications */}
-        <View style={styles.field}>
-          <Text style={styles.label}>{t("billing.clarifications")}</Text>
-          <View style={styles.textareaCard}>
-            <TextInput
-              style={[styles.textarea, styles.textareaShort]}
-              value={clarifications}
-              onChangeText={setClarifications}
-              placeholder={t("billing.clarificationsPlaceholder")}
-              placeholderTextColor={placeholderInk(theme.content)}
-              multiline
-            />
-          </View>
-        </View>
-
-        {/* Contact person printed on the offer. */}
-        <View style={styles.field}>
-          <Text style={styles.label}>{t("billing.contactPerson")}</Text>
-          <TextInput
-            style={styles.input}
+        <FieldCard>
+          <FieldRow
+            variant="input"
+            multiline
+            label={t("billing.clarifications")}
+            value={clarifications}
+            onChangeText={setClarifications}
+          />
+          {/* Contact person printed on the offer. */}
+          <FieldRow
+            variant="input"
+            floating
+            label={t("billing.contactPerson")}
             value={contactName}
             onChangeText={setContactName}
-            placeholder={t("billing.contactPerson")}
-            placeholderTextColor={placeholderInk(theme.content)}
           />
-        </View>
-
-        <View style={styles.field}>
-          <Text style={styles.label}>{t("billing.contactRole")}</Text>
-          <TextInput
-            style={styles.input}
+          <FieldRow
+            variant="input"
+            floating
+            label={t("billing.contactRole")}
             value={contactRole}
             onChangeText={setContactRole}
-            placeholder={t("billing.contactRole")}
-            placeholderTextColor={placeholderInk(theme.content)}
+            isLast
           />
-        </View>
+        </FieldCard>
 
         {/* Totals */}
         <View style={styles.totals}>
@@ -363,31 +308,20 @@ export default function CreateOfferScreen() {
       </ScrollView>
 
       <View style={[styles.actions, { paddingBottom: insets.bottom + 12 }]}>
-        <TouchableOpacity
-          style={[styles.btn, styles.btnGhost, saving && styles.btnDisabled]}
+        <Button
+          variant="outline"
+          title={t("billing.saveDraft")}
           onPress={handleSaveDraft}
           disabled={saving}
-        >
-          <Text style={[styles.btnText, styles.btnTextGhost]}>
-            {t("billing.saveDraft")}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.btn, styles.btnPrimary, saving && styles.btnDisabled]}
+          style={styles.actionBtn}
+        />
+        <Button
+          icon="share"
+          title={t("billing.createAndShare")}
           onPress={handleCreateAndShare}
-          disabled={saving}
-        >
-          {saving ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <>
-              <Icon name="share" size={16} color="#fff" />
-              <Text style={[styles.btnText, styles.btnTextPrimary]}>
-                {t("billing.createAndShare")}
-              </Text>
-            </>
-          )}
-        </TouchableOpacity>
+          loading={saving}
+          style={styles.actionBtn}
+        />
       </View>
 
       <ClientPickerModal

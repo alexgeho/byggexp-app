@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 
 import { onDark } from "../../../theme/colorUtils";
+import { radius, size } from "../../../theme/tokens";
 
 /* Finance forms — pixel-matched to Figma "new invoice" / "new offer".
    Palette and metrics come straight from the Figma nodes. */
@@ -17,15 +18,13 @@ export const PLACEHOLDER = "#9AA6B2";
 export const mutedInk = (c) => onDark(c, c.textMuted, MUTED);
 export const placeholderInk = (c) => onDark(c, c.placeholder, PLACEHOLDER);
 
-const F_MED = "DMSans-Medium"; // Figma weight 500
-const F_SEMI = "DMSans-SemiBold"; // Figma weight 600
-
 export const createStyles = (c) => {
   const PAGE = c.background;
   const CARD = c.surface;
   const INK = c.textPrimary;
   const MUTED = c.textMuted;
   const INPUT_BG = c.inputSurface;
+  const PRIMARY = c.accent;
   return StyleSheet.create({
     container: { flex: 1, backgroundColor: PAGE },
 
@@ -58,34 +57,38 @@ export const createStyles = (c) => {
       alignItems: "center",
       justifyContent: "center",
     },
-    title: { fontSize: 17, fontFamily: F_SEMI, color: INK },
+    title: { fontSize: 17, fontWeight: "600", color: INK },
 
-    scroll: { paddingHorizontal: 16, paddingBottom: 130, gap: 20 },
+    scroll: { paddingHorizontal: 20, paddingBottom: 130, gap: 24 },
+    actionBtn: { flex: 1 },
+    // The editor's wrapper already spaces its children — drop the title's own
+    // bottom margin so heading→card is the same 12 as everywhere.
+    sectionTitleFlush: { marginBottom: 0 },
 
     /* Label + field block (Figma: 8px gap between label and field) */
     field: { gap: 8 },
-    label: { fontSize: 15, fontFamily: F_MED, color: INK },
+    label: { fontSize: 15, fontWeight: "500", color: INK },
 
     /* Pill field (h44, r71, white) */
     input: {
       backgroundColor: CARD,
-      borderRadius: 71,
+      borderRadius: radius.control,
       paddingHorizontal: 16,
       height: 44,
       fontSize: 15,
-      fontFamily: F_MED,
+      fontWeight: "500",
       color: INK,
     },
     inputRow: {
       backgroundColor: CARD,
-      borderRadius: 71,
+      borderRadius: radius.control,
       paddingHorizontal: 16,
       height: 44,
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
     },
-    inputRowText: { fontSize: 15, fontFamily: F_MED, color: INK, flex: 1 },
+    inputRowText: { fontSize: 15, fontWeight: "500", color: INK, flex: 1 },
     inputRowPlaceholder: { color: PLACEHOLDER },
 
     /* "Select customer" + plus button on the same row */
@@ -94,7 +97,7 @@ export const createStyles = (c) => {
     customerAdd: {
       width: 44,
       height: 44,
-      borderRadius: 71,
+      borderRadius: radius.control,
       backgroundColor: CARD,
       alignItems: "center",
       justifyContent: "center",
@@ -103,13 +106,13 @@ export const createStyles = (c) => {
     /* Textarea card (Description / Clarifications): r20 white, pad t17 l20 r20 */
     textareaCard: {
       backgroundColor: CARD,
-      borderRadius: 20,
+      borderRadius: radius.card,
       paddingHorizontal: 20,
       paddingVertical: 17,
     },
     textarea: {
       fontSize: 15,
-      fontFamily: F_MED,
+      fontWeight: "500",
       color: INK,
       minHeight: 94,
       padding: 0,
@@ -120,9 +123,9 @@ export const createStyles = (c) => {
     /* Line-items card (r20 white, pad15) — one card per row */
     row: {
       backgroundColor: CARD,
-      borderRadius: 20,
-      padding: 15,
-      gap: 15,
+      borderRadius: radius.card,
+      padding: 16,
+      gap: 16,
     },
     rowBlock: { gap: 8 },
     rowLabelLine: {
@@ -132,26 +135,28 @@ export const createStyles = (c) => {
     },
     rowDescField: {
       backgroundColor: INPUT_BG,
-      borderRadius: 71,
+      borderRadius: radius.control,
       paddingHorizontal: 16,
-      minHeight: 44,
+      minHeight: size.control,
+      paddingTop: 14,
+      paddingBottom: 14,
       justifyContent: "center",
       fontSize: 15,
-      fontFamily: F_MED,
+      fontWeight: "500",
       color: INK,
       textAlignVertical: "center",
     },
     rowDelete: { padding: 2 },
     rowGrid: { flexDirection: "row", gap: 15 },
     cell: { flex: 1, gap: 8 },
-    cellLabel: { fontSize: 13, fontFamily: F_MED, color: INK },
+    cellLabel: { fontSize: 13, fontWeight: "500", color: INK },
     cellInput: {
       backgroundColor: INPUT_BG,
-      borderRadius: 71,
+      borderRadius: radius.control,
       paddingHorizontal: 16,
-      height: 44,
+      height: size.control,
       fontSize: 15,
-      fontFamily: F_MED,
+      fontWeight: "500",
       color: INK,
       textAlign: "right",
     },
@@ -161,27 +166,27 @@ export const createStyles = (c) => {
       justifyContent: "space-between",
       alignItems: "center",
     },
-    rowAmountLabel: { fontSize: 13, fontFamily: F_MED, color: INK },
-    rowAmountValue: { fontSize: 17, fontFamily: F_SEMI, color: INK },
+    rowAmountLabel: { fontSize: 13, fontWeight: "500", color: INK },
+    rowAmountValue: { fontSize: 17, fontWeight: "600", color: INK },
 
     /* Add row — pill, white, blue border + blue label */
     addRow: {
-      height: 44,
-      borderRadius: 71,
-      borderWidth: 1,
-      borderColor: PRIMARY,
-      backgroundColor: CARD,
+      height: size.control,
+      borderRadius: radius.control,
+      borderWidth: size.border,
+      borderColor: c.border,
+      backgroundColor: "transparent",
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
       gap: 6,
     },
-    addRowText: { color: PRIMARY, fontFamily: F_MED, fontSize: 15 },
+    addRowText: { color: INK, fontWeight: "600", fontSize: 15 },
 
     /* ROT card */
     toggleRow: {
       backgroundColor: CARD,
-      borderRadius: 20,
+      borderRadius: radius.card,
       paddingHorizontal: 16,
       paddingVertical: 10,
       minHeight: 66,
@@ -190,8 +195,8 @@ export const createStyles = (c) => {
       justifyContent: "space-between",
       gap: 10,
     },
-    toggleTitle: { fontSize: 15, fontFamily: F_SEMI, color: INK },
-    toggleSub: { fontSize: 13, fontFamily: F_MED, color: MUTED, marginTop: 2 },
+    toggleTitle: { fontSize: 15, fontWeight: "600", color: INK },
+    toggleSub: { fontSize: 13, fontWeight: "500", color: MUTED, marginTop: 2 },
     toggleTrack: {
       width: 51,
       height: 31,
@@ -214,14 +219,13 @@ export const createStyles = (c) => {
     /* Totals card (r20 white) */
     totals: {
       backgroundColor: CARD,
-      borderRadius: 20,
-      paddingHorizontal: 20,
-      paddingVertical: 17,
+      borderRadius: radius.card,
+      padding: 16,
       gap: 8,
     },
     totalLine: { flexDirection: "row", justifyContent: "space-between" },
-    totalLabel: { fontSize: 15, fontFamily: F_MED, color: INK },
-    totalValue: { fontSize: 15, fontFamily: F_SEMI, color: INK },
+    totalLabel: { fontSize: 15, fontWeight: "500", color: INK },
+    totalValue: { fontSize: 15, fontWeight: "600", color: INK },
     totalValueNeg: { color: "#04B251" },
     grandLine: {
       marginTop: 7,
@@ -229,13 +233,13 @@ export const createStyles = (c) => {
       justifyContent: "space-between",
       alignItems: "center",
     },
-    grandLabel: { fontSize: 17, fontFamily: F_SEMI, color: INK },
-    grandValue: { fontSize: 17, fontFamily: F_SEMI, color: INK },
+    grandLabel: { fontSize: 17, fontWeight: "600", color: INK },
+    grandValue: { fontSize: 17, fontWeight: "600", color: INK },
 
     /* Bottom action bar (white "Down" frame with two pills) */
     actions: {
       flexDirection: "row",
-      gap: 14,
+      gap: 12,
       paddingHorizontal: 20,
       paddingTop: 12,
       paddingBottom: 30,
@@ -244,7 +248,7 @@ export const createStyles = (c) => {
     btn: {
       flex: 1,
       height: 52,
-      borderRadius: 71,
+      borderRadius: radius.control,
       alignItems: "center",
       justifyContent: "center",
       flexDirection: "row",
@@ -253,7 +257,7 @@ export const createStyles = (c) => {
     btnPrimary: { backgroundColor: PRIMARY },
     // Figma shows a white pill on the white bar; a hairline keeps it visible.
     btnGhost: { backgroundColor: CARD, borderWidth: 1, borderColor: "#ECECEC" },
-    btnText: { fontSize: 15, fontFamily: F_MED },
+    btnText: { fontSize: 15, fontWeight: "500" },
     btnTextPrimary: { color: "#FFFFFF" },
     btnTextGhost: { color: INK },
     btnDisabled: { opacity: 0.5 },
@@ -266,18 +270,18 @@ export const createStyles = (c) => {
     typeToggle: {
       flexDirection: "row",
       backgroundColor: INPUT_BG,
-      borderRadius: 71,
+      borderRadius: radius.control,
       padding: 4,
       marginBottom: 12,
     },
     typeBtn: {
       flex: 1,
       paddingVertical: 9,
-      borderRadius: 71,
+      borderRadius: radius.control,
       alignItems: "center",
     },
     typeBtnOn: { backgroundColor: CARD },
-    typeText: { fontSize: 14, fontFamily: F_MED, color: MUTED },
+    typeText: { fontSize: 14, fontWeight: "500", color: MUTED },
     typeTextOn: { color: INK },
 
     /* article button + discount/VAT cells on an invoice row */
@@ -290,14 +294,14 @@ export const createStyles = (c) => {
     articleBtnText: {
       flex: 1,
       fontSize: 14,
-      fontFamily: F_MED,
+      fontWeight: "500",
       color: PRIMARY,
     },
     articlePicked: { flex: 1 },
-    articlePickedName: { fontSize: 15, fontFamily: F_SEMI, color: INK },
+    articlePickedName: { fontSize: 15, fontWeight: "600", color: INK },
     articlePickedMeta: {
       fontSize: 13,
-      fontFamily: F_MED,
+      fontWeight: "500",
       color: MUTED,
       marginTop: 1,
     },
@@ -308,11 +312,11 @@ export const createStyles = (c) => {
     vatChip: {
       paddingHorizontal: 10,
       paddingVertical: 6,
-      borderRadius: 71,
+      borderRadius: radius.control,
       backgroundColor: INPUT_BG,
     },
     vatChipOn: { backgroundColor: PRIMARY },
-    vatChipText: { fontSize: 13, fontFamily: F_MED, color: MUTED },
+    vatChipText: { fontSize: 13, fontWeight: "500", color: MUTED },
     vatChipTextOn: { color: "#FFFFFF" },
 
     /* client picker modal */
@@ -323,8 +327,8 @@ export const createStyles = (c) => {
     },
     modalSheet: {
       backgroundColor: CARD,
-      borderTopLeftRadius: 24,
-      borderTopRightRadius: 24,
+      borderTopLeftRadius: radius.sheet,
+      borderTopRightRadius: radius.sheet,
       paddingHorizontal: 18,
       paddingTop: 14,
       paddingBottom: 30,
@@ -340,7 +344,7 @@ export const createStyles = (c) => {
     },
     modalTitle: {
       fontSize: 17,
-      fontFamily: F_SEMI,
+      fontWeight: "600",
       color: INK,
       marginBottom: 12,
     },
@@ -349,7 +353,7 @@ export const createStyles = (c) => {
       alignItems: "center",
       gap: 8,
       backgroundColor: INPUT_BG,
-      borderRadius: 71,
+      borderRadius: radius.control,
       paddingHorizontal: 16,
       marginBottom: 10,
     },
@@ -357,7 +361,7 @@ export const createStyles = (c) => {
       flex: 1,
       paddingVertical: 11,
       fontSize: 15,
-      fontFamily: F_MED,
+      fontWeight: "500",
       color: INK,
     },
     // Rows in the picker sheets: a hairline in the theme's own separator
@@ -369,14 +373,14 @@ export const createStyles = (c) => {
       borderBottomColor: c.divider,
     },
     clientRowLast: { borderBottomWidth: 0 },
-    clientName: { fontSize: 15, fontFamily: F_SEMI, color: INK },
-    clientMeta: { fontSize: 13, fontFamily: F_MED, color: MUTED, marginTop: 2 },
+    clientName: { fontSize: 15, fontWeight: "600", color: INK },
+    clientMeta: { fontSize: 13, fontWeight: "500", color: MUTED, marginTop: 2 },
     newClientBtn: {
       flexDirection: "row",
       alignItems: "center",
       gap: 8,
       paddingVertical: 14,
     },
-    newClientText: { color: PRIMARY, fontFamily: F_SEMI, fontSize: 15 },
+    newClientText: { color: PRIMARY, fontWeight: "600", fontSize: 15 },
   });
 };

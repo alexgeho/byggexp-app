@@ -10,8 +10,9 @@ import {
 } from "../../../utils/billingTotals";
 import ArticlePickerModal from "./ArticlePickerModal";
 import { getDateLocale } from "../../../utils/dateLocale";
-import { createStyles, PRIMARY, placeholderInk } from "./billingForm.styles";
+import { createStyles, placeholderInk } from "./billingForm.styles";
 import { useTheme } from "../../../theme/ThemeContext";
+import { SectionTitle } from "../../../components/common/ui";
 
 // The VAT rate is not edited here: it belongs to the article and is fixed in
 // the catalogue, so it rides in with the article and is shown, not chosen.
@@ -91,8 +92,12 @@ export default function LineItemsEditor({
   };
 
   return (
-    <View style={{ gap: 8 }}>
-      {label ? <Text style={styles.label}>{label}</Text> : null}
+    <View style={{ gap: 12 }}>
+      {label ? (
+        <SectionTitle inset style={styles.sectionTitleFlush}>
+          {label}
+        </SectionTitle>
+      ) : null}
 
       {items.map((item, index) => (
         <View key={item._key ?? index} style={styles.row}>
@@ -105,7 +110,7 @@ export default function LineItemsEditor({
               onPress={() => setArticleRow(index)}
               activeOpacity={0.7}
             >
-              <Icon name="package" size={16} color={PRIMARY} />
+              <Icon name="package" size={16} color={theme.content.accent} />
               {item.articleNumber ? (
                 <View style={styles.articlePicked}>
                   <Text style={styles.articlePickedName} numberOfLines={1}>
@@ -122,7 +127,11 @@ export default function LineItemsEditor({
                   {t("billing.pickArticle")}
                 </Text>
               )}
-              <Icon name="chevron-right" size={18} color={PRIMARY} />
+              <Icon
+                name="chevron-right"
+                size={18}
+                color={theme.content.accent}
+              />
             </TouchableOpacity>
           )}
 
@@ -224,7 +233,7 @@ export default function LineItemsEditor({
 
       <TouchableOpacity style={styles.addRow} onPress={add} activeOpacity={0.8}>
         <Text style={styles.addRowText}>{t("billing.addRow")}</Text>
-        <Icon name="plus" size={20} color={PRIMARY} />
+        <Icon name="plus" size={20} color={theme.content.textPrimary} />
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -233,7 +242,7 @@ export default function LineItemsEditor({
         activeOpacity={0.8}
       >
         <Text style={styles.addRowText}>{t("billing.addTextRow")}</Text>
-        <Icon name="type" size={18} color={PRIMARY} />
+        <Icon name="type" size={18} color={theme.content.textPrimary} />
       </TouchableOpacity>
 
       <ArticlePickerModal

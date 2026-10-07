@@ -49,6 +49,8 @@ export function FieldRow({
   // placeholder (one compact line, like iOS Settings); once there is a value
   // it moves up as the small grey label. The label is never shown twice.
   floating = false,
+  // Extra TextInput props (selectTextOnFocus, autoCorrect…) for "input".
+  inputProps,
 }) {
   const { theme } = useTheme();
   const c = theme.content;
@@ -111,6 +113,7 @@ export function FieldRow({
                 autoCapitalize={autoCapitalize}
                 multiline={multiline}
                 textAlignVertical={multiline ? "top" : "auto"}
+                {...inputProps}
               />
             </View>
           </View>
