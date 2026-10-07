@@ -13,7 +13,7 @@
 - [x] Общие компоненты: FormHeader, FieldRow `floating` (строки 62pt, подпись не дублируется), Button `outline` (пара одной высоты), ChoiceChips, SectionTitle `inset`
 - [x] Экраны: New client, New invoice, New offer, New article, Supplier invoice, Company details, Create task, Create project, Report bug; все кнопки действий → 48/pill; тёмная тема проверена
 - [x] Скрины до/после → ~/Desktop/byggexp-app-design/ ; дизайн-система → docs/DESIGN-SYSTEM.md + рабочий стол + OneDrive
-- [ ] OTA не выпускал — сначала посмотреть на телефоне / решить
+- [x] OTA `60fc2f00` (production, runtime 1.1.0) — 14:50
 - [ ] Следующие: шторки-пикеры, MyAccount, Shifts/Schedule, экраны входа, чат
 - [i] Dev-only: `xcrun simctl openurl booted "byggexp://dev-nav/<Screen>"`, `byggexp://dev-theme/black|blue`; ввод в сим: `simctl pbcopy` + cmd+V
 
