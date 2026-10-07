@@ -1,24 +1,23 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import Icon from "react-native-vector-icons/Feather";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import { useTheme } from "../../../theme/ThemeContext";
 import { projectService, supplierInvoiceService } from "../../../services";
-import { BackButton } from "../../../components/common/BackButton/BackButton";
+import {
+  FieldCard,
+  FieldRow,
+} from "../../../components/common/FieldRow/FieldRow";
+import { Button, FormHeader } from "../../../components/common/ui";
+import { layout } from "../../../theme/spacing";
 import { getApiErrorMessage } from "../../../utils/apiError";
 import { pickUploadAssets } from "../../../utils/uploadPicker";
 import ProjectPickerModal from "./ProjectPickerModal";
@@ -168,30 +167,17 @@ export default function CreateSupplierInvoiceScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
-      <View style={styles.header}>
-        <BackButton
-          onPress={() => navigation.goBack()}
-          iconSource={require("../../../assets/Arrow-left.png")}
-        />
-        <Text style={styles.headerTitle}>
-          {editingId
+      <FormHeader
+        title={
+          editingId
             ? t("supplierInvoices.editTitle")
-            : t("supplierInvoices.addTitle")}
-        </Text>
-        <TouchableOpacity
-          style={styles.headerSave}
-          onPress={handleSave}
-          disabled={saving}
-          accessibilityRole="button"
-          accessibilityLabel={t("common.save")}
-        >
-          {saving ? (
-            <ActivityIndicator color="#FFFFFF" size="small" />
-          ) : (
-            <Icon name="check" size={22} color="#FFFFFF" />
-          )}
-        </TouchableOpacity>
-      </View>
+            : t("supplierInvoices.addTitle")
+        }
+        onBack={() => navigation.goBack()}
+        onSave={handleSave}
+        saving={saving}
+        saveLabel={t("common.save")}
+      />
 
       <KeyboardAvoidingView
         style={styles.flex}
@@ -201,158 +187,119 @@ export default function CreateSupplierInvoiceScreen() {
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
         >
-          <Field label={t("supplierInvoices.supplier")} styles={styles}>
-            <TextInput
-              style={styles.input}
+          <FieldCard>
+            <FieldRow
+              variant="input"
+              floating
+              label={t("supplierInvoices.supplier")}
               value={form.supplierName}
               onChangeText={(value) => change("supplierName", value)}
-              placeholder={t("supplierInvoices.supplier")}
-              placeholderTextColor={theme.content.placeholder}
             />
-          </Field>
-
-          <View style={styles.row}>
-            <Field
+            <FieldRow
+              variant="input"
+              floating
               label={t("supplierInvoices.invoiceNumber")}
-              styles={styles}
-              flex
-            >
-              <TextInput
-                style={styles.input}
-                value={form.invoiceNumber}
-                onChangeText={(value) => change("invoiceNumber", value)}
-                placeholderTextColor={theme.content.placeholder}
-              />
-            </Field>
-            <Field label={t("supplierInvoices.ocr")} styles={styles} flex>
-              <TextInput
-                style={styles.input}
-                value={form.ocr}
-                onChangeText={(value) => change("ocr", value)}
-                keyboardType="number-pad"
-                placeholderTextColor={theme.content.placeholder}
-              />
-            </Field>
-          </View>
-
-          <View style={styles.row}>
-            <Field
+              value={form.invoiceNumber}
+              onChangeText={(value) => change("invoiceNumber", value)}
+            />
+            <FieldRow
+              variant="input"
+              floating
+              label={t("supplierInvoices.ocr")}
+              value={form.ocr}
+              onChangeText={(value) => change("ocr", value)}
+              keyboardType="number-pad"
+            />
+            <FieldRow
+              variant="input"
+              floating
               label={t("supplierInvoices.invoiceDate")}
-              styles={styles}
-              flex
-            >
-              <TextInput
-                style={styles.input}
-                value={form.invoiceDate}
-                onChangeText={(value) => change("invoiceDate", value)}
-                placeholder="ÅÅÅÅ-MM-DD"
-                placeholderTextColor={theme.content.placeholder}
-              />
-            </Field>
-            <Field label={t("supplierInvoices.dueDate")} styles={styles} flex>
-              <TextInput
-                style={styles.input}
-                value={form.dueDate}
-                onChangeText={(value) => change("dueDate", value)}
-                placeholder="ÅÅÅÅ-MM-DD"
-                placeholderTextColor={theme.content.placeholder}
-              />
-            </Field>
-          </View>
+              value={form.invoiceDate}
+              onChangeText={(value) => change("invoiceDate", value)}
+            />
+            <FieldRow
+              variant="input"
+              floating
+              label={t("supplierInvoices.dueDate")}
+              value={form.dueDate}
+              onChangeText={(value) => change("dueDate", value)}
+              isLast
+            />
+          </FieldCard>
 
-          <View style={styles.row}>
-            <Field
+          <FieldCard>
+            <FieldRow
+              variant="input"
+              floating
               label={t("supplierInvoices.amountExclVat")}
-              styles={styles}
-              flex
-            >
-              <TextInput
-                style={styles.input}
-                value={form.amountExclVat}
-                onChangeText={(value) => change("amountExclVat", value)}
-                keyboardType="decimal-pad"
-                selectTextOnFocus
-                placeholderTextColor={theme.content.placeholder}
-              />
-            </Field>
-            <Field label={t("supplierInvoices.vat")} styles={styles} flex>
-              <TextInput
-                style={styles.input}
-                value={form.vat}
-                onChangeText={(value) => change("vat", value)}
-                keyboardType="decimal-pad"
-                selectTextOnFocus
-                placeholderTextColor={theme.content.placeholder}
-              />
-            </Field>
-          </View>
-
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>
-              {t("supplierInvoices.totalLabel")}
-            </Text>
-            <Text style={styles.totalValue}>
-              {new Intl.NumberFormat("sv-SE", {
+              value={form.amountExclVat}
+              onChangeText={(value) => change("amountExclVat", value)}
+              keyboardType="decimal-pad"
+              inputProps={{ selectTextOnFocus: true }}
+            />
+            <FieldRow
+              variant="input"
+              floating
+              label={t("supplierInvoices.vat")}
+              value={form.vat}
+              onChangeText={(value) => change("vat", value)}
+              keyboardType="decimal-pad"
+              inputProps={{ selectTextOnFocus: true }}
+            />
+            <FieldRow
+              floating
+              label={t("supplierInvoices.totalLabel")}
+              value={`${new Intl.NumberFormat("sv-SE", {
                 maximumFractionDigits: 2,
-              }).format(total)}{" "}
-              kr
-            </Text>
-          </View>
+              }).format(total)} kr`}
+              isLast
+            />
+          </FieldCard>
 
-          <Field label={t("supplierInvoices.bankgiro")} styles={styles}>
-            <TextInput
-              style={styles.input}
+          <FieldCard>
+            <FieldRow
+              variant="input"
+              floating
+              label={t("supplierInvoices.bankgiro")}
               value={form.bankgiro}
               onChangeText={(value) => change("bankgiro", value)}
-              placeholderTextColor={theme.content.placeholder}
             />
-          </Field>
-
-          <Field label={t("supplierInvoices.category")} styles={styles}>
-            <TextInput
-              style={styles.input}
+            <FieldRow
+              variant="input"
+              floating
+              label={t("supplierInvoices.category")}
               value={form.category}
               onChangeText={(value) => change("category", value)}
-              placeholderTextColor={theme.content.placeholder}
             />
-          </Field>
-
-          <Field label={t("createTask.projectLabel")} styles={styles}>
-            <TouchableOpacity
-              style={styles.input}
+            <FieldRow
+              variant="select"
+              floating
+              label={t("createTask.projectLabel")}
+              value={form.projectName}
               onPress={() => setProjectPickerVisible(true)}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.pickerValue} numberOfLines={1}>
-                {form.projectName || t("createTask.selectProject")}
-              </Text>
-            </TouchableOpacity>
-          </Field>
-
-          <Field label={t("supplierInvoices.notes")} styles={styles}>
-            <TextInput
-              style={[styles.input, styles.textarea]}
+            />
+            <FieldRow
+              variant="input"
+              multiline
+              label={t("supplierInvoices.notes")}
               value={form.notes}
               onChangeText={(value) => change("notes", value)}
-              multiline
-              placeholderTextColor={theme.content.placeholder}
+              isLast
             />
-          </Field>
+          </FieldCard>
 
-          <TouchableOpacity
-            style={styles.attachBtn}
-            onPress={attachPhoto}
-            activeOpacity={0.85}
-          >
-            <Icon name="paperclip" size={18} color={theme.colors.primary} />
-            <Text style={styles.attachText}>
-              {attachments.length
+          <Button
+            variant="outline"
+            icon="paperclip"
+            title={
+              attachments.length
                 ? t("supplierInvoices.attachedCount", {
                     count: attachments.length,
                   })
-                : t("supplierInvoices.attach")}
-            </Text>
-          </TouchableOpacity>
+                : t("supplierInvoices.attach")
+            }
+            onPress={attachPhoto}
+          />
         </ScrollView>
       </KeyboardAvoidingView>
 
@@ -374,95 +321,16 @@ export default function CreateSupplierInvoiceScreen() {
   );
 }
 
-function Field({ label, styles, children, flex = false }) {
-  return (
-    <View style={[styles.fieldBlock, flex && styles.fieldFlex]}>
-      <Text style={styles.label}>{label}</Text>
-      {children}
-    </View>
-  );
-}
-
 function createStyles(theme) {
   const c = theme.content;
   return StyleSheet.create({
     safe: { flex: 1, backgroundColor: c.background },
     flex: { flex: 1 },
-    header: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      paddingHorizontal: 16,
-      paddingVertical: 12,
-      gap: 12,
-    },
-    headerTitle: {
-      flex: 1,
-      textAlign: "center",
-      color: c.textPrimary,
-      fontSize: 18,
-      fontFamily: theme.text.fontFamily.semiBold,
-    },
-    headerSave: {
-      width: 44,
-      height: 44,
-      borderRadius: 999,
-      backgroundColor: theme.colors.primary,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    content: { padding: 16, gap: 14, paddingBottom: 60 },
-    row: { flexDirection: "row", gap: 12 },
-    fieldBlock: { gap: 8 },
-    fieldFlex: { flex: 1 },
-    label: {
-      color: c.textPrimary,
-      fontSize: 13,
-      fontFamily: theme.text.fontFamily.medium,
-    },
-    input: {
-      backgroundColor: c.surface,
-      borderWidth: 1,
-      borderColor: c.border,
-      borderRadius: 14,
-      paddingHorizontal: 16,
-      paddingVertical: 14,
-      color: c.textPrimary,
-      fontSize: 15,
-    },
-    pickerValue: { color: c.textPrimary, fontSize: 15 },
-    textarea: { minHeight: 80, textAlignVertical: "top" },
-    totalRow: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      paddingVertical: 4,
-    },
-    totalLabel: {
-      color: c.textMuted,
-      fontSize: 14,
-      fontFamily: theme.text.fontFamily.medium,
-    },
-    totalValue: {
-      color: c.textPrimary,
-      fontSize: 17,
-      fontFamily: theme.text.fontFamily.semiBold,
-    },
-    attachBtn: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: 8,
-      paddingVertical: 14,
-      borderRadius: 14,
-      borderWidth: 1,
-      borderColor: c.border,
-      backgroundColor: c.surface,
-    },
-    attachText: {
-      color: theme.colors.primary,
-      fontSize: 15,
-      fontFamily: theme.text.fontFamily.medium,
+    content: {
+      paddingHorizontal: layout.formGutter,
+      paddingTop: layout.headerToContent,
+      paddingBottom: 40,
+      gap: layout.betweenCards * 2,
     },
   });
 }
