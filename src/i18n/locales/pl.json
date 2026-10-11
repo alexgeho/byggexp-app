@@ -1549,6 +1549,10 @@
     "phone": "Telefon",
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
+    "vatNumber": "Nr VAT",
+    "city": "Kod pocztowy i miasto",
+    "website": "Strona www",
+    "fSkatt": "Godkänd för F-skatt",
     "hint": "Używane na każdej ofercie i fakturze.",
     "savedTitle": "Zapisano",
     "savedMessage": "Dane firmy zostały zapisane."

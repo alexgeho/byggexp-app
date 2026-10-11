@@ -1548,6 +1548,10 @@
     "phone": "Telefon",
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
+    "vatNumber": "PDV broj",
+    "city": "Poštanski broj i grad",
+    "website": "Web stranica",
+    "fSkatt": "Godkänd för F-skatt",
     "hint": "Koristi se na svakoj ponudi i fakturi.",
     "savedTitle": "Sačuvano",
     "savedMessage": "Podaci o firmi su sačuvani."

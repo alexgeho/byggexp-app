@@ -1549,6 +1549,10 @@
     "phone": "Телефон",
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
+    "vatNumber": "ПДВ номер",
+    "city": "Індекс і місто",
+    "website": "Вебсайт",
+    "fSkatt": "Godkänd för F-skatt",
     "hint": "Використовується в кожній пропозиції та рахунку.",
     "savedTitle": "Збережено",
     "savedMessage": "Дані компанії збережено."

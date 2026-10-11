@@ -1545,6 +1545,10 @@
     "phone": "Puhelin",
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
+    "vatNumber": "ALV-numero",
+    "city": "Postinumero ja kaupunki",
+    "website": "Verkkosivu",
+    "fSkatt": "Godkänd för F-skatt",
     "hint": "Käytetään jokaisessa tarjouksessa ja laskussa.",
     "savedTitle": "Tallennettu",
     "savedMessage": "Yrityksen tiedot tallennettiin."

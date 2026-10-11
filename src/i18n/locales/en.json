@@ -1560,6 +1560,10 @@
     "phone": "Phone",
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
+    "vatNumber": "VAT reg. no.",
+    "city": "Postcode and town",
+    "website": "Website",
+    "fSkatt": "Approved for F-tax",
     "hint": "Used on every offer and invoice.",
     "savedTitle": "Saved",
     "savedMessage": "Company details saved."

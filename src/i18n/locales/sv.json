@@ -1560,6 +1560,10 @@
     "phone": "Telefon",
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
+    "vatNumber": "Momsreg.nr",
+    "city": "Postnr och ort",
+    "website": "Webbadress",
+    "fSkatt": "Godkänd för F-skatt",
     "hint": "Används på varje offert och faktura.",
     "savedTitle": "Sparat",
     "savedMessage": "Företagsuppgifterna sparades."

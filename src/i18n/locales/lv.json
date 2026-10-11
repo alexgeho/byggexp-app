@@ -1546,6 +1546,10 @@
     "phone": "Tālrunis",
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
+    "vatNumber": "PVN numurs",
+    "city": "Pasta indekss un pilsēta",
+    "website": "Mājaslapa",
+    "fSkatt": "Godkänd för F-skatt",
     "hint": "Izmanto katrā piedāvājumā un rēķinā.",
     "savedTitle": "Saglabāts",
     "savedMessage": "Uzņēmuma informācija saglabāta."

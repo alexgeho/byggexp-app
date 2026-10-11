@@ -1545,6 +1545,10 @@
     "phone": "Telefon",
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
+    "vatNumber": "KMKR nr",
+    "city": "Postiindeks ja linn",
+    "website": "Veebileht",
+    "fSkatt": "Godkänd för F-skatt",
     "hint": "Kasutatakse igal pakkumisel ja arvel.",
     "savedTitle": "Salvestatud",
     "savedMessage": "Ettevõtte andmed salvestati."

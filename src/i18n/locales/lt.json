@@ -1549,6 +1549,10 @@
     "phone": "Telefonas",
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
+    "vatNumber": "PVM kodas",
+    "city": "Pašto kodas ir miestas",
+    "website": "Svetainė",
+    "fSkatt": "Godkänd för F-skatt",
     "hint": "Naudojama kiekviename pasiūlyme ir sąskaitoje.",
     "savedTitle": "Išsaugota",
     "savedMessage": "Įmonės duomenys išsaugoti."

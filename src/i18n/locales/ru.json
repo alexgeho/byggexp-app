@@ -1564,6 +1564,10 @@
     "phone": "Телефон",
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
+    "vatNumber": "Номер НДС",
+    "city": "Индекс и город",
+    "website": "Сайт",
+    "fSkatt": "Godkänd för F-skatt",
     "hint": "Используется в каждом предложении и счёте.",
     "savedTitle": "Сохранено",
     "savedMessage": "Данные компании сохранены."

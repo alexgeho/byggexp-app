@@ -23,7 +23,9 @@ import { getEntityId } from "../../utils/entityId";
 
 // Company details (org number, address, contact) — the mobile counterpart of the
 // admin's "Fill in your company details". Kept simple: load the admin's company,
-// edit the invoice/offer-relevant fields, save. Theme-aware throughout.
+// edit the invoice/offer-relevant fields, save. Theme-aware throughout. The
+// field set mirrors the web form so an app-made invoice prints the same footer
+// (Momsreg.nr, town, website, F-skatt) as one made on the web.
 const FIELDS = [
   { key: "name", labelKey: "companyDetails.name", keyboard: "default" },
   {
@@ -31,9 +33,16 @@ const FIELDS = [
     labelKey: "companyDetails.orgNumber",
     keyboard: "default",
   },
+  {
+    key: "vatNumber",
+    labelKey: "companyDetails.vatNumber",
+    keyboard: "default",
+  },
   { key: "address", labelKey: "companyDetails.address", keyboard: "default" },
+  { key: "city", labelKey: "companyDetails.city", keyboard: "default" },
   { key: "email", labelKey: "companyDetails.email", keyboard: "email-address" },
   { key: "phone", labelKey: "companyDetails.phone", keyboard: "phone-pad" },
+  { key: "website", labelKey: "companyDetails.website", keyboard: "url" },
   // Where the customer actually pays. Without these the invoice printed an
   // empty Bankgiro box and there was nowhere in the app to fill it in.
   { key: "bankgiro", labelKey: "companyDetails.bankgiro", keyboard: "default" },
@@ -49,15 +58,10 @@ export default function CompanyDetailsScreen() {
   const { showSuccess, showError } = useFeedback();
 
   const [companyId, setCompanyId] = useState(null);
-  const [form, setForm] = useState({
-    name: "",
-    orgNumber: "",
-    address: "",
-    email: "",
-    phone: "",
-    bankgiro: "",
-    plusgiro: "",
-  });
+  const [form, setForm] = useState(
+    Object.fromEntries(FIELDS.map((f) => [f.key, ""])),
+  );
+  const [fSkatt, setFSkatt] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -68,15 +72,11 @@ export default function CompanyDetailsScreen() {
         const company = await companyService.getMyCompany();
         if (!active || !company) return;
         setCompanyId(getEntityId(company));
-        setForm({
-          name: company.name || "",
-          orgNumber: company.orgNumber || "",
-          address: company.address || "",
-          email: company.email || "",
-          phone: company.phone || "",
-          bankgiro: company.bankgiro || "",
-          plusgiro: company.plusgiro || "",
-        });
+        setForm(
+          Object.fromEntries(FIELDS.map((f) => [f.key, company[f.key] || ""])),
+        );
+        // Stored as free text ("Godkänd för F-skatt") or a legacy "true"/"false".
+        setFSkatt(Boolean(company.vatStatus) && company.vatStatus !== "false");
       } catch (error) {
         console.error("Failed to load company:", error);
       } finally {
@@ -96,13 +96,9 @@ export default function CompanyDetailsScreen() {
     setSaving(true);
     try {
       await companyService.update(companyId, {
-        name: form.name.trim(),
-        orgNumber: form.orgNumber.trim(),
-        address: form.address.trim(),
-        email: form.email.trim(),
-        phone: form.phone.trim(),
-        bankgiro: form.bankgiro.trim(),
-        plusgiro: form.plusgiro.trim(),
+        ...Object.fromEntries(FIELDS.map((f) => [f.key, form[f.key].trim()])),
+        // Same label the web saves — printed verbatim in the invoice footer.
+        vatStatus: fSkatt ? "Godkänd för F-skatt" : "",
       });
       showSuccess({
         title: t("companyDetails.savedTitle", "Sparat"),
@@ -154,10 +150,21 @@ export default function CompanyDetailsScreen() {
                   value={form[f.key]}
                   onChangeText={(v) => handleChange(f.key, v)}
                   keyboardType={f.keyboard}
-                  autoCapitalize={f.key === "email" ? "none" : "sentences"}
-                  isLast={i === FIELDS.length - 1}
+                  autoCapitalize={
+                    f.key === "email" || f.key === "website"
+                      ? "none"
+                      : "sentences"
+                  }
                 />
               ))}
+              <FieldRow
+                variant="toggle"
+                floating
+                label={t("companyDetails.fSkatt")}
+                switchValue={fSkatt}
+                onSwitchChange={setFSkatt}
+                isLast
+              />
             </FieldCard>
           </ScrollView>
         </KeyboardAvoidingView>
