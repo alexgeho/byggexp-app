@@ -786,7 +786,8 @@
       "projects": "Projekti",
       "tasks": "Uzdevumi",
       "offer": "Piedāvājums",
-      "invoice": "Rēķins"
+      "invoice": "Rēķins",
+      "egenkontroll": "Paškontrole"
     },
     "sections": {
       "shift-history": "Dienas atskaite",
@@ -852,7 +853,8 @@
     "editTitle": "Jūsu amats",
     "editTitleHint": "Ieraksti, kas tu esi pēc profesijas – piem., Galdnieks, Elektriķis vai Būvdarbu vadītājs.",
     "titlePlaceholder": "Piem., Galdnieks",
-    "economy": "Finanses"
+    "economy": "Finanses",
+    "logOutConfirm": "Izrakstīties?"
   },
   "schedule": {
     "employees": "Darbinieki",
@@ -1535,6 +1537,19 @@
       "roleManager": "Projekta vadītājs",
       "roleCarpenter": "Galdnieks",
       "roleElectrician": "Elektriķis"
+    },
+    "egenkontroll": {
+      "slide": {
+        "1": {
+          "title": "Augšupielādējiet līgumu vai darbu sarakstu"
+        },
+        "2": {
+          "title": "Nofotografējiet paveikto darbu lietotnē"
+        },
+        "3": {
+          "title": "Egenkontroll ir aizpildīta – jūs parakstāt"
+        }
+      }
     }
   },
   "companyDetails": {
@@ -1734,5 +1749,75 @@
     "creditFull": "Kreditēt pilnībā",
     "creditPartly": "Kreditēt daļēji",
     "actionFailed": "Darbība neizdevās."
+  },
+  "egenkontroll": {
+    "title": "Egenkontroll",
+    "emptyTitle": "Paškontroļu vēl nav",
+    "emptySubtitle": "Augšupielādējiet līgumu un fotografējiet objektā — punkti aizpildās automātiski.",
+    "new": "Jauna egenkontroll",
+    "fromContract": "Augšupielādējiet līgumu vai darbu aprakstu",
+    "fromContractHint": "Līguma PDF vai foto — kontroles punkti tiek izveidoti automātiski. Tos var pievienot arī manuāli.",
+    "saveFailed": "Neizdevās saglabāt egenkontroll.",
+    "actionFailed": "Kaut kas nogāja greizi. Mēģiniet vēlreiz.",
+    "project": "Projekts",
+    "newProject": "+ Jauns projekts",
+    "titleLabel": "Nosaukums",
+    "titlePlaceholder": "piem. Vannas istaba, Storgatan 5",
+    "points": "Kontroles punkti",
+    "addPoint": "Pievienot punktu",
+    "pointsDone": "{{done}}/{{total}} punkti",
+    "takePhoto": "Uzņemt foto",
+    "fromLibrary": "No galerijas",
+    "analyzing": "Augšupielādē un pārbauda foto…",
+    "photoHint": "Fotografējiet darba gaitā — pabeigtie punkti tiek atzīmēti ar datumu un foto.",
+    "undo": "Atsaukt",
+    "contract": "Līgums",
+    "sign": "Parakstīt",
+    "signTitle": "Parakstīt egenkontroll?",
+    "signMessage": "Paraksts bloķē egenkontroll.",
+    "status": {
+      "draft": "Procesā",
+      "completed": "Gatavs",
+      "signed": "Parakstīts"
+    },
+    "result": {
+      "ok": "Apstiprināts",
+      "remark": "Piezīme",
+      "na": "Nav attiecināms",
+      "pending": "Nav atbildēts"
+    },
+    "onboardingContract": "Augšupielādējiet līgumu",
+    "onboardingPhotos": "Fotografējiet objektā",
+    "address": "Adrese",
+    "addressPlaceholder": "piem. Storgatan 5, Uppsala",
+    "point": "Punkts",
+    "readMore": "lasīt vairāk",
+    "photo": "Foto",
+    "filledTitle_one": "Aizpildīts {{count}} punkts",
+    "filledTitle_other": "Aizpildīti {{count}} punkti",
+    "draftReady_one": "{{count}} punkts gatavs",
+    "draftReady_other": "{{count}} punkti gatavi",
+    "method": "Metode",
+    "requirement": "Prasība",
+    "measured": "Izmērītā vērtība",
+    "measuredPlaceholder": "piem. 250",
+    "checkedBy": "Pārbaudīja",
+    "action": "Darbība",
+    "actionPlaceholder": "piem. Membrāna salabota",
+    "actionDone": "Salabots",
+    "openDeviation": "Atvērta novirze",
+    "showLess": "rādīt mazāk",
+    "pointsLeft_one": "Atlicis {{count}} punkts",
+    "pointsLeft_other": "Atlikuši {{count}} punkti",
+    "sharePdf": "Kopīgot PDF",
+    "readingContract": "Lasa līgumu…",
+    "creatingPoints": "Izveido kontroles punktus…",
+    "readFailedShort": "Neizdevās nolasīt failu",
+    "tryAgain": "Mēģināt vēlreiz",
+    "loadFailed": "Neizdevās ielādēt",
+    "retry": "Mēģināt vēlreiz",
+    "filledTitle_zero": "Aizpildīti {{count}} punkti",
+    "draftReady_zero": "{{count}} punkti gatavi",
+    "pointsLeft_zero": "Atlikuši {{count}} punkti"
   }
 }

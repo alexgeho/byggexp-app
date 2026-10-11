@@ -785,7 +785,8 @@
       "projects": "Projektit",
       "tasks": "Tehtävät",
       "offer": "Tarjous",
-      "invoice": "Lasku"
+      "invoice": "Lasku",
+      "egenkontroll": "Omavalvonta"
     },
     "sections": {
       "shift-history": "Päiväraportti",
@@ -851,7 +852,8 @@
     "editTitle": "Ammattinimikkeesi",
     "editTitleHint": "Kirjoita, mitä teet – esim. Kirvesmies, Sähköasentaja tai Työnjohtaja.",
     "titlePlaceholder": "Esim. Kirvesmies",
-    "economy": "Talous"
+    "economy": "Talous",
+    "logOutConfirm": "Kirjaudu ulos?"
   },
   "schedule": {
     "employees": "Työntekijät",
@@ -1534,6 +1536,19 @@
       "roleManager": "Projektipäällikkö",
       "roleCarpenter": "Kirvesmies",
       "roleElectrician": "Sähköasentaja"
+    },
+    "egenkontroll": {
+      "slide": {
+        "1": {
+          "title": "Lataa sopimus tai työluettelo"
+        },
+        "2": {
+          "title": "Kuvaa valmis työ sovelluksessa"
+        },
+        "3": {
+          "title": "Egenkontroll on täytetty – sinä allekirjoitat"
+        }
+      }
     }
   },
   "companyDetails": {
@@ -1733,5 +1748,72 @@
     "creditFull": "Hyvitä kokonaan",
     "creditPartly": "Hyvitä osittain",
     "actionFailed": "Toiminto epäonnistui."
+  },
+  "egenkontroll": {
+    "title": "Egenkontroll",
+    "emptyTitle": "Ei vielä omavalvontoja",
+    "emptySubtitle": "Lataa sopimus ja ota kuvia työmaalla — kohdat täyttyvät automaattisesti.",
+    "new": "Uusi egenkontroll",
+    "fromContract": "Lataa sopimus tai työselostus",
+    "fromContractHint": "Sopimuksen PDF tai kuva — tarkastuskohdat luodaan automaattisesti. Voit lisätä niitä myös käsin.",
+    "saveFailed": "Egenkontrollin tallennus epäonnistui.",
+    "actionFailed": "Jokin meni pieleen. Yritä uudelleen.",
+    "project": "Projekti",
+    "newProject": "+ Uusi projekti",
+    "titleLabel": "Otsikko",
+    "titlePlaceholder": "esim. Kylpyhuone, Storgatan 5",
+    "points": "Tarkastuskohdat",
+    "addPoint": "Lisää kohta",
+    "pointsDone": "{{done}}/{{total}} kohtaa",
+    "takePhoto": "Ota kuva",
+    "fromLibrary": "Galleriasta",
+    "analyzing": "Ladataan ja tarkistetaan kuvia…",
+    "photoHint": "Ota kuvia työn edetessä — valmiit kohdat kuitataan päivämäärällä ja kuvalla.",
+    "undo": "Kumoa",
+    "contract": "Sopimus",
+    "sign": "Allekirjoita",
+    "signTitle": "Allekirjoitetaanko egenkontroll?",
+    "signMessage": "Allekirjoitus lukitsee egenkontrollin.",
+    "status": {
+      "draft": "Kesken",
+      "completed": "Valmis",
+      "signed": "Allekirjoitettu"
+    },
+    "result": {
+      "ok": "Hyväksytty",
+      "remark": "Huomautus",
+      "na": "Ei koske",
+      "pending": "Vastaamatta"
+    },
+    "onboardingContract": "Lataa sopimus",
+    "onboardingPhotos": "Ota kuvia työmaalla",
+    "address": "Osoite",
+    "addressPlaceholder": "esim. Storgatan 5, Uppsala",
+    "point": "Kohta",
+    "readMore": "lue lisää",
+    "photo": "Kuva",
+    "filledTitle_one": "{{count}} kohta täytetty",
+    "filledTitle_other": "{{count}} kohtaa täytetty",
+    "draftReady_one": "{{count}} kohta valmis",
+    "draftReady_other": "{{count}} kohtaa valmis",
+    "method": "Menetelmä",
+    "requirement": "Vaatimus",
+    "measured": "Mitattu arvo",
+    "measuredPlaceholder": "esim. 250",
+    "checkedBy": "Tarkastanut",
+    "action": "Toimenpide",
+    "actionPlaceholder": "esim. Kalvo korjattu",
+    "actionDone": "Korjattu",
+    "openDeviation": "Avoin poikkeama",
+    "showLess": "näytä vähemmän",
+    "pointsLeft_one": "{{count}} kohta jäljellä",
+    "pointsLeft_other": "{{count}} kohtaa jäljellä",
+    "sharePdf": "Jaa PDF",
+    "readingContract": "Luetaan sopimusta…",
+    "creatingPoints": "Luodaan tarkastuskohtia…",
+    "readFailedShort": "Tiedoston lukeminen epäonnistui",
+    "tryAgain": "Yritä uudelleen",
+    "loadFailed": "Lataus epäonnistui",
+    "retry": "Yritä uudelleen"
   }
 }

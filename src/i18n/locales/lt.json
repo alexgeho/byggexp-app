@@ -789,7 +789,8 @@
       "projects": "Projektai",
       "tasks": "Užduotys",
       "offer": "Pasiūlymas",
-      "invoice": "Sąskaita"
+      "invoice": "Sąskaita",
+      "egenkontroll": "Savikontrolė"
     },
     "sections": {
       "shift-history": "Dienos ataskaita",
@@ -855,7 +856,8 @@
     "editTitle": "Jūsų pareigos",
     "editTitleHint": "Parašykite, kuo dirbate – pvz., Stalius, Elektrikas ar Statybos vadovas.",
     "titlePlaceholder": "Pvz., Stalius",
-    "economy": "Finansai"
+    "economy": "Finansai",
+    "logOutConfirm": "Atsijungti?"
   },
   "schedule": {
     "employees": "Darbuotojai",
@@ -1538,6 +1540,19 @@
       "roleManager": "Projekto vadovas",
       "roleCarpenter": "Dailidė",
       "roleElectrician": "Elektrikas"
+    },
+    "egenkontroll": {
+      "slide": {
+        "1": {
+          "title": "Įkelkite sutartį arba darbų sąrašą"
+        },
+        "2": {
+          "title": "Nufotografuokite atliktą darbą programėlėje"
+        },
+        "3": {
+          "title": "Egenkontroll užpildyta – jūs pasirašote"
+        }
+      }
     }
   },
   "companyDetails": {
@@ -1737,5 +1752,75 @@
     "creditFull": "Kredituoti visą",
     "creditPartly": "Kredituoti dalį",
     "actionFailed": "Veiksmas nepavyko."
+  },
+  "egenkontroll": {
+    "title": "Egenkontroll",
+    "emptyTitle": "Savikontrolių dar nėra",
+    "emptySubtitle": "Įkelkite sutartį ir fotografuokite objekte — punktai užpildomi automatiškai.",
+    "new": "Nauja egenkontroll",
+    "fromContract": "Įkelkite sutartį arba darbų aprašą",
+    "fromContractHint": "Sutarties PDF ar nuotrauka — kontrolės punktai sukuriami automatiškai. Galite juos pridėti ir rankiniu būdu.",
+    "saveFailed": "Nepavyko išsaugoti egenkontroll.",
+    "actionFailed": "Kažkas nepavyko. Bandykite dar kartą.",
+    "project": "Projektas",
+    "newProject": "+ Naujas projektas",
+    "titleLabel": "Pavadinimas",
+    "titlePlaceholder": "pvz. Vonia, Storgatan 5",
+    "points": "Kontrolės punktai",
+    "addPoint": "Pridėti punktą",
+    "pointsDone": "{{done}}/{{total}} punktų",
+    "takePhoto": "Fotografuoti",
+    "fromLibrary": "Iš galerijos",
+    "analyzing": "Įkeliamos ir tikrinamos nuotraukos…",
+    "photoHint": "Fotografuokite darbo eigoje — atlikti punktai pažymimi su data ir nuotrauka.",
+    "undo": "Atšaukti",
+    "contract": "Sutartis",
+    "sign": "Pasirašyti",
+    "signTitle": "Pasirašyti egenkontroll?",
+    "signMessage": "Parašas užrakina egenkontroll.",
+    "status": {
+      "draft": "Vykdoma",
+      "completed": "Atlikta",
+      "signed": "Pasirašyta"
+    },
+    "result": {
+      "ok": "Patvirtinta",
+      "remark": "Pastaba",
+      "na": "Netaikoma",
+      "pending": "Neatsakyta"
+    },
+    "onboardingContract": "Įkelkite sutartį",
+    "onboardingPhotos": "Fotografuokite objekte",
+    "address": "Adresas",
+    "addressPlaceholder": "pvz. Storgatan 5, Uppsala",
+    "point": "Punktas",
+    "readMore": "skaityti daugiau",
+    "photo": "Nuotrauka",
+    "filledTitle_one": "Užpildytas {{count}} punktas",
+    "filledTitle_other": "Užpildyta {{count}} punktų",
+    "draftReady_one": "{{count}} punktas paruoštas",
+    "draftReady_other": "{{count}} punktų paruošta",
+    "method": "Metodas",
+    "requirement": "Reikalavimas",
+    "measured": "Išmatuota vertė",
+    "measuredPlaceholder": "pvz. 250",
+    "checkedBy": "Patikrino",
+    "action": "Veiksmas",
+    "actionPlaceholder": "pvz. Membrana sutaisyta",
+    "actionDone": "Sutaisyta",
+    "openDeviation": "Atviras nukrypimas",
+    "showLess": "rodyti mažiau",
+    "pointsLeft_one": "Liko {{count}} punktas",
+    "pointsLeft_other": "Liko {{count}} punktų",
+    "sharePdf": "Bendrinti PDF",
+    "readingContract": "Skaitoma sutartis…",
+    "creatingPoints": "Kuriami kontrolės punktai…",
+    "readFailedShort": "Nepavyko nuskaityti failo",
+    "tryAgain": "Bandyti dar kartą",
+    "loadFailed": "Nepavyko įkelti",
+    "retry": "Bandyti dar kartą",
+    "filledTitle_few": "Užpildyti {{count}} punktai",
+    "draftReady_few": "{{count}} punktai paruošti",
+    "pointsLeft_few": "Liko {{count}} punktai"
   }
 }

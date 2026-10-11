@@ -789,7 +789,8 @@
       "projects": "Projekty",
       "tasks": "Zadania",
       "offer": "Oferta",
-      "invoice": "Faktura"
+      "invoice": "Faktura",
+      "egenkontroll": "Kontrola własna"
     },
     "sections": {
       "shift-history": "Raport dzienny",
@@ -855,7 +856,8 @@
     "editTitle": "Twój tytuł zawodowy",
     "editTitleHint": "Wpisz, czym się zajmujesz – np. Stolarz, Elektryk lub Kierownik budowy.",
     "titlePlaceholder": "Np. Stolarz",
-    "economy": "Finanse"
+    "economy": "Finanse",
+    "logOutConfirm": "Wylogować się?"
   },
   "schedule": {
     "employees": "Pracownicy",
@@ -1538,6 +1540,19 @@
       "roleManager": "Kierownik projektu",
       "roleCarpenter": "Stolarz",
       "roleElectrician": "Elektryk"
+    },
+    "egenkontroll": {
+      "slide": {
+        "1": {
+          "title": "Prześlij umowę lub listę prac"
+        },
+        "2": {
+          "title": "Sfotografuj gotową pracę w aplikacji"
+        },
+        "3": {
+          "title": "Egenkontroll jest wypełniona – ty podpisujesz"
+        }
+      }
     }
   },
   "companyDetails": {
@@ -1737,5 +1752,78 @@
     "creditFull": "Koryguj całość",
     "creditPartly": "Koryguj częściowo",
     "actionFailed": "Operacja nie powiodła się."
+  },
+  "egenkontroll": {
+    "title": "Egenkontroll",
+    "emptyTitle": "Brak kontroli własnych",
+    "emptySubtitle": "Prześlij umowę i rób zdjęcia na miejscu — punkty wypełnią się automatycznie.",
+    "new": "Nowa egenkontroll",
+    "fromContract": "Prześlij umowę lub opis prac",
+    "fromContractHint": "PDF lub zdjęcie umowy — punkty kontrolne tworzą się automatycznie. Możesz też dodać je ręcznie.",
+    "saveFailed": "Nie udało się zapisać egenkontroll.",
+    "actionFailed": "Coś poszło nie tak. Spróbuj ponownie.",
+    "project": "Projekt",
+    "newProject": "+ Nowy projekt",
+    "titleLabel": "Tytuł",
+    "titlePlaceholder": "np. Łazienka, Storgatan 5",
+    "points": "Punkty kontrolne",
+    "addPoint": "Dodaj punkt",
+    "pointsDone": "{{done}}/{{total}} punktów",
+    "takePhoto": "Zrób zdjęcie",
+    "fromLibrary": "Z galerii",
+    "analyzing": "Przesyłanie i sprawdzanie zdjęć…",
+    "photoHint": "Rób zdjęcia w trakcie pracy — gotowe punkty są odhaczane z datą i zdjęciem.",
+    "undo": "Cofnij",
+    "contract": "Umowa",
+    "sign": "Podpisz",
+    "signTitle": "Podpisać egenkontroll?",
+    "signMessage": "Podpis blokuje egenkontroll.",
+    "status": {
+      "draft": "W toku",
+      "completed": "Gotowe",
+      "signed": "Podpisano"
+    },
+    "result": {
+      "ok": "Zatwierdzono",
+      "remark": "Uwaga",
+      "na": "Nie dotyczy",
+      "pending": "Bez odpowiedzi"
+    },
+    "onboardingContract": "Prześlij umowę",
+    "onboardingPhotos": "Rób zdjęcia na miejscu",
+    "address": "Adres",
+    "addressPlaceholder": "np. Storgatan 5, Uppsala",
+    "point": "Punkt",
+    "readMore": "czytaj więcej",
+    "photo": "Zdjęcie",
+    "filledTitle_one": "Wypełniono {{count}} punkt",
+    "filledTitle_other": "Wypełniono {{count}} punktów",
+    "draftReady_one": "{{count}} punkt gotowy",
+    "draftReady_other": "{{count}} punktów gotowych",
+    "method": "Metoda",
+    "requirement": "Wymaganie",
+    "measured": "Wartość zmierzona",
+    "measuredPlaceholder": "np. 250",
+    "checkedBy": "Sprawdził",
+    "action": "Działanie",
+    "actionPlaceholder": "np. Naprawiono membranę",
+    "actionDone": "Naprawiono",
+    "openDeviation": "Otwarte odchylenie",
+    "showLess": "pokaż mniej",
+    "pointsLeft_one": "Został {{count}} punkt",
+    "pointsLeft_other": "Zostało {{count}} punktów",
+    "sharePdf": "Udostępnij PDF",
+    "readingContract": "Czytanie umowy…",
+    "creatingPoints": "Tworzenie punktów kontrolnych…",
+    "readFailedShort": "Nie udało się odczytać pliku",
+    "tryAgain": "Spróbuj ponownie",
+    "loadFailed": "Nie udało się wczytać",
+    "retry": "Spróbuj ponownie",
+    "filledTitle_few": "Wypełniono {{count}} punkty",
+    "filledTitle_many": "Wypełniono {{count}} punktów",
+    "draftReady_few": "{{count}} punkty gotowe",
+    "draftReady_many": "{{count}} punktów gotowych",
+    "pointsLeft_few": "Zostały {{count}} punkty",
+    "pointsLeft_many": "Zostało {{count}} punktów"
   }
 }

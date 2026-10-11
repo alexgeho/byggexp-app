@@ -788,7 +788,8 @@
       "projects": "Projekti",
       "tasks": "Zadaci",
       "offer": "Ponuda",
-      "invoice": "Faktura"
+      "invoice": "Faktura",
+      "egenkontroll": "Samokontrola"
     },
     "sections": {
       "shift-history": "Dnevni izvještaj",
@@ -854,7 +855,8 @@
     "editTitle": "Vaše zvanje",
     "editTitleHint": "Napišite čime se bavite – npr. Stolar, Električar ili Voditelj gradilišta.",
     "titlePlaceholder": "Npr. Stolar",
-    "economy": "Finansije"
+    "economy": "Finansije",
+    "logOutConfirm": "Odjaviti se?"
   },
   "schedule": {
     "employees": "Zaposleni",
@@ -1537,6 +1539,19 @@
       "roleManager": "Voditelj projekta",
       "roleCarpenter": "Stolar",
       "roleElectrician": "Električar"
+    },
+    "egenkontroll": {
+      "slide": {
+        "1": {
+          "title": "Učitajte ugovor ili listu radova"
+        },
+        "2": {
+          "title": "Fotografišite završen rad u aplikaciji"
+        },
+        "3": {
+          "title": "Egenkontroll je popunjena – vi potpisujete"
+        }
+      }
     }
   },
   "companyDetails": {
@@ -1736,5 +1751,75 @@
     "creditFull": "Storniraj u cijelosti",
     "creditPartly": "Storniraj djelimično",
     "actionFailed": "Radnja nije uspjela."
+  },
+  "egenkontroll": {
+    "title": "Egenkontroll",
+    "emptyTitle": "Još nema samokontrola",
+    "emptySubtitle": "Učitajte ugovor i fotografišite na gradilištu — tačke se popunjavaju automatski.",
+    "new": "Nova egenkontroll",
+    "fromContract": "Učitajte ugovor ili opis radova",
+    "fromContractHint": "PDF ili fotografija ugovora — kontrolne tačke se kreiraju automatski. Možete ih dodati i ručno.",
+    "saveFailed": "Nije moguće sačuvati egenkontroll.",
+    "actionFailed": "Nešto nije u redu. Pokušajte ponovo.",
+    "project": "Projekat",
+    "newProject": "+ Novi projekat",
+    "titleLabel": "Naslov",
+    "titlePlaceholder": "npr. Kupatilo, Storgatan 5",
+    "points": "Kontrolne tačke",
+    "addPoint": "Dodaj tačku",
+    "pointsDone": "{{done}}/{{total}} tačaka",
+    "takePhoto": "Fotografiši",
+    "fromLibrary": "Iz galerije",
+    "analyzing": "Učitavanje i provjera fotografija…",
+    "photoHint": "Fotografišite tokom rada — završene tačke se označavaju datumom i fotografijom.",
+    "undo": "Poništi",
+    "contract": "Ugovor",
+    "sign": "Potpiši",
+    "signTitle": "Potpisati egenkontroll?",
+    "signMessage": "Potpis zaključava egenkontroll.",
+    "status": {
+      "draft": "U toku",
+      "completed": "Završeno",
+      "signed": "Potpisano"
+    },
+    "result": {
+      "ok": "Odobreno",
+      "remark": "Napomena",
+      "na": "N/P",
+      "pending": "Bez odgovora"
+    },
+    "onboardingContract": "Učitajte ugovor",
+    "onboardingPhotos": "Fotografišite na gradilištu",
+    "address": "Adresa",
+    "addressPlaceholder": "npr. Storgatan 5, Uppsala",
+    "point": "Tačka",
+    "readMore": "pročitaj više",
+    "photo": "Fotografija",
+    "filledTitle_one": "Popunjena {{count}} tačka",
+    "filledTitle_other": "Popunjeno {{count}} tačaka",
+    "draftReady_one": "{{count}} tačka spremna",
+    "draftReady_other": "{{count}} tačaka spremno",
+    "method": "Metoda",
+    "requirement": "Zahtjev",
+    "measured": "Izmjerena vrijednost",
+    "measuredPlaceholder": "npr. 250",
+    "checkedBy": "Provjerio",
+    "action": "Radnja",
+    "actionPlaceholder": "npr. Membrana popravljena",
+    "actionDone": "Popravljeno",
+    "openDeviation": "Otvoreno odstupanje",
+    "showLess": "prikaži manje",
+    "pointsLeft_one": "Ostala je {{count}} tačka",
+    "pointsLeft_other": "Ostalo je {{count}} tačaka",
+    "sharePdf": "Podijeli PDF",
+    "readingContract": "Čitam ugovor…",
+    "creatingPoints": "Kreiram kontrolne tačke…",
+    "readFailedShort": "Nije moguće pročitati datoteku",
+    "tryAgain": "Pokušaj ponovo",
+    "loadFailed": "Nije moguće učitati",
+    "retry": "Pokušaj ponovo",
+    "filledTitle_few": "Popunjene {{count}} tačke",
+    "draftReady_few": "{{count}} tačke spremne",
+    "pointsLeft_few": "Ostale su {{count}} tačke"
   }
 }

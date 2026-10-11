@@ -785,7 +785,8 @@
       "projects": "Projektid",
       "tasks": "Ülesanded",
       "offer": "Pakkumine",
-      "invoice": "Arve"
+      "invoice": "Arve",
+      "egenkontroll": "Enesekontroll"
     },
     "sections": {
       "shift-history": "Päevaraport",
@@ -851,7 +852,8 @@
     "editTitle": "Sinu ametinimetus",
     "editTitleHint": "Kirjuta, mida sa teed – nt Puusepp, Elektrik või Objektijuht.",
     "titlePlaceholder": "Nt Puusepp",
-    "economy": "Majandus"
+    "economy": "Majandus",
+    "logOutConfirm": "Logi välja?"
   },
   "schedule": {
     "employees": "Töötajad",
@@ -1534,6 +1536,19 @@
       "roleManager": "Projektijuht",
       "roleCarpenter": "Tisler",
       "roleElectrician": "Elektrik"
+    },
+    "egenkontroll": {
+      "slide": {
+        "1": {
+          "title": "Laadi üles leping või tööde nimekiri"
+        },
+        "2": {
+          "title": "Pildista valminud töö rakenduses"
+        },
+        "3": {
+          "title": "Egenkontroll on täidetud – sina allkirjastad"
+        }
+      }
     }
   },
   "companyDetails": {
@@ -1733,5 +1748,72 @@
     "creditFull": "Krediteeri täielikult",
     "creditPartly": "Krediteeri osaliselt",
     "actionFailed": "Toiming ebaõnnestus."
+  },
+  "egenkontroll": {
+    "title": "Egenkontroll",
+    "emptyTitle": "Enesekontrolle veel pole",
+    "emptySubtitle": "Laadi üles leping ja pildista objektil — punktid täidetakse automaatselt.",
+    "new": "Uus egenkontroll",
+    "fromContract": "Laadi üles leping või töökirjeldus",
+    "fromContractHint": "Lepingu PDF või foto — kontrollpunktid luuakse automaatselt. Võid neid lisada ka käsitsi.",
+    "saveFailed": "Egenkontrolli salvestamine ebaõnnestus.",
+    "actionFailed": "Midagi läks valesti. Proovi uuesti.",
+    "project": "Projekt",
+    "newProject": "+ Uus projekt",
+    "titleLabel": "Pealkiri",
+    "titlePlaceholder": "nt Vannituba, Storgatan 5",
+    "points": "Kontrollpunktid",
+    "addPoint": "Lisa punkt",
+    "pointsDone": "{{done}}/{{total}} punkti",
+    "takePhoto": "Tee foto",
+    "fromLibrary": "Galeriist",
+    "analyzing": "Fotode üleslaadimine ja kontroll…",
+    "photoHint": "Pildista töö käigus — valmis punktid märgitakse kuupäeva ja fotoga.",
+    "undo": "Võta tagasi",
+    "contract": "Leping",
+    "sign": "Allkirjasta",
+    "signTitle": "Allkirjastada egenkontroll?",
+    "signMessage": "Allkiri lukustab egenkontrolli.",
+    "status": {
+      "draft": "Pooleli",
+      "completed": "Valmis",
+      "signed": "Allkirjastatud"
+    },
+    "result": {
+      "ok": "Heaks kiidetud",
+      "remark": "Märkus",
+      "na": "Ei kohaldu",
+      "pending": "Vastamata"
+    },
+    "onboardingContract": "Laadi üles leping",
+    "onboardingPhotos": "Pildista objektil",
+    "address": "Aadress",
+    "addressPlaceholder": "nt Storgatan 5, Uppsala",
+    "point": "Punkt",
+    "readMore": "loe edasi",
+    "photo": "Foto",
+    "filledTitle_one": "{{count}} punkt täidetud",
+    "filledTitle_other": "{{count}} punkti täidetud",
+    "draftReady_one": "{{count}} punkt valmis",
+    "draftReady_other": "{{count}} punkti valmis",
+    "method": "Meetod",
+    "requirement": "Nõue",
+    "measured": "Mõõdetud väärtus",
+    "measuredPlaceholder": "nt 250",
+    "checkedBy": "Kontrollis",
+    "action": "Tegevus",
+    "actionPlaceholder": "nt Membraan parandatud",
+    "actionDone": "Parandatud",
+    "openDeviation": "Avatud kõrvalekalle",
+    "showLess": "näita vähem",
+    "pointsLeft_one": "{{count}} punkt jäänud",
+    "pointsLeft_other": "{{count}} punkti jäänud",
+    "sharePdf": "Jaga PDF-i",
+    "readingContract": "Loen lepingut…",
+    "creatingPoints": "Loon kontrollpunkte…",
+    "readFailedShort": "Faili lugemine ebaõnnestus",
+    "tryAgain": "Proovi uuesti",
+    "loadFailed": "Laadimine ebaõnnestus",
+    "retry": "Proovi uuesti"
   }
 }

@@ -789,7 +789,8 @@
       "projects": "Проєкти",
       "tasks": "Завдання",
       "offer": "Пропозиція",
-      "invoice": "Рахунок"
+      "invoice": "Рахунок",
+      "egenkontroll": "Самоконтроль"
     },
     "sections": {
       "shift-history": "Денний звіт",
@@ -855,7 +856,8 @@
     "editTitle": "Ваша посада",
     "editTitleHint": "Напишіть, ким ви працюєте – напр. Тесляр, Електрик або Виконроб.",
     "titlePlaceholder": "Напр. Тесляр",
-    "economy": "Фінанси"
+    "economy": "Фінанси",
+    "logOutConfirm": "Вийти?"
   },
   "schedule": {
     "employees": "Співробітники",
@@ -1538,6 +1540,19 @@
       "roleManager": "Керівник проєкту",
       "roleCarpenter": "Тесляр",
       "roleElectrician": "Електрик"
+    },
+    "egenkontroll": {
+      "slide": {
+        "1": {
+          "title": "Завантажте договір або перелік робіт"
+        },
+        "2": {
+          "title": "Сфотографуйте виконану роботу в застосунку"
+        },
+        "3": {
+          "title": "Egenkontroll заповнено – ви підписуєте"
+        }
+      }
     }
   },
   "companyDetails": {
@@ -1737,5 +1752,78 @@
     "creditFull": "Кредитувати повністю",
     "creditPartly": "Кредитувати частково",
     "actionFailed": "Не вдалося виконати дію."
+  },
+  "egenkontroll": {
+    "title": "Egenkontroll",
+    "emptyTitle": "Ще немає самоконтролів",
+    "emptySubtitle": "Завантажте договір і фотографуйте на об'єкті — пункти заповнюються автоматично.",
+    "new": "Новий egenkontroll",
+    "fromContract": "Завантажте договір або опис робіт",
+    "fromContractHint": "PDF або фото договору — контрольні пункти створюються автоматично. Можна додати й вручну.",
+    "saveFailed": "Не вдалося зберегти egenkontroll.",
+    "actionFailed": "Щось пішло не так. Спробуйте ще раз.",
+    "project": "Проєкт",
+    "newProject": "+ Новий проєкт",
+    "titleLabel": "Назва",
+    "titlePlaceholder": "напр. Ванна, Storgatan 5",
+    "points": "Контрольні пункти",
+    "addPoint": "Додати пункт",
+    "pointsDone": "{{done}}/{{total}} пунктів",
+    "takePhoto": "Зробити фото",
+    "fromLibrary": "З галереї",
+    "analyzing": "Завантаження та перевірка фото…",
+    "photoHint": "Фотографуйте під час роботи — готові пункти відмічаються з датою і фото.",
+    "undo": "Скасувати",
+    "contract": "Договір",
+    "sign": "Підписати",
+    "signTitle": "Підписати egenkontroll?",
+    "signMessage": "Підпис блокує egenkontroll.",
+    "status": {
+      "draft": "У роботі",
+      "completed": "Готово",
+      "signed": "Підписано"
+    },
+    "result": {
+      "ok": "Схвалено",
+      "remark": "Зауваження",
+      "na": "Н/З",
+      "pending": "Без відповіді"
+    },
+    "onboardingContract": "Завантажте договір",
+    "onboardingPhotos": "Фотографуйте на об'єкті",
+    "address": "Адреса",
+    "addressPlaceholder": "напр. Storgatan 5, Uppsala",
+    "point": "Пункт",
+    "readMore": "детальніше",
+    "photo": "Фото",
+    "filledTitle_one": "Заповнено {{count}} пункт",
+    "filledTitle_other": "Заповнено {{count}} пунктів",
+    "draftReady_one": "{{count}} пункт готовий",
+    "draftReady_other": "{{count}} пунктів готово",
+    "method": "Метод",
+    "requirement": "Вимога",
+    "measured": "Виміряне значення",
+    "measuredPlaceholder": "напр. 250",
+    "checkedBy": "Перевірив",
+    "action": "Дія",
+    "actionPlaceholder": "напр. Мембрану відремонтовано",
+    "actionDone": "Виправлено",
+    "openDeviation": "Відкрите відхилення",
+    "showLess": "згорнути",
+    "pointsLeft_one": "Залишився {{count}} пункт",
+    "pointsLeft_other": "Залишилось {{count}} пунктів",
+    "sharePdf": "Поділитися PDF",
+    "readingContract": "Читаю договір…",
+    "creatingPoints": "Створюю контрольні пункти…",
+    "readFailedShort": "Не вдалося прочитати файл",
+    "tryAgain": "Спробувати ще",
+    "loadFailed": "Не вдалося завантажити",
+    "retry": "Спробувати ще",
+    "filledTitle_few": "Заповнено {{count}} пункти",
+    "filledTitle_many": "Заповнено {{count}} пунктів",
+    "draftReady_few": "{{count}} пункти готові",
+    "draftReady_many": "{{count}} пунктів готово",
+    "pointsLeft_few": "Залишилось {{count}} пункти",
+    "pointsLeft_many": "Залишилось {{count}} пунктів"
   }
 }
