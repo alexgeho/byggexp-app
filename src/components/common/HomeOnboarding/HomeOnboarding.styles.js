@@ -196,8 +196,10 @@ export function createStyles(theme, onDark = false) {
       fontFamily: theme.text.fontFamily.semiBold,
     },
     // Admin focus routing
+    // One step inside the routing card: the same 14 as the card's own gap, so
+    // header → buttons → "Hoppa över" are evenly spaced.
     focusChoices: {
-      gap: 10,
+      gap: 14,
       alignItems: "stretch",
     },
     focusBtn: {
@@ -223,8 +225,8 @@ export function createStyles(theme, onDark = false) {
       textAlign: "center",
       color: onDark ? g.text : c.textMuted,
       fontSize: 16,
+      lineHeight: 22,
       fontFamily: theme.text.fontFamily.medium,
-      paddingVertical: 4,
     },
     changeFocus: {
       textAlign: "center",
