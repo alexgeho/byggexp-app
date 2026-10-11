@@ -59,7 +59,9 @@ export function FeedbackProvider({ children }) {
 
   const showPopup = useCallback(
     (variant, options) => {
-      if (!options?.message) {
+      // Title-only popups are valid ("Faktura skickad") — requiring a message
+      // silently swallowed every save/send confirmation that passed just a title.
+      if (!options?.message && !options?.title) {
         return;
       }
 
@@ -180,17 +182,19 @@ export function FeedbackProvider({ children }) {
               {popup?.title}
             </Text>
 
-            <Text
-              style={[
-                styles.message,
-                {
-                  color: popupSubtextColor,
-                  fontFamily: theme.text.fontFamily.medium,
-                },
-              ]}
-            >
-              {popup?.message}
-            </Text>
+            {popup?.message ? (
+              <Text
+                style={[
+                  styles.message,
+                  {
+                    color: popupSubtextColor,
+                    fontFamily: theme.text.fontFamily.medium,
+                  },
+                ]}
+              >
+                {popup?.message}
+              </Text>
+            ) : null}
 
             <TouchableOpacity
               activeOpacity={0.9}
