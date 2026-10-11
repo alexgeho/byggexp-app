@@ -1618,6 +1618,7 @@
     "companyNameRequired": "Angi firmanavn",
     "nameRequired": "Angi for- og etternavn",
     "addTitle": "Ny klient",
+    "editTitle": "Rediger kunde",
     "deleteFailed": "Kunne ikke slette klienten."
   },
   "notes": {

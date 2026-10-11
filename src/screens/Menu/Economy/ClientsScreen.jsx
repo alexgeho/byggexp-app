@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { Alert, StyleSheet, Text } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 
 import { useTheme } from "../../../theme/ThemeContext";
@@ -19,6 +19,7 @@ const clientName = (client) =>
 
 export default function ClientsScreen() {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const { theme } = useTheme();
   const cardStyles = useCardStyles();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
@@ -97,6 +98,7 @@ export default function ClientsScreen() {
         return (
           <ListCard
             title={clientName(client) || t("common.noName")}
+            onPress={() => navigation.navigate("CreateClient", { client })}
             badgeLabel={t(isPrivate ? "clients.private" : "clients.company")}
             badgeStyle={
               isPrivate

@@ -1607,6 +1607,7 @@
     "companyNameRequired": "Введіть назву компанії",
     "nameRequired": "Введіть ім'я та прізвище",
     "addTitle": "Новий клієнт",
+    "editTitle": "Редагувати клієнта",
     "deleteFailed": "Не вдалося видалити клієнта."
   },
   "notes": {

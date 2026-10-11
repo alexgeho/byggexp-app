@@ -1618,6 +1618,7 @@
     "companyNameRequired": "Ange företagsnamn",
     "nameRequired": "Ange för- och efternamn",
     "addTitle": "Ny klient",
+    "editTitle": "Redigera klient",
     "deleteFailed": "Kunde inte ta bort klienten."
   },
   "notes": {

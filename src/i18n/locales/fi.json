@@ -1603,6 +1603,7 @@
     "companyNameRequired": "Anna yrityksen nimi",
     "nameRequired": "Anna etu- ja sukunimi",
     "addTitle": "Uusi asiakas",
+    "editTitle": "Muokkaa asiakasta",
     "deleteFailed": "Asiakkaan poistaminen epäonnistui."
   },
   "notes": {

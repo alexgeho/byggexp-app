@@ -1607,6 +1607,7 @@
     "companyNameRequired": "Įveskite įmonės pavadinimą",
     "nameRequired": "Įveskite vardą ir pavardę",
     "addTitle": "Naujas klientas",
+    "editTitle": "Redaguoti klientą",
     "deleteFailed": "Nepavyko ištrinti kliento."
   },
   "notes": {

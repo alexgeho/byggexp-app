@@ -1607,6 +1607,7 @@
     "companyNameRequired": "Podaj nazwę firmy",
     "nameRequired": "Podaj imię i nazwisko",
     "addTitle": "Nowy klient",
+    "editTitle": "Edytuj klienta",
     "deleteFailed": "Nie udało się usunąć klienta."
   },
   "notes": {

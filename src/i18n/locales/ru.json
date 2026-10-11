@@ -1622,6 +1622,7 @@
     "companyNameRequired": "Введите название компании",
     "nameRequired": "Введите имя и фамилию",
     "addTitle": "Новый клиент",
+    "editTitle": "Редактировать клиента",
     "deleteFailed": "Не удалось удалить клиента."
   },
   "notes": {

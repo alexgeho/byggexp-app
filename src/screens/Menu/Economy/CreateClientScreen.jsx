@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
@@ -29,7 +29,7 @@ import {
 import { layout } from "../../../theme/spacing";
 import { getApiErrorMessage } from "../../../utils/apiError";
 
-// New client — mirrors the admin ClientCreateForm (same fields, one scroll form on
+// New / edit client — mirrors the admin ClientCreateForm (same fields, one scroll form on
 // mobile instead of a 3-step wizard): identity (company/private), address,
 // contact, payment. Auto customer number, country-driven currency default.
 const PAYMENT_TERMS = ["10", "20", "30", "40", "50"];
@@ -63,6 +63,19 @@ const EMPTY = {
   notes: "",
 };
 
+// A saved client back into form values — the inputs only take strings, and
+// fields the client never had fall back to the empty defaults.
+const toForm = (client) => {
+  const form = { ...EMPTY };
+  Object.keys(EMPTY).forEach((key) => {
+    const value = client?.[key];
+    if (value === undefined || value === null) return;
+    form[key] =
+      typeof EMPTY[key] === "boolean" ? Boolean(value) : String(value);
+  });
+  return form;
+};
+
 export default function CreateClientScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -70,9 +83,14 @@ export default function CreateClientScreen() {
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { user } = useContext(AuthContext);
   const { showSuccess, showError } = useFeedback();
+  // Tapping a client in the list opens this same form, filled in.
+  const editingClient = useRoute().params?.client;
+  const editingId = editingClient?._id || editingClient?.id;
 
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState(EMPTY);
+  const [form, setForm] = useState(() =>
+    editingClient ? toForm(editingClient) : EMPTY,
+  );
   const isCompany = form.clientType === "company";
 
   const set = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
@@ -90,6 +108,8 @@ export default function CreateClientScreen() {
   };
 
   useEffect(() => {
+    // An existing client keeps its own number, country and currency.
+    if (editingId) return undefined;
     let active = true;
     (async () => {
       try {
@@ -128,13 +148,17 @@ export default function CreateClientScreen() {
     }
     setSaving(true);
     try {
-      await clientService.create({
+      const payload = {
         ...form,
-        companyId: user?.companyId,
         hourlyRate: Number(form.hourlyRate) || 0,
         reverseVAT: isCompany && Boolean(form.reverseVAT),
-      });
-      await resetForm();
+      };
+      if (editingId) {
+        await clientService.update(editingId, payload);
+      } else {
+        await clientService.create({ ...payload, companyId: user?.companyId });
+        await resetForm();
+      }
       showSuccess({ title: t("clientForm.savedTitle") });
       // Back to the list, which refetches on focus and shows the new client.
       navigation.goBack();
@@ -146,6 +170,10 @@ export default function CreateClientScreen() {
       setSaving(false);
     }
   };
+
+  const saveLabel = editingId
+    ? t("common.save", "Spara")
+    : t("clientForm.add", "Lägg till klient");
 
   // One input row inside a FieldCard: the label is shown once (no placeholder
   // echoing it). `last` drops the separator under the final row of a card.
@@ -168,11 +196,15 @@ export default function CreateClientScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
       <FormHeader
-        title={t("clientForm.addTitle", "Ny klient")}
+        title={
+          editingId
+            ? t("clientForm.editTitle", "Redigera klient")
+            : t("clientForm.addTitle", "Ny klient")
+        }
         onBack={() => navigation.goBack()}
         onSave={handleSave}
         saving={saving}
-        saveLabel={t("clientForm.add", "Lägg till klient")}
+        saveLabel={saveLabel}
       />
 
       <KeyboardAvoidingView
@@ -328,11 +360,7 @@ export default function CreateClientScreen() {
       </KeyboardAvoidingView>
 
       <FormFooter>
-        <Button
-          title={t("clientForm.add", "Lägg till klient")}
-          onPress={handleSave}
-          loading={saving}
-        />
+        <Button title={saveLabel} onPress={handleSave} loading={saving} />
       </FormFooter>
     </SafeAreaView>
   );

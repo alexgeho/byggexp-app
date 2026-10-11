@@ -1603,6 +1603,7 @@
     "companyNameRequired": "Sisesta ettevõtte nimi",
     "nameRequired": "Sisesta ees- ja perekonnanimi",
     "addTitle": "Uus klient",
+    "editTitle": "Muuda klienti",
     "deleteFailed": "Klienti kustutamine ebaõnnestus."
   },
   "notes": {

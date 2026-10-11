@@ -1606,6 +1606,7 @@
     "companyNameRequired": "Unesite naziv firme",
     "nameRequired": "Unesite ime i prezime",
     "addTitle": "Novi klijent",
+    "editTitle": "Uredi klijenta",
     "deleteFailed": "Nije moguće obrisati klijenta."
   },
   "notes": {

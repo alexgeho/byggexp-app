@@ -1604,6 +1604,7 @@
     "companyNameRequired": "Ievadiet uzņēmuma nosaukumu",
     "nameRequired": "Ievadiet vārdu un uzvārdu",
     "addTitle": "Jauns klients",
+    "editTitle": "Rediģēt klientu",
     "deleteFailed": "Neizdevās dzēst klientu."
   },
   "notes": {
