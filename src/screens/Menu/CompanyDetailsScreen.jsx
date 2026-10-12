@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
+  TextInput,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
@@ -16,7 +17,7 @@ import { useFeedback } from "../../contexts/FeedbackContext";
 import { useTheme } from "../../theme/ThemeContext";
 import { companyService } from "../../services/company.service";
 import { FieldCard, FieldRow } from "../../components/common/FieldRow/FieldRow";
-import { FormHeader } from "../../components/common/ui";
+import { ChoiceChips, FormHeader } from "../../components/common/ui";
 import { layout } from "../../theme/spacing";
 import { getApiErrorMessage } from "../../utils/apiError";
 import { getEntityId } from "../../utils/entityId";
@@ -57,22 +58,11 @@ const GROUPS = [
       keyboard: "url",
     },
   ],
-  // Where the customer actually pays. Without these the invoice printed an
-  // empty Bankgiro box and there was nowhere in the app to fill it in.
-  [
-    {
-      key: "bankgiro",
-      labelKey: "companyDetails.bankgiro",
-      icon: "credit-card",
-    },
-    {
-      key: "plusgiro",
-      labelKey: "companyDetails.plusgiro",
-      icon: "credit-card",
-    },
-  ],
 ];
 const FIELDS = GROUPS.flat();
+// Where the customer actually pays: a company has one or the other, so one
+// cell with a Bankgiro/Plusgiro switch instead of two half-empty rows.
+const GIRO_TYPES = ["bankgiro", "plusgiro"];
 
 export default function CompanyDetailsScreen() {
   const navigation = useNavigation();
@@ -87,6 +77,8 @@ export default function CompanyDetailsScreen() {
     Object.fromEntries(FIELDS.map((f) => [f.key, ""])),
   );
   const [fSkatt, setFSkatt] = useState(false);
+  const [giroType, setGiroType] = useState("bankgiro");
+  const [giro, setGiro] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -100,6 +92,9 @@ export default function CompanyDetailsScreen() {
         setForm(
           Object.fromEntries(FIELDS.map((f) => [f.key, company[f.key] || ""])),
         );
+        const usePlus = !company.bankgiro && !!company.plusgiro;
+        setGiroType(usePlus ? "plusgiro" : "bankgiro");
+        setGiro((usePlus ? company.plusgiro : company.bankgiro) || "");
         // Stored as free text ("Godkänd för F-skatt") or a legacy "true"/"false".
         setFSkatt(Boolean(company.vatStatus) && company.vatStatus !== "false");
       } catch (error) {
@@ -122,6 +117,9 @@ export default function CompanyDetailsScreen() {
     try {
       await companyService.update(companyId, {
         ...Object.fromEntries(FIELDS.map((f) => [f.key, form[f.key].trim()])),
+        // Only the chosen giro is kept; the other is cleared.
+        bankgiro: giroType === "bankgiro" ? giro.trim() : "",
+        plusgiro: giroType === "plusgiro" ? giro.trim() : "",
         // Same label the web saves — printed verbatim in the invoice footer.
         vatStatus: fSkatt ? "Godkänd för F-skatt" : "",
       });
@@ -188,6 +186,24 @@ export default function CompanyDetailsScreen() {
               </FieldCard>
             ))}
             <FieldCard style={styles.group}>
+              <FieldRow icon="credit-card" isLast>
+                <ChoiceChips
+                  values={GIRO_TYPES}
+                  value={giroType}
+                  onChange={setGiroType}
+                  format={(v) => t(`companyDetails.${v}`)}
+                />
+                <TextInput
+                  style={styles.giroInput}
+                  value={giro}
+                  onChangeText={setGiro}
+                  placeholder={t(`companyDetails.${giroType}`)}
+                  placeholderTextColor={theme.content.placeholder}
+                  keyboardType="numbers-and-punctuation"
+                />
+              </FieldRow>
+            </FieldCard>
+            <FieldCard style={styles.group}>
               <FieldRow
                 variant="toggle"
                 floating
@@ -212,6 +228,12 @@ function createStyles(theme) {
     flex: { flex: 1 },
     loader: { flex: 1, alignItems: "center", justifyContent: "center" },
     group: { marginBottom: 12 },
+    giroInput: {
+      fontSize: 16,
+      lineHeight: 20,
+      color: c.textPrimary,
+      paddingVertical: 0,
+    },
     content: {
       paddingHorizontal: layout.formGutter,
       paddingTop: layout.headerToContent,
