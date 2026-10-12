@@ -26,28 +26,53 @@ import { getEntityId } from "../../utils/entityId";
 // edit the invoice/offer-relevant fields, save. Theme-aware throughout. The
 // field set mirrors the web form so an app-made invoice prints the same footer
 // (Momsreg.nr, town, website, F-skatt) as one made on the web.
-const FIELDS = [
-  { key: "name", labelKey: "companyDetails.name", keyboard: "default" },
-  {
-    key: "orgNumber",
-    labelKey: "companyDetails.orgNumber",
-    keyboard: "default",
-  },
-  {
-    key: "vatNumber",
-    labelKey: "companyDetails.vatNumber",
-    keyboard: "default",
-  },
-  { key: "address", labelKey: "companyDetails.address", keyboard: "default" },
-  { key: "city", labelKey: "companyDetails.city", keyboard: "default" },
-  { key: "email", labelKey: "companyDetails.email", keyboard: "email-address" },
-  { key: "phone", labelKey: "companyDetails.phone", keyboard: "phone-pad" },
-  { key: "website", labelKey: "companyDetails.website", keyboard: "url" },
+// Grouped like Create project: one card per topic, an icon on every row.
+const GROUPS = [
+  [
+    { key: "name", labelKey: "companyDetails.name", icon: "briefcase" },
+    { key: "orgNumber", labelKey: "companyDetails.orgNumber", icon: "hash" },
+    { key: "vatNumber", labelKey: "companyDetails.vatNumber", icon: "percent" },
+  ],
+  [
+    { key: "address", labelKey: "companyDetails.address", icon: "map-pin" },
+    { key: "city", labelKey: "companyDetails.city", icon: "map" },
+  ],
+  [
+    {
+      key: "email",
+      labelKey: "companyDetails.email",
+      icon: "mail",
+      keyboard: "email-address",
+    },
+    {
+      key: "phone",
+      labelKey: "companyDetails.phone",
+      icon: "phone",
+      keyboard: "phone-pad",
+    },
+    {
+      key: "website",
+      labelKey: "companyDetails.website",
+      icon: "globe",
+      keyboard: "url",
+    },
+  ],
   // Where the customer actually pays. Without these the invoice printed an
   // empty Bankgiro box and there was nowhere in the app to fill it in.
-  { key: "bankgiro", labelKey: "companyDetails.bankgiro", keyboard: "default" },
-  { key: "plusgiro", labelKey: "companyDetails.plusgiro", keyboard: "default" },
+  [
+    {
+      key: "bankgiro",
+      labelKey: "companyDetails.bankgiro",
+      icon: "credit-card",
+    },
+    {
+      key: "plusgiro",
+      labelKey: "companyDetails.plusgiro",
+      icon: "credit-card",
+    },
+  ],
 ];
+const FIELDS = GROUPS.flat();
 
 export default function CompanyDetailsScreen() {
   const navigation = useNavigation();
@@ -140,26 +165,33 @@ export default function CompanyDetailsScreen() {
             contentContainerStyle={styles.content}
             keyboardShouldPersistTaps="handled"
           >
-            <FieldCard>
-              {FIELDS.map((f, i) => (
-                <FieldRow
-                  key={f.key}
-                  variant="input"
-                  floating
-                  label={t(f.labelKey)}
-                  value={form[f.key]}
-                  onChangeText={(v) => handleChange(f.key, v)}
-                  keyboardType={f.keyboard}
-                  autoCapitalize={
-                    f.key === "email" || f.key === "website"
-                      ? "none"
-                      : "sentences"
-                  }
-                />
-              ))}
+            {GROUPS.map((group) => (
+              <FieldCard key={group[0].key} style={styles.group}>
+                {group.map((f, i) => (
+                  <FieldRow
+                    key={f.key}
+                    variant="input"
+                    floating
+                    icon={f.icon}
+                    label={t(f.labelKey)}
+                    value={form[f.key]}
+                    onChangeText={(v) => handleChange(f.key, v)}
+                    keyboardType={f.keyboard || "default"}
+                    autoCapitalize={
+                      f.key === "email" || f.key === "website"
+                        ? "none"
+                        : "sentences"
+                    }
+                    isLast={i === group.length - 1}
+                  />
+                ))}
+              </FieldCard>
+            ))}
+            <FieldCard style={styles.group}>
               <FieldRow
                 variant="toggle"
                 floating
+                icon="check-circle"
                 label={t("companyDetails.fSkatt")}
                 switchValue={fSkatt}
                 onSwitchChange={setFSkatt}
@@ -179,6 +211,7 @@ function createStyles(theme) {
     safe: { flex: 1, backgroundColor: c.background },
     flex: { flex: 1 },
     loader: { flex: 1, alignItems: "center", justifyContent: "center" },
+    group: { marginBottom: 12 },
     content: {
       paddingHorizontal: layout.formGutter,
       paddingTop: layout.headerToContent,
