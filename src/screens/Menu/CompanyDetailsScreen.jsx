@@ -6,7 +6,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
-  TextInput,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
@@ -17,7 +16,7 @@ import { useFeedback } from "../../contexts/FeedbackContext";
 import { useTheme } from "../../theme/ThemeContext";
 import { companyService } from "../../services/company.service";
 import { FieldCard, FieldRow } from "../../components/common/FieldRow/FieldRow";
-import { ChoiceChips, FormHeader } from "../../components/common/ui";
+import { FormHeader } from "../../components/common/ui";
 import { layout } from "../../theme/spacing";
 import { getApiErrorMessage } from "../../utils/apiError";
 import { getEntityId } from "../../utils/entityId";
@@ -31,8 +30,16 @@ import { getEntityId } from "../../utils/entityId";
 const GROUPS = [
   [
     { key: "name", labelKey: "companyDetails.name", icon: "briefcase" },
-    { key: "orgNumber", labelKey: "companyDetails.orgNumber", icon: "hash" },
-    { key: "vatNumber", labelKey: "companyDetails.vatNumber", icon: "percent" },
+    {
+      key: "orgNumber",
+      labelKey: "companyDetails.orgNumber",
+      icon: "id-card",
+    },
+    {
+      key: "vatNumber",
+      labelKey: "companyDetails.vatNumber",
+      icon: "receipt",
+    },
   ],
   [
     { key: "address", labelKey: "companyDetails.address", icon: "map-pin" },
@@ -61,8 +68,9 @@ const GROUPS = [
 ];
 const FIELDS = GROUPS.flat();
 // Where the customer actually pays: a company has one or the other, so one
-// cell with a Bankgiro/Plusgiro switch instead of two half-empty rows.
-const GIRO_TYPES = ["bankgiro", "plusgiro"];
+// "Bankgiro/Plusgiro" cell. The format tells them apart — a plusgiro number
+// has its dash before the last digit (12345-6), a bankgiro after 3–4 (5052-8272).
+const isPlusgiro = (v) => /^\d{1,7}-\d$/.test(String(v).replace(/\s/g, ""));
 
 export default function CompanyDetailsScreen() {
   const navigation = useNavigation();
@@ -77,7 +85,6 @@ export default function CompanyDetailsScreen() {
     Object.fromEntries(FIELDS.map((f) => [f.key, ""])),
   );
   const [fSkatt, setFSkatt] = useState(false);
-  const [giroType, setGiroType] = useState("bankgiro");
   const [giro, setGiro] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -92,9 +99,7 @@ export default function CompanyDetailsScreen() {
         setForm(
           Object.fromEntries(FIELDS.map((f) => [f.key, company[f.key] || ""])),
         );
-        const usePlus = !company.bankgiro && !!company.plusgiro;
-        setGiroType(usePlus ? "plusgiro" : "bankgiro");
-        setGiro((usePlus ? company.plusgiro : company.bankgiro) || "");
+        setGiro(company.bankgiro || company.plusgiro || "");
         // Stored as free text ("Godkänd för F-skatt") or a legacy "true"/"false".
         setFSkatt(Boolean(company.vatStatus) && company.vatStatus !== "false");
       } catch (error) {
@@ -118,8 +123,8 @@ export default function CompanyDetailsScreen() {
       await companyService.update(companyId, {
         ...Object.fromEntries(FIELDS.map((f) => [f.key, form[f.key].trim()])),
         // Only the chosen giro is kept; the other is cleared.
-        bankgiro: giroType === "bankgiro" ? giro.trim() : "",
-        plusgiro: giroType === "plusgiro" ? giro.trim() : "",
+        bankgiro: isPlusgiro(giro) ? "" : giro.trim(),
+        plusgiro: isPlusgiro(giro) ? giro.trim() : "",
         // Same label the web saves — printed verbatim in the invoice footer.
         vatStatus: fSkatt ? "Godkänd för F-skatt" : "",
       });
@@ -186,22 +191,16 @@ export default function CompanyDetailsScreen() {
               </FieldCard>
             ))}
             <FieldCard style={styles.group}>
-              <FieldRow icon="credit-card" isLast>
-                <ChoiceChips
-                  values={GIRO_TYPES}
-                  value={giroType}
-                  onChange={setGiroType}
-                  format={(v) => t(`companyDetails.${v}`)}
-                />
-                <TextInput
-                  style={styles.giroInput}
-                  value={giro}
-                  onChangeText={setGiro}
-                  placeholder={t(`companyDetails.${giroType}`)}
-                  placeholderTextColor={theme.content.placeholder}
-                  keyboardType="numbers-and-punctuation"
-                />
-              </FieldRow>
+              <FieldRow
+                variant="input"
+                floating
+                icon="bank"
+                label={t("companyDetails.giro")}
+                value={giro}
+                onChangeText={setGiro}
+                keyboardType="numbers-and-punctuation"
+                isLast
+              />
             </FieldCard>
             <FieldCard style={styles.group}>
               <FieldRow
@@ -228,12 +227,6 @@ function createStyles(theme) {
     flex: { flex: 1 },
     loader: { flex: 1, alignItems: "center", justifyContent: "center" },
     group: { marginBottom: 12 },
-    giroInput: {
-      fontSize: 16,
-      lineHeight: 20,
-      color: c.textPrimary,
-      paddingVertical: 0,
-    },
     content: {
       paddingHorizontal: layout.formGutter,
       paddingTop: layout.headerToContent,

@@ -1560,6 +1560,7 @@
     "phone": "Puhelin",
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
+    "giro": "Bankgiro/Plusgiro",
     "vatNumber": "ALV-numero",
     "city": "Postinumero ja kaupunki",
     "website": "Verkkosivu",

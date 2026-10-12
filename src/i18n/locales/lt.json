@@ -1564,6 +1564,7 @@
     "phone": "Telefonas",
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
+    "giro": "Bankgiro/Plusgiro",
     "vatNumber": "PVM kodas",
     "city": "Pašto kodas ir miestas",
     "website": "Svetainė",

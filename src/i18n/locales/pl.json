@@ -1564,6 +1564,7 @@
     "phone": "Telefon",
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
+    "giro": "Bankgiro/Plusgiro",
     "vatNumber": "Nr VAT",
     "city": "Kod pocztowy i miasto",
     "website": "Strona www",

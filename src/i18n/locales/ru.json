@@ -1564,6 +1564,7 @@
     "phone": "Телефон",
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
+    "giro": "Bankgiro/Plusgiro",
     "vatNumber": "Номер НДС",
     "city": "Индекс и город",
     "website": "Сайт",

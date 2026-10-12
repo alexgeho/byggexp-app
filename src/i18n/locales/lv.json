@@ -1561,6 +1561,7 @@
     "phone": "Tālrunis",
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
+    "giro": "Bankgiro/Plusgiro",
     "vatNumber": "PVN numurs",
     "city": "Pasta indekss un pilsēta",
     "website": "Mājaslapa",

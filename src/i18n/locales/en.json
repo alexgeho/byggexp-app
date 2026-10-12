@@ -1560,6 +1560,7 @@
     "phone": "Phone",
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
+    "giro": "Bankgiro/Plusgiro",
     "vatNumber": "VAT reg. no.",
     "city": "Postcode and town",
     "website": "Website",

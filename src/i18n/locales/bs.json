@@ -1563,6 +1563,7 @@
     "phone": "Telefon",
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
+    "giro": "Bankgiro/Plusgiro",
     "vatNumber": "PDV broj",
     "city": "Poštanski broj i grad",
     "website": "Web stranica",
