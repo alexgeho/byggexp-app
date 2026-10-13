@@ -178,10 +178,11 @@ export default function CreateClientScreen() {
   // One input row inside a FieldCard: the label is shown once (no placeholder
   // echoing it). `last` drops the separator under the final row of a card.
   const field = (k, label, opts = {}) => {
-    const { editable = true, last = false, ...rest } = opts;
+    const { editable = true, last = false, icon, ...rest } = opts;
     return (
       <FieldRow
         key={k}
+        icon={icon}
         variant={editable ? "input" : "readonly"}
         floating
         label={label}
@@ -216,7 +217,11 @@ export default function CreateClientScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <FieldCard>
-            <FieldRow label={t("clientForm.clientType", "Kundtyp")} isLast>
+            <FieldRow
+              icon="users"
+              label={t("clientForm.clientType", "Kundtyp")}
+              isLast
+            >
               <ChoiceChips
                 values={["company", "private"]}
                 value={form.clientType}
@@ -236,18 +241,23 @@ export default function CreateClientScreen() {
                 {field(
                   "companyName",
                   `${t("clientForm.companyName", "Företagsnamn")} *`,
+                  { icon: "briefcase" },
                 )}
                 {field(
                   "customerNumber",
                   t("clientForm.customerNumber", "Kundnr"),
-                  { editable: false },
+                  { editable: false, icon: "hash" },
                 )}
-                {field("orgNumber", t("clientForm.orgNumber", "Org.nr"))}
-                {field("vatNumber", t("clientForm.vatNumber", "Momsreg.nr"))}
+                {field("orgNumber", t("clientForm.orgNumber", "Org.nr"), {
+                  icon: "id-card",
+                })}
+                {field("vatNumber", t("clientForm.vatNumber", "Momsreg.nr"), {
+                  icon: "receipt",
+                })}
                 {field(
                   "contactPerson",
                   t("clientForm.contactPerson", "Kontaktperson"),
-                  { last: true },
+                  { last: true, icon: "user" },
                 )}
               </>
             ) : (
@@ -255,16 +265,20 @@ export default function CreateClientScreen() {
                 {field(
                   "firstName",
                   `${t("clientForm.firstName", "Förnamn")} *`,
+                  { icon: "user" },
                 )}
-                {field("lastName", t("clientForm.lastName", "Efternamn"))}
+                {field("lastName", t("clientForm.lastName", "Efternamn"), {
+                  icon: "user",
+                })}
                 {field(
                   "personalNumber",
                   t("clientForm.personalNumber", "Personnummer"),
+                  { icon: "id-card" },
                 )}
                 {field(
                   "customerNumber",
                   t("clientForm.customerNumber", "Kundnr"),
-                  { editable: false, last: true },
+                  { editable: false, last: true, icon: "hash" },
                 )}
               </>
             )}
@@ -275,10 +289,15 @@ export default function CreateClientScreen() {
               {t("clientForm.address", "Adress")}
             </SectionTitle>
             <FieldCard>
-              {field("address", t("clientForm.address", "Adress"))}
-              {field("postalCode", t("clientForm.postalCode", "Postnummer"))}
-              {field("city", t("clientForm.city", "Ort"))}
+              {field("address", t("clientForm.address", "Adress"), {
+                icon: "map-pin",
+              })}
+              {field("postalCode", t("clientForm.postalCode", "Postnummer"), {
+                icon: "inbox",
+              })}
+              {field("city", t("clientForm.city", "Ort"), { icon: "map" })}
               {field("country", t("clientForm.country", "Land"), {
+                icon: "flag",
                 last: true,
               })}
             </FieldCard>
@@ -290,16 +309,20 @@ export default function CreateClientScreen() {
             </SectionTitle>
             <FieldCard>
               {field("email", t("clientForm.email", "E-post"), {
+                icon: "mail",
                 keyboardType: "email-address",
                 autoCapitalize: "none",
               })}
               {field("phone", t("clientForm.phone", "Telefon"), {
+                icon: "phone",
                 keyboardType: "phone-pad",
               })}
               {field("mobile", t("clientForm.mobile", "Mobil"), {
+                icon: "smartphone",
                 keyboardType: "phone-pad",
               })}
               {field("website", t("clientForm.website", "Webbplats"), {
+                icon: "globe",
                 autoCapitalize: "none",
                 last: true,
               })}
@@ -312,6 +335,7 @@ export default function CreateClientScreen() {
             </SectionTitle>
             <FieldCard>
               <FieldRow
+                icon="calendar"
                 label={`${t("clientForm.paymentTerms", "Betalningsvillkor")} · ${t("clientForm.daysNet", "dagar netto")}`}
               >
                 <ChoiceChips
@@ -320,7 +344,10 @@ export default function CreateClientScreen() {
                   onChange={(v) => set("paymentTerms", v)}
                 />
               </FieldRow>
-              <FieldRow label={t("clientForm.currency", "Valuta")}>
+              <FieldRow
+                icon="dollar-sign"
+                label={t("clientForm.currency", "Valuta")}
+              >
                 <ChoiceChips
                   values={CURRENCIES}
                   value={form.currency}
@@ -328,18 +355,20 @@ export default function CreateClientScreen() {
                 />
               </FieldRow>
               {field("discount", t("clientForm.discount", "Kundrabatt %"), {
+                icon: "percent",
                 keyboardType: "numeric",
               })}
               {field(
                 "hourlyRate",
                 t("clientForm.hourlyRate", "Timpris (SEK)"),
-                { keyboardType: "numeric", last: !isCompany },
+                { keyboardType: "numeric", last: !isCompany, icon: "clock" },
               )}
               {/* Byggmoms is between businesses — a private person never carries
                   it, so the toggle isn't offered (same as the web form). */}
               {isCompany ? (
                 <FieldRow
                   variant="toggle"
+                  icon="repeat"
                   floating
                   label={t("clientForm.reverseVAT", "Omvänd moms")}
                   switchValue={form.reverseVAT}
@@ -352,6 +381,7 @@ export default function CreateClientScreen() {
 
           <FieldCard>
             {field("notes", t("clientForm.notes", "Anteckningar"), {
+              icon: "file-text",
               multiline: true,
               last: true,
             })}
