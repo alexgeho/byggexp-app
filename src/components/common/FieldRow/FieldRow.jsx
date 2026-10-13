@@ -51,10 +51,6 @@ export function FieldRow({
   floating = false,
   // Extra TextInput props (selectTextOnFocus, autoCorrect…) for "input".
   inputProps,
-  // Per-screen type overrides (e.g. Create project's 12/14 label/value pair):
-  // labelStyle for the small label, valueStyle for a filled input's text.
-  labelStyle,
-  valueStyle,
 }) {
   const { theme } = useTheme();
   const c = theme.content;
@@ -102,14 +98,12 @@ export function FieldRow({
           <View style={styles.rowContent}>
             {badge}
             <View style={styles.body}>
-              {showLabel ? (
-                <Text style={[styles.label, labelStyle]}>{label}</Text>
-              ) : null}
+              {showLabel ? <Text style={styles.label}>{label}</Text> : null}
               <TextInput
                 style={[
                   styles.input,
                   multiline ? styles.inputMultiline : styles.inputLine,
-                  value ? valueStyle : null,
+                  showLabel && styles.valueUnderLabel,
                 ]}
                 value={value}
                 onChangeText={onChangeText}
@@ -182,6 +176,7 @@ export function FieldRow({
               ellipsizeMode="tail"
               style={[
                 styles.value,
+                (!floating || value) && styles.valueUnderLabel,
                 !value &&
                   (floating ? styles.placeholderFloating : styles.placeholder),
               ]}

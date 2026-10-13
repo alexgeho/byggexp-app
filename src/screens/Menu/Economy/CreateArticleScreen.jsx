@@ -6,7 +6,6 @@ import {
   StyleSheet,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 
 import AuthContext from "../../../contexts/AuthContext";
@@ -23,6 +22,7 @@ import {
   ChoiceChips,
   FormFooter,
   FormHeader,
+  FormScreen,
 } from "../../../components/common/ui";
 import { layout } from "../../../theme/spacing";
 import { getApiErrorMessage } from "../../../utils/apiError";
@@ -114,7 +114,7 @@ export default function CreateArticleScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe} edges={["top"]}>
+    <FormScreen style={styles.safe} edges={["top"]}>
       <FormHeader
         title={t("articleForm.addTitle", "Ny artikel")}
         onBack={() => navigation.goBack()}
@@ -174,7 +174,7 @@ export default function CreateArticleScreen() {
           loading={saving}
         />
       </FormFooter>
-    </SafeAreaView>
+    </FormScreen>
   );
 }
 

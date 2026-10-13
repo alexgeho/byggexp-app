@@ -23,6 +23,7 @@ export const createStyles = (c) =>
     headerTitle: {
       color: c.textPrimary,
       fontSize: 17,
+      fontWeight: "600",
       textAlign: "center",
       flex: 1,
     },
@@ -32,7 +33,7 @@ export const createStyles = (c) =>
     },
     contentScrollContent: {
       paddingBottom: 140,
-      gap: 20,
+      gap: 24,
     },
     groupCard: {
       width: "100%",

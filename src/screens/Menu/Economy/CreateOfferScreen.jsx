@@ -1,14 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-  Platform,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Icon from "react-native-vector-icons/Feather";
+import { View, Text, ScrollView, Alert, Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
@@ -34,7 +25,8 @@ import {
 import {
   Button,
   FormFooter,
-  HeaderCheckButton,
+  FormHeader,
+  FormScreen,
 } from "../../../components/common/ui";
 import ClientPickerModal from "./ClientPickerModal";
 
@@ -48,7 +40,6 @@ export default function CreateOfferScreen() {
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const { t } = useTranslation();
   const { showSuccess } = useFeedback();
-  const insets = useSafeAreaInsets();
 
   const [companyName, setCompanyName] = useState("");
   const [email, setEmail] = useState("");
@@ -192,29 +183,18 @@ export default function CreateOfferScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.header, { marginTop: insets.top + 8 }]}>
-        <TouchableOpacity
-          style={styles.headerBtn}
-          onPress={() => navigation.goBack()}
-        >
-          <Icon
-            name="chevron-left"
-            size={22}
-            color={theme.content.textPrimary}
-          />
-        </TouchableOpacity>
-        <Text style={styles.title}>
-          {editingId ? t("billing.editOfferTitle") : t("billing.newOfferTitle")}
-        </Text>
-        {/* Save the draft straight from the header — the buttons at the end
-            of the form are a long scroll away. */}
-        <HeaderCheckButton
-          onPress={handleSaveDraft}
-          loading={saving}
-          accessibilityLabel={t("billing.saveDraft", "Spara utkast")}
-        />
-      </View>
+    <FormScreen style={styles.container}>
+      {/* Save the draft straight from the header — the buttons at the end
+          of the form are a long scroll away. */}
+      <FormHeader
+        title={
+          editingId ? t("billing.editOfferTitle") : t("billing.newOfferTitle")
+        }
+        onBack={() => navigation.goBack()}
+        onSave={handleSaveDraft}
+        saving={saving}
+        saveLabel={t("billing.saveDraft", "Spara utkast")}
+      />
 
       <ScrollView
         style={{ flex: 1 }}
@@ -344,6 +324,6 @@ export default function CreateOfferScreen() {
           accentColor={PRIMARY}
         />
       )}
-    </View>
+    </FormScreen>
   );
 }

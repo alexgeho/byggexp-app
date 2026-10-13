@@ -58,11 +58,19 @@ export function createStyles(c) {
     bodyCustom: {
       gap: 8,
     },
+    // Type pair of Create project (the reference form): a 12 regular label
+    // 4 above a 14 value. A row with no label above (empty floating field,
+    // toggle) keeps the 16 line, like Create project's one-line rows.
     label: {
-      fontSize: 13,
-      lineHeight: 16,
-      fontWeight: "600",
-      color: onDark(c, c.textSecondary, "#6C6C70"),
+      fontSize: 12,
+      lineHeight: 14,
+      fontWeight: "400",
+      color: c.textPrimary,
+      marginBottom: 2,
+    },
+    valueUnderLabel: {
+      fontSize: 14,
+      lineHeight: 18,
     },
     input: {
       fontSize: 16,

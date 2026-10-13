@@ -7,7 +7,6 @@ import {
   StyleSheet,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
 import AuthContext from "../../../contexts/AuthContext";
@@ -24,6 +23,7 @@ import {
   ChoiceChips,
   FormFooter,
   FormHeader,
+  FormScreen,
   SectionTitle,
 } from "../../../components/common/ui";
 import { layout } from "../../../theme/spacing";
@@ -194,7 +194,7 @@ export default function CreateClientScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe} edges={["top"]}>
+    <FormScreen style={styles.safe} edges={["top"]}>
       <FormHeader
         title={
           editingId
@@ -362,7 +362,7 @@ export default function CreateClientScreen() {
       <FormFooter>
         <Button title={saveLabel} onPress={handleSave} loading={saving} />
       </FormFooter>
-    </SafeAreaView>
+    </FormScreen>
   );
 }
 

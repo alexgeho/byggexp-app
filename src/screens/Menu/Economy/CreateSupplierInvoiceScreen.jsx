@@ -6,7 +6,6 @@ import {
   StyleSheet,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
 import { useFeedback } from "../../../contexts/FeedbackContext";
@@ -16,7 +15,7 @@ import {
   FieldCard,
   FieldRow,
 } from "../../../components/common/FieldRow/FieldRow";
-import { Button, FormHeader } from "../../../components/common/ui";
+import { Button, FormHeader, FormScreen } from "../../../components/common/ui";
 import { layout } from "../../../theme/spacing";
 import { getApiErrorMessage } from "../../../utils/apiError";
 import { pickUploadAssets } from "../../../utils/uploadPicker";
@@ -166,7 +165,7 @@ export default function CreateSupplierInvoiceScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
+    <FormScreen style={styles.safe} edges={["top", "bottom"]}>
       <FormHeader
         title={
           editingId
@@ -317,7 +316,7 @@ export default function CreateSupplierInvoiceScreen() {
           }));
         }}
       />
-    </SafeAreaView>
+    </FormScreen>
   );
 }
 

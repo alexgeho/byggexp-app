@@ -1,14 +1,5 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-  Platform,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Icon from "react-native-vector-icons/Feather";
+import { View, Text, ScrollView, Alert, Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
@@ -39,7 +30,8 @@ import {
 import {
   Button,
   FormFooter,
-  HeaderCheckButton,
+  FormHeader,
+  FormScreen,
 } from "../../../components/common/ui";
 
 const DEFAULT_TERMS_DAYS = 20;
@@ -57,7 +49,6 @@ export default function CreateInvoiceScreen() {
   const { t } = useTranslation();
   const { showSuccess } = useFeedback();
   const { user } = useContext(AuthContext);
-  const insets = useSafeAreaInsets();
 
   const [client, setClient] = useState(null);
   const [companyName, setCompanyName] = useState("");
@@ -408,35 +399,24 @@ export default function CreateInvoiceScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.header, { marginTop: insets.top + 8 }]}>
-        <TouchableOpacity
-          style={styles.headerBtn}
-          onPress={() => navigation.goBack()}
-        >
-          <Icon
-            name="chevron-left"
-            size={22}
-            color={theme.content.textPrimary}
-          />
-        </TouchableOpacity>
-        <Text style={styles.title}>
-          {editingInvoice?.creditOfNumber
+    <FormScreen style={styles.container}>
+      {/* Save the draft straight from the header — the buttons at the end
+          of the form are a long scroll away. */}
+      <FormHeader
+        title={
+          editingInvoice?.creditOfNumber
             ? t("billing.creditNoteTitle", {
                 number: editingInvoice.creditOfNumber,
               })
             : editingId
               ? t("billing.editInvoiceTitle")
-              : t("billing.newInvoiceTitle")}
-        </Text>
-        {/* Save the draft straight from the header — the buttons at the end
-            of the form are a long scroll away. */}
-        <HeaderCheckButton
-          onPress={handleSaveDraft}
-          loading={saving}
-          accessibilityLabel={t("billing.saveDraft", "Spara utkast")}
-        />
-      </View>
+              : t("billing.newInvoiceTitle")
+        }
+        onBack={() => navigation.goBack()}
+        onSave={handleSaveDraft}
+        saving={saving}
+        saveLabel={t("billing.saveDraft", "Spara utkast")}
+      />
 
       <ScrollView
         style={{ flex: 1 }}
@@ -641,6 +621,6 @@ export default function CreateInvoiceScreen() {
           accentColor={PRIMARY}
         />
       )}
-    </View>
+    </FormScreen>
   );
 }

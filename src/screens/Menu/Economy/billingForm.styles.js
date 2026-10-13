@@ -62,6 +62,7 @@ export const createStyles = (c) => {
 
     scroll: {
       paddingHorizontal: layout.formGutter,
+      paddingTop: layout.headerToContent,
       paddingBottom: 130,
       gap: 24,
     },
