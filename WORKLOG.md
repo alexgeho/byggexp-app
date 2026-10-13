@@ -4,7 +4,7 @@
 
 # 2026-10-13 — Kontonummer
 
-- [x] 09:23 «Под Bg/Pg добавь номер счёта, отдельной ячейкой»: строка «Kontonummer» в карточке оплаты (11 языков), поле `bankAccount` в backend (schema + DTO). Проверено в симуляторе
+- [x] 09:23 «Под Bg/Pg добавь номер счёта, отдельной ячейкой»: строка «Kontonummer» в карточке оплаты (11 языков), поле `bankAccount` в backend (schema + DTO). Проверено в симуляторе. OTA `5b69999f`
 
 # 2026-10-12 — Företagsuppgifter в стиле Create project
 
