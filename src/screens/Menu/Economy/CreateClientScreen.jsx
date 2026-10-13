@@ -217,11 +217,7 @@ export default function CreateClientScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <FieldCard>
-            <FieldRow
-              icon="users"
-              label={t("clientForm.clientType", "Kundtyp")}
-              isLast
-            >
+            <FieldRow label={t("clientForm.clientType", "Kundtyp")} isLast>
               <ChoiceChips
                 values={["company", "private"]}
                 value={form.clientType}
