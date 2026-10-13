@@ -4,7 +4,7 @@
 
 # 2026-10-13 — Kontonummer
 
-- [x] 17:07 Скрин «Ny klient»: «Убери, я выделил» → убрана иконка у Kundtyp
+- [x] 17:07 Скрин «Ny klient»: «Убери, я выделил» → убрана иконка у Kundtyp. OTA `2e1d9858`
 
 - [x] 16:35 Скрины New client + Company details: «Делай клиенту тоже иконок» → иконка в каждой строке формы клиента (Kundtyp, Företagsnamn, Kundnr, Org.nr, Momsreg, Kontaktperson, адрес, контакты, оплата, заметки). Проверено в симуляторе. OTA `87350f31`
 
