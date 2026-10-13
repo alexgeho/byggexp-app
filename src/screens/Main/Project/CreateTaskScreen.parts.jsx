@@ -36,7 +36,8 @@ export const FieldIcon = ({ library = "feather", name, size = 20, color }) => {
   // render it in systemBlue instead, and keep glyphs at a readable size.
   const isWhite = /^#f{3}$|^#f{6}$/i.test(String(tint).replace(/\s/g, ""));
   const resolved = isWhite ? "#007AFF" : tint;
-  const s = size < 28 ? 28 : size;
+  // Row glyphs are one size everywhere (design system: 22).
+  const s = 22;
   if (library === "material-community") {
     return <MaterialCommunityIcons name={name} size={s} color={resolved} />;
   }

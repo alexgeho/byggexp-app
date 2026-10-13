@@ -29,7 +29,7 @@ export const MenuButton = ({
       accessibilityLabel={title}
     >
       <View style={styles.menuIconContainer}>
-        <AppIcon name={icon} size={28} color={c.accent} strokeWidth={1.5} />
+        <AppIcon name={icon} size={22} color={c.accent} strokeWidth={1.5} />
       </View>
       {/* Text + chevron carry the separator, so — like iOS — the hairline is
           inset to start at the label, not under the icon. */}

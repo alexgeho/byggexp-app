@@ -146,7 +146,7 @@ export const createStyles = (c) =>
     rowSepIcon: {
       height: StyleSheet.hairlineWidth,
       backgroundColor: c.divider,
-      marginLeft: 58, // rows with a leading icon (16 + 30 icon + 12 gap)
+      marginLeft: 52, // rows with a leading icon (16 + 24 icon + 12 gap)
     },
     groupRowLast: {
       borderBottomWidth: 0,
@@ -287,8 +287,8 @@ export const createStyles = (c) =>
       paddingRight: 12,
     },
     locationFieldIconContainer: {
-      width: 30,
-      height: 30,
+      width: 24,
+      height: 24,
       borderRadius: 5,
       alignItems: "center",
       justifyContent: "center",
@@ -374,8 +374,8 @@ export const createStyles = (c) =>
       gap: 16,
     },
     iconContainer: {
-      width: 30,
-      height: 30,
+      width: 24,
+      height: 24,
       borderRadius: 5,
       alignItems: "center",
       justifyContent: "center",

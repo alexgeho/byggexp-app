@@ -38,7 +38,7 @@ import { DEFAULT_TOOL_STATUS } from "../../constants/toolStatus";
 
 const FieldIcon = ({ name, styles }) => (
   <View style={styles.fieldIconBadge}>
-    <AppIcon name={name} size={28} color="#007AFF" strokeWidth={1.5} />
+    <AppIcon name={name} size={22} color="#007AFF" strokeWidth={1.5} />
   </View>
 );
 

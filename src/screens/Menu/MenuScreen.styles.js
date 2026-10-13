@@ -88,8 +88,8 @@ export function createStyles(theme) {
       marginBottom: 8,
     },
     menuIconContainer: {
-      width: 32,
-      height: 32,
+      width: 24,
+      height: 24,
       borderRadius: 8,
       justifyContent: "center",
       alignItems: "center",

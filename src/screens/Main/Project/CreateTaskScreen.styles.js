@@ -116,7 +116,7 @@ export const createStyles = (c) =>
     rowSepIcon: {
       height: StyleSheet.hairlineWidth,
       backgroundColor: c.divider,
-      marginLeft: 58,
+      marginLeft: 52,
     },
     groupRowDisabled: {
       opacity: 0.45,
@@ -128,8 +128,8 @@ export const createStyles = (c) =>
       gap: 12,
     },
     rowIcon: {
-      width: 30,
-      height: 30,
+      width: 24,
+      height: 24,
       borderRadius: 5,
       alignItems: "center",
       justifyContent: "center",
