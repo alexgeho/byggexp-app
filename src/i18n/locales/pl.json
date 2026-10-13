@@ -1565,6 +1565,7 @@
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
     "giro": "Bankgiro/Plusgiro",
+    "bankAccount": "Numer konta",
     "vatNumber": "Nr VAT",
     "city": "Kod pocztowy i miasto",
     "website": "Strona www",

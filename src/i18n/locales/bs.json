@@ -1564,6 +1564,7 @@
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
     "giro": "Bankgiro/Plusgiro",
+    "bankAccount": "Broj računa",
     "vatNumber": "PDV broj",
     "city": "Poštanski broj i grad",
     "website": "Web stranica",

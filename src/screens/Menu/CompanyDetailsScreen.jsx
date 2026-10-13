@@ -86,6 +86,7 @@ export default function CompanyDetailsScreen() {
   );
   const [fSkatt, setFSkatt] = useState(false);
   const [giro, setGiro] = useState("");
+  const [bankAccount, setBankAccount] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -100,6 +101,7 @@ export default function CompanyDetailsScreen() {
           Object.fromEntries(FIELDS.map((f) => [f.key, company[f.key] || ""])),
         );
         setGiro(company.bankgiro || company.plusgiro || "");
+        setBankAccount(company.bankAccount || "");
         // Stored as free text ("Godkänd för F-skatt") or a legacy "true"/"false".
         setFSkatt(Boolean(company.vatStatus) && company.vatStatus !== "false");
       } catch (error) {
@@ -125,6 +127,7 @@ export default function CompanyDetailsScreen() {
         // Only the chosen giro is kept; the other is cleared.
         bankgiro: isPlusgiro(giro) ? "" : giro.trim(),
         plusgiro: isPlusgiro(giro) ? giro.trim() : "",
+        bankAccount: bankAccount.trim(),
         // Same label the web saves — printed verbatim in the invoice footer.
         vatStatus: fSkatt ? "Godkänd för F-skatt" : "",
       });
@@ -198,6 +201,15 @@ export default function CompanyDetailsScreen() {
                 label={t("companyDetails.giro")}
                 value={giro}
                 onChangeText={setGiro}
+                keyboardType="numbers-and-punctuation"
+              />
+              <FieldRow
+                variant="input"
+                floating
+                icon="credit-card"
+                label={t("companyDetails.bankAccount")}
+                value={bankAccount}
+                onChangeText={setBankAccount}
                 keyboardType="numbers-and-punctuation"
                 isLast
               />

@@ -1561,6 +1561,7 @@
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
     "giro": "Bankgiro/Plusgiro",
+    "bankAccount": "Kontonummer",
     "vatNumber": "Momsreg.nr",
     "city": "Postnr och ort",
     "website": "Webbadress",

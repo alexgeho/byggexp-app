@@ -1565,6 +1565,7 @@
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
     "giro": "Bankgiro/Plusgiro",
+    "bankAccount": "Номер счёта",
     "vatNumber": "Номер НДС",
     "city": "Индекс и город",
     "website": "Сайт",

@@ -1561,6 +1561,7 @@
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
     "giro": "Bankgiro/Plusgiro",
+    "bankAccount": "Kontonummer",
     "vatNumber": "MVA-nr",
     "city": "Postnr og sted",
     "website": "Nettside",

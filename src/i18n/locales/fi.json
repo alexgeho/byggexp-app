@@ -1561,6 +1561,7 @@
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
     "giro": "Bankgiro/Plusgiro",
+    "bankAccount": "Tilinumero",
     "vatNumber": "ALV-numero",
     "city": "Postinumero ja kaupunki",
     "website": "Verkkosivu",

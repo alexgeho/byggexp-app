@@ -1565,6 +1565,7 @@
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
     "giro": "Bankgiro/Plusgiro",
+    "bankAccount": "Sąskaitos numeris",
     "vatNumber": "PVM kodas",
     "city": "Pašto kodas ir miestas",
     "website": "Svetainė",

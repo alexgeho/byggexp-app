@@ -1562,6 +1562,7 @@
     "bankgiro": "Bankgiro",
     "plusgiro": "Plusgiro",
     "giro": "Bankgiro/Plusgiro",
+    "bankAccount": "Konta numurs",
     "vatNumber": "PVN numurs",
     "city": "Pasta indekss un pilsēta",
     "website": "Mājaslapa",
