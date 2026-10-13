@@ -26,6 +26,7 @@ export const createStyles = (c) =>
       textAlign: "center",
       color: c.textPrimary,
       fontSize: 17,
+      fontWeight: "600",
     },
     loadingContainer: {
       flex: 1,

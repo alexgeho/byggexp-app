@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import { radius } from "../../theme/tokens";
+import { fieldLabelType } from "../../components/common/FieldRow/FieldRow.styles";
 
 import { onDark } from "../../theme/colorUtils";
 
@@ -49,13 +50,7 @@ export const createStyles = (c) =>
       padding: 16,
     },
     // Same as the shared FieldRow label.
-    inputLabel: {
-      color: c.textSecondary,
-      fontSize: 13,
-      lineHeight: 16,
-      fontWeight: "600",
-      marginBottom: 2,
-    },
+    inputLabel: fieldLabelType(c),
     textArea: {
       minHeight: 130,
       color: c.textPrimary,

@@ -27,6 +27,7 @@ export function createStyles(theme) {
     headerTitle: {
       color: c.textPrimary,
       fontSize: 17,
+      fontWeight: "600",
       textAlign: "center",
     },
     placeholder: {

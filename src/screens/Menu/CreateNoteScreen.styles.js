@@ -20,6 +20,7 @@ export const createStyles = (c) =>
     headerTitle: {
       color: c.textPrimary,
       fontSize: 17,
+      fontWeight: "600",
       textAlign: "center",
       flex: 1,
     },

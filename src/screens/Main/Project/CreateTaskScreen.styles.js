@@ -5,6 +5,10 @@ import {
 } from "../../../styles/screenLayout";
 import { onDark } from "../../../theme/colorUtils";
 import { radius, size } from "../../../theme/tokens";
+import {
+  fieldLabelType,
+  fieldValueUnderLabelType,
+} from "../../../components/common/FieldRow/FieldRow.styles";
 
 export const createStyles = (c) =>
   StyleSheet.create({
@@ -133,17 +137,10 @@ export const createStyles = (c) =>
     rowTextContainer: {
       flex: 1,
     },
-    rowLabel: {
-      color: c.textSecondary,
-      fontSize: 13,
-      lineHeight: 16,
-      fontWeight: "600",
-      marginBottom: 2,
-    },
+    rowLabel: fieldLabelType(c),
     rowValue: {
       color: c.textPrimary,
-      fontSize: 16,
-      lineHeight: 20,
+      ...fieldValueUnderLabelType,
     },
     rowPlaceholder: {
       color: c.textMuted,
@@ -167,13 +164,7 @@ export const createStyles = (c) =>
     textAreaWrapper: {
       width: "100%",
     },
-    inputLabel: {
-      color: c.textSecondary,
-      fontSize: 13,
-      lineHeight: 16,
-      fontWeight: "600",
-      marginBottom: 2,
-    },
+    inputLabel: fieldLabelType(c),
     input: {
       color: c.textPrimary,
       fontSize: 16,

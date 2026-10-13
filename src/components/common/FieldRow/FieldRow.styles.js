@@ -6,6 +6,18 @@ import { radius } from "../../../theme/tokens";
 // Redigera anställd (edit employee) form, the design source of truth. Every
 // user-facing card of icon+label+value rows should use these so the look never
 // diverges between screens (edit vs profile vs …).
+// Field type pair of Create project (the reference form): a 12 regular label
+// 4 above a 14 value. Screens with their own row markup spread these so every
+// form reads the same. A row with no label above keeps the 16 line.
+export const fieldLabelType = (c) => ({
+  fontSize: 12,
+  lineHeight: 14,
+  fontWeight: "400",
+  color: c.textPrimary,
+  marginBottom: 2,
+});
+export const fieldValueUnderLabelType = { fontSize: 14, lineHeight: 18 };
+
 export function createStyles(c) {
   return StyleSheet.create({
     card: {
@@ -58,20 +70,8 @@ export function createStyles(c) {
     bodyCustom: {
       gap: 8,
     },
-    // Type pair of Create project (the reference form): a 12 regular label
-    // 4 above a 14 value. A row with no label above (empty floating field,
-    // toggle) keeps the 16 line, like Create project's one-line rows.
-    label: {
-      fontSize: 12,
-      lineHeight: 14,
-      fontWeight: "400",
-      color: c.textPrimary,
-      marginBottom: 2,
-    },
-    valueUnderLabel: {
-      fontSize: 14,
-      lineHeight: 18,
-    },
+    label: fieldLabelType(c),
+    valueUnderLabel: fieldValueUnderLabelType,
     input: {
       fontSize: 16,
       color: c.textPrimary,

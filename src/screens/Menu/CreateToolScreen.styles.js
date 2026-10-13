@@ -4,6 +4,10 @@ import {
   standardScreenHeader,
 } from "../../styles/screenLayout";
 import { onDark } from "../../theme/colorUtils";
+import {
+  fieldLabelType,
+  fieldValueUnderLabelType,
+} from "../../components/common/FieldRow/FieldRow.styles";
 
 // Extracted from CreateToolScreen.jsx — themed style factory (c = theme.content).
 export const createStyles = (c) =>
@@ -23,6 +27,7 @@ export const createStyles = (c) =>
     headerTitle: {
       color: c.textPrimary,
       fontSize: 17,
+      fontWeight: "600",
       textAlign: "center",
       flex: 1,
     },
@@ -32,7 +37,7 @@ export const createStyles = (c) =>
     },
     contentScrollContent: {
       paddingBottom: 140,
-      gap: 20,
+      gap: 24,
     },
     groupCard: {
       width: "100%",
@@ -79,13 +84,9 @@ export const createStyles = (c) =>
       flex: 1,
       gap: 2,
     },
-    fieldLabel: {
-      fontSize: 13,
-      fontWeight: "600",
-      color: onDark(c, c.textSecondary, "#6C6C70"),
-    },
+    fieldLabel: fieldLabelType(c),
     fieldInput: {
-      fontSize: 16,
+      ...fieldValueUnderLabelType,
       color: c.textPrimary,
       paddingVertical: 0,
     },
@@ -101,7 +102,7 @@ export const createStyles = (c) =>
       justifyContent: "space-between",
     },
     selectValue: {
-      fontSize: 16,
+      ...fieldValueUnderLabelType,
       color: c.textPrimary,
     },
     selectPlaceholder: {

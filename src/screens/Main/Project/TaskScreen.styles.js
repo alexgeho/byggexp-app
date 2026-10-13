@@ -22,6 +22,7 @@ export const createStyles = (c) =>
     headerTitle: {
       color: c.textPrimary,
       fontSize: 17,
+      fontWeight: "600",
       flex: 1,
       textAlign: "center",
       fontFamily: "DMSans-SemiBold",

@@ -63,7 +63,7 @@
 
 ## 5. Что переведено
 
-2026-10-13: эталон Skapa projekt → в общие компоненты. FieldRow: подпись 12/400, значение 14; FormScreen для верха. Сверено по пикселям: Company details, New article, New client, New supplier invoice, New invoice, New offer (переведены на FormHeader), Add employee (24 между карточками, заголовок 600).
+2026-10-13: эталон Skapa projekt → в общие компоненты. Экраны со своей разметкой строк берут `fieldLabelType` / `fieldValueUnderLabelType` из `FieldRow.styles` (Create task, Lägg till verktyg, Rapportera ett fel). Все заголовки экранов 17/600 (было 11 без веса: Notes, Tools, Menu, Shifts, Task, профиль и др.). FieldRow: подпись 12/400, значение 14; FormScreen для верха. Сверено по пикселям: Company details, New article, New client, New supplier invoice, New invoice, New offer (переведены на FormHeader), Add employee (24 между карточками, заголовок 600).
 
 2026-10-07:
 

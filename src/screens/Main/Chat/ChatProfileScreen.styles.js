@@ -24,6 +24,7 @@ export const createStyles = (c) =>
       flex: 1,
       color: c.textPrimary,
       fontSize: 17,
+      fontWeight: "600",
       textAlign: "center",
     },
     editButton: {
