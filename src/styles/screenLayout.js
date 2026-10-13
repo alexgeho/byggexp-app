@@ -9,7 +9,7 @@ export const standardScreenContentGap = 12;
 // double-counts the status bar (content sits too low vs native), so use the
 // real safe-area inset — env() is passed through by react-native-web and
 // resolves to the status-bar height on the iOS PWA, 0 on desktop.
-const screenPaddingTop =
+export const screenPaddingTop =
   Platform.OS === "web" ? "env(safe-area-inset-top)" : 48;
 
 export const standardScreenContainer = {

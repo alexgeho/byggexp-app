@@ -17,7 +17,8 @@ import { useTheme } from "../../theme/ThemeContext";
 import { companyService } from "../../services/company.service";
 import { FieldCard, FieldRow } from "../../components/common/FieldRow/FieldRow";
 import { FormHeader } from "../../components/common/ui";
-import { layout } from "../../theme/spacing";
+import { layout, space } from "../../theme/spacing";
+import { screenPaddingTop } from "../../styles/screenLayout";
 import { getApiErrorMessage } from "../../utils/apiError";
 import { getEntityId } from "../../utils/entityId";
 
@@ -71,6 +72,8 @@ const FIELDS = GROUPS.flat();
 // "Bankgiro/Plusgiro" cell. The format tells them apart — a plusgiro number
 // has its dash before the last digit (12345-6), a bankgiro after 3–4 (5052-8272).
 const isPlusgiro = (v) => /^\d{1,7}-\d$/.test(String(v).replace(/\s/g, ""));
+
+const IS_WEB = Platform.OS === "web";
 
 export default function CompanyDetailsScreen() {
   const navigation = useNavigation();
@@ -149,7 +152,10 @@ export default function CompanyDetailsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
+    <SafeAreaView
+      style={[styles.safe, IS_WEB ? null : styles.safeNative]}
+      edges={IS_WEB ? ["top", "bottom"] : ["bottom"]}
+    >
       <FormHeader
         title={t("companyDetails.title", "Företagsuppgifter")}
         onBack={() => navigation.goBack()}
@@ -188,6 +194,8 @@ export default function CompanyDetailsScreen() {
                         ? "none"
                         : "sentences"
                     }
+                    labelStyle={styles.label}
+                    valueStyle={styles.value}
                     isLast={i === group.length - 1}
                   />
                 ))}
@@ -202,6 +210,8 @@ export default function CompanyDetailsScreen() {
                 value={giro}
                 onChangeText={setGiro}
                 keyboardType="numbers-and-punctuation"
+                labelStyle={styles.label}
+                valueStyle={styles.value}
               />
               <FieldRow
                 variant="input"
@@ -211,6 +221,8 @@ export default function CompanyDetailsScreen() {
                 value={bankAccount}
                 onChangeText={setBankAccount}
                 keyboardType="numbers-and-punctuation"
+                labelStyle={styles.label}
+                valueStyle={styles.value}
                 isLast
               />
             </FieldCard>
@@ -236,9 +248,24 @@ function createStyles(theme) {
   const c = theme.content;
   return StyleSheet.create({
     safe: { flex: 1, backgroundColor: c.background },
+    // Native: the same fixed top as Create project (48 + its 24 header pad),
+    // so the header and first card sit at the exact same height.
+    safeNative: {
+      paddingTop: screenPaddingTop + space.xl - layout.headerToContent,
+    },
     flex: { flex: 1 },
     loader: { flex: 1, alignItems: "center", justifyContent: "center" },
-    group: { marginBottom: 12 },
+    // Same rhythm and type as Create project: 24 between cards, a 12 regular
+    // label 4 above a 14 value (an empty field keeps the 16 placeholder line).
+    group: { marginBottom: 24 },
+    label: {
+      fontSize: 12,
+      lineHeight: 14,
+      fontWeight: "400",
+      color: c.textPrimary,
+      marginBottom: 2,
+    },
+    value: { fontSize: 14, lineHeight: 18 },
     content: {
       paddingHorizontal: layout.formGutter,
       paddingTop: layout.headerToContent,
