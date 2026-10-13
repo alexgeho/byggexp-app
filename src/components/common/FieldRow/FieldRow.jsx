@@ -58,7 +58,7 @@ export function FieldRow({
 
   const badge = icon ? (
     <View style={styles.iconBadge}>
-      <AppIcon name={icon} size={28} color={BADGE_BLUE} strokeWidth={1.5} />
+      <AppIcon name={icon} size={22} color={BADGE_BLUE} strokeWidth={1.5} />
     </View>
   ) : prefix != null ? (
     <Text style={[styles.input, { flex: 0, color: c.placeholder }]}>

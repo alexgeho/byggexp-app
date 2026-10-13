@@ -57,8 +57,8 @@ export function createStyles(c) {
       flex: 1,
     },
     iconBadge: {
-      width: 30,
-      height: 30,
+      width: 24,
+      height: 24,
       borderRadius: 5,
       alignItems: "center",
       justifyContent: "center",
@@ -104,11 +104,11 @@ export function createStyles(c) {
     placeholder: {
       color: onDark(c, c.placeholder, "rgba(5, 45, 80, 0.35)"),
     },
-    // hairline divider, inset past the icon (30 badge + 12 gap + 16 pad = 58)
+    // hairline divider, inset past the icon (24 badge + 12 gap + 16 pad = 52)
     sepIcon: {
       height: StyleSheet.hairlineWidth,
       backgroundColor: c.divider,
-      marginLeft: 58,
+      marginLeft: 52,
     },
     // hairline divider inset to the label when there is no icon
     sepPlain: {
