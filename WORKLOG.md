@@ -326,6 +326,8 @@ _Обновлено 2026-10-13. Отсюда продолжать в следу�
 
 ## 0. Первым делом
 
+- [ ] **16.10**: статус ревью 1.1.4 — App Store Connect (iOS 193) + Play Console /u/1/ → Publiceringsöversikt (Android 31)
+
 - [ ] **05.10 вечер**: на телефоне проверить удаление чека (Kamera → Kvitton → тап → корзина), галочку у просроченной задачи в Mitt arbete, бледный плейсхолдер заметки (OTA `43c55c0e`)
 - [ ] **Главный экран (04.10 вечер)**: проверить на телефоне «Visa» (Projekt/Klocka/Runda knappar), центровку кнопок и новые кнопки заметок (OTA `da4add75`)
 - [ ] **Статус ревью 1.1.3** (на 04.10 09:07 стояла проверка агентом — если сессия закрылась, проверить руками): App Store Connect → 1.1.3; Play Console → Publiceringsöversikt. Отклонят — причина в Resolution Center / входящих Play, чинить, новая сборка (`eas build -p ios --profile production` → 193; Android → 30+)
