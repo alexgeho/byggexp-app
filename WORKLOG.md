@@ -4,7 +4,8 @@
 
 # 2026-10-15 — Релиз 1.1.4
 
-- [ ] «Давай тогда отправлять в Apple и Google» → версия 1.1.4, сборки iOS + Android, отправка в оба стора
+- [x] «Давай тогда отправлять в Apple и Google» → 1.1.4: iOS 193 на ревью Apple (Waiting for Review, 17:27); тексты Nyheter в `docs/STORE_LISTING_COPY.md`
+- [ ] Android 31: AAB `~/Downloads/byggexp-1.1.4/byggexp-1.1.4-31.aab` загрузить в Play Console → Produktion (Alexander: 64 МБ, браузер агента берёт ≤10 МБ; в Chrome не тот Google-аккаунт)
 
 # 2026-10-13 — Kontonummer
 
