@@ -109,3 +109,23 @@ FÖR HELA FÖRETAGET
 
 Prova gratis i 14 dagar.
 ```
+
+## 1.1.4 — Nyheter (2026-10-15)
+
+### sv
+
+- Egenkontroll: läs in kontrakt med AI, fyll i punkter, fota, signera och dela PDF
+- Företagsuppgifter: Bankgiro/Plusgiro, kontonummer, Momsreg.nr och F-skatt – fakturor från appen ser ut som på webben
+- Kunder: tryck på en kund för att öppna och ändra
+- Kamera: ta bort ett kvitto direkt i telefonen
+- Startskärmen: dölj projektväljare, klocka och runda knappar i Anpassa
+- Snyggare och tydligare formulär i hela appen
+
+### en
+
+- Self-inspection: read a contract with AI, fill in points, take photos, sign and share a PDF
+- Company details: Bankgiro/Plusgiro, account number, VAT no. and F-tax – invoices from the app match the web
+- Clients: tap a client to open and edit
+- Camera: delete a receipt right on the phone
+- Home: hide the project picker, clock and round buttons in Customize
+- Cleaner, clearer forms throughout the app
