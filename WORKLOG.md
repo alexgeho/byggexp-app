@@ -5,7 +5,7 @@
 # 2026-10-15 — Релиз 1.1.4
 
 - [x] «Давай тогда отправлять в Apple и Google» → 1.1.4: iOS 193 на ревью Apple (Waiting for Review, 17:27); тексты Nyheter в `docs/STORE_LISTING_COPY.md`
-- [ ] Android 31: AAB `~/Downloads/byggexp-1.1.4/byggexp-1.1.4-31.aab` загрузить в Play Console → Produktion (Alexander: 64 МБ, браузер агента берёт ≤10 МБ; в Chrome не тот Google-аккаунт)
+- [x] Android 31 (1.1.4): Alexander загрузил во Internt test → агент перенёс в Produktion 100%, Nyheter sv, отправлено на ревью Google (17:40, managed publishing выкл. → выйдет сам)
 
 # 2026-10-13 — Kontonummer
 
