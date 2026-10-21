@@ -294,7 +294,14 @@
 
 # Открытые / след. шаги
 
-_Обновлено 2026-10-13. Отсюда продолжать в следующий раз — сверху вниз._
+_Обновлено 2026-10-21. Отсюда продолжать в следующий раз — сверху вниз._
+
+## 21.10 — проверить на телефоне (перезапустить приложение → OTA)
+
+- [ ] Kamera → Kvitton → «Bifoga fil»: PDF из почты (Mail → «Spara i Filer») и фото из галереи → скан заполняет форму → сохранить → в списке иконка документа, тап открывает PDF (OTA `e986e615`)
+- [ ] Meny → Anställda → «Lägg till anställd»: Språk под E-post, при открытой клавиатуре долистывается до низа, ↵ переходит к след. полю (OTA `ab89f32d`)
+- [ ] Просрочено с 16.10: статус ревью 1.1.4 — App Store Connect (iOS 193) + Play Console → Publiceringsöversikt (Android 31)
+- [i] Локальная проверка: в Xcode нет Simulator.app (тапать нельзя) → поставить его (Xcode → Settings → Components) или проверять на телефоне. Сим iOS 27 роняет debug-сборку (UIScene) → брать iOS 18.5; сборка `xcodebuild … IPHONEOS_DEPLOYMENT_TARGET=15.1`. Dev-Atlas удалён → локально Mongo + `yarn seed:demo` (MONGODB_URI=локальный), бэкенд запускать из папки с копией `.env` (load-env перетирает env)
 
 ## Формы / Företagsuppgifter (13.10) — продолжить
 
