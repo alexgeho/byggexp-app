@@ -1,5 +1,6 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
+  Keyboard,
   ActivityIndicator,
   Modal,
   ScrollView,
@@ -92,6 +93,9 @@ export default function CreateEmployeeScreen() {
   const isEditing = Boolean(employeeId);
 
   const [name, setName] = useState("");
+  const nameInputRef = useRef(null);
+  const professionInputRef = useRef(null);
+  const phoneInputRef = useRef(null);
   const [email, setEmail] = useState("");
   const [profession, setProfession] = useState("");
   const [phone, setPhone] = useState("");
@@ -483,6 +487,9 @@ export default function CreateEmployeeScreen() {
           contentContainerStyle={styles.contentScrollContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
+          // Keep every field reachable while the keyboard is up.
+          automaticallyAdjustKeyboardInsets
+          keyboardDismissMode="interactive"
         >
           {loadingEmployee ? (
             <View style={styles.inlineLoadingState}>
@@ -501,6 +508,23 @@ export default function CreateEmployeeScreen() {
               placeholder={t("createEmployee.emailPlaceholder")}
               keyboardType="email-address"
               autoCapitalize="none"
+              inputProps={{
+                returnKeyType: "next",
+                submitBehavior: "submit",
+                onSubmitEditing: () => nameInputRef.current?.focus(),
+              }}
+            />
+            {/* Right under e-mail: the invite e-mail goes out in this language. */}
+            <FieldRow
+              variant="select"
+              icon="globe"
+              label={t("createEmployee.language", "Språk")}
+              value={selectedLanguageLabel}
+              placeholder={t("createEmployee.selectLanguage", "Välj språk")}
+              onPress={() => {
+                Keyboard.dismiss();
+                setShowLanguageModal(true);
+              }}
             />
             <FieldRow
               variant="input"
@@ -510,6 +534,12 @@ export default function CreateEmployeeScreen() {
               onChangeText={setName}
               placeholder={t("createEmployee.namePlaceholder")}
               autoCapitalize="words"
+              inputProps={{
+                ref: nameInputRef,
+                returnKeyType: "next",
+                submitBehavior: "submit",
+                onSubmitEditing: () => professionInputRef.current?.focus(),
+              }}
             />
             <FieldRow
               variant="input"
@@ -519,6 +549,12 @@ export default function CreateEmployeeScreen() {
               onChangeText={setProfession}
               placeholder={t("createEmployee.professionPlaceholder")}
               autoCapitalize="words"
+              inputProps={{
+                ref: professionInputRef,
+                returnKeyType: "next",
+                submitBehavior: "submit",
+                onSubmitEditing: () => phoneInputRef.current?.focus(),
+              }}
             />
             <FieldRow
               variant="input"
@@ -528,6 +564,7 @@ export default function CreateEmployeeScreen() {
               onChangeText={setPhone}
               placeholder="+46 701234567"
               keyboardType="phone-pad"
+              inputProps={{ ref: phoneInputRef }}
               isLast
             />
           </FieldCard>
@@ -543,7 +580,10 @@ export default function CreateEmployeeScreen() {
                   ? t("projects.loading")
                   : t("createTask.selectProject")
               }
-              onPress={() => setShowProjectModal(true)}
+              onPress={() => {
+                Keyboard.dismiss();
+                setShowProjectModal(true);
+              }}
             />
             <FieldRow
               variant="select"
@@ -551,15 +591,10 @@ export default function CreateEmployeeScreen() {
               label={t("myAccount.roleLabel")}
               value={selectedRoleLabel}
               placeholder={t("createEmployee.selectRole")}
-              onPress={() => setShowRoleModal(true)}
-            />
-            <FieldRow
-              variant="select"
-              icon="globe"
-              label={t("createEmployee.language", "Språk")}
-              value={selectedLanguageLabel}
-              placeholder={t("createEmployee.selectLanguage", "Välj språk")}
-              onPress={() => setShowLanguageModal(true)}
+              onPress={() => {
+                Keyboard.dismiss();
+                setShowRoleModal(true);
+              }}
               isLast={!isWorkerRole && !showFinanceToggle}
             />
             {isWorkerRole ? (
@@ -573,7 +608,10 @@ export default function CreateEmployeeScreen() {
                     ? t("createEmployee.loadingInstruments")
                     : t("createEmployee.selectInstruments")
                 }
-                onPress={() => setShowToolModal(true)}
+                onPress={() => {
+                  Keyboard.dismiss();
+                  setShowToolModal(true);
+                }}
                 isLast
               />
             ) : null}
