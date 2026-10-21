@@ -29,12 +29,15 @@ import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import { expenseService, shiftService } from "../../../services";
 import ExpenseReviewSheet from "./ExpenseReviewSheet";
+import { Button } from "../../../components/common/ui";
 import { useTheme } from "../../../theme/ThemeContext";
 import { formatShiftDayLabel, resolveUploadUrl } from "../../../utils/shifts";
 import { getDateLocale } from "../../../utils/dateLocale";
 import { formatMoney } from "../../../utils/billingTotals";
 import {
   IMAGE_DOCUMENT_TYPES,
+  RECEIPT_DOCUMENT_TYPES,
+  isPdfName,
   pickUploadAssets,
 } from "../../../utils/uploadPicker";
 import { createStyles } from "./CameraScreen.styles";
@@ -232,15 +235,21 @@ export default function CameraScreen() {
     [shift?.id, refreshSections],
   );
 
-  // Kvitto mode: scan the captured photo, then open the review sheet.
+  // Kvitto mode: scan the captured photo (or attached PDF/image), then open
+  // the review sheet.
   const handleExpensePhoto = useCallback(async (rawAsset) => {
     if (!rawAsset?.uri) {
       return;
     }
+    const name =
+      rawAsset.fileName || rawAsset.name || `kvitto-${Date.now()}.jpg`;
     const asset = {
       uri: rawAsset.uri,
-      name: rawAsset.fileName || rawAsset.name || `kvitto-${Date.now()}.jpg`,
-      mimeType: rawAsset.mimeType || rawAsset.type || "image/jpeg",
+      name,
+      mimeType:
+        rawAsset.mimeType ||
+        rawAsset.type ||
+        (isPdfName(name) ? "application/pdf" : "image/jpeg"),
     };
     setScanning(true);
     let scanned = {};
@@ -266,7 +275,9 @@ export default function CameraScreen() {
     try {
       setUploading(true);
       const pickedAssets = await pickUploadAssets({
-        documentTypes: IMAGE_DOCUMENT_TYPES,
+        allowsMultipleSelection: mode !== "expense",
+        documentTypes:
+          mode === "expense" ? RECEIPT_DOCUMENT_TYPES : IMAGE_DOCUMENT_TYPES,
         fileNamePrefix: mode === "expense" ? "kvitto" : "shift-photo",
       });
 
@@ -621,6 +632,17 @@ export default function CameraScreen() {
 
       {renderTabs()}
 
+      {mode === "expense" ? (
+        <Button
+          variant="outline"
+          icon="paperclip"
+          title={t("camera.attachFile")}
+          onPress={handleAttachFile}
+          disabled={uploading || scanning}
+          style={styles.attachButton}
+        />
+      ) : null}
+
       <ScrollView
         style={styles.contentScroll}
         contentContainerStyle={styles.contentScrollContent}
@@ -700,19 +722,28 @@ export default function CameraScreen() {
                       const receiptUri = receipt.receiptUrl
                         ? resolveUploadUrl(receipt.receiptUrl)
                         : null;
+                      const receiptIsPdf = isPdfName(receipt.receiptUrl);
                       return (
                         <TouchableOpacity
                           key={`${receipt._id || receipt.id || index}`}
                           activeOpacity={0.85}
                           onPress={() =>
-                            receiptUri
-                              ? setPreviewReceipt(receipt)
-                              : confirmDeleteReceipt(receipt)
+                            receiptIsPdf
+                              ? Linking.openURL(receiptUri)
+                              : receiptUri
+                                ? setPreviewReceipt(receipt)
+                                : confirmDeleteReceipt(receipt)
                           }
                           onLongPress={() => confirmDeleteReceipt(receipt)}
                         >
                           <View style={styles.thumb}>
-                            {receiptUri ? (
+                            {receiptIsPdf ? (
+                              <Icon
+                                name="file-text"
+                                size={32}
+                                color={theme.content.textMuted}
+                              />
+                            ) : receiptUri ? (
                               <Image
                                 source={{ uri: receiptUri }}
                                 style={styles.thumbImage}

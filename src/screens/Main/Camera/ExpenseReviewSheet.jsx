@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Icon from "react-native-vector-icons/Feather";
 import AuthContext from "../../../contexts/AuthContext";
 import { expenseService, projectService } from "../../../services";
 import { createStyles } from "./ExpenseReviewSheet.styles";
@@ -156,7 +157,14 @@ export default function ExpenseReviewSheet({
           >
             <Text style={styles.title}>{t("camera.expense.title")}</Text>
 
-            {asset?.uri ? (
+            {asset?.uri && asset.mimeType === "application/pdf" ? (
+              <View style={styles.pdfPreview}>
+                <Icon name="file-text" size={22} color={styles.pdfName.color} />
+                <Text style={styles.pdfName} numberOfLines={1}>
+                  {asset.name}
+                </Text>
+              </View>
+            ) : asset?.uri ? (
               // The whole receipt, not a cropped strip of it.
               <Image
                 source={{ uri: asset.uri }}

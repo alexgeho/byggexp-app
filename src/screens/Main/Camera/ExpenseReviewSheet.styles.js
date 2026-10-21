@@ -43,6 +43,21 @@ export const createStyles = (c) =>
       backgroundColor: onDark(c, c.surfaceMuted, "#EEE"),
       marginBottom: 14,
     },
+    pdfPreview: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+      paddingHorizontal: 14,
+      height: 48,
+      borderRadius: 14,
+      backgroundColor: onDark(c, c.surfaceMuted, "#EEE"),
+      marginBottom: 14,
+    },
+    pdfName: {
+      flex: 1,
+      fontSize: 15,
+      color: onDark(c, c.textPrimary, "#052D50"),
+    },
     labelRow: {
       flexDirection: "row",
       alignItems: "flex-end",

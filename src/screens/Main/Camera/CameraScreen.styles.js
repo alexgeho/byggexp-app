@@ -71,6 +71,9 @@ export const createStyles = (c) =>
       borderRadius: 10,
       backgroundColor: onDark(c, c.inputSurface, "#052D500D"),
     },
+    attachButton: {
+      marginTop: 12,
+    },
     tab: {
       flex: 1,
       height: 44,

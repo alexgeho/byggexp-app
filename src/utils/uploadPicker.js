@@ -37,6 +37,10 @@ const guessMimeTypeFromName = (name = "") => {
     return `image/${extension === "jpg" ? "jpeg" : extension}`;
   }
 
+  if (extension === "pdf") {
+    return "application/pdf";
+  }
+
   if (["mp4", "mov", "m4v", "webm", "avi", "mkv"].includes(extension)) {
     const mimeExtension =
       extension === "mov"
@@ -252,5 +256,9 @@ export const isVideoAsset = (asset) => {
   return /\.(mp4|mov|m4v|webm|avi|mkv)(\?|$)/i.test(name);
 };
 
+export const isPdfName = (name = "") => /\.pdf(\?|$)/i.test(name);
+
 export const IMAGE_DOCUMENT_TYPES = ["image/*"];
+// Receipts/invoices: a photo, or a PDF forwarded by email.
+export const RECEIPT_DOCUMENT_TYPES = ["image/*", "application/pdf"];
 export const IMAGE_AND_VIDEO_DOCUMENT_TYPES = ["image/*", "video/*"];
