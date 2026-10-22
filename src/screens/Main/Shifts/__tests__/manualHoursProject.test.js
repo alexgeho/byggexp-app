@@ -69,8 +69,13 @@ jest.mock("../../../../utils/shifts", () => {
   };
 });
 
+// The whole screen renders here; on a busy CI runner that takes longer than
+// jest's default 5 s, and a timed-out test kept saving into the next one.
+jest.setTimeout(30000);
+
 const BYGGTOTALEN = { _id: "p1", name: "Byggtotalen steypa AB" };
 const OTHER = { _id: "p2", name: "Villa Bromma" };
+let mounted = null;
 
 // A worker who never picked a project on the home screen types 8 h and saves.
 async function typeEightAndSave(projects, setSelectedProject = jest.fn()) {
@@ -91,6 +96,7 @@ async function typeEightAndSave(projects, setSelectedProject = jest.fn()) {
       </ThemeProvider>,
     );
   });
+  mounted = tree;
   await act(async () => {});
   const input = tree.root.findAllByType(TextInput)[0];
   await act(async () => input.props.onChangeText("8"));
@@ -104,6 +110,11 @@ async function typeEightAndSave(projects, setSelectedProject = jest.fn()) {
 
 beforeEach(() => {
   shiftService.addManualHours.mockClear();
+});
+
+afterEach(async () => {
+  if (mounted) await act(async () => mounted.unmount());
+  mounted = null;
 });
 
 test("with one project the hours are saved to it, no project error", async () => {
