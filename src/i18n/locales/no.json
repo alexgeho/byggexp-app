@@ -487,6 +487,8 @@
     "manualHoursClear": "Fjern",
     "manualAddForDate": "Legg til manuelle timer",
     "manualHoursNoProject": "Velg et prosjekt før du registrerer timer.",
+    "manualPickProjectTitle": "Hvilket prosjekt gjelder timene?",
+    "manualNoProjects": "Du er ikke lagt til i noe prosjekt ennå. Be arbeidslederen din legge deg til, og før deretter timene.",
     "manualTapHint": "Trykk på en dag for å oppgi timer",
     "unitHour": "t",
     "unitMinute": "min",

@@ -68,6 +68,7 @@ import {
   HoursSourceToggle,
   ManualHoursModal,
   PeriodSheet,
+  ProjectPickModal,
   SelectionSummary,
   ShiftCalendar,
 } from "./ShiftsScreen.parts";
@@ -119,7 +120,7 @@ export default function ShiftsScreen() {
     () => createSheetStyles(theme.content),
     [theme.content],
   );
-  const { user, selectedProject } = useContext(AuthContext);
+  const { user, selectedProject, setSelectedProject } = useContext(AuthContext);
   const isAdmin = ["companyAdmin", "superadmin", "projectAdmin"].includes(
     user?.role,
   );
@@ -178,6 +179,9 @@ export default function ShiftsScreen() {
   // then the header check saves them all in one go.
   const [pendingManual, setPendingManual] = useState({});
   const [savingBatch, setSavingBatch] = useState(false);
+  // Days waiting for the worker to say which project they belong to (several
+  // projects, none chosen yet). Non-null opens the project picker.
+  const [batchAwaitingProject, setBatchAwaitingProject] = useState(null);
   // Scroll the edited day above the keyboard. calendarYRef = the calendar's
   // offset in the scroll content; rowYRef = each date's row offset within it.
   const scrollViewRef = useRef(null);
@@ -230,13 +234,17 @@ export default function ShiftsScreen() {
     }
   }, [hoursSource, currentUserId]);
 
-  // Manual hours attach ONLY to the explicitly selected project (app-wide
-  // selectedProject) — never a silent projects[0] fallback, which let hours be
-  // logged to a project the worker never chose. Null here means "no project
-  // chosen", and callers must tell the worker to pick one first.
+  // Manual hours attach to the app-wide selected project, or to the worker's
+  // only project when they have exactly one — that choice is unambiguous. With
+  // several projects and none chosen there is no silent projects[0] guess
+  // (hours once landed on a project the worker never chose): null here means
+  // "ask", and callers open the project picker.
   const resolveManualProjectId = useCallback(
-    () => selectedProject?._id || selectedProject?.id || null,
-    [selectedProject],
+    () =>
+      selectedProject?._id ||
+      selectedProject?.id ||
+      (projects.length === 1 ? projects[0]._id || projects[0].id : null),
+    [selectedProject, projects],
   );
 
   // Track the keyboard height so we can park the edited day just above it and
@@ -642,6 +650,52 @@ export default function ShiftsScreen() {
     });
   }, [inlineManualDate, dayMap]);
 
+  // Write the collected days to one project, then refresh the month.
+  const commitManualBatch = useCallback(
+    async (entries, projectId) => {
+      try {
+        setSavingBatch(true);
+        for (const [date, hours] of entries) {
+          const durationMs = Math.round(Number(hours) * 3600000);
+          await shiftService.addManualHours({
+            workerId: currentUserId,
+            projectId,
+            date,
+            durationMs,
+          });
+        }
+        setPendingManual({});
+        await loadHistory(selectedMonth);
+      } catch (error) {
+        const message =
+          error?.response?.data?.message ||
+          error?.message ||
+          t("shifts.manualHoursError");
+        Alert.alert(t("shifts.manualHoursError"), message);
+      } finally {
+        setSavingBatch(false);
+        batchSavingRef.current = false;
+      }
+    },
+    [currentUserId, loadHistory, selectedMonth, t],
+  );
+
+  // Picker answer: remember the project app-wide (next time no question), then
+  // save the waiting days to it.
+  const pickBatchProject = useCallback(
+    (project) => {
+      const entries = batchAwaitingProject;
+      setBatchAwaitingProject(null);
+      if (!entries || !project) {
+        batchSavingRef.current = false;
+        return;
+      }
+      setSelectedProject?.(project);
+      commitManualBatch(entries, project._id || project.id);
+    },
+    [batchAwaitingProject, commitManualBatch, setSelectedProject],
+  );
+
   // The blue header check saves every pending day in one go (including the one
   // still open in the input).
   const saveAllManual = useCallback(async () => {
@@ -679,46 +733,28 @@ export default function ShiftsScreen() {
     }
 
     const projectId = resolveManualProjectId();
-    if (!projectId) {
+    if (projectId) {
+      await commitManualBatch(entries, projectId);
+      return;
+    }
+    // Keep the typed days so nothing is lost while the worker decides.
+    setPendingManual(merged);
+    if (projects.length === 0) {
       Alert.alert(
         t("shifts.manualHoursError"),
-        t("shifts.manualHoursNoProject"),
+        t("shifts.manualNoProjects"),
       );
       batchSavingRef.current = false;
       return;
     }
-
-    try {
-      setSavingBatch(true);
-      for (const [date, hours] of entries) {
-        const durationMs = Math.round(Number(hours) * 3600000);
-        await shiftService.addManualHours({
-          workerId: currentUserId,
-          projectId,
-          date,
-          durationMs,
-        });
-      }
-      setPendingManual({});
-      await loadHistory(selectedMonth);
-    } catch (error) {
-      const message =
-        error?.response?.data?.message ||
-        error?.message ||
-        t("shifts.manualHoursError");
-      Alert.alert(t("shifts.manualHoursError"), message);
-    } finally {
-      setSavingBatch(false);
-      batchSavingRef.current = false;
-    }
+    setBatchAwaitingProject(entries);
   }, [
     pendingManual,
     inlineManualDate,
     dayMap,
     resolveManualProjectId,
-    currentUserId,
-    loadHistory,
-    selectedMonth,
+    commitManualBatch,
+    projects.length,
     t,
   ]);
 
@@ -1261,6 +1297,7 @@ export default function ShiftsScreen() {
         {hoursSource === "manual" && (inlineManualDate || hasPendingManual) ? (
           <TouchableOpacity
             style={styles.headerSaveButton}
+            testID="shifts-save-manual"
             onPress={saveAllManual}
             activeOpacity={0.85}
             disabled={savingBatch}
@@ -1830,6 +1867,18 @@ export default function ShiftsScreen() {
         savingManualHours={savingManualHours}
         onSave={saveManualHours}
         onClear={() => submitManualHours(null)}
+        styles={styles}
+        t={t}
+      />
+
+      <ProjectPickModal
+        visible={Boolean(batchAwaitingProject)}
+        projects={projects}
+        onPick={pickBatchProject}
+        onClose={() => {
+          setBatchAwaitingProject(null);
+          batchSavingRef.current = false;
+        }}
         styles={styles}
         t={t}
       />

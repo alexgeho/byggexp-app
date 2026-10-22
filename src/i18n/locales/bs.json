@@ -490,6 +490,8 @@
     "manualHoursClear": "Obriši",
     "manualAddForDate": "Dodaj ručne sate",
     "manualHoursNoProject": "Odaberite projekt prije evidentiranja sati.",
+    "manualPickProjectTitle": "Za koji projekat su ovi sati?",
+    "manualNoProjects": "Još niste dodani ni u jedan projekat. Zamolite poslovođu da vas doda, a zatim unesite sate.",
     "manualTapHint": "Dodirnite dan da unesete sate",
     "unitHour": "h",
     "unitMinute": "min",

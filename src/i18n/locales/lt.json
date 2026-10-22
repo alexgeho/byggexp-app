@@ -491,6 +491,8 @@
     "manualHoursClear": "Išvalyti",
     "manualAddForDate": "Pridėti rankines valandas",
     "manualHoursNoProject": "Pasirinkite projektą prieš registruodami valandas.",
+    "manualPickProjectTitle": "Kuriam projektui skirtos šios valandos?",
+    "manualNoProjects": "Jūs dar nepridėtas prie jokio projekto. Paprašykite darbų vadovo jus pridėti, tada įveskite valandas.",
     "manualTapHint": "Palieskite dieną, kad įvestumėte valandas",
     "unitHour": "val.",
     "unitMinute": "min.",

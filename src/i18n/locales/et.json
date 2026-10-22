@@ -487,6 +487,8 @@
     "manualHoursClear": "Tühjenda",
     "manualAddForDate": "Lisa käsitsi tunnid",
     "manualHoursNoProject": "Vali enne tundide registreerimist projekt.",
+    "manualPickProjectTitle": "Millise projekti jaoks need tunnid on?",
+    "manualNoProjects": "Sind pole veel ühtegi projekti lisatud. Palu oma töödejuhatajal sind lisada ja sisesta siis tunnid.",
     "manualTapHint": "Puuduta päeva, et sisestada tunnid",
     "unitHour": "h",
     "unitMinute": "min",

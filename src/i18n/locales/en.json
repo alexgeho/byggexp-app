@@ -487,6 +487,8 @@
     "manualHoursClear": "Clear entry",
     "manualAddForDate": "Add manual hours",
     "manualHoursNoProject": "Please select a project before logging hours.",
+    "manualPickProjectTitle": "Which project are these hours for?",
+    "manualNoProjects": "You are not added to any project yet. Ask your supervisor to add you, then log your hours.",
     "manualTapHint": "Tap a day to enter hours",
     "unitHour": "h",
     "unitMinute": "min",

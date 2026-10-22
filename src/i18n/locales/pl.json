@@ -491,6 +491,8 @@
     "manualHoursClear": "Wyczyść",
     "manualAddForDate": "Dodaj godziny ręczne",
     "manualHoursNoProject": "Wybierz projekt przed rejestracją godzin.",
+    "manualPickProjectTitle": "Do którego projektu należą te godziny?",
+    "manualNoProjects": "Nie jesteś jeszcze dodany do żadnego projektu. Poproś kierownika, aby cię dodał, a potem wpisz godziny.",
     "manualTapHint": "Dotknij dnia, aby podać godziny",
     "unitHour": "h",
     "unitMinute": "min",

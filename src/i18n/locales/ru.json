@@ -491,6 +491,8 @@
     "manualHoursClear": "Очистить",
     "manualAddForDate": "Добавить часы вручную",
     "manualHoursNoProject": "Выберите проект, прежде чем записывать часы.",
+    "manualPickProjectTitle": "К какому проекту относятся эти часы?",
+    "manualNoProjects": "Вас ещё не добавили ни в один проект. Попросите руководителя добавить вас, затем внесите часы.",
     "manualTapHint": "Нажмите на день, чтобы указать часы",
     "unitHour": "ч",
     "unitMinute": "мин",

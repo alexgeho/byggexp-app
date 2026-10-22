@@ -488,6 +488,8 @@
     "manualHoursClear": "Notīrīt",
     "manualAddForDate": "Pievienot manuālās stundas",
     "manualHoursNoProject": "Lūdzu, izvēlieties projektu pirms stundu reģistrēšanas.",
+    "manualPickProjectTitle": "Kuram projektam ir šīs stundas?",
+    "manualNoProjects": "Jūs vēl neesat pievienots nevienam projektam. Palūdziet darbu vadītājam jūs pievienot un pēc tam ievadiet stundas.",
     "manualTapHint": "Pieskarieties dienai, lai ievadītu stundas",
     "unitHour": "st.",
     "unitMinute": "min.",

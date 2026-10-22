@@ -491,6 +491,8 @@
     "manualHoursClear": "Очистити",
     "manualAddForDate": "Додати ручні години",
     "manualHoursNoProject": "Виберіть проєкт перед записом годин.",
+    "manualPickProjectTitle": "До якого проєкту належать ці години?",
+    "manualNoProjects": "Вас ще не додали до жодного проєкту. Попросіть керівника додати вас, потім внесіть години.",
     "manualTapHint": "Торкніться дня, щоб ввести години",
     "unitHour": "год",
     "unitMinute": "хв",

@@ -487,6 +487,8 @@
     "manualHoursClear": "Rensa",
     "manualAddForDate": "Lägg till manuella timmar",
     "manualHoursNoProject": "Välj ett projekt innan du loggar timmar.",
+    "manualPickProjectTitle": "Vilket projekt gäller timmarna?",
+    "manualNoProjects": "Du är inte tillagd i något projekt än. Be din arbetsledare lägga till dig och logga sedan timmarna.",
     "manualTapHint": "Tryck på en dag för att ange timmar",
     "unitHour": "h",
     "unitMinute": "min",

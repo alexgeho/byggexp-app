@@ -487,6 +487,8 @@
     "manualHoursClear": "Tyhjennä",
     "manualAddForDate": "Lisää manuaaliset tunnit",
     "manualHoursNoProject": "Valitse projekti ennen tuntien kirjaamista.",
+    "manualPickProjectTitle": "Mihin projektiin tunnit kuuluvat?",
+    "manualNoProjects": "Sinua ei ole vielä lisätty mihinkään projektiin. Pyydä työnjohtajaa lisäämään sinut ja kirjaa sitten tunnit.",
     "manualTapHint": "Napauta päivää antaaksesi tunnit",
     "unitHour": "h",
     "unitMinute": "min",

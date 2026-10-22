@@ -248,6 +248,57 @@ export function ManualHoursModal({
   );
 }
 
+// "Which project are these hours for?" — shown when the worker saves typed
+// days but has several projects and none chosen. A tap saves straight away.
+export function ProjectPickModal({ visible, projects, onPick, onClose, styles, t }) {
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      <View style={styles.manualSheetOverlay}>
+        <Pressable style={styles.manualSheetBackdrop} onPress={onClose} />
+        <View style={styles.manualSheet}>
+          <View style={styles.manualSheetGrab} />
+          <Text style={styles.manualSheetTitle}>
+            {t("shifts.manualPickProjectTitle")}
+          </Text>
+          <ScrollView
+            style={styles.manualProjectList}
+            nestedScrollEnabled
+            keyboardShouldPersistTaps="handled"
+          >
+            {projects.map((project) => {
+              const projectId = project._id || project.id;
+              return (
+                <TouchableOpacity
+                  key={projectId}
+                  style={styles.manualProjectOption}
+                  activeOpacity={0.8}
+                  onPress={() => onPick(project)}
+                >
+                  <Text numberOfLines={1} style={styles.manualProjectOptionText}>
+                    {project.name || project.projectName || projectId}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+          <View style={styles.manualSheetFooter}>
+            <TouchableOpacity onPress={onClose}>
+              <Text style={styles.manualHoursCancelText}>
+                {t("common.cancel")}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
 // Export bottom sheet: pick PDF/Excel, then export the selected period.
 export function ExportSheet({
   visible,
