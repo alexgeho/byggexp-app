@@ -1,8 +1,10 @@
 import {
+  dayExtras,
   dayOvertime,
   dayPlanHours,
   proposeOvertime,
   stepOvertime,
+  stepWithin,
 } from "../overtime";
 
 const H = 3600000;
@@ -50,4 +52,34 @@ test("a day's övertid is pending while any of it waits for a manager", () => {
     dayOvertime({ shifts: [{ overtimeMs: H, overtimeStatus: "pending" }] }),
   ).toEqual({ overtimeMs: H, pending: true });
   expect(dayOvertime(undefined)).toEqual({ overtimeMs: 0, pending: false });
+});
+
+describe("dayExtras", () => {
+  it("sums OB, travel and km over the day's shifts and keeps the highest per diem", () => {
+    expect(
+      dayExtras({
+        shifts: [
+          { obMs: 3600000, travelMinutes: 30, travelKm: 12, perDiem: "half" },
+          { obMs: 1800000, travelMinutes: 15, travelKm: 8, perDiem: "none" },
+        ],
+      }),
+    ).toEqual({ ob: 1.5, travel: 0.75, km: 20, perDiem: "half" });
+  });
+
+  it("is empty for a day without shifts", () => {
+    expect(dayExtras(undefined)).toEqual({
+      ob: 0,
+      travel: 0,
+      km: 0,
+      perDiem: "none",
+    });
+  });
+});
+
+describe("stepWithin", () => {
+  it("keeps the value between 0 and the max in half steps", () => {
+    expect(stepWithin(0, -0.5, 8)).toBe(0);
+    expect(stepWithin(7.5, 1, 8)).toBe(8);
+    expect(stepWithin(1, 0.5, 8)).toBe(1.5);
+  });
 });

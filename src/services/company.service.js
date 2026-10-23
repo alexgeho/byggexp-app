@@ -1,13 +1,13 @@
-import api from './api';
+import api from "./api";
 
 export const companyService = {
   getAll: async () => {
-    const { data } = await api.get('/company');
+    const { data } = await api.get("/company");
     return data;
   },
 
   getMyCompany: async () => {
-    const { data } = await api.get('/company/my');
+    const { data } = await api.get("/company/my");
     return data;
   },
 
@@ -22,17 +22,17 @@ export const companyService = {
   },
 
   create: async (companyData) => {
-    const { data } = await api.post('/company', companyData);
+    const { data } = await api.post("/company", companyData);
     return data;
   },
 
   register: async (registerData) => {
-    const { data } = await api.post('/company/register', registerData);
+    const { data } = await api.post("/company/register", registerData);
     return data;
   },
 
   getByIds: async (ids) => {
-    const { data } = await api.post('/company/by-ids', { ids });
+    const { data } = await api.post("/company/by-ids", { ids });
     return data;
   },
 

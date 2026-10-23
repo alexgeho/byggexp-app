@@ -132,6 +132,10 @@ test("with one project the hours are saved to it, no project error", async () =>
     date: "2026-10-21",
     durationMs: 8 * 3600000,
     overtimeMs: 0,
+    obMs: 0,
+    travelMinutes: 0,
+    travelKm: 0,
+    perDiem: "none",
   });
 });
 

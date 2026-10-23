@@ -518,7 +518,13 @@
     "approveFailed": "Nepavyko patvirtinti pamainos.",
     "clocked": "GPS laikas",
     "sourceManual": "rankiniu būdu",
-    "sourceGps": "GPS"
+    "sourceGps": "GPS",
+    "ob": "OB (nepatogus laikas)",
+    "travelTime": "Kelionės laikas",
+    "car": "Automobilis",
+    "absence": "Nebuvimas",
+    "absencePending": "Laukiama",
+    "absenceError": "Nepavyko išsiųsti nebuvimo"
   },
   "shiftHistory": {
     "title": "Dienos ataskaita",

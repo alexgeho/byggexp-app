@@ -574,6 +574,55 @@ export const createStyles = (c) =>
       color: c.textSecondary,
       fontSize: 13,
     },
+    dayEntryStepValueOb: {
+      color: onDark(c, "#A78BFA", "#7C5CD6"),
+    },
+    dayEntryStepValuePlain: {
+      color: c.textPrimary,
+    },
+    dayEntrySection: {
+      color: c.textSecondary,
+      fontSize: 13,
+      fontWeight: "600",
+      textTransform: "uppercase",
+      letterSpacing: 0.5,
+      marginTop: 4,
+    },
+    dayEntryChoice: {
+      gap: 8,
+    },
+    dayEntryChips: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 8,
+    },
+    dayEntryChip: {
+      height: 36,
+      paddingHorizontal: 14,
+      borderRadius: radius.control,
+      borderWidth: size.border,
+      borderColor: c.border,
+      backgroundColor: c.surface,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    dayEntryChipActive: {
+      backgroundColor: "#0785F4",
+      borderColor: "#0785F4",
+    },
+    dayEntryChipText: {
+      color: c.textPrimary,
+      fontSize: 14,
+    },
+    dayEntryChipTextActive: {
+      color: "#FFFFFF",
+      fontWeight: "600",
+    },
+    dayEntryAbsenceValue: {
+      color: onDark(c, "#A78BFA", "#7C5CD6"),
+      fontSize: 15,
+      fontWeight: "600",
+    },
     dayEntryValueRow: {
       flexDirection: "row",
       alignItems: "center",

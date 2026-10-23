@@ -515,7 +515,13 @@
     "approveFailed": "Neizdevās apstiprināt maiņu.",
     "clocked": "GPS laiks",
     "sourceManual": "manuāli",
-    "sourceGps": "GPS"
+    "sourceGps": "GPS",
+    "ob": "OB (neērts laiks)",
+    "travelTime": "Ceļa laiks",
+    "car": "Auto",
+    "absence": "Prombūtne",
+    "absencePending": "Gaida",
+    "absenceError": "Neizdevās nosūtīt prombūtni"
   },
   "shiftHistory": {
     "title": "Dienas atskaite",

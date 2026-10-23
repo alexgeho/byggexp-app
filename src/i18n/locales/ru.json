@@ -518,7 +518,13 @@
     "approveFailed": "Не удалось подтвердить смену.",
     "clocked": "Время по GPS",
     "sourceManual": "вручную",
-    "sourceGps": "GPS"
+    "sourceGps": "GPS",
+    "ob": "OB (неудобное время)",
+    "travelTime": "Время в пути",
+    "car": "Авто",
+    "absence": "Отсутствие",
+    "absencePending": "Ожидает",
+    "absenceError": "Не удалось отправить отсутствие"
   },
   "shiftHistory": {
     "title": "Дневной отчёт",

@@ -514,7 +514,13 @@
     "approveFailed": "Vahetust ei saanud kinnitada.",
     "clocked": "GPS-aeg",
     "sourceManual": "käsitsi",
-    "sourceGps": "GPS"
+    "sourceGps": "GPS",
+    "ob": "OB (ebamugav aeg)",
+    "travelTime": "Sõiduaeg",
+    "car": "Auto",
+    "absence": "Puudumine",
+    "absencePending": "Ootel",
+    "absenceError": "Puudumist ei õnnestunud saata"
   },
   "shiftHistory": {
     "title": "Päevaraport",

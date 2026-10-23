@@ -514,7 +514,13 @@
     "approveFailed": "Kunne ikke attestere vakten.",
     "clocked": "GPS-stemplet tid",
     "sourceManual": "manuelt",
-    "sourceGps": "GPS"
+    "sourceGps": "GPS",
+    "ob": "OB (ubekvem tid)",
+    "travelTime": "Reisetid",
+    "car": "Bil",
+    "absence": "Fravær",
+    "absencePending": "Venter",
+    "absenceError": "Kunne ikke sende fraværet"
   },
   "shiftHistory": {
     "title": "Dagsrapport",

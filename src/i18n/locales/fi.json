@@ -514,7 +514,13 @@
     "approveFailed": "Vuoron hyväksyminen epäonnistui.",
     "clocked": "GPS-leimattu aika",
     "sourceManual": "manuaalinen",
-    "sourceGps": "GPS"
+    "sourceGps": "GPS",
+    "ob": "OB (epämukava työaika)",
+    "travelTime": "Matka-aika",
+    "car": "Auto",
+    "absence": "Poissaolo",
+    "absencePending": "Odottaa",
+    "absenceError": "Poissaoloa ei voitu lähettää"
   },
   "shiftHistory": {
     "title": "Päiväraportti",

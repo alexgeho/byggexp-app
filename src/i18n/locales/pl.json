@@ -518,7 +518,13 @@
     "approveFailed": "Nie udało się zatwierdzić zmiany.",
     "clocked": "Czas z GPS",
     "sourceManual": "ręcznie",
-    "sourceGps": "GPS"
+    "sourceGps": "GPS",
+    "ob": "OB (godziny niewygodne)",
+    "travelTime": "Czas dojazdu",
+    "car": "Samochód",
+    "absence": "Nieobecność",
+    "absencePending": "Oczekuje",
+    "absenceError": "Nie udało się wysłać nieobecności"
   },
   "shiftHistory": {
     "title": "Raport dzienny",

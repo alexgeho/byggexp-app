@@ -108,7 +108,8 @@ test("a manager approves or denies övertid that waits", () => {
       />,
     );
   });
-  expect(textsOf(tree, "shifts.overtimePending")).toHaveLength(1);
+  // Waiting övertid shows no chip, only the manager's buttons.
+  expect(textsOf(tree, "shifts.overtimeApproved")).toHaveLength(0);
   const approve = tree.root.find(
     (n) =>
       n.type === TouchableOpacity &&

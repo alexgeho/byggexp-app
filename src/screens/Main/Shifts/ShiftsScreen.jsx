@@ -33,6 +33,7 @@ import { ProjectFilterSelector } from "../../../components/common/ProjectFilterS
 import AuthContext from "../../../contexts/AuthContext";
 import {
   hoursService,
+  leaveService,
   projectService,
   shiftService,
   userService,
@@ -60,10 +61,13 @@ import {
   weekDateKeys,
 } from "../../../utils/shiftsCalendar";
 import {
+  dayExtras,
   dayOvertime,
   dayPlanHours,
   proposeOvertime,
+  sameExtras,
   stepOvertime,
+  stepWithin,
 } from "../../../utils/overtime";
 import {
   getDocumentNameFromUrl,
@@ -188,6 +192,13 @@ export default function ShiftsScreen() {
   const [inlineOvertime, setInlineOvertime] = useState(null);
   // Unsaved övertid (hours) per date, alongside pendingManual.
   const [pendingOvertime, setPendingOvertime] = useState({});
+  // The open card's other pay lines ({ ob, travel, km, perDiem }) and the
+  // unsaved ones per date.
+  const [inlineExtras, setInlineExtras] = useState(null);
+  const [pendingExtras, setPendingExtras] = useState({});
+  // The worker's own absences (Frånvaro), to show a day's absence in its card.
+  const [myLeaves, setMyLeaves] = useState([]);
+  const [savingLeave, setSavingLeave] = useState(false);
   // True while saveAllManual is committing, so the input's onBlur (fired by the
   // Keyboard.dismiss inside the save) doesn't double-stash and resurrect a
   // just-saved day as pending.
@@ -665,6 +676,7 @@ export default function ShiftsScreen() {
             ? dayOvertime(day).overtimeMs / 3600000
             : null,
       );
+      setInlineExtras(pendingExtras[dateStr] || dayExtras(day));
       setInlineManualDate(dateStr);
 
       // Park the edited day just above the keyboard (not jammed to the top).
@@ -681,7 +693,7 @@ export default function ShiftsScreen() {
         }, 300);
       }
     },
-    [dayMap, pendingManual, pendingOvertime],
+    [dayMap, pendingManual, pendingOvertime, pendingExtras],
   );
 
   // Deep-link from a "log your hours" reminder push: switch to the Manual tab
@@ -716,6 +728,7 @@ export default function ShiftsScreen() {
       .trim();
     const day = dayMap.get(dateStr);
     const savedMs = Number(day?.manualDurationMs) || 0;
+    const extras = inlineExtras || dayExtras(day);
     let hours;
     if (raw === "") {
       // Empty clears to 0 only when there was a saved value to remove.
@@ -734,11 +747,14 @@ export default function ShiftsScreen() {
       inlineOvertime ?? proposeOvertime(hours, planHoursFor(dateStr)),
       hours,
     );
+    const ob = Math.min(extras.ob || 0, Math.max(0, hours - overtime));
+    const entryExtras = { ...extras, ob };
     const unchanged =
       Math.round(hours * 3600000) === savedMs &&
-      Math.round(overtime * 3600000) === dayOvertime(day).overtimeMs;
-    return { dateStr, hours, overtime, unchanged };
-  }, [inlineManualDate, dayMap, inlineOvertime, planHoursFor]);
+      Math.round(overtime * 3600000) === dayOvertime(day).overtimeMs &&
+      sameExtras(entryExtras, dayExtras(day));
+    return { dateStr, hours, overtime, extras: entryExtras, unchanged };
+  }, [inlineManualDate, dayMap, inlineOvertime, inlineExtras, planHoursFor]);
 
   // Move the open card's typed value into the pending maps (no network).
   const stashOpenInput = useCallback(() => {
@@ -761,6 +777,7 @@ export default function ShiftsScreen() {
     };
     setPendingManual(update(entry.hours));
     setPendingOvertime(update(entry.overtime));
+    setPendingExtras(update(entry.extras));
   }, [readOpenEntry]);
 
   // Write the collected days ([date, hours, övertid]) to one project, then
@@ -769,17 +786,26 @@ export default function ShiftsScreen() {
     async (entries, projectId) => {
       try {
         setSavingBatch(true);
-        for (const [date, hours, overtime] of entries) {
+        for (const [date, hours, overtime, extras] of entries) {
           await shiftService.addManualHours({
             workerId: currentUserId,
             projectId,
             date,
             durationMs: Math.round(Number(hours) * 3600000),
             overtimeMs: Math.round((Number(overtime) || 0) * 3600000),
+            ...(extras
+              ? {
+                  obMs: Math.round((Number(extras.ob) || 0) * 3600000),
+                  travelMinutes: Math.round((Number(extras.travel) || 0) * 60),
+                  travelKm: Math.round(Number(extras.km) || 0),
+                  perDiem: extras.perDiem || "none",
+                }
+              : {}),
           });
         }
         setPendingManual({});
         setPendingOvertime({});
+        setPendingExtras({});
         await loadHistory(selectedMonth);
       } catch (error) {
         const message =
@@ -821,14 +847,17 @@ export default function ShiftsScreen() {
     // setPendingManual from stashOpenInput.
     const mergedManual = { ...pendingManual };
     const mergedOvertime = { ...pendingOvertime };
+    const mergedExtras = { ...pendingExtras };
     const entry = readOpenEntry();
     if (entry && !entry.invalid) {
       if (entry.unchanged) {
         delete mergedManual[entry.dateStr];
         delete mergedOvertime[entry.dateStr];
+        delete mergedExtras[entry.dateStr];
       } else {
         mergedManual[entry.dateStr] = entry.hours;
         mergedOvertime[entry.dateStr] = entry.overtime;
+        mergedExtras[entry.dateStr] = entry.extras;
       }
     }
     setInlineManualDate(null);
@@ -837,10 +866,12 @@ export default function ShiftsScreen() {
       date,
       hours,
       mergedOvertime[date] ?? proposeOvertime(hours, planHoursFor(date)),
+      mergedExtras[date],
     ]);
     if (entries.length === 0) {
       setPendingManual({});
       setPendingOvertime({});
+      setPendingExtras({});
       batchSavingRef.current = false;
       return;
     }
@@ -853,6 +884,7 @@ export default function ShiftsScreen() {
     // Keep the typed days so nothing is lost while the worker decides.
     setPendingManual(mergedManual);
     setPendingOvertime(mergedOvertime);
+    setPendingExtras(mergedExtras);
     if (projects.length === 0) {
       Alert.alert(t("shifts.manualHoursError"), t("shifts.manualNoProjects"));
       batchSavingRef.current = false;
@@ -862,6 +894,7 @@ export default function ShiftsScreen() {
   }, [
     pendingManual,
     pendingOvertime,
+    pendingExtras,
     readOpenEntry,
     planHoursFor,
     resolveManualProjectId,
@@ -897,6 +930,94 @@ export default function ShiftsScreen() {
       );
     },
     [inlineSplit],
+  );
+
+  // The open card's OB / travel / per diem. OB fits in what övertid leaves.
+  const openExtras = useMemo(() => {
+    const extras = inlineExtras || dayExtras(dayMap.get(inlineManualDate));
+    return {
+      ...extras,
+      ob: Math.min(
+        extras.ob || 0,
+        Math.max(0, inlineSplit.total - inlineSplit.overtime),
+      ),
+    };
+  }, [inlineExtras, dayMap, inlineManualDate, inlineSplit]);
+
+  const changeInlineExtra = useCallback(
+    (key, delta) => {
+      setInlineExtras(() => {
+        const next = { ...openExtras };
+        if (key === "perDiem") {
+          next.perDiem = delta;
+        } else if (key === "ob") {
+          next.ob = stepWithin(
+            openExtras.ob,
+            delta,
+            Math.max(0, inlineSplit.total - inlineSplit.overtime),
+          );
+        } else if (key === "travel") {
+          next.travel = stepWithin(openExtras.travel, delta, 24);
+        } else if (key === "km") {
+          next.km = Math.min(Math.max(0, (openExtras.km || 0) + delta), 2000);
+        }
+        return next;
+      });
+    },
+    [openExtras, inlineSplit],
+  );
+
+  // The worker's absences, for the day card's Frånvaro line.
+  const loadMyLeaves = useCallback(async () => {
+    try {
+      const all = await leaveService.getAll();
+      setMyLeaves(
+        (Array.isArray(all) ? all : []).filter(
+          (leave) =>
+            String(leave.userId?._id || leave.userId) === String(currentUserId),
+        ),
+      );
+    } catch {
+      setMyLeaves([]);
+    }
+  }, [currentUserId]);
+
+  useEffect(() => {
+    loadMyLeaves();
+  }, [loadMyLeaves]);
+
+  const leaveOn = useCallback(
+    (dateStr) =>
+      myLeaves.find(
+        (leave) =>
+          leave.status !== "rejected" &&
+          leave.startDate <= dateStr &&
+          (leave.endDate || leave.startDate) >= dateStr,
+      ) || null,
+    [myLeaves],
+  );
+
+  // Frånvaro for one day goes to the manager as a request.
+  const reportAbsence = useCallback(
+    async (dateStr, type) => {
+      try {
+        setSavingLeave(true);
+        await leaveService.create({
+          type,
+          startDate: dateStr,
+          endDate: dateStr,
+        });
+        await loadMyLeaves();
+      } catch (error) {
+        Alert.alert(
+          t("shifts.absenceError"),
+          error?.response?.data?.message || error?.message || "",
+        );
+      } finally {
+        setSavingLeave(false);
+      }
+    },
+    [loadMyLeaves, t],
   );
 
   // Inline hour entry writes to the CURRENT user only (workerId: currentUserId),
@@ -1279,14 +1400,20 @@ export default function ShiftsScreen() {
     [approvingIds, refreshHistory, selectedMonth, t],
   );
 
-  // Godkänn / Neka övertid on a day of the people the manager looks at.
+  // Godkänn / Neka the waiting övertid and OB on a day of the people the
+  // manager looks at.
   const decideOvertime = useCallback(
     async (shift, approved) => {
       const id = shift.id || shift._id;
       if (!id || approvingIds.includes(id)) return;
       setApprovingIds((previous) => [...previous, id]);
       try {
-        await shiftService.decideOvertime(id, approved);
+        if (shift.overtimeMs > 0 && shift.overtimeStatus !== "approved") {
+          await shiftService.decideOvertime(id, approved);
+        }
+        if (shift.obMs > 0 && shift.obStatus !== "approved") {
+          await shiftService.decideOb(id, approved);
+        }
         await refreshHistory(selectedMonth);
       } catch (error) {
         console.error("Failed to decide overtime:", error);
@@ -1599,6 +1726,11 @@ export default function ShiftsScreen() {
                   onChangeTotal={changeInlineTotal}
                   split={inlineSplit}
                   onStepOvertime={stepInlineOvertime}
+                  extras={openExtras}
+                  onChangeExtra={changeInlineExtra}
+                  absence={leaveOn(focusedDate)}
+                  onReportAbsence={(type) => reportAbsence(focusedDate, type)}
+                  savingAbsence={savingLeave}
                   onSave={saveAllManual}
                   saving={savingBatch}
                   pendingHours={pendingManual[focusedDate]}

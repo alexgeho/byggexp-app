@@ -514,7 +514,13 @@
     "approveFailed": "Could not approve the shift.",
     "clocked": "GPS-clocked time",
     "sourceManual": "manual",
-    "sourceGps": "GPS"
+    "sourceGps": "GPS",
+    "ob": "OB (unsocial hours)",
+    "travelTime": "Travel time",
+    "car": "Car",
+    "absence": "Absence",
+    "absencePending": "Pending",
+    "absenceError": "Could not send the absence"
   },
   "shiftHistory": {
     "title": "Daily report",

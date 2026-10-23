@@ -517,7 +517,13 @@
     "approveFailed": "Nije moguće potvrditi smjenu.",
     "clocked": "GPS vrijeme",
     "sourceManual": "ručno",
-    "sourceGps": "GPS"
+    "sourceGps": "GPS",
+    "ob": "OB (neugodno vrijeme)",
+    "travelTime": "Vrijeme putovanja",
+    "car": "Auto",
+    "absence": "Odsustvo",
+    "absencePending": "Čeka",
+    "absenceError": "Nije moguće poslati odsustvo"
   },
   "shiftHistory": {
     "title": "Dnevni izvještaj",

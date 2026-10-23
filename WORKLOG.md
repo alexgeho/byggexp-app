@@ -5,7 +5,11 @@
 # 2026-10-23 (вечер) — Arbetspass: строки зарплаты в карточке дня
 
 - [x] 21:30 «Månad / Anpassad — отцентрируй» → кнопки периода по центру (68febdec)
-- [ ] 21:32 Скрин карточки дня + макет «dagens lönerader»: «OB (obekväm tid) добавь, Resa и т.д.» → в карточку «Manuella timmar» под Övertid: OB (часы), Restid, Bil (км), Traktamente (Inget/Halvt/Helt), Frånvaro
+- [x] 21:32 Скрин карточки дня + макет «dagens lönerader»: «OB (obekväm tid) добавь, Resa и т.д.» → в карточке «Manuella timmar» под Övertid: OB (часы, фиолетовый, не больше «часы − övertid»), Resa: Restid (0,5 ч шаг), Bil (km, шаг 5), Traktamente (Inget/Halvt/Helt), Frånvaro (Sjuk/VAB/Semester/Föräldraledig/Tjänstledig → заявка руководителю, после — «Sjukfrånvaro · Väntar»). Всё сохраняется одной кнопкой Spara вместе с часами. В карточке смены строка OB; у руководителя Godkänn/Neka решают и övertid, и OB. 11 языков, 345 тестов. Проверено в симуляторе на локальном бэкенде (сохранение → в базе obMs/travel/perDiem).
+- [x] Бэкенд 92c488c (агент): obMs/obStatus на смене, PATCH /shifts/:id/ob, GET /shifts/ob/pending, manual принимает obMs/travel/perDiem; зарплата: подтверждённый OB отдельной строкой, неподтверждённый = обычные часы; Excel «OB h».
+- [x] 21:39 «Väntar på godkännande убери» → в карточке смены у ждущих övertid/OB нет плашки, «Godkänd» осталась
+- [ ] Админка: промт отдан пользователю (агент в byggexp-admin): OB в «Att göra», все строки дня в часах/смене/Timeline, lönunderlag
+- [ ] OTA — после просмотра в симуляторе
 
 # 2026-10-23 — Arbetspass: övertid внутри дня
 

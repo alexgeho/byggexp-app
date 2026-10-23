@@ -46,3 +46,40 @@ export const dayOvertime = (day) => {
   });
   return { overtimeMs, pending };
 };
+
+// The rest of the day's pay lines, saved on its shifts: OB hours, travel time
+// (hours), kilometres and the per-diem bracket.
+const PER_DIEM_RANK = { none: 0, half: 1, full: 2 };
+export const dayExtras = (day) => {
+  let obMs = 0;
+  let travelMinutes = 0;
+  let travelKm = 0;
+  let perDiem = "none";
+  (day?.shifts || []).forEach((shift) => {
+    obMs += Number(shift.obMs) || 0;
+    travelMinutes += Number(shift.travelMinutes) || 0;
+    travelKm += Number(shift.travelKm) || 0;
+    if ((PER_DIEM_RANK[shift.perDiem] || 0) > PER_DIEM_RANK[perDiem]) {
+      perDiem = shift.perDiem;
+    }
+  });
+  return {
+    ob: obMs / HOUR_MS,
+    travel: travelMinutes / 60,
+    km: travelKm,
+    perDiem,
+  };
+};
+
+export const sameExtras = (a, b) =>
+  Math.round((a?.ob || 0) * 60) === Math.round((b?.ob || 0) * 60) &&
+  Math.round((a?.travel || 0) * 60) === Math.round((b?.travel || 0) * 60) &&
+  Math.round(a?.km || 0) === Math.round(b?.km || 0) &&
+  (a?.perDiem || "none") === (b?.perDiem || "none");
+
+// One − / + step, kept between `min` and `max`.
+export const stepWithin = (value, delta, max, min = 0) =>
+  Math.min(
+    Math.max(min, Math.round(((Number(value) || 0) + delta) * 2) / 2),
+    max,
+  );

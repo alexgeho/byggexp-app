@@ -518,7 +518,13 @@
     "approveFailed": "Не вдалося підтвердити зміну.",
     "clocked": "Час за GPS",
     "sourceManual": "вручну",
-    "sourceGps": "GPS"
+    "sourceGps": "GPS",
+    "ob": "OB (незручний час)",
+    "travelTime": "Час у дорозі",
+    "car": "Авто",
+    "absence": "Відсутність",
+    "absencePending": "Очікує",
+    "absenceError": "Не вдалося надіслати відсутність"
   },
   "shiftHistory": {
     "title": "Денний звіт",

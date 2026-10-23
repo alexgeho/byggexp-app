@@ -1104,8 +1104,27 @@ export function HoursBar({
   );
 }
 
-// "Normal 8 h" and "Övertid 2 h" with its status, in a shift card when the
-// day has övertid; a manager gets Godkänn / Neka while it waits.
+// "Normal 8 h", "Övertid 2 h" and "OB 1 h" with their status, in a shift
+// card when the day has övertid or OB; a manager gets Godkänn / Neka while
+// any of it waits.
+function PayStatusRow({ styles, t, label, ms, pending, valueStyle }) {
+  return (
+    <View style={styles.overtimeRow}>
+      <Text style={styles.overtimeLabel}>{label}</Text>
+      <View style={styles.overtimeValueGroup}>
+        {pending ? null : (
+          <Text style={[styles.overtimeChip, styles.overtimeChipOk]}>
+            {t("shifts.overtimeApproved")}
+          </Text>
+        )}
+        <Text style={[styles.overtimeValue, valueStyle]}>
+          {formatDurationCompact(ms)}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
 export function ShiftOvertime({
   shift,
   styles,
@@ -1116,50 +1135,55 @@ export function ShiftOvertime({
   onDecide,
 }) {
   const overtimeMs = Number(shift.overtimeMs) || 0;
-  if (!overtimeMs) return null;
+  const obMs = Number(shift.obMs) || 0;
+  if (!overtimeMs && !obMs) return null;
   const totalMs =
     shift.manualDurationMs != null
       ? Number(shift.manualDurationMs)
       : Number(shift.durationMs) || 0;
-  const pending = shift.overtimeStatus !== "approved";
+  const overtimePending = overtimeMs > 0 && shift.overtimeStatus !== "approved";
+  const obPending = obMs > 0 && shift.obStatus !== "approved";
+  const pending = overtimePending || obPending;
 
   return (
     <View style={styles.overtimeBox}>
-      <HoursBar
-        styles={styles}
-        wide
-        totalMs={Math.max(totalMs, overtimeMs)}
-        overtimeMs={overtimeMs}
-        pending={pending}
-      />
+      {overtimeMs ? (
+        <HoursBar
+          styles={styles}
+          wide
+          totalMs={Math.max(totalMs, overtimeMs)}
+          overtimeMs={overtimeMs}
+          pending={overtimePending}
+        />
+      ) : null}
       <View style={styles.overtimeRow}>
         <Text style={styles.overtimeLabel}>
           {t("dayReport.hourType.normal")}
         </Text>
         <Text style={styles.overtimeValue}>
-          {formatDurationCompact(Math.max(0, totalMs - overtimeMs))}
+          {formatDurationCompact(Math.max(0, totalMs - overtimeMs - obMs))}
         </Text>
       </View>
-      <View style={styles.overtimeRow}>
-        <Text style={styles.overtimeLabel}>
-          {t("dayReport.hourType.overtime")}
-        </Text>
-        <View style={styles.overtimeValueGroup}>
-          <Text
-            style={[
-              styles.overtimeChip,
-              pending ? styles.overtimeChipPending : styles.overtimeChipOk,
-            ]}
-          >
-            {pending
-              ? t("shifts.overtimePending")
-              : t("shifts.overtimeApproved")}
-          </Text>
-          <Text style={[styles.overtimeValue, styles.overtimeValueOrange]}>
-            {formatDurationCompact(overtimeMs)}
-          </Text>
-        </View>
-      </View>
+      {overtimeMs ? (
+        <PayStatusRow
+          styles={styles}
+          t={t}
+          label={t("dayReport.hourType.overtime")}
+          ms={overtimeMs}
+          pending={overtimePending}
+          valueStyle={styles.overtimeValueOrange}
+        />
+      ) : null}
+      {obMs ? (
+        <PayStatusRow
+          styles={styles}
+          t={t}
+          label={t("shifts.ob")}
+          ms={obMs}
+          pending={obPending}
+          valueStyle={styles.dayEntryStepValueOb}
+        />
+      ) : null}
       {canDecide && pending ? (
         <View style={styles.overtimeActions}>
           <TouchableOpacity
@@ -1203,6 +1227,116 @@ export function ShiftOvertime({
   );
 }
 
+// One pay line of the day card with − / + (OB, Restid, Bil).
+function DayStepRow({
+  styles,
+  label,
+  value,
+  valueStyle,
+  onStep,
+  step,
+  semiBoldFontFamily,
+}) {
+  return (
+    <View style={styles.dayEntryOvertimeRow}>
+      <Text style={styles.dayEntryLabel}>{label}</Text>
+      <View style={styles.dayEntryStepper}>
+        <TouchableOpacity
+          style={styles.dayEntryStep}
+          onPress={() => onStep(-step)}
+          activeOpacity={0.7}
+          accessibilityLabel={`${label} −`}
+        >
+          <Icon name="minus" size={18} color={styles.weekNavIcon?.color} />
+        </TouchableOpacity>
+        <Text
+          style={[
+            styles.dayEntryStepValue,
+            valueStyle,
+            { fontFamily: semiBoldFontFamily },
+          ]}
+        >
+          {value}
+        </Text>
+        <TouchableOpacity
+          style={styles.dayEntryStep}
+          onPress={() => onStep(step)}
+          activeOpacity={0.7}
+          accessibilityLabel={`${label} +`}
+        >
+          <Icon name="plus" size={18} color={styles.weekNavIcon?.color} />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+// Pick-one chips under a label (Traktamente, Frånvaro).
+function DayChoiceRow({ styles, label, options, value, onPick, disabled }) {
+  return (
+    <View style={styles.dayEntryChoice}>
+      <Text style={styles.dayEntryLabel}>{label}</Text>
+      <View style={styles.dayEntryChips}>
+        {options.map(([key, text]) => {
+          const active = key === value;
+          return (
+            <TouchableOpacity
+              key={key}
+              style={[styles.dayEntryChip, active && styles.dayEntryChipActive]}
+              onPress={() => onPick(key)}
+              disabled={disabled}
+              activeOpacity={0.7}
+            >
+              <Text
+                style={[
+                  styles.dayEntryChipText,
+                  active && styles.dayEntryChipTextActive,
+                ]}
+              >
+                {text}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
+const ABSENCE_TYPES = ["sick", "vab", "vacation", "parental", "leave"];
+
+// The day's absence: what was reported (and whether the manager agreed), or
+// the types to report one with.
+function DayAbsenceRow({ styles, t, absence, onReport, saving }) {
+  if (absence) {
+    return (
+      <View style={styles.dayEntryValueRow}>
+        <Text style={styles.dayEntryLabel}>{t("shifts.absence")}</Text>
+        <Text style={styles.dayEntryAbsenceValue}>
+          {`${t(`schedule.leaveTypes.${absence.type}`)} · ${
+            absence.status === "approved"
+              ? t("shifts.overtimeApproved")
+              : t("shifts.absencePending")
+          }`}
+        </Text>
+      </View>
+    );
+  }
+  return (
+    <DayChoiceRow
+      styles={styles}
+      label={t("shifts.absence")}
+      options={ABSENCE_TYPES.map((type) => [
+        type,
+        t(`schedule.leaveTypes.${type}`),
+      ])}
+      value={null}
+      onPick={onReport}
+      disabled={saving}
+    />
+  );
+}
+
 // Manual hours for the chosen day, typed in a card under the week controls.
 // The value lands in the pending map like before and is saved with the header
 // check or the Save button here. What goes over the day's plan is proposed as
@@ -1225,7 +1359,21 @@ export function DayHoursEntry({
   pendingOvertime,
   hasShifts,
   onLayout,
+  extras,
+  onChangeExtra,
+  absence,
+  onReportAbsence,
+  savingAbsence,
 }) {
+  const absenceRow = onReportAbsence ? (
+    <DayAbsenceRow
+      styles={styles}
+      t={t}
+      absence={absence}
+      onReport={onReportAbsence}
+      saving={savingAbsence}
+    />
+  ) : null;
   const saveButton = (
     <TouchableOpacity
       style={styles.dayEntryPrimary}
@@ -1335,6 +1483,51 @@ export function DayHoursEntry({
             </Text>
           </>
         ) : null}
+        {extras && onChangeExtra ? (
+          <>
+            <DayStepRow
+              styles={styles}
+              semiBoldFontFamily={semiBoldFontFamily}
+              label={t("shifts.ob")}
+              value={formatDurationShort(Math.round(extras.ob * 3600000))}
+              valueStyle={styles.dayEntryStepValueOb}
+              step={0.5}
+              onStep={(delta) => onChangeExtra("ob", delta)}
+            />
+            <Text style={styles.dayEntrySection}>
+              {t("dayReport.travelLabel")}
+            </Text>
+            <DayStepRow
+              styles={styles}
+              semiBoldFontFamily={semiBoldFontFamily}
+              label={t("shifts.travelTime")}
+              value={formatDurationShort(Math.round(extras.travel * 3600000))}
+              valueStyle={styles.dayEntryStepValuePlain}
+              step={0.5}
+              onStep={(delta) => onChangeExtra("travel", delta)}
+            />
+            <DayStepRow
+              styles={styles}
+              semiBoldFontFamily={semiBoldFontFamily}
+              label={`${t("shifts.car")} (km)`}
+              value={String(Math.round(extras.km || 0))}
+              valueStyle={styles.dayEntryStepValuePlain}
+              step={5}
+              onStep={(delta) => onChangeExtra("km", delta)}
+            />
+            <DayChoiceRow
+              styles={styles}
+              label={t("dayReport.perDiem")}
+              options={["none", "half", "full"].map((key) => [
+                key,
+                t(`dayReport.perDiemOption.${key}`),
+              ])}
+              value={extras.perDiem || "none"}
+              onPick={(key) => onChangeExtra("perDiem", key)}
+            />
+          </>
+        ) : null}
+        {absenceRow}
         {saveButton}
       </View>
     );
@@ -1398,7 +1591,9 @@ export function DayHoursEntry({
 
   return (
     <View style={styles.dayEntryCard} onLayout={onLayout}>
-      <Text style={styles.dayEntryEmpty}>{t("shifts.noShiftsDay")}</Text>
+      {absence ? null : (
+        <Text style={styles.dayEntryEmpty}>{t("shifts.noShiftsDay")}</Text>
+      )}
       <TouchableOpacity
         style={styles.dayEntryPrimary}
         onPress={onEdit}
@@ -1414,6 +1609,7 @@ export function DayHoursEntry({
           {`＋ ${t("shifts.addHours")}`}
         </Text>
       </TouchableOpacity>
+      {absenceRow}
     </View>
   );
 }
