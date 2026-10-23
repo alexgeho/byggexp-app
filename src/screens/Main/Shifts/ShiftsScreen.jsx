@@ -1668,15 +1668,11 @@ export default function ShiftsScreen() {
             </Text>
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity
-            style={styles.headerShareButton}
+          <BackButton
+            icon="share"
             onPress={openExportSheet}
-            activeOpacity={0.85}
             accessibilityLabel={t("shiftHistory.export")}
-            testID="shifts-export"
-          >
-            <Icon name="share" size={20} color={styles.weekNavIcon?.color} />
-          </TouchableOpacity>
+          />
         )}
       </View>
 

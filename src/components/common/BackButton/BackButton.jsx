@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { TouchableOpacity, Image } from "react-native";
+import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 
 import { useTheme } from "../../../theme/ThemeContext";
@@ -42,6 +43,9 @@ export function BackButton({
   style,
   iconStyle,
   accessibilityLabel,
+  // A Feather glyph instead of the arrow image, for another round header
+  // button that should look exactly like this one (e.g. share).
+  icon,
 }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -81,14 +85,18 @@ export function BackButton({
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.8}
-      style={[styles.backButton, style]}
+      style={[styles.backButton, icon && { padding: 0 }, style]}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel || t("a11y.back")}
     >
       {/* No glass layers any more: the button is the same flat card surface
           the nav bar and the cards use, with the same hairline. Stacked
           gradients on top made it a third material on the screen. */}
-      <Image style={[styles.backIcon, iconStyle]} source={iconSource} />
+      {icon ? (
+        <Icon name={icon} size={20} color={glass.icon} />
+      ) : (
+        <Image style={[styles.backIcon, iconStyle]} source={iconSource} />
+      )}
     </TouchableOpacity>
   );
 }
