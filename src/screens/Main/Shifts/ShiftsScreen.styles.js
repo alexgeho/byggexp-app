@@ -110,18 +110,23 @@ export const createStyles = (c) =>
       marginBottom: 8,
       marginLeft: 2,
     },
+    /* Attention, top to bottom of importance (docs/DESIGN-SYSTEM.md §6):
+       1 the chosen day's hours and its one blue button, 2 the week strip,
+       3 month / week / totals, 4 settings — source toggle, period, filters,
+       Summera. Level 4 is small, grey and see-through so it never pulls the
+       eye away from the day. */
     sourceToggle: {
       flexDirection: "row",
-      backgroundColor: c.inputSurface,
+      backgroundColor: onDark(c, c.surfaceMuted, "rgba(118, 118, 128, 0.08)"),
       borderRadius: 10,
-      padding: 4,
-      marginBottom: 12,
-      gap: 4,
+      padding: 3,
+      marginBottom: 8,
+      gap: 3,
     },
     sourceBtn: {
       flex: 1,
-      height: 40,
-      borderRadius: 10,
+      height: 32,
+      borderRadius: 8,
       alignItems: "center",
       justifyContent: "center",
       // Room either side, so a label that shrinks to fit never touches the
@@ -129,15 +134,16 @@ export const createStyles = (c) =>
       paddingHorizontal: 6,
     },
     sourceBtnOn: {
-      backgroundColor: c.surface,
+      backgroundColor: onDark(c, c.surface, "rgba(255, 255, 255, 0.9)"),
     },
-    sourceBtnText: { fontSize: 15, fontWeight: "500", color: c.textPrimary },
+    sourceBtnText: { fontSize: 13, fontWeight: "500", color: c.textSecondary },
 
     exportSelector: {
       width: "100%",
-      marginBottom: 10,
+      marginBottom: 8,
     },
-    /* "Select" toggle in the header — solid pill, matches the Tools "Scan" button */
+    /* "Summera" in the header — a level-4 setting: outlined, not filled, so
+       the day's blue button stays the only solid blue on the screen. */
     headerSelectButton: {
       height: 44,
       minWidth: 72,
@@ -145,15 +151,18 @@ export const createStyles = (c) =>
       borderRadius: 999,
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: "#0785F4",
+      borderWidth: size.border,
+      borderColor: c.border,
+      backgroundColor: c.surface,
     },
     headerSelectButtonActive: {
+      borderColor: "#0785F4",
       backgroundColor: onDark(c, c.accentSoft, "#E8F1FB"),
     },
     headerSelectText: {
-      fontSize: 14,
-      fontWeight: "700",
-      color: "#FFFFFF",
+      fontSize: 15,
+      fontWeight: "600",
+      color: onDark(c, c.textPrimary, "#0785F4"),
     },
     headerSelectTextActive: {
       color: "#0785F4",
@@ -171,31 +180,34 @@ export const createStyles = (c) =>
       marginBottom: 10,
     },
     filterHalf: { flex: 1 },
+    /* Period and people filters: level 4 — outline only, grey text. */
     dropdownButton: {
       width: "100%",
-      height: 48,
+      height: 40,
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
       gap: 8,
-      paddingHorizontal: 16,
-      backgroundColor: c.inputSurface,
-      borderRadius: 20,
+      paddingHorizontal: 14,
+      backgroundColor: "transparent",
+      borderWidth: size.border,
+      borderColor: c.border,
+      borderRadius: radius.control,
     },
     dropdownText: {
       flex: 1,
-      color: c.textPrimary,
-      fontSize: 17,
-      fontWeight: "500",
+      color: c.textSecondary,
+      fontSize: 15,
+      fontWeight: "400",
     },
     dropdownPlaceholderText: {
-      color: c.placeholder,
-      fontWeight: "500",
+      color: c.textMuted,
+      fontWeight: "400",
     },
     dropdownIcon: {
-      width: 16,
-      height: 16,
-      tintColor: c.textPrimary,
+      width: 14,
+      height: 14,
+      tintColor: c.textMuted,
     },
     /* Week view: every control in one card — month, week, days, day */
     weekCard: {
@@ -217,10 +229,11 @@ export const createStyles = (c) =>
       minHeight: size.headerButton,
       paddingHorizontal: 4,
     },
+    // The month anchors the screen: darkest and heaviest of the navigation.
     weekMonthText: {
       color: c.textPrimary,
-      fontSize: 18,
-      fontWeight: "600",
+      fontSize: 19,
+      fontWeight: "700",
     },
     todayChip: {
       height: 36,
@@ -285,13 +298,18 @@ export const createStyles = (c) =>
       justifyContent: "space-between",
       gap: 8,
     },
+    // Week / day arrows are navigation (level 3): no box of their own, just a
+    // grey chevron with a thumb-sized target.
     weekNavButton: {
       width: size.headerButton,
       height: size.headerButton,
       borderRadius: 12,
-      backgroundColor: c.background,
+      backgroundColor: "transparent",
       alignItems: "center",
       justifyContent: "center",
+    },
+    navChevron: {
+      color: c.textSecondary,
     },
     weekNavButtonDisabled: {
       opacity: 0.35,
@@ -305,7 +323,7 @@ export const createStyles = (c) =>
     },
     weekNavTitle: {
       color: c.textPrimary,
-      fontSize: 17,
+      fontSize: 15,
       fontWeight: "600",
     },
     weekNavSub: {
@@ -673,11 +691,12 @@ export const createStyles = (c) =>
     selectionSummaryValue: {
       color: c.textPrimary,
       fontSize: 17,
-      fontWeight: "400",
+      fontWeight: "600",
+      fontVariant: ["tabular-nums"],
     },
     selectionSummaryLabel: {
       color: c.textMuted,
-      fontSize: 14,
+      fontSize: 13,
       fontWeight: "400",
     },
     selectionSummaryDivider: {
@@ -708,18 +727,21 @@ export const createStyles = (c) =>
       gap: 12,
     },
     shiftTimeText: {
-      color: onDark(c, c.textMuted, "rgba(122, 148, 168, 1)"),
+      color: c.textSecondary,
       fontSize: 15,
       lineHeight: 22,
       fontWeight: "400",
       flex: 1,
     },
+    // The day's hours are level 1 — the number the screen is about, so the
+    // largest and darkest text on it.
     shiftDurationText: {
-      color: onDark(c, c.textSecondary, "rgba(95, 117, 136, 1)"),
-      fontSize: 14,
-      lineHeight: 24,
-      fontWeight: "500",
+      color: c.textPrimary,
+      fontSize: 22,
+      lineHeight: 28,
+      fontWeight: "700",
       textAlign: "right",
+      fontVariant: ["tabular-nums"],
     },
     shiftProjectName: {
       color: onDark(c, c.textMuted, "rgba(122, 148, 168, 1)"),

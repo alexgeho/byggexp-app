@@ -9,10 +9,14 @@ import { createStyles } from "./ProjectFilterSelector.styles";
 
 const getProjectId = (project) => project?._id || project?.id;
 
+// triggerStyle / textStyle let a screen tone the trigger down where the filter
+// is a background setting rather than the thing to look at.
 export function ProjectFilterSelector({
   projects,
   selectedProjectId,
   onSelect,
+  triggerStyle,
+  textStyle,
 }) {
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -26,7 +30,7 @@ export function ProjectFilterSelector({
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        style={styles.trigger}
+        style={[styles.trigger, triggerStyle]}
         activeOpacity={0.85}
         accessibilityRole="button"
         accessibilityLabel={selectedProject?.name || t("projects.all")}
@@ -45,6 +49,7 @@ export function ProjectFilterSelector({
         <Text
           style={[
             styles.triggerText,
+            textStyle,
             !selectedProject && styles.triggerPlaceholder,
           ]}
           numberOfLines={1}

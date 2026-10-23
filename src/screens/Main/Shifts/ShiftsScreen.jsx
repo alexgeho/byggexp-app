@@ -1517,6 +1517,8 @@ export default function ShiftsScreen() {
                   projects={projects}
                   selectedProjectId={filterProjectId}
                   onSelect={setFilterProjectId}
+                  triggerStyle={styles.dropdownButton}
+                  textStyle={styles.dropdownText}
                 />
               </View>
               <View style={styles.filterHalf}>

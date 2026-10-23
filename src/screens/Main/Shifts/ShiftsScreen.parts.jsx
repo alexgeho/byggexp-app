@@ -841,7 +841,7 @@ export function ShiftWeekPicker({
       activeOpacity={0.85}
       accessibilityLabel={label}
     >
-      <Icon name={icon} size={22} color={styles.weekNavIcon?.color} />
+      <Icon name={icon} size={22} color={styles.navChevron?.color} />
     </TouchableOpacity>
   );
 
@@ -862,7 +862,7 @@ export function ShiftWeekPicker({
           <Icon
             name={monthGridOpen ? "chevron-up" : "chevron-down"}
             size={20}
-            color={styles.weekNavIcon?.color}
+            color={styles.navChevron?.color}
           />
         </TouchableOpacity>
         {!isToday ? (
@@ -890,7 +890,7 @@ export function ShiftWeekPicker({
               <Icon
                 name="chevron-left"
                 size={20}
-                color={styles.weekNavIcon?.color}
+                color={styles.navChevron?.color}
               />
             </TouchableOpacity>
             <Text style={styles.monthGridYear}>{gridYear}</Text>
@@ -906,7 +906,7 @@ export function ShiftWeekPicker({
               <Icon
                 name="chevron-right"
                 size={20}
-                color={styles.weekNavIcon?.color}
+                color={styles.navChevron?.color}
               />
             </TouchableOpacity>
           </View>
