@@ -136,6 +136,7 @@ test("with one project the hours are saved to it, no project error", async () =>
     travelMinutes: 0,
     travelKm: 0,
     perDiem: "none",
+    dayNote: "",
   });
 });
 
