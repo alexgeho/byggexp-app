@@ -29,6 +29,7 @@ import {
   getISOWeekNumber,
   monthKeyOf,
   weekDateKeys,
+  weekStartKey,
 } from "../../../utils/shiftsCalendar";
 
 // Presentational sub-components split out of ShiftsScreen to keep that file
@@ -327,6 +328,7 @@ export function ExportSheet({
   hasSelection,
   periodLabel,
   onPickPeriod,
+  exportLabel,
   styles,
   sheetStyles,
   titleFontFamily,
@@ -420,11 +422,13 @@ export function ExportSheet({
               <ActivityIndicator color="#FFFFFF" />
             ) : (
               <Text style={styles.exportMainButtonText}>
-                {t(
-                  hasSelection
-                    ? "shifts.exportSelected"
-                    : "shifts.exportThisMonth",
-                )}
+                {exportLabel
+                  ? t("shifts.exportWhat", { what: exportLabel })
+                  : t(
+                      hasSelection
+                        ? "shifts.exportSelected"
+                        : "shifts.exportThisMonth",
+                    )}
               </Text>
             )}
           </TouchableOpacity>
@@ -795,6 +799,7 @@ export function SelectionSummary({
 }
 
 const CALENDAR_WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const VIEW_MODES = ["week", "month", "period"];
 
 const capitalize = (text) =>
   text ? text.charAt(0).toUpperCase() + text.slice(1) : "";
@@ -824,6 +829,10 @@ export function ShiftWeekPicker({
   onDayPress,
   onFocusDate,
   onPickMonth,
+  viewMode = "week",
+  onChangeViewMode,
+  periodLabel,
+  onPickPeriod,
 }) {
   const [monthGridOpen, setMonthGridOpen] = React.useState(false);
   const [gridYear, setGridYear] = React.useState(() =>
@@ -839,17 +848,35 @@ export function ShiftWeekPicker({
   };
   const prevWeek = step(-7);
   const nextWeek = step(7);
-  const isToday = focusedDate === todayDateKey;
 
   const toggleMonthGrid = () => {
     setGridYear(Number(focusedDate.slice(0, 4)));
     setMonthGridOpen((open) => !open);
   };
 
-  const navButton = (target, icon, label) => (
+  const viewMonthKey = monthKeyOf(focusedDate);
+  const shiftMonth = (delta) => {
+    const [year, month] = viewMonthKey.split("-").map(Number);
+    const date = new Date(year, month - 1 + delta, 1);
+    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+    return key <= maxMonthKey ? key : null;
+  };
+  const prevMonthKey = shiftMonth(-1);
+  const nextMonthKey = shiftMonth(1);
+  // Every week that touches the month, Monday first.
+  const monthWeeks = [];
+  for (
+    let start = weekStartKey(`${viewMonthKey}-01`);
+    monthKeyOf(start) <= viewMonthKey;
+    start = addDaysToKey(start, 7)
+  ) {
+    monthWeeks.push(weekDateKeys(start));
+  }
+
+  const navButton = (target, icon, label, onGo = onFocusDate) => (
     <TouchableOpacity
       style={[styles.weekNavButton, !target && styles.weekNavButtonDisabled]}
-      onPress={() => target && onFocusDate(target)}
+      onPress={() => target && onGo(target)}
       disabled={!target}
       activeOpacity={0.85}
       accessibilityLabel={label}
@@ -858,39 +885,165 @@ export function ShiftWeekPicker({
     </TouchableOpacity>
   );
 
+  const renderDay = (dateKey, columnIndex, compact) => {
+    const inMonth = monthKeyOf(dateKey) === selectedMonth;
+    const disabled = !reachable(dateKey) || (selectMode && !inMonth);
+    const pendingHours = pendingManual[dateKey];
+    const hasPending = hoursSource === "manual" && pendingHours != null;
+    const displayMs = !inMonth
+      ? 0
+      : hasPending
+        ? Math.round(pendingHours * 3600000)
+        : daySourceMs(dayMap.get(dateKey), dateKey);
+    const isOn = selectMode
+      ? selectedDates.includes(dateKey)
+      : dateKey === focusedDate;
+    const isTodayCell = dateKey === todayDateKey;
+    const overtime = inMonth ? dayOvertimeOf?.(dateKey) : null;
+
+    return (
+      <TouchableOpacity
+        key={dateKey}
+        style={[
+          styles.weekDay,
+          compact && styles.weekDayCompact,
+          displayMs > 0 && !isOn && { backgroundColor: `${sourceColor}1A` },
+          isTodayCell && !isOn && styles.weekDayToday,
+          isOn && styles.weekDayOn,
+          (!inMonth || disabled) && !isOn && styles.weekDayOut,
+        ]}
+        onPress={() => onDayPress(dateKey)}
+        disabled={disabled}
+        activeOpacity={0.85}
+      >
+        {hasPending ? <View style={styles.pendingDot} /> : null}
+        {selectMode ? (
+          <View style={[styles.calendarCheck, isOn && styles.calendarCheckOn]}>
+            {isOn ? <Icon name="check" size={10} color="#FFFFFF" /> : null}
+          </View>
+        ) : null}
+        {compact ? null : (
+          <Text style={[styles.weekDayName, isOn && styles.weekDayTextOn]}>
+            {(Array.isArray(weekdayLabels)
+              ? weekdayLabels[columnIndex]
+              : null) || CALENDAR_WEEKDAYS[columnIndex]}
+          </Text>
+        )}
+        <Text
+          style={[
+            styles.weekDayNumber,
+            compact && styles.weekDayNumberCompact,
+            { fontFamily: semiBoldFontFamily },
+            isOn && styles.weekDayTextOn,
+          ]}
+        >
+          {Number(dateKey.slice(8))}
+        </Text>
+        <Text
+          style={[
+            styles.weekDayHours,
+            displayMs > 0 ? { color: sourceColor } : styles.weekDayHoursEmpty,
+            isOn && styles.weekDayTextOn,
+          ]}
+        >
+          {displayMs > 0 ? formatDurationShort(displayMs) : "–"}
+        </Text>
+        {overtime && overtime.overtimeMs > 0 && displayMs > 0 ? (
+          <HoursBar
+            styles={styles}
+            totalMs={displayMs}
+            overtimeMs={overtime.overtimeMs}
+            pending={overtime.pending}
+            onAccent={isOn}
+          />
+        ) : null}
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <View style={styles.weekCard}>
-      <View style={styles.weekMonthRow}>
+      {onChangeViewMode ? (
+        <View style={styles.viewModeToggle}>
+          {VIEW_MODES.map((mode) => {
+            const on = mode === viewMode;
+            return (
+              <TouchableOpacity
+                key={mode}
+                style={[styles.viewModeBtn, on && styles.viewModeBtnOn]}
+                onPress={() => {
+                  setMonthGridOpen(false);
+                  onChangeViewMode(mode);
+                }}
+                activeOpacity={0.85}
+                testID={`shifts-view-${mode}`}
+              >
+                <Text
+                  style={[
+                    styles.viewModeText,
+                    on && styles.viewModeTextOn,
+                    on && { fontFamily: semiBoldFontFamily },
+                  ]}
+                >
+                  {t(`shifts.view.${mode}`)}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      ) : null}
+
+      {viewMode === "period" ? (
         <TouchableOpacity
-          style={styles.weekMonthButton}
-          onPress={toggleMonthGrid}
+          style={styles.periodPickButton}
+          onPress={onPickPeriod}
           activeOpacity={0.85}
-          testID="shifts-month-button"
+          testID="shifts-period-button"
         >
           <Text
-            style={[styles.weekMonthText, { fontFamily: semiBoldFontFamily }]}
+            style={[styles.weekNavTitle, { fontFamily: semiBoldFontFamily }]}
           >
-            {capitalize(formatMonthLabel(monthKeyOf(focusedDate)))}
+            {capitalize(periodLabel)}
           </Text>
           <Icon
-            name={monthGridOpen ? "chevron-up" : "chevron-down"}
+            name="chevron-down"
             size={20}
             color={styles.navChevron?.color}
           />
         </TouchableOpacity>
-        {!isToday ? (
+      ) : viewMode === "month" ? (
+        <View style={styles.weekNavRow}>
+          {navButton(
+            prevMonthKey,
+            "chevron-left",
+            "previous month",
+            onPickMonth,
+          )}
           <TouchableOpacity
-            style={styles.todayChip}
-            onPress={() => {
-              setMonthGridOpen(false);
-              onFocusDate(todayDateKey);
-            }}
+            style={styles.weekNavTitleBox}
+            onPress={toggleMonthGrid}
             activeOpacity={0.85}
+            testID="shifts-month-button"
           >
-            <Text style={styles.todayChipText}>{t("chat.today")}</Text>
+            <View style={styles.monthTitleRow}>
+              <Text
+                style={[
+                  styles.weekNavTitle,
+                  { fontFamily: semiBoldFontFamily },
+                ]}
+              >
+                {capitalize(formatMonthLabel(viewMonthKey))}
+              </Text>
+              <Icon
+                name={monthGridOpen ? "chevron-up" : "chevron-down"}
+                size={18}
+                color={styles.navChevron?.color}
+              />
+            </View>
           </TouchableOpacity>
-        ) : null}
-      </View>
+          {navButton(nextMonthKey, "chevron-right", "next month", onPickMonth)}
+        </View>
+      ) : null}
 
       {monthGridOpen ? (
         <View style={styles.monthGrid}>
@@ -958,98 +1111,46 @@ export function ShiftWeekPicker({
         </View>
       ) : null}
 
-      <View style={styles.weekNavRow}>
-        {navButton(prevWeek, "chevron-left", "previous week")}
-        <View style={styles.weekNavTitleBox}>
-          <Text
-            style={[styles.weekNavTitle, { fontFamily: semiBoldFontFamily }]}
-          >
-            {t("schedule.week", { number: weekNumber })}
-          </Text>
-        </View>
-        {navButton(nextWeek, "chevron-right", "next week")}
-      </View>
-
-      <View style={styles.weekStrip}>
-        {weekKeys.map((dateKey, columnIndex) => {
-          const inMonth = monthKeyOf(dateKey) === selectedMonth;
-          const disabled = !reachable(dateKey) || (selectMode && !inMonth);
-          const pendingHours = pendingManual[dateKey];
-          const hasPending = hoursSource === "manual" && pendingHours != null;
-          const displayMs = !inMonth
-            ? 0
-            : hasPending
-              ? Math.round(pendingHours * 3600000)
-              : daySourceMs(dayMap.get(dateKey), dateKey);
-          const isOn = selectMode
-            ? selectedDates.includes(dateKey)
-            : dateKey === focusedDate;
-          const isTodayCell = dateKey === todayDateKey;
-          const overtime = inMonth ? dayOvertimeOf?.(dateKey) : null;
-
-          return (
-            <TouchableOpacity
-              key={dateKey}
-              style={[
-                styles.weekDay,
-                displayMs > 0 &&
-                  !isOn && { backgroundColor: `${sourceColor}1A` },
-                isTodayCell && !isOn && styles.weekDayToday,
-                isOn && styles.weekDayOn,
-                (!inMonth || disabled) && !isOn && styles.weekDayOut,
-              ]}
-              onPress={() => onDayPress(dateKey)}
-              disabled={disabled}
-              activeOpacity={0.85}
+      {viewMode === "week" ? (
+        <View style={styles.weekNavRow}>
+          {navButton(prevWeek, "chevron-left", "previous week")}
+          <View style={styles.weekNavTitleBox}>
+            <Text
+              style={[styles.weekNavTitle, { fontFamily: semiBoldFontFamily }]}
             >
-              {hasPending ? <View style={styles.pendingDot} /> : null}
-              {selectMode ? (
-                <View
-                  style={[styles.calendarCheck, isOn && styles.calendarCheckOn]}
-                >
-                  {isOn ? (
-                    <Icon name="check" size={10} color="#FFFFFF" />
-                  ) : null}
-                </View>
-              ) : null}
-              <Text style={[styles.weekDayName, isOn && styles.weekDayTextOn]}>
-                {(Array.isArray(weekdayLabels)
-                  ? weekdayLabels[columnIndex]
-                  : null) || CALENDAR_WEEKDAYS[columnIndex]}
-              </Text>
-              <Text
-                style={[
-                  styles.weekDayNumber,
-                  { fontFamily: semiBoldFontFamily },
-                  isOn && styles.weekDayTextOn,
-                ]}
-              >
-                {Number(dateKey.slice(8))}
-              </Text>
-              <Text
-                style={[
-                  styles.weekDayHours,
-                  displayMs > 0
-                    ? { color: sourceColor }
-                    : styles.weekDayHoursEmpty,
-                  isOn && styles.weekDayTextOn,
-                ]}
-              >
-                {displayMs > 0 ? formatDurationShort(displayMs) : "–"}
-              </Text>
-              {overtime && overtime.overtimeMs > 0 && displayMs > 0 ? (
-                <HoursBar
-                  styles={styles}
-                  totalMs={displayMs}
-                  overtimeMs={overtime.overtimeMs}
-                  pending={overtime.pending}
-                  onAccent={isOn}
-                />
-              ) : null}
-            </TouchableOpacity>
-          );
-        })}
-      </View>
+              {t("schedule.week", { number: weekNumber })}
+            </Text>
+          </View>
+          {navButton(nextWeek, "chevron-right", "next week")}
+        </View>
+      ) : null}
+
+      {viewMode === "month" ? (
+        <View style={styles.weekStrip}>
+          {CALENDAR_WEEKDAYS.map((fallback, columnIndex) => (
+            <Text key={fallback} style={styles.monthWeekdayHeader}>
+              {(Array.isArray(weekdayLabels)
+                ? weekdayLabels[columnIndex]
+                : null) || fallback}
+            </Text>
+          ))}
+        </View>
+      ) : null}
+      {viewMode === "period"
+        ? null
+        : (viewMode === "month" ? monthWeeks : [weekKeys]).map((keys) => (
+            <View
+              key={keys[0]}
+              style={[
+                styles.weekStrip,
+                viewMode === "month" && styles.monthStrip,
+              ]}
+            >
+              {keys.map((dateKey, columnIndex) =>
+                renderDay(dateKey, columnIndex, viewMode === "month"),
+              )}
+            </View>
+          ))}
     </View>
   );
 }
@@ -1212,6 +1313,91 @@ export function ShiftOvertime({
             )}
           </TouchableOpacity>
         </View>
+      ) : null}
+    </View>
+  );
+}
+
+// The chosen period at a glance: all hours, then each payslip line, then the
+// hours month by month.
+export function PeriodSummary({ summary, styles, t, semiBoldFontFamily }) {
+  if (!summary) {
+    return (
+      <View style={styles.dayEntryCard}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+  const { totals, rows } = summary;
+  const normalMs = Math.max(0, totals.ms - totals.overtimeMs - totals.obMs);
+  const lines = [
+    [t("dayReport.hourType.normal"), formatDurationCompact(normalMs), null],
+    totals.overtimeMs > 0 && [
+      t("dayReport.hourType.overtime"),
+      formatDurationCompact(totals.overtimeMs),
+      styles.overtimeValueOrange,
+    ],
+    totals.obMs > 0 && [
+      t("shifts.ob"),
+      formatDurationCompact(totals.obMs),
+      styles.dayEntryStepValueOb,
+    ],
+    totals.travelH > 0 && [
+      t("shifts.travelTime"),
+      formatDurationCompact(Math.round(totals.travelH * 3600000)),
+      null,
+    ],
+    totals.km > 0 && [
+      `${t("shifts.car")} (km)`,
+      String(Math.round(totals.km)),
+      null,
+    ],
+    totals.perDiemHalf + totals.perDiemFull > 0 && [
+      t("dayReport.perDiem"),
+      [
+        totals.perDiemFull
+          ? `${totals.perDiemFull} × ${t("dayReport.perDiemOption.full")}`
+          : null,
+        totals.perDiemHalf
+          ? `${totals.perDiemHalf} × ${t("dayReport.perDiemOption.half")}`
+          : null,
+      ]
+        .filter(Boolean)
+        .join(" · "),
+      null,
+    ],
+  ].filter(Boolean);
+
+  return (
+    <View style={styles.dayEntryCard}>
+      <View style={styles.dayEntryValueRow}>
+        <Text style={styles.dayEntryLabel}>{t("shifts.totalHours")}</Text>
+        <Text
+          style={[styles.periodTotalValue, { fontFamily: semiBoldFontFamily }]}
+        >
+          {formatDurationCompact(totals.ms)}
+        </Text>
+      </View>
+      {lines.map(([label, value, valueStyle]) => (
+        <View key={label} style={styles.overtimeRow}>
+          <Text style={styles.overtimeLabel}>{label}</Text>
+          <Text style={[styles.overtimeValue, valueStyle]}>{value}</Text>
+        </View>
+      ))}
+      {rows.length > 1 ? (
+        <>
+          <Text style={styles.dayEntrySection}>{t("shifts.view.month")}</Text>
+          {rows.map((row) => (
+            <View key={row.month} style={styles.overtimeRow}>
+              <Text style={styles.overtimeLabel}>
+                {capitalize(formatMonthLabel(row.month))}
+              </Text>
+              <Text style={styles.overtimeValue}>
+                {formatDurationCompact(row.ms)}
+              </Text>
+            </View>
+          ))}
+        </>
       ) : null}
     </View>
   );

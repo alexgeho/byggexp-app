@@ -521,7 +521,14 @@
     "car": "Auto",
     "absence": "Prombūtne",
     "absencePending": "Gaida",
-    "absenceError": "Neizdevās nosūtīt prombūtni"
+    "absenceError": "Neizdevās nosūtīt prombūtni",
+    "view": {
+      "week": "Nedēļa",
+      "month": "Mēnesis",
+      "period": "Periods"
+    },
+    "exportWhat": "Eksportēt {{what}}",
+    "totalHours": "Kopā"
   },
   "shiftHistory": {
     "title": "Dienas atskaite",

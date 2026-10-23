@@ -520,7 +520,14 @@
     "car": "Auto",
     "absence": "Poissaolo",
     "absencePending": "Odottaa",
-    "absenceError": "Poissaoloa ei voitu lähettää"
+    "absenceError": "Poissaoloa ei voitu lähettää",
+    "view": {
+      "week": "Viikko",
+      "month": "Kuukausi",
+      "period": "Jakso"
+    },
+    "exportWhat": "Vie {{what}}",
+    "totalHours": "Yhteensä"
   },
   "shiftHistory": {
     "title": "Päiväraportti",

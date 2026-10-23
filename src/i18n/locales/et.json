@@ -520,7 +520,14 @@
     "car": "Auto",
     "absence": "Puudumine",
     "absencePending": "Ootel",
-    "absenceError": "Puudumist ei õnnestunud saata"
+    "absenceError": "Puudumist ei õnnestunud saata",
+    "view": {
+      "week": "Nädal",
+      "month": "Kuu",
+      "period": "Periood"
+    },
+    "exportWhat": "Ekspordi {{what}}",
+    "totalHours": "Kokku"
   },
   "shiftHistory": {
     "title": "Päevaraport",

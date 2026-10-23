@@ -524,7 +524,14 @@
     "car": "Automobilis",
     "absence": "Nebuvimas",
     "absencePending": "Laukiama",
-    "absenceError": "Nepavyko išsiųsti nebuvimo"
+    "absenceError": "Nepavyko išsiųsti nebuvimo",
+    "view": {
+      "week": "Savaitė",
+      "month": "Mėnuo",
+      "period": "Laikotarpis"
+    },
+    "exportWhat": "Eksportuoti {{what}}",
+    "totalHours": "Iš viso"
   },
   "shiftHistory": {
     "title": "Dienos ataskaita",

@@ -523,7 +523,14 @@
     "car": "Auto",
     "absence": "Odsustvo",
     "absencePending": "Čeka",
-    "absenceError": "Nije moguće poslati odsustvo"
+    "absenceError": "Nije moguće poslati odsustvo",
+    "view": {
+      "week": "Sedmica",
+      "month": "Mjesec",
+      "period": "Period"
+    },
+    "exportWhat": "Izvezi {{what}}",
+    "totalHours": "Ukupno"
   },
   "shiftHistory": {
     "title": "Dnevni izvještaj",

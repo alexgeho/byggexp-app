@@ -524,7 +524,14 @@
     "car": "Samochód",
     "absence": "Nieobecność",
     "absencePending": "Oczekuje",
-    "absenceError": "Nie udało się wysłać nieobecności"
+    "absenceError": "Nie udało się wysłać nieobecności",
+    "view": {
+      "week": "Tydzień",
+      "month": "Miesiąc",
+      "period": "Okres"
+    },
+    "exportWhat": "Eksportuj {{what}}",
+    "totalHours": "Razem"
   },
   "shiftHistory": {
     "title": "Raport dzienny",

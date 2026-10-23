@@ -346,6 +346,73 @@ export const createStyles = (c) =>
       borderColor: "transparent",
       backgroundColor: c.background,
     },
+    weekDayCompact: {
+      minHeight: 52,
+      paddingVertical: 4,
+      gap: 0,
+    },
+    weekDayNumberCompact: {
+      fontSize: 17,
+    },
+    monthWeekdayHeader: {
+      flex: 1,
+      textAlign: "center",
+      color: c.textSecondary,
+      fontSize: 12,
+    },
+    monthStrip: {
+      marginTop: -6,
+    },
+    /* Vecka | Månad | Period — what span the card shows */
+    viewModeToggle: {
+      flexDirection: "row",
+      alignSelf: "center",
+      backgroundColor: c.background,
+      borderRadius: radius.control,
+      padding: 3,
+      gap: 3,
+    },
+    viewModeBtn: {
+      height: 34,
+      paddingHorizontal: 18,
+      borderRadius: radius.control,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    viewModeBtnOn: {
+      backgroundColor: onDark(c, c.surfaceMuted, "#FFFFFF"),
+      shadowColor: "#000",
+      shadowOpacity: 0.08,
+      shadowRadius: 4,
+      shadowOffset: { width: 0, height: 1 },
+      elevation: 1,
+    },
+    viewModeText: {
+      color: c.textSecondary,
+      fontSize: 14,
+      fontWeight: "500",
+    },
+    viewModeTextOn: {
+      color: c.textPrimary,
+      fontWeight: "600",
+    },
+    periodPickButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 6,
+      minHeight: 44,
+    },
+    periodTotalValue: {
+      color: c.textPrimary,
+      fontSize: 22,
+      fontWeight: "700",
+    },
+    monthTitleRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+    },
     weekDayToday: {
       borderColor: "#0785F4",
     },

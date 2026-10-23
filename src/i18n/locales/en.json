@@ -520,7 +520,14 @@
     "car": "Car",
     "absence": "Absence",
     "absencePending": "Pending",
-    "absenceError": "Could not send the absence"
+    "absenceError": "Could not send the absence",
+    "view": {
+      "week": "Week",
+      "month": "Month",
+      "period": "Period"
+    },
+    "exportWhat": "Export {{what}}",
+    "totalHours": "Total"
   },
   "shiftHistory": {
     "title": "Daily report",

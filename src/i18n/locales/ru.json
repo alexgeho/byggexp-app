@@ -524,7 +524,14 @@
     "car": "Авто",
     "absence": "Отсутствие",
     "absencePending": "Ожидает",
-    "absenceError": "Не удалось отправить отсутствие"
+    "absenceError": "Не удалось отправить отсутствие",
+    "view": {
+      "week": "Неделя",
+      "month": "Месяц",
+      "period": "Период"
+    },
+    "exportWhat": "Экспорт: {{what}}",
+    "totalHours": "Итого"
   },
   "shiftHistory": {
     "title": "Дневной отчёт",

@@ -520,7 +520,14 @@
     "car": "Bil",
     "absence": "Fravær",
     "absencePending": "Venter",
-    "absenceError": "Kunne ikke sende fraværet"
+    "absenceError": "Kunne ikke sende fraværet",
+    "view": {
+      "week": "Uke",
+      "month": "Måned",
+      "period": "Periode"
+    },
+    "exportWhat": "Eksporter {{what}}",
+    "totalHours": "Totalt"
   },
   "shiftHistory": {
     "title": "Dagsrapport",

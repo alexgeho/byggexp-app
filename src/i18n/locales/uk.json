@@ -524,7 +524,14 @@
     "car": "Авто",
     "absence": "Відсутність",
     "absencePending": "Очікує",
-    "absenceError": "Не вдалося надіслати відсутність"
+    "absenceError": "Не вдалося надіслати відсутність",
+    "view": {
+      "week": "Тиждень",
+      "month": "Місяць",
+      "period": "Період"
+    },
+    "exportWhat": "Експорт: {{what}}",
+    "totalHours": "Разом"
   },
   "shiftHistory": {
     "title": "Денний звіт",

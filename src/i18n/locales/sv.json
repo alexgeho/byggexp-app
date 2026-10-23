@@ -520,7 +520,14 @@
     "car": "Bil",
     "absence": "Frånvaro",
     "absencePending": "Väntar",
-    "absenceError": "Kunde inte skicka frånvaron"
+    "absenceError": "Kunde inte skicka frånvaron",
+    "view": {
+      "week": "Vecka",
+      "month": "Månad",
+      "period": "Period"
+    },
+    "exportWhat": "Exportera {{what}}",
+    "totalHours": "Totalt"
   },
   "shiftHistory": {
     "title": "Dagsrapport",
