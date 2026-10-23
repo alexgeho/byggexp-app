@@ -530,7 +530,9 @@
     "totalHours": "Kokku",
     "workHours": "Töötunnid",
     "pickDays": "Vali päevad",
-    "dayTotal": "Kokku {{total}} · planeeritud {{plan}}"
+    "dayTotal": "Kokku {{total}} · planeeritud {{plan}}",
+    "comment": "Kommentaar",
+    "receipts": "Tšekid"
   },
   "shiftHistory": {
     "title": "Päevaraport",

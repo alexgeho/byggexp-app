@@ -808,6 +808,7 @@ export default function ShiftsScreen() {
                   travelMinutes: Math.round((Number(extras.travel) || 0) * 60),
                   travelKm: Math.round(Number(extras.km) || 0),
                   perDiem: extras.perDiem || "none",
+                  dayNote: extras.note || "",
                 }
               : {}),
           });
@@ -967,6 +968,8 @@ export default function ShiftsScreen() {
             delta,
             24 - inlineSplit.work - inlineSplit.overtime,
           );
+        } else if (key === "note") {
+          next.note = delta;
         } else if (key === "travel") {
           next.travel = stepWithin(openExtras.travel, delta, 24);
         } else if (key === "km") {
@@ -1823,6 +1826,15 @@ export default function ShiftsScreen() {
                     absence={leaveOn(focusedDate)}
                     onReportAbsence={(type) => reportAbsence(focusedDate, type)}
                     savingAbsence={savingLeave}
+                    dayShift={detailShifts[0] || null}
+                    onOpenDayReport={(focus) =>
+                      detailShifts[0]
+                        ? navigation.navigate("DayReport", {
+                            shift: detailShifts[0],
+                            focus,
+                          })
+                        : saveAllManual()
+                    }
                     onSave={saveAllManual}
                     saving={savingBatch}
                     pendingHours={pendingManual[focusedDate]}

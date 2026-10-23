@@ -530,7 +530,9 @@
     "totalHours": "Total",
     "workHours": "Work hours",
     "pickDays": "Pick days",
-    "dayTotal": "Total {{total}} · planned {{plan}}"
+    "dayTotal": "Total {{total}} · planned {{plan}}",
+    "comment": "Comment",
+    "receipts": "Receipts"
   },
   "shiftHistory": {
     "title": "Daily report",

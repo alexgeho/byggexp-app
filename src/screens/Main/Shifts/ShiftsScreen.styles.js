@@ -730,6 +730,21 @@ export const createStyles = (c) =>
       fontSize: 15,
       fontWeight: "500",
     },
+    dayEntryNote: {
+      minHeight: 72,
+      padding: 12,
+      borderRadius: 12,
+      borderWidth: size.border,
+      borderColor: c.border,
+      color: c.textPrimary,
+      fontSize: 15,
+      textAlignVertical: "top",
+    },
+    dayEntryCount: {
+      color: c.textPrimary,
+      fontSize: 15,
+      fontWeight: "600",
+    },
     dayEntryAbsenceValue: {
       color: onDark(c, "#A78BFA", "#7C5CD6"),
       fontSize: 15,
@@ -739,6 +754,7 @@ export const createStyles = (c) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
+      minHeight: 44,
     },
     dayEntryValue: {
       color: onDark(c, c.warning, "#B8760A"),

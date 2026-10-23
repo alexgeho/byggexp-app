@@ -46,12 +46,16 @@ export const labelIncludesHouseNumber = (label = "", houseNumber = "") => {
     return false;
   }
 
-  return new RegExp(`\\b${houseNumber.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i").test(
-    label,
-  );
+  return new RegExp(
+    `\\b${houseNumber.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
+    "i",
+  ).test(label);
 };
 
-export const enrichAddressLabelWithQueryHouseNumber = (label = "", query = "") => {
+export const enrichAddressLabelWithQueryHouseNumber = (
+  label = "",
+  query = "",
+) => {
   const normalizedLabel = label.trim();
   const houseNumber = extractHouseNumberFromQuery(query);
 
@@ -88,8 +92,7 @@ export const normalizeLocationSuggestions = (matches = []) => {
   const seenLabels = new Set();
 
   return matches.reduce((suggestions, match, index) => {
-    const label =
-      match?.label?.trim?.() || match?.display_name?.trim();
+    const label = match?.label?.trim?.() || match?.display_name?.trim();
     const latitude = Number(match?.latitude ?? match?.lat);
     const longitude = Number(match?.longitude ?? match?.lon);
 

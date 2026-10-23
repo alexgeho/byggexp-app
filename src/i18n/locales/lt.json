@@ -534,7 +534,9 @@
     "totalHours": "Iš viso",
     "workHours": "Darbo valandos",
     "pickDays": "Pasirinkti dienas",
-    "dayTotal": "Iš viso {{total}} · suplanuota {{plan}}"
+    "dayTotal": "Iš viso {{total}} · suplanuota {{plan}}",
+    "comment": "Komentaras",
+    "receipts": "Kvitai"
   },
   "shiftHistory": {
     "title": "Dienos ataskaita",

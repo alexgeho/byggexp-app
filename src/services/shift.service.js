@@ -219,6 +219,7 @@ export const shiftService = {
     travelMinutes,
     travelKm,
     perDiem,
+    dayNote,
   }) => {
     const { data } = await api.post("/shifts/manual", {
       workerId,
@@ -230,6 +231,7 @@ export const shiftService = {
       travelMinutes,
       travelKm,
       perDiem,
+      dayNote,
     });
     return data;
   },

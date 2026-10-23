@@ -63,7 +63,7 @@ describe("dayExtras", () => {
           { obMs: 1800000, travelMinutes: 15, travelKm: 8, perDiem: "none" },
         ],
       }),
-    ).toEqual({ ob: 1.5, travel: 0.75, km: 20, perDiem: "half" });
+    ).toEqual({ ob: 1.5, travel: 0.75, km: 20, perDiem: "half", note: "" });
   });
 
   it("is empty for a day without shifts", () => {
@@ -72,6 +72,7 @@ describe("dayExtras", () => {
       travel: 0,
       km: 0,
       perDiem: "none",
+      note: "",
     });
   });
 });

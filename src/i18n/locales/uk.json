@@ -534,7 +534,9 @@
     "totalHours": "Разом",
     "workHours": "Робочі години",
     "pickDays": "Вибрати дні",
-    "dayTotal": "Разом {{total}} · заплановано {{plan}}"
+    "dayTotal": "Разом {{total}} · заплановано {{plan}}",
+    "comment": "Коментар",
+    "receipts": "Чеки"
   },
   "shiftHistory": {
     "title": "Денний звіт",

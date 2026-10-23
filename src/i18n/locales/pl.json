@@ -534,7 +534,9 @@
     "totalHours": "Razem",
     "workHours": "Godziny pracy",
     "pickDays": "Wybierz dni",
-    "dayTotal": "Razem {{total}} · zaplanowano {{plan}}"
+    "dayTotal": "Razem {{total}} · zaplanowano {{plan}}",
+    "comment": "Komentarz",
+    "receipts": "Paragony"
   },
   "shiftHistory": {
     "title": "Raport dzienny",

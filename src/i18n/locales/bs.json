@@ -533,7 +533,9 @@
     "totalHours": "Ukupno",
     "workHours": "Radni sati",
     "pickDays": "Odaberi dane",
-    "dayTotal": "Ukupno {{total}} · planirano {{plan}}"
+    "dayTotal": "Ukupno {{total}} · planirano {{plan}}",
+    "comment": "Komentar",
+    "receipts": "Računi"
   },
   "shiftHistory": {
     "title": "Dnevni izvještaj",

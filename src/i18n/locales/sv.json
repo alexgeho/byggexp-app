@@ -530,7 +530,9 @@
     "totalHours": "Totalt",
     "workHours": "Arbetstimmar",
     "pickDays": "Välj dagar",
-    "dayTotal": "Totalt {{total}} · planerat {{plan}}"
+    "dayTotal": "Totalt {{total}} · planerat {{plan}}",
+    "comment": "Kommentar",
+    "receipts": "Kvitton"
   },
   "shiftHistory": {
     "title": "Dagsrapport",

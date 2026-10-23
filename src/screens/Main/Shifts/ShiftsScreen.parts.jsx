@@ -1570,7 +1570,10 @@ export function DayHoursEntry({
   absence,
   onReportAbsence,
   savingAbsence,
+  dayShift,
+  onOpenDayReport,
 }) {
+  const [noteOpen, setNoteOpen] = React.useState(false);
   const hoursInputRef = React.useRef(null);
   const absenceRow = onReportAbsence ? (
     <DayAbsenceRow
@@ -1765,6 +1768,59 @@ export function DayHoursEntry({
           </>
         ) : null}
         {absenceRow}
+        {extras && onChangeExtra ? (
+          noteOpen || extras.note ? (
+            <View style={styles.dayEntryChoice}>
+              <Text style={styles.dayEntryLabel}>{t("shifts.comment")}</Text>
+              <TextInput
+                style={styles.dayEntryNote}
+                defaultValue={extras.note}
+                onChangeText={(text) => onChangeExtra("note", text)}
+                multiline
+                autoFocus={noteOpen && !extras.note}
+                placeholder={t("dayReport.notePlaceholder")}
+                placeholderTextColor="#9BB0C1"
+              />
+            </View>
+          ) : (
+            <TouchableOpacity
+              style={styles.dayEntryValueRow}
+              onPress={() => setNoteOpen(true)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.dayEntryLabel}>{t("shifts.comment")}</Text>
+              <Text style={styles.dayEntryLink}>
+                {`＋ ${t("dayReport.add")}`}
+              </Text>
+            </TouchableOpacity>
+          )
+        ) : null}
+        {onOpenDayReport
+          ? [
+              [
+                "photos",
+                t("shifts.photos"),
+                Array.isArray(dayShift?.photos) && dayShift.photos.length
+                  ? String(dayShift.photos.length)
+                  : null,
+              ],
+              ["expenses", t("shifts.receipts"), null],
+            ].map(([focus, label, count]) => (
+              <TouchableOpacity
+                key={focus}
+                style={styles.dayEntryValueRow}
+                onPress={() => onOpenDayReport(focus)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.dayEntryLabel}>{label}</Text>
+                <Text
+                  style={count ? styles.dayEntryCount : styles.dayEntryLink}
+                >
+                  {count || `＋ ${t("dayReport.add")}`}
+                </Text>
+              </TouchableOpacity>
+            ))
+          : null}
       </View>
     );
   }

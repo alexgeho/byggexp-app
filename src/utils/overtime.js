@@ -55,7 +55,9 @@ export const dayExtras = (day) => {
   let travelMinutes = 0;
   let travelKm = 0;
   let perDiem = "none";
+  let note = "";
   (day?.shifts || []).forEach((shift) => {
+    if (!note && shift.dayNote) note = shift.dayNote;
     obMs += Number(shift.obMs) || 0;
     travelMinutes += Number(shift.travelMinutes) || 0;
     travelKm += Number(shift.travelKm) || 0;
@@ -68,6 +70,7 @@ export const dayExtras = (day) => {
     travel: travelMinutes / 60,
     km: travelKm,
     perDiem,
+    note,
   };
 };
 
@@ -75,7 +78,8 @@ export const sameExtras = (a, b) =>
   Math.round((a?.ob || 0) * 60) === Math.round((b?.ob || 0) * 60) &&
   Math.round((a?.travel || 0) * 60) === Math.round((b?.travel || 0) * 60) &&
   Math.round(a?.km || 0) === Math.round(b?.km || 0) &&
-  (a?.perDiem || "none") === (b?.perDiem || "none");
+  (a?.perDiem || "none") === (b?.perDiem || "none") &&
+  (a?.note || "").trim() === (b?.note || "").trim();
 
 // One − / + step, kept between `min` and `max`.
 export const stepWithin = (value, delta, max, min = 0) =>

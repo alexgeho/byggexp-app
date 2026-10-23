@@ -530,7 +530,9 @@
     "totalHours": "Yhteensä",
     "workHours": "Työtunnit",
     "pickDays": "Valitse päivät",
-    "dayTotal": "Yhteensä {{total}} · suunniteltu {{plan}}"
+    "dayTotal": "Yhteensä {{total}} · suunniteltu {{plan}}",
+    "comment": "Kommentti",
+    "receipts": "Kuitit"
   },
   "shiftHistory": {
     "title": "Päiväraportti",

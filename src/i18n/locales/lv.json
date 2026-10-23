@@ -531,7 +531,9 @@
     "totalHours": "Kopā",
     "workHours": "Darba stundas",
     "pickDays": "Izvēlēties dienas",
-    "dayTotal": "Kopā {{total}} · plānots {{plan}}"
+    "dayTotal": "Kopā {{total}} · plānots {{plan}}",
+    "comment": "Komentārs",
+    "receipts": "Čeki"
   },
   "shiftHistory": {
     "title": "Dienas atskaite",
