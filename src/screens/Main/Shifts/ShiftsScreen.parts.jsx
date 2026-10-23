@@ -17,13 +17,11 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import Icon from "react-native-vector-icons/Feather";
 
 import {
-  formatDayTitle,
   formatDurationCompact,
   formatDurationShort,
   formatExportPickerDate,
   formatMonthLabel,
   formatMonthShort,
-  formatWeekRange,
   parseDateKey,
 } from "../../../utils/shifts";
 import {
@@ -327,6 +325,8 @@ export function ExportSheet({
   exporting,
   onExport,
   hasSelection,
+  periodLabel,
+  onPickPeriod,
   styles,
   sheetStyles,
   titleFontFamily,
@@ -350,6 +350,21 @@ export function ExportSheet({
             >
               {t("shifts.exportTitle")}
             </Text>
+
+            {onPickPeriod ? (
+              <TouchableOpacity
+                style={styles.dropdownButton}
+                onPress={onPickPeriod}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.dropdownText}>{periodLabel}</Text>
+                <Icon
+                  name="chevron-down"
+                  size={18}
+                  color={styles.navChevron?.color}
+                />
+              </TouchableOpacity>
+            ) : null}
 
             <View style={styles.exportSheetCard}>
               <View style={styles.exportButtonsContainer}>
@@ -824,8 +839,6 @@ export function ShiftWeekPicker({
   };
   const prevWeek = step(-7);
   const nextWeek = step(7);
-  const prevDay = step(-1);
-  const nextDay = step(1);
   const isToday = focusedDate === todayDateKey;
 
   const toggleMonthGrid = () => {
@@ -953,9 +966,6 @@ export function ShiftWeekPicker({
           >
             {t("schedule.week", { number: weekNumber })}
           </Text>
-          <Text style={styles.weekNavSub}>
-            {formatWeekRange(weekKeys[0], weekKeys[6])}
-          </Text>
         </View>
         {navButton(nextWeek, "chevron-right", "next week")}
       </View>
@@ -1040,26 +1050,6 @@ export function ShiftWeekPicker({
           );
         })}
       </View>
-
-      {!selectMode ? (
-        <View style={[styles.weekNavRow, styles.dayBar]}>
-          {navButton(prevDay, "chevron-left", "previous day")}
-          <View style={styles.weekNavTitleBox}>
-            <Text
-              style={[styles.dayBarTitle, { fontFamily: semiBoldFontFamily }]}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.8}
-            >
-              {formatDayTitle(focusedDate)}
-            </Text>
-            {isToday ? (
-              <Text style={styles.weekNavSub}>{t("chat.today")}</Text>
-            ) : null}
-          </View>
-          {navButton(nextDay, "chevron-right", "next day")}
-        </View>
-      ) : null}
     </View>
   );
 }
@@ -1308,6 +1298,7 @@ const ABSENCE_TYPES = ["sick", "vab", "vacation", "parental", "leave"];
 // The day's absence: what was reported (and whether the manager agreed), or
 // the types to report one with.
 function DayAbsenceRow({ styles, t, absence, onReport, saving }) {
+  const [open, setOpen] = React.useState(false);
   if (absence) {
     return (
       <View style={styles.dayEntryValueRow}>
@@ -1320,6 +1311,19 @@ function DayAbsenceRow({ styles, t, absence, onReport, saving }) {
           }`}
         </Text>
       </View>
+    );
+  }
+  // Folded to one line until asked for, so it doesn't compete with the hours.
+  if (!open) {
+    return (
+      <TouchableOpacity
+        style={styles.dayEntryValueRow}
+        onPress={() => setOpen(true)}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.dayEntryLabel}>{t("shifts.absence")}</Text>
+        <Text style={styles.dayEntryLink}>{`＋ ${t("dayReport.add")}`}</Text>
+      </TouchableOpacity>
     );
   }
   return (

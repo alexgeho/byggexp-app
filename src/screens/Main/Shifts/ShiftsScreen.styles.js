@@ -226,14 +226,14 @@ export const createStyles = (c) =>
       flexDirection: "row",
       alignItems: "center",
       gap: 6,
-      minHeight: size.headerButton,
+      minHeight: 28,
       paddingHorizontal: 4,
     },
     // The month anchors the screen: darkest and heaviest of the navigation.
     weekMonthText: {
-      color: c.textPrimary,
-      fontSize: 19,
-      fontWeight: "700",
+      color: c.textSecondary,
+      fontSize: 15,
+      fontWeight: "600",
     },
     todayChip: {
       height: 36,
@@ -323,8 +323,8 @@ export const createStyles = (c) =>
     },
     weekNavTitle: {
       color: c.textPrimary,
-      fontSize: 15,
-      fontWeight: "600",
+      fontSize: 17,
+      fontWeight: "700",
     },
     weekNavSub: {
       color: c.textSecondary,
@@ -617,6 +617,11 @@ export const createStyles = (c) =>
     dayEntryChipTextActive: {
       color: "#FFFFFF",
       fontWeight: "600",
+    },
+    dayEntryLink: {
+      color: onDark(c, c.textPrimary, "#0177DE"),
+      fontSize: 15,
+      fontWeight: "500",
     },
     dayEntryAbsenceValue: {
       color: onDark(c, "#A78BFA", "#7C5CD6"),

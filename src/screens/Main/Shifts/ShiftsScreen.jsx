@@ -142,6 +142,8 @@ export default function ShiftsScreen() {
   const weekdayLabels = t("shifts.weekdays", { returnObjects: true });
   const [exportSheetOpen, setExportSheetOpen] = useState(false);
   const [periodSheetOpen, setPeriodSheetOpen] = useState(false);
+  // Set when the period sheet was opened from Export, to return there.
+  const reopenExportRef = useRef(false);
   const [selectedExportType, setSelectedExportType] = useState("pdf");
   const [exportPeriodTab, setExportPeriodTab] = useState("Month");
   const [exportFromMonth, setExportFromMonth] = useState("");
@@ -1160,6 +1162,10 @@ export default function ShiftsScreen() {
   const closePeriodSheet = useCallback(() => {
     setDatePickerTarget(null);
     setPeriodSheetOpen(false);
+    if (reopenExportRef.current) {
+      reopenExportRef.current = false;
+      setTimeout(() => setExportSheetOpen(true), 350);
+    }
   }, []);
 
   const openPeriodSheet = useCallback(() => {
@@ -1616,27 +1622,6 @@ export default function ShiftsScreen() {
             t={t}
           />
 
-          <View style={styles.exportSelector}>
-            <TouchableOpacity
-              style={styles.dropdownButton}
-              onPress={openPeriodSheet}
-            >
-              <Text
-                style={[
-                  styles.dropdownText,
-                  !exportPeriodApplied && styles.dropdownPlaceholderText,
-                  { fontFamily: theme.text.fontFamily.medium },
-                ]}
-              >
-                {exportPeriodLabel}
-              </Text>
-              <Image
-                style={styles.dropdownIcon}
-                source={require("../../../assets/Arrow-down.png")}
-              />
-            </TouchableOpacity>
-          </View>
-
           {isAdmin ? (
             <View style={styles.filtersRow}>
               <View style={styles.filterHalf}>
@@ -1803,7 +1788,10 @@ export default function ShiftsScreen() {
                       />
 
                       <View style={styles.shiftExpandedContent}>
+                        {/* Saved manual hours already head the card; the row
+                            is only the way to add them. */}
                         {shift.status === "completed" &&
+                        !shift.manualDurationMs &&
                         String(shift.workerId) === String(currentUserId) ? (
                           <TouchableOpacity
                             style={styles.shiftDetailRow}
@@ -1844,28 +1832,33 @@ export default function ShiftsScreen() {
 
                         {/* When the declared hours replace the clocked ones,
                             show what the clock caught so the difference is
-                            visible rather than silently overwritten. */}
-                        {/* Always on the card. A row that appears and
-                            disappears by its own rules is harder to trust than
-                            a number that is simply always there. */}
-                        <View style={styles.shiftDetailRow}>
-                          <Text
-                            style={[
-                              styles.shiftDetailLabel,
-                              { fontFamily: theme.text.fontFamily["regular"] },
-                            ]}
-                          >
-                            {t("shifts.clocked")}
-                          </Text>
-                          <Text
-                            style={[
-                              styles.shiftDetailValue,
-                              { fontFamily: theme.text.fontFamily["regular"] },
-                            ]}
-                          >
-                            {formatDuration(shift.durationMs)}
-                          </Text>
-                        </View>
+                            visible rather than silently overwritten. A day
+                            the clock never ran has nothing to compare. */}
+                        {Number(shift.durationMs) > 0 &&
+                        shift.manualDurationMs ? (
+                          <View style={styles.shiftDetailRow}>
+                            <Text
+                              style={[
+                                styles.shiftDetailLabel,
+                                {
+                                  fontFamily: theme.text.fontFamily["regular"],
+                                },
+                              ]}
+                            >
+                              {t("shifts.clocked")}
+                            </Text>
+                            <Text
+                              style={[
+                                styles.shiftDetailValue,
+                                {
+                                  fontFamily: theme.text.fontFamily["regular"],
+                                },
+                              ]}
+                            >
+                              {formatDuration(shift.durationMs)}
+                            </Text>
+                          </View>
+                        ) : null}
 
                         {/* Attest — the manager's confirmation of the day. */}
                         {isAdmin && shift.status === "completed" ? (
@@ -2114,6 +2107,14 @@ export default function ShiftsScreen() {
         exporting={exporting}
         onExport={handleExport}
         hasSelection={selectedDates.length > 0 || exportPeriodApplied}
+        periodLabel={exportPeriodLabel}
+        onPickPeriod={() => {
+          // One sheet at a time on iOS: the period sheet opens in place of
+          // Export and hands back to it once the period is applied.
+          reopenExportRef.current = true;
+          setExportSheetOpen(false);
+          setTimeout(openPeriodSheet, 350);
+        }}
         styles={styles}
         sheetStyles={sheetStyles}
         titleFontFamily={theme.text.fontFamily["semiBold"]}
@@ -2122,7 +2123,7 @@ export default function ShiftsScreen() {
 
       <PeriodSheet
         visible={periodSheetOpen}
-        onClose={() => setPeriodSheetOpen(false)}
+        onClose={closePeriodSheet}
         exportPeriodTab={exportPeriodTab}
         setExportPeriodTab={setExportPeriodTab}
         exportFromMonth={exportFromMonth}
