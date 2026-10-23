@@ -1464,8 +1464,8 @@ function DayStepRow({
 }
 
 // A typed pay line like Arbetstimmar: ✎ focuses the number, typed in place
-// (Restid, Bil). On the right ↺ copies the last day's value; saving is the
-// one ✓ above.
+// (Restid, Bil). On the right ↺ copies the last trip's value (always there
+// once a trip exists, so both rows look the same); saving is the one ✓ above.
 function DayInputRow({
   styles,
   t,
@@ -1816,10 +1816,7 @@ export function DayHoursEntry({
               decimal
               onChange={(value) => onChangeExtra("travelSet", value)}
               copyValue={
-                previousTravel?.travel > 0 &&
-                previousTravel.travel !== extras.travel
-                  ? previousTravel.travel
-                  : null
+                previousTravel?.travel > 0 ? previousTravel.travel : null
               }
               onCopy={(value) => onChangeExtra("copyTravel", value)}
             />
@@ -1831,11 +1828,7 @@ export function DayHoursEntry({
               label={`${t("shifts.car")} (km)`}
               value={extras.km}
               onChange={(value) => onChangeExtra("kmSet", value)}
-              copyValue={
-                previousTravel?.km > 0 && previousTravel.km !== extras.km
-                  ? previousTravel.km
-                  : null
-              }
+              copyValue={previousTravel?.km > 0 ? previousTravel.km : null}
               onCopy={(value) => onChangeExtra("copyKm", value)}
             />
             <DayChoiceRow
