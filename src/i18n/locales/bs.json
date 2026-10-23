@@ -536,7 +536,8 @@
     "dayTotal": "Ukupno {{total}} · planirano {{plan}}",
     "comment": "Komentar",
     "receipts": "Računi",
-    "sameAsLast": "Isto kao prošli put"
+    "sameAsLast": "Isto kao prošli put",
+    "hoursUnit": "sati"
   },
   "shiftHistory": {
     "title": "Dnevni izvještaj",

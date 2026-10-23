@@ -537,7 +537,8 @@
     "dayTotal": "Iš viso {{total}} · suplanuota {{plan}}",
     "comment": "Komentaras",
     "receipts": "Kvitai",
-    "sameAsLast": "Kaip praėjusį kartą"
+    "sameAsLast": "Kaip praėjusį kartą",
+    "hoursUnit": "val."
   },
   "shiftHistory": {
     "title": "Dienos ataskaita",

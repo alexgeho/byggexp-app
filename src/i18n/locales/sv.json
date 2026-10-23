@@ -533,7 +533,8 @@
     "dayTotal": "Totalt {{total}} · planerat {{plan}}",
     "comment": "Kommentar",
     "receipts": "Kvitton",
-    "sameAsLast": "Samma som förra gången"
+    "sameAsLast": "Samma som förra gången",
+    "hoursUnit": "timmar"
   },
   "shiftHistory": {
     "title": "Dagsrapport",

@@ -537,7 +537,8 @@
     "dayTotal": "Razem {{total}} · zaplanowano {{plan}}",
     "comment": "Komentarz",
     "receipts": "Paragony",
-    "sameAsLast": "Tak jak ostatnio"
+    "sameAsLast": "Tak jak ostatnio",
+    "hoursUnit": "godz."
   },
   "shiftHistory": {
     "title": "Raport dzienny",

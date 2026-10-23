@@ -533,7 +533,8 @@
     "dayTotal": "Total {{total}} · planned {{plan}}",
     "comment": "Comment",
     "receipts": "Receipts",
-    "sameAsLast": "Same as last time"
+    "sameAsLast": "Same as last time",
+    "hoursUnit": "hours"
   },
   "shiftHistory": {
     "title": "Daily report",

@@ -534,7 +534,8 @@
     "dayTotal": "Kopā {{total}} · plānots {{plan}}",
     "comment": "Komentārs",
     "receipts": "Čeki",
-    "sameAsLast": "Tāpat kā iepriekšējo reizi"
+    "sameAsLast": "Tāpat kā iepriekšējo reizi",
+    "hoursUnit": "stundas"
   },
   "shiftHistory": {
     "title": "Dienas atskaite",

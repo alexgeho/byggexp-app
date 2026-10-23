@@ -537,7 +537,8 @@
     "dayTotal": "Итого {{total}} · запланировано {{plan}}",
     "comment": "Комментарий",
     "receipts": "Чеки",
-    "sameAsLast": "Как в прошлый раз"
+    "sameAsLast": "Как в прошлый раз",
+    "hoursUnit": "ч"
   },
   "shiftHistory": {
     "title": "Дневной отчёт",

@@ -537,7 +537,8 @@
     "dayTotal": "Разом {{total}} · заплановано {{plan}}",
     "comment": "Коментар",
     "receipts": "Чеки",
-    "sameAsLast": "Як минулого разу"
+    "sameAsLast": "Як минулого разу",
+    "hoursUnit": "год"
   },
   "shiftHistory": {
     "title": "Денний звіт",

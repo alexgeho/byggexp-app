@@ -533,7 +533,8 @@
     "dayTotal": "Totalt {{total}} · planlagt {{plan}}",
     "comment": "Kommentar",
     "receipts": "Kvitteringer",
-    "sameAsLast": "Samme som sist"
+    "sameAsLast": "Samme som sist",
+    "hoursUnit": "timer"
   },
   "shiftHistory": {
     "title": "Dagsrapport",

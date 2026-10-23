@@ -533,7 +533,8 @@
     "dayTotal": "Kokku {{total}} · planeeritud {{plan}}",
     "comment": "Kommentaar",
     "receipts": "Tšekid",
-    "sameAsLast": "Sama mis eelmisel korral"
+    "sameAsLast": "Sama mis eelmisel korral",
+    "hoursUnit": "tundi"
   },
   "shiftHistory": {
     "title": "Päevaraport",

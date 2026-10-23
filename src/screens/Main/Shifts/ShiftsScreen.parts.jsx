@@ -1811,7 +1811,7 @@ export function DayHoursEntry({
               styles={styles}
               t={t}
               semiBoldFontFamily={semiBoldFontFamily}
-              label={t("shifts.travelTime")}
+              label={`${t("shifts.travelTime")} (${t("shifts.hoursUnit")})`}
               value={extras.travel}
               decimal
               onChange={(value) => onChangeExtra("travelSet", value)}

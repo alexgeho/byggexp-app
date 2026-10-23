@@ -533,7 +533,8 @@
     "dayTotal": "Yhteensä {{total}} · suunniteltu {{plan}}",
     "comment": "Kommentti",
     "receipts": "Kuitit",
-    "sameAsLast": "Sama kuin viimeksi"
+    "sameAsLast": "Sama kuin viimeksi",
+    "hoursUnit": "tuntia"
   },
   "shiftHistory": {
     "title": "Päiväraportti",
