@@ -884,7 +884,7 @@ export const createStyles = (c) =>
     periodTabs: {
       flexDirection: "row",
       gap: 8,
-      alignSelf: "flex-start",
+      alignSelf: "center",
     },
     periodTab: {
       height: 44,
