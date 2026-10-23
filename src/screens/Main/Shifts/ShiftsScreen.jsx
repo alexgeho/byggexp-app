@@ -968,6 +968,10 @@ export default function ShiftsScreen() {
             delta,
             24 - inlineSplit.work - inlineSplit.overtime,
           );
+        } else if (key === "travelSet") {
+          next.travel = Math.min(Math.max(0, delta), 24);
+        } else if (key === "kmSet") {
+          next.km = Math.min(Math.max(0, Math.round(delta)), 2000);
         } else if (key === "note") {
           next.note = delta;
         } else if (key === "travel") {

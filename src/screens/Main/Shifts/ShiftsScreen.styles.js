@@ -666,6 +666,10 @@ export const createStyles = (c) =>
       alignItems: "center",
       justifyContent: "center",
     },
+    dayEntryStepSlot: {
+      width: size.headerButton,
+      height: size.headerButton,
+    },
     dayEntryStepSave: {
       backgroundColor: "#0785F4",
       borderColor: "#0785F4",

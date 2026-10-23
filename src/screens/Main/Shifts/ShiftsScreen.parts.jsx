@@ -1463,6 +1463,55 @@ function DayStepRow({
   );
 }
 
+// A typed pay line like Arbetstimmar: ✎ focuses the number, typed in place
+// (Restid, Bil). The right slot stays empty — saving is the one ✓ above.
+function DayInputRow({
+  styles,
+  t,
+  semiBoldFontFamily,
+  label,
+  value,
+  decimal,
+  onChange,
+}) {
+  const inputRef = React.useRef(null);
+  const shown = value ? String(value).replace(".", ",") : "";
+  return (
+    <View style={styles.dayEntryOvertimeRow}>
+      <Text style={styles.dayEntryLabel}>{label}</Text>
+      <View style={styles.dayEntryStepper}>
+        <TouchableOpacity
+          style={styles.dayEntryStep}
+          onPress={() => inputRef.current?.focus()}
+          activeOpacity={0.7}
+          accessibilityLabel={`${label} ${t("shifts.editHours")}`}
+        >
+          <Icon name="edit-2" size={16} color={styles.weekNavIcon?.color} />
+        </TouchableOpacity>
+        <View style={styles.dayEntryHoursCell}>
+          <TextInput
+            ref={inputRef}
+            style={[
+              styles.dayEntryHoursInput,
+              { fontFamily: semiBoldFontFamily },
+            ]}
+            defaultValue={shown}
+            onChangeText={(text) => {
+              const clean = text.replace(decimal ? /[^0-9.,]/g : /[^0-9]/g, "");
+              onChange(parseFloat(clean.replace(",", ".")) || 0);
+            }}
+            keyboardType={decimal ? "decimal-pad" : "number-pad"}
+            selectTextOnFocus
+            placeholder="0"
+            placeholderTextColor={styles.dayEntryHint?.color}
+          />
+        </View>
+        <View style={styles.dayEntryStepSlot} />
+      </View>
+    </View>
+  );
+}
+
 // Pick-one chips under a label (Traktamente, Frånvaro).
 function DayChoiceRow({ styles, label, options, value, onPick, disabled }) {
   return (
@@ -1737,23 +1786,22 @@ export function DayHoursEntry({
             <Text style={styles.dayEntrySection}>
               {t("dayReport.travelLabel")}
             </Text>
-            <DayStepRow
+            <DayInputRow
               styles={styles}
+              t={t}
               semiBoldFontFamily={semiBoldFontFamily}
               label={t("shifts.travelTime")}
-              value={formatDurationShort(Math.round(extras.travel * 3600000))}
-              valueStyle={styles.dayEntryStepValuePlain}
-              step={0.5}
-              onStep={(delta) => onChangeExtra("travel", delta)}
+              value={extras.travel}
+              decimal
+              onChange={(value) => onChangeExtra("travelSet", value)}
             />
-            <DayStepRow
+            <DayInputRow
               styles={styles}
+              t={t}
               semiBoldFontFamily={semiBoldFontFamily}
               label={`${t("shifts.car")} (km)`}
-              value={String(Math.round(extras.km || 0))}
-              valueStyle={styles.dayEntryStepValuePlain}
-              step={5}
-              onStep={(delta) => onChangeExtra("km", delta)}
+              value={extras.km}
+              onChange={(value) => onChangeExtra("kmSet", value)}
             />
             <DayChoiceRow
               styles={styles}
