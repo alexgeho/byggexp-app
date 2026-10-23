@@ -527,7 +527,8 @@
       "period": "Periood"
     },
     "exportWhat": "Ekspordi {{what}}",
-    "totalHours": "Kokku"
+    "totalHours": "Kokku",
+    "workHours": "Töötunnid"
   },
   "shiftHistory": {
     "title": "Päevaraport",

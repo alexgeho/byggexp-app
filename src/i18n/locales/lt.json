@@ -531,7 +531,8 @@
       "period": "Laikotarpis"
     },
     "exportWhat": "Eksportuoti {{what}}",
-    "totalHours": "Iš viso"
+    "totalHours": "Iš viso",
+    "workHours": "Darbo valandos"
   },
   "shiftHistory": {
     "title": "Dienos ataskaita",

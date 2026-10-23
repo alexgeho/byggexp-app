@@ -531,7 +531,8 @@
       "period": "Okres"
     },
     "exportWhat": "Eksportuj {{what}}",
-    "totalHours": "Razem"
+    "totalHours": "Razem",
+    "workHours": "Godziny pracy"
   },
   "shiftHistory": {
     "title": "Raport dzienny",

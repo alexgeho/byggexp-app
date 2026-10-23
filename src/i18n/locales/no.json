@@ -527,7 +527,8 @@
       "period": "Periode"
     },
     "exportWhat": "Eksporter {{what}}",
-    "totalHours": "Totalt"
+    "totalHours": "Totalt",
+    "workHours": "Arbeidstimer"
   },
   "shiftHistory": {
     "title": "Dagsrapport",

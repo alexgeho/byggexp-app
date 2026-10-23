@@ -528,7 +528,8 @@
       "period": "Periods"
     },
     "exportWhat": "Eksportēt {{what}}",
-    "totalHours": "Kopā"
+    "totalHours": "Kopā",
+    "workHours": "Darba stundas"
   },
   "shiftHistory": {
     "title": "Dienas atskaite",

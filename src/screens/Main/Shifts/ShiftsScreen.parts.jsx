@@ -1589,26 +1589,31 @@ export function DayHoursEntry({
   if (isEditing) {
     return (
       <View style={styles.dayEntryCard} onLayout={onLayout}>
-        <Text style={styles.dayEntryLabel}>{t("shifts.manualHours")}</Text>
-        <View style={styles.dayEntryInputRow}>
-          <TextInput
-            style={[styles.dayEntryInput, { fontFamily: semiBoldFontFamily }]}
-            defaultValue={seed}
-            onChangeText={(text) => {
-              const clean = text.replace(/[^0-9.,]/g, "").slice(0, 5);
-              inlineValueRef.current = clean;
-              onChangeTotal?.(clean);
-            }}
-            keyboardType="decimal-pad"
-            autoFocus
-            selectTextOnFocus
-            returnKeyType="done"
-            placeholder="0"
-            placeholderTextColor="#9BB0C1"
-            onSubmitEditing={onStashInput}
-            onBlur={onStashInput}
-          />
-          <Text style={styles.dayEntryUnit}>h</Text>
+        <View style={styles.dayEntryOvertimeRow}>
+          <Text style={styles.dayEntryLabel}>{t("shifts.workHours")}</Text>
+          <View style={styles.dayEntryHoursCell}>
+            <TextInput
+              style={[
+                styles.dayEntryHoursInput,
+                { fontFamily: semiBoldFontFamily },
+              ]}
+              defaultValue={seed}
+              onChangeText={(text) => {
+                const clean = text.replace(/[^0-9.,]/g, "").slice(0, 5);
+                inlineValueRef.current = clean;
+                onChangeTotal?.(clean);
+              }}
+              keyboardType="decimal-pad"
+              autoFocus
+              selectTextOnFocus
+              returnKeyType="done"
+              placeholder="0"
+              placeholderTextColor="#9BB0C1"
+              onSubmitEditing={onStashInput}
+              onBlur={onStashInput}
+            />
+            <Text style={styles.dayEntryUnit}>h</Text>
+          </View>
         </View>
         {split ? (
           <>

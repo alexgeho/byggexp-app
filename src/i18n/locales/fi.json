@@ -527,7 +527,8 @@
       "period": "Jakso"
     },
     "exportWhat": "Vie {{what}}",
-    "totalHours": "Yhteensä"
+    "totalHours": "Yhteensä",
+    "workHours": "Työtunnit"
   },
   "shiftHistory": {
     "title": "Päiväraportti",

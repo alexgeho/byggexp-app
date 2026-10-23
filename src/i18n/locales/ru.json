@@ -531,7 +531,8 @@
       "period": "Период"
     },
     "exportWhat": "Экспорт: {{what}}",
-    "totalHours": "Итого"
+    "totalHours": "Итого",
+    "workHours": "Рабочие часы"
   },
   "shiftHistory": {
     "title": "Дневной отчёт",

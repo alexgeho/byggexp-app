@@ -530,7 +530,8 @@
       "period": "Period"
     },
     "exportWhat": "Izvezi {{what}}",
-    "totalHours": "Ukupno"
+    "totalHours": "Ukupno",
+    "workHours": "Radni sati"
   },
   "shiftHistory": {
     "title": "Dnevni izvještaj",
