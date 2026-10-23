@@ -530,7 +530,8 @@
     "exportWhat": "Eksportēt {{what}}",
     "totalHours": "Kopā",
     "workHours": "Darba stundas",
-    "pickDays": "Izvēlēties dienas"
+    "pickDays": "Izvēlēties dienas",
+    "dayTotal": "Kopā {{total}} · plānots {{plan}}"
   },
   "shiftHistory": {
     "title": "Dienas atskaite",

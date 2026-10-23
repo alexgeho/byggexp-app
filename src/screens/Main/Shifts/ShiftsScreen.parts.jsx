@@ -1172,11 +1172,14 @@ export function HoursBar({
   styles,
   totalMs,
   overtimeMs,
+  obMs = 0,
   pending,
   onAccent,
   wide,
 }) {
-  const overtime = Math.min(overtimeMs, totalMs);
+  const overtime = Math.min(overtimeMs || 0, totalMs);
+  const ob = Math.min(obMs || 0, Math.max(0, totalMs - overtime));
+  const normal = totalMs - overtime - ob;
   return (
     <View
       style={[
@@ -1186,22 +1189,25 @@ export function HoursBar({
       ]}
       testID="shifts-hours-bar"
     >
-      {totalMs - overtime > 0 ? (
+      {normal > 0 ? (
         <View
           style={[
             styles.hoursBarNormal,
             onAccent && styles.hoursBarNormalOnAccent,
-            { flex: totalMs - overtime },
+            { flex: normal },
           ]}
         />
       ) : null}
-      <View
-        style={[
-          styles.hoursBarOvertime,
-          pending && styles.hoursBarPending,
-          { flex: overtime },
-        ]}
-      />
+      {overtime > 0 ? (
+        <View
+          style={[
+            styles.hoursBarOvertime,
+            pending && styles.hoursBarPending,
+            { flex: overtime },
+          ]}
+        />
+      ) : null}
+      {ob > 0 ? <View style={[styles.hoursBarOb, { flex: ob }]} /> : null}
     </View>
   );
 }
@@ -1249,15 +1255,14 @@ export function ShiftOvertime({
 
   return (
     <View style={styles.overtimeBox}>
-      {overtimeMs ? (
-        <HoursBar
-          styles={styles}
-          wide
-          totalMs={Math.max(totalMs, overtimeMs)}
-          overtimeMs={overtimeMs}
-          pending={overtimePending}
-        />
-      ) : null}
+      <HoursBar
+        styles={styles}
+        wide
+        totalMs={Math.max(totalMs, overtimeMs + obMs)}
+        overtimeMs={overtimeMs}
+        obMs={obMs}
+        pending={overtimePending}
+      />
       <View style={styles.overtimeRow}>
         <Text style={styles.overtimeLabel}>
           {t("dayReport.hourType.normal")}
@@ -1609,17 +1614,12 @@ export function DayHoursEntry({
                 wide
                 totalMs={split.total * 3600000}
                 overtimeMs={split.overtime * 3600000}
-                pending
+                obMs={split.ob * 3600000}
               />
             ) : null}
             <Text style={styles.dayEntryHint}>
-              {t("shifts.overtimeSplit", {
-                normal: formatDurationCompact(
-                  Math.round((split.total - split.overtime) * 3600000),
-                ),
-                overtime: formatDurationCompact(
-                  Math.round(split.overtime * 3600000),
-                ),
+              {t("shifts.dayTotal", {
+                total: formatDurationCompact(Math.round(split.total * 3600000)),
                 plan: formatDurationCompact(Math.round(split.plan * 3600000)),
               })}
             </Text>

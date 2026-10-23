@@ -529,7 +529,8 @@
     "exportWhat": "Ekspordi {{what}}",
     "totalHours": "Kokku",
     "workHours": "Töötunnid",
-    "pickDays": "Vali päevad"
+    "pickDays": "Vali päevad",
+    "dayTotal": "Kokku {{total}} · planeeritud {{plan}}"
   },
   "shiftHistory": {
     "title": "Päevaraport",

@@ -156,29 +156,28 @@ test("with several projects the worker picks one, and it is remembered", async (
   );
 });
 
-// 21 Oct 2026 is a Wednesday and the month has no plan, so 8 h is normal and
-// what goes over it is proposed as övertid.
-test("hours over the plan are saved as övertid", async () => {
+// The typed number is arbetstid; övertid and OB are added on top with + / −.
+test("typed hours are arbetstid; nothing becomes övertid by itself", async () => {
   await typeEightAndSave([BYGGTOTALEN], jest.fn(), "10");
   expect(shiftService.addManualHours).toHaveBeenCalledWith(
-    expect.objectContaining({
-      durationMs: 10 * 3600000,
-      overtimeMs: 2 * 3600000,
-    }),
+    expect.objectContaining({ durationMs: 10 * 3600000, overtimeMs: 0 }),
   );
 });
 
-test("the worker can move the split with − / +", async () => {
-  await typeEightAndSave([BYGGTOTALEN], jest.fn(), "10", async (tree) => {
-    const less = tree.root.find(
+test("övertid from + comes on top of the arbetstid", async () => {
+  await typeEightAndSave([BYGGTOTALEN], jest.fn(), "8", async (tree) => {
+    const more = tree.root.find(
       (n) =>
         n.type === TouchableOpacity &&
-        n.props.accessibilityLabel === "less overtime",
+        n.props.accessibilityLabel === "more overtime",
     );
-    await act(async () => less.props.onPress());
-    await act(async () => less.props.onPress());
+    await act(async () => more.props.onPress());
+    await act(async () => more.props.onPress());
   });
   expect(shiftService.addManualHours).toHaveBeenCalledWith(
-    expect.objectContaining({ overtimeMs: 1 * 3600000 }),
+    expect.objectContaining({
+      durationMs: 9 * 3600000,
+      overtimeMs: 1 * 3600000,
+    }),
   );
 });

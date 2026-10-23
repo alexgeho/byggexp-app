@@ -533,7 +533,8 @@
     "exportWhat": "Экспорт: {{what}}",
     "totalHours": "Итого",
     "workHours": "Рабочие часы",
-    "pickDays": "Выбрать дни"
+    "pickDays": "Выбрать дни",
+    "dayTotal": "Итого {{total}} · запланировано {{plan}}"
   },
   "shiftHistory": {
     "title": "Дневной отчёт",

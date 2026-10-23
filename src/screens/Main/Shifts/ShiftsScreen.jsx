@@ -39,7 +39,6 @@ import {
   userService,
 } from "../../../services";
 import { useShiftHistory } from "../../../hooks/useShiftHistory";
-import Icon from "react-native-vector-icons/Feather";
 import {
   buildExportMonthOptions,
   formatDateKey,
@@ -67,7 +66,6 @@ import {
   dayPlanHours,
   proposeOvertime,
   sameExtras,
-  stepOvertime,
   stepWithin,
 } from "../../../utils/overtime";
 import {
@@ -665,24 +663,29 @@ export default function ShiftsScreen() {
       const pending = pendingManual[dateStr];
       const day = dayMap.get(dateStr);
       const savedMs = Number(day?.manualDurationMs) || 0;
-      const hours =
+      // The card shows arbetstid; övertid and OB are added on top of it.
+      const seedOvertime =
+        pending != null
+          ? pendingOvertime[dateStr] || 0
+          : savedMs
+            ? dayOvertime(day).overtimeMs / 3600000
+            : 0;
+      const seedOb = (pendingExtras[dateStr] || dayExtras(day)).ob || 0;
+      const total =
         pending != null
           ? pending
           : savedMs
             ? Number((savedMs / 3600000).toFixed(2))
             : 0;
+      const hours = Math.max(
+        0,
+        Math.round((total - seedOvertime - seedOb) * 100) / 100,
+      );
       const seed = hours ? String(hours).replace(".", ",") : "";
       inlineValueRef.current = seed;
       setInlineManualSeed(seed);
       setInlineTotalText(seed);
-      const pendingHours = pendingOvertime[dateStr];
-      setInlineOvertime(
-        pendingHours != null
-          ? pendingHours
-          : savedMs
-            ? dayOvertime(day).overtimeMs / 3600000
-            : null,
-      );
+      setInlineOvertime(seedOvertime);
       setInlineExtras(pendingExtras[dateStr] || dayExtras(day));
       setInlineManualDate(dateStr);
 
@@ -750,18 +753,17 @@ export default function ShiftsScreen() {
       }
       hours = Math.min(hours, 24);
     }
-    const overtime = Math.min(
-      inlineOvertime ?? proposeOvertime(hours, planHoursFor(dateStr)),
-      hours,
-    );
-    const ob = Math.min(extras.ob || 0, Math.max(0, hours - overtime));
+    // Arbetstid typed; övertid and OB come on top of it.
+    const overtime = inlineOvertime || 0;
+    const ob = extras.ob || 0;
+    hours = Math.min(hours + overtime + ob, 24);
     const entryExtras = { ...extras, ob };
     const unchanged =
       Math.round(hours * 3600000) === savedMs &&
       Math.round(overtime * 3600000) === dayOvertime(day).overtimeMs &&
       sameExtras(entryExtras, dayExtras(day));
     return { dateStr, hours, overtime, extras: entryExtras, unchanged };
-  }, [inlineManualDate, dayMap, inlineOvertime, inlineExtras, planHoursFor]);
+  }, [inlineManualDate, dayMap, inlineOvertime, inlineExtras]);
 
   // Move the open card's typed value into the pending maps (no network).
   const stashOpenInput = useCallback(() => {
@@ -912,28 +914,36 @@ export default function ShiftsScreen() {
 
   // The open card's live split, for "8 h normal + 2 h övertid" while typing.
   const inlineSplit = useMemo(() => {
-    const total = Math.min(
+    const work = Math.min(
       Math.max(0, parseFloat(String(inlineTotalText).replace(",", ".")) || 0),
       24,
     );
     const plan = inlineManualDate ? planHoursFor(inlineManualDate) : 0;
-    const overtime = Math.min(
-      inlineOvertime ?? proposeOvertime(total, plan),
-      total,
-    );
-    return { total, overtime, plan };
-  }, [inlineTotalText, inlineOvertime, inlineManualDate, planHoursFor]);
+    const overtime = inlineOvertime || 0;
+    const ob =
+      (inlineExtras || dayExtras(dayMap.get(inlineManualDate))).ob || 0;
+    return { work, overtime, ob, total: work + overtime + ob, plan };
+  }, [
+    inlineTotalText,
+    inlineOvertime,
+    inlineExtras,
+    dayMap,
+    inlineManualDate,
+    planHoursFor,
+  ]);
 
   const changeInlineTotal = useCallback((text) => {
     setInlineTotalText(text);
-    // A new total proposes its own split again.
-    setInlineOvertime(null);
   }, []);
 
   const stepInlineOvertime = useCallback(
     (delta) => {
       setInlineOvertime(
-        stepOvertime(inlineSplit.overtime, inlineSplit.total, delta),
+        stepWithin(
+          inlineSplit.overtime,
+          delta,
+          24 - inlineSplit.work - inlineSplit.ob,
+        ),
       );
     },
     [inlineSplit],
@@ -942,13 +952,7 @@ export default function ShiftsScreen() {
   // The open card's OB / travel / per diem. OB fits in what övertid leaves.
   const openExtras = useMemo(() => {
     const extras = inlineExtras || dayExtras(dayMap.get(inlineManualDate));
-    return {
-      ...extras,
-      ob: Math.min(
-        extras.ob || 0,
-        Math.max(0, inlineSplit.total - inlineSplit.overtime),
-      ),
-    };
+    return extras;
   }, [inlineExtras, dayMap, inlineManualDate, inlineSplit]);
 
   const changeInlineExtra = useCallback(
@@ -961,7 +965,7 @@ export default function ShiftsScreen() {
           next.ob = stepWithin(
             openExtras.ob,
             delta,
-            Math.max(0, inlineSplit.total - inlineSplit.overtime),
+            24 - inlineSplit.work - inlineSplit.overtime,
           );
         } else if (key === "travel") {
           next.travel = stepWithin(openExtras.travel, delta, 24);
@@ -1843,108 +1847,245 @@ export default function ShiftsScreen() {
                     </Text>
                   )
                 ) : (
-                  detailShifts.map((shift) => {
-                    return (
-                      <View key={shift.id} style={styles.shiftCard}>
-                        {isAdmin && shift.workerName ? (
-                          <Text
-                            style={styles.shiftWorkerName}
-                            numberOfLines={1}
-                          >
-                            {shift.workerName}
-                          </Text>
-                        ) : null}
-                        <View style={styles.shiftTimeRow}>
-                          <Text
-                            style={[
-                              styles.shiftTimeText,
-                              { fontFamily: theme.text.fontFamily["regular"] },
-                            ]}
-                          >
-                            {formatTimeRange(shift.startedAt, shift.endedAt)}
-                          </Text>
-                          <Text
-                            style={[
-                              styles.shiftDurationText,
-                              { fontFamily: theme.text.fontFamily["medium"] },
-                            ]}
-                          >
-                            {/* The day's hours: what the worker declared when they
+                  // While the day is being edited above, its saved card
+                  // would only repeat it.
+                  (inlineManualDate === focusedDate ? [] : detailShifts).map(
+                    (shift) => {
+                      return (
+                        <View key={shift.id} style={styles.shiftCard}>
+                          {isAdmin && shift.workerName ? (
+                            <Text
+                              style={styles.shiftWorkerName}
+                              numberOfLines={1}
+                            >
+                              {shift.workerName}
+                            </Text>
+                          ) : null}
+                          <View style={styles.shiftTimeRow}>
+                            <Text
+                              style={[
+                                styles.shiftTimeText,
+                                {
+                                  fontFamily: theme.text.fontFamily["regular"],
+                                },
+                              ]}
+                            >
+                              {formatTimeRange(shift.startedAt, shift.endedAt)}
+                            </Text>
+                            <Text
+                              style={[
+                                styles.shiftDurationText,
+                                { fontFamily: theme.text.fontFamily["medium"] },
+                              ]}
+                            >
+                              {/* The day's hours: what the worker declared when they
                               declared it, otherwise what the clock caught. A
                               card that says 0 h above 8 h declared reads as a
                               bug, even though both numbers are true. The source
                               is said in words, not in colour. */}
-                            {formatDuration(effectiveDurationMs(shift))}
-                            <Text style={styles.durationSource}>
-                              {shift.manualDurationMs
-                                ? ` · ${t("shifts.sourceManual")}`
-                                : ` · ${t("shifts.sourceGps")}`}
-                            </Text>
-                          </Text>
-                        </View>
-
-                        <ShiftOvertime
-                          shift={shift}
-                          styles={styles}
-                          t={t}
-                          semiBoldFontFamily={theme.text.fontFamily["semiBold"]}
-                          canDecide={isAdmin}
-                          busy={approvingIds.includes(shift.id)}
-                          onDecide={(approved) =>
-                            decideOvertime(shift, approved)
-                          }
-                        />
-
-                        <View style={styles.shiftExpandedContent}>
-                          {/* Saved manual hours already head the card; the row
-                            is only the way to add them. */}
-                          {shift.status === "completed" &&
-                          !shift.manualDurationMs &&
-                          String(shift.workerId) === String(currentUserId) ? (
-                            <TouchableOpacity
-                              style={styles.shiftDetailRow}
-                              activeOpacity={0.7}
-                              onPress={() => openManualHoursEditor(shift)}
-                            >
-                              <Text
-                                style={[
-                                  styles.shiftDetailLabel,
-                                  {
-                                    fontFamily:
-                                      theme.text.fontFamily["regular"],
-                                  },
-                                ]}
-                              >
-                                {t("shifts.manualHours")}
-                              </Text>
-                              <Text
-                                style={[
-                                  shift.manualDurationMs
-                                    ? styles.manualHoursValue
-                                    : styles.rowActionValue,
-                                  {
-                                    fontFamily:
-                                      theme.text.fontFamily[
-                                        shift.manualDurationMs
-                                          ? "medium"
-                                          : "regular"
-                                      ],
-                                  },
-                                ]}
-                              >
+                              {formatDuration(effectiveDurationMs(shift))}
+                              <Text style={styles.durationSource}>
                                 {shift.manualDurationMs
-                                  ? formatDuration(shift.manualDurationMs)
-                                  : `＋ ${t("shifts.manualHoursAdd")}`}
+                                  ? ` · ${t("shifts.sourceManual")}`
+                                  : ` · ${t("shifts.sourceGps")}`}
                               </Text>
-                            </TouchableOpacity>
-                          ) : null}
+                            </Text>
+                          </View>
 
-                          {/* When the declared hours replace the clocked ones,
+                          <ShiftOvertime
+                            shift={shift}
+                            styles={styles}
+                            t={t}
+                            semiBoldFontFamily={
+                              theme.text.fontFamily["semiBold"]
+                            }
+                            canDecide={isAdmin}
+                            busy={approvingIds.includes(shift.id)}
+                            onDecide={(approved) =>
+                              decideOvertime(shift, approved)
+                            }
+                          />
+
+                          <View style={styles.shiftExpandedContent}>
+                            {/* Saved manual hours already head the card; the row
+                            is only the way to add them. */}
+                            {shift.status === "completed" &&
+                            !shift.manualDurationMs &&
+                            String(shift.workerId) === String(currentUserId) ? (
+                              <TouchableOpacity
+                                style={styles.shiftDetailRow}
+                                activeOpacity={0.7}
+                                onPress={() => openManualHoursEditor(shift)}
+                              >
+                                <Text
+                                  style={[
+                                    styles.shiftDetailLabel,
+                                    {
+                                      fontFamily:
+                                        theme.text.fontFamily["regular"],
+                                    },
+                                  ]}
+                                >
+                                  {t("shifts.manualHours")}
+                                </Text>
+                                <Text
+                                  style={[
+                                    shift.manualDurationMs
+                                      ? styles.manualHoursValue
+                                      : styles.rowActionValue,
+                                    {
+                                      fontFamily:
+                                        theme.text.fontFamily[
+                                          shift.manualDurationMs
+                                            ? "medium"
+                                            : "regular"
+                                        ],
+                                    },
+                                  ]}
+                                >
+                                  {shift.manualDurationMs
+                                    ? formatDuration(shift.manualDurationMs)
+                                    : `＋ ${t("shifts.manualHoursAdd")}`}
+                                </Text>
+                              </TouchableOpacity>
+                            ) : null}
+
+                            {/* When the declared hours replace the clocked ones,
                             show what the clock caught so the difference is
                             visible rather than silently overwritten. A day
                             the clock never ran has nothing to compare. */}
-                          {Number(shift.durationMs) > 0 &&
-                          shift.manualDurationMs ? (
+                            {Number(shift.durationMs) > 0 &&
+                            shift.manualDurationMs ? (
+                              <View style={styles.shiftDetailRow}>
+                                <Text
+                                  style={[
+                                    styles.shiftDetailLabel,
+                                    {
+                                      fontFamily:
+                                        theme.text.fontFamily["regular"],
+                                    },
+                                  ]}
+                                >
+                                  {t("shifts.clocked")}
+                                </Text>
+                                <Text
+                                  style={[
+                                    styles.shiftDetailValue,
+                                    {
+                                      fontFamily:
+                                        theme.text.fontFamily["regular"],
+                                    },
+                                  ]}
+                                >
+                                  {formatDuration(shift.durationMs)}
+                                </Text>
+                              </View>
+                            ) : null}
+
+                            {/* Attest — the manager's confirmation of the day. */}
+                            {isAdmin && shift.status === "completed" ? (
+                              <TouchableOpacity
+                                style={styles.shiftDetailRow}
+                                activeOpacity={0.7}
+                                onPress={() => toggleApproval(shift)}
+                              >
+                                <Text
+                                  style={[
+                                    styles.shiftDetailLabel,
+                                    {
+                                      fontFamily:
+                                        theme.text.fontFamily["regular"],
+                                    },
+                                  ]}
+                                >
+                                  {t("shifts.attest")}
+                                </Text>
+                                <Text
+                                  style={[
+                                    // Green means one thing on this screen:
+                                    // approved. Until then it is an action.
+                                    shift.approvedAt
+                                      ? styles.approvedValue
+                                      : styles.rowActionValue,
+                                    {
+                                      fontFamily:
+                                        theme.text.fontFamily[
+                                          shift.approvedAt
+                                            ? "medium"
+                                            : "regular"
+                                        ],
+                                    },
+                                  ]}
+                                >
+                                  {shift.approvedAt
+                                    ? t("shifts.attested")
+                                    : t("shifts.attestAction")}
+                                </Text>
+                              </TouchableOpacity>
+                            ) : null}
+
+                            {/* Dagens rapport — pay bucket, travel and the day's
+                            note, on your own finished day. */}
+                            {shift.status === "completed" &&
+                            String(shift.workerId) === String(currentUserId) ? (
+                              <TouchableOpacity
+                                style={styles.shiftDetailRow}
+                                activeOpacity={0.7}
+                                onPress={() =>
+                                  navigation.navigate("DayReport", { shift })
+                                }
+                              >
+                                <Text
+                                  style={[
+                                    styles.shiftDetailLabel,
+                                    {
+                                      fontFamily:
+                                        theme.text.fontFamily["regular"],
+                                    },
+                                  ]}
+                                >
+                                  {t("dayReport.title")}
+                                </Text>
+                                <Text
+                                  style={[
+                                    shift.reportedAt
+                                      ? styles.manualHoursValue
+                                      : styles.rowActionValue,
+                                    {
+                                      fontFamily:
+                                        theme.text.fontFamily[
+                                          shift.reportedAt
+                                            ? "medium"
+                                            : "regular"
+                                        ],
+                                    },
+                                  ]}
+                                >
+                                  {shift.reportedAt
+                                    ? [
+                                        shift.hourType &&
+                                        shift.hourType !== "normal"
+                                          ? t(
+                                              `dayReport.hourType.${shift.hourType}`,
+                                            )
+                                          : null,
+                                        shift.travelKm
+                                          ? `${shift.travelKm} km`
+                                          : null,
+                                        shift.perDiem &&
+                                        shift.perDiem !== "none"
+                                          ? t(
+                                              `dayReport.perDiemOption.${shift.perDiem}`,
+                                            )
+                                          : null,
+                                      ]
+                                        .filter(Boolean)
+                                        .join(" · ") || t("dayReport.reported")
+                                    : `＋ ${t("dayReport.add")}`}
+                                </Text>
+                              </TouchableOpacity>
+                            ) : null}
+
                             <View style={styles.shiftDetailRow}>
                               <Text
                                 style={[
@@ -1955,9 +2096,10 @@ export default function ShiftsScreen() {
                                   },
                                 ]}
                               >
-                                {t("shifts.clocked")}
+                                {t("createTask.projectLabel")}
                               </Text>
                               <Text
+                                numberOfLines={1}
                                 style={[
                                   styles.shiftDetailValue,
                                   {
@@ -1966,18 +2108,10 @@ export default function ShiftsScreen() {
                                   },
                                 ]}
                               >
-                                {formatDuration(shift.durationMs)}
+                                {formatShiftListProjectName(shift.projectName)}
                               </Text>
                             </View>
-                          ) : null}
-
-                          {/* Attest — the manager's confirmation of the day. */}
-                          {isAdmin && shift.status === "completed" ? (
-                            <TouchableOpacity
-                              style={styles.shiftDetailRow}
-                              activeOpacity={0.7}
-                              onPress={() => toggleApproval(shift)}
-                            >
+                            <View style={styles.shiftDetailRow}>
                               <Text
                                 style={[
                                   styles.shiftDetailLabel,
@@ -1987,178 +2121,11 @@ export default function ShiftsScreen() {
                                   },
                                 ]}
                               >
-                                {t("shifts.attest")}
+                                {t("createProject.location")}
                               </Text>
                               <Text
-                                style={[
-                                  // Green means one thing on this screen:
-                                  // approved. Until then it is an action.
-                                  shift.approvedAt
-                                    ? styles.approvedValue
-                                    : styles.rowActionValue,
-                                  {
-                                    fontFamily:
-                                      theme.text.fontFamily[
-                                        shift.approvedAt ? "medium" : "regular"
-                                      ],
-                                  },
-                                ]}
-                              >
-                                {shift.approvedAt
-                                  ? t("shifts.attested")
-                                  : t("shifts.attestAction")}
-                              </Text>
-                            </TouchableOpacity>
-                          ) : null}
-
-                          {/* Dagens rapport — pay bucket, travel and the day's
-                            note, on your own finished day. */}
-                          {shift.status === "completed" &&
-                          String(shift.workerId) === String(currentUserId) ? (
-                            <TouchableOpacity
-                              style={styles.shiftDetailRow}
-                              activeOpacity={0.7}
-                              onPress={() =>
-                                navigation.navigate("DayReport", { shift })
-                              }
-                            >
-                              <Text
-                                style={[
-                                  styles.shiftDetailLabel,
-                                  {
-                                    fontFamily:
-                                      theme.text.fontFamily["regular"],
-                                  },
-                                ]}
-                              >
-                                {t("dayReport.title")}
-                              </Text>
-                              <Text
-                                style={[
-                                  shift.reportedAt
-                                    ? styles.manualHoursValue
-                                    : styles.rowActionValue,
-                                  {
-                                    fontFamily:
-                                      theme.text.fontFamily[
-                                        shift.reportedAt ? "medium" : "regular"
-                                      ],
-                                  },
-                                ]}
-                              >
-                                {shift.reportedAt
-                                  ? [
-                                      shift.hourType &&
-                                      shift.hourType !== "normal"
-                                        ? t(
-                                            `dayReport.hourType.${shift.hourType}`,
-                                          )
-                                        : null,
-                                      shift.travelKm
-                                        ? `${shift.travelKm} km`
-                                        : null,
-                                      shift.perDiem && shift.perDiem !== "none"
-                                        ? t(
-                                            `dayReport.perDiemOption.${shift.perDiem}`,
-                                          )
-                                        : null,
-                                    ]
-                                      .filter(Boolean)
-                                      .join(" · ") || t("dayReport.reported")
-                                  : `＋ ${t("dayReport.add")}`}
-                              </Text>
-                            </TouchableOpacity>
-                          ) : null}
-
-                          <View style={styles.shiftDetailRow}>
-                            <Text
-                              style={[
-                                styles.shiftDetailLabel,
-                                {
-                                  fontFamily: theme.text.fontFamily["regular"],
-                                },
-                              ]}
-                            >
-                              {t("createTask.projectLabel")}
-                            </Text>
-                            <Text
-                              numberOfLines={1}
-                              style={[
-                                styles.shiftDetailValue,
-                                {
-                                  fontFamily: theme.text.fontFamily["regular"],
-                                },
-                              ]}
-                            >
-                              {formatShiftListProjectName(shift.projectName)}
-                            </Text>
-                          </View>
-                          <View style={styles.shiftDetailRow}>
-                            <Text
-                              style={[
-                                styles.shiftDetailLabel,
-                                {
-                                  fontFamily: theme.text.fontFamily["regular"],
-                                },
-                              ]}
-                            >
-                              {t("createProject.location")}
-                            </Text>
-                            <Text
-                              numberOfLines={1}
-                              ellipsizeMode="tail"
-                              style={[
-                                styles.shiftDetailValue,
-                                {
-                                  fontFamily: theme.text.fontFamily["regular"],
-                                },
-                              ]}
-                            >
-                              {shortAddress(shift.location) || "—"}
-                            </Text>
-                          </View>
-                          <View style={styles.shiftDetailRow}>
-                            <Text
-                              style={[
-                                styles.shiftDetailLabel,
-                                {
-                                  fontFamily: theme.text.fontFamily["regular"],
-                                },
-                              ]}
-                            >
-                              {t("shifts.photos")}
-                            </Text>
-                            {shift.photos?.length ? (
-                              <View style={styles.shiftPhotosValue}>
-                                <ScrollView
-                                  horizontal
-                                  showsHorizontalScrollIndicator={false}
-                                  style={styles.shiftPhotosScroll}
-                                  contentContainerStyle={
-                                    styles.shiftPhotosScrollContent
-                                  }
-                                >
-                                  {shift.photos.map((photo, index) => (
-                                    <TouchableOpacity
-                                      key={`${shift.id}-photo-${index}`}
-                                      activeOpacity={0.85}
-                                      onPress={() =>
-                                        handleOpenShiftPhoto(photo)
-                                      }
-                                    >
-                                      <ExpoImage
-                                        style={styles.shiftImage}
-                                        source={resolveUploadUrl(photo.url)}
-                                        contentFit="cover"
-                                        cachePolicy="memory-disk"
-                                        transition={0}
-                                      />
-                                    </TouchableOpacity>
-                                  ))}
-                                </ScrollView>
-                              </View>
-                            ) : (
-                              <Text
+                                numberOfLines={1}
+                                ellipsizeMode="tail"
                                 style={[
                                   styles.shiftDetailValue,
                                   {
@@ -2167,14 +2134,69 @@ export default function ShiftsScreen() {
                                   },
                                 ]}
                               >
-                                {t("shifts.noPhotos")}
+                                {shortAddress(shift.location) || "—"}
                               </Text>
-                            )}
+                            </View>
+                            <View style={styles.shiftDetailRow}>
+                              <Text
+                                style={[
+                                  styles.shiftDetailLabel,
+                                  {
+                                    fontFamily:
+                                      theme.text.fontFamily["regular"],
+                                  },
+                                ]}
+                              >
+                                {t("shifts.photos")}
+                              </Text>
+                              {shift.photos?.length ? (
+                                <View style={styles.shiftPhotosValue}>
+                                  <ScrollView
+                                    horizontal
+                                    showsHorizontalScrollIndicator={false}
+                                    style={styles.shiftPhotosScroll}
+                                    contentContainerStyle={
+                                      styles.shiftPhotosScrollContent
+                                    }
+                                  >
+                                    {shift.photos.map((photo, index) => (
+                                      <TouchableOpacity
+                                        key={`${shift.id}-photo-${index}`}
+                                        activeOpacity={0.85}
+                                        onPress={() =>
+                                          handleOpenShiftPhoto(photo)
+                                        }
+                                      >
+                                        <ExpoImage
+                                          style={styles.shiftImage}
+                                          source={resolveUploadUrl(photo.url)}
+                                          contentFit="cover"
+                                          cachePolicy="memory-disk"
+                                          transition={0}
+                                        />
+                                      </TouchableOpacity>
+                                    ))}
+                                  </ScrollView>
+                                </View>
+                              ) : (
+                                <Text
+                                  style={[
+                                    styles.shiftDetailValue,
+                                    {
+                                      fontFamily:
+                                        theme.text.fontFamily["regular"],
+                                    },
+                                  ]}
+                                >
+                                  {t("shifts.noPhotos")}
+                                </Text>
+                              )}
+                            </View>
                           </View>
                         </View>
-                      </View>
-                    );
-                  })
+                      );
+                    },
+                  )
                 )}
               </View>
             </View>

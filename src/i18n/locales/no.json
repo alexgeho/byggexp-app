@@ -529,7 +529,8 @@
     "exportWhat": "Eksporter {{what}}",
     "totalHours": "Totalt",
     "workHours": "Arbeidstimer",
-    "pickDays": "Velg dager"
+    "pickDays": "Velg dager",
+    "dayTotal": "Totalt {{total}} · planlagt {{plan}}"
   },
   "shiftHistory": {
     "title": "Dagsrapport",

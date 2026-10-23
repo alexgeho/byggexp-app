@@ -487,6 +487,9 @@ export const createStyles = (c) =>
     hoursBarOvertime: {
       backgroundColor: "#F59E0B",
     },
+    hoursBarOb: {
+      backgroundColor: "#7C5CD6",
+    },
     hoursBarPending: {
       backgroundColor: "rgba(245, 158, 11, 0.45)",
     },
