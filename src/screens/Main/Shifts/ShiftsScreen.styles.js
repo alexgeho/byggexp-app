@@ -731,8 +731,10 @@ export const createStyles = (c) =>
       fontWeight: "500",
     },
     dayEntryNote: {
-      minHeight: 72,
-      padding: 12,
+      minHeight: 44,
+      paddingHorizontal: 12,
+      paddingTop: 11,
+      paddingBottom: 11,
       borderRadius: 12,
       borderWidth: size.border,
       borderColor: c.border,
