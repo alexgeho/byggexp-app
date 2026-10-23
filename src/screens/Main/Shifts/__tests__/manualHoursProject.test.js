@@ -108,7 +108,7 @@ async function typeEightAndSave(
   await beforeSave(tree);
   const save = tree.root.find(
     (n) =>
-      n.type === TouchableOpacity && n.props.testID === "shifts-save-manual",
+      n.type === TouchableOpacity && n.props.testID === "shifts-save-hours",
   );
   await act(async () => save.props.onPress());
   await act(async () => {});

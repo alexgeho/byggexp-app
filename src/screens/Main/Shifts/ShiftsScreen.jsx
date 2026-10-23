@@ -1089,8 +1089,6 @@ export default function ShiftsScreen() {
     [inlineManualDate, stashOpenInput, startInlineManual],
   );
 
-  const hasPendingManual = Object.keys(pendingManual).length > 0;
-
   const handleOpenShiftPhoto = useCallback(
     async (photo) => {
       const resolvedUrl = resolveUploadUrl(photo?.url);
@@ -1648,21 +1646,9 @@ export default function ShiftsScreen() {
         >
           {t("menu.workShifts")}
         </Text>
-        {hoursSource === "manual" && (inlineManualDate || hasPendingManual) ? (
-          <TouchableOpacity
-            style={styles.headerSaveButton}
-            testID="shifts-save-manual"
-            onPress={saveAllManual}
-            activeOpacity={0.85}
-            disabled={savingBatch}
-          >
-            {savingBatch ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
-            ) : (
-              <Icon name="check" size={22} color="#FFFFFF" />
-            )}
-          </TouchableOpacity>
-        ) : (
+        {/* Saving lives in the day card (✓ in the Arbetstimmar row); one
+            blue check per screen. */}
+        {
           <TouchableOpacity
             style={[
               styles.headerSelectButton,
@@ -1681,7 +1667,7 @@ export default function ShiftsScreen() {
               {selectMode ? t("shifts.selectDone") : t("shifts.selectDays")}
             </Text>
           </TouchableOpacity>
-        )}
+        }
       </View>
 
       {/* Only block the whole screen on the FIRST load (no data yet). On every
