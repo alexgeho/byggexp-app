@@ -1589,30 +1589,59 @@ export function DayHoursEntry({
   if (isEditing) {
     return (
       <View style={styles.dayEntryCard} onLayout={onLayout}>
+        {split ? (
+          <>
+            {split.total > 0 ? (
+              <HoursBar
+                styles={styles}
+                wide
+                totalMs={split.total * 3600000}
+                overtimeMs={split.overtime * 3600000}
+                pending
+              />
+            ) : null}
+            <Text style={styles.dayEntryHint}>
+              {t("shifts.overtimeSplit", {
+                normal: formatDurationCompact(
+                  Math.round((split.total - split.overtime) * 3600000),
+                ),
+                overtime: formatDurationCompact(
+                  Math.round(split.overtime * 3600000),
+                ),
+                plan: formatDurationCompact(Math.round(split.plan * 3600000)),
+              })}
+            </Text>
+          </>
+        ) : null}
         <View style={styles.dayEntryOvertimeRow}>
           <Text style={styles.dayEntryLabel}>{t("shifts.workHours")}</Text>
-          <View style={styles.dayEntryHoursCell}>
-            <TextInput
-              style={[
-                styles.dayEntryHoursInput,
-                { fontFamily: semiBoldFontFamily },
-              ]}
-              defaultValue={seed}
-              onChangeText={(text) => {
-                const clean = text.replace(/[^0-9.,]/g, "").slice(0, 5);
-                inlineValueRef.current = clean;
-                onChangeTotal?.(clean);
-              }}
-              keyboardType="decimal-pad"
-              autoFocus
-              selectTextOnFocus
-              returnKeyType="done"
-              placeholder="0"
-              placeholderTextColor="#9BB0C1"
-              onSubmitEditing={onStashInput}
-              onBlur={onStashInput}
-            />
-            <Text style={styles.dayEntryUnit}>h</Text>
+          {/* Same columns as the − / + rows, so every number sits in one
+              line; the hours are typed into the round cell in the middle. */}
+          <View style={styles.dayEntryStepper}>
+            <View style={styles.dayEntryStepSpacer} />
+            <View style={styles.dayEntryHoursCell}>
+              <TextInput
+                style={[
+                  styles.dayEntryHoursInput,
+                  { fontFamily: semiBoldFontFamily },
+                ]}
+                defaultValue={seed}
+                onChangeText={(text) => {
+                  const clean = text.replace(/[^0-9.,]/g, "").slice(0, 5);
+                  inlineValueRef.current = clean;
+                  onChangeTotal?.(clean);
+                }}
+                keyboardType="decimal-pad"
+                autoFocus
+                selectTextOnFocus
+                returnKeyType="done"
+                placeholder="0"
+                placeholderTextColor="#9BB0C1"
+                onSubmitEditing={onStashInput}
+                onBlur={onStashInput}
+              />
+            </View>
+            <View style={styles.dayEntryStepSpacer} />
           </View>
         </View>
         {split ? (
@@ -1656,26 +1685,6 @@ export function DayHoursEntry({
                 </TouchableOpacity>
               </View>
             </View>
-            {split.total > 0 ? (
-              <HoursBar
-                styles={styles}
-                wide
-                totalMs={split.total * 3600000}
-                overtimeMs={split.overtime * 3600000}
-                pending
-              />
-            ) : null}
-            <Text style={styles.dayEntryHint}>
-              {t("shifts.overtimeSplit", {
-                normal: formatDurationCompact(
-                  Math.round((split.total - split.overtime) * 3600000),
-                ),
-                overtime: formatDurationCompact(
-                  Math.round(split.overtime * 3600000),
-                ),
-                plan: formatDurationCompact(Math.round(split.plan * 3600000)),
-              })}
-            </Text>
           </>
         ) : null}
         {extras && onChangeExtra ? (
