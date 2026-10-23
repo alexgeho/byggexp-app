@@ -1768,6 +1768,33 @@ export function DayHoursEntry({
           </>
         ) : null}
         {absenceRow}
+        {extras && onChangeExtra ? (
+          noteOpen || extras.note ? (
+            <View style={styles.dayEntryChoice}>
+              <Text style={styles.dayEntryLabel}>{t("shifts.comment")}</Text>
+              <TextInput
+                style={styles.dayEntryNote}
+                defaultValue={extras.note}
+                onChangeText={(text) => onChangeExtra("note", text)}
+                multiline
+                autoFocus={noteOpen && !extras.note}
+                placeholder={t("dayReport.notePlaceholder")}
+                placeholderTextColor="#9BB0C1"
+              />
+            </View>
+          ) : (
+            <TouchableOpacity
+              style={styles.dayEntryValueRow}
+              onPress={() => setNoteOpen(true)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.dayEntryLabel}>{t("shifts.comment")}</Text>
+              <Text style={styles.dayEntryLink}>
+                {`＋ ${t("dayReport.add")}`}
+              </Text>
+            </TouchableOpacity>
+          )
+        ) : null}
         {onOpenDayReport
           ? [
               [
@@ -1794,31 +1821,6 @@ export function DayHoursEntry({
               </TouchableOpacity>
             ))
           : null}
-        {extras && onChangeExtra ? (
-          noteOpen || extras.note ? (
-            <View style={styles.dayEntryChoice}>
-              <Text style={styles.dayEntryLabel}>{t("shifts.comment")}</Text>
-              <TextInput
-                style={styles.dayEntryNote}
-                defaultValue={extras.note}
-                onChangeText={(text) => onChangeExtra("note", text)}
-                multiline
-                autoFocus={noteOpen && !extras.note}
-              />
-            </View>
-          ) : (
-            <TouchableOpacity
-              style={styles.dayEntryValueRow}
-              onPress={() => setNoteOpen(true)}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.dayEntryLabel}>{t("shifts.comment")}</Text>
-              <Text style={styles.dayEntryLink}>
-                {`＋ ${t("dayReport.add")}`}
-              </Text>
-            </TouchableOpacity>
-          )
-        ) : null}
       </View>
     );
   }
