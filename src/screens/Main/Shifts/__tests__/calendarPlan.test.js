@@ -1,7 +1,7 @@
 import React from "react";
 import TestRenderer, { act } from "react-test-renderer";
-import { Text } from "react-native";
-import { ShiftWeekPicker } from "../ShiftsScreen.parts";
+import { Text, TouchableOpacity } from "react-native";
+import { ShiftOvertime, ShiftWeekPicker } from "../ShiftsScreen.parts";
 
 jest.mock("react-native-vector-icons/Feather", () => "Icon");
 jest.mock("@react-native-async-storage/async-storage", () =>
@@ -70,4 +70,68 @@ test("a typed but unsaved day shows its pending hours", () => {
     pendingManual: { "2026-09-22": 7.5 },
   });
   expect(textsOf(tree, "7,5")).toHaveLength(1);
+});
+
+test("a day with övertid gets a bar under its hours", () => {
+  const tree = renderWeek({
+    hoursSource: "manual",
+    daySourceMs: (_entry, date) => (date === "2026-09-22" ? 10 * 3600000 : 0),
+    dayOvertimeOf: (date) =>
+      date === "2026-09-22"
+        ? { overtimeMs: 2 * 3600000, pending: true }
+        : { overtimeMs: 0, pending: false },
+  });
+  const bars = tree.root
+    .findAllByProps({ testID: "shifts-hours-bar" })
+    .filter((n) => typeof n.type === "string");
+  expect(bars).toHaveLength(1);
+});
+
+test("a manager approves or denies övertid that waits", () => {
+  const onDecide = jest.fn();
+  const shift = {
+    id: "s1",
+    manualDurationMs: 10 * 3600000,
+    overtimeMs: 2 * 3600000,
+    overtimeStatus: "pending",
+  };
+  let tree;
+  act(() => {
+    tree = TestRenderer.create(
+      <ShiftOvertime
+        shift={shift}
+        styles={{}}
+        t={(k) => k}
+        canDecide
+        busy={false}
+        onDecide={onDecide}
+      />,
+    );
+  });
+  expect(textsOf(tree, "shifts.overtimePending")).toHaveLength(1);
+  const approve = tree.root.find(
+    (n) =>
+      n.type === TouchableOpacity &&
+      n.props.testID === "shifts-approve-overtime",
+  );
+  act(() => approve.props.onPress());
+  expect(onDecide).toHaveBeenCalledWith(true);
+
+  // Approved: the status says so and there is nothing left to decide.
+  act(() => {
+    tree.update(
+      <ShiftOvertime
+        shift={{ ...shift, overtimeStatus: "approved" }}
+        styles={{}}
+        t={(k) => k}
+        canDecide
+        busy={false}
+        onDecide={onDecide}
+      />,
+    );
+  });
+  expect(textsOf(tree, "shifts.overtimeApproved")).toHaveLength(1);
+  expect(
+    tree.root.findAllByProps({ testID: "shifts-approve-overtime" }),
+  ).toHaveLength(0);
 });

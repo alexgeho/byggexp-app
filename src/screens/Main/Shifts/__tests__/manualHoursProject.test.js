@@ -77,8 +77,13 @@ const BYGGTOTALEN = { _id: "p1", name: "Byggtotalen steypa AB" };
 const OTHER = { _id: "p2", name: "Villa Bromma" };
 let mounted = null;
 
-// A worker who never picked a project on the home screen types 8 h and saves.
-async function typeEightAndSave(projects, setSelectedProject = jest.fn()) {
+// A worker who never picked a project on the home screen types hours and saves.
+async function typeEightAndSave(
+  projects,
+  setSelectedProject = jest.fn(),
+  hours = "8",
+  beforeSave = async () => {},
+) {
   projectService.getMyProjects.mockResolvedValue(projects);
   let tree;
   await act(async () => {
@@ -99,7 +104,8 @@ async function typeEightAndSave(projects, setSelectedProject = jest.fn()) {
   mounted = tree;
   await act(async () => {});
   const input = tree.root.findAllByType(TextInput)[0];
-  await act(async () => input.props.onChangeText("8"));
+  await act(async () => input.props.onChangeText(hours));
+  await beforeSave(tree);
   const save = tree.root.find(
     (n) =>
       n.type === TouchableOpacity && n.props.testID === "shifts-save-manual",
@@ -125,6 +131,7 @@ test("with one project the hours are saved to it, no project error", async () =>
     projectId: "p1",
     date: "2026-10-21",
     durationMs: 8 * 3600000,
+    overtimeMs: 0,
   });
 });
 
@@ -142,5 +149,32 @@ test("with several projects the worker picks one, and it is remembered", async (
   expect(setSelectedProject).toHaveBeenCalledWith(OTHER);
   expect(shiftService.addManualHours).toHaveBeenCalledWith(
     expect.objectContaining({ projectId: "p2", date: "2026-10-21" }),
+  );
+});
+
+// 21 Oct 2026 is a Wednesday and the month has no plan, so 8 h is normal and
+// what goes over it is proposed as övertid.
+test("hours over the plan are saved as övertid", async () => {
+  await typeEightAndSave([BYGGTOTALEN], jest.fn(), "10");
+  expect(shiftService.addManualHours).toHaveBeenCalledWith(
+    expect.objectContaining({
+      durationMs: 10 * 3600000,
+      overtimeMs: 2 * 3600000,
+    }),
+  );
+});
+
+test("the worker can move the split with − / +", async () => {
+  await typeEightAndSave([BYGGTOTALEN], jest.fn(), "10", async (tree) => {
+    const less = tree.root.find(
+      (n) =>
+        n.type === TouchableOpacity &&
+        n.props.accessibilityLabel === "less overtime",
+    );
+    await act(async () => less.props.onPress());
+    await act(async () => less.props.onPress());
+  });
+  expect(shiftService.addManualHours).toHaveBeenCalledWith(
+    expect.objectContaining({ overtimeMs: 1 * 3600000 }),
   );
 });

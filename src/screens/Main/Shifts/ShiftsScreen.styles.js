@@ -372,6 +372,125 @@ export const createStyles = (c) =>
       fontWeight: "600",
     },
 
+    /* Normal (blue) + övertid (orange, paler while it waits) as one bar */
+    hoursBar: {
+      flexDirection: "row",
+      width: 28,
+      height: 4,
+      marginTop: 2,
+      gap: 1,
+      borderRadius: 2,
+      overflow: "hidden",
+      backgroundColor: c.border,
+    },
+    hoursBarWide: {
+      width: "100%",
+      height: 10,
+      marginTop: 0,
+      gap: 2,
+      borderRadius: 5,
+    },
+    hoursBarOnAccent: {
+      backgroundColor: "rgba(255, 255, 255, 0.35)",
+    },
+    hoursBarNormal: {
+      backgroundColor: "#0785F4",
+    },
+    hoursBarNormalOnAccent: {
+      backgroundColor: "#FFFFFF",
+    },
+    hoursBarOvertime: {
+      backgroundColor: "#F59E0B",
+    },
+    hoursBarPending: {
+      backgroundColor: "rgba(245, 158, 11, 0.45)",
+    },
+
+    /* Övertid inside a shift card */
+    overtimeBox: {
+      gap: 4,
+      marginTop: 10,
+    },
+    overtimeRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 8,
+      minHeight: 32,
+    },
+    overtimeLabel: {
+      color: c.textPrimary,
+      fontSize: 15,
+    },
+    overtimeValueGroup: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+    },
+    overtimeValue: {
+      color: c.textPrimary,
+      fontSize: 15,
+      fontWeight: "600",
+      fontVariant: ["tabular-nums"],
+    },
+    overtimeValueOrange: {
+      color: onDark(c, c.warning, "#B8760A"),
+    },
+    overtimeChip: {
+      fontSize: 12,
+      fontWeight: "700",
+      paddingHorizontal: 8,
+      paddingVertical: 3,
+      borderRadius: radius.control,
+      overflow: "hidden",
+    },
+    overtimeChipPending: {
+      color: onDark(c, c.warning, "#9A6216"),
+      backgroundColor: onDark(c, c.warningSoft, "#FCEFD9"),
+    },
+    overtimeChipOk: {
+      color: onDark(c, c.success, "#1E8A55"),
+      backgroundColor: onDark(c, c.successSoft, "#E3F6EC"),
+    },
+    overtimeActions: {
+      flexDirection: "row",
+      gap: 8,
+      marginTop: 6,
+    },
+    overtimeDeny: {
+      flex: 1,
+      height: size.control,
+      borderRadius: radius.control,
+      borderWidth: size.border,
+      borderColor: c.border,
+      backgroundColor: c.surface,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    overtimeDenyText: {
+      color: c.textPrimary,
+      fontSize: 15,
+      fontWeight: "600",
+    },
+    overtimeApprove: {
+      flex: 1,
+      height: size.control,
+      borderRadius: radius.control,
+      backgroundColor: onDark(c, c.success, "#1E8A55"),
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    overtimeApproveText: {
+      color: "#FFFFFF",
+      fontSize: 15,
+      fontWeight: "600",
+    },
+    selectionSummaryOvertime: {
+      color: onDark(c, c.warning, "#B8760A"),
+      fontSize: 13,
+      fontWeight: "600",
+    },
+
     /* The chosen day's manual hours, under the week card */
     dayEntryCard: {
       backgroundColor: c.surface,
@@ -403,6 +522,39 @@ export const createStyles = (c) =>
     dayEntryUnit: {
       color: c.textSecondary,
       fontSize: 20,
+    },
+    dayEntryOvertimeRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      minHeight: 48,
+    },
+    dayEntryStepper: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+    },
+    dayEntryStep: {
+      width: size.headerButton,
+      height: size.headerButton,
+      borderRadius: radius.control,
+      borderWidth: size.border,
+      borderColor: c.border,
+      backgroundColor: c.surface,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    dayEntryStepValue: {
+      minWidth: 44,
+      textAlign: "center",
+      color: onDark(c, c.warning, "#B8760A"),
+      fontSize: 20,
+      fontWeight: "600",
+      fontVariant: ["tabular-nums"],
+    },
+    dayEntryHint: {
+      color: c.textSecondary,
+      fontSize: 13,
     },
     dayEntryValueRow: {
       flexDirection: "row",

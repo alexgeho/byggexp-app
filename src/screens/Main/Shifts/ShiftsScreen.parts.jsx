@@ -714,6 +714,7 @@ export function HoursSourceToggle({
 export function SelectionSummary({
   heroValueMs,
   weekValueMs,
+  weekOvertimeMs,
   weekLabel,
   monthLabel,
   selectedDates,
@@ -738,6 +739,13 @@ export function SelectionSummary({
         <Text style={styles.selectionSummaryLabel}>
           {hasSelection ? t("shifts.selected") : weekLabel}
         </Text>
+        {!hasSelection && weekOvertimeMs > 0 ? (
+          <Text style={styles.selectionSummaryOvertime}>
+            {t("shifts.ofWhichOvertime", {
+              hours: formatDurationCompact(weekOvertimeMs),
+            })}
+          </Text>
+        ) : null}
       </View>
 
       <View style={styles.selectionSummaryDivider} />
@@ -795,6 +803,7 @@ export function ShiftWeekPicker({
   sourceColor,
   hoursSource,
   pendingManual,
+  dayOvertimeOf,
   selectMode,
   selectedDates,
   onDayPress,
@@ -966,6 +975,7 @@ export function ShiftWeekPicker({
             ? selectedDates.includes(dateKey)
             : dateKey === focusedDate;
           const isTodayCell = dateKey === todayDateKey;
+          const overtime = inMonth ? dayOvertimeOf?.(dateKey) : null;
 
           return (
             <TouchableOpacity
@@ -1017,6 +1027,15 @@ export function ShiftWeekPicker({
               >
                 {displayMs > 0 ? formatDurationShort(displayMs) : "–"}
               </Text>
+              {overtime && overtime.overtimeMs > 0 && displayMs > 0 ? (
+                <HoursBar
+                  styles={styles}
+                  totalMs={displayMs}
+                  overtimeMs={overtime.overtimeMs}
+                  pending={overtime.pending}
+                  onAccent={isOn}
+                />
+              ) : null}
             </TouchableOpacity>
           );
         })}
@@ -1045,9 +1064,149 @@ export function ShiftWeekPicker({
   );
 }
 
+// The day's hours as one bar: normal in blue, övertid in orange — paler
+// while the övertid still waits for a manager.
+export function HoursBar({
+  styles,
+  totalMs,
+  overtimeMs,
+  pending,
+  onAccent,
+  wide,
+}) {
+  const overtime = Math.min(overtimeMs, totalMs);
+  return (
+    <View
+      style={[
+        styles.hoursBar,
+        wide && styles.hoursBarWide,
+        onAccent && styles.hoursBarOnAccent,
+      ]}
+      testID="shifts-hours-bar"
+    >
+      {totalMs - overtime > 0 ? (
+        <View
+          style={[
+            styles.hoursBarNormal,
+            onAccent && styles.hoursBarNormalOnAccent,
+            { flex: totalMs - overtime },
+          ]}
+        />
+      ) : null}
+      <View
+        style={[
+          styles.hoursBarOvertime,
+          pending && styles.hoursBarPending,
+          { flex: overtime },
+        ]}
+      />
+    </View>
+  );
+}
+
+// "Normal 8 h" and "Övertid 2 h" with its status, in a shift card when the
+// day has övertid; a manager gets Godkänn / Neka while it waits.
+export function ShiftOvertime({
+  shift,
+  styles,
+  t,
+  semiBoldFontFamily,
+  canDecide,
+  busy,
+  onDecide,
+}) {
+  const overtimeMs = Number(shift.overtimeMs) || 0;
+  if (!overtimeMs) return null;
+  const totalMs =
+    shift.manualDurationMs != null
+      ? Number(shift.manualDurationMs)
+      : Number(shift.durationMs) || 0;
+  const pending = shift.overtimeStatus !== "approved";
+
+  return (
+    <View style={styles.overtimeBox}>
+      <HoursBar
+        styles={styles}
+        wide
+        totalMs={Math.max(totalMs, overtimeMs)}
+        overtimeMs={overtimeMs}
+        pending={pending}
+      />
+      <View style={styles.overtimeRow}>
+        <Text style={styles.overtimeLabel}>
+          {t("dayReport.hourType.normal")}
+        </Text>
+        <Text style={styles.overtimeValue}>
+          {formatDurationCompact(Math.max(0, totalMs - overtimeMs))}
+        </Text>
+      </View>
+      <View style={styles.overtimeRow}>
+        <Text style={styles.overtimeLabel}>
+          {t("dayReport.hourType.overtime")}
+        </Text>
+        <View style={styles.overtimeValueGroup}>
+          <Text
+            style={[
+              styles.overtimeChip,
+              pending ? styles.overtimeChipPending : styles.overtimeChipOk,
+            ]}
+          >
+            {pending
+              ? t("shifts.overtimePending")
+              : t("shifts.overtimeApproved")}
+          </Text>
+          <Text style={[styles.overtimeValue, styles.overtimeValueOrange]}>
+            {formatDurationCompact(overtimeMs)}
+          </Text>
+        </View>
+      </View>
+      {canDecide && pending ? (
+        <View style={styles.overtimeActions}>
+          <TouchableOpacity
+            style={styles.overtimeDeny}
+            onPress={() => onDecide(false)}
+            disabled={busy}
+            activeOpacity={0.85}
+          >
+            <Text
+              style={[
+                styles.overtimeDenyText,
+                { fontFamily: semiBoldFontFamily },
+              ]}
+            >
+              {t("shifts.denyOvertime")}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.overtimeApprove}
+            onPress={() => onDecide(true)}
+            disabled={busy}
+            activeOpacity={0.85}
+            testID="shifts-approve-overtime"
+          >
+            {busy ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Text
+                style={[
+                  styles.overtimeApproveText,
+                  { fontFamily: semiBoldFontFamily },
+                ]}
+              >
+                {t("shifts.approveOvertime")}
+              </Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
 // Manual hours for the chosen day, typed in a card under the week controls.
 // The value lands in the pending map like before and is saved with the header
-// check or the Save button here.
+// check or the Save button here. What goes over the day's plan is proposed as
+// övertid; − / + change it.
 export function DayHoursEntry({
   styles,
   t,
@@ -1056,10 +1215,14 @@ export function DayHoursEntry({
   seed,
   inlineValueRef,
   onStashInput,
+  onChangeTotal,
+  split,
+  onStepOvertime,
   onEdit,
   onSave,
   saving,
   pendingHours,
+  pendingOvertime,
   hasShifts,
   onLayout,
 }) {
@@ -1094,9 +1257,9 @@ export function DayHoursEntry({
             style={[styles.dayEntryInput, { fontFamily: semiBoldFontFamily }]}
             defaultValue={seed}
             onChangeText={(text) => {
-              inlineValueRef.current = text
-                .replace(/[^0-9.,]/g, "")
-                .slice(0, 5);
+              const clean = text.replace(/[^0-9.,]/g, "").slice(0, 5);
+              inlineValueRef.current = clean;
+              onChangeTotal?.(clean);
             }}
             keyboardType="decimal-pad"
             autoFocus
@@ -1109,22 +1272,104 @@ export function DayHoursEntry({
           />
           <Text style={styles.dayEntryUnit}>h</Text>
         </View>
+        {split ? (
+          <>
+            <View style={styles.dayEntryOvertimeRow}>
+              <Text style={styles.dayEntryLabel}>
+                {t("dayReport.hourType.overtime")}
+              </Text>
+              <View style={styles.dayEntryStepper}>
+                <TouchableOpacity
+                  style={styles.dayEntryStep}
+                  onPress={() => onStepOvertime(-0.5)}
+                  activeOpacity={0.7}
+                  accessibilityLabel="less overtime"
+                >
+                  <Icon
+                    name="minus"
+                    size={18}
+                    color={styles.weekNavIcon?.color}
+                  />
+                </TouchableOpacity>
+                <Text
+                  style={[
+                    styles.dayEntryStepValue,
+                    { fontFamily: semiBoldFontFamily },
+                  ]}
+                >
+                  {formatDurationShort(Math.round(split.overtime * 3600000))}
+                </Text>
+                <TouchableOpacity
+                  style={styles.dayEntryStep}
+                  onPress={() => onStepOvertime(0.5)}
+                  activeOpacity={0.7}
+                  accessibilityLabel="more overtime"
+                >
+                  <Icon
+                    name="plus"
+                    size={18}
+                    color={styles.weekNavIcon?.color}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+            {split.total > 0 ? (
+              <HoursBar
+                styles={styles}
+                wide
+                totalMs={split.total * 3600000}
+                overtimeMs={split.overtime * 3600000}
+                pending
+              />
+            ) : null}
+            <Text style={styles.dayEntryHint}>
+              {t("shifts.overtimeSplit", {
+                normal: formatDurationCompact(
+                  Math.round((split.total - split.overtime) * 3600000),
+                ),
+                overtime: formatDurationCompact(
+                  Math.round(split.overtime * 3600000),
+                ),
+                plan: formatDurationCompact(Math.round(split.plan * 3600000)),
+              })}
+            </Text>
+          </>
+        ) : null}
         {saveButton}
       </View>
     );
   }
 
   if (pendingHours != null) {
+    const totalMs = Math.round(pendingHours * 3600000);
+    const overtimeMs = Math.round((pendingOvertime || 0) * 3600000);
     return (
       <View style={styles.dayEntryCard} onLayout={onLayout}>
         <View style={styles.dayEntryValueRow}>
           <Text style={styles.dayEntryLabel}>{t("shifts.manualHours")}</Text>
           <TouchableOpacity onPress={onEdit} activeOpacity={0.6}>
             <Text style={styles.dayEntryValue}>
-              {formatDurationCompact(Math.round(pendingHours * 3600000))}
+              {formatDurationCompact(totalMs)}
             </Text>
           </TouchableOpacity>
         </View>
+        {overtimeMs > 0 ? (
+          <>
+            <HoursBar
+              styles={styles}
+              wide
+              totalMs={totalMs}
+              overtimeMs={overtimeMs}
+              pending
+            />
+            <Text style={styles.dayEntryHint}>
+              {t("shifts.overtimeSplitShort", {
+                normal: formatDurationCompact(totalMs - overtimeMs),
+                overtime: formatDurationCompact(overtimeMs),
+              })}
+            </Text>
+          </>
+        ) : null}
         {saveButton}
       </View>
     );

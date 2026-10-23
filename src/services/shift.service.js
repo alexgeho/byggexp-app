@@ -163,6 +163,14 @@ export const shiftService = {
     return data;
   },
 
+  // Godkänn / Neka a day's övertid. Denied overtime becomes normal hours.
+  decideOvertime: async (shiftId, approved) => {
+    const { data } = await api.patch(`/shifts/${shiftId}/overtime`, {
+      approved,
+    });
+    return data;
+  },
+
   // Manager attest of a day's hours.
   setApproval: async (shiftId, approved) => {
     const { data } = await api.patch(`/shifts/${shiftId}/approval`, {
@@ -193,13 +201,21 @@ export const shiftService = {
 
   // Create (or update) a manual-hours entry for a specific date, with no
   // clock-in. Workers may only pass their own workerId. Upserts by
-  // worker+project+date on the backend.
-  addManualHours: async ({ workerId, projectId, date, durationMs }) => {
+  // worker+project+date on the backend. overtimeMs is the part of the hours
+  // that is övertid.
+  addManualHours: async ({
+    workerId,
+    projectId,
+    date,
+    durationMs,
+    overtimeMs,
+  }) => {
     const { data } = await api.post("/shifts/manual", {
       workerId,
       projectId,
       date,
       durationMs,
+      overtimeMs,
     });
     return data;
   },

@@ -60,6 +60,12 @@ import {
   weekDateKeys,
 } from "../../../utils/shiftsCalendar";
 import {
+  dayOvertime,
+  dayPlanHours,
+  proposeOvertime,
+  stepOvertime,
+} from "../../../utils/overtime";
+import {
   getDocumentNameFromUrl,
   isImageDocument,
   isPdfDocument,
@@ -74,6 +80,7 @@ import {
   PeriodSheet,
   ProjectPickModal,
   SelectionSummary,
+  ShiftOvertime,
   ShiftWeekPicker,
 } from "./ShiftsScreen.parts";
 
@@ -170,11 +177,17 @@ export default function ShiftsScreen() {
   // clock-in. Holds the target date and the project to attach the hours to.
   const [manualDateEntry, setManualDateEntry] = useState(null);
   const [manualProjectId, setManualProjectId] = useState(null);
-  // Inline in-cell manual entry: the date whose calendar cell is being typed
-  // into, its seed text (defaultValue), and a ref holding the live text.
+  // Inline manual entry in the day card: the date being typed into, its seed
+  // text (defaultValue), and a ref holding the live text.
   const [inlineManualDate, setInlineManualDate] = useState(null);
   const [inlineManualSeed, setInlineManualSeed] = useState("");
   const inlineValueRef = useRef("");
+  // The typed total as text, for the live "8 h normal + 2 h övertid" line, and
+  // the övertid the worker set with − / + (null = proposed from the plan).
+  const [inlineTotalText, setInlineTotalText] = useState("");
+  const [inlineOvertime, setInlineOvertime] = useState(null);
+  // Unsaved övertid (hours) per date, alongside pendingManual.
+  const [pendingOvertime, setPendingOvertime] = useState({});
   // True while saveAllManual is committing, so the input's onBlur (fired by the
   // Keyboard.dismiss inside the save) doesn't double-stash and resurrect a
   // just-saved day as pending.
@@ -343,9 +356,10 @@ export default function ShiftsScreen() {
   // phone and web show the same planned hours.
   // Workers read it too: the backend hands them only their own row, so their
   // plan covers every working day of their site, not just the shift days.
+  // The Manuell tab reads it as well: övertid is what goes over the plan.
 
   useEffect(() => {
-    if (hoursSource !== "planned" || !selectedMonth) {
+    if (hoursSource === "gps" || !selectedMonth) {
       setPlannedByDate(null);
       return undefined;
     }
@@ -543,6 +557,32 @@ export default function ShiftsScreen() {
       ),
     [weekDates, selectedMonth, daySourceMs, dayMap],
   );
+  // The övertid in a day on the Manuell tab: the unsaved split while one is
+  // waiting to be saved, else what the day's shifts carry. null elsewhere.
+  const dayOvertimeOf = useCallback(
+    (date) => {
+      if (hoursSource !== "manual") return null;
+      if (pendingManual[date] != null) {
+        return {
+          overtimeMs: Math.round((pendingOvertime[date] || 0) * 3600000),
+          pending: true,
+        };
+      }
+      return dayOvertime(dayMap.get(date));
+    },
+    [hoursSource, pendingManual, pendingOvertime, dayMap],
+  );
+  const weekOvertimeMs = useMemo(
+    () =>
+      weekDates.reduce(
+        (sum, date) =>
+          selectedMonth && date.startsWith(selectedMonth)
+            ? sum + (dayOvertimeOf(date)?.overtimeMs || 0)
+            : sum,
+        0,
+      ),
+    [weekDates, selectedMonth, dayOvertimeOf],
+  );
   const summaryMonthLabel = useMemo(() => {
     const label = formatMonthLabel(selectedMonth);
     return label.charAt(0).toUpperCase() + label.slice(1);
@@ -594,12 +634,19 @@ export default function ShiftsScreen() {
     [hoursSource, setSelectedDates],
   );
 
-  // Begin typing hours straight into a day's calendar cell (Manuell tab). Seed
-  // from a pending edit if present, else from what's already saved.
+  // The day's planned hours, which övertid is counted from.
+  const planHoursFor = useCallback(
+    (dateStr) => dayPlanHours(dateStr, plannedByDate),
+    [plannedByDate],
+  );
+
+  // Begin typing hours into the day card (Manuell tab). Seed from a pending
+  // edit if present, else from what's already saved — the övertid too.
   const startInlineManual = useCallback(
     (dateStr) => {
       const pending = pendingManual[dateStr];
-      const savedMs = Number(dayMap.get(dateStr)?.manualDurationMs) || 0;
+      const day = dayMap.get(dateStr);
+      const savedMs = Number(day?.manualDurationMs) || 0;
       const hours =
         pending != null
           ? pending
@@ -609,6 +656,15 @@ export default function ShiftsScreen() {
       const seed = hours ? String(hours).replace(".", ",") : "";
       inlineValueRef.current = seed;
       setInlineManualSeed(seed);
+      setInlineTotalText(seed);
+      const pendingHours = pendingOvertime[dateStr];
+      setInlineOvertime(
+        pendingHours != null
+          ? pendingHours
+          : savedMs
+            ? dayOvertime(day).overtimeMs / 3600000
+            : null,
+      );
       setInlineManualDate(dateStr);
 
       // Park the edited day just above the keyboard (not jammed to the top).
@@ -625,7 +681,7 @@ export default function ShiftsScreen() {
         }, 300);
       }
     },
-    [dayMap, pendingManual],
+    [dayMap, pendingManual, pendingOvertime],
   );
 
   // Deep-link from a "log your hours" reminder push: switch to the Manual tab
@@ -647,59 +703,83 @@ export default function ShiftsScreen() {
     navigation,
   ]);
 
-  // Move the open cell's typed value into the pending map (no network). Dedups
-  // against the saved value so unchanged days don't count as unsaved.
-  const stashOpenInput = useCallback(() => {
+  // What the open day card holds: the hours and their övertid. `unchanged`
+  // when both match what is saved (nothing to save), `invalid` for text that
+  // isn't a number.
+  const readOpenEntry = useCallback(() => {
     const dateStr = inlineManualDate;
-    if (!dateStr || batchSavingRef.current) {
-      return;
+    if (!dateStr) {
+      return null;
     }
     const raw = String(inlineValueRef.current || "")
       .replace(",", ".")
       .trim();
-    const savedMs = Number(dayMap.get(dateStr)?.manualDurationMs) || 0;
-
-    setPendingManual((prev) => {
-      const next = { ...prev };
-      if (raw === "") {
-        // Empty clears to 0 only when there was a saved value to remove.
-        if (savedMs > 0) {
-          next[dateStr] = 0;
-        } else {
-          delete next[dateStr];
-        }
-        return next;
+    const day = dayMap.get(dateStr);
+    const savedMs = Number(day?.manualDurationMs) || 0;
+    let hours;
+    if (raw === "") {
+      // Empty clears to 0 only when there was a saved value to remove.
+      if (!savedMs) {
+        return { dateStr, unchanged: true };
       }
-      const hours = parseFloat(raw);
+      hours = 0;
+    } else {
+      hours = parseFloat(raw);
       if (!Number.isFinite(hours) || hours < 0) {
-        delete next[dateStr];
-        return next;
+        return { dateStr, invalid: true };
       }
-      const capped = Math.min(hours, 24);
-      if (Math.round(capped * 3600000) === savedMs) {
-        delete next[dateStr]; // same as saved — nothing to save
+      hours = Math.min(hours, 24);
+    }
+    const overtime = Math.min(
+      inlineOvertime ?? proposeOvertime(hours, planHoursFor(dateStr)),
+      hours,
+    );
+    const unchanged =
+      Math.round(hours * 3600000) === savedMs &&
+      Math.round(overtime * 3600000) === dayOvertime(day).overtimeMs;
+    return { dateStr, hours, overtime, unchanged };
+  }, [inlineManualDate, dayMap, inlineOvertime, planHoursFor]);
+
+  // Move the open card's typed value into the pending maps (no network).
+  const stashOpenInput = useCallback(() => {
+    if (batchSavingRef.current) {
+      return;
+    }
+    const entry = readOpenEntry();
+    if (!entry) {
+      return;
+    }
+    const keep = !entry.unchanged && !entry.invalid;
+    const update = (value) => (prev) => {
+      const next = { ...prev };
+      if (keep) {
+        next[entry.dateStr] = value;
       } else {
-        next[dateStr] = capped;
+        delete next[entry.dateStr];
       }
       return next;
-    });
-  }, [inlineManualDate, dayMap]);
+    };
+    setPendingManual(update(entry.hours));
+    setPendingOvertime(update(entry.overtime));
+  }, [readOpenEntry]);
 
-  // Write the collected days to one project, then refresh the month.
+  // Write the collected days ([date, hours, övertid]) to one project, then
+  // refresh the month.
   const commitManualBatch = useCallback(
     async (entries, projectId) => {
       try {
         setSavingBatch(true);
-        for (const [date, hours] of entries) {
-          const durationMs = Math.round(Number(hours) * 3600000);
+        for (const [date, hours, overtime] of entries) {
           await shiftService.addManualHours({
             workerId: currentUserId,
             projectId,
             date,
-            durationMs,
+            durationMs: Math.round(Number(hours) * 3600000),
+            overtimeMs: Math.round((Number(overtime) || 0) * 3600000),
           });
         }
         setPendingManual({});
+        setPendingOvertime({});
         await loadHistory(selectedMonth);
       } catch (error) {
         const message =
@@ -731,38 +811,36 @@ export default function ShiftsScreen() {
     [batchAwaitingProject, commitManualBatch, setSelectedProject],
   );
 
-  // The blue header check saves every pending day in one go (including the one
-  // still open in the input).
+  // The blue header check (or Spara in the card) saves every pending day in
+  // one go, including the one still open in the input.
   const saveAllManual = useCallback(async () => {
     batchSavingRef.current = true;
     Keyboard.dismiss();
 
-    // Merge the currently-open cell into a local copy so we don't race the
-    // async setPendingManual from stashOpenInput.
-    const merged = { ...pendingManual };
-    const openDate = inlineManualDate;
-    if (openDate) {
-      const raw = String(inlineValueRef.current || "")
-        .replace(",", ".")
-        .trim();
-      const savedMs = Number(dayMap.get(openDate)?.manualDurationMs) || 0;
-      if (raw === "") {
-        if (savedMs > 0) merged[openDate] = 0;
-        else delete merged[openDate];
+    // Merge the open card into local copies so we don't race the async
+    // setPendingManual from stashOpenInput.
+    const mergedManual = { ...pendingManual };
+    const mergedOvertime = { ...pendingOvertime };
+    const entry = readOpenEntry();
+    if (entry && !entry.invalid) {
+      if (entry.unchanged) {
+        delete mergedManual[entry.dateStr];
+        delete mergedOvertime[entry.dateStr];
       } else {
-        const hours = parseFloat(raw);
-        if (Number.isFinite(hours) && hours >= 0) {
-          const capped = Math.min(hours, 24);
-          if (Math.round(capped * 3600000) === savedMs) delete merged[openDate];
-          else merged[openDate] = capped;
-        }
+        mergedManual[entry.dateStr] = entry.hours;
+        mergedOvertime[entry.dateStr] = entry.overtime;
       }
     }
     setInlineManualDate(null);
 
-    const entries = Object.entries(merged);
+    const entries = Object.entries(mergedManual).map(([date, hours]) => [
+      date,
+      hours,
+      mergedOvertime[date] ?? proposeOvertime(hours, planHoursFor(date)),
+    ]);
     if (entries.length === 0) {
       setPendingManual({});
+      setPendingOvertime({});
       batchSavingRef.current = false;
       return;
     }
@@ -773,7 +851,8 @@ export default function ShiftsScreen() {
       return;
     }
     // Keep the typed days so nothing is lost while the worker decides.
-    setPendingManual(merged);
+    setPendingManual(mergedManual);
+    setPendingOvertime(mergedOvertime);
     if (projects.length === 0) {
       Alert.alert(t("shifts.manualHoursError"), t("shifts.manualNoProjects"));
       batchSavingRef.current = false;
@@ -782,13 +861,43 @@ export default function ShiftsScreen() {
     setBatchAwaitingProject(entries);
   }, [
     pendingManual,
-    inlineManualDate,
-    dayMap,
+    pendingOvertime,
+    readOpenEntry,
+    planHoursFor,
     resolveManualProjectId,
     commitManualBatch,
     projects.length,
     t,
   ]);
+
+  // The open card's live split, for "8 h normal + 2 h övertid" while typing.
+  const inlineSplit = useMemo(() => {
+    const total = Math.min(
+      Math.max(0, parseFloat(String(inlineTotalText).replace(",", ".")) || 0),
+      24,
+    );
+    const plan = inlineManualDate ? planHoursFor(inlineManualDate) : 0;
+    const overtime = Math.min(
+      inlineOvertime ?? proposeOvertime(total, plan),
+      total,
+    );
+    return { total, overtime, plan };
+  }, [inlineTotalText, inlineOvertime, inlineManualDate, planHoursFor]);
+
+  const changeInlineTotal = useCallback((text) => {
+    setInlineTotalText(text);
+    // A new total proposes its own split again.
+    setInlineOvertime(null);
+  }, []);
+
+  const stepInlineOvertime = useCallback(
+    (delta) => {
+      setInlineOvertime(
+        stepOvertime(inlineSplit.overtime, inlineSplit.total, delta),
+      );
+    },
+    [inlineSplit],
+  );
 
   // Inline hour entry writes to the CURRENT user only (workerId: currentUserId),
   // so it's only meaningful when the day's subject is unambiguously "me": a
@@ -1170,6 +1279,25 @@ export default function ShiftsScreen() {
     [approvingIds, refreshHistory, selectedMonth, t],
   );
 
+  // Godkänn / Neka övertid on a day of the people the manager looks at.
+  const decideOvertime = useCallback(
+    async (shift, approved) => {
+      const id = shift.id || shift._id;
+      if (!id || approvingIds.includes(id)) return;
+      setApprovingIds((previous) => [...previous, id]);
+      try {
+        await shiftService.decideOvertime(id, approved);
+        await refreshHistory(selectedMonth);
+      } catch (error) {
+        console.error("Failed to decide overtime:", error);
+        Alert.alert(t("common.error"), t("shifts.approveFailed"));
+      } finally {
+        setApprovingIds((previous) => previous.filter((item) => item !== id));
+      }
+    },
+    [approvingIds, refreshHistory, selectedMonth, t],
+  );
+
   const openManualHoursEditor = useCallback((shift) => {
     const ms = Number(shift?.manualDurationMs) || 0;
     const hours = Math.round((ms / 3600000) * 100) / 100;
@@ -1441,6 +1569,7 @@ export default function ShiftsScreen() {
             sourceColor={sourceMeta.color}
             hoursSource={hoursSource}
             pendingManual={pendingManual}
+            dayOvertimeOf={dayOvertimeOf}
             selectMode={selectMode}
             selectedDates={selectedDates}
             onDayPress={handleDayPress}
@@ -1465,9 +1594,13 @@ export default function ShiftsScreen() {
                   inlineValueRef={inlineValueRef}
                   onStashInput={stashOpenInput}
                   onEdit={() => handleEditDay(focusedDate)}
+                  onChangeTotal={changeInlineTotal}
+                  split={inlineSplit}
+                  onStepOvertime={stepInlineOvertime}
                   onSave={saveAllManual}
                   saving={savingBatch}
                   pendingHours={pendingManual[focusedDate]}
+                  pendingOvertime={pendingOvertime[focusedDate]}
                   hasShifts={detailShifts.length > 0}
                   onLayout={(e) => {
                     rowYRef.current[focusedDate] = e.nativeEvent.layout.y;
@@ -1524,6 +1657,16 @@ export default function ShiftsScreen() {
                           </Text>
                         </Text>
                       </View>
+
+                      <ShiftOvertime
+                        shift={shift}
+                        styles={styles}
+                        t={t}
+                        semiBoldFontFamily={theme.text.fontFamily["semiBold"]}
+                        canDecide={isAdmin}
+                        busy={approvingIds.includes(shift.id)}
+                        onDecide={(approved) => decideOvertime(shift, approved)}
+                      />
 
                       <View style={styles.shiftExpandedContent}>
                         {shift.status === "completed" &&
@@ -1796,6 +1939,7 @@ export default function ShiftsScreen() {
           <SelectionSummary
             heroValueMs={heroValueMs}
             weekValueMs={weekValueMs}
+            weekOvertimeMs={weekOvertimeMs}
             weekLabel={t("schedule.week", {
               number: getISOWeekNumber(new Date(`${weekDates[0]}T12:00:00`)),
             })}
