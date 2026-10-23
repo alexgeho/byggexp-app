@@ -532,7 +532,8 @@
     },
     "exportWhat": "Eksportuoti {{what}}",
     "totalHours": "Iš viso",
-    "workHours": "Darbo valandos"
+    "workHours": "Darbo valandos",
+    "pickDays": "Pasirinkti dienas"
   },
   "shiftHistory": {
     "title": "Dienos ataskaita",

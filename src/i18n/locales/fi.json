@@ -528,7 +528,8 @@
     },
     "exportWhat": "Vie {{what}}",
     "totalHours": "Yhteensä",
-    "workHours": "Työtunnit"
+    "workHours": "Työtunnit",
+    "pickDays": "Valitse päivät"
   },
   "shiftHistory": {
     "title": "Päiväraportti",

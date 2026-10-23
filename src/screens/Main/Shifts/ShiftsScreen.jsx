@@ -1455,6 +1455,10 @@ export default function ShiftsScreen() {
         ...(workerIdsParam ? { workerIds: workerIdsParam } : {}),
       });
       closeExportSheet();
+      if (selectedDates.length) {
+        clearSelectedDates();
+        setSelectMode(false);
+      }
     } catch (error) {
       const message =
         error?.response?.data?.message ||
@@ -1646,28 +1650,34 @@ export default function ShiftsScreen() {
         >
           {t("menu.workShifts")}
         </Text>
-        {/* Saving lives in the day card (✓ in the Arbetstimmar row); one
-            blue check per screen. */}
-        {
+        {/* Export is a manager's errand, not why a worker opens the screen:
+            a quiet share button here instead of the big blue one below. */}
+        {selectMode ? (
           <TouchableOpacity
-            style={[
-              styles.headerSelectButton,
-              selectMode && styles.headerSelectButtonActive,
-            ]}
-            onPress={() => setSelectMode((mode) => !mode)}
+            style={styles.headerSelectButton}
+            onPress={openExportSheet}
             activeOpacity={0.85}
           >
             <Text
               style={[
                 styles.headerSelectText,
-                selectMode && styles.headerSelectTextActive,
                 { fontFamily: theme.text.fontFamily["semiBold"] },
               ]}
             >
-              {selectMode ? t("shifts.selectDone") : t("shifts.selectDays")}
+              {t("shiftHistory.export")}
             </Text>
           </TouchableOpacity>
-        }
+        ) : (
+          <TouchableOpacity
+            style={styles.headerShareButton}
+            onPress={openExportSheet}
+            activeOpacity={0.85}
+            accessibilityLabel={t("shiftHistory.export")}
+            testID="shifts-export"
+          >
+            <Icon name="share" size={20} color={styles.weekNavIcon?.color} />
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* Only block the whole screen on the FIRST load (no data yet). On every
@@ -2185,7 +2195,10 @@ export default function ShiftsScreen() {
               monthLabel={summaryMonthLabel}
               selectedDates={selectedDates}
               selectionSummary={selectionSummary}
-              onClearSelection={clearSelectedDates}
+              onClearSelection={() => {
+                clearSelectedDates();
+                setSelectMode(false);
+              }}
               styles={styles}
               regularFontFamily={theme.text.fontFamily["regular"]}
               t={t}
@@ -2197,19 +2210,7 @@ export default function ShiftsScreen() {
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
-        onAddPress={openExportSheet}
-        showAddButton
-        renderAddContent={() => (
-          <Text
-            style={styles.exportFabText}
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            minimumFontScale={0.7}
-          >
-            {t("shiftHistory.export")}
-          </Text>
-        )}
-        addButtonStyle={styles.exportFabButton}
+        showAddButton={false}
       />
 
       <ExportSheet
@@ -2220,6 +2221,14 @@ export default function ShiftsScreen() {
         exporting={exporting}
         onExport={handleExport}
         hasSelection={selectedDates.length > 0 || exportPeriodApplied}
+        onPickDays={
+          selectMode
+            ? null
+            : () => {
+                setExportSheetOpen(false);
+                setSelectMode(true);
+              }
+        }
         exportLabel={
           selectedDates.length
             ? null

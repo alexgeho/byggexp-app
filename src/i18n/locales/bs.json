@@ -531,7 +531,8 @@
     },
     "exportWhat": "Izvezi {{what}}",
     "totalHours": "Ukupno",
-    "workHours": "Radni sati"
+    "workHours": "Radni sati",
+    "pickDays": "Odaberi dane"
   },
   "shiftHistory": {
     "title": "Dnevni izvještaj",

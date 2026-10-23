@@ -329,6 +329,7 @@ export function ExportSheet({
   periodLabel,
   onPickPeriod,
   exportLabel,
+  onPickDays,
   styles,
   sheetStyles,
   titleFontFamily,
@@ -409,6 +410,16 @@ export function ExportSheet({
               </View>
             </View>
           </View>
+
+          {onPickDays ? (
+            <TouchableOpacity
+              style={styles.exportPickDays}
+              onPress={onPickDays}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.dayEntryLink}>{t("shifts.pickDays")}</Text>
+            </TouchableOpacity>
+          ) : null}
 
           <TouchableOpacity
             style={[

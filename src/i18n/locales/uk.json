@@ -532,7 +532,8 @@
     },
     "exportWhat": "Експорт: {{what}}",
     "totalHours": "Разом",
-    "workHours": "Робочі години"
+    "workHours": "Робочі години",
+    "pickDays": "Вибрати дні"
   },
   "shiftHistory": {
     "title": "Денний звіт",

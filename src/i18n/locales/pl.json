@@ -532,7 +532,8 @@
     },
     "exportWhat": "Eksportuj {{what}}",
     "totalHours": "Razem",
-    "workHours": "Godziny pracy"
+    "workHours": "Godziny pracy",
+    "pickDays": "Wybierz dni"
   },
   "shiftHistory": {
     "title": "Raport dzienny",

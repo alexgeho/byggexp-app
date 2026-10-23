@@ -642,6 +642,20 @@ export const createStyles = (c) =>
       fontSize: 13,
     },
     /* Arbetstimmar: the same row as Övertid / OB, a small cell instead of − / + */
+    headerShareButton: {
+      width: size.headerButton,
+      height: size.headerButton,
+      borderRadius: radius.control,
+      borderWidth: size.border,
+      borderColor: c.border,
+      backgroundColor: c.surface,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    exportPickDays: {
+      alignSelf: "center",
+      paddingVertical: 10,
+    },
     dayEntryHoursCell: {
       width: 52,
       height: size.headerButton,

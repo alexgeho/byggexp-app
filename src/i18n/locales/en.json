@@ -528,7 +528,8 @@
     },
     "exportWhat": "Export {{what}}",
     "totalHours": "Total",
-    "workHours": "Work hours"
+    "workHours": "Work hours",
+    "pickDays": "Pick days"
   },
   "shiftHistory": {
     "title": "Daily report",
