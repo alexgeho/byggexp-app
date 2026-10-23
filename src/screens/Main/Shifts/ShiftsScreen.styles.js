@@ -197,152 +197,255 @@ export const createStyles = (c) =>
       height: 16,
       tintColor: c.textPrimary,
     },
-    calendarContainer: {
-      width: "100%",
+    /* Week view: every control in one card — month, week, days, day */
+    weekCard: {
+      backgroundColor: c.surface,
+      borderRadius: radius.card,
+      padding: 12,
+      gap: 12,
       marginBottom: 12,
     },
-    calendarMonthBar: {
-      paddingTop: 10,
-      paddingBottom: 14,
-    },
-    calendarNav: {
+    weekMonthRow: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      gap: 12,
     },
-    calendarNavButton: {
-      // Dark: the dim blue 16px chevrons were hard to see — white, larger,
-      // with a thumb-sized target.
-      width: onDark(c, 40, 16),
-      height: onDark(c, 40, 16),
+    weekMonthButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      minHeight: size.headerButton,
+      paddingHorizontal: 4,
+    },
+    weekMonthText: {
+      color: c.textPrimary,
+      fontSize: 18,
+      fontWeight: "600",
+    },
+    todayChip: {
+      height: 36,
+      paddingHorizontal: 14,
+      borderRadius: radius.control,
+      backgroundColor: onDark(c, c.surfaceMuted, "rgba(7, 133, 244, 0.12)"),
       alignItems: "center",
       justifyContent: "center",
     },
-    calendarNavIcon: {
-      color: onDark(c, c.textPrimary, "#0177DE"),
-      fontSize: onDark(c, 28, 16),
+    todayChipText: {
+      color: onDark(c, c.textPrimary, "#0785F4"),
+      fontSize: 15,
+      fontWeight: "600",
     },
-    calendarNavButtonDisabled: {
-      opacity: 0.45,
+    monthGrid: {
+      gap: 8,
     },
-    calendarNavLabel: {
-      flex: 1,
+    monthGridYearRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    monthGridYearButton: {
+      width: size.headerButton,
+      height: size.headerButton,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    monthGridYear: {
+      color: c.textPrimary,
+      fontSize: 17,
+      fontWeight: "600",
+    },
+    monthGridCells: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      justifyContent: "space-between",
+      rowGap: 8,
+    },
+    monthGridCell: {
+      width: "23.5%",
+      height: size.headerButton,
+      borderRadius: 12,
+      backgroundColor: c.background,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    monthGridCellOn: {
+      backgroundColor: "#0785F4",
+    },
+    monthGridCellText: {
       color: c.textPrimary,
       fontSize: 15,
-      fontWeight: "500",
-      lineHeight: 22,
-      textAlign: "center",
+      fontWeight: "600",
     },
-    calendarHeader: {
-      flexDirection: "row",
-      alignItems: "center",
-      marginBottom: 8,
-      gap: 8,
-    },
-    calendarWeekHeaderCell: {
-      width: 28,
-    },
-    calendarDaysHeader: {
-      flex: 1,
-      flexDirection: "row",
-      justifyContent: "space-between",
-    },
-    calendarHeaderDayButton: {
-      width: 40,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    calendarHeaderDay: {
-      color: c.textPrimary,
-      fontSize: 14,
-      fontWeight: "300",
-      textAlign: "center",
-    },
-    calendarRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      marginBottom: 8,
-      gap: 8,
-    },
-    calendarWeekNumberCell: {
-      width: 28,
-      height: 40,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    calendarWeekNumberText: {
-      color: c.textMuted,
-      fontSize: 12,
-      fontWeight: "500",
-      textAlign: "center",
-    },
-    calendarDaysRow: {
-      flex: 1,
-      flexDirection: "row",
-      justifyContent: "space-between",
-    },
-    calendarCell: {
-      width: 42,
-      height: 42,
-      justifyContent: "center",
-      alignItems: "center",
-      gap: 1,
-      paddingVertical: 5,
-      borderRadius: 6,
-      backgroundColor: onDark(c, c.surfaceMuted, "rgba(255, 255, 255, 0.4)"),
-      borderWidth: 1,
-      borderColor: c.border,
-    },
-    calendarCellToday: {
-      backgroundColor: c.surface,
-    },
-    calendarCellSelected: {
-      backgroundColor: "rgba(7, 133, 244, 0.6)",
-      borderWidth: 1,
-      borderColor: c.border,
-    },
-    calendarCellEmpty: {
-      width: 42,
-      height: 42,
-    },
-    calendarDay: {
-      fontFamily: "DMSans-Regular",
-      color: c.textPrimary,
-      fontSize: 14,
-      opacity: 0.5,
-    },
-    calendarDayToday: {
-      opacity: 1,
-    },
-    calendarDaySelected: {
+    monthGridCellTextOn: {
       color: "#FFFFFF",
-      opacity: 1,
     },
-    calendarHours: {
-      fontFamily: "DMSans-Medium",
+    weekNavRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 8,
+    },
+    weekNavButton: {
+      width: size.headerButton,
+      height: size.headerButton,
+      borderRadius: 12,
+      backgroundColor: c.background,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    weekNavButtonDisabled: {
+      opacity: 0.35,
+    },
+    weekNavIcon: {
+      color: onDark(c, c.textPrimary, "#0177DE"),
+    },
+    weekNavTitleBox: {
+      flex: 1,
+      alignItems: "center",
+    },
+    weekNavTitle: {
       color: c.textPrimary,
-      fontSize: 10,
-      opacity: 0.5,
-      backgroundColor: c.surface,
-      paddingHorizontal: 6,
-      paddingVertical: 1,
-      borderRadius: 6,
-      marginBottom: 2,
+      fontSize: 17,
+      fontWeight: "600",
     },
-    calendarHoursInput: {
-      fontFamily: "DMSans-Bold",
-      color: onDark(c, c.warning, "#B8760A"),
+    weekNavSub: {
+      color: c.textSecondary,
+      fontSize: 13,
+    },
+    weekStrip: {
+      flexDirection: "row",
+      gap: 4,
+    },
+    weekDay: {
+      flex: 1,
+      minHeight: 72,
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 2,
+      paddingVertical: 8,
+      borderRadius: 12,
+      borderWidth: 1.5,
+      borderColor: "transparent",
+      backgroundColor: c.background,
+    },
+    weekDayToday: {
+      borderColor: "#0785F4",
+    },
+    weekDayOn: {
+      backgroundColor: "#0785F4",
+      borderColor: "#0785F4",
+    },
+    weekDayOut: {
+      opacity: 0.4,
+    },
+    weekDayName: {
+      color: c.textSecondary,
       fontSize: 12,
-      textAlign: "center",
-      width: 36,
-      height: 18,
-      paddingHorizontal: 2,
-      paddingVertical: 0,
-      marginBottom: 1,
-      borderRadius: 6,
+      fontWeight: "500",
+    },
+    weekDayNumber: {
+      color: c.textPrimary,
+      fontSize: 21,
+      fontWeight: "600",
+      fontVariant: ["tabular-nums"],
+    },
+    weekDayHours: {
+      fontSize: 13,
+      fontWeight: "700",
+      lineHeight: 16,
+    },
+    weekDayHoursEmpty: {
+      color: c.textMuted,
+      fontWeight: "400",
+    },
+    weekDayTextOn: {
+      color: "#FFFFFF",
+    },
+    dayBar: {
+      borderTopWidth: size.border,
+      borderTopColor: c.border,
+      paddingTop: 12,
+    },
+    dayBarTitle: {
+      color: c.textPrimary,
+      fontSize: 17,
+      fontWeight: "600",
+    },
+
+    /* The chosen day's manual hours, under the week card */
+    dayEntryCard: {
       backgroundColor: c.surface,
+      borderRadius: radius.card,
+      padding: 16,
+      gap: 12,
+    },
+    dayEntryLabel: {
+      color: c.textSecondary,
+      fontSize: 15,
+    },
+    dayEntryInputRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+      height: 56,
+      paddingHorizontal: 16,
+      borderRadius: 12,
+      backgroundColor: c.background,
+    },
+    dayEntryInput: {
+      flex: 1,
+      color: c.textPrimary,
+      fontSize: 28,
+      fontWeight: "600",
+      paddingVertical: 0,
       includeFontPadding: false,
+    },
+    dayEntryUnit: {
+      color: c.textSecondary,
+      fontSize: 20,
+    },
+    dayEntryValueRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    dayEntryValue: {
+      color: onDark(c, c.warning, "#B8760A"),
+      fontSize: 20,
+      fontWeight: "600",
+    },
+    dayEntryEmpty: {
+      color: c.textSecondary,
+      fontSize: 15,
+      textAlign: "center",
+    },
+    dayEntryPrimary: {
+      height: size.control,
+      borderRadius: radius.control,
+      backgroundColor: "#0785F4",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    dayEntryPrimaryText: {
+      color: "#FFFFFF",
+      fontSize: 15,
+      fontWeight: "600",
+    },
+    dayEntrySecondary: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+      height: size.control,
+      borderRadius: radius.control,
+      borderWidth: size.border,
+      borderColor: c.border,
+      backgroundColor: c.surface,
+    },
+    dayEntrySecondaryText: {
+      color: onDark(c, c.textPrimary, "#0177DE"),
+      fontSize: 15,
+      fontWeight: "600",
     },
     headerSaveButton: {
       width: 48,
@@ -367,17 +470,6 @@ export const createStyles = (c) =>
       fontFamily: "DMSans-Medium",
       color: onDark(c, c.warning, "#B8760A"),
       fontSize: 13,
-    },
-    calendarPlus: {
-      fontFamily: "DMSans-Bold",
-      color: "#F59E0B",
-      fontSize: 14,
-      lineHeight: 14,
-      opacity: 0.55,
-    },
-    calendarPlusSelected: {
-      color: "#FFFFFF",
-      opacity: 0.9,
     },
     pendingDot: {
       position: "absolute",

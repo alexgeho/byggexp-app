@@ -88,3 +88,34 @@ export const buildCalendarLayout = (selectedMonth) => {
 
   return { columnDates, rowDates, rows };
 };
+
+// Week view helpers. Dates travel as "YYYY-MM-DD" keys and are moved with
+// setDate on a local date, so stepping by days never lands on the wrong day
+// across a daylight-saving change.
+const toDateKey = (date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+const dateFromKey = (dateKey) => {
+  const [year, month, day] = String(dateKey).split("-").map(Number);
+  return new Date(year, month - 1, day);
+};
+
+export const addDaysToKey = (dateKey, days) => {
+  const date = dateFromKey(dateKey);
+  date.setDate(date.getDate() + days);
+  return toDateKey(date);
+};
+
+export const monthKeyOf = (dateKey) => String(dateKey).slice(0, 7);
+
+// Monday of the week the date falls in.
+export const weekStartKey = (dateKey) => {
+  const date = dateFromKey(dateKey);
+  return addDaysToKey(dateKey, -((date.getDay() + 6) % 7));
+};
+
+// The seven date keys, Monday first, of the week the date falls in.
+export const weekDateKeys = (dateKey) => {
+  const start = weekStartKey(dateKey);
+  return Array.from({ length: 7 }, (_, index) => addDaysToKey(start, index));
+};

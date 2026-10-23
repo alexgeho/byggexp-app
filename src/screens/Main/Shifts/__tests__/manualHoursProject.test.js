@@ -101,7 +101,8 @@ async function typeEightAndSave(projects, setSelectedProject = jest.fn()) {
   const input = tree.root.findAllByType(TextInput)[0];
   await act(async () => input.props.onChangeText("8"));
   const save = tree.root.find(
-    (n) => n.type === TouchableOpacity && n.props.testID === "shifts-save-manual",
+    (n) =>
+      n.type === TouchableOpacity && n.props.testID === "shifts-save-manual",
   );
   await act(async () => save.props.onPress());
   await act(async () => {});

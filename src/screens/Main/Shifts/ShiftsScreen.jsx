@@ -49,13 +49,16 @@ import {
   formatMonthLabel,
   formatTimeRange,
   formatShiftListProjectName,
-  getAdjacentMonthKey,
   getCurrentMonthKey,
   getMonthDateRange,
   getTodayDateKey,
   resolveUploadUrl,
 } from "../../../utils/shifts";
-import { buildCalendarLayout } from "../../../utils/shiftsCalendar";
+import {
+  getISOWeekNumber,
+  monthKeyOf,
+  weekDateKeys,
+} from "../../../utils/shiftsCalendar";
 import {
   getDocumentNameFromUrl,
   isImageDocument,
@@ -63,6 +66,7 @@ import {
 } from "../../../utils/documentPreview";
 import { createStyles } from "./ShiftsScreen.styles";
 import {
+  DayHoursEntry,
   EmployeePickerModal,
   ExportSheet,
   HoursSourceToggle,
@@ -70,7 +74,7 @@ import {
   PeriodSheet,
   ProjectPickModal,
   SelectionSummary,
-  ShiftCalendar,
+  ShiftWeekPicker,
 } from "./ShiftsScreen.parts";
 
 // Plain-Modal bottom sheet — replaces @gorhom/bottom-sheet, which hangs the JS
@@ -312,13 +316,17 @@ export default function ShiftsScreen() {
 
   const currentMonthKey = useMemo(() => getCurrentMonthKey(), []);
   const todayDateKey = useMemo(() => getTodayDateKey(), []);
+  // The day the week view is on. Always a day (opens on today), so the card
+  // under the week is never empty and nobody has to discover a tap first.
+  const [focusedDate, setFocusedDate] = useState(
+    () => route.params?.date || todayDateKey,
+  );
 
   const {
     loading,
     days,
     availableMonths,
     currentMonthDuration,
-    previousMonthDuration,
     selectedMonth,
     setSelectedMonth,
     selectedDates,
@@ -439,10 +447,17 @@ export default function ShiftsScreen() {
     return map;
   }, [days]);
 
-  const selectedShifts = useMemo(() => {
+  // The days whose shifts the cards below the week show: the picked days in
+  // select mode, otherwise the one day the week view is on.
+  const detailDates = useMemo(
+    () => (selectMode ? selectedDates : [focusedDate]),
+    [selectMode, selectedDates, focusedDate],
+  );
+
+  const detailShifts = useMemo(() => {
     const shifts = [];
 
-    selectedDates.forEach((date) => {
+    detailDates.forEach((date) => {
       const day = dayMap.get(date);
       (day?.shifts || []).forEach((shift) => {
         shifts.push({ ...shift, date });
@@ -454,7 +469,7 @@ export default function ShiftsScreen() {
       const rightTime = new Date(right.startedAt || 0).getTime();
       return leftTime - rightTime;
     });
-  }, [dayMap, selectedDates]);
+  }, [dayMap, detailDates]);
 
   const selectionSummary = useMemo(() => {
     if (!selectedDates.length) {
@@ -513,6 +528,25 @@ export default function ShiftsScreen() {
     selectedMonth,
     plannedByDate,
   ]);
+
+  // The week's total under the active source. Only the loaded month counts:
+  // the days of a week that spill into the next month have no data yet.
+  const weekDates = useMemo(() => weekDateKeys(focusedDate), [focusedDate]);
+  const weekValueMs = useMemo(
+    () =>
+      weekDates.reduce(
+        (sum, date) =>
+          selectedMonth && date.startsWith(selectedMonth)
+            ? sum + daySourceMs(dayMap.get(date), date)
+            : sum,
+        0,
+      ),
+    [weekDates, selectedMonth, daySourceMs, dayMap],
+  );
+  const summaryMonthLabel = useMemo(() => {
+    const label = formatMonthLabel(selectedMonth);
+    return label.charAt(0).toUpperCase() + label.slice(1);
+  }, [selectedMonth]);
 
   const toggleDateGroup = useCallback(
     (dates) => {
@@ -602,6 +636,7 @@ export default function ShiftsScreen() {
     }
     handledHoursEntryRef.current = true;
     setHoursSource("manual");
+    setFocusedDate(route.params.date || todayDateKey);
     startInlineManual(route.params.date || todayDateKey);
     navigation.setParams({ openHoursEntry: undefined, date: undefined });
   }, [
@@ -740,10 +775,7 @@ export default function ShiftsScreen() {
     // Keep the typed days so nothing is lost while the worker decides.
     setPendingManual(merged);
     if (projects.length === 0) {
-      Alert.alert(
-        t("shifts.manualHoursError"),
-        t("shifts.manualNoProjects"),
-      );
+      Alert.alert(t("shifts.manualHoursError"), t("shifts.manualNoProjects"));
       batchSavingRef.current = false;
       return;
     }
@@ -768,35 +800,47 @@ export default function ShiftsScreen() {
       (filterWorkerIds.length === 1 &&
         String(filterWorkerIds[0]) === String(currentUserId)));
 
-  // Tapping a day OPENS it (its shifts, photos and project show in the panel
-  // below) — no keyboard, any half-typed cell is banked first. In select mode a
-  // tap instead accumulates days for export; outside it a tap focuses a single
-  // day (tapping the focused day again closes it).
-  const handleDayPress = useCallback(
+  // Move the week view to a day (week/day arrows, a day in the strip, "Idag").
+  // Any half-typed hours are banked first. Hours load one month at a time, so
+  // stepping into another month loads that month.
+  const focusDate = useCallback(
     (dateStr) => {
       if (inlineManualDate) {
         stashOpenInput();
         setInlineManualDate(null);
       }
+      setFocusedDate(dateStr);
+      const monthKey = monthKeyOf(dateStr);
+      if (selectedMonth && monthKey !== selectedMonth) {
+        refreshHistory(monthKey);
+      }
+    },
+    [inlineManualDate, stashOpenInput, selectedMonth, refreshHistory],
+  );
+
+  // A month from the month grid: today in the current month, else the 1st.
+  const pickMonth = useCallback(
+    (monthKey) => {
+      focusDate(monthKey === currentMonthKey ? todayDateKey : `${monthKey}-01`);
+    },
+    [focusDate, currentMonthKey, todayDateKey],
+  );
+
+  // In select mode a tap on a day collects it for export; otherwise it shows
+  // that day under the week.
+  const handleDayPress = useCallback(
+    (dateStr) => {
       if (selectMode) {
         toggleSelectedDate(dateStr);
       } else {
-        setSelectedDates((prev) =>
-          prev.length === 1 && prev[0] === dateStr ? [] : [dateStr],
-        );
+        focusDate(dateStr);
       }
     },
-    [
-      inlineManualDate,
-      stashOpenInput,
-      selectMode,
-      toggleSelectedDate,
-      setSelectedDates,
-    ],
+    [selectMode, toggleSelectedDate, focusDate],
   );
 
-  // Entering/editing hours is a separate, explicit tap on the cell's hours/＋
-  // area (only rendered when canInlineEnter). Banks the previously open cell.
+  // Entering/editing hours is an explicit tap on the day card's button (only
+  // rendered when canInlineEnter). Banks the previously open day.
   const handleEditDay = useCallback(
     (dateStr) => {
       if (inlineManualDate === dateStr) {
@@ -809,29 +853,6 @@ export default function ShiftsScreen() {
   );
 
   const hasPendingManual = Object.keys(pendingManual).length > 0;
-
-  const calendarLayout = useMemo(
-    () => buildCalendarLayout(selectedMonth),
-    [selectedMonth],
-  );
-
-  // Whole-column / whole-row selection is a multi-select shortcut, so it only
-  // acts in select mode (outside it a tap focuses a single day).
-  const toggleWeekdayColumn = useCallback(
-    (columnIndex) => {
-      if (!selectMode) return;
-      toggleDateGroup(calendarLayout.columnDates[columnIndex] || []);
-    },
-    [selectMode, calendarLayout.columnDates, toggleDateGroup],
-  );
-
-  const toggleWeekRow = useCallback(
-    (rowIndex) => {
-      if (!selectMode) return;
-      toggleDateGroup(calendarLayout.rowDates[rowIndex] || []);
-    },
-    [selectMode, calendarLayout.rowDates, toggleDateGroup],
-  );
 
   const handleOpenShiftPhoto = useCallback(
     async (photo) => {
@@ -872,31 +893,6 @@ export default function ShiftsScreen() {
       }
     },
     [navigation, t],
-  );
-
-  const canGoBackMonth = Boolean(selectedMonth);
-  const canGoForwardMonth = Boolean(
-    selectedMonth && selectedMonth < currentMonthKey,
-  );
-
-  const handleChangeMonth = useCallback(
-    async (delta) => {
-      if (!selectedMonth) {
-        return;
-      }
-
-      const nextMonth = getAdjacentMonthKey(selectedMonth, delta);
-      if (!nextMonth) {
-        return;
-      }
-
-      if (delta > 0 && nextMonth > currentMonthKey) {
-        return;
-      }
-
-      await refreshHistory(nextMonth);
-    },
-    [currentMonthKey, refreshHistory, selectedMonth],
   );
 
   const exportPeriodLabel = useMemo(() => {
@@ -1423,68 +1419,76 @@ export default function ShiftsScreen() {
             </View>
           ) : null}
 
-          {/* Single minimalist summary, coloured by the active source */}
-          <SelectionSummary
-            heroValueMs={heroValueMs}
-            previousMonthDuration={previousMonthDuration}
-            selectedDates={selectedDates}
-            selectionSummary={selectionSummary}
-            onClearSelection={clearSelectedDates}
-            styles={styles}
-            regularFontFamily={theme.text.fontFamily["regular"]}
-            t={t}
-          />
-
           {selectMode ? (
             <Text style={styles.selectModeHint} numberOfLines={1}>
               {t("shifts.selectDaysHint")}
             </Text>
           ) : null}
 
-          <ShiftCalendar
+          {/* Controls on top (month, week, days, day), the day's information
+              below them. */}
+          <ShiftWeekPicker
             styles={styles}
             t={t}
-            calendarYRef={calendarYRef}
-            canGoBackMonth={canGoBackMonth}
-            canGoForwardMonth={canGoForwardMonth}
-            onPrevMonth={() => handleChangeMonth(-1)}
-            onNextMonth={() => handleChangeMonth(1)}
-            selectedMonth={selectedMonth}
             semiBoldFontFamily={theme.text.fontFamily["semiBold"]}
-            weekdayLabels={weekdayLabels}
-            onToggleColumn={toggleWeekdayColumn}
-            calendarLayout={calendarLayout}
-            dayMap={dayMap}
-            selectedDates={selectedDates}
+            focusedDate={focusedDate}
             todayDateKey={todayDateKey}
-            onDayPress={handleDayPress}
-            onEditDay={handleEditDay}
-            canEditDay={canInlineEnter}
-            selectMode={selectMode}
-            onToggleWeekRow={toggleWeekRow}
+            selectedMonth={selectedMonth}
+            maxMonthKey={currentMonthKey}
+            weekdayLabels={weekdayLabels}
+            dayMap={dayMap}
             daySourceMs={daySourceMs}
             sourceColor={sourceMeta.color}
             hoursSource={hoursSource}
-            inlineManualDate={inlineManualDate}
-            inlineManualSeed={inlineManualSeed}
-            inlineValueRef={inlineValueRef}
-            onStashInput={stashOpenInput}
             pendingManual={pendingManual}
-            rowYRef={rowYRef}
+            selectMode={selectMode}
+            selectedDates={selectedDates}
+            onDayPress={handleDayPress}
+            onFocusDate={focusDate}
+            onPickMonth={pickMonth}
           />
 
-          <View style={styles.shiftDetailsContainer}>
+          <View
+            style={styles.shiftDetailsContainer}
+            onLayout={(e) => {
+              calendarYRef.current = e.nativeEvent.layout.y;
+            }}
+          >
             <View style={styles.shiftDetailsContent}>
-              {selectedDates.length === 0 ? (
+              {!selectMode && canInlineEnter ? (
+                <DayHoursEntry
+                  styles={styles}
+                  t={t}
+                  semiBoldFontFamily={theme.text.fontFamily["semiBold"]}
+                  isEditing={inlineManualDate === focusedDate}
+                  seed={inlineManualSeed}
+                  inlineValueRef={inlineValueRef}
+                  onStashInput={stashOpenInput}
+                  onEdit={() => handleEditDay(focusedDate)}
+                  onSave={saveAllManual}
+                  saving={savingBatch}
+                  pendingHours={pendingManual[focusedDate]}
+                  hasShifts={detailShifts.length > 0}
+                  onLayout={(e) => {
+                    rowYRef.current[focusedDate] = e.nativeEvent.layout.y;
+                  }}
+                />
+              ) : null}
+              {selectMode && selectedDates.length === 0 ? (
                 <Text style={styles.emptyDetailsText}>
                   {t("shifts.selectDatesHint")}
                 </Text>
-              ) : selectedShifts.length === 0 ? (
-                <Text style={styles.emptyDetailsText}>
-                  {t("shifts.noShiftsSelected")}
-                </Text>
+              ) : detailShifts.length === 0 ? (
+                // The manual-hours card already says the day is empty.
+                !selectMode && canInlineEnter ? null : (
+                  <Text style={styles.emptyDetailsText}>
+                    {selectMode
+                      ? t("shifts.noShiftsSelected")
+                      : t("shifts.noShiftsDay")}
+                  </Text>
+                )
               ) : (
-                selectedShifts.map((shift) => {
+                detailShifts.map((shift) => {
                   return (
                     <View key={shift.id} style={styles.shiftCard}>
                       {isAdmin && shift.workerName ? (
@@ -1788,6 +1792,21 @@ export default function ShiftsScreen() {
               )}
             </View>
           </View>
+
+          <SelectionSummary
+            heroValueMs={heroValueMs}
+            weekValueMs={weekValueMs}
+            weekLabel={t("schedule.week", {
+              number: getISOWeekNumber(new Date(`${weekDates[0]}T12:00:00`)),
+            })}
+            monthLabel={summaryMonthLabel}
+            selectedDates={selectedDates}
+            selectionSummary={selectionSummary}
+            onClearSelection={clearSelectedDates}
+            styles={styles}
+            regularFontFamily={theme.text.fontFamily["regular"]}
+            t={t}
+          />
         </ScrollView>
       )}
 

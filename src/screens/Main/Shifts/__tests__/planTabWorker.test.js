@@ -120,8 +120,16 @@ test("a worker's plan tab shows every planned day of the home project", async ()
   await act(async () => {});
   // Scoped to the project picked on the home screen.
   expect(hoursService.getGrid.mock.calls[0][0].projectId).toBe(PROJECT);
-  const eights = tree.root
-    .findAllByType(Text)
-    .filter((n) => n.props.children === "8");
-  expect(eights.length).toBe(6);
+  const eights = () =>
+    tree.root.findAllByType(Text).filter((n) => n.props.children === "8");
+  // Week 39 (21–27 Sep): Wed–Fri are planned.
+  expect(eights().length).toBe(3);
+  // Week 40: Mon–Wed 28–30 Sep are planned; the October days are not loaded.
+  const nextWeek = tree.root.find(
+    (n) =>
+      n.type === TouchableOpacity && n.props.accessibilityLabel === "next week",
+  );
+  await act(async () => nextWeek.props.onPress());
+  await act(async () => {});
+  expect(eights().length).toBe(3);
 });

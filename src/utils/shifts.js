@@ -86,6 +86,43 @@ export const formatMonthLabel = (monthKey) => {
   return getDateFormatter(MONTH_YEAR_OPTIONS).format(date);
 };
 
+// "19–25 okt." for the week bar; both months are named when the week spans two.
+export const formatWeekRange = (startKey, endKey) => {
+  const start = new Date(`${startKey}T12:00:00`);
+  const end = new Date(`${endKey}T12:00:00`);
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+    return "";
+  }
+  const dayMonth = getDateFormatter({ day: "numeric", month: "short" });
+  if (start.getMonth() === end.getMonth()) {
+    return `${start.getDate()}–${dayMonth.format(end)}`;
+  }
+  return `${dayMonth.format(start)} – ${dayMonth.format(end)}`;
+};
+
+// "okt." in the month grid of the week view.
+export const formatMonthShort = (monthKey) => {
+  const date = new Date(`${monthKey}-01T12:00:00`);
+  if (Number.isNaN(date.getTime())) {
+    return monthKey || "";
+  }
+  return getDateFormatter({ month: "short" }).format(date);
+};
+
+// "Torsdag 22 oktober" for the day bar under the week strip.
+export const formatDayTitle = (dateKey) => {
+  const date = new Date(`${dateKey}T12:00:00`);
+  if (Number.isNaN(date.getTime())) {
+    return dateKey || "";
+  }
+  const label = getDateFormatter({
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  }).format(date);
+  return label.charAt(0).toUpperCase() + label.slice(1);
+};
+
 export const getCurrentMonthKey = () => {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;

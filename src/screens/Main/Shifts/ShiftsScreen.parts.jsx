@@ -17,12 +17,21 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import Icon from "react-native-vector-icons/Feather";
 
 import {
+  formatDayTitle,
   formatDurationCompact,
   formatDurationShort,
   formatExportPickerDate,
   formatMonthLabel,
+  formatMonthShort,
+  formatWeekRange,
   parseDateKey,
 } from "../../../utils/shifts";
+import {
+  addDaysToKey,
+  getISOWeekNumber,
+  monthKeyOf,
+  weekDateKeys,
+} from "../../../utils/shiftsCalendar";
 
 // Presentational sub-components split out of ShiftsScreen to keep that file
 // smaller. Each is self-contained: it receives the themed `styles` object and
@@ -250,7 +259,14 @@ export function ManualHoursModal({
 
 // "Which project are these hours for?" — shown when the worker saves typed
 // days but has several projects and none chosen. A tap saves straight away.
-export function ProjectPickModal({ visible, projects, onPick, onClose, styles, t }) {
+export function ProjectPickModal({
+  visible,
+  projects,
+  onPick,
+  onClose,
+  styles,
+  t,
+}) {
   return (
     <Modal
       visible={visible}
@@ -279,7 +295,10 @@ export function ProjectPickModal({ visible, projects, onPick, onClose, styles, t
                   activeOpacity={0.8}
                   onPress={() => onPick(project)}
                 >
-                  <Text numberOfLines={1} style={styles.manualProjectOptionText}>
+                  <Text
+                    numberOfLines={1}
+                    style={styles.manualProjectOptionText}
+                  >
                     {project.name || project.projectName || projectId}
                   </Text>
                 </TouchableOpacity>
@@ -689,12 +708,14 @@ export function HoursSourceToggle({
   );
 }
 
-// Two-stat summary card: current-month (or selected) total on the left, the
-// previous month (or selected-day count) on the right, with a clear button
-// while a day selection is active.
+// Two-stat summary card under the day: the week's total on the left and the
+// month's on the right; while days are picked for export, their total and
+// count instead, with a clear button.
 export function SelectionSummary({
   heroValueMs,
-  previousMonthDuration,
+  weekValueMs,
+  weekLabel,
+  monthLabel,
   selectedDates,
   selectionSummary,
   onClearSelection,
@@ -712,10 +733,10 @@ export function SelectionSummary({
             { fontFamily: regularFontFamily },
           ]}
         >
-          {formatDurationCompact(heroValueMs)}
+          {formatDurationCompact(hasSelection ? heroValueMs : weekValueMs)}
         </Text>
         <Text style={styles.selectionSummaryLabel}>
-          {hasSelection ? t("shifts.selected") : t("shifts.currentMonth")}
+          {hasSelection ? t("shifts.selected") : weekLabel}
         </Text>
       </View>
 
@@ -730,10 +751,10 @@ export function SelectionSummary({
         >
           {hasSelection
             ? t("shifts.dayCount", { count: selectionSummary?.dayCount || 0 })
-            : formatDurationCompact(previousMonthDuration)}
+            : formatDurationCompact(heroValueMs)}
         </Text>
         <Text style={styles.selectionSummaryLabel}>
-          {hasSelection ? t("shifts.selected") : t("shifts.previousMonth")}
+          {hasSelection ? t("shifts.selected") : monthLabel}
         </Text>
       </View>
 
@@ -752,285 +773,402 @@ export function SelectionSummary({
 
 const CALENDAR_WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-// The month calendar: prev/next month bar, weekday header and the day grid.
-// The grid rows are memoized on the same deps the screen used, so extracting
-// this doesn't lose the memoization. Refs (rowYRef for keyboard scrolling,
-// inlineValueRef for the in-cell input) are threaded in as props.
-export function ShiftCalendar({
+const capitalize = (text) =>
+  text ? text.charAt(0).toUpperCase() + text.slice(1) : "";
+
+// The week view's controls, all in one card at the top: the month (tap opens a
+// month grid), the week ‹ ›, the seven days and the chosen day ‹ ›. What
+// happened on the day is shown below the card, never inside it.
+// Hours are only loaded for one month at a time, so days of a week that spill
+// into the neighbouring month are dimmed; tapping one moves to that month.
+export function ShiftWeekPicker({
   styles,
   t,
-  calendarYRef,
-  canGoBackMonth,
-  canGoForwardMonth,
-  onPrevMonth,
-  onNextMonth,
-  selectedMonth,
   semiBoldFontFamily,
-  weekdayLabels,
-  onToggleColumn,
-  calendarLayout,
-  dayMap,
-  selectedDates,
+  focusedDate,
   todayDateKey,
-  onDayPress,
-  onEditDay,
-  canEditDay,
-  selectMode,
-  onToggleWeekRow,
+  selectedMonth,
+  maxMonthKey,
+  weekdayLabels,
+  dayMap,
   daySourceMs,
   sourceColor,
   hoursSource,
-  inlineManualDate,
-  inlineManualSeed,
-  inlineValueRef,
-  onStashInput,
   pendingManual,
-  rowYRef,
+  selectMode,
+  selectedDates,
+  onDayPress,
+  onFocusDate,
+  onPickMonth,
 }) {
-  const rows = React.useMemo(() => {
-    return calendarLayout.rows.map((row) => (
-      <View
-        key={`row-${row.rowIndex}`}
-        style={styles.calendarRow}
-        onLayout={(e) => {
-          const { y } = e.nativeEvent.layout;
-          row.cells.forEach((cellDate) => {
-            if (cellDate) {
-              rowYRef.current[cellDate] = y;
-            }
-          });
-        }}
-      >
-        <TouchableOpacity
-          style={styles.calendarWeekNumberCell}
-          onPress={() => onToggleWeekRow(row.rowIndex)}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.calendarWeekNumberText}>{row.weekNumber}</Text>
-        </TouchableOpacity>
-        <View style={styles.calendarDaysRow}>
-          {row.cells.map((dateStr, columnIndex) => {
-            if (!dateStr) {
-              return (
-                <View
-                  key={`empty-${row.rowIndex}-${columnIndex}`}
-                  style={styles.calendarCellEmpty}
-                />
-              );
-            }
+  const [monthGridOpen, setMonthGridOpen] = React.useState(false);
+  const [gridYear, setGridYear] = React.useState(() =>
+    Number(focusedDate.slice(0, 4)),
+  );
+  const maxYear = Number(maxMonthKey.slice(0, 4));
+  const weekKeys = weekDateKeys(focusedDate);
+  const weekNumber = getISOWeekNumber(new Date(`${weekKeys[0]}T12:00:00`));
+  const reachable = (dateKey) => monthKeyOf(dateKey) <= maxMonthKey;
+  const step = (days) => {
+    const next = addDaysToKey(focusedDate, days);
+    return reachable(next) ? next : null;
+  };
+  const prevWeek = step(-7);
+  const nextWeek = step(7);
+  const prevDay = step(-1);
+  const nextDay = step(1);
+  const isToday = focusedDate === todayDateKey;
 
-            const day = Number(dateStr.split("-")[2]);
-            const shiftDay = dayMap.get(dateStr);
-            const savedMs = daySourceMs(shiftDay, dateStr);
-            const pendingHours = pendingManual[dateStr];
-            const hasPending = hoursSource === "manual" && pendingHours != null;
-            const displayMs = hasPending
-              ? Math.round(pendingHours * 3600000)
-              : savedMs;
-            const isSelected = selectedDates.includes(dateStr);
-            const isToday = dateStr === todayDateKey;
+  const toggleMonthGrid = () => {
+    setGridYear(Number(focusedDate.slice(0, 4)));
+    setMonthGridOpen((open) => !open);
+  };
 
-            const isInlineEditing =
-              hoursSource === "manual" && inlineManualDate === dateStr;
-
-            return (
-              <TouchableOpacity
-                key={dateStr}
-                style={[
-                  styles.calendarCell,
-                  displayMs > 0 &&
-                    !isSelected && {
-                      backgroundColor: `${sourceColor}1A`,
-                    },
-                  isToday && !isSelected && styles.calendarCellToday,
-                  isSelected && styles.calendarCellSelected,
-                ]}
-                onPress={() => onDayPress(dateStr)}
-                activeOpacity={0.85}
-              >
-                {hasPending ? <View style={styles.pendingDot} /> : null}
-                {selectMode ? (
-                  <View
-                    style={[
-                      styles.calendarCheck,
-                      isSelected && styles.calendarCheckOn,
-                    ]}
-                  >
-                    {isSelected ? (
-                      <Icon name="check" size={10} color="#FFFFFF" />
-                    ) : null}
-                  </View>
-                ) : null}
-                <Text
-                  style={[
-                    styles.calendarDay,
-                    isToday && !isSelected && styles.calendarDayToday,
-                    isSelected && styles.calendarDaySelected,
-                  ]}
-                >
-                  {day}
-                </Text>
-                {isInlineEditing ? (
-                  <TextInput
-                    style={styles.calendarHoursInput}
-                    defaultValue={inlineManualSeed}
-                    onChangeText={(text) => {
-                      inlineValueRef.current = text
-                        .replace(/[^0-9.,]/g, "")
-                        .slice(0, 5);
-                    }}
-                    keyboardType="decimal-pad"
-                    autoFocus
-                    selectTextOnFocus
-                    returnKeyType="done"
-                    placeholder="0"
-                    placeholderTextColor="#9BB0C1"
-                    onSubmitEditing={onStashInput}
-                    onBlur={onStashInput}
-                  />
-                ) : displayMs > 0 ? (
-                  canEditDay ? (
-                    <TouchableOpacity
-                      onPress={() => onEditDay(dateStr)}
-                      hitSlop={{ top: 6, bottom: 8, left: 12, right: 12 }}
-                      activeOpacity={0.6}
-                    >
-                      <Text
-                        style={[
-                          styles.calendarHours,
-                          !isSelected && { color: sourceColor },
-                        ]}
-                      >
-                        {formatDurationShort(displayMs)}
-                      </Text>
-                    </TouchableOpacity>
-                  ) : (
-                    <Text
-                      style={[
-                        styles.calendarHours,
-                        !isSelected && { color: sourceColor },
-                      ]}
-                    >
-                      {formatDurationShort(displayMs)}
-                    </Text>
-                  )
-                ) : canEditDay ? (
-                  <TouchableOpacity
-                    onPress={() => onEditDay(dateStr)}
-                    hitSlop={{ top: 6, bottom: 8, left: 12, right: 12 }}
-                    activeOpacity={0.6}
-                  >
-                    <Text
-                      style={[
-                        styles.calendarPlus,
-                        isSelected && styles.calendarPlusSelected,
-                      ]}
-                    >
-                      +
-                    </Text>
-                  </TouchableOpacity>
-                ) : null}
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      </View>
-    ));
-  }, [
-    calendarLayout.rows,
-    dayMap,
-    selectedDates,
-    todayDateKey,
-    onDayPress,
-    onEditDay,
-    canEditDay,
-    selectMode,
-    onToggleWeekRow,
-    daySourceMs,
-    sourceColor,
-    hoursSource,
-    inlineManualDate,
-    inlineManualSeed,
-    pendingManual,
-    onStashInput,
-    styles,
-    rowYRef,
-    inlineValueRef,
-  ]);
+  const navButton = (target, icon, label) => (
+    <TouchableOpacity
+      style={[styles.weekNavButton, !target && styles.weekNavButtonDisabled]}
+      onPress={() => target && onFocusDate(target)}
+      disabled={!target}
+      activeOpacity={0.85}
+      accessibilityLabel={label}
+    >
+      <Icon name={icon} size={22} color={styles.weekNavIcon?.color} />
+    </TouchableOpacity>
+  );
 
   return (
-    <View
-      style={styles.calendarContainer}
-      onLayout={(e) => {
-        calendarYRef.current = e.nativeEvent.layout.y;
-      }}
-    >
-      <View style={styles.calendarMonthBar}>
-        <View style={styles.calendarNav}>
-          <TouchableOpacity
-            style={[
-              styles.calendarNavButton,
-              !canGoBackMonth && styles.calendarNavButtonDisabled,
-            ]}
-            onPress={onPrevMonth}
-            disabled={!canGoBackMonth}
-            activeOpacity={0.85}
-          >
-            <Icon
-              name="chevron-left"
-              size={styles.calendarNavIcon?.fontSize || 16}
-              color={styles.calendarNavIcon?.color || "#0177DE"}
-            />
-          </TouchableOpacity>
+    <View style={styles.weekCard}>
+      <View style={styles.weekMonthRow}>
+        <TouchableOpacity
+          style={styles.weekMonthButton}
+          onPress={toggleMonthGrid}
+          activeOpacity={0.85}
+          testID="shifts-month-button"
+        >
           <Text
-            style={[
-              styles.calendarNavLabel,
-              { fontFamily: semiBoldFontFamily },
-            ]}
+            style={[styles.weekMonthText, { fontFamily: semiBoldFontFamily }]}
           >
-            {selectedMonth ? formatMonthLabel(selectedMonth) : ""}
+            {capitalize(formatMonthLabel(monthKeyOf(focusedDate)))}
           </Text>
+          <Icon
+            name={monthGridOpen ? "chevron-up" : "chevron-down"}
+            size={20}
+            color={styles.weekNavIcon?.color}
+          />
+        </TouchableOpacity>
+        {!isToday ? (
           <TouchableOpacity
-            style={[
-              styles.calendarNavButton,
-              !canGoForwardMonth && styles.calendarNavButtonDisabled,
-            ]}
-            onPress={onNextMonth}
-            disabled={!canGoForwardMonth}
+            style={styles.todayChip}
+            onPress={() => {
+              setMonthGridOpen(false);
+              onFocusDate(todayDateKey);
+            }}
             activeOpacity={0.85}
           >
-            <Icon
-              name="chevron-right"
-              size={styles.calendarNavIcon?.fontSize || 16}
-              color={styles.calendarNavIcon?.color || "#0177DE"}
-            />
+            <Text style={styles.todayChipText}>{t("chat.today")}</Text>
           </TouchableOpacity>
-        </View>
+        ) : null}
       </View>
-      <View style={styles.calendarHeader}>
-        <View style={styles.calendarWeekHeaderCell} />
-        <View style={styles.calendarDaysHeader}>
-          {CALENDAR_WEEKDAYS.map((label, columnIndex) => (
+
+      {monthGridOpen ? (
+        <View style={styles.monthGrid}>
+          <View style={styles.monthGridYearRow}>
             <TouchableOpacity
-              key={label}
-              style={styles.calendarHeaderDayButton}
-              onPress={() => onToggleColumn(columnIndex)}
+              style={styles.monthGridYearButton}
+              onPress={() => setGridYear((year) => year - 1)}
               activeOpacity={0.85}
             >
-              <Text style={styles.calendarHeaderDay}>
+              <Icon
+                name="chevron-left"
+                size={20}
+                color={styles.weekNavIcon?.color}
+              />
+            </TouchableOpacity>
+            <Text style={styles.monthGridYear}>{gridYear}</Text>
+            <TouchableOpacity
+              style={[
+                styles.monthGridYearButton,
+                gridYear >= maxYear && styles.weekNavButtonDisabled,
+              ]}
+              onPress={() => setGridYear((year) => year + 1)}
+              disabled={gridYear >= maxYear}
+              activeOpacity={0.85}
+            >
+              <Icon
+                name="chevron-right"
+                size={20}
+                color={styles.weekNavIcon?.color}
+              />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.monthGridCells}>
+            {Array.from({ length: 12 }, (_, index) => {
+              const monthKey = `${gridYear}-${String(index + 1).padStart(2, "0")}`;
+              const isOn = monthKey === monthKeyOf(focusedDate);
+              const disabled = monthKey > maxMonthKey;
+              return (
+                <TouchableOpacity
+                  key={monthKey}
+                  style={[
+                    styles.monthGridCell,
+                    isOn && styles.monthGridCellOn,
+                    disabled && styles.weekNavButtonDisabled,
+                  ]}
+                  onPress={() => {
+                    setMonthGridOpen(false);
+                    onPickMonth(monthKey);
+                  }}
+                  disabled={disabled}
+                  activeOpacity={0.85}
+                >
+                  <Text
+                    style={[
+                      styles.monthGridCellText,
+                      isOn && styles.monthGridCellTextOn,
+                    ]}
+                  >
+                    {capitalize(formatMonthShort(monthKey))}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+      ) : null}
+
+      <View style={styles.weekNavRow}>
+        {navButton(prevWeek, "chevron-left", "previous week")}
+        <View style={styles.weekNavTitleBox}>
+          <Text
+            style={[styles.weekNavTitle, { fontFamily: semiBoldFontFamily }]}
+          >
+            {t("schedule.week", { number: weekNumber })}
+          </Text>
+          <Text style={styles.weekNavSub}>
+            {formatWeekRange(weekKeys[0], weekKeys[6])}
+          </Text>
+        </View>
+        {navButton(nextWeek, "chevron-right", "next week")}
+      </View>
+
+      <View style={styles.weekStrip}>
+        {weekKeys.map((dateKey, columnIndex) => {
+          const inMonth = monthKeyOf(dateKey) === selectedMonth;
+          const disabled = !reachable(dateKey) || (selectMode && !inMonth);
+          const pendingHours = pendingManual[dateKey];
+          const hasPending = hoursSource === "manual" && pendingHours != null;
+          const displayMs = !inMonth
+            ? 0
+            : hasPending
+              ? Math.round(pendingHours * 3600000)
+              : daySourceMs(dayMap.get(dateKey), dateKey);
+          const isOn = selectMode
+            ? selectedDates.includes(dateKey)
+            : dateKey === focusedDate;
+          const isTodayCell = dateKey === todayDateKey;
+
+          return (
+            <TouchableOpacity
+              key={dateKey}
+              style={[
+                styles.weekDay,
+                displayMs > 0 &&
+                  !isOn && { backgroundColor: `${sourceColor}1A` },
+                isTodayCell && !isOn && styles.weekDayToday,
+                isOn && styles.weekDayOn,
+                (!inMonth || disabled) && !isOn && styles.weekDayOut,
+              ]}
+              onPress={() => onDayPress(dateKey)}
+              disabled={disabled}
+              activeOpacity={0.85}
+            >
+              {hasPending ? <View style={styles.pendingDot} /> : null}
+              {selectMode ? (
+                <View
+                  style={[styles.calendarCheck, isOn && styles.calendarCheckOn]}
+                >
+                  {isOn ? (
+                    <Icon name="check" size={10} color="#FFFFFF" />
+                  ) : null}
+                </View>
+              ) : null}
+              <Text style={[styles.weekDayName, isOn && styles.weekDayTextOn]}>
                 {(Array.isArray(weekdayLabels)
                   ? weekdayLabels[columnIndex]
-                  : null) || label}
+                  : null) || CALENDAR_WEEKDAYS[columnIndex]}
+              </Text>
+              <Text
+                style={[
+                  styles.weekDayNumber,
+                  { fontFamily: semiBoldFontFamily },
+                  isOn && styles.weekDayTextOn,
+                ]}
+              >
+                {Number(dateKey.slice(8))}
+              </Text>
+              <Text
+                style={[
+                  styles.weekDayHours,
+                  displayMs > 0
+                    ? { color: sourceColor }
+                    : styles.weekDayHoursEmpty,
+                  isOn && styles.weekDayTextOn,
+                ]}
+              >
+                {displayMs > 0 ? formatDurationShort(displayMs) : "–"}
               </Text>
             </TouchableOpacity>
-          ))}
-        </View>
+          );
+        })}
       </View>
-      {rows.length ? (
-        rows
+
+      {!selectMode ? (
+        <View style={[styles.weekNavRow, styles.dayBar]}>
+          {navButton(prevDay, "chevron-left", "previous day")}
+          <View style={styles.weekNavTitleBox}>
+            <Text
+              style={[styles.dayBarTitle, { fontFamily: semiBoldFontFamily }]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.8}
+            >
+              {formatDayTitle(focusedDate)}
+            </Text>
+            {isToday ? (
+              <Text style={styles.weekNavSub}>{t("chat.today")}</Text>
+            ) : null}
+          </View>
+          {navButton(nextDay, "chevron-right", "next day")}
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+// Manual hours for the chosen day, typed in a card under the week controls.
+// The value lands in the pending map like before and is saved with the header
+// check or the Save button here.
+export function DayHoursEntry({
+  styles,
+  t,
+  semiBoldFontFamily,
+  isEditing,
+  seed,
+  inlineValueRef,
+  onStashInput,
+  onEdit,
+  onSave,
+  saving,
+  pendingHours,
+  hasShifts,
+  onLayout,
+}) {
+  const saveButton = (
+    <TouchableOpacity
+      style={styles.dayEntryPrimary}
+      onPress={onSave}
+      disabled={saving}
+      activeOpacity={0.85}
+    >
+      {saving ? (
+        <ActivityIndicator size="small" color="#FFFFFF" />
       ) : (
-        <Text style={styles.emptyMonthText}>{t("shifts.emptyMonth")}</Text>
+        <Text
+          style={[
+            styles.dayEntryPrimaryText,
+            { fontFamily: semiBoldFontFamily },
+          ]}
+        >
+          {t("common.save")}
+        </Text>
       )}
+    </TouchableOpacity>
+  );
+
+  if (isEditing) {
+    return (
+      <View style={styles.dayEntryCard} onLayout={onLayout}>
+        <Text style={styles.dayEntryLabel}>{t("shifts.manualHours")}</Text>
+        <View style={styles.dayEntryInputRow}>
+          <TextInput
+            style={[styles.dayEntryInput, { fontFamily: semiBoldFontFamily }]}
+            defaultValue={seed}
+            onChangeText={(text) => {
+              inlineValueRef.current = text
+                .replace(/[^0-9.,]/g, "")
+                .slice(0, 5);
+            }}
+            keyboardType="decimal-pad"
+            autoFocus
+            selectTextOnFocus
+            returnKeyType="done"
+            placeholder="0"
+            placeholderTextColor="#9BB0C1"
+            onSubmitEditing={onStashInput}
+            onBlur={onStashInput}
+          />
+          <Text style={styles.dayEntryUnit}>h</Text>
+        </View>
+        {saveButton}
+      </View>
+    );
+  }
+
+  if (pendingHours != null) {
+    return (
+      <View style={styles.dayEntryCard} onLayout={onLayout}>
+        <View style={styles.dayEntryValueRow}>
+          <Text style={styles.dayEntryLabel}>{t("shifts.manualHours")}</Text>
+          <TouchableOpacity onPress={onEdit} activeOpacity={0.6}>
+            <Text style={styles.dayEntryValue}>
+              {formatDurationCompact(Math.round(pendingHours * 3600000))}
+            </Text>
+          </TouchableOpacity>
+        </View>
+        {saveButton}
+      </View>
+    );
+  }
+
+  if (hasShifts) {
+    return (
+      <TouchableOpacity
+        style={styles.dayEntrySecondary}
+        onPress={onEdit}
+        onLayout={onLayout}
+        activeOpacity={0.85}
+      >
+        <Icon name="edit-2" size={16} color={styles.weekNavIcon?.color} />
+        <Text
+          style={[
+            styles.dayEntrySecondaryText,
+            { fontFamily: semiBoldFontFamily },
+          ]}
+        >
+          {t("shifts.editHours")}
+        </Text>
+      </TouchableOpacity>
+    );
+  }
+
+  return (
+    <View style={styles.dayEntryCard} onLayout={onLayout}>
+      <Text style={styles.dayEntryEmpty}>{t("shifts.noShiftsDay")}</Text>
+      <TouchableOpacity
+        style={styles.dayEntryPrimary}
+        onPress={onEdit}
+        activeOpacity={0.85}
+        testID="shifts-add-hours"
+      >
+        <Text
+          style={[
+            styles.dayEntryPrimaryText,
+            { fontFamily: semiBoldFontFamily },
+          ]}
+        >
+          {`＋ ${t("shifts.addHours")}`}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
