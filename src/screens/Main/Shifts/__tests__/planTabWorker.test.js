@@ -92,6 +92,16 @@ jest.mock("../../../../utils/shifts", () => {
   };
 });
 
+// The whole screen renders here (and steps a week); on a busy CI runner that
+// takes longer than jest's default 5 s.
+jest.setTimeout(30000);
+
+let mounted = null;
+afterEach(async () => {
+  if (mounted) await act(async () => mounted.unmount());
+  mounted = null;
+});
+
 test("a worker's plan tab shows every planned day of the home project", async () => {
   let tree;
   await act(async () => {
@@ -108,6 +118,7 @@ test("a worker's plan tab shows every planned day of the home project", async ()
       </ThemeProvider>,
     );
   });
+  mounted = tree;
   await act(async () => {});
   const planBtn = tree.root.findAll(
     (n) =>
