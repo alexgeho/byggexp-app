@@ -349,7 +349,20 @@
 
 # Открытые / след. шаги
 
-_Обновлено 2026-10-21. Отсюда продолжать в следующий раз — сверху вниз._
+_Обновлено 2026-10-23 (вечер). Отсюда продолжать в следующий раз — сверху вниз._
+
+## 23.10 — Arbetspass для лида Lucas / Svea Ställningsallians (Byggavtalet → зарплата)
+
+Состояние: OTA `4fe2bbc6` вышло 22:58. ПОСЛЕ него в main (НЕ в OTA): 81c11328 Restid/km вводом, 542a6fda+c1c603e3 ↺ «как в прошлый раз», e38f4d73 «Restid (timmar)». Бэкенд 92c488c (OB/travel/perDiem в manual) + 7f55571 (dayNote) — на проде. Админка (агент): c631ed4 OB в «Att göra» + Dagens rapport в часах/логе/карточке, a6c2e64 km целым, 8bece0a карточка смены только просмотр.
+
+- [ ] 1. Выпустить OTA с правками после 4fe2bbc6 (`npx eas-cli update --branch production --environment production --non-interactive -m "…"`), потом проверить на телефоне: карточка дня (✎/✓ Arbetstimmar, Övertid/OB сверху, Restid/km + ↺, Kommentar), Vecka/Månad/Period, экспорт в шапке
+- [ ] 2. Админка: проверить, что агент сделал всё по промту — Restid/km полями + ↺ по сотруднику, lönunderlag/PAXml: OB/Restid/Bil/Traktamente отдельными строками, неподтверждённые OB/övertid = обычные часы; права бухгалтера (finance.manage) на экспорт PAXml
+- [ ] 3. Lucas (lucas.sahindal@yanez.se): письмо с извинением + описанием + pdf (2 скрина вида работника) — владелец отправлял сам; ждём ответа на 2 вопроса: хватит PAXml-импорта в Fortnox Lön или нужна интеграция; что ещё нужно Svea кроме Byggavtalet; кто ставит Traktamente (работник или при регистрации зарплаты)
+- [ ] 4. РЕШИТЬ (владелец): может ли руководитель менять ручные часы работника. Сейчас: изменить сохранённое — только сам работник (findOwnedShift); НО POST /shifts/manual от админа с workerId перезаписывает день (upsert) — лазейка. Рекомендация: разрешить правку руководителю с пометкой «Ändrad av chef» (кто/когда/что было)
+- [ ] 5. Dagens rapport ещё показывает старый выбор «Normal / Övertid / OB-tillägg» на весь день — убрать/свести к новой карточке (спросил, ответа нет)
+- [ ] 6. Модель часов поменялась: введённое число = arbetstid, övertid/OB прибавляются сверху; авто-предложение övertid сверх плана убрано. Проверить, что зарплата/экспорт считают так же (durationMs = всё, normal = всё − övertid − OB)
+- [ ] 7. Идея: значок маршрута — km и Restid сами по маршруту дом → адрес проекта
+- [i] Симулятор: Xcode 27 — приложение DeviceHub (не Simulator.app), iOS 18.5. Локально: mongod из Cellar (`--dbpath` в scratchpad), `yarn seed:demo`, бэкенд из папки с копией .env (MONGODB_URI локальный), Metro `EXPO_PUBLIC_API_URL=http://localhost:3000`. Вход: worker1@byggexp.dev / demo1234 (работник), admin@byggexp.dev / demo1234. Агент тапает через idb (venv fb-idb + brew idb-companion). Тестовые данные в поля НЕ вводить, а если ввёл — стереть и в базе, и в открытой карточке
 
 ## 21.10 — проверить на телефоне (перезапустить приложение → OTA)
 
