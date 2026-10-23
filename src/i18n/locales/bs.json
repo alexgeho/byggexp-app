@@ -535,7 +535,8 @@
     "pickDays": "Odaberi dane",
     "dayTotal": "Ukupno {{total}} · planirano {{plan}}",
     "comment": "Komentar",
-    "receipts": "Računi"
+    "receipts": "Računi",
+    "sameAsLast": "Isto kao prošli put"
   },
   "shiftHistory": {
     "title": "Dnevni izvještaj",

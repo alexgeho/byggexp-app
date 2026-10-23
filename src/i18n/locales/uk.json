@@ -536,7 +536,8 @@
     "pickDays": "Вибрати дні",
     "dayTotal": "Разом {{total}} · заплановано {{plan}}",
     "comment": "Коментар",
-    "receipts": "Чеки"
+    "receipts": "Чеки",
+    "sameAsLast": "Як минулого разу"
   },
   "shiftHistory": {
     "title": "Денний звіт",

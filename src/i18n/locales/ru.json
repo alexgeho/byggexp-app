@@ -536,7 +536,8 @@
     "pickDays": "Выбрать дни",
     "dayTotal": "Итого {{total}} · запланировано {{plan}}",
     "comment": "Комментарий",
-    "receipts": "Чеки"
+    "receipts": "Чеки",
+    "sameAsLast": "Как в прошлый раз"
   },
   "shiftHistory": {
     "title": "Дневной отчёт",

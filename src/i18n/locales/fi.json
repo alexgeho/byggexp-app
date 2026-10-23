@@ -532,7 +532,8 @@
     "pickDays": "Valitse päivät",
     "dayTotal": "Yhteensä {{total}} · suunniteltu {{plan}}",
     "comment": "Kommentti",
-    "receipts": "Kuitit"
+    "receipts": "Kuitit",
+    "sameAsLast": "Sama kuin viimeksi"
   },
   "shiftHistory": {
     "title": "Päiväraportti",

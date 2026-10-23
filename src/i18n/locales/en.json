@@ -532,7 +532,8 @@
     "pickDays": "Pick days",
     "dayTotal": "Total {{total}} · planned {{plan}}",
     "comment": "Comment",
-    "receipts": "Receipts"
+    "receipts": "Receipts",
+    "sameAsLast": "Same as last time"
   },
   "shiftHistory": {
     "title": "Daily report",

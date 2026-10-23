@@ -203,6 +203,11 @@ export default function ShiftsScreen() {
   const [pendingExtras, setPendingExtras] = useState({});
   // The worker's own absences (Frånvaro), to show a day's absence in its card.
   const [myLeaves, setMyLeaves] = useState([]);
+  // The worker's last reported travel, for ↺ "as last time" when the
+  // loaded month has no earlier day with travel.
+  const [lastReport, setLastReport] = useState(null);
+  // Bumped when a value is copied in, so the typed fields show it.
+  const [extrasVersion, setExtrasVersion] = useState(0);
   const [savingLeave, setSavingLeave] = useState(false);
   // True while saveAllManual is committing, so the input's onBlur (fired by the
   // Keyboard.dismiss inside the save) doesn't double-stash and resurrect a
@@ -968,6 +973,10 @@ export default function ShiftsScreen() {
             delta,
             24 - inlineSplit.work - inlineSplit.overtime,
           );
+        } else if (key === "copyTravel" || key === "copyKm") {
+          if (key === "copyTravel") next.travel = delta;
+          else next.km = delta;
+          setExtrasVersion((version) => version + 1);
         } else if (key === "travelSet") {
           next.travel = Math.min(Math.max(0, delta), 24);
         } else if (key === "kmSet") {
@@ -984,6 +993,43 @@ export default function ShiftsScreen() {
     },
     [openExtras, inlineSplit],
   );
+
+  useEffect(() => {
+    let active = true;
+    Promise.resolve(shiftService.getLastDayReport?.())
+      .then((report) => active && setLastReport(report))
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  // Travel of the nearest earlier day that had some: first in the loaded
+  // month, else the last report the server knows.
+  const previousTravel = useMemo(() => {
+    if (!inlineManualDate) return null;
+    const earlier = [...dayMap.keys()]
+      .filter((key) => key < inlineManualDate)
+      .sort()
+      .reverse();
+    for (const key of earlier) {
+      const extras = dayExtras(dayMap.get(key));
+      if (extras.travel > 0 || extras.km > 0) {
+        return { travel: extras.travel, km: extras.km };
+      }
+    }
+    if (
+      lastReport &&
+      lastReport.shiftDate < inlineManualDate &&
+      (lastReport.travelMinutes > 0 || lastReport.travelKm > 0)
+    ) {
+      return {
+        travel: (lastReport.travelMinutes || 0) / 60,
+        km: lastReport.travelKm || 0,
+      };
+    }
+    return null;
+  }, [inlineManualDate, dayMap, lastReport]);
 
   // The worker's absences, for the day card's Frånvaro line.
   const loadMyLeaves = useCallback(async () => {
@@ -1826,6 +1872,8 @@ export default function ShiftsScreen() {
                     split={inlineSplit}
                     onStepOvertime={stepInlineOvertime}
                     extras={openExtras}
+                    previousTravel={previousTravel}
+                    extrasVersion={extrasVersion}
                     onChangeExtra={changeInlineExtra}
                     absence={leaveOn(focusedDate)}
                     onReportAbsence={(type) => reportAbsence(focusedDate, type)}

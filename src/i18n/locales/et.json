@@ -532,7 +532,8 @@
     "pickDays": "Vali päevad",
     "dayTotal": "Kokku {{total}} · planeeritud {{plan}}",
     "comment": "Kommentaar",
-    "receipts": "Tšekid"
+    "receipts": "Tšekid",
+    "sameAsLast": "Sama mis eelmisel korral"
   },
   "shiftHistory": {
     "title": "Päevaraport",

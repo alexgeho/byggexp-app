@@ -1464,7 +1464,8 @@ function DayStepRow({
 }
 
 // A typed pay line like Arbetstimmar: ✎ focuses the number, typed in place
-// (Restid, Bil). The right slot stays empty — saving is the one ✓ above.
+// (Restid, Bil). On the right ↺ copies the last day's value; saving is the
+// one ✓ above.
 function DayInputRow({
   styles,
   t,
@@ -1473,6 +1474,8 @@ function DayInputRow({
   value,
   decimal,
   onChange,
+  copyValue,
+  onCopy,
 }) {
   const inputRef = React.useRef(null);
   const shown = value ? String(value).replace(".", ",") : "";
@@ -1506,7 +1509,22 @@ function DayInputRow({
             placeholderTextColor={styles.dayEntryHint?.color}
           />
         </View>
-        <View style={styles.dayEntryStepSlot} />
+        {copyValue != null && onCopy ? (
+          <TouchableOpacity
+            style={styles.dayEntryStep}
+            onPress={() => onCopy(copyValue)}
+            activeOpacity={0.7}
+            accessibilityLabel={`${label}: ${t("shifts.sameAsLast")}`}
+          >
+            <Icon
+              name="rotate-ccw"
+              size={16}
+              color={styles.weekNavIcon?.color}
+            />
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.dayEntryStepSlot} />
+        )}
       </View>
     </View>
   );
@@ -1621,6 +1639,8 @@ export function DayHoursEntry({
   savingAbsence,
   dayShift,
   onOpenDayReport,
+  previousTravel,
+  extrasVersion = 0,
 }) {
   const [noteOpen, setNoteOpen] = React.useState(false);
   const hoursInputRef = React.useRef(null);
@@ -1787,6 +1807,7 @@ export function DayHoursEntry({
               {t("dayReport.travelLabel")}
             </Text>
             <DayInputRow
+              key={`travel-${extrasVersion}`}
               styles={styles}
               t={t}
               semiBoldFontFamily={semiBoldFontFamily}
@@ -1794,14 +1815,28 @@ export function DayHoursEntry({
               value={extras.travel}
               decimal
               onChange={(value) => onChangeExtra("travelSet", value)}
+              copyValue={
+                previousTravel?.travel > 0 &&
+                previousTravel.travel !== extras.travel
+                  ? previousTravel.travel
+                  : null
+              }
+              onCopy={(value) => onChangeExtra("copyTravel", value)}
             />
             <DayInputRow
+              key={`km-${extrasVersion}`}
               styles={styles}
               t={t}
               semiBoldFontFamily={semiBoldFontFamily}
               label={`${t("shifts.car")} (km)`}
               value={extras.km}
               onChange={(value) => onChangeExtra("kmSet", value)}
+              copyValue={
+                previousTravel?.km > 0 && previousTravel.km !== extras.km
+                  ? previousTravel.km
+                  : null
+              }
+              onCopy={(value) => onChangeExtra("copyKm", value)}
             />
             <DayChoiceRow
               styles={styles}

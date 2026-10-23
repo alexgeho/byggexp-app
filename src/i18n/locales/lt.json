@@ -536,7 +536,8 @@
     "pickDays": "Pasirinkti dienas",
     "dayTotal": "Iš viso {{total}} · suplanuota {{plan}}",
     "comment": "Komentaras",
-    "receipts": "Kvitai"
+    "receipts": "Kvitai",
+    "sameAsLast": "Kaip praėjusį kartą"
   },
   "shiftHistory": {
     "title": "Dienos ataskaita",

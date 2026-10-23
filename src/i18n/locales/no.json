@@ -532,7 +532,8 @@
     "pickDays": "Velg dager",
     "dayTotal": "Totalt {{total}} · planlagt {{plan}}",
     "comment": "Kommentar",
-    "receipts": "Kvitteringer"
+    "receipts": "Kvitteringer",
+    "sameAsLast": "Samme som sist"
   },
   "shiftHistory": {
     "title": "Dagsrapport",

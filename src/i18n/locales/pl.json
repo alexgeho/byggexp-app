@@ -536,7 +536,8 @@
     "pickDays": "Wybierz dni",
     "dayTotal": "Razem {{total}} · zaplanowano {{plan}}",
     "comment": "Komentarz",
-    "receipts": "Paragony"
+    "receipts": "Paragony",
+    "sameAsLast": "Tak jak ostatnio"
   },
   "shiftHistory": {
     "title": "Raport dzienny",

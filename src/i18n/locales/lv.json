@@ -533,7 +533,8 @@
     "pickDays": "Izvēlēties dienas",
     "dayTotal": "Kopā {{total}} · plānots {{plan}}",
     "comment": "Komentārs",
-    "receipts": "Čeki"
+    "receipts": "Čeki",
+    "sameAsLast": "Tāpat kā iepriekšējo reizi"
   },
   "shiftHistory": {
     "title": "Dienas atskaite",
