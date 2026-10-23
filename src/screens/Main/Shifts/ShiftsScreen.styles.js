@@ -643,15 +643,19 @@ export const createStyles = (c) =>
     },
     /* Arbetstimmar: the same row as Övertid / OB, a small cell instead of − / + */
     dayEntryHoursCell: {
-      width: 56,
-      height: 56,
-      marginHorizontal: -6,
-      borderRadius: 28,
+      width: 52,
+      height: size.headerButton,
+      marginHorizontal: -4,
+      borderRadius: 10,
       borderWidth: size.border,
       borderColor: c.border,
-      backgroundColor: c.background,
+      backgroundColor: c.surface,
       alignItems: "center",
       justifyContent: "center",
+    },
+    dayEntryStepSave: {
+      backgroundColor: "#0785F4",
+      borderColor: "#0785F4",
     },
     dayEntryHoursInput: {
       width: "100%",
@@ -663,10 +667,6 @@ export const createStyles = (c) =>
       paddingHorizontal: 0,
       includeFontPadding: false,
       fontVariant: ["tabular-nums"],
-    },
-    dayEntryStepSpacer: {
-      width: size.headerButton,
-      height: size.headerButton,
     },
     dayEntryStepValueOb: {
       color: onDark(c, "#A78BFA", "#7C5CD6"),

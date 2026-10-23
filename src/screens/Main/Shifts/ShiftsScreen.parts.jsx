@@ -1555,6 +1555,7 @@ export function DayHoursEntry({
   onReportAbsence,
   savingAbsence,
 }) {
+  const hoursInputRef = React.useRef(null);
   const absenceRow = onReportAbsence ? (
     <DayAbsenceRow
       styles={styles}
@@ -1618,9 +1619,17 @@ export function DayHoursEntry({
           {/* Same columns as the − / + rows, so every number sits in one
               line; the hours are typed into the round cell in the middle. */}
           <View style={styles.dayEntryStepper}>
-            <View style={styles.dayEntryStepSpacer} />
+            <TouchableOpacity
+              style={styles.dayEntryStep}
+              onPress={() => hoursInputRef.current?.focus()}
+              activeOpacity={0.7}
+              accessibilityLabel={t("shifts.editHours")}
+            >
+              <Icon name="edit-2" size={16} color={styles.weekNavIcon?.color} />
+            </TouchableOpacity>
             <View style={styles.dayEntryHoursCell}>
               <TextInput
+                ref={hoursInputRef}
                 style={[
                   styles.dayEntryHoursInput,
                   { fontFamily: semiBoldFontFamily },
@@ -1641,7 +1650,20 @@ export function DayHoursEntry({
                 onBlur={onStashInput}
               />
             </View>
-            <View style={styles.dayEntryStepSpacer} />
+            <TouchableOpacity
+              style={[styles.dayEntryStep, styles.dayEntryStepSave]}
+              onPress={onSave}
+              disabled={saving}
+              activeOpacity={0.85}
+              accessibilityLabel={t("common.save")}
+              testID="shifts-save-hours"
+            >
+              {saving ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <Icon name="check" size={20} color="#FFFFFF" />
+              )}
+            </TouchableOpacity>
           </View>
         </View>
         {split ? (
@@ -1732,7 +1754,6 @@ export function DayHoursEntry({
           </>
         ) : null}
         {absenceRow}
-        {saveButton}
       </View>
     );
   }
