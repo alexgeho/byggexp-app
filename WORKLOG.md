@@ -355,7 +355,8 @@ _Обновлено 2026-10-23 (вечер). Отсюда продолжать �
 
 Состояние: OTA `4fe2bbc6` вышло 22:58. ПОСЛЕ него в main (НЕ в OTA): 81c11328 Restid/km вводом, 542a6fda+c1c603e3 ↺ «как в прошлый раз», e38f4d73 «Restid (timmar)». Бэкенд 92c488c (OB/travel/perDiem в manual) + 7f55571 (dayNote) — на проде. Админка (агент): c631ed4 OB в «Att göra» + Dagens rapport в часах/логе/карточке, a6c2e64 km целым, 8bece0a карточка смены только просмотр.
 
-- [ ] 1. Выпустить OTA с правками после 4fe2bbc6 (`npx eas-cli update --branch production --environment production --non-interactive -m "…"`), потом проверить на телефоне: карточка дня (✎/✓ Arbetstimmar, Övertid/OB сверху, Restid/km + ↺, Kommentar), Vecka/Månad/Period, экспорт в шапке
+- [x] 1a. OTA `e3fca26e` (production, iOS + Android) — Restid/km вводом, ↺, «Restid (timmar)»
+- [ ] 1. Проверить на телефоне (перезапустить приложение 2 раза): карточка дня (✎/✓ Arbetstimmar, Övertid/OB сверху, Restid/km + ↺, Kommentar), Vecka/Månad/Period, экспорт в шапке
 - [ ] 2. Админка: проверить, что агент сделал всё по промту — Restid/km полями + ↺ по сотруднику, lönunderlag/PAXml: OB/Restid/Bil/Traktamente отдельными строками, неподтверждённые OB/övertid = обычные часы; права бухгалтера (finance.manage) на экспорт PAXml
 - [ ] 3. Lucas (lucas.sahindal@yanez.se): письмо с извинением + описанием + pdf (2 скрина вида работника) — владелец отправлял сам; ждём ответа на 2 вопроса: хватит PAXml-импорта в Fortnox Lön или нужна интеграция; что ещё нужно Svea кроме Byggavtalet; кто ставит Traktamente (работник или при регистрации зарплаты)
 - [ ] 4. РЕШИТЬ (владелец): может ли руководитель менять ручные часы работника. Сейчас: изменить сохранённое — только сам работник (findOwnedShift); НО POST /shifts/manual от админа с workerId перезаписывает день (upsert) — лазейка. Рекомендация: разрешить правку руководителю с пометкой «Ändrad av chef» (кто/когда/что было)
