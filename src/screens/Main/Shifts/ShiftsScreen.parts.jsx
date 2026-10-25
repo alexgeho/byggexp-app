@@ -926,7 +926,6 @@ export function ShiftWeekPicker({
         style={[
           styles.weekDay,
           compact && styles.weekDayCompact,
-          displayMs > 0 && { backgroundColor: `${sourceColor}1A` },
           isOn && styles.weekDayOn,
           (!inMonth || disabled) && !isOn && styles.weekDayOut,
         ]}
@@ -966,12 +965,14 @@ export function ShiftWeekPicker({
           {displayMs > 0 ? formatDurationShort(displayMs) : "–"}
         </Text>
         {overtime && overtime.overtimeMs > 0 && displayMs > 0 ? (
-          <HoursBar
-            styles={styles}
-            totalMs={displayMs}
-            overtimeMs={overtime.overtimeMs}
-            pending={overtime.pending}
-          />
+          <View style={styles.weekDayBarSlot} pointerEvents="none">
+            <HoursBar
+              styles={styles}
+              totalMs={displayMs}
+              overtimeMs={overtime.overtimeMs}
+              pending={overtime.pending}
+            />
+          </View>
         ) : null}
       </TouchableOpacity>
     );

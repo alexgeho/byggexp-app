@@ -217,7 +217,6 @@ export function ArbetspassMock() {
   );
 }
 
-const GREEN_BG = "#E5F3EA";
 const GREEN_TX = "#3BA45C";
 
 const styles = StyleSheet.create({
@@ -333,7 +332,7 @@ const styles = StyleSheet.create({
   },
   // Selected day as in the app: a 1px blue frame, no fill.
   dayInnerBlue: { borderWidth: 1, borderColor: "#0785F4" },
-  dayInnerGreen: { backgroundColor: GREEN_BG },
+  dayInnerGreen: { backgroundColor: "#F7F8FA" },
   dayInnerPlain: { backgroundColor: "#F7F8FA" },
   dayNum: { fontSize: 12, color: MOCK.labelDark, ...FONT.medium },
   dayNumBlue: { color: "#0785F4", ...FONT.semibold },

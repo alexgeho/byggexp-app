@@ -340,15 +340,27 @@ export const createStyles = (c) =>
       alignItems: "center",
       justifyContent: "center",
       gap: 2,
-      paddingVertical: 8,
+      // Room under the hours for the bar, kept on every day so all line up.
+      paddingTop: 8,
+      paddingBottom: 16,
       borderRadius: 12,
       borderWidth: size.border,
       borderColor: "transparent",
       backgroundColor: c.background,
     },
+    // The bar sits under the numbers without pushing them up, so every day's
+    // date and hours stay on one line whether it has a bar or not.
+    weekDayBarSlot: {
+      position: "absolute",
+      bottom: 5,
+      left: 0,
+      right: 0,
+      alignItems: "center",
+    },
     weekDayCompact: {
       minHeight: 52,
-      paddingVertical: 4,
+      paddingTop: 4,
+      paddingBottom: 12,
       gap: 0,
     },
     weekDayNumberCompact: {
@@ -477,9 +489,8 @@ export const createStyles = (c) =>
     hoursBarOnAccent: {
       backgroundColor: "rgba(255, 255, 255, 0.35)",
     },
-    // Green, not the blue of the selected day — the two sat side by side.
     hoursBarNormal: {
-      backgroundColor: "#45B36B",
+      backgroundColor: "#0785F4",
     },
     hoursBarNormalOnAccent: {
       backgroundColor: "#FFFFFF",
