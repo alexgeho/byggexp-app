@@ -918,8 +918,7 @@ export function ShiftWeekPicker({
         style={[
           styles.weekDay,
           compact && styles.weekDayCompact,
-          displayMs > 0 && !isOn && { backgroundColor: `${sourceColor}1A` },
-          isTodayCell && !isOn && styles.weekDayToday,
+          displayMs > 0 && { backgroundColor: `${sourceColor}1A` },
           isOn && styles.weekDayOn,
           (!inMonth || disabled) && !isOn && styles.weekDayOut,
         ]}
@@ -934,7 +933,7 @@ export function ShiftWeekPicker({
           </View>
         ) : null}
         {compact ? null : (
-          <Text style={[styles.weekDayName, isOn && styles.weekDayTextOn]}>
+          <Text style={styles.weekDayName}>
             {(Array.isArray(weekdayLabels)
               ? weekdayLabels[columnIndex]
               : null) || CALENDAR_WEEKDAYS[columnIndex]}
@@ -945,7 +944,7 @@ export function ShiftWeekPicker({
             styles.weekDayNumber,
             compact && styles.weekDayNumberCompact,
             { fontFamily: semiBoldFontFamily },
-            isOn && styles.weekDayTextOn,
+            isTodayCell && styles.weekDayNumberToday,
           ]}
         >
           {Number(dateKey.slice(8))}
@@ -954,7 +953,6 @@ export function ShiftWeekPicker({
           style={[
             styles.weekDayHours,
             displayMs > 0 ? { color: sourceColor } : styles.weekDayHoursEmpty,
-            isOn && styles.weekDayTextOn,
           ]}
         >
           {displayMs > 0 ? formatDurationShort(displayMs) : "–"}
@@ -965,7 +963,6 @@ export function ShiftWeekPicker({
             totalMs={displayMs}
             overtimeMs={overtime.overtimeMs}
             pending={overtime.pending}
-            onAccent={isOn}
           />
         ) : null}
       </TouchableOpacity>

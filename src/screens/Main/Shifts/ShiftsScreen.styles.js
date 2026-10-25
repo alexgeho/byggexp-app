@@ -342,7 +342,7 @@ export const createStyles = (c) =>
       gap: 2,
       paddingVertical: 8,
       borderRadius: 12,
-      borderWidth: 1.5,
+      borderWidth: size.border,
       borderColor: "transparent",
       backgroundColor: c.background,
     },
@@ -413,13 +413,14 @@ export const createStyles = (c) =>
       alignItems: "center",
       gap: 4,
     },
-    weekDayToday: {
+    // The open day: a 1px blue frame on its own colour, so the filled
+    // «Ändra timmar» stays the one strong blue thing.
+    weekDayOn: {
       borderColor: "#0785F4",
     },
-    // A touch paler than the action blue, so «Ändra timmar» leads.
-    weekDayOn: {
-      backgroundColor: onDark(c, "#0785F4", "#3F98F3"),
-      borderColor: onDark(c, "#0785F4", "#3F98F3"),
+    // Today: the date in blue.
+    weekDayNumberToday: {
+      color: "#0785F4",
     },
     weekDayOut: {
       opacity: 0.4,
@@ -443,9 +444,6 @@ export const createStyles = (c) =>
     weekDayHoursEmpty: {
       color: c.textMuted,
       fontWeight: "400",
-    },
-    weekDayTextOn: {
-      color: "#FFFFFF",
     },
     dayBar: {
       borderTopWidth: size.border,
