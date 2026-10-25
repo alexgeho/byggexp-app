@@ -706,7 +706,13 @@ export default function ShiftsScreen() {
   // Deep-link from a "log your hours" reminder push: switch to the Manual tab
   // and open today's cell for entry. Runs once, then clears the route param.
   useEffect(() => {
-    if (!route.params?.openHoursEntry || handledHoursEntryRef.current) {
+    // Wait for the month to load, or the day opens empty instead of with its
+    // saved hours.
+    if (
+      !route.params?.openHoursEntry ||
+      handledHoursEntryRef.current ||
+      loading
+    ) {
       return;
     }
     handledHoursEntryRef.current = true;
@@ -717,6 +723,7 @@ export default function ShiftsScreen() {
   }, [
     route.params?.openHoursEntry,
     route.params?.date,
+    loading,
     startInlineManual,
     todayDateKey,
     navigation,
