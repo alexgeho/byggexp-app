@@ -935,11 +935,12 @@ export const createStyles = (c) =>
     },
     // The day's hours are level 1 — the number the screen is about, so the
     // largest and darkest text on it.
+    // Smaller and lighter, like the dates in the week (owner 2026-10-25).
     shiftDurationText: {
       color: c.textPrimary,
-      fontSize: 22,
-      lineHeight: 28,
-      fontWeight: "700",
+      fontSize: 19,
+      lineHeight: 24,
+      fontWeight: "600",
       textAlign: "right",
       fontVariant: ["tabular-nums"],
     },
