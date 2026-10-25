@@ -534,7 +534,9 @@
     "comment": "Comment",
     "receipts": "Receipts",
     "sameAsLast": "Same as last time",
-    "hoursUnit": "hours"
+    "hoursUnit": "hours",
+    "saved": "Saved",
+    "saving": "Saving…"
   },
   "shiftHistory": {
     "title": "Daily report",

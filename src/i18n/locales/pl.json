@@ -538,7 +538,9 @@
     "comment": "Komentarz",
     "receipts": "Paragony",
     "sameAsLast": "Tak jak ostatnio",
-    "hoursUnit": "godz."
+    "hoursUnit": "godz.",
+    "saved": "Zapisano",
+    "saving": "Zapisywanie…"
   },
   "shiftHistory": {
     "title": "Raport dzienny",

@@ -535,7 +535,9 @@
     "comment": "Komentārs",
     "receipts": "Čeki",
     "sameAsLast": "Tāpat kā iepriekšējo reizi",
-    "hoursUnit": "stundas"
+    "hoursUnit": "stundas",
+    "saved": "Saglabāts",
+    "saving": "Saglabā…"
   },
   "shiftHistory": {
     "title": "Dienas atskaite",

@@ -910,6 +910,86 @@ export default function ShiftsScreen() {
     t,
   ]);
 
+  // Autosave: a second after the last change the open day is written on its
+  // own — no button to remember. "Sparat ✓" next to the total confirms it.
+  const [autosaveState, setAutosaveState] = useState(null);
+  const autosavingRef = useRef(false);
+  const saveOpenDay = useCallback(async () => {
+    if (batchSavingRef.current || autosavingRef.current) {
+      return;
+    }
+    const entry = readOpenEntry();
+    const projectId = resolveManualProjectId();
+    // No project yet → the ✓ asks for one, as before.
+    if (!entry || entry.invalid || entry.unchanged || !projectId) {
+      return;
+    }
+    autosavingRef.current = true;
+    setAutosaveState("saving");
+    try {
+      await shiftService.addManualHours({
+        workerId: currentUserId,
+        projectId,
+        date: entry.dateStr,
+        durationMs: Math.round(entry.hours * 3600000),
+        overtimeMs: Math.round((entry.overtime || 0) * 3600000),
+        obMs: Math.round((Number(entry.extras.ob) || 0) * 3600000),
+        travelMinutes: Math.round((Number(entry.extras.travel) || 0) * 60),
+        travelKm: Math.round(Number(entry.extras.km) || 0),
+        perDiem: entry.extras.perDiem || "none",
+        dayNote: entry.extras.note || "",
+      });
+      const drop = (prev) => {
+        const next = { ...prev };
+        delete next[entry.dateStr];
+        return next;
+      };
+      setPendingManual(drop);
+      setPendingOvertime(drop);
+      setPendingExtras(drop);
+      await loadHistory(selectedMonth);
+      setAutosaveState("saved");
+    } catch (error) {
+      setAutosaveState(null);
+      Alert.alert(
+        t("shifts.manualHoursError"),
+        error?.response?.data?.message ||
+          error?.message ||
+          t("shifts.manualHoursError"),
+      );
+    } finally {
+      autosavingRef.current = false;
+    }
+  }, [
+    readOpenEntry,
+    resolveManualProjectId,
+    currentUserId,
+    loadHistory,
+    selectedMonth,
+    t,
+  ]);
+
+  // Debounce: every change restarts the second.
+  const saveOpenDayRef = useRef(saveOpenDay);
+  saveOpenDayRef.current = saveOpenDay;
+  useEffect(() => {
+    if (!inlineManualDate) {
+      setAutosaveState(null);
+      return undefined;
+    }
+    const timer = setTimeout(() => saveOpenDayRef.current(), 1000);
+    return () => clearTimeout(timer);
+  }, [inlineManualDate, inlineTotalText, inlineOvertime, inlineExtras]);
+
+  // "Sparat ✓" fades back to the plain total after a moment.
+  useEffect(() => {
+    if (autosaveState !== "saved") {
+      return undefined;
+    }
+    const timer = setTimeout(() => setAutosaveState(null), 2500);
+    return () => clearTimeout(timer);
+  }, [autosaveState]);
+
   // The open card's live split, for "8 h normal + 2 h övertid" while typing.
   const inlineSplit = useMemo(() => {
     const work = Math.min(
@@ -1881,6 +1961,7 @@ export default function ShiftsScreen() {
                     }
                     onSave={saveAllManual}
                     saving={savingBatch}
+                    autosaveState={autosaveState}
                     pendingHours={pendingManual[focusedDate]}
                     pendingOvertime={pendingOvertime[focusedDate]}
                     hasShifts={detailShifts.length > 0}

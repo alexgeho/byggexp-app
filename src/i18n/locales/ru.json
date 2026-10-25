@@ -538,7 +538,9 @@
     "comment": "Комментарий",
     "receipts": "Чеки",
     "sameAsLast": "Как в прошлый раз",
-    "hoursUnit": "ч"
+    "hoursUnit": "ч",
+    "saved": "Сохранено",
+    "saving": "Сохранение…"
   },
   "shiftHistory": {
     "title": "Дневной отчёт",

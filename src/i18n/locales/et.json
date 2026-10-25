@@ -534,7 +534,9 @@
     "comment": "Kommentaar",
     "receipts": "Tšekid",
     "sameAsLast": "Sama mis eelmisel korral",
-    "hoursUnit": "tundi"
+    "hoursUnit": "tundi",
+    "saved": "Salvestatud",
+    "saving": "Salvestan…"
   },
   "shiftHistory": {
     "title": "Päevaraport",

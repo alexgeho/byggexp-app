@@ -534,7 +534,9 @@
     "comment": "Kommentar",
     "receipts": "Kvitton",
     "sameAsLast": "Samma som förra gången",
-    "hoursUnit": "timmar"
+    "hoursUnit": "timmar",
+    "saved": "Sparat",
+    "saving": "Sparar…"
   },
   "shiftHistory": {
     "title": "Dagsrapport",

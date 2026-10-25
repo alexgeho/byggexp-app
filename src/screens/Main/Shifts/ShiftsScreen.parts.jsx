@@ -1628,6 +1628,7 @@ export function DayHoursEntry({
   onEdit,
   onSave,
   saving,
+  autosaveState,
   pendingHours,
   pendingOvertime,
   hasShifts,
@@ -1694,6 +1695,18 @@ export function DayHoursEntry({
                 total: formatDurationCompact(Math.round(split.total * 3600000)),
                 plan: formatDurationCompact(Math.round(split.plan * 3600000)),
               })}
+              {autosaveState ? (
+                <Text
+                  style={
+                    autosaveState === "saved" ? styles.dayEntrySaved : null
+                  }
+                >
+                  {"  ·  "}
+                  {autosaveState === "saved"
+                    ? `${t("shifts.saved")} ✓`
+                    : t("shifts.saving")}
+                </Text>
+              ) : null}
             </Text>
           </>
         ) : null}

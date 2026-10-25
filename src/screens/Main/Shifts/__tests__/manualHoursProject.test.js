@@ -182,3 +182,39 @@ test("övertid from + comes on top of the arbetstid", async () => {
     }),
   );
 });
+
+// Autosave: a second after typing the day is saved with no button, and the
+// card says so.
+test("saves the day by itself a second after typing, then shows Sparat", async () => {
+  projectService.getMyProjects.mockResolvedValue([BYGGTOTALEN]);
+  let tree;
+  await act(async () => {
+    tree = TestRenderer.create(
+      <ThemeProvider>
+        <AuthContext.Provider
+          value={{
+            user: { _id: "w1", role: "worker" },
+            selectedProject: null,
+            setSelectedProject: jest.fn(),
+          }}
+        >
+          <ShiftsScreen />
+        </AuthContext.Provider>
+      </ThemeProvider>,
+    );
+  });
+  mounted = tree;
+  await act(async () => {});
+  const input = tree.root.findAllByType(TextInput)[0];
+  await act(async () => input.props.onChangeText("8"));
+  expect(shiftService.addManualHours).not.toHaveBeenCalled();
+
+  await act(async () => new Promise((r) => setTimeout(r, 1200)));
+  expect(shiftService.addManualHours).toHaveBeenCalledWith(
+    expect.objectContaining({ projectId: "p1", durationMs: 8 * 3600000 }),
+  );
+  const texts = tree.root
+    .findAllByType(Text)
+    .map((n) => [].concat(n.props.children).join(""));
+  expect(texts.some((s) => s.includes("shifts.saved ✓"))).toBe(true);
+});

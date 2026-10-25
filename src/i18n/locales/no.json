@@ -534,7 +534,9 @@
     "comment": "Kommentar",
     "receipts": "Kvitteringer",
     "sameAsLast": "Samme som sist",
-    "hoursUnit": "timer"
+    "hoursUnit": "timer",
+    "saved": "Lagret",
+    "saving": "Lagrer…"
   },
   "shiftHistory": {
     "title": "Dagsrapport",

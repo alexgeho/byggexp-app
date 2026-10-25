@@ -537,7 +537,9 @@
     "comment": "Komentar",
     "receipts": "Računi",
     "sameAsLast": "Isto kao prošli put",
-    "hoursUnit": "sati"
+    "hoursUnit": "sati",
+    "saved": "Sačuvano",
+    "saving": "Čuvanje…"
   },
   "shiftHistory": {
     "title": "Dnevni izvještaj",

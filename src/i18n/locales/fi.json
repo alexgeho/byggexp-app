@@ -534,7 +534,9 @@
     "comment": "Kommentti",
     "receipts": "Kuitit",
     "sameAsLast": "Sama kuin viimeksi",
-    "hoursUnit": "tuntia"
+    "hoursUnit": "tuntia",
+    "saved": "Tallennettu",
+    "saving": "Tallennetaan…"
   },
   "shiftHistory": {
     "title": "Päiväraportti",

@@ -538,7 +538,9 @@
     "comment": "Komentaras",
     "receipts": "Kvitai",
     "sameAsLast": "Kaip praėjusį kartą",
-    "hoursUnit": "val."
+    "hoursUnit": "val.",
+    "saved": "Išsaugota",
+    "saving": "Saugoma…"
   },
   "shiftHistory": {
     "title": "Dienos ataskaita",

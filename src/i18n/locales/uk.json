@@ -538,7 +538,9 @@
     "comment": "Коментар",
     "receipts": "Чеки",
     "sameAsLast": "Як минулого разу",
-    "hoursUnit": "год"
+    "hoursUnit": "год",
+    "saved": "Збережено",
+    "saving": "Збереження…"
   },
   "shiftHistory": {
     "title": "Денний звіт",

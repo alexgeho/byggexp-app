@@ -645,6 +645,9 @@ export const createStyles = (c) =>
       color: c.textSecondary,
       fontSize: 13,
     },
+    dayEntrySaved: {
+      color: "#45B36B",
+    },
     /* Arbetstimmar: the same row as Övertid / OB, a small cell instead of − / + */
     headerShareButton: {
       width: size.headerButton,
