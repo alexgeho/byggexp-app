@@ -13,6 +13,7 @@ import { useTheme } from "../../theme/ThemeContext";
 import { useTranslation } from "react-i18next";
 import AuthContext from "../../contexts/AuthContext";
 import { toolService } from "../../services";
+import { SheetView } from "../../components/common/SheetSlideIn/SheetSlideIn";
 
 const idOf = (v) => (v && typeof v === "object" ? v._id || v.id : v);
 
@@ -71,11 +72,11 @@ export default function ToolActionSheet({ visible, tool, onClose, onUpdated }) {
     <Modal
       visible={visible}
       transparent
-      animationType="slide"
+      animationType="fade"
       onRequestClose={onClose}
     >
       <View style={styles.backdrop}>
-        <View style={styles.sheet}>
+        <SheetView style={styles.sheet}>
           <View style={styles.handle} />
           <Text style={styles.name}>{tool.name}</Text>
 
@@ -163,7 +164,7 @@ export default function ToolActionSheet({ visible, tool, onClose, onUpdated }) {
           <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
             <Text style={styles.closeText}>{t("createProject.close")}</Text>
           </TouchableOpacity>
-        </View>
+        </SheetView>
       </View>
     </Modal>
   );

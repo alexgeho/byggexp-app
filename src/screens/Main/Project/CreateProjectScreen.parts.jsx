@@ -31,6 +31,7 @@ import { LocationMapPicker, getDeviceCoordinate } from "./LocationMapPicker";
 import { RadiusSlider } from "./RadiusSlider";
 import { useTheme } from "../../../theme/ThemeContext";
 import { onDark } from "../../../theme/colorUtils";
+import { SheetView } from "../../../components/common/SheetSlideIn/SheetSlideIn";
 
 const useThemedStyles = () => {
   const { theme } = useTheme();
@@ -391,13 +392,13 @@ export const CompaniesListModal = ({
   const styles = useThemedStyles();
   return (
     <Modal
-      animationType="slide"
+      animationType="fade"
       transparent={true}
       visible={visible}
       onRequestClose={onClose}
     >
       <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
+        <SheetView style={styles.modalContent}>
           <Text style={styles.modalTitle}>
             {t("createProject.selectClientCompany")}
           </Text>
@@ -426,7 +427,7 @@ export const CompaniesListModal = ({
               {t("createProject.close")}
             </Text>
           </TouchableOpacity>
-        </View>
+        </SheetView>
       </View>
     </Modal>
   );

@@ -14,6 +14,7 @@ import { useTheme } from "../../../theme/ThemeContext";
 // Share the project filter's trigger styling so every list filter looks the
 // same — change it there and both follow.
 import { createStyles as createTriggerStyles } from "../ProjectFilterSelector/ProjectFilterSelector.styles";
+import { SheetPressable } from "../SheetSlideIn/SheetSlideIn";
 
 // A list filter shaped like the project one ("Alla projekt" pill with a
 // chevron), but picking from a plain set of options in a sheet instead of
@@ -54,11 +55,11 @@ export function FilterSelector({ value, options, onChange, placeholder }) {
       <Modal
         visible={open}
         transparent
-        animationType="slide"
+        animationType="fade"
         onRequestClose={() => setOpen(false)}
       >
         <Pressable style={styles.overlay} onPress={() => setOpen(false)}>
-          <Pressable style={styles.sheet} onPress={() => {}}>
+          <SheetPressable style={styles.sheet} onPress={() => {}}>
             <View style={styles.grab} />
             <ScrollView>
               {options.map((option) => (
@@ -80,7 +81,7 @@ export function FilterSelector({ value, options, onChange, placeholder }) {
                 </TouchableOpacity>
               ))}
             </ScrollView>
-          </Pressable>
+          </SheetPressable>
         </Pressable>
       </Modal>
     </View>

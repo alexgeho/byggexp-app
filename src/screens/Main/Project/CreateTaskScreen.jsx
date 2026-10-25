@@ -55,6 +55,7 @@ import {
   isImageDocument,
 } from "../../../utils/documentPreview";
 import { onDark } from "../../../theme/colorUtils";
+import { SheetView } from "../../../components/common/SheetSlideIn/SheetSlideIn";
 
 // Same values the admin form and the backend enum use.
 const PRIORITY_VALUES = ["low", "normal", "high"];
@@ -1161,7 +1162,7 @@ export default function CreateTaskScreen() {
       <Modal
         visible={showNotificationsSheet}
         transparent={true}
-        animationType="slide"
+        animationType="fade"
         onRequestClose={closeNotificationsSheet}
       >
         <View style={styles.sheetOverlay}>
@@ -1170,7 +1171,7 @@ export default function CreateTaskScreen() {
             activeOpacity={1}
             onPress={closeNotificationsSheet}
           />
-          <View style={styles.sheetCard}>
+          <SheetView style={styles.sheetCard}>
             <View style={styles.sheetHandle} />
             <View style={styles.sheetHeader}>
               <Text style={styles.sheetTitle}>
@@ -1408,7 +1409,7 @@ export default function CreateTaskScreen() {
               <Icon name="check" size={18} color="#FFFFFF" />
               <Text style={styles.sheetDoneButtonText}>{t("common.done")}</Text>
             </TouchableOpacity>
-          </View>
+          </SheetView>
         </View>
       </Modal>
 

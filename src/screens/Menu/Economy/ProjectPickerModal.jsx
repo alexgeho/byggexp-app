@@ -23,6 +23,7 @@ import { createStyles, PRIMARY, MUTED, mutedInk } from "./billingForm.styles";
 import { useTheme } from "../../../theme/ThemeContext";
 import { onDark } from "../../../theme/colorUtils";
 import { ProjectListCard } from "../../../components/common/ProjectListCard/ProjectListCard";
+import { SheetPressable } from "../../../components/common/SheetSlideIn/SheetSlideIn";
 
 // Optional project picker for the invoice form. Linking an invoice to a project
 // lets its total roll up into that project's economy ("Fakturerat"). Selecting
@@ -79,11 +80,11 @@ export default function ProjectPickerModal({ visible, onClose, onSelect }) {
     <Modal
       visible={visible}
       transparent
-      animationType="slide"
+      animationType="fade"
       onRequestClose={onClose}
     >
       <Pressable style={styles.modalOverlay} onPress={onClose}>
-        <Pressable style={styles.modalSheet} onPress={() => {}}>
+        <SheetPressable style={styles.modalSheet} onPress={() => {}}>
           <View style={styles.grab} />
           <Text style={styles.modalTitle}>{t("billing.selectProject")}</Text>
 
@@ -154,7 +155,7 @@ export default function ProjectPickerModal({ visible, onClose, onSelect }) {
               {t("common.cancel")}
             </Text>
           </TouchableOpacity>
-        </Pressable>
+        </SheetPressable>
       </Pressable>
     </Modal>
   );

@@ -27,6 +27,7 @@ import { createStyles } from "./EconomyScreen.styles";
 import { downloadAndShareDocument } from "../../../utils/documentPreview";
 import { API_BASE_URL } from "../../../config/env";
 import { useTheme } from "../../../theme/ThemeContext";
+import { SheetPressable } from "../../../components/common/SheetSlideIn/SheetSlideIn";
 
 const OFFER_STATUS_TONE = {
   draft: "draft",
@@ -507,7 +508,7 @@ export default function EconomyScreen() {
       <Modal
         visible={Boolean(actionItem)}
         transparent
-        animationType="slide"
+        animationType="fade"
         onRequestClose={closeSheet}
       >
         <KeyboardAvoidingView
@@ -515,7 +516,7 @@ export default function EconomyScreen() {
           behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
           <Pressable style={styles.modalOverlay} onPress={closeSheet}>
-            <Pressable style={styles.modalSheet} onPress={() => {}}>
+            <SheetPressable style={styles.modalSheet} onPress={() => {}}>
               <View style={styles.grab} />
 
               {busyAction ? (
@@ -687,7 +688,7 @@ export default function EconomyScreen() {
                   ) : null}
                 </>
               )}
-            </Pressable>
+            </SheetPressable>
           </Pressable>
         </KeyboardAvoidingView>
       </Modal>

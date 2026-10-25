@@ -45,6 +45,7 @@ import { getDateLocale } from "../../../utils/dateLocale";
 import { createStyles, ROW_HEIGHT } from "./ScheduleScreen.styles";
 import { useTheme } from "../../../theme/ThemeContext";
 import { onDark } from "../../../theme/colorUtils";
+import { SheetView } from "../../../components/common/SheetSlideIn/SheetSlideIn";
 
 const RANGE_DAYS = 42; // 6 weeks — covers any month with week alignment
 const BASE_DAY_WIDTH = 72;
@@ -817,7 +818,7 @@ export default function ScheduleScreen() {
       <Modal
         visible={activeFilter !== null}
         transparent
-        animationType="slide"
+        animationType="fade"
         onRequestClose={() => setActiveFilter(null)}
       >
         <TouchableOpacity
@@ -825,7 +826,7 @@ export default function ScheduleScreen() {
           activeOpacity={1}
           onPress={() => setActiveFilter(null)}
         >
-          <View style={styles.modalSheet}>
+          <SheetView style={styles.modalSheet}>
             <View style={styles.modalHeaderRow}>
               <Text style={styles.modalTitle}>
                 {t(
@@ -866,7 +867,7 @@ export default function ScheduleScreen() {
                 );
               }}
             />
-          </View>
+          </SheetView>
         </TouchableOpacity>
       </Modal>
 
@@ -874,14 +875,14 @@ export default function ScheduleScreen() {
       <Modal
         visible={reschedule !== null}
         transparent
-        animationType="slide"
+        animationType="fade"
         onRequestClose={() => {
           setReschedule(null);
           setDatePickerTarget(null);
         }}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.modalSheet}>
+          <SheetView style={styles.modalSheet}>
             <Text style={styles.modalTitle}>
               {t("schedule.rescheduleTitle")}
             </Text>
@@ -971,7 +972,7 @@ export default function ScheduleScreen() {
                 </TouchableOpacity>
               </>
             ) : null}
-          </View>
+          </SheetView>
         </View>
       </Modal>
 
@@ -979,7 +980,7 @@ export default function ScheduleScreen() {
       <Modal
         visible={monthPickerOpen}
         transparent
-        animationType="slide"
+        animationType="fade"
         onRequestClose={() => setMonthPickerOpen(false)}
       >
         <TouchableOpacity
@@ -987,7 +988,7 @@ export default function ScheduleScreen() {
           activeOpacity={1}
           onPress={() => setMonthPickerOpen(false)}
         >
-          <View style={styles.modalSheet}>
+          <SheetView style={styles.modalSheet}>
             <Text style={styles.modalTitle}>{t("schedule.selectMonth")}</Text>
             <FlatList
               data={monthOptions}
@@ -1014,7 +1015,7 @@ export default function ScheduleScreen() {
                 </TouchableOpacity>
               )}
             />
-          </View>
+          </SheetView>
         </TouchableOpacity>
       </Modal>
     </View>

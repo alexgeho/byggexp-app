@@ -18,6 +18,7 @@ import AuthContext from "../../../contexts/AuthContext";
 import { expenseService, projectService } from "../../../services";
 import { createStyles } from "./ExpenseReviewSheet.styles";
 import { useTheme } from "../../../theme/ThemeContext";
+import { SheetView } from "../../../components/common/SheetSlideIn/SheetSlideIn";
 
 const toNumber = (v) => {
   const n = parseFloat(String(v ?? "").replace(",", "."));
@@ -137,7 +138,7 @@ export default function ExpenseReviewSheet({
   return (
     <Modal
       visible={visible}
-      animationType="slide"
+      animationType="fade"
       transparent
       onRequestClose={onClose}
     >
@@ -148,7 +149,7 @@ export default function ExpenseReviewSheet({
         style={styles.backdrop}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <View style={styles.sheet}>
+        <SheetView style={styles.sheet}>
           <View style={styles.handle} />
           <ScrollView
             showsVerticalScrollIndicator={false}
@@ -291,7 +292,7 @@ export default function ExpenseReviewSheet({
               )}
             </TouchableOpacity>
           </View>
-        </View>
+        </SheetView>
       </KeyboardAvoidingView>
     </Modal>
   );

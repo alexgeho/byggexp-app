@@ -20,6 +20,7 @@ import { formatMoney } from "../../../utils/billingTotals";
 import { getDateLocale } from "../../../utils/dateLocale";
 import { createStyles, PRIMARY, mutedInk } from "./billingForm.styles";
 import { useTheme } from "../../../theme/ThemeContext";
+import { SheetPressable } from "../../../components/common/SheetSlideIn/SheetSlideIn";
 
 // Pick an article from the company catalogue onto an invoice/offer row — the
 // same list the web form offers in its row dropdown. Picking fills the row's
@@ -70,11 +71,11 @@ export default function ArticlePickerModal({ visible, onClose, onSelect }) {
     <Modal
       visible={visible}
       transparent
-      animationType="slide"
+      animationType="fade"
       onRequestClose={onClose}
     >
       <Pressable style={styles.modalOverlay} onPress={onClose}>
-        <Pressable style={styles.modalSheet} onPress={() => {}}>
+        <SheetPressable style={styles.modalSheet} onPress={() => {}}>
           <View style={styles.grab} />
           <Text style={styles.modalTitle}>{t("billing.selectArticle")}</Text>
 
@@ -135,7 +136,7 @@ export default function ArticlePickerModal({ visible, onClose, onSelect }) {
               )}
             </ScrollView>
           )}
-        </Pressable>
+        </SheetPressable>
       </Pressable>
     </Modal>
   );

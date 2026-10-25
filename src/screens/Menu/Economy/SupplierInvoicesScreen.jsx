@@ -39,6 +39,7 @@ import { getDateLocale } from "../../../utils/dateLocale";
 import { sortByNewest } from "../../../utils/sortByNewest";
 import { useCardStyles } from "../../../styles/cards";
 import { useTheme } from "../../../theme/ThemeContext";
+import { SheetPressable } from "../../../components/common/SheetSlideIn/SheetSlideIn";
 
 // The bills the company has to PAY (leverantörsfakturor) — the other side of
 // the invoices it sends out. This is where the "unpaid invoice" reminder lands:
@@ -286,7 +287,7 @@ export default function SupplierInvoicesScreen() {
       <Modal
         visible={Boolean(actionItem)}
         transparent
-        animationType="slide"
+        animationType="fade"
         onRequestClose={() => setActionItem(null)}
       >
         {/* The amount field opens a number pad that has no "done" key, and it
@@ -303,7 +304,7 @@ export default function SupplierInvoicesScreen() {
               setCreditingPartly(false);
             }}
           >
-            <Pressable style={styles.sheet} onPress={() => {}}>
+            <SheetPressable style={styles.sheet} onPress={() => {}}>
               <View style={styles.grab} />
 
               {busyAction ? (
@@ -438,7 +439,7 @@ export default function SupplierInvoicesScreen() {
                   </TouchableOpacity>
                 </>
               )}
-            </Pressable>
+            </SheetPressable>
           </Pressable>
         </KeyboardAvoidingView>
       </Modal>

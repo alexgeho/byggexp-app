@@ -16,6 +16,7 @@ import { clientService } from "../../../services";
 import { createStyles, PRIMARY, MUTED, mutedInk } from "./billingForm.styles";
 import { useTheme } from "../../../theme/ThemeContext";
 import { onDark } from "../../../theme/colorUtils";
+import { SheetPressable } from "../../../components/common/SheetSlideIn/SheetSlideIn";
 
 const NEW_CLIENT = {
   clientType: "company",
@@ -155,11 +156,11 @@ export default function ClientPickerModal({ visible, onClose, onSelect }) {
     <Modal
       visible={visible}
       transparent
-      animationType="slide"
+      animationType="fade"
       onRequestClose={onClose}
     >
       <Pressable style={styles.modalOverlay} onPress={onClose}>
-        <Pressable style={styles.modalSheet} onPress={() => {}}>
+        <SheetPressable style={styles.modalSheet} onPress={() => {}}>
           <View style={styles.grab} />
           <Text style={styles.modalTitle}>
             {creating ? t("billing.newClient") : t("billing.selectClient")}
@@ -346,7 +347,7 @@ export default function ClientPickerModal({ visible, onClose, onSelect }) {
               </TouchableOpacity>
             </>
           )}
-        </Pressable>
+        </SheetPressable>
       </Pressable>
     </Modal>
   );
