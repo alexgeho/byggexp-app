@@ -70,6 +70,9 @@ export default function AppNavigator() {
       ref={navigationRef}
       theme={navigationTheme}
       onReady={flushPendingNotificationNavigation}
+      // A notification tapped before login finished waits until its screen
+      // exists — the switch from the auth stack to the app is a state change.
+      onStateChange={flushPendingNotificationNavigation}
     >
       <Stack.Navigator
         screenOptions={{

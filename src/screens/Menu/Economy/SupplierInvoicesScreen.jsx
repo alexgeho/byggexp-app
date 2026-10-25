@@ -1,4 +1,10 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -103,6 +109,19 @@ export default function SupplierInvoicesScreen() {
     const [picked] = copy.splice(index, 1);
     return [picked, ...copy];
   }, [invoices, filter, highlightId]);
+
+  // Opened from the reminder: show that bill's actions right away, so marking
+  // it paid is one tap. Once per notification, not on every reload.
+  const openedForRef = useRef(null);
+  useEffect(() => {
+    if (!highlightId || openedForRef.current === highlightId) return;
+    const target = invoices.find(
+      (invoice) => String(invoice._id || invoice.id) === String(highlightId),
+    );
+    if (!target) return;
+    openedForRef.current = highlightId;
+    setActionItem(target);
+  }, [invoices, highlightId]);
 
   const markPaid = useCallback(
     async (invoice) => {

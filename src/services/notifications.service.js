@@ -5,7 +5,11 @@ import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 import api from "./api";
 import { logUserActivity } from "./user-activity.service";
-import { isNavigationReady, navigate } from "../navigation/navigationRef";
+import {
+  isNavigationReady,
+  navigate,
+  navigationRef,
+} from "../navigation/navigationRef";
 
 const INSTALLATION_ID_KEY = "notificationInstallationId";
 const EXPO_PUSH_TOKEN_KEY = "expoPushToken";
@@ -89,13 +93,23 @@ const buildNavigationTarget = (data = {}) => {
   return { screen, params: {} };
 };
 
+// On a cold start the tap arrives while the login/loader stack is still up:
+// the target screen isn't registered yet, so navigating then is silently
+// dropped and the user lands on Home. Keep it pending until it exists.
+const canNavigateTo = (screen) =>
+  isNavigationReady() &&
+  (navigationRef.getRootState()?.routeNames || []).includes(screen);
+
 const handleNotificationNavigation = (data = {}) => {
   const target = buildNavigationTarget(data);
   if (!target) {
     return;
   }
 
-  if (!navigate(target.screen, target.params)) {
+  if (
+    !canNavigateTo(target.screen) ||
+    !navigate(target.screen, target.params)
+  ) {
     pendingNotificationNavigation = target;
   }
 };
@@ -114,7 +128,10 @@ const handleNotificationResponse = async (response) => {
 };
 
 export const flushPendingNotificationNavigation = () => {
-  if (!pendingNotificationNavigation || !isNavigationReady()) {
+  if (
+    !pendingNotificationNavigation ||
+    !canNavigateTo(pendingNotificationNavigation.screen)
+  ) {
     return;
   }
 
