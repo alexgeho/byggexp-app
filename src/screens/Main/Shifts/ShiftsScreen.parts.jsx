@@ -964,13 +964,15 @@ export function ShiftWeekPicker({
         >
           {displayMs > 0 ? formatDurationShort(displayMs) : "–"}
         </Text>
-        {overtime && overtime.overtimeMs > 0 && displayMs > 0 ? (
+        {/* Every day with hours gets its bar, not only days with övertid. */}
+        {displayMs > 0 ? (
           <View style={styles.weekDayBarSlot} pointerEvents="none">
             <HoursBar
               styles={styles}
               totalMs={displayMs}
-              overtimeMs={overtime.overtimeMs}
-              pending={overtime.pending}
+              overtimeMs={overtime?.overtimeMs || 0}
+              obMs={overtime ? Number(dayMap.get(dateKey)?.obMs) || 0 : 0}
+              pending={overtime?.pending}
             />
           </View>
         ) : null}
@@ -1250,11 +1252,12 @@ export function ShiftOvertime({
 }) {
   const overtimeMs = Number(shift.overtimeMs) || 0;
   const obMs = Number(shift.obMs) || 0;
-  if (!overtimeMs && !obMs) return null;
   const totalMs =
     shift.manualDurationMs != null
       ? Number(shift.manualDurationMs)
       : Number(shift.durationMs) || 0;
+  // The bar and «Normal» show on every day with hours, not only with övertid.
+  if (!totalMs && !overtimeMs && !obMs) return null;
   const overtimePending = overtimeMs > 0 && shift.overtimeStatus !== "approved";
   const obPending = obMs > 0 && shift.obStatus !== "approved";
   const pending = overtimePending || obPending;
