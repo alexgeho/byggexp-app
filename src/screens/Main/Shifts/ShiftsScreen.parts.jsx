@@ -1,6 +1,7 @@
 import React from "react";
 import {
   ActivityIndicator,
+  Animated,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -15,6 +16,7 @@ import { Picker } from "@react-native-picker/picker";
 import { getDateLocale } from "../../../utils/dateLocale";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Icon from "react-native-vector-icons/Feather";
+import useSheetEnter from "../../../hooks/useSheetEnter";
 
 import {
   formatDurationCompact,
@@ -130,11 +132,14 @@ export function ManualHoursModal({
   // it. Sliding up from the bottom and lifting with the keyboard keeps every
   // action reachable (Fitts's), and one decimal field replaces the h + min
   // pair, because hours are what gets reported and paid.
+  const sheetEnter = useSheetEnter(
+    Boolean(manualHoursShift) || Boolean(manualDateEntry),
+  );
   return (
     <Modal
       visible={Boolean(manualHoursShift) || Boolean(manualDateEntry)}
       transparent
-      animationType="slide"
+      animationType="fade"
       onRequestClose={onClose}
     >
       <KeyboardAvoidingView
@@ -143,7 +148,7 @@ export function ManualHoursModal({
       >
         <Pressable style={styles.manualSheetBackdrop} onPress={onClose} />
 
-        <View style={styles.manualSheet}>
+        <Animated.View style={[styles.manualSheet, sheetEnter]}>
           <View style={styles.manualSheetGrab} />
 
           <Text style={styles.manualSheetTitle}>
@@ -250,7 +255,7 @@ export function ManualHoursModal({
               </TouchableOpacity>
             ) : null}
           </View>
-        </View>
+        </Animated.View>
       </KeyboardAvoidingView>
     </Modal>
   );
@@ -266,16 +271,17 @@ export function ProjectPickModal({
   styles,
   t,
 }) {
+  const sheetEnter = useSheetEnter(visible);
   return (
     <Modal
       visible={visible}
       transparent
-      animationType="slide"
+      animationType="fade"
       onRequestClose={onClose}
     >
       <View style={styles.manualSheetOverlay}>
         <Pressable style={styles.manualSheetBackdrop} onPress={onClose} />
-        <View style={styles.manualSheet}>
+        <Animated.View style={[styles.manualSheet, sheetEnter]}>
           <View style={styles.manualSheetGrab} />
           <Text style={styles.manualSheetTitle}>
             {t("shifts.manualPickProjectTitle")}
@@ -311,7 +317,7 @@ export function ProjectPickModal({
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </Animated.View>
       </View>
     </Modal>
   );
@@ -335,16 +341,17 @@ export function ExportSheet({
   titleFontFamily,
   t,
 }) {
+  const sheetEnter = useSheetEnter(visible);
   return (
     <Modal
       visible={visible}
       transparent
-      animationType="slide"
+      animationType="fade"
       statusBarTranslucent
       onRequestClose={onClose}
     >
       <Pressable style={sheetStyles.backdrop} onPress={onClose} />
-      <View style={sheetStyles.container}>
+      <Animated.View style={[sheetStyles.container, sheetEnter]}>
         <View style={styles.handleIndicator} />
         <View style={styles.bottomSheetContent}>
           <View style={styles.exportSheetBody}>
@@ -444,7 +451,7 @@ export function ExportSheet({
             )}
           </TouchableOpacity>
         </View>
-      </View>
+      </Animated.View>
     </Modal>
   );
 }
@@ -540,16 +547,17 @@ export function PeriodSheet({
   titleFontFamily,
   t,
 }) {
+  const sheetEnter = useSheetEnter(visible);
   return (
     <Modal
       visible={visible}
       transparent
-      animationType="slide"
+      animationType="fade"
       statusBarTranslucent
       onRequestClose={onClose}
     >
       <Pressable style={sheetStyles.backdrop} onPress={onClose} />
-      <View style={sheetStyles.container}>
+      <Animated.View style={[sheetStyles.container, sheetEnter]}>
         <View style={styles.handleIndicator} />
         <View style={styles.bottomSheetContent}>
           <View style={styles.exportSheetBody}>
@@ -687,7 +695,7 @@ export function PeriodSheet({
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </Animated.View>
     </Modal>
   );
 }
