@@ -489,8 +489,10 @@ export const createStyles = (c) =>
     hoursBarOnAccent: {
       backgroundColor: "rgba(255, 255, 255, 0.35)",
     },
+    // Light blue: an hours bar is information, not a control — it must not
+    // share the action blue of buttons (docs/DESIGN-SYSTEM.md §7).
     hoursBarNormal: {
-      backgroundColor: "#0785F4",
+      backgroundColor: "#7CC4FA",
     },
     hoursBarNormalOnAccent: {
       backgroundColor: "#FFFFFF",
