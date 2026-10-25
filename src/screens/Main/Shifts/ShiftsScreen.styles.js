@@ -442,10 +442,11 @@ export const createStyles = (c) =>
       fontSize: 12,
       fontWeight: "500",
     },
+    // A touch smaller and lighter than before (owner 2026-10-25).
     weekDayNumber: {
       color: c.textPrimary,
-      fontSize: 21,
-      fontWeight: "600",
+      fontSize: 19,
+      fontWeight: "500",
       fontVariant: ["tabular-nums"],
     },
     weekDayHours: {

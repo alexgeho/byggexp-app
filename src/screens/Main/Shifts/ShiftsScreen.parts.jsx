@@ -950,7 +950,6 @@ export function ShiftWeekPicker({
           style={[
             styles.weekDayNumber,
             compact && styles.weekDayNumberCompact,
-            { fontFamily: semiBoldFontFamily },
             isTodayCell && styles.weekDayNumberToday,
           ]}
         >
