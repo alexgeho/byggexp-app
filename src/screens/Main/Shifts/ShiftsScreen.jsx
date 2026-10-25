@@ -226,7 +226,6 @@ export default function ShiftsScreen() {
   const calendarYRef = useRef(0);
   const rowYRef = useRef({});
   const scrollViewHeightRef = useRef(0);
-  const keyboardHeightRef = useRef(336);
   // Keyboard height as state so Android can pad the scroll content (iOS relies
   // on automaticallyAdjustKeyboardInsets instead).
   const [keyboardHeight, setKeyboardHeight] = useState(0);
@@ -294,7 +293,6 @@ export default function ShiftsScreen() {
       Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
     const show = Keyboard.addListener(showEvent, (e) => {
       const h = e.endCoordinates?.height || 336;
-      keyboardHeightRef.current = h;
       setKeyboardHeight(h);
     });
     const hide = Keyboard.addListener(hideEvent, () => setKeyboardHeight(0));
@@ -304,11 +302,19 @@ export default function ShiftsScreen() {
     };
   }, []);
 
-  // Once the keyboard is actually up, lift the edited day above it.
+  // Once the keyboard is actually up, lift the edited day above it — once per
+  // opened day. Re-parking on every keyboard show (tapping Restid, Bil…)
+  // fought iOS scrolling to the tapped field, so the screen jumped.
+  const parkedDateRef = useRef(null);
   useEffect(() => {
-    if (!inlineManualDate || keyboardHeight <= 0) {
+    if (!inlineManualDate) {
+      parkedDateRef.current = null;
       return;
     }
+    if (keyboardHeight <= 0 || parkedDateRef.current === inlineManualDate) {
+      return;
+    }
+    parkedDateRef.current = inlineManualDate;
     const rowY = rowYRef.current[inlineManualDate];
     if (rowY == null) {
       return;
@@ -693,20 +699,6 @@ export default function ShiftsScreen() {
       setInlineOvertime(seedOvertime);
       setInlineExtras(pendingExtras[dateStr] || dayExtras(day));
       setInlineManualDate(dateStr);
-
-      // Park the edited day just above the keyboard (not jammed to the top).
-      const rowY = rowYRef.current[dateStr];
-      if (rowY != null) {
-        setTimeout(() => {
-          const visibleAboveKb =
-            (scrollViewHeightRef.current || 500) - keyboardHeightRef.current;
-          const targetFromTop = Math.max(150, visibleAboveKb - 110);
-          scrollViewRef.current?.scrollTo({
-            y: Math.max(0, calendarYRef.current + rowY - targetFromTop),
-            animated: true,
-          });
-        }, 300);
-      }
     },
     [dayMap, pendingManual, pendingOvertime, pendingExtras],
   );

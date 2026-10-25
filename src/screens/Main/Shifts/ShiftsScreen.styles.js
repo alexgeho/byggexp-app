@@ -478,8 +478,9 @@ export const createStyles = (c) =>
     hoursBarOnAccent: {
       backgroundColor: "rgba(255, 255, 255, 0.35)",
     },
+    // Green, not the blue of the selected day — the two sat side by side.
     hoursBarNormal: {
-      backgroundColor: "#0785F4",
+      backgroundColor: "#45B36B",
     },
     hoursBarNormalOnAccent: {
       backgroundColor: "#FFFFFF",
