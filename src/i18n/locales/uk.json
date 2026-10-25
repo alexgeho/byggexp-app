@@ -1181,6 +1181,10 @@
       "productAndMarketingAlerts": {
         "label": "Сповіщення про продукт і маркетинг",
         "description": "Новини про оновлення застосунку, релізи та анонси продукту."
+      },
+      "invoices": {
+        "label": "Рахунки до оплати",
+        "description": "Нагадування про неоплачені рахунки постачальників."
       }
     }
   },
@@ -1785,7 +1789,8 @@
     "attachedCount_other": "{{count}} вкладень",
     "creditFull": "Кредитувати повністю",
     "creditPartly": "Кредитувати частково",
-    "actionFailed": "Не вдалося виконати дію."
+    "actionFailed": "Не вдалося виконати дію.",
+    "muteReminders": "Вимкнути нагадування"
   },
   "egenkontroll": {
     "title": "Egenkontroll",

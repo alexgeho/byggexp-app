@@ -27,7 +27,9 @@ export default function NotificationsSettingsScreen() {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
-  const { user, updateStoredUser } = useContext(AuthContext);
+  const { user, updateStoredUser, hasPermission } = useContext(AuthContext);
+  const getsBillReminders =
+    user?.role === "companyAdmin" || Boolean(hasPermission?.("finance.manage"));
   const { showSuccess } = useFeedback();
   const [preferences, setPreferences] = useState(() =>
     normalizeNotificationPreferences(user?.notificationPreferences),
@@ -71,11 +73,13 @@ export default function NotificationsSettingsScreen() {
 
   const cardRows = useMemo(
     () =>
-      NOTIFICATION_PREFERENCE_ITEMS.map((item) => ({
+      NOTIFICATION_PREFERENCE_ITEMS.filter(
+        (item) => !item.financeOnly || getsBillReminders,
+      ).map((item) => ({
         ...item,
         value: Boolean(preferences[item.key]),
       })),
-    [preferences],
+    [preferences, getsBillReminders],
   );
 
   const handleToggle = (key, value) => {

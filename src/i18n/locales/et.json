@@ -1177,6 +1177,10 @@
       "productAndMarketingAlerts": {
         "label": "Toote- ja turundusteavitused",
         "description": "Uudised rakenduse uuenduste, väljalasete ja tooteteadete kohta."
+      },
+      "invoices": {
+        "label": "Tasumata arved",
+        "description": "Meeldetuletused tasumata tarnijaarvete kohta."
       }
     }
   },
@@ -1781,7 +1785,8 @@
     "attachedCount_other": "{{count}} manust",
     "creditFull": "Krediteeri täielikult",
     "creditPartly": "Krediteeri osaliselt",
-    "actionFailed": "Toiming ebaõnnestus."
+    "actionFailed": "Toiming ebaõnnestus.",
+    "muteReminders": "Lülita meeldetuletused välja"
   },
   "egenkontroll": {
     "title": "Egenkontroll",

@@ -1177,6 +1177,10 @@
       "productAndMarketingAlerts": {
         "label": "Produkt- och marknadsföringsaviseringar",
         "description": "Nyheter om appuppdateringar, lanseringar och produktmeddelanden."
+      },
+      "invoices": {
+        "label": "Fakturor att betala",
+        "description": "Påminnelser om obetalda leverantörsfakturor."
       }
     }
   },
@@ -1781,7 +1785,8 @@
     "attachedCount_other": "{{count}} bilagor",
     "creditFull": "Kreditera hela",
     "creditPartly": "Kreditera delvis",
-    "actionFailed": "Åtgärden misslyckades."
+    "actionFailed": "Åtgärden misslyckades.",
+    "muteReminders": "Stäng av påminnelser"
   },
   "egenkontroll": {
     "title": "Egenkontroll",

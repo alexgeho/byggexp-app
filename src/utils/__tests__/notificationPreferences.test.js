@@ -23,12 +23,14 @@ describe("normalizeNotificationPreferences", () => {
         messages: true,
         tasks: false,
         productAndMarketingAlerts: false,
+        invoices: false,
       }),
     ).toEqual({
       flowMode: false,
       messages: true,
       tasks: false,
       productAndMarketingAlerts: false,
+      invoices: false,
     });
   });
 

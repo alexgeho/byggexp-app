@@ -1178,6 +1178,10 @@
       "productAndMarketingAlerts": {
         "label": "Produktu un mārketinga paziņojumi",
         "description": "Ziņas par lietotnes atjauninājumiem, laidieniem un produktu paziņojumiem."
+      },
+      "invoices": {
+        "label": "Apmaksājamie rēķini",
+        "description": "Atgādinājumi par neapmaksātiem piegādātāju rēķiniem."
       }
     }
   },
@@ -1782,7 +1786,8 @@
     "attachedCount_other": "{{count}} pielikumi",
     "creditFull": "Kreditēt pilnībā",
     "creditPartly": "Kreditēt daļēji",
-    "actionFailed": "Darbība neizdevās."
+    "actionFailed": "Darbība neizdevās.",
+    "muteReminders": "Izslēgt atgādinājumus"
   },
   "egenkontroll": {
     "title": "Egenkontroll",

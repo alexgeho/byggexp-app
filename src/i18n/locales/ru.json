@@ -1181,6 +1181,10 @@
       "productAndMarketingAlerts": {
         "label": "Уведомления о продукте и маркетинге",
         "description": "Новости об обновлениях приложения, релизах и анонсах продукта."
+      },
+      "invoices": {
+        "label": "Счета к оплате",
+        "description": "Напоминания о неоплаченных счетах поставщиков."
       }
     }
   },
@@ -1785,7 +1789,8 @@
     "attachedCount_other": "{{count}} вложений",
     "creditFull": "Кредитовать полностью",
     "creditPartly": "Кредитовать частично",
-    "actionFailed": "Не удалось выполнить действие."
+    "actionFailed": "Не удалось выполнить действие.",
+    "muteReminders": "Отключить напоминания"
   },
   "egenkontroll": {
     "title": "Egenkontroll",

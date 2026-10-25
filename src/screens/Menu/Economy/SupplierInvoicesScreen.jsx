@@ -1,5 +1,6 @@
 import React, {
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -26,7 +27,12 @@ import {
 } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 
-import { supplierInvoiceService } from "../../../services";
+import AuthContext from "../../../contexts/AuthContext";
+import {
+  notificationsService,
+  supplierInvoiceService,
+} from "../../../services";
+import { normalizeNotificationPreferences } from "../../../utils/notificationPreferences";
 import { EntityListScreen } from "../../../components/common/EntityListScreen/EntityListScreen";
 import { ListCard } from "../../../components/common/ListCard/ListCard";
 import { getDateLocale } from "../../../utils/dateLocale";
@@ -56,6 +62,10 @@ export default function SupplierInvoicesScreen() {
   const route = useRoute();
   const navigation = useNavigation();
   const highlightId = route.params?.entityId || null;
+  const { user, updateStoredUser } = useContext(AuthContext);
+  const remindersOn = normalizeNotificationPreferences(
+    user?.notificationPreferences,
+  ).invoices;
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const [invoices, setInvoices] = useState([]);
@@ -142,6 +152,18 @@ export default function SupplierInvoicesScreen() {
     },
     [t],
   );
+
+  // Opened from a reminder: turn these reminders off right there, like closing
+  // an onboarding card. Back on in Meny → Aviseringar.
+  const muteReminders = async () => {
+    const saved = normalizeNotificationPreferences(
+      await notificationsService.updateNotificationPreferences({
+        ...normalizeNotificationPreferences(user?.notificationPreferences),
+        invoices: false,
+      }),
+    );
+    await updateStoredUser({ ...user, notificationPreferences: saved });
+  };
 
   const runAction = async (work) => {
     setBusyAction(true);
@@ -382,6 +404,26 @@ export default function SupplierInvoicesScreen() {
                         </Text>
                       </TouchableOpacity>
                     </>
+                  ) : null}
+
+                  {remindersOn &&
+                  highlightId &&
+                  String(actionItem?._id || actionItem?.id) ===
+                    String(highlightId) ? (
+                    <TouchableOpacity
+                      style={styles.row}
+                      onPress={() => runAction(muteReminders)}
+                      activeOpacity={0.8}
+                    >
+                      <Icon
+                        name="bell-off"
+                        size={20}
+                        color={theme.content.textMuted}
+                      />
+                      <Text style={styles.rowText}>
+                        {t("supplierInvoices.muteReminders")}
+                      </Text>
+                    </TouchableOpacity>
                   ) : null}
 
                   <TouchableOpacity

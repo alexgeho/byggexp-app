@@ -1177,6 +1177,10 @@
       "productAndMarketingAlerts": {
         "label": "Product and Marketing Alerts",
         "description": "News about app updates, releases, and product announcements."
+      },
+      "invoices": {
+        "label": "Bills to pay",
+        "description": "Reminders about unpaid supplier invoices."
       }
     }
   },
@@ -1781,7 +1785,8 @@
     "attachedCount_other": "{{count}} attachments",
     "creditFull": "Credit in full",
     "creditPartly": "Credit part of it",
-    "actionFailed": "The action failed."
+    "actionFailed": "The action failed.",
+    "muteReminders": "Turn off reminders"
   },
   "egenkontroll": {
     "title": "Egenkontroll",

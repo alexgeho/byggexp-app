@@ -1177,6 +1177,10 @@
       "productAndMarketingAlerts": {
         "label": "Tuote- ja markkinointi-ilmoitukset",
         "description": "Uutisia sovelluspäivityksistä, julkaisuista ja tuoteilmoituksista."
+      },
+      "invoices": {
+        "label": "Maksettavat laskut",
+        "description": "Muistutukset maksamattomista ostolaskuista."
       }
     }
   },
@@ -1781,7 +1785,8 @@
     "attachedCount_other": "{{count}} liitettä",
     "creditFull": "Hyvitä kokonaan",
     "creditPartly": "Hyvitä osittain",
-    "actionFailed": "Toiminto epäonnistui."
+    "actionFailed": "Toiminto epäonnistui.",
+    "muteReminders": "Poista muistutukset käytöstä"
   },
   "egenkontroll": {
     "title": "Egenkontroll",

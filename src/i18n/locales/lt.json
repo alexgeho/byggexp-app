@@ -1181,6 +1181,10 @@
       "productAndMarketingAlerts": {
         "label": "Produkto ir rinkodaros pranešimai",
         "description": "Naujienos apie programėlės atnaujinimus, leidimus ir produkto pranešimus."
+      },
+      "invoices": {
+        "label": "Mokėtinos sąskaitos",
+        "description": "Priminimai apie neapmokėtas tiekėjų sąskaitas."
       }
     }
   },
@@ -1785,7 +1789,8 @@
     "attachedCount_other": "{{count}} priedų",
     "creditFull": "Kredituoti visą",
     "creditPartly": "Kredituoti dalį",
-    "actionFailed": "Veiksmas nepavyko."
+    "actionFailed": "Veiksmas nepavyko.",
+    "muteReminders": "Išjungti priminimus"
   },
   "egenkontroll": {
     "title": "Egenkontroll",

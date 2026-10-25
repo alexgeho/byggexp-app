@@ -1181,6 +1181,10 @@
       "productAndMarketingAlerts": {
         "label": "Powiadomienia o produkcie i marketingu",
         "description": "Wiadomości o aktualizacjach aplikacji, wydaniach i ogłoszeniach produktowych."
+      },
+      "invoices": {
+        "label": "Faktury do zapłaty",
+        "description": "Przypomnienia o niezapłaconych fakturach od dostawców."
       }
     }
   },
@@ -1785,7 +1789,8 @@
     "attachedCount_other": "{{count}} załączników",
     "creditFull": "Koryguj całość",
     "creditPartly": "Koryguj częściowo",
-    "actionFailed": "Operacja nie powiodła się."
+    "actionFailed": "Operacja nie powiodła się.",
+    "muteReminders": "Wyłącz przypomnienia"
   },
   "egenkontroll": {
     "title": "Egenkontroll",

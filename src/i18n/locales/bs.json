@@ -1180,6 +1180,10 @@
       "productAndMarketingAlerts": {
         "label": "Obavještenja o proizvodu i marketingu",
         "description": "Vijesti o ažuriranjima aplikacije, izdanjima i najavama proizvoda."
+      },
+      "invoices": {
+        "label": "Računi za plaćanje",
+        "description": "Podsjetnici o neplaćenim računima dobavljača."
       }
     }
   },
@@ -1784,7 +1788,8 @@
     "attachedCount_other": "{{count}} priloga",
     "creditFull": "Storniraj u cijelosti",
     "creditPartly": "Storniraj djelimično",
-    "actionFailed": "Radnja nije uspjela."
+    "actionFailed": "Radnja nije uspjela.",
+    "muteReminders": "Isključi podsjetnike"
   },
   "egenkontroll": {
     "title": "Egenkontroll",
