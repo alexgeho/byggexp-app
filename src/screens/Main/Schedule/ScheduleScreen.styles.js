@@ -162,14 +162,14 @@ export const createStyles = (c) =>
       fontSize: 13,
       fontFamily: "DMSans-Medium",
     },
+    // Today as everywhere else: the date in blue, no filled pill.
     dayTodayPill: {
-      backgroundColor: "#1877F2",
-      borderRadius: 14,
       paddingHorizontal: 12,
       paddingVertical: 4,
     },
     dayTodayLabel: {
-      color: "#FFFFFF",
+      color: "#0785F4",
+      fontWeight: "700",
     },
     bodyRow: {
       flex: 1,

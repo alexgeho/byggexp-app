@@ -217,7 +217,6 @@ export function ArbetspassMock() {
   );
 }
 
-const BLUE = "#4A9EFF";
 const GREEN_BG = "#E5F3EA";
 const GREEN_TX = "#3BA45C";
 
@@ -332,11 +331,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 1,
   },
-  dayInnerBlue: { backgroundColor: BLUE },
+  // Selected day as in the app: a 1px blue frame, no fill.
+  dayInnerBlue: { borderWidth: 1, borderColor: "#0785F4" },
   dayInnerGreen: { backgroundColor: GREEN_BG },
   dayInnerPlain: { backgroundColor: "#F7F8FA" },
   dayNum: { fontSize: 12, color: MOCK.labelDark, ...FONT.medium },
-  dayNumBlue: { color: "#FFFFFF", ...FONT.semibold },
+  dayNumBlue: { color: "#0785F4", ...FONT.semibold },
   dayNumPlain: { color: "#AEB6C1" },
   hourPill: {
     marginTop: 2,
@@ -345,8 +345,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     paddingVertical: 0,
   },
-  hourPillBlue: { backgroundColor: "rgba(255,255,255,0.28)" },
+  hourPillBlue: { backgroundColor: "#E7F1FE" },
   hourText: { fontSize: 8, ...FONT.medium, color: "#8A94A6" },
-  hourTextBlue: { color: "#FFFFFF", ...FONT.semibold },
+  hourTextBlue: { color: "#0785F4", ...FONT.semibold },
   hourTextGreen: { color: GREEN_TX, ...FONT.semibold },
 });
