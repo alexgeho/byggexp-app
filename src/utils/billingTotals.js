@@ -103,12 +103,14 @@ export const deriveSettlement = (
 };
 
 // Swedish money formatting: "40 200,00 kr".
-export const formatMoney = (value, locale = "sv") => {
+// A foreign receipt keeps its own currency (55,00 EUR, not 55,00 kr).
+export const formatMoney = (value, locale = "sv", currency = "SEK") => {
   const formatted = new Intl.NumberFormat(locale, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(Number(value) || 0);
-  return `${formatted} kr`;
+  const code = String(currency || "SEK").toUpperCase();
+  return `${formatted} ${code === "SEK" ? "kr" : code}`;
 };
 
 export const toIsoDate = (date) => {

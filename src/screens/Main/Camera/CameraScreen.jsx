@@ -760,7 +760,11 @@ export default function CameraScreen() {
                                   style={styles.receiptAmountText}
                                   numberOfLines={1}
                                 >
-                                  {formatMoney(receipt.amount, getDateLocale())}
+                                  {formatMoney(
+                                    receipt.amount,
+                                    getDateLocale(),
+                                    receipt.currency,
+                                  )}
                                 </Text>
                               </View>
                             ) : null}
