@@ -416,9 +416,10 @@ export const createStyles = (c) =>
     weekDayToday: {
       borderColor: "#0785F4",
     },
+    // A touch paler than the action blue, so «Ändra timmar» leads.
     weekDayOn: {
-      backgroundColor: "#0785F4",
-      borderColor: "#0785F4",
+      backgroundColor: onDark(c, "#0785F4", "#3F98F3"),
+      borderColor: onDark(c, "#0785F4", "#3F98F3"),
     },
     weekDayOut: {
       opacity: 0.4,
@@ -796,7 +797,7 @@ export const createStyles = (c) =>
       height: size.control,
       borderRadius: radius.control,
       borderWidth: size.border,
-      borderColor: c.border,
+      borderColor: onDark(c, c.border, "#0785F4"),
       backgroundColor: c.surface,
     },
     dayEntrySecondaryText: {
