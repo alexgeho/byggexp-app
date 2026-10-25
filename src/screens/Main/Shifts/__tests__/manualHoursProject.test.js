@@ -218,3 +218,29 @@ test("saves the day by itself a second after typing, then shows Sparat", async (
     .map((n) => [].concat(n.props.children).join(""));
   expect(texts.some((s) => s.includes("shifts.saved ✓"))).toBe(true);
 });
+
+test("an emptied field is not autosaved (no wiping a day to 0)", async () => {
+  projectService.getMyProjects.mockResolvedValue([BYGGTOTALEN]);
+  let tree;
+  await act(async () => {
+    tree = TestRenderer.create(
+      <ThemeProvider>
+        <AuthContext.Provider
+          value={{
+            user: { _id: "w1", role: "worker" },
+            selectedProject: null,
+            setSelectedProject: jest.fn(),
+          }}
+        >
+          <ShiftsScreen />
+        </AuthContext.Provider>
+      </ThemeProvider>,
+    );
+  });
+  mounted = tree;
+  await act(async () => {});
+  const input = tree.root.findAllByType(TextInput)[0];
+  await act(async () => input.props.onChangeText(""));
+  await act(async () => new Promise((r) => setTimeout(r, 1200)));
+  expect(shiftService.addManualHours).not.toHaveBeenCalled();
+});

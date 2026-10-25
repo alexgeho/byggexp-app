@@ -918,6 +918,11 @@ export default function ShiftsScreen() {
     if (batchSavingRef.current || autosavingRef.current) {
       return;
     }
+    // An empty field never autosaves: it would wipe a saved day to 0 (e.g. a
+    // day opened from a push before its hours loaded). Clearing is the ✓'s job.
+    if (String(inlineValueRef.current || "").trim() === "") {
+      return;
+    }
     const entry = readOpenEntry();
     const projectId = resolveManualProjectId();
     // No project yet → the ✓ asks for one, as before.
