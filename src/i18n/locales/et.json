@@ -1335,7 +1335,21 @@
     "lateInterest": "Viivis",
     "lateInterestPlaceholder": "nt 8% + viitemäär",
     "downloadInstead": "Laadi alla selle asemel",
-    "creditNoteTitle": "Kreeditarve arvele #{{number}}"
+    "creditNoteTitle": "Kreeditarve arvele #{{number}}",
+    "deductionApply": "Maksusoodustus arvel",
+    "deductionType": "Tüüp",
+    "deductionTypes": {
+      "rot": "ROT 30%",
+      "rut": "RUT 50%",
+      "green15": "Roheline tehnoloogia · päikesepaneelid 15%",
+      "green50": "Roheline tehnoloogia · aku/laadija 50%"
+    },
+    "deductionLine": {
+      "rot": "ROT-mahaarvamine",
+      "rut": "RUT-mahaarvamine",
+      "green15": "Roheline tehnoloogia",
+      "green50": "Roheline tehnoloogia"
+    }
   },
   "tasksPreview": {
     "noDate": "Kuupäev puudub",

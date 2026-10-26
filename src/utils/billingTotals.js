@@ -8,6 +8,17 @@ export const DEFAULT_VAT_RATE = 25;
 export const ROT_RATE = 0.3;
 export const ROT_MAX = 50000;
 
+// Skattereduktion kinds on an invoice — mirrors the backend's invoice-math
+// DEDUCTION_TYPES: rate × labour, capped at max kr.
+export const DEDUCTION_TYPES = {
+  rot: { rate: ROT_RATE, max: ROT_MAX },
+  rut: { rate: 0.5, max: 75000 },
+  green15: { rate: 0.15, max: 50000 },
+  green50: { rate: 0.5, max: 50000 },
+};
+export const DEDUCTION_KEYS = Object.keys(DEDUCTION_TYPES);
+const deductionMeta = (type) => DEDUCTION_TYPES[type] || DEDUCTION_TYPES.rot;
+
 // Monotonic client-only key so the editor can use a stable React key even as
 // rows are inserted/removed (index keys would misattach input state). Stripped
 // from the payload before saving — see the create screens' buildPayload().
@@ -88,13 +99,15 @@ export const computeTotals = (items = [], { reverseVAT = false } = {}) => {
   return { subtotal, vat, total: round2(subtotal + vat) };
 };
 
-// ROT deduction + öresavrundning, mirroring deriveInvoiceSettlement.
+// ROT / RUT / grön teknik deduction + öresavrundning, mirroring
+// deriveInvoiceSettlement. The rot* fields carry every kind.
 export const deriveSettlement = (
   total,
-  { rotEnabled, rotLaborAmount } = {},
+  { rotEnabled, rotLaborAmount, deductionType } = {},
 ) => {
+  const { rate, max } = deductionMeta(deductionType);
   const rotDeduction = rotEnabled
-    ? Math.min(round2(ROT_RATE * (Number(rotLaborAmount) || 0)), ROT_MAX)
+    ? Math.min(round2(rate * (Number(rotLaborAmount) || 0)), max)
     : 0;
   const payable = (Number(total) || 0) - rotDeduction;
   const roundedTotal = Math.round(payable);

@@ -1335,7 +1335,21 @@
     "lateInterest": "Late-payment interest",
     "lateInterestPlaceholder": "e.g. 8% + reference rate",
     "downloadInstead": "Download instead",
-    "creditNoteTitle": "Credit note for #{{number}}"
+    "creditNoteTitle": "Credit note for #{{number}}",
+    "deductionApply": "Tax deduction on the invoice",
+    "deductionType": "Type",
+    "deductionTypes": {
+      "rot": "ROT 30%",
+      "rut": "RUT 50%",
+      "green15": "Green tech · solar 15%",
+      "green50": "Green tech · battery/charger 50%"
+    },
+    "deductionLine": {
+      "rot": "ROT deduction",
+      "rut": "RUT deduction",
+      "green15": "Green tech",
+      "green50": "Green tech"
+    }
   },
   "tasksPreview": {
     "noDate": "No date",

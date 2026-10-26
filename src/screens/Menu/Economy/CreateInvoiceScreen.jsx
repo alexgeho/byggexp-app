@@ -15,6 +15,7 @@ import {
   addDaysIso,
   emptyLineItem,
   isHourRow,
+  DEDUCTION_KEYS,
 } from "../../../utils/billingTotals";
 import { createStyles, PRIMARY } from "./billingForm.styles";
 import { downloadAndShareDocument } from "../../../utils/documentPreview";
@@ -29,6 +30,7 @@ import {
 } from "../../../components/common/FieldRow/FieldRow";
 import {
   Button,
+  ChoiceChips,
   FormFooter,
   FormHeader,
   FormScreen,
@@ -59,6 +61,8 @@ export default function CreateInvoiceScreen() {
   const [items, setItems] = useState([emptyLineItem()]);
   const [rotEnabled, setRotEnabled] = useState(false);
   const [rotLaborAmount, setRotLaborAmount] = useState("");
+  // ROT / RUT / grön teknik — which skattereduktion the rot* fields carry.
+  const [deductionType, setDeductionType] = useState("rot");
   // Skatteverket needs the buyer's personnummer and the property designation on
   // a ROT invoice — without them the deduction can't be claimed.
   const [rotPersonalNumber, setRotPersonalNumber] = useState("");
@@ -125,6 +129,11 @@ export default function CreateInvoiceScreen() {
       );
       setReverseVAT(String(editingInvoice.reverseVAT) === "true");
       setRotEnabled(Boolean(editingInvoice.rotEnabled));
+      setDeductionType(
+        DEDUCTION_KEYS.includes(editingInvoice.deductionType)
+          ? editingInvoice.deductionType
+          : "rot",
+      );
       setRotLaborAmount(
         editingInvoice.rotLaborAmount
           ? String(editingInvoice.rotLaborAmount)
@@ -155,8 +164,9 @@ export default function CreateInvoiceScreen() {
       deriveSettlement(totals.total, {
         rotEnabled: isPrivateClient && rotEnabled,
         rotLaborAmount: Number(String(rotLaborAmount).replace(",", ".")) || 0,
+        deductionType,
       }),
-    [totals.total, rotEnabled, rotLaborAmount, isPrivateClient],
+    [totals.total, rotEnabled, rotLaborAmount, isPrivateClient, deductionType],
   );
 
   const onSelectClient = (picked) => {
@@ -279,8 +289,9 @@ export default function CreateInvoiceScreen() {
         : 0,
     ...(isPrivateClient && rotEnabled
       ? {
+          deductionType,
           rotPersonalNumber: rotPersonalNumber.trim(),
-          rotProperty: rotProperty.trim(),
+          rotProperty: deductionType === "rut" ? "" : rotProperty.trim(),
         }
       : {}),
     // Optional: link to a project so it counts toward the project economy.
@@ -500,13 +511,21 @@ export default function CreateInvoiceScreen() {
             <FieldRow
               variant="toggle"
               floating
-              label={t("billing.rotApply")}
+              label={t("billing.deductionApply")}
               switchValue={rotEnabled}
               onSwitchChange={setRotEnabled}
               isLast={!rotEnabled}
             />
             {rotEnabled ? (
               <>
+                <FieldRow label={t("billing.deductionType")}>
+                  <ChoiceChips
+                    values={DEDUCTION_KEYS}
+                    value={deductionType}
+                    onChange={setDeductionType}
+                    format={(key) => t(`billing.deductionTypes.${key}`)}
+                  />
+                </FieldRow>
                 <FieldRow
                   variant="input"
                   floating
@@ -515,13 +534,16 @@ export default function CreateInvoiceScreen() {
                   onChangeText={setRotPersonalNumber}
                   keyboardType="numbers-and-punctuation"
                 />
-                <FieldRow
-                  variant="input"
-                  floating
-                  label={t("billing.rotProperty")}
-                  value={rotProperty}
-                  onChangeText={setRotProperty}
-                />
+                {/* RUT is household services — no property to name. */}
+                {deductionType === "rut" ? null : (
+                  <FieldRow
+                    variant="input"
+                    floating
+                    label={t("billing.rotProperty")}
+                    value={rotProperty}
+                    onChangeText={setRotProperty}
+                  />
+                )}
                 <FieldRow
                   variant="input"
                   floating
@@ -559,7 +581,9 @@ export default function CreateInvoiceScreen() {
           </View>
           {rotEnabled && settlement.rotDeduction > 0 && (
             <View style={styles.totalLine}>
-              <Text style={styles.totalLabel}>{t("billing.rotDeduction")}</Text>
+              <Text style={styles.totalLabel}>
+                {t(`billing.deductionLine.${deductionType}`)}
+              </Text>
               <Text style={[styles.totalValue, styles.totalValueNeg]}>
                 −{formatMoney(settlement.rotDeduction, locale)}
               </Text>

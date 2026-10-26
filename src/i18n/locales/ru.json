@@ -1339,7 +1339,21 @@
     "lateInterest": "Пеня за просрочку",
     "lateInterestPlaceholder": "напр. 8% + ключевая ставка",
     "downloadInstead": "Скачать вместо этого",
-    "creditNoteTitle": "Кредит-фактура к №{{number}}"
+    "creditNoteTitle": "Кредит-фактура к №{{number}}",
+    "deductionApply": "Налоговый вычет в счёте",
+    "deductionType": "Тип",
+    "deductionTypes": {
+      "rot": "ROT 30%",
+      "rut": "RUT 50%",
+      "green15": "Зелёные технологии · солнечные панели 15%",
+      "green50": "Зелёные технологии · батарея/зарядка 50%"
+    },
+    "deductionLine": {
+      "rot": "Вычет ROT",
+      "rut": "Вычет RUT",
+      "green15": "Зелёные технологии",
+      "green50": "Зелёные технологии"
+    }
   },
   "tasksPreview": {
     "noDate": "Без даты",

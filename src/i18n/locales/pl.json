@@ -1339,7 +1339,21 @@
     "lateInterest": "Odsetki za zwłokę",
     "lateInterestPlaceholder": "np. 8% + stopa referencyjna",
     "downloadInstead": "Pobierz zamiast tego",
-    "creditNoteTitle": "Korekta do nr {{number}}"
+    "creditNoteTitle": "Korekta do nr {{number}}",
+    "deductionApply": "Ulga podatkowa na fakturze",
+    "deductionType": "Rodzaj",
+    "deductionTypes": {
+      "rot": "ROT 30%",
+      "rut": "RUT 50%",
+      "green15": "Zielona technologia · panele 15%",
+      "green50": "Zielona technologia · bateria/ładowarka 50%"
+    },
+    "deductionLine": {
+      "rot": "Ulga ROT",
+      "rut": "Ulga RUT",
+      "green15": "Zielona technologia",
+      "green50": "Zielona technologia"
+    }
   },
   "tasksPreview": {
     "noDate": "Brak daty",

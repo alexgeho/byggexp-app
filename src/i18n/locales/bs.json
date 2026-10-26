@@ -1338,7 +1338,21 @@
     "lateInterest": "Zatezna kamata",
     "lateInterestPlaceholder": "npr. 8% + referentna stopa",
     "downloadInstead": "Preuzmi umjesto toga",
-    "creditNoteTitle": "Knjižno odobrenje za #{{number}}"
+    "creditNoteTitle": "Knjižno odobrenje za #{{number}}",
+    "deductionApply": "Poreska olakšica na fakturi",
+    "deductionType": "Vrsta",
+    "deductionTypes": {
+      "rot": "ROT 30%",
+      "rut": "RUT 50%",
+      "green15": "Zelena tehnologija · solarni paneli 15%",
+      "green50": "Zelena tehnologija · baterija/punjač 50%"
+    },
+    "deductionLine": {
+      "rot": "ROT olakšica",
+      "rut": "RUT olakšica",
+      "green15": "Zelena tehnologija",
+      "green50": "Zelena tehnologija"
+    }
   },
   "tasksPreview": {
     "noDate": "Bez datuma",

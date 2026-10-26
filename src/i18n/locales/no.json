@@ -1335,7 +1335,21 @@
     "lateInterest": "Forsinkelsesrente",
     "lateInterestPlaceholder": "f.eks. 8% + referanserente",
     "downloadInstead": "Last ned i stedet",
-    "creditNoteTitle": "Kreditnota til #{{number}}"
+    "creditNoteTitle": "Kreditnota til #{{number}}",
+    "deductionApply": "Skattefradrag på fakturaen",
+    "deductionType": "Type",
+    "deductionTypes": {
+      "rot": "ROT 30%",
+      "rut": "RUT 50%",
+      "green15": "Grønn teknologi · solceller 15%",
+      "green50": "Grønn teknologi · batteri/lader 50%"
+    },
+    "deductionLine": {
+      "rot": "ROT-fradrag",
+      "rut": "RUT-fradrag",
+      "green15": "Grønn teknologi",
+      "green50": "Grønn teknologi"
+    }
   },
   "tasksPreview": {
     "noDate": "Ingen dato",

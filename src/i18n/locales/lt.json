@@ -1339,7 +1339,21 @@
     "lateInterest": "Delspinigiai",
     "lateInterestPlaceholder": "pvz. 8% + bazinė norma",
     "downloadInstead": "Vietoj to atsisiųsti",
-    "creditNoteTitle": "Kreditinė sąskaita #{{number}}"
+    "creditNoteTitle": "Kreditinė sąskaita #{{number}}",
+    "deductionApply": "Mokesčių lengvata sąskaitoje",
+    "deductionType": "Tipas",
+    "deductionTypes": {
+      "rot": "ROT 30%",
+      "rut": "RUT 50%",
+      "green15": "Žalioji technologija · saulės moduliai 15%",
+      "green50": "Žalioji technologija · baterija/kroviklis 50%"
+    },
+    "deductionLine": {
+      "rot": "ROT lengvata",
+      "rut": "RUT lengvata",
+      "green15": "Žalioji technologija",
+      "green50": "Žalioji technologija"
+    }
   },
   "tasksPreview": {
     "noDate": "Nėra datos",

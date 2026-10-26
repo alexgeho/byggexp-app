@@ -1339,7 +1339,21 @@
     "lateInterest": "Пеня за прострочення",
     "lateInterestPlaceholder": "напр. 8% + облікова ставка",
     "downloadInstead": "Завантажити натомість",
-    "creditNoteTitle": "Кредит-рахунок до №{{number}}"
+    "creditNoteTitle": "Кредит-рахунок до №{{number}}",
+    "deductionApply": "Податкова знижка в рахунку",
+    "deductionType": "Тип",
+    "deductionTypes": {
+      "rot": "ROT 30%",
+      "rut": "RUT 50%",
+      "green15": "Зелені технології · сонячні панелі 15%",
+      "green50": "Зелені технології · батарея/зарядка 50%"
+    },
+    "deductionLine": {
+      "rot": "Знижка ROT",
+      "rut": "Знижка RUT",
+      "green15": "Зелені технології",
+      "green50": "Зелені технології"
+    }
   },
   "tasksPreview": {
     "noDate": "Без дати",

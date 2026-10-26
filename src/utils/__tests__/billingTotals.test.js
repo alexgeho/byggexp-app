@@ -134,3 +134,45 @@ describe("isHourRow", () => {
     expect(isHourRow({})).toBe(false);
   });
 });
+
+describe("deriveSettlement (RUT / grön teknik)", () => {
+  it("RUT is 50% of labour: 8 000 → −4 000", () => {
+    const { rotDeduction } = deriveSettlement(10000, {
+      rotEnabled: true,
+      rotLaborAmount: 8000,
+      deductionType: "rut",
+    });
+    expect(rotDeduction).toBe(4000);
+  });
+
+  it("caps RUT at 75 000 and grön teknik solceller at 15% / 50 000", () => {
+    expect(
+      deriveSettlement(0, {
+        rotEnabled: true,
+        rotLaborAmount: 200000,
+        deductionType: "rut",
+      }).rotDeduction,
+    ).toBe(75000);
+    expect(
+      deriveSettlement(0, {
+        rotEnabled: true,
+        rotLaborAmount: 10000,
+        deductionType: "green15",
+      }).rotDeduction,
+    ).toBe(1500);
+    expect(
+      deriveSettlement(0, {
+        rotEnabled: true,
+        rotLaborAmount: 200000,
+        deductionType: "green50",
+      }).rotDeduction,
+    ).toBe(50000);
+  });
+
+  it("an unknown or missing type falls back to ROT", () => {
+    expect(
+      deriveSettlement(0, { rotEnabled: true, rotLaborAmount: 10000 })
+        .rotDeduction,
+    ).toBe(3000);
+  });
+});

@@ -1335,7 +1335,21 @@
     "lateInterest": "Viivästyskorko",
     "lateInterestPlaceholder": "esim. 8% + viitekorko",
     "downloadInstead": "Lataa sen sijaan",
-    "creditNoteTitle": "Hyvityslasku laskulle #{{number}}"
+    "creditNoteTitle": "Hyvityslasku laskulle #{{number}}",
+    "deductionApply": "Verovähennys laskulla",
+    "deductionType": "Tyyppi",
+    "deductionTypes": {
+      "rot": "ROT 30%",
+      "rut": "RUT 50%",
+      "green15": "Vihreä teknologia · aurinkopaneelit 15%",
+      "green50": "Vihreä teknologia · akku/latausasema 50%"
+    },
+    "deductionLine": {
+      "rot": "ROT-vähennys",
+      "rut": "RUT-vähennys",
+      "green15": "Vihreä teknologia",
+      "green50": "Vihreä teknologia"
+    }
   },
   "tasksPreview": {
     "noDate": "Ei päivämäärää",

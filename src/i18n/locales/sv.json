@@ -1335,7 +1335,21 @@
     "lateInterest": "Dröjsmålsränta",
     "lateInterestPlaceholder": "t.ex. 8% + referensränta",
     "downloadInstead": "Ladda ner i stället",
-    "creditNoteTitle": "Kreditfaktura till #{{number}}"
+    "creditNoteTitle": "Kreditfaktura till #{{number}}",
+    "deductionApply": "Skattereduktion på fakturan",
+    "deductionType": "Typ",
+    "deductionTypes": {
+      "rot": "ROT 30%",
+      "rut": "RUT 50%",
+      "green15": "Grön teknik · solceller 15%",
+      "green50": "Grön teknik · batteri/laddbox 50%"
+    },
+    "deductionLine": {
+      "rot": "ROT-avdrag",
+      "rut": "RUT-avdrag",
+      "green15": "Grön teknik",
+      "green50": "Grön teknik"
+    }
   },
   "tasksPreview": {
     "noDate": "Inget datum",

@@ -1336,7 +1336,21 @@
     "lateInterest": "Kavējuma procenti",
     "lateInterestPlaceholder": "piem. 8% + bāzes likme",
     "downloadInstead": "Lejupielādēt tā vietā",
-    "creditNoteTitle": "Kredītrēķins #{{number}}"
+    "creditNoteTitle": "Kredītrēķins #{{number}}",
+    "deductionApply": "Nodokļu atvieglojums rēķinā",
+    "deductionType": "Veids",
+    "deductionTypes": {
+      "rot": "ROT 30%",
+      "rut": "RUT 50%",
+      "green15": "Zaļā tehnoloģija · saules paneļi 15%",
+      "green50": "Zaļā tehnoloģija · akumulators/lādētājs 50%"
+    },
+    "deductionLine": {
+      "rot": "ROT atvieglojums",
+      "rut": "RUT atvieglojums",
+      "green15": "Zaļā tehnoloģija",
+      "green50": "Zaļā tehnoloģija"
+    }
   },
   "tasksPreview": {
     "noDate": "Nav datuma",
