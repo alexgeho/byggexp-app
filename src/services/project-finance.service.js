@@ -14,13 +14,14 @@ const matchesProject = (invoice, projectId) => {
 // Resilient — any failed summary (e.g. a role without access) counts as 0.
 export const projectFinanceService = {
   getEconomy: async (projectId, { project = {}, hoursWorked = 0 } = {}) => {
-    const [expensesRes, supplierRes, ataRes, laborRes, invoicesRes] =
+    const [expensesRes, supplierRes, ataRes, laborRes, invoicesRes, ordersRes] =
       await Promise.allSettled([
         api.get(`/expenses/project/${projectId}/summary`),
         api.get(`/supplier-invoices/project/${projectId}/summary`),
         api.get(`/ata/project/${projectId}/summary`),
         api.get("/hours/labor-cost"),
         api.get("/invoices"),
+        api.get("/material-orders", { params: { projectId } }),
       ]);
 
     const ok = (res, pick, fallback = 0) =>
@@ -41,13 +42,29 @@ export const projectFinanceService = {
       .filter((inv) => matchesProject(inv, projectId) && inv.status !== "draft")
       .reduce((sum, inv) => sum + num(inv.total), 0);
 
+    // Material ordered from the grossist counts from the moment it's ordered
+    // (draft or sent), at purchase price — not only once their bill arrives.
+    const orders =
+      ordersRes.status === "fulfilled" && Array.isArray(ordersRes.value.data)
+        ? ordersRes.value.data
+        : [];
+    const ordered = orders.reduce(
+      (sum, order) =>
+        sum +
+        (order.rows || []).reduce(
+          (rowSum, row) => rowSum + num(row.unitPrice) * num(row.quantity),
+          0,
+        ),
+      0,
+    );
+
     const costRate = num(project.costRatePerHour);
     const billRate = num(project.billRatePerHour);
     const materials = num(project.spentMaterialsCost);
     // Prefer the project cost rate; otherwise fall back to per-employee labor.
     const laborCost = costRate > 0 ? hoursWorked * costRate : laborByProject;
     const laborBilled = billRate > 0 ? hoursWorked * billRate : 0;
-    const totalCost = materials + supplier + expenses + laborCost;
+    const totalCost = materials + ordered + supplier + expenses + laborCost;
     const margin = invoiced - totalCost;
     const marginPct = invoiced > 0 ? Math.round((margin / invoiced) * 100) : 0;
 
@@ -57,6 +74,7 @@ export const projectFinanceService = {
       billRate,
       materials: round2(materials),
       supplier: round2(supplier),
+      ordered: round2(ordered),
       expenses: round2(expenses),
       ata: round2(ata),
       laborCost: round2(laborCost),

@@ -1193,6 +1193,10 @@
       "invoices": {
         "label": "Tasumata arved",
         "description": "Meeldetuletused tasumata tarnijaarvete kohta."
+      },
+      "materialOrders": {
+        "label": "Materjalitellimused",
+        "description": "Uued tellimused ja tarnijale saadetud tellimused."
       }
     }
   },
@@ -1410,7 +1414,8 @@
     "invoiced": "Arveldatud",
     "margin": "Marginaal",
     "ratesSaved": "Hinnad salvestatud",
-    "ratesSaveError": "Hindu ei õnnestunud salvestada."
+    "ratesSaveError": "Hindu ei õnnestunud salvestada.",
+    "orderedMaterial": "Tellitud materjal"
   },
   "onboarding": {
     "title": "Alusta",
@@ -1901,6 +1906,12 @@
     "orderTitle": "Tellimus #{{number}}",
     "delete": "Kustuta tellimus",
     "deleteTitle": "Kustutada tellimus?",
-    "total": "Kokku"
+    "total": "Kokku",
+    "mute": "Lülita teavitused välja",
+    "delivery": "Tarne",
+    "deliveryProject": "Projekti aadress",
+    "deliveryOther": "Muu aadress",
+    "address": "Aadress",
+    "notFound": "Tellimust enam ei ole"
   }
 }

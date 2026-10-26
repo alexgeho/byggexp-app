@@ -9,6 +9,10 @@ export const materialOrderService = {
     });
     return Array.isArray(data) ? data : data?.items || [];
   },
+  get: async (id) => {
+    const { data } = await api.get(`/material-orders/${id}`);
+    return data;
+  },
   // Grossist articles for the worker's search — no prices, at most 50.
   searchArticles: async ({ supplier, q } = {}) => {
     const { data } = await api.get("/material-orders/articles", {

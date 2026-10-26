@@ -24,6 +24,7 @@ describe("normalizeNotificationPreferences", () => {
         tasks: false,
         productAndMarketingAlerts: false,
         invoices: false,
+        materialOrders: false,
       }),
     ).toEqual({
       flowMode: false,
@@ -31,6 +32,7 @@ describe("normalizeNotificationPreferences", () => {
       tasks: false,
       productAndMarketingAlerts: false,
       invoices: false,
+      materialOrders: false,
     });
   });
 

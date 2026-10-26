@@ -1197,6 +1197,10 @@
       "invoices": {
         "label": "Mokėtinos sąskaitos",
         "description": "Priminimai apie neapmokėtas tiekėjų sąskaitas."
+      },
+      "materialOrders": {
+        "label": "Medžiagų užsakymai",
+        "description": "Nauji užsakymai ir tiekėjui išsiųsti užsakymai."
       }
     }
   },
@@ -1414,7 +1418,8 @@
     "invoiced": "Sąskaitos išrašytos",
     "margin": "Marža",
     "ratesSaved": "Įkainiai išsaugoti",
-    "ratesSaveError": "Nepavyko išsaugoti įkainių."
+    "ratesSaveError": "Nepavyko išsaugoti įkainių.",
+    "orderedMaterial": "Užsakytos medžiagos"
   },
   "onboarding": {
     "title": "Pradžia",
@@ -1908,6 +1913,12 @@
     "orderTitle": "Užsakymas #{{number}}",
     "delete": "Ištrinti užsakymą",
     "deleteTitle": "Ištrinti užsakymą?",
-    "total": "Iš viso"
+    "total": "Iš viso",
+    "mute": "Išjungti pranešimus",
+    "delivery": "Pristatymas",
+    "deliveryProject": "Projekto adresas",
+    "deliveryOther": "Kitas adresas",
+    "address": "Adresas",
+    "notFound": "Užsakymo nebėra"
   }
 }

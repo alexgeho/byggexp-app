@@ -1196,6 +1196,10 @@
       "invoices": {
         "label": "Računi za plaćanje",
         "description": "Podsjetnici o neplaćenim računima dobavljača."
+      },
+      "materialOrders": {
+        "label": "Narudžbe materijala",
+        "description": "Nove narudžbe i narudžbe poslane dobavljaču."
       }
     }
   },
@@ -1413,7 +1417,8 @@
     "invoiced": "Fakturisano",
     "margin": "Marža",
     "ratesSaved": "Cijene sačuvane",
-    "ratesSaveError": "Cijene nije moguće sačuvati."
+    "ratesSaveError": "Cijene nije moguće sačuvati.",
+    "orderedMaterial": "Naručeni materijal"
   },
   "onboarding": {
     "title": "Kako početi",
@@ -1907,6 +1912,12 @@
     "orderTitle": "Narudžba #{{number}}",
     "delete": "Obriši narudžbu",
     "deleteTitle": "Obrisati narudžbu?",
-    "total": "Ukupno"
+    "total": "Ukupno",
+    "mute": "Isključi obavještenja",
+    "delivery": "Dostava",
+    "deliveryProject": "Adresa projekta",
+    "deliveryOther": "Druga adresa",
+    "address": "Adresa",
+    "notFound": "Narudžba više ne postoji"
   }
 }

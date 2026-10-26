@@ -21,9 +21,9 @@ const PROJECT_TABS = [
   { key: "Tasks", labelKey: "project.tabs.tasks" },
   { key: "Documents", labelKey: "project.tabs.documents" },
   { key: "Workers", labelKey: "project.tabs.workers" },
+  { key: "Material", labelKey: "project.tabs.material", flag: "material" },
   { key: "Tools", labelKey: "project.tabs.tools" },
   { key: "Photos", labelKey: "project.tabs.photos" },
-  { key: "Material", labelKey: "project.tabs.material", flag: "material" },
   { key: "Economy", labelKey: "project.tabs.economy", financeOnly: true },
 ];
 

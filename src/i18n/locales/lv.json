@@ -1194,6 +1194,10 @@
       "invoices": {
         "label": "Apmaksājamie rēķini",
         "description": "Atgādinājumi par neapmaksātiem piegādātāju rēķiniem."
+      },
+      "materialOrders": {
+        "label": "Materiālu pasūtījumi",
+        "description": "Jauni pasūtījumi un piegādātājam nosūtītie pasūtījumi."
       }
     }
   },
@@ -1411,7 +1415,8 @@
     "invoiced": "Rēķinā iekļauts",
     "margin": "Peļņas norma",
     "ratesSaved": "Likmes saglabātas",
-    "ratesSaveError": "Nevarēja saglabāt likmes."
+    "ratesSaveError": "Nevarēja saglabāt likmes.",
+    "orderedMaterial": "Pasūtītie materiāli"
   },
   "onboarding": {
     "title": "Darba sākšana",
@@ -1905,6 +1910,12 @@
     "orderTitle": "Pasūtījums #{{number}}",
     "delete": "Dzēst pasūtījumu",
     "deleteTitle": "Dzēst pasūtījumu?",
-    "total": "Kopā"
+    "total": "Kopā",
+    "mute": "Izslēgt paziņojumus",
+    "delivery": "Piegāde",
+    "deliveryProject": "Projekta adrese",
+    "deliveryOther": "Cita adrese",
+    "address": "Adrese",
+    "notFound": "Pasūtījums vairs nepastāv"
   }
 }

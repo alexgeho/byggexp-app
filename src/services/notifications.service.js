@@ -81,6 +81,21 @@ const buildNavigationTarget = (data = {}) => {
     };
   }
 
+  // A material order (new draft / sent): open the order itself.
+  if (screen === "MaterialOrder") {
+    const orderId = data.entityId || data.id;
+    return orderId
+      ? {
+          screen,
+          params: {
+            orderId,
+            projectId: data.projectId || null,
+            fromPush: true,
+          },
+        }
+      : null;
+  }
+
   if (screen === "Shifts") {
     // "Log your hours" reminder: land on the manual entry for the given day.
     const params =

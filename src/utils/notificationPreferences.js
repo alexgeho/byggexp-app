@@ -4,6 +4,7 @@ export const DEFAULT_NOTIFICATION_PREFERENCES = {
   tasks: true,
   productAndMarketingAlerts: true,
   invoices: true,
+  materialOrders: true,
 };
 
 export const NOTIFICATION_PREFERENCE_ITEMS = [
@@ -28,6 +29,12 @@ export const NOTIFICATION_PREFERENCE_ITEMS = [
     label: "Bills to pay",
     description: "Reminders about unpaid and due supplier invoices.",
     financeOnly: true,
+  },
+  {
+    // New draft (to admins) and "sent" (to the worker who made it).
+    key: "materialOrders",
+    label: "Material orders",
+    description: "New material orders and orders sent to the supplier.",
   },
   {
     key: "productAndMarketingAlerts",
@@ -57,4 +64,8 @@ export const normalizeNotificationPreferences = (value) => ({
     typeof value?.invoices === "boolean"
       ? value.invoices
       : DEFAULT_NOTIFICATION_PREFERENCES.invoices,
+  materialOrders:
+    typeof value?.materialOrders === "boolean"
+      ? value.materialOrders
+      : DEFAULT_NOTIFICATION_PREFERENCES.materialOrders,
 });

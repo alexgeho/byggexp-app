@@ -1,5 +1,12 @@
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
+  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Platform,
@@ -18,6 +25,9 @@ import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import { useTheme } from "../../../theme/ThemeContext";
 import { materialOrderService } from "../../../services/material-order.service";
+import { notificationsService } from "../../../services/notifications.service";
+import { projectService } from "../../../services/project.service";
+import { normalizeNotificationPreferences } from "../../../utils/notificationPreferences";
 import ArticlePickerModal from "../../Menu/Economy/ArticlePickerModal";
 import {
   FieldCard,
@@ -25,6 +35,7 @@ import {
 } from "../../../components/common/FieldRow/FieldRow";
 import {
   Button,
+  ChoiceChips,
   FormFooter,
   FormHeader,
   FormScreen,
@@ -50,18 +61,94 @@ const tomorrow = () => {
   return date;
 };
 
-// Material order from the site: pick grossist articles, quantities, a wanted
-// delivery date and a note, save as a draft. An admin sends it. Opened with an
-// `order`, the worker's own draft can be changed or deleted; a sent order (or
-// a colleague's) is shown read-only.
+// Opened from a push the route carries only the order id (and maybe no project
+// address): fetch what's missing, then show the form.
 export default function MaterialOrderScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const { projectId, order } = useRoute().params || {};
+  const params = useRoute().params || {};
+  const { theme } = useTheme();
+  const [order, setOrder] = useState(params.order || null);
+  const [projectAddress, setProjectAddress] = useState(
+    params.projectAddress ?? null,
+  );
+  const needsOrder = Boolean(params.orderId && !params.order);
+  const projectId = params.projectId || order?.projectId;
+
+  useEffect(() => {
+    if (!needsOrder) return;
+    materialOrderService
+      .get(params.orderId)
+      .then(setOrder)
+      .catch(() => setOrder({ _missing: true }));
+  }, [needsOrder, params.orderId]);
+
+  useEffect(() => {
+    if (projectAddress !== null || !projectId) return;
+    projectService
+      .getById(projectId)
+      .then((project) => setProjectAddress(project?.location || ""))
+      .catch(() => setProjectAddress(""));
+  }, [projectAddress, projectId]);
+
+  if ((needsOrder && !order) || projectAddress === null) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: theme.content.background,
+        }}
+      >
+        <ActivityIndicator color={theme.colors.primary} />
+      </View>
+    );
+  }
+
+  // The order from the push was deleted meanwhile (or isn't ours to see).
+  if (order?._missing) {
+    return (
+      <FormScreen
+        style={{ flex: 1, backgroundColor: theme.content.background }}
+        edges={["top"]}
+      >
+        <FormHeader title="" onBack={() => navigation.goBack()} />
+        <Text
+          style={{
+            marginTop: 40,
+            textAlign: "center",
+            fontSize: 16,
+            color: theme.content.textSecondary,
+          }}
+        >
+          {t("materialOrders.notFound")}
+        </Text>
+      </FormScreen>
+    );
+  }
+
+  return (
+    <MaterialOrderForm
+      order={order}
+      projectId={projectId}
+      projectAddress={projectAddress}
+      fromPush={Boolean(params.fromPush)}
+    />
+  );
+}
+
+// Material order from the site: pick grossist articles, quantities, a wanted
+// delivery date, where to deliver and a note, save as a draft. An admin sends
+// it. Opened with an `order`, a draft can be changed or deleted (a worker only
+// their own); a sent order is read-only.
+function MaterialOrderForm({ order, projectId, projectAddress, fromPush }) {
+  const { t } = useTranslation();
+  const navigation = useNavigation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { showSuccess, showError } = useFeedback();
-  const { user } = useContext(AuthContext);
+  const { user, updateStoredUser } = useContext(AuthContext);
   const orderId = order?._id || order?.id;
   // Purchase prices are for the office: the API sends them to admins only.
   const isAdmin = user?.role !== "worker";
@@ -77,6 +164,18 @@ export default function MaterialOrderScreen() {
     () => parseDateOnly(order?.desiredDate) || tomorrow(),
   );
   const [comment, setComment] = useState(order?.comment || "");
+  // Deliver to the project's address, or anywhere else (warehouse, home…).
+  const savedAddress = (order?.deliveryAddress || "").trim();
+  const [deliverOther, setDeliverOther] = useState(
+    Boolean(savedAddress) && savedAddress !== (projectAddress || "").trim(),
+  );
+  const [otherAddress, setOtherAddress] = useState(
+    savedAddress !== (projectAddress || "").trim() ? savedAddress : "",
+  );
+  const [notifyOn, setNotifyOn] = useState(
+    normalizeNotificationPreferences(user?.notificationPreferences)
+      .materialOrders,
+  );
   const [pickerOpen, setPickerOpen] = useState(false);
   const [androidDateOpen, setAndroidDateOpen] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -108,15 +207,24 @@ export default function MaterialOrderScreen() {
       showError({ message: t("materialOrders.noRows") });
       return;
     }
+    if (deliverOther && !otherAddress.trim()) {
+      showError({ message: t("materialOrders.address") });
+      return;
+    }
     setSaving(true);
     try {
-      const payload = buildOrderPayload({
-        projectId,
-        supplier,
-        rows,
-        desiredDate,
-        comment,
-      });
+      const payload = {
+        ...buildOrderPayload({
+          projectId,
+          supplier,
+          rows,
+          desiredDate,
+          comment,
+        }),
+        deliveryAddress: deliverOther
+          ? otherAddress.trim()
+          : projectAddress || undefined,
+      };
       if (orderId) {
         const { projectId: _project, ...changes } = payload;
         await materialOrderService.update(orderId, changes);
@@ -129,6 +237,23 @@ export default function MaterialOrderScreen() {
       showError({ message: getApiErrorMessage(error, t("common.error")) });
     } finally {
       setSaving(false);
+    }
+  };
+
+  // Opened from a push: switch these notifications off right here, like the
+  // onboarding ×. Back on in Meny → Aviseringar.
+  const muteNotifications = async () => {
+    try {
+      const saved = normalizeNotificationPreferences(
+        await notificationsService.updateNotificationPreferences({
+          ...normalizeNotificationPreferences(user?.notificationPreferences),
+          materialOrders: false,
+        }),
+      );
+      await updateStoredUser({ ...user, notificationPreferences: saved });
+      setNotifyOn(false);
+    } catch (error) {
+      showError({ message: getApiErrorMessage(error, t("common.error")) });
     }
   };
 
@@ -307,6 +432,43 @@ export default function MaterialOrderScreen() {
             )}
           </FieldCard>
 
+          {editable ? (
+            <FieldCard>
+              <FieldRow label={t("materialOrders.delivery")}>
+                <ChoiceChips
+                  values={["project", "other"]}
+                  value={deliverOther ? "other" : "project"}
+                  onChange={(v) => setDeliverOther(v === "other")}
+                  format={(v) =>
+                    v === "other"
+                      ? t("materialOrders.deliveryOther")
+                      : t("materialOrders.deliveryProject")
+                  }
+                />
+              </FieldRow>
+              {deliverOther ? (
+                <FieldRow
+                  variant="input"
+                  floating
+                  label={t("materialOrders.address")}
+                  value={otherAddress}
+                  onChangeText={setOtherAddress}
+                  isLast
+                />
+              ) : (
+                <FieldRow value={projectAddress || "—"} isLast />
+              )}
+            </FieldCard>
+          ) : (
+            <FieldCard>
+              <FieldRow
+                label={t("materialOrders.delivery")}
+                value={savedAddress || projectAddress || "—"}
+                isLast
+              />
+            </FieldCard>
+          )}
+
           {editable && orderId ? (
             <TouchableOpacity
               style={styles.deleteButton}
@@ -318,6 +480,18 @@ export default function MaterialOrderScreen() {
               <Text style={styles.deleteText}>
                 {t("materialOrders.delete")}
               </Text>
+            </TouchableOpacity>
+          ) : null}
+
+          {fromPush && notifyOn ? (
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={muteNotifications}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+            >
+              <Icon name="bell-off" size={18} color={theme.content.textMuted} />
+              <Text style={styles.muteText}>{t("materialOrders.mute")}</Text>
             </TouchableOpacity>
           ) : null}
         </ScrollView>
@@ -441,5 +615,6 @@ function createStyles(theme) {
       minHeight: 48,
     },
     deleteText: { fontSize: 16, color: c.danger },
+    muteText: { fontSize: 16, color: c.textMuted },
   });
 }

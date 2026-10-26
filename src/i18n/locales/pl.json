@@ -1197,6 +1197,10 @@
       "invoices": {
         "label": "Faktury do zapłaty",
         "description": "Przypomnienia o niezapłaconych fakturach od dostawców."
+      },
+      "materialOrders": {
+        "label": "Zamówienia materiałów",
+        "description": "Nowe zamówienia i zamówienia wysłane do dostawcy."
       }
     }
   },
@@ -1414,7 +1418,8 @@
     "invoiced": "Zafakturowano",
     "margin": "Marża",
     "ratesSaved": "Stawki zapisane",
-    "ratesSaveError": "Nie udało się zapisać stawek."
+    "ratesSaveError": "Nie udało się zapisać stawek.",
+    "orderedMaterial": "Zamówiony materiał"
   },
   "onboarding": {
     "title": "Rozpocznij",
@@ -1911,6 +1916,12 @@
     "orderTitle": "Zamówienie #{{number}}",
     "delete": "Usuń zamówienie",
     "deleteTitle": "Usunąć zamówienie?",
-    "total": "Suma"
+    "total": "Suma",
+    "mute": "Wyłącz powiadomienia",
+    "delivery": "Dostawa",
+    "deliveryProject": "Adres projektu",
+    "deliveryOther": "Inny adres",
+    "address": "Adres",
+    "notFound": "To zamówienie już nie istnieje"
   }
 }

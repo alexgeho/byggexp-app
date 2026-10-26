@@ -75,3 +75,19 @@ test("app already open: navigates straight away", async () => {
     entityId: "inv1",
   });
 });
+
+test("material order push opens the order, marked as from a push", async () => {
+  mockReady = true;
+  mockRouteNames = ["Main", "MaterialOrder"];
+  await tap({
+    type: "material_order_sent",
+    screen: "MaterialOrder",
+    entityId: "o1",
+    projectId: "p1",
+  });
+  expect(mockNavigate).toHaveBeenCalledWith("MaterialOrder", {
+    orderId: "o1",
+    projectId: "p1",
+    fromPush: true,
+  });
+});

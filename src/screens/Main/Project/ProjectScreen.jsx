@@ -286,6 +286,7 @@ export const ProjectScreen = () => {
       // Refresh the tools list on focus (e.g. after attaching tools).
       setProjectTools(null);
       setMaterialOrders(null);
+      setEconomy(null);
     }, [fetchProject]),
   );
 
@@ -768,6 +769,7 @@ export const ProjectScreen = () => {
                   onPress={() =>
                     navigation.navigate("MaterialOrder", {
                       projectId: id,
+                      projectAddress: project?.location || "",
                       order,
                     })
                   }
@@ -890,6 +892,10 @@ export const ProjectScreen = () => {
                   {t("projectEconomy.costs")}
                 </SectionTitle>
                 <KeyValueRow
+                  label={t("projectEconomy.orderedMaterial")}
+                  value={formatMoney(economy.ordered)}
+                />
+                <KeyValueRow
                   label={t("projectEconomy.supplierInvoices")}
                   value={formatMoney(economy.supplier)}
                 />
@@ -969,7 +975,10 @@ export const ProjectScreen = () => {
           }
 
           if (modal === "Material") {
-            navigation.navigate("MaterialOrder", { projectId: id });
+            navigation.navigate("MaterialOrder", {
+              projectId: id,
+              projectAddress: project?.location || "",
+            });
             return;
           }
 
