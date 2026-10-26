@@ -4,6 +4,11 @@
 
 # 2026-10-26 — Счёт: RUT и Grön teknik; Intern tid; поля отчёта; Ordertyp
 
+## 09:30 · (через byggexp-admin, задача владельца: клиент звонил) Lundagrossisten-заказы + Fortnox
+
+- [ ] Materialbeställning: в проекте вкладка «Material» — список заказов проекта со статусом; новый заказ: поиск в регистре артикулов (supplier), строки с количеством, желаемая дата, комментарий → черновик (material-orders: draft|sent). Работник только черновик, отправляет админ. sv+en. Бэк ещё не готов — UI по плану контракта, за флагом; OTA только когда эндпоинты на проде
+- [ ] Fortnox: в списке счетов «Skickad till Fortnox», если счёт отправлен
+
 ## 08:10 · (через byggexp-admin, задачи владельца)
 
 - [x] A) company.hiddenReportFields (бэк 4074e2b, GET /company/my): в карточке дня скрыть выключенные строки (Övertid, OB, Restid, Bil, Traktamente, Frånvaro, Foton, Kvitton); значения не стирать; кэш на сессию, обновлять при открытии → useHiddenReportFields (GET /company/my, кэш на сессию, обновление при фокусе), карточка дня прячет строки; заголовок RESA — если видна Restid или Bil; рендер-тест; симулятор: overtime/ob/perDiem скрыты
