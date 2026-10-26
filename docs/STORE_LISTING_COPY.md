@@ -61,7 +61,7 @@ Play Console / App Store Connect (в коде эти тексты не живу�
 Важно: после смены текста в Play описание уходит на ревью вместе со следующим
 релизом.
 
-## App Store 1.1.2 — итоговый набор (sv, 2026-09-23)
+## App Store 1.1.2 — итоговый набор (sv, 2026-09-23; блоки TIDRAPPORTERING / PROJEKTHANTERING / FAKTURERING обновлены 2026-10-26 для 1.1.5)
 
 Ключи — из SEO-банка сайта (`ByggExp-NextJs/docs/seo/keywords-master.md`): tidrapporteringssystem bygg 5400,
 projekthantering bygg 2900, tidrapportering hantverkare 2400, schemaläggningssystem 2400, app för tidrapportering 1900,
@@ -81,26 +81,28 @@ Byggd för hantverkare och byggföretag – från enmansföretaget till laget me
 
 TIDRAPPORTERING
 • Automatisk stämpelklocka med GPS: kommer du till projektets adress startar tiden, lämnar du platsen pausas den
-• Manuell tidrapport när GPS inte behövs – fyll i timmarna direkt i kalendern
-• Planerade timmar per projekt utifrån arbetsdagen, så du ser plan mot utfall
-• Påminnelse när timmar saknas, och en tydlig logg över in- och utstämplingar
-• Export av tidrapporten till PDF och Excel – färdigt löneunderlag
+• Manuell dagrapport: arbetstid, övertid, OB, restid, bil, traktamente och frånvaro – med foton, kvitton och kommentar
+• Intern tid för verkstad, service och utbildning – går till lön, inte till faktura
+• Vecka, månad eller valfri period, och dagen sparas automatiskt
+• Påminnelse när timmar saknas
+• Export till PDF och Excel – färdigt löneunderlag, även till Fortnox Lön
 
 PROJEKTHANTERING
 • Alla byggprojekt med adress, datum, team, dokument och foton på ett ställe
-• Kvitton fotograferas och läses av automatiskt – kostnaden hamnar på projektet
-• Verktyg kopplas till projekt och anställda
-• Projektets ekonomi: timmar, kostnad och marginal
+• Ordertyp: projekt, service, installation, jour eller garanti
+• Materialbeställning till grossisten direkt från projektet
+• Kvitton och fakturor läses av automatiskt – kostnaden hamnar på projektet
+• Projektets ekonomi: timmar, material, kostnad och marginal
 
 UPPGIFTER OCH PLANERING
 • Ge uppgifter till en person eller hela laget, med datum, påminnelser och foton
 • Schemaläggning av pass och personal i kalendern
 
 FAKTURERING
-• Offerter och fakturor med ROT-avdrag och omvänd byggmoms
+• Offerter och fakturor med ROT, RUT, Grön teknik och omvänd byggmoms
+• Fakturor och löneunderlag direkt till Fortnox
 • Kreditfakturor, helt eller delvis
 • Leverantörsfakturor med påminnelse när de förfaller
-• Kunder, artiklar, Bankgiro och Plusgiro
 
 FÖR HELA FÖRETAGET
 • Roller för administratör, arbetsledare och anställd – var och en ser det som gäller dem
@@ -108,6 +110,65 @@ FÖR HELA FÖRETAGET
 • Samma konto i appen och i webbversionen för kontoret
 
 Prova gratis i 14 dagar.
+```
+
+## 1.1.5 — Nyheter (2026-10-26)
+
+### sv
+
+- Dagrapport: arbetstid, övertid, OB, restid, bil, traktamente och frånvaro samlat på dagen – med kommentar, foton och kvitton
+- Vecka, Månad och Period i Arbetspass, med timstapel på varje dag
+- Dagen sparas automatiskt en sekund efter ändring, och ↺ kopierar förra resans restid och km
+- Spara timmar manuellt utan att välja projekt först
+- Intern tid: rapportera tid utanför projekt – verkstad, service av bil eller utbildning
+- Arbetsgivaren väljer vilka fält som visas i dagrapporten
+- Materialbeställning: beställ material från grossisten direkt från projektet, med leveransadress och önskat datum, och få avisering när den skickas
+- Projektets ekonomi visar beställt material
+- Ordertyp på projekt: Service, Installation, Jour, Garanti
+- ROT, RUT och Grön teknik på fakturor, och fakturor visar när de skickats till Fortnox
+- Bifoga kvitto eller faktura som foto eller PDF för avläsning
+- Mjukare fönster och avisering som öppnar rätt sak direkt
+- Förbättringar och buggfixar
+
+### en
+
+- Daily report: hours, overtime, unsocial hours, travel, mileage, per diem and absence on one day – with comment, photos and receipts
+- Week, Month and Period views in Shifts, with an hours bar on every day
+- The day saves itself a second after a change, and ↺ copies last trip's travel time and km
+- Save manual hours without picking a project first
+- Internal time: log time outside projects – workshop, vehicle service or training
+- Employers choose which fields appear in the daily report
+- Material orders: order from your wholesaler right from the project, with delivery address and desired date, and get notified when it's sent
+- Project economy shows ordered material
+- Order type on projects: Service, Installation, On-call, Warranty
+- ROT, RUT and green technology deductions on invoices, and invoices show when they've been sent to Fortnox
+- Attach a receipt or invoice as a photo or PDF for scanning
+- Smoother sheets, and notifications open the right thing directly
+- Improvements and bug fixes
+
+### Description (en) — the same three blocks
+
+```
+TIME TRACKING
+• Automatic GPS time clock: arrive at the project address and time starts, leave the site and it pauses
+• Manual daily report: hours, overtime, unsocial hours, travel, mileage, per diem and absence – with photos, receipts and comment
+• Internal time for workshop, service and training – goes to payroll, not to the invoice
+• Week, month or any period, and the day saves itself
+• Reminder when hours are missing
+• Export to PDF and Excel – ready payroll data, also to Fortnox Lön
+
+PROJECT MANAGEMENT
+• Every construction project with address, dates, team, documents and photos in one place
+• Order type: project, service, installation, on-call or warranty
+• Material orders to the wholesaler right from the project
+• Receipts and invoices are read automatically – the cost lands on the project
+• Project economy: hours, material, cost and margin
+
+INVOICING
+• Quotes and invoices with ROT, RUT, green technology and reverse construction VAT
+• Invoices and payroll data straight to Fortnox
+• Credit invoices, in full or in part
+• Supplier invoices with a reminder when they fall due
 ```
 
 ## 1.1.4 — Nyheter (2026-10-15)
