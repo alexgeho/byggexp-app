@@ -167,6 +167,12 @@ export default function AppNavigator() {
               }
             />
             <Stack.Screen
+              name="MaterialOrder"
+              getComponent={() =>
+                require("../screens/Main/Project/MaterialOrderScreen").default
+              }
+            />
+            <Stack.Screen
               name="Task"
               getComponent={() =>
                 require("../screens/Main/Project/TaskScreen").default

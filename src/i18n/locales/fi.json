@@ -162,7 +162,8 @@
       "workers": "Työntekijät",
       "photos": "Kuvat",
       "economy": "Talous",
-      "tools": "Työkalut"
+      "tools": "Työkalut",
+      "material": "Materiaali"
     },
     "noPhotosTitle": "Ei vielä kuvia",
     "noPhotosText": "Tämän projektin vuoroilla otetut kuvat näkyvät täällä.",
@@ -1235,7 +1236,8 @@
     "markPaid": "Merkitse maksetuksi",
     "copyDocument": "Kopioi",
     "deleteTitle": "Poistetaanko?",
-    "deleteMessage": "Asiakirja poistetaan pysyvästi."
+    "deleteMessage": "Asiakirja poistetaan pysyvästi.",
+    "sentToFortnox": "Lähetetty Fortnoxiin"
   },
   "billing": {
     "itemDescription": "Kuvaus",
@@ -1879,5 +1881,22 @@
     "tryAgain": "Yritä uudelleen",
     "loadFailed": "Lataus epäonnistui",
     "retry": "Yritä uudelleen"
+  },
+  "materialOrders": {
+    "title": "Materiaali",
+    "newTitle": "Uusi tilaus",
+    "addArticle": "Lisää tuote",
+    "desiredDate": "Toivottu päivä",
+    "comment": "Kommentti",
+    "saveDraft": "Tallenna luonnos",
+    "saved": "Luonnos tallennettu",
+    "noRows": "Lisää vähintään yksi tuote",
+    "empty": "Ei tilauksia",
+    "rowCount_one": "{{count}} tuote",
+    "rowCount_other": "{{count}} tuotetta",
+    "status": {
+      "draft": "Luonnos",
+      "sent": "Lähetetty"
+    }
   }
 }

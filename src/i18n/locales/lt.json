@@ -162,7 +162,8 @@
       "workers": "Darbuotojai",
       "photos": "Nuotraukos",
       "economy": "Ekonomika",
-      "tools": "Įrankiai"
+      "tools": "Įrankiai",
+      "material": "Medžiagos"
     },
     "noPhotosTitle": "Dar nėra nuotraukų",
     "noPhotosText": "Šio projekto pamainose padarytos nuotraukos bus rodomos čia.",
@@ -1239,7 +1240,8 @@
     "markPaid": "Pažymėti apmokėta",
     "copyDocument": "Kopijuoti",
     "deleteTitle": "Ištrinti?",
-    "deleteMessage": "Dokumentas bus ištrintas visam laikui."
+    "deleteMessage": "Dokumentas bus ištrintas visam laikui.",
+    "sentToFortnox": "Išsiųsta į Fortnox"
   },
   "billing": {
     "itemDescription": "Aprašymas",
@@ -1886,5 +1888,22 @@
     "filledTitle_few": "Užpildyti {{count}} punktai",
     "draftReady_few": "{{count}} punktai paruošti",
     "pointsLeft_few": "Liko {{count}} punktai"
+  },
+  "materialOrders": {
+    "title": "Medžiagos",
+    "newTitle": "Naujas užsakymas",
+    "addArticle": "Pridėti prekę",
+    "desiredDate": "Pageidaujama data",
+    "comment": "Komentaras",
+    "saveDraft": "Išsaugoti juodraštį",
+    "saved": "Juodraštis išsaugotas",
+    "noRows": "Pridėkite bent vieną prekę",
+    "empty": "Užsakymų nėra",
+    "rowCount_one": "Prekių: {{count}}",
+    "rowCount_other": "Prekių: {{count}}",
+    "status": {
+      "draft": "Juodraštis",
+      "sent": "Išsiųstas"
+    }
   }
 }

@@ -162,7 +162,8 @@
       "workers": "Töötajad",
       "photos": "Fotod",
       "economy": "Majandus",
-      "tools": "Tööriistad"
+      "tools": "Tööriistad",
+      "material": "Materjal"
     },
     "noPhotosTitle": "Fotosid pole veel",
     "noPhotosText": "Selle projekti vahetustel tehtud fotod ilmuvad siia.",
@@ -1235,7 +1236,8 @@
     "markPaid": "Märgi makstuks",
     "copyDocument": "Kopeeri",
     "deleteTitle": "Kustutada?",
-    "deleteMessage": "Dokument kustutatakse jäädavalt."
+    "deleteMessage": "Dokument kustutatakse jäädavalt.",
+    "sentToFortnox": "Saadetud Fortnoxi"
   },
   "billing": {
     "itemDescription": "Kirjeldus",
@@ -1879,5 +1881,22 @@
     "tryAgain": "Proovi uuesti",
     "loadFailed": "Laadimine ebaõnnestus",
     "retry": "Proovi uuesti"
+  },
+  "materialOrders": {
+    "title": "Materjal",
+    "newTitle": "Uus tellimus",
+    "addArticle": "Lisa artikkel",
+    "desiredDate": "Soovitud kuupäev",
+    "comment": "Kommentaar",
+    "saveDraft": "Salvesta mustand",
+    "saved": "Mustand salvestatud",
+    "noRows": "Lisa vähemalt üks artikkel",
+    "empty": "Tellimusi pole",
+    "rowCount_one": "{{count}} artikkel",
+    "rowCount_other": "{{count}} artiklit",
+    "status": {
+      "draft": "Mustand",
+      "sent": "Saadetud"
+    }
   }
 }

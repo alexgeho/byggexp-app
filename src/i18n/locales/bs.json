@@ -162,7 +162,8 @@
       "workers": "Radnici",
       "photos": "Fotografije",
       "economy": "Finansije",
-      "tools": "Alati"
+      "tools": "Alati",
+      "material": "Materijal"
     },
     "noPhotosTitle": "Još nema fotografija",
     "noPhotosText": "Fotografije snimljene tokom smjena za ovaj projekt prikazat će se ovdje.",
@@ -1238,7 +1239,8 @@
     "markPaid": "Označi kao plaćeno",
     "copyDocument": "Kopiraj",
     "deleteTitle": "Obrisati?",
-    "deleteMessage": "Dokument se trajno briše."
+    "deleteMessage": "Dokument se trajno briše.",
+    "sentToFortnox": "Poslano u Fortnox"
   },
   "billing": {
     "itemDescription": "Opis",
@@ -1885,5 +1887,22 @@
     "filledTitle_few": "Popunjene {{count}} tačke",
     "draftReady_few": "{{count}} tačke spremne",
     "pointsLeft_few": "Ostale su {{count}} tačke"
+  },
+  "materialOrders": {
+    "title": "Materijal",
+    "newTitle": "Nova narudžba",
+    "addArticle": "Dodaj artikal",
+    "desiredDate": "Željeni datum",
+    "comment": "Komentar",
+    "saveDraft": "Sačuvaj nacrt",
+    "saved": "Nacrt sačuvan",
+    "noRows": "Dodajte barem jedan artikal",
+    "empty": "Nema narudžbi",
+    "rowCount_one": "Artikala: {{count}}",
+    "rowCount_other": "Artikala: {{count}}",
+    "status": {
+      "draft": "Nacrt",
+      "sent": "Poslano"
+    }
   }
 }

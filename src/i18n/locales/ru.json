@@ -162,7 +162,8 @@
       "workers": "Работники",
       "photos": "Фото",
       "economy": "Экономика",
-      "tools": "Инструменты"
+      "tools": "Инструменты",
+      "material": "Материалы"
     },
     "noPhotosTitle": "Пока нет фото",
     "noPhotosText": "Здесь появятся фото, сделанные во время смен по этому проекту.",
@@ -1239,7 +1240,8 @@
     "markPaid": "Отметить оплаченным",
     "copyDocument": "Копировать",
     "deleteTitle": "Удалить?",
-    "deleteMessage": "Документ будет удалён безвозвратно."
+    "deleteMessage": "Документ будет удалён безвозвратно.",
+    "sentToFortnox": "Отправлен в Fortnox"
   },
   "billing": {
     "itemDescription": "Описание",
@@ -1889,5 +1891,22 @@
     "tryAgain": "Попробовать снова",
     "loadFailed": "Не удалось загрузить",
     "retry": "Повторить"
+  },
+  "materialOrders": {
+    "title": "Материалы",
+    "newTitle": "Новый заказ",
+    "addArticle": "Добавить артикул",
+    "desiredDate": "Желаемая дата",
+    "comment": "Комментарий",
+    "saveDraft": "Сохранить черновик",
+    "saved": "Черновик сохранён",
+    "noRows": "Добавьте хотя бы один артикул",
+    "empty": "Нет заказов",
+    "rowCount_one": "Артикулов: {{count}}",
+    "rowCount_other": "Артикулов: {{count}}",
+    "status": {
+      "draft": "Черновик",
+      "sent": "Отправлен"
+    }
   }
 }

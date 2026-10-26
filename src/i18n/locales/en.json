@@ -162,7 +162,8 @@
       "workers": "Workers",
       "photos": "Photos",
       "economy": "Economy",
-      "tools": "Tools"
+      "tools": "Tools",
+      "material": "Material"
     },
     "noPhotosTitle": "No photos yet",
     "noPhotosText": "Photos taken on shifts for this project will appear here.",
@@ -1235,7 +1236,8 @@
     "markPaid": "Mark as paid",
     "copyDocument": "Duplicate",
     "deleteTitle": "Delete?",
-    "deleteMessage": "The document is removed for good."
+    "deleteMessage": "The document is removed for good.",
+    "sentToFortnox": "Sent to Fortnox"
   },
   "billing": {
     "itemDescription": "Description",
@@ -1879,5 +1881,22 @@
     "tryAgain": "Try again",
     "loadFailed": "Could not load",
     "retry": "Try again"
+  },
+  "materialOrders": {
+    "title": "Material",
+    "newTitle": "New order",
+    "addArticle": "Add article",
+    "desiredDate": "Wanted date",
+    "comment": "Comment",
+    "saveDraft": "Save draft",
+    "saved": "Draft saved",
+    "noRows": "Add at least one article",
+    "empty": "No orders",
+    "rowCount_one": "{{count}} article",
+    "rowCount_other": "{{count}} articles",
+    "status": {
+      "draft": "Draft",
+      "sent": "Sent"
+    }
   }
 }

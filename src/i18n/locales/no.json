@@ -162,7 +162,8 @@
       "workers": "Arbeidere",
       "photos": "Bilder",
       "economy": "Økonomi",
-      "tools": "Verktøy"
+      "tools": "Verktøy",
+      "material": "Material"
     },
     "noPhotosTitle": "Ingen bilder ennå",
     "noPhotosText": "Bilder tatt på skift for dette prosjektet vises her.",
@@ -1235,7 +1236,8 @@
     "markPaid": "Merk som betalt",
     "copyDocument": "Kopier",
     "deleteTitle": "Slette?",
-    "deleteMessage": "Dokumentet slettes permanent."
+    "deleteMessage": "Dokumentet slettes permanent.",
+    "sentToFortnox": "Sendt til Fortnox"
   },
   "billing": {
     "itemDescription": "Beskrivelse",
@@ -1879,5 +1881,22 @@
     "tryAgain": "Prøv igjen",
     "loadFailed": "Kunne ikke laste",
     "retry": "Prøv igjen"
+  },
+  "materialOrders": {
+    "title": "Material",
+    "newTitle": "Ny bestilling",
+    "addArticle": "Legg til artikkel",
+    "desiredDate": "Ønsket dato",
+    "comment": "Kommentar",
+    "saveDraft": "Lagre utkast",
+    "saved": "Utkast lagret",
+    "noRows": "Legg til minst én artikkel",
+    "empty": "Ingen bestillinger",
+    "rowCount_one": "{{count}} artikkel",
+    "rowCount_other": "{{count}} artikler",
+    "status": {
+      "draft": "Utkast",
+      "sent": "Sendt"
+    }
   }
 }

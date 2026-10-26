@@ -162,7 +162,8 @@
       "workers": "Pracownicy",
       "photos": "Zdjęcia",
       "economy": "Ekonomia",
-      "tools": "Narzędzia"
+      "tools": "Narzędzia",
+      "material": "Materiał"
     },
     "noPhotosTitle": "Brak zdjęć",
     "noPhotosText": "Zdjęcia zrobione podczas zmian w tym projekcie pojawią się tutaj.",
@@ -1239,7 +1240,8 @@
     "markPaid": "Oznacz jako opłaconą",
     "copyDocument": "Kopiuj",
     "deleteTitle": "Usunąć?",
-    "deleteMessage": "Dokument zostanie trwale usunięty."
+    "deleteMessage": "Dokument zostanie trwale usunięty.",
+    "sentToFortnox": "Wysłano do Fortnox"
   },
   "billing": {
     "itemDescription": "Opis",
@@ -1889,5 +1891,22 @@
     "draftReady_many": "{{count}} punktów gotowych",
     "pointsLeft_few": "Zostały {{count}} punkty",
     "pointsLeft_many": "Zostało {{count}} punktów"
+  },
+  "materialOrders": {
+    "title": "Materiał",
+    "newTitle": "Nowe zamówienie",
+    "addArticle": "Dodaj artykuł",
+    "desiredDate": "Żądana data",
+    "comment": "Komentarz",
+    "saveDraft": "Zapisz szkic",
+    "saved": "Szkic zapisany",
+    "noRows": "Dodaj co najmniej jeden artykuł",
+    "empty": "Brak zamówień",
+    "rowCount_one": "Artykuły: {{count}}",
+    "rowCount_other": "Artykuły: {{count}}",
+    "status": {
+      "draft": "Szkic",
+      "sent": "Wysłane"
+    }
   }
 }

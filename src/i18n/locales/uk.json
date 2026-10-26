@@ -162,7 +162,8 @@
       "workers": "Працівники",
       "photos": "Фото",
       "economy": "Фінанси",
-      "tools": "Інструменти"
+      "tools": "Інструменти",
+      "material": "Матеріали"
     },
     "noPhotosTitle": "Поки що немає фото",
     "noPhotosText": "Фото, зроблені під час змін для цього проєкту, з'являться тут.",
@@ -1239,7 +1240,8 @@
     "markPaid": "Позначити оплаченим",
     "copyDocument": "Копіювати",
     "deleteTitle": "Видалити?",
-    "deleteMessage": "Документ буде видалено назавжди."
+    "deleteMessage": "Документ буде видалено назавжди.",
+    "sentToFortnox": "Надіслано у Fortnox"
   },
   "billing": {
     "itemDescription": "Опис",
@@ -1889,5 +1891,22 @@
     "draftReady_many": "{{count}} пунктів готово",
     "pointsLeft_few": "Залишилось {{count}} пункти",
     "pointsLeft_many": "Залишилось {{count}} пунктів"
+  },
+  "materialOrders": {
+    "title": "Матеріали",
+    "newTitle": "Нове замовлення",
+    "addArticle": "Додати артикул",
+    "desiredDate": "Бажана дата",
+    "comment": "Коментар",
+    "saveDraft": "Зберегти чернетку",
+    "saved": "Чернетку збережено",
+    "noRows": "Додайте хоча б один артикул",
+    "empty": "Немає замовлень",
+    "rowCount_one": "Артикулів: {{count}}",
+    "rowCount_other": "Артикулів: {{count}}",
+    "status": {
+      "draft": "Чернетка",
+      "sent": "Надіслано"
+    }
   }
 }

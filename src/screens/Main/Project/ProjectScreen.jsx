@@ -77,6 +77,7 @@ import {
   shouldShowAccountStatus,
 } from "../../../utils/userRoles";
 import { resolveUploadUrl } from "../../../utils/shifts";
+import { materialOrderService } from "../../../services/material-order.service";
 
 // Group project photo items ({ url, date, isReceipt }) by day, newest first.
 const groupPhotoItemsByDate = (items) => {
@@ -115,6 +116,12 @@ const formatDate = (value, withTime = false, t = null) => {
         day: "numeric",
         year: "numeric",
       });
+};
+
+// Draft = waiting for an admin to send it; sent = on its way.
+const ORDER_BADGE_KEYS = {
+  draft: "cardBadgeWarning",
+  sent: "cardBadgeCompleted",
 };
 
 const TASK_BADGE_KEYS = {
@@ -191,6 +198,9 @@ export const ProjectScreen = () => {
   // Tools tab (tools carry a projectIds[] pointing back at this project).
   const [projectTools, setProjectTools] = useState(null);
   const [loadingTools, setLoadingTools] = useState(false);
+
+  // Material tab: the project's grossist orders (drafts and sent).
+  const [materialOrders, setMaterialOrders] = useState(null);
 
   // The project photo gallery = every shift photo + every scanned receipt for
   // the project, so both a plain site photo and a receipt end up "in the
@@ -274,6 +284,7 @@ export const ProjectScreen = () => {
       fetchProject();
       // Refresh the tools list on focus (e.g. after attaching tools).
       setProjectTools(null);
+      setMaterialOrders(null);
     }, [fetchProject]),
   );
 
@@ -303,6 +314,24 @@ export const ProjectScreen = () => {
     setLoadingTools(true);
     loadProjectTools().finally(() => setLoadingTools(false));
   }, [modal, projectTools, loadingTools, loadProjectTools]);
+
+  // Lazy-load the material orders when their tab is opened (and again after
+  // coming back from a new order).
+  useEffect(() => {
+    if (modal !== "Material" || materialOrders !== null || !id) {
+      return;
+    }
+    let active = true;
+    materialOrderService
+      .listByProject(id)
+      .catch(() => [])
+      .then((orders) => {
+        if (active) setMaterialOrders(sortByNewest(orders));
+      });
+    return () => {
+      active = false;
+    };
+  }, [modal, materialOrders, id]);
 
   // Lazy-load the project photo gallery when its tab is first opened.
   useEffect(() => {
@@ -722,6 +751,43 @@ export const ProjectScreen = () => {
             </View>
           ))}
 
+        {modal === "Material" &&
+          (materialOrders === null ? (
+            <View style={styles.tabLoading}>
+              <ActivityIndicator color={theme.colors.primary} />
+            </View>
+          ) : materialOrders.length > 0 ? (
+            materialOrders.map((order) => {
+              const status = order.status === "sent" ? "sent" : "draft";
+              const rowCount = (order.rows || []).length;
+              return (
+                <ListCard
+                  key={order._id || order.id}
+                  title={order.supplier || t("materialOrders.title")}
+                  badgeLabel={t(`materialOrders.status.${status}`)}
+                  badgeStyle={cardStyles[ORDER_BADGE_KEYS[status]]}
+                >
+                  <Text style={cardStyles.cardSecondaryText} numberOfLines={1}>
+                    {[
+                      t("materialOrders.rowCount", { count: rowCount }),
+                      order.desiredDate &&
+                        formatDate(order.desiredDate, false, t),
+                      order.comment,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </Text>
+                </ListCard>
+              );
+            })
+          ) : (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateTitle}>
+                {t("materialOrders.empty")}
+              </Text>
+            </View>
+          ))}
+
         {modal === "Photos" ? (
           <ProjectPhotosTab
             loading={loadingPhotos}
@@ -860,7 +926,8 @@ export const ProjectScreen = () => {
           (modal === "Documents" && canAddContent) ||
           (modal === "Photos" && canAddContent) ||
           (modal === "Workers" && canEditWorkers) ||
-          (modal === "Tools" && canAddContent)
+          (modal === "Tools" && canAddContent) ||
+          modal === "Material"
         }
         onAddPress={() => {
           if (modal === "Documents") {
@@ -884,6 +951,11 @@ export const ProjectScreen = () => {
             navigation.navigate("SelectTools", {
               projectId: id,
             });
+            return;
+          }
+
+          if (modal === "Material") {
+            navigation.navigate("MaterialOrder", { projectId: id });
             return;
           }
 

@@ -162,7 +162,8 @@
       "workers": "Arbetare",
       "photos": "Foton",
       "economy": "Ekonomi",
-      "tools": "Verktyg"
+      "tools": "Verktyg",
+      "material": "Material"
     },
     "noPhotosTitle": "Inga foton ännu",
     "noPhotosText": "Foton tagna på arbetspass för detta projekt visas här.",
@@ -1235,7 +1236,8 @@
     "markPaid": "Markera som betald",
     "copyDocument": "Kopiera",
     "deleteTitle": "Ta bort?",
-    "deleteMessage": "Dokumentet tas bort permanent."
+    "deleteMessage": "Dokumentet tas bort permanent.",
+    "sentToFortnox": "Skickad till Fortnox"
   },
   "billing": {
     "itemDescription": "Beskrivning",
@@ -1879,5 +1881,22 @@
     "tryAgain": "Prova igen",
     "loadFailed": "Kunde inte ladda",
     "retry": "Försök igen"
+  },
+  "materialOrders": {
+    "title": "Material",
+    "newTitle": "Ny beställning",
+    "addArticle": "Lägg till artikel",
+    "desiredDate": "Önskat datum",
+    "comment": "Kommentar",
+    "saveDraft": "Spara utkast",
+    "saved": "Utkast sparat",
+    "noRows": "Lägg till minst en artikel",
+    "empty": "Inga beställningar",
+    "rowCount_one": "{{count}} artikel",
+    "rowCount_other": "{{count}} artiklar",
+    "status": {
+      "draft": "Utkast",
+      "sent": "Skickad"
+    }
   }
 }

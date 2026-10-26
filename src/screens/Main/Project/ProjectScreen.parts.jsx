@@ -12,6 +12,7 @@ import { formatShiftDayLabel, resolveUploadUrl } from "../../../utils/shifts";
 import { PersonListItem } from "../../../components/common/PersonListItem/PersonListItem";
 import { getWorkerStatusBadge } from "../../../utils/workerStatusBadge";
 import { useTheme } from "../../../theme/ThemeContext";
+import { materialOrdersEnabled } from "../../../config/materialOrders";
 
 // The project detail tabs. Data-driven so the six near-identical TouchableOpacity
 // blocks become one map; the Economy tab is finance-gated. Behaviour and order
@@ -22,6 +23,7 @@ const PROJECT_TABS = [
   { key: "Workers", labelKey: "project.tabs.workers" },
   { key: "Tools", labelKey: "project.tabs.tools" },
   { key: "Photos", labelKey: "project.tabs.photos" },
+  { key: "Material", labelKey: "project.tabs.material", flag: "material" },
   { key: "Economy", labelKey: "project.tabs.economy", financeOnly: true },
 ];
 
@@ -40,29 +42,31 @@ export function ProjectTabBar({
       style={styles.tabScroll}
       contentContainerStyle={styles.tabContainer}
     >
-      {PROJECT_TABS.filter((tab) => !tab.financeOnly || canSeeFinance).map(
-        (tab) => {
-          const isActive = active === tab.key;
-          return (
-            <TouchableOpacity
-              key={tab.key}
-              onPress={() => onSelect(tab.key)}
-              style={[
-                styles.tabButton,
-                isActive && styles.activeTab,
-                isActive && { borderColor: activeColor },
-              ]}
+      {PROJECT_TABS.filter(
+        (tab) =>
+          (!tab.financeOnly || canSeeFinance) &&
+          (tab.flag !== "material" || materialOrdersEnabled),
+      ).map((tab) => {
+        const isActive = active === tab.key;
+        return (
+          <TouchableOpacity
+            key={tab.key}
+            onPress={() => onSelect(tab.key)}
+            style={[
+              styles.tabButton,
+              isActive && styles.activeTab,
+              isActive && { borderColor: activeColor },
+            ]}
+          >
+            <Text
+              style={[styles.tabText, isActive && { color: activeColor }]}
+              numberOfLines={1}
             >
-              <Text
-                style={[styles.tabText, isActive && { color: activeColor }]}
-                numberOfLines={1}
-              >
-                {t(tab.labelKey)}
-              </Text>
-            </TouchableOpacity>
-          );
-        },
-      )}
+              {t(tab.labelKey)}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
     </ScrollView>
   );
 }

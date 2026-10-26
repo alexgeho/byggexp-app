@@ -20,6 +20,7 @@ import {
 } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { offerService, invoiceService, clientService } from "../../../services";
+import { isSentToFortnox } from "../../../utils/fortnox";
 import { EntityListScreen } from "../../../components/common/EntityListScreen/EntityListScreen";
 import { getDateLocale } from "../../../utils/dateLocale";
 import { sortByNewest } from "../../../utils/sortByNewest";
@@ -387,9 +388,12 @@ export default function EconomyScreen() {
       ? item.validUntil
         ? `${t("economy.validUntil")} ${formatDate(item.validUntil)}`
         : ""
-      : item.dueDate
-        ? `${t("economy.due")} ${formatDate(item.dueDate)}`
-        : "";
+      : [
+          item.dueDate && `${t("economy.due")} ${formatDate(item.dueDate)}`,
+          isSentToFortnox(item) && t("economy.sentToFortnox"),
+        ]
+          .filter(Boolean)
+          .join(" · ");
 
     return (
       <TouchableOpacity

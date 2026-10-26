@@ -1,0 +1,320 @@
+import React, { useCallback, useContext, useMemo, useState } from "react";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import Icon from "react-native-vector-icons/Feather";
+import { useTranslation } from "react-i18next";
+import { useNavigation, useRoute } from "@react-navigation/native";
+
+import AuthContext from "../../../contexts/AuthContext";
+import { useFeedback } from "../../../contexts/FeedbackContext";
+import { useTheme } from "../../../theme/ThemeContext";
+import { materialOrderService } from "../../../services/material-order.service";
+import ArticlePickerModal from "../../Menu/Economy/ArticlePickerModal";
+import {
+  FieldCard,
+  FieldRow,
+} from "../../../components/common/FieldRow/FieldRow";
+import {
+  Button,
+  FormFooter,
+  FormHeader,
+  FormScreen,
+  SectionTitle,
+} from "../../../components/common/ui";
+import { layout } from "../../../theme/spacing";
+import { getApiErrorMessage } from "../../../utils/apiError";
+import { getDateLocale } from "../../../utils/dateLocale";
+import {
+  addArticle,
+  buildOrderPayload,
+  isOrderable,
+  setQuantity,
+} from "../../../utils/materialOrder";
+
+const tomorrow = () => {
+  const date = new Date();
+  date.setDate(date.getDate() + 1);
+  return date;
+};
+
+// New material order from the site: pick grossist articles, quantities, a
+// wanted delivery date and a note, save as a draft. An admin sends it.
+export default function MaterialOrderScreen() {
+  const { t } = useTranslation();
+  const navigation = useNavigation();
+  const { projectId } = useRoute().params || {};
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+  const { user } = useContext(AuthContext);
+  const { showSuccess, showError } = useFeedback();
+
+  const [rows, setRows] = useState([]);
+  const [supplier, setSupplier] = useState("");
+  const [desiredDate, setDesiredDate] = useState(tomorrow);
+  const [comment, setComment] = useState("");
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [androidDateOpen, setAndroidDateOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // One order goes to one grossist: once a row is in, only that supplier's
+  // articles are offered.
+  const articleFilter = useCallback(
+    (article) =>
+      isOrderable(article) && (!supplier || article.supplier === supplier),
+    [supplier],
+  );
+
+  const handlePick = (article) => {
+    setPickerOpen(false);
+    setSupplier(article.supplier);
+    setRows((prev) => addArticle(prev, article));
+  };
+
+  const changeQuantity = (index, quantity) =>
+    setRows((prev) => {
+      const next = setQuantity(prev, index, quantity);
+      if (next.length === 0) setSupplier("");
+      return next;
+    });
+
+  const handleSave = async () => {
+    if (saving) return;
+    if (rows.length === 0) {
+      showError({ message: t("materialOrders.noRows") });
+      return;
+    }
+    setSaving(true);
+    try {
+      await materialOrderService.create(
+        buildOrderPayload({
+          companyId: user?.companyId,
+          projectId,
+          supplier,
+          rows,
+          desiredDate,
+          comment,
+        }),
+      );
+      showSuccess({ title: t("materialOrders.saved") });
+      navigation.goBack();
+    } catch (error) {
+      showError({ message: getApiErrorMessage(error, t("common.error")) });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const dateLabel = desiredDate.toLocaleDateString(getDateLocale(), {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
+
+  return (
+    <FormScreen style={styles.safe} edges={["top"]}>
+      <FormHeader
+        title={t("materialOrders.newTitle")}
+        onBack={() => navigation.goBack()}
+        onSave={handleSave}
+        saving={saving}
+        saveLabel={t("common.save")}
+      />
+
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View>
+            {supplier ? <SectionTitle>{supplier}</SectionTitle> : null}
+            {rows.length > 0 ? (
+              <FieldCard>
+                {rows.map((row, index) => (
+                  <View
+                    key={row.articleId}
+                    style={[
+                      styles.row,
+                      index < rows.length - 1 && styles.rowDivider,
+                    ]}
+                  >
+                    <View style={styles.rowInfo}>
+                      <Text style={styles.rowName} numberOfLines={1}>
+                        {row.name || row.articleNumber}
+                      </Text>
+                      <Text style={styles.rowMeta} numberOfLines={1}>
+                        {[row.articleNumber, row.unit]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      style={styles.stepButton}
+                      onPress={() => changeQuantity(index, row.quantity - 1)}
+                      accessibilityRole="button"
+                      accessibilityLabel="−"
+                    >
+                      <Icon
+                        name={row.quantity === 1 ? "trash-2" : "minus"}
+                        size={18}
+                        color={theme.colors.primary}
+                      />
+                    </TouchableOpacity>
+                    <Text style={styles.quantity}>{row.quantity}</Text>
+                    <TouchableOpacity
+                      style={styles.stepButton}
+                      onPress={() => changeQuantity(index, row.quantity + 1)}
+                      accessibilityRole="button"
+                      accessibilityLabel="+"
+                    >
+                      <Icon
+                        name="plus"
+                        size={18}
+                        color={theme.colors.primary}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </FieldCard>
+            ) : null}
+            <Button
+              variant="outline"
+              title={t("materialOrders.addArticle")}
+              onPress={() => setPickerOpen(true)}
+              style={rows.length > 0 ? styles.addAfterRows : null}
+            />
+          </View>
+
+          <FieldCard>
+            {Platform.OS === "ios" ? (
+              <View style={[styles.dateRow, styles.rowDivider]}>
+                <Text style={styles.dateLabel}>
+                  {t("materialOrders.desiredDate")}
+                </Text>
+                <DateTimePicker
+                  value={desiredDate}
+                  mode="date"
+                  display="compact"
+                  locale={getDateLocale()}
+                  minimumDate={new Date()}
+                  onChange={(_event, date) => date && setDesiredDate(date)}
+                />
+              </View>
+            ) : (
+              <FieldRow
+                variant="select"
+                label={t("materialOrders.desiredDate")}
+                value={dateLabel}
+                onPress={() => setAndroidDateOpen(true)}
+              />
+            )}
+            <FieldRow
+              variant="input"
+              multiline
+              label={t("materialOrders.comment")}
+              value={comment}
+              onChangeText={setComment}
+              isLast
+            />
+          </FieldCard>
+        </ScrollView>
+      </KeyboardAvoidingView>
+
+      {androidDateOpen ? (
+        <DateTimePicker
+          value={desiredDate}
+          mode="date"
+          minimumDate={new Date()}
+          onChange={(_event, date) => {
+            setAndroidDateOpen(false);
+            if (date) setDesiredDate(date);
+          }}
+        />
+      ) : null}
+
+      <FormFooter>
+        <Button
+          title={t("materialOrders.saveDraft")}
+          onPress={handleSave}
+          loading={saving}
+          disabled={rows.length === 0}
+        />
+      </FormFooter>
+
+      <ArticlePickerModal
+        visible={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onSelect={handlePick}
+        filter={articleFilter}
+        showPrice={false}
+      />
+    </FormScreen>
+  );
+}
+
+function createStyles(theme) {
+  const c = theme.content;
+  return StyleSheet.create({
+    safe: { flex: 1, backgroundColor: c.background },
+    flex: { flex: 1 },
+    content: {
+      paddingHorizontal: layout.formGutter,
+      paddingTop: layout.headerToContent,
+      paddingBottom: 40,
+      gap: layout.betweenCards * 2,
+    },
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      minHeight: 62,
+      paddingHorizontal: 16,
+      gap: 4,
+    },
+    rowDivider: {
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: c.border,
+    },
+    rowInfo: { flex: 1, paddingVertical: 10, paddingRight: 8 },
+    rowName: {
+      fontSize: 14,
+      color: c.textPrimary,
+      fontFamily: theme.text.fontFamily.medium,
+    },
+    rowMeta: { fontSize: 12, color: c.textSecondary, marginTop: 2 },
+    stepButton: {
+      width: 44,
+      height: 44,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    quantity: {
+      minWidth: 28,
+      textAlign: "center",
+      fontSize: 16,
+      color: c.textPrimary,
+      fontFamily: theme.text.fontFamily.medium,
+      fontVariant: ["tabular-nums"],
+    },
+    addAfterRows: { marginTop: layout.betweenCards },
+    // iOS: label left, compact date pill right — like a Settings row.
+    dateRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      minHeight: 62,
+      paddingLeft: 16,
+      paddingRight: 8,
+    },
+    dateLabel: { fontSize: 14, color: c.textPrimary },
+  });
+}

@@ -162,7 +162,8 @@
       "workers": "Darbinieki",
       "photos": "Fotoattēli",
       "economy": "Ekonomika",
-      "tools": "Instrumenti"
+      "tools": "Instrumenti",
+      "material": "Materiāli"
     },
     "noPhotosTitle": "Vēl nav fotoattēlu",
     "noPhotosText": "Šī projekta maiņās uzņemtie fotoattēli tiks parādīti šeit.",
@@ -1236,7 +1237,8 @@
     "markPaid": "Atzīmēt kā apmaksātu",
     "copyDocument": "Kopēt",
     "deleteTitle": "Dzēst?",
-    "deleteMessage": "Dokuments tiks dzēsts neatgriezeniski."
+    "deleteMessage": "Dokuments tiks dzēsts neatgriezeniski.",
+    "sentToFortnox": "Nosūtīts uz Fortnox"
   },
   "billing": {
     "itemDescription": "Apraksts",
@@ -1883,5 +1885,22 @@
     "filledTitle_zero": "Aizpildīti {{count}} punkti",
     "draftReady_zero": "{{count}} punkti gatavi",
     "pointsLeft_zero": "Atlikuši {{count}} punkti"
+  },
+  "materialOrders": {
+    "title": "Materiāli",
+    "newTitle": "Jauns pasūtījums",
+    "addArticle": "Pievienot preci",
+    "desiredDate": "Vēlamais datums",
+    "comment": "Komentārs",
+    "saveDraft": "Saglabāt melnrakstu",
+    "saved": "Melnraksts saglabāts",
+    "noRows": "Pievienojiet vismaz vienu preci",
+    "empty": "Nav pasūtījumu",
+    "rowCount_one": "Preces: {{count}}",
+    "rowCount_other": "Preces: {{count}}",
+    "status": {
+      "draft": "Melnraksts",
+      "sent": "Nosūtīts"
+    }
   }
 }

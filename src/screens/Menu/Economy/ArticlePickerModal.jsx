@@ -25,8 +25,15 @@ import { SheetPressable } from "../../../components/common/SheetSlideIn/SheetSli
 // Pick an article from the company catalogue onto an invoice/offer row — the
 // same list the web form offers in its row dropdown. Picking fills the row's
 // article number, name, price, unit and VAT rate; new articles are created on
-// the Articles screen, as on the web.
-export default function ArticlePickerModal({ visible, onClose, onSelect }) {
+// the Articles screen, as on the web. A material order passes `filter` (only
+// grossist articles) and `showPrice={false}` — the worker orders, not prices.
+export default function ArticlePickerModal({
+  visible,
+  onClose,
+  onSelect,
+  filter,
+  showPrice = true,
+}) {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
@@ -56,7 +63,9 @@ export default function ArticlePickerModal({ visible, onClose, onSelect }) {
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
-    const active = articles.filter((article) => article?.active !== false);
+    const active = articles.filter((article) =>
+      filter ? filter(article) : article?.active !== false,
+    );
     if (!query) return active;
     return active.filter((article) =>
       [article.articleNumber, article.name, article.nameEnglish]
@@ -65,7 +74,7 @@ export default function ArticlePickerModal({ visible, onClose, onSelect }) {
         .toLowerCase()
         .includes(query),
     );
-  }, [articles, search]);
+  }, [articles, search, filter]);
 
   return (
     <Modal
@@ -116,10 +125,11 @@ export default function ArticlePickerModal({ visible, onClose, onSelect }) {
                       <Text style={styles.clientMeta} numberOfLines={1}>
                         {[
                           article.articleNumber,
-                          formatMoney(
-                            article.priceExclMoms || 0,
-                            getDateLocale(),
-                          ),
+                          showPrice &&
+                            formatMoney(
+                              article.priceExclMoms || 0,
+                              getDateLocale(),
+                            ),
                           article.unit,
                         ]
                           .filter(Boolean)
