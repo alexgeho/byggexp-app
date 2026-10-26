@@ -173,6 +173,27 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // DEV only: `xcrun simctl openurl booted "byggexp://dev-login?json=<{email,
+  // password}>"` signs the simulator in with seed credentials, so a session
+  // lost to a token rotation doesn't need typing. Never in release builds.
+  const loginRef = useRef(login);
+  loginRef.current = login;
+  useEffect(() => {
+    if (!__DEV__) return undefined;
+    const { Linking } = require("react-native");
+    const subscription = Linking.addEventListener("url", ({ url }) => {
+      const m = /dev-login\?json=(.*)$/.exec(url || "");
+      if (!m) return;
+      try {
+        const { email, password } = JSON.parse(decodeURIComponent(m[1]));
+        loginRef.current(email, password);
+      } catch {
+        /* malformed dev link */
+      }
+    });
+    return () => subscription.remove();
+  }, []);
+
   const magicLogin = async (code) => {
     try {
       setIsLoading(true);
