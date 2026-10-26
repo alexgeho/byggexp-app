@@ -3,6 +3,15 @@
 Tracking checklist for App Store and Google Play submission.
 Tick items as they are completed.
 
+## ⚠️ Правило владельца (навсегда, 2026-10-26): из стора — всё сразу
+
+Скачал из стора → с ПЕРВОГО запуска работает всё новое, без «перезапусти пару раз».
+
+- Сборку для сторов делать только из свежего `main` и ПОСЛЕ последнего OTA: встроенный JS = самый новый OTA.
+- Перед `eas build` убедиться, что все изменения запушены и последний `eas update` опубликован из того же коммита.
+- Старые сборки той же версии, собранные до последних OTA, — устаревшие, в стор их не отправлять.
+- `eas build` для сторов: `npx eas-cli build --platform all --profile production` (autoIncrement поднимает номера сборок; версию не трогать без решения владельца). Отправляет в сторы владелец.
+
 ## Key facts (reference)
 
 - **Bundle ID / package:** `se.byggexp.app` (iOS + Android)
