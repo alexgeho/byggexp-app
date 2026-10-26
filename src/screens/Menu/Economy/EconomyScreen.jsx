@@ -387,9 +387,13 @@ export default function EconomyScreen() {
       ? item.validUntil
         ? `${t("economy.validUntil")} ${formatDate(item.validUntil)}`
         : ""
-      : item.dueDate
-        ? `${t("economy.due")} ${formatDate(item.dueDate)}`
-        : "";
+      : [
+          item.dueDate && `${t("economy.due")} ${formatDate(item.dueDate)}`,
+          // Pushed to the company's Fortnox; errors are the admin's business.
+          item.fortnoxStatus === "sent" && t("economy.sentToFortnox"),
+        ]
+          .filter(Boolean)
+          .join(" · ");
 
     return (
       <TouchableOpacity

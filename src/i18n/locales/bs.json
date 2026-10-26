@@ -1239,7 +1239,8 @@
     "markPaid": "Označi kao plaćeno",
     "copyDocument": "Kopiraj",
     "deleteTitle": "Obrisati?",
-    "deleteMessage": "Dokument se trajno briše."
+    "deleteMessage": "Dokument se trajno briše.",
+    "sentToFortnox": "Poslano u Fortnox"
   },
   "billing": {
     "itemDescription": "Opis",
@@ -1902,6 +1903,9 @@
     "status": {
       "draft": "Nacrt",
       "sent": "Poslano"
-    }
+    },
+    "orderTitle": "Narudžba #{{number}}",
+    "delete": "Obriši narudžbu",
+    "deleteTitle": "Obrisati narudžbu?"
   }
 }

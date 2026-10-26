@@ -1,5 +1,6 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -13,6 +14,7 @@ import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
+import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import { useTheme } from "../../../theme/ThemeContext";
 import { materialOrderService } from "../../../services/material-order.service";
@@ -34,7 +36,9 @@ import { getDateLocale } from "../../../utils/dateLocale";
 import {
   addArticle,
   buildOrderPayload,
+  canEditOrder,
   isOrderable,
+  parseDateOnly,
   setQuantity,
 } from "../../../utils/materialOrder";
 
@@ -44,20 +48,29 @@ const tomorrow = () => {
   return date;
 };
 
-// New material order from the site: pick grossist articles, quantities, a
-// wanted delivery date and a note, save as a draft. An admin sends it.
+// Material order from the site: pick grossist articles, quantities, a wanted
+// delivery date and a note, save as a draft. An admin sends it. Opened with an
+// `order`, the worker's own draft can be changed or deleted; a sent order (or
+// a colleague's) is shown read-only.
 export default function MaterialOrderScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const { projectId } = useRoute().params || {};
+  const { projectId, order } = useRoute().params || {};
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { showSuccess, showError } = useFeedback();
+  const { user } = useContext(AuthContext);
+  const orderId = order?._id || order?.id;
+  const editable = canEditOrder(order, user?._id || user?.id);
 
-  const [rows, setRows] = useState([]);
-  const [supplier, setSupplier] = useState("");
-  const [desiredDate, setDesiredDate] = useState(tomorrow);
-  const [comment, setComment] = useState("");
+  const [rows, setRows] = useState(() =>
+    (order?.rows || []).map((row) => ({ ...row })),
+  );
+  const [supplier, setSupplier] = useState(order?.supplier || "");
+  const [desiredDate, setDesiredDate] = useState(
+    () => parseDateOnly(order?.desiredDate) || tomorrow(),
+  );
+  const [comment, setComment] = useState(order?.comment || "");
   const [pickerOpen, setPickerOpen] = useState(false);
   const [androidDateOpen, setAndroidDateOpen] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -91,15 +104,19 @@ export default function MaterialOrderScreen() {
     }
     setSaving(true);
     try {
-      await materialOrderService.create(
-        buildOrderPayload({
-          projectId,
-          supplier,
-          rows,
-          desiredDate,
-          comment,
-        }),
-      );
+      const payload = buildOrderPayload({
+        projectId,
+        supplier,
+        rows,
+        desiredDate,
+        comment,
+      });
+      if (orderId) {
+        const { projectId: _project, ...changes } = payload;
+        await materialOrderService.update(orderId, changes);
+      } else {
+        await materialOrderService.create(payload);
+      }
       showSuccess({ title: t("materialOrders.saved") });
       navigation.goBack();
     } catch (error) {
@@ -108,6 +125,30 @@ export default function MaterialOrderScreen() {
       setSaving(false);
     }
   };
+
+  const handleDelete = () => {
+    Alert.alert(t("materialOrders.deleteTitle"), undefined, [
+      { text: t("common.cancel"), style: "cancel" },
+      {
+        text: t("common.delete"),
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await materialOrderService.remove(orderId);
+            navigation.goBack();
+          } catch (error) {
+            showError({
+              message: getApiErrorMessage(error, t("common.error")),
+            });
+          }
+        },
+      },
+    ]);
+  };
+
+  const title = orderId
+    ? t("materialOrders.orderTitle", { number: order.orderNumber ?? "" })
+    : t("materialOrders.newTitle");
 
   const dateLabel = desiredDate.toLocaleDateString(getDateLocale(), {
     weekday: "short",
@@ -118,9 +159,9 @@ export default function MaterialOrderScreen() {
   return (
     <FormScreen style={styles.safe} edges={["top"]}>
       <FormHeader
-        title={t("materialOrders.newTitle")}
+        title={title}
         onBack={() => navigation.goBack()}
-        onSave={handleSave}
+        onSave={editable ? handleSave : undefined}
         saving={saving}
         saveLabel={t("common.save")}
       />
@@ -155,45 +196,56 @@ export default function MaterialOrderScreen() {
                           .join(" · ")}
                       </Text>
                     </View>
-                    <TouchableOpacity
-                      style={styles.stepButton}
-                      onPress={() => changeQuantity(index, row.quantity - 1)}
-                      accessibilityRole="button"
-                      accessibilityLabel="−"
-                    >
-                      <Icon
-                        name={row.quantity === 1 ? "trash-2" : "minus"}
-                        size={18}
-                        color={theme.colors.primary}
-                      />
-                    </TouchableOpacity>
+                    {editable ? (
+                      <TouchableOpacity
+                        style={styles.stepButton}
+                        onPress={() => changeQuantity(index, row.quantity - 1)}
+                        accessibilityRole="button"
+                        accessibilityLabel="−"
+                      >
+                        <Icon
+                          name={row.quantity === 1 ? "trash-2" : "minus"}
+                          size={18}
+                          color={theme.colors.primary}
+                        />
+                      </TouchableOpacity>
+                    ) : null}
                     <Text style={styles.quantity}>{row.quantity}</Text>
-                    <TouchableOpacity
-                      style={styles.stepButton}
-                      onPress={() => changeQuantity(index, row.quantity + 1)}
-                      accessibilityRole="button"
-                      accessibilityLabel="+"
-                    >
-                      <Icon
-                        name="plus"
-                        size={18}
-                        color={theme.colors.primary}
-                      />
-                    </TouchableOpacity>
+                    {editable ? (
+                      <TouchableOpacity
+                        style={styles.stepButton}
+                        onPress={() => changeQuantity(index, row.quantity + 1)}
+                        accessibilityRole="button"
+                        accessibilityLabel="+"
+                      >
+                        <Icon
+                          name="plus"
+                          size={18}
+                          color={theme.colors.primary}
+                        />
+                      </TouchableOpacity>
+                    ) : null}
                   </View>
                 ))}
               </FieldCard>
             ) : null}
-            <Button
-              variant="outline"
-              title={t("materialOrders.addArticle")}
-              onPress={() => setPickerOpen(true)}
-              style={rows.length > 0 ? styles.addAfterRows : null}
-            />
+            {editable ? (
+              <Button
+                variant="outline"
+                title={t("materialOrders.addArticle")}
+                onPress={() => setPickerOpen(true)}
+                style={rows.length > 0 ? styles.addAfterRows : null}
+              />
+            ) : null}
           </View>
 
           <FieldCard>
-            {Platform.OS === "ios" ? (
+            {!editable ? (
+              <FieldRow
+                label={t("materialOrders.desiredDate")}
+                value={dateLabel}
+              />
+            ) : Platform.OS === "ios" ? (
               <View style={[styles.dateRow, styles.rowDivider]}>
                 <Text style={styles.dateLabel}>
                   {t("materialOrders.desiredDate")}
@@ -215,15 +267,37 @@ export default function MaterialOrderScreen() {
                 onPress={() => setAndroidDateOpen(true)}
               />
             )}
-            <FieldRow
-              variant="input"
-              multiline
-              label={t("materialOrders.comment")}
-              value={comment}
-              onChangeText={setComment}
-              isLast
-            />
+            {editable ? (
+              <FieldRow
+                variant="input"
+                multiline
+                label={t("materialOrders.comment")}
+                value={comment}
+                onChangeText={setComment}
+                isLast
+              />
+            ) : (
+              <FieldRow
+                label={t("materialOrders.comment")}
+                value={comment || "—"}
+                isLast
+              />
+            )}
           </FieldCard>
+
+          {editable && orderId ? (
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={handleDelete}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+            >
+              <Icon name="trash-2" size={18} color={theme.content.danger} />
+              <Text style={styles.deleteText}>
+                {t("materialOrders.delete")}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
         </ScrollView>
       </KeyboardAvoidingView>
 
@@ -239,14 +313,16 @@ export default function MaterialOrderScreen() {
         />
       ) : null}
 
-      <FormFooter>
-        <Button
-          title={t("materialOrders.saveDraft")}
-          onPress={handleSave}
-          loading={saving}
-          disabled={rows.length === 0}
-        />
-      </FormFooter>
+      {editable ? (
+        <FormFooter>
+          <Button
+            title={t("materialOrders.saveDraft")}
+            onPress={handleSave}
+            loading={saving}
+            disabled={rows.length === 0}
+          />
+        </FormFooter>
+      ) : null}
 
       <ArticlePickerModal
         visible={pickerOpen}
@@ -316,5 +392,13 @@ function createStyles(theme) {
       paddingRight: 8,
     },
     dateLabel: { fontSize: 14, color: c.textPrimary },
+    deleteButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+      minHeight: 48,
+    },
+    deleteText: { fontSize: 16, color: c.danger },
   });
 }

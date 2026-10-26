@@ -50,3 +50,19 @@ describe("material order drafts", () => {
     });
   });
 });
+
+describe("who may change an order", () => {
+  const { canEditOrder, parseDateOnly } = require("../materialOrder");
+  it("own draft yes; sent or a colleague's no; new order yes", () => {
+    expect(canEditOrder({ status: "draft", createdBy: "w1" }, "w1")).toBe(true);
+    expect(canEditOrder({ status: "sent", createdBy: "w1" }, "w1")).toBe(false);
+    expect(canEditOrder({ status: "draft", createdBy: "w2" }, "w1")).toBe(
+      false,
+    );
+    expect(canEditOrder(undefined, "w1")).toBe(true);
+  });
+  it("wanted date stays the same calendar day", () => {
+    const d = parseDateOnly("2026-10-28T00:00:00.000Z");
+    expect([d.getFullYear(), d.getMonth(), d.getDate()]).toEqual([2026, 9, 28]);
+  });
+});

@@ -763,6 +763,12 @@ export const ProjectScreen = () => {
               return (
                 <ListCard
                   key={order._id || order.id}
+                  onPress={() =>
+                    navigation.navigate("MaterialOrder", {
+                      projectId: id,
+                      order,
+                    })
+                  }
                   title={order.supplier || t("materialOrders.title")}
                   badgeLabel={t(`materialOrders.status.${status}`)}
                   badgeStyle={cardStyles[ORDER_BADGE_KEYS[status]]}

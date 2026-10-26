@@ -31,6 +31,20 @@ export const setQuantity = (rows, index, quantity) => {
     : rows.map((r, i) => (i === index ? { ...r, quantity: next } : r));
 };
 
+// A worker may change or delete an order only while it is their own draft;
+// a sent order (or a colleague's) is read-only.
+export const canEditOrder = (order, userId) =>
+  !order ||
+  (order.status !== "sent" &&
+    Boolean(userId) &&
+    String(order.createdBy?._id || order.createdBy) === String(userId));
+
+// The wanted date as a local date (the API returns midnight UTC).
+export const parseDateOnly = (value) => {
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(value || ""));
+  return match ? new Date(+match[1], +match[2] - 1, +match[3]) : null;
+};
+
 // YYYY-MM-DD in local time, so "tomorrow" is the worker's tomorrow.
 export const toDateOnly = (date) => {
   const pad = (n) => String(n).padStart(2, "0");

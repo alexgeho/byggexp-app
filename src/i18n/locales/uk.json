@@ -1240,7 +1240,8 @@
     "markPaid": "Позначити оплаченим",
     "copyDocument": "Копіювати",
     "deleteTitle": "Видалити?",
-    "deleteMessage": "Документ буде видалено назавжди."
+    "deleteMessage": "Документ буде видалено назавжди.",
+    "sentToFortnox": "Надіслано у Fortnox"
   },
   "billing": {
     "itemDescription": "Опис",
@@ -1906,6 +1907,9 @@
     "status": {
       "draft": "Чернетка",
       "sent": "Надіслано"
-    }
+    },
+    "orderTitle": "Замовлення #{{number}}",
+    "delete": "Видалити замовлення",
+    "deleteTitle": "Видалити замовлення?"
   }
 }

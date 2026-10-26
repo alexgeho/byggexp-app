@@ -1236,7 +1236,8 @@
     "markPaid": "Mark as paid",
     "copyDocument": "Duplicate",
     "deleteTitle": "Delete?",
-    "deleteMessage": "The document is removed for good."
+    "deleteMessage": "The document is removed for good.",
+    "sentToFortnox": "Sent to Fortnox"
   },
   "billing": {
     "itemDescription": "Description",
@@ -1896,6 +1897,9 @@
     "status": {
       "draft": "Draft",
       "sent": "Sent"
-    }
+    },
+    "orderTitle": "Order #{{number}}",
+    "delete": "Delete order",
+    "deleteTitle": "Delete this order?"
   }
 }

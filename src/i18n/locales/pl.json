@@ -1240,7 +1240,8 @@
     "markPaid": "Oznacz jako opłaconą",
     "copyDocument": "Kopiuj",
     "deleteTitle": "Usunąć?",
-    "deleteMessage": "Dokument zostanie trwale usunięty."
+    "deleteMessage": "Dokument zostanie trwale usunięty.",
+    "sentToFortnox": "Wysłano do Fortnox"
   },
   "billing": {
     "itemDescription": "Opis",
@@ -1906,6 +1907,9 @@
     "status": {
       "draft": "Szkic",
       "sent": "Wysłane"
-    }
+    },
+    "orderTitle": "Zamówienie #{{number}}",
+    "delete": "Usuń zamówienie",
+    "deleteTitle": "Usunąć zamówienie?"
   }
 }

@@ -20,6 +20,15 @@ export const materialOrderService = {
     const { data } = await api.post("/material-orders", payload);
     return data;
   },
+  // Drafts only, and a worker only their own.
+  update: async (id, payload) => {
+    const { data } = await api.put(`/material-orders/${id}`, payload);
+    return data;
+  },
+  remove: async (id) => {
+    const { data } = await api.delete(`/material-orders/${id}`);
+    return data;
+  },
 };
 
 export default materialOrderService;

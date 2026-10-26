@@ -1240,7 +1240,8 @@
     "markPaid": "Pažymėti apmokėta",
     "copyDocument": "Kopijuoti",
     "deleteTitle": "Ištrinti?",
-    "deleteMessage": "Dokumentas bus ištrintas visam laikui."
+    "deleteMessage": "Dokumentas bus ištrintas visam laikui.",
+    "sentToFortnox": "Išsiųsta į Fortnox"
   },
   "billing": {
     "itemDescription": "Aprašymas",
@@ -1903,6 +1904,9 @@
     "status": {
       "draft": "Juodraštis",
       "sent": "Išsiųstas"
-    }
+    },
+    "orderTitle": "Užsakymas #{{number}}",
+    "delete": "Ištrinti užsakymą",
+    "deleteTitle": "Ištrinti užsakymą?"
   }
 }

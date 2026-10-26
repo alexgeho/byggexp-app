@@ -1236,7 +1236,8 @@
     "markPaid": "Merkitse maksetuksi",
     "copyDocument": "Kopioi",
     "deleteTitle": "Poistetaanko?",
-    "deleteMessage": "Asiakirja poistetaan pysyvästi."
+    "deleteMessage": "Asiakirja poistetaan pysyvästi.",
+    "sentToFortnox": "Lähetetty Fortnoxiin"
   },
   "billing": {
     "itemDescription": "Kuvaus",
@@ -1896,6 +1897,9 @@
     "status": {
       "draft": "Luonnos",
       "sent": "Lähetetty"
-    }
+    },
+    "orderTitle": "Tilaus #{{number}}",
+    "delete": "Poista tilaus",
+    "deleteTitle": "Poistetaanko tilaus?"
   }
 }

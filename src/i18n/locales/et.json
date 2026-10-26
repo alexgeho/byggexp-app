@@ -1236,7 +1236,8 @@
     "markPaid": "Märgi makstuks",
     "copyDocument": "Kopeeri",
     "deleteTitle": "Kustutada?",
-    "deleteMessage": "Dokument kustutatakse jäädavalt."
+    "deleteMessage": "Dokument kustutatakse jäädavalt.",
+    "sentToFortnox": "Saadetud Fortnoxi"
   },
   "billing": {
     "itemDescription": "Kirjeldus",
@@ -1896,6 +1897,9 @@
     "status": {
       "draft": "Mustand",
       "sent": "Saadetud"
-    }
+    },
+    "orderTitle": "Tellimus #{{number}}",
+    "delete": "Kustuta tellimus",
+    "deleteTitle": "Kustutada tellimus?"
   }
 }

@@ -1237,7 +1237,8 @@
     "markPaid": "Atzīmēt kā apmaksātu",
     "copyDocument": "Kopēt",
     "deleteTitle": "Dzēst?",
-    "deleteMessage": "Dokuments tiks dzēsts neatgriezeniski."
+    "deleteMessage": "Dokuments tiks dzēsts neatgriezeniski.",
+    "sentToFortnox": "Nosūtīts uz Fortnox"
   },
   "billing": {
     "itemDescription": "Apraksts",
@@ -1900,6 +1901,9 @@
     "status": {
       "draft": "Melnraksts",
       "sent": "Nosūtīts"
-    }
+    },
+    "orderTitle": "Pasūtījums #{{number}}",
+    "delete": "Dzēst pasūtījumu",
+    "deleteTitle": "Dzēst pasūtījumu?"
   }
 }

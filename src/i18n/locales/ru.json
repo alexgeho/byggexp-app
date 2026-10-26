@@ -1240,7 +1240,8 @@
     "markPaid": "Отметить оплаченным",
     "copyDocument": "Копировать",
     "deleteTitle": "Удалить?",
-    "deleteMessage": "Документ будет удалён безвозвратно."
+    "deleteMessage": "Документ будет удалён безвозвратно.",
+    "sentToFortnox": "Отправлен в Fortnox"
   },
   "billing": {
     "itemDescription": "Описание",
@@ -1906,6 +1907,9 @@
     "status": {
       "draft": "Черновик",
       "sent": "Отправлен"
-    }
+    },
+    "orderTitle": "Заказ #{{number}}",
+    "delete": "Удалить заказ",
+    "deleteTitle": "Удалить заказ?"
   }
 }
