@@ -1651,6 +1651,7 @@ export function DayHoursEntry({
   absence,
   onReportAbsence,
   savingAbsence,
+  hiddenFields = [],
   dayShift,
   onOpenDayReport,
   previousTravel,
@@ -1658,15 +1659,18 @@ export function DayHoursEntry({
 }) {
   const [noteOpen, setNoteOpen] = React.useState(false);
   const hoursInputRef = React.useRef(null);
-  const absenceRow = onReportAbsence ? (
-    <DayAbsenceRow
-      styles={styles}
-      t={t}
-      absence={absence}
-      onReport={onReportAbsence}
-      saving={savingAbsence}
-    />
-  ) : null;
+  // Rows the employer switched off are not offered; saved values stay.
+  const shows = (field) => !hiddenFields.includes(field);
+  const absenceRow =
+    onReportAbsence && shows("absence") ? (
+      <DayAbsenceRow
+        styles={styles}
+        t={t}
+        absence={absence}
+        onReport={onReportAbsence}
+        saving={savingAbsence}
+      />
+    ) : null;
   const saveButton = (
     <TouchableOpacity
       style={styles.dayEntryPrimary}
@@ -1775,7 +1779,7 @@ export function DayHoursEntry({
             </TouchableOpacity>
           </View>
         </View>
-        {split ? (
+        {split && shows("overtime") ? (
           <>
             <View style={styles.dayEntryOvertimeRow}>
               <Text style={styles.dayEntryLabel}>
@@ -1820,53 +1824,63 @@ export function DayHoursEntry({
         ) : null}
         {extras && onChangeExtra ? (
           <>
-            <DayStepRow
-              styles={styles}
-              semiBoldFontFamily={semiBoldFontFamily}
-              label={t("shifts.ob")}
-              value={formatDurationShort(Math.round(extras.ob * 3600000))}
-              valueStyle={styles.dayEntryStepValueOb}
-              step={0.5}
-              onStep={(delta) => onChangeExtra("ob", delta)}
-            />
-            <Text style={styles.dayEntrySection}>
-              {t("dayReport.travelLabel")}
-            </Text>
-            <DayInputRow
-              key={`travel-${extrasVersion}`}
-              styles={styles}
-              t={t}
-              semiBoldFontFamily={semiBoldFontFamily}
-              label={`${t("shifts.travelTime")} (${t("shifts.hoursUnit")})`}
-              value={extras.travel}
-              decimal
-              onChange={(value) => onChangeExtra("travelSet", value)}
-              copyValue={
-                previousTravel?.travel > 0 ? previousTravel.travel : null
-              }
-              onCopy={(value) => onChangeExtra("copyTravel", value)}
-            />
-            <DayInputRow
-              key={`km-${extrasVersion}`}
-              styles={styles}
-              t={t}
-              semiBoldFontFamily={semiBoldFontFamily}
-              label={`${t("shifts.car")} (km)`}
-              value={extras.km}
-              onChange={(value) => onChangeExtra("kmSet", value)}
-              copyValue={previousTravel?.km > 0 ? previousTravel.km : null}
-              onCopy={(value) => onChangeExtra("copyKm", value)}
-            />
-            <DayChoiceRow
-              styles={styles}
-              label={t("dayReport.perDiem")}
-              options={["none", "half", "full"].map((key) => [
-                key,
-                t(`dayReport.perDiemOption.${key}`),
-              ])}
-              value={extras.perDiem || "none"}
-              onPick={(key) => onChangeExtra("perDiem", key)}
-            />
+            {shows("ob") ? (
+              <DayStepRow
+                styles={styles}
+                semiBoldFontFamily={semiBoldFontFamily}
+                label={t("shifts.ob")}
+                value={formatDurationShort(Math.round(extras.ob * 3600000))}
+                valueStyle={styles.dayEntryStepValueOb}
+                step={0.5}
+                onStep={(delta) => onChangeExtra("ob", delta)}
+              />
+            ) : null}
+            {shows("travel") || shows("mileage") ? (
+              <Text style={styles.dayEntrySection}>
+                {t("dayReport.travelLabel")}
+              </Text>
+            ) : null}
+            {shows("travel") ? (
+              <DayInputRow
+                key={`travel-${extrasVersion}`}
+                styles={styles}
+                t={t}
+                semiBoldFontFamily={semiBoldFontFamily}
+                label={`${t("shifts.travelTime")} (${t("shifts.hoursUnit")})`}
+                value={extras.travel}
+                decimal
+                onChange={(value) => onChangeExtra("travelSet", value)}
+                copyValue={
+                  previousTravel?.travel > 0 ? previousTravel.travel : null
+                }
+                onCopy={(value) => onChangeExtra("copyTravel", value)}
+              />
+            ) : null}
+            {shows("mileage") ? (
+              <DayInputRow
+                key={`km-${extrasVersion}`}
+                styles={styles}
+                t={t}
+                semiBoldFontFamily={semiBoldFontFamily}
+                label={`${t("shifts.car")} (km)`}
+                value={extras.km}
+                onChange={(value) => onChangeExtra("kmSet", value)}
+                copyValue={previousTravel?.km > 0 ? previousTravel.km : null}
+                onCopy={(value) => onChangeExtra("copyKm", value)}
+              />
+            ) : null}
+            {shows("perDiem") ? (
+              <DayChoiceRow
+                styles={styles}
+                label={t("dayReport.perDiem")}
+                options={["none", "half", "full"].map((key) => [
+                  key,
+                  t(`dayReport.perDiemOption.${key}`),
+                ])}
+                value={extras.perDiem || "none"}
+                onPick={(key) => onChangeExtra("perDiem", key)}
+              />
+            ) : null}
           </>
         ) : null}
         {absenceRow}
@@ -1880,21 +1894,25 @@ export function DayHoursEntry({
                   : null,
               ],
               ["expenses", t("shifts.receipts"), null],
-            ].map(([focus, label, count]) => (
-              <TouchableOpacity
-                key={focus}
-                style={styles.dayEntryValueRow}
-                onPress={() => onOpenDayReport(focus)}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.dayEntryLabel}>{label}</Text>
-                <Text
-                  style={count ? styles.dayEntryCount : styles.dayEntryLink}
+            ]
+              .filter(([focus]) =>
+                shows(focus === "expenses" ? "receipts" : focus),
+              )
+              .map(([focus, label, count]) => (
+                <TouchableOpacity
+                  key={focus}
+                  style={styles.dayEntryValueRow}
+                  onPress={() => onOpenDayReport(focus)}
+                  activeOpacity={0.7}
                 >
-                  {count || `＋ ${t("dayReport.add")}`}
-                </Text>
-              </TouchableOpacity>
-            ))
+                  <Text style={styles.dayEntryLabel}>{label}</Text>
+                  <Text
+                    style={count ? styles.dayEntryCount : styles.dayEntryLink}
+                  >
+                    {count || `＋ ${t("dayReport.add")}`}
+                  </Text>
+                </TouchableOpacity>
+              ))
           : null}
         {extras && onChangeExtra ? (
           noteOpen || extras.note ? (

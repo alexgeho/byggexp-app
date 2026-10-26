@@ -31,6 +31,7 @@ import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import { ProjectFilterSelector } from "../../../components/common/ProjectFilterSelector/ProjectFilterSelector";
 import AuthContext from "../../../contexts/AuthContext";
+import useHiddenReportFields from "../../../hooks/useHiddenReportFields";
 import {
   hoursService,
   leaveService,
@@ -129,6 +130,8 @@ export default function ShiftsScreen() {
   const route = useRoute();
   // Guards the one-shot deep-link from a "log your hours" reminder push.
   const handledHoursEntryRef = useRef(false);
+  // Day-report rows the employer switched off.
+  const hiddenReportFields = useHiddenReportFields();
   const { t } = useTranslation();
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
@@ -1968,6 +1971,7 @@ export default function ShiftsScreen() {
                     onChangeExtra={changeInlineExtra}
                     absence={leaveOn(focusedDate)}
                     onReportAbsence={(type) => reportAbsence(focusedDate, type)}
+                    hiddenFields={hiddenReportFields}
                     savingAbsence={savingLeave}
                     dayShift={detailShifts[0] || null}
                     onOpenDayReport={(focus) =>

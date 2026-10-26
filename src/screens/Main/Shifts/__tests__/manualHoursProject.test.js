@@ -5,7 +5,11 @@ import { Text, TextInput, TouchableOpacity } from "react-native";
 import AuthContext from "../../../../contexts/AuthContext";
 import { ThemeProvider } from "../../../../theme/ThemeContext";
 import ShiftsScreen from "../ShiftsScreen";
-import { projectService, shiftService } from "../../../../services";
+import {
+  companyService,
+  projectService,
+  shiftService,
+} from "../../../../services";
 
 jest.mock("react-native-vector-icons/Feather", () => "Icon");
 jest.mock("@react-native-async-storage/async-storage", () =>
@@ -59,6 +63,7 @@ jest.mock("../../../../services", () => ({
     getMyProjects: jest.fn(async () => []),
   },
   userService: { getColleagues: jest.fn(async () => []) },
+  companyService: { getMyCompany: jest.fn(async () => ({})) },
 }));
 jest.mock("../../../../utils/shifts", () => {
   const actual = jest.requireActual("../../../../utils/shifts");
@@ -243,4 +248,37 @@ test("an emptied field is not autosaved (no wiping a day to 0)", async () => {
   await act(async () => input.props.onChangeText(""));
   await act(async () => new Promise((r) => setTimeout(r, 1200)));
   expect(shiftService.addManualHours).not.toHaveBeenCalled();
+});
+
+// The employer switched Övertid and OB off: those rows are not offered.
+test("rows the employer hid are not shown in the day card", async () => {
+  companyService.getMyCompany.mockResolvedValue({
+    hiddenReportFields: ["overtime", "ob"],
+  });
+  projectService.getMyProjects.mockResolvedValue([BYGGTOTALEN]);
+  let tree;
+  await act(async () => {
+    tree = TestRenderer.create(
+      <ThemeProvider>
+        <AuthContext.Provider
+          value={{
+            user: { _id: "w1", role: "worker" },
+            selectedProject: null,
+            setSelectedProject: jest.fn(),
+          }}
+        >
+          <ShiftsScreen />
+        </AuthContext.Provider>
+      </ThemeProvider>,
+    );
+  });
+  mounted = tree;
+  await act(async () => {});
+  const labels = tree.root
+    .findAllByType(Text)
+    .map((n) => [].concat(n.props.children).join(""));
+  expect(labels).toContain("shifts.workHours");
+  expect(labels).not.toContain("dayReport.hourType.overtime");
+  expect(labels).not.toContain("shifts.ob");
+  companyService.getMyCompany.mockResolvedValue({});
 });
