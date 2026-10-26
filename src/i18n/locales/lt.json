@@ -585,7 +585,15 @@
     },
     "untitled": "Projektas be pavadinimo",
     "pin": "Prisegti",
-    "internalTime": "Vidinis laikas"
+    "internalTime": "Vidinis laikas",
+    "orderType": {
+      "label": "Užsakymo tipas",
+      "project": "Projektas",
+      "service": "Servisas",
+      "installation": "Montavimas",
+      "jour": "Budėjimas",
+      "garanti": "Garantija"
+    }
   },
   "taskReminders": {
     "off": "Išjungta",

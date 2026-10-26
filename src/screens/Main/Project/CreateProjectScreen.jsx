@@ -50,6 +50,12 @@ import {
   parseTimeStringToDate,
 } from "../../../utils/shiftSchedule";
 import { canCreateProjects } from "../../../utils/userRoles";
+import { ChoiceChips } from "../../../components/common/ui";
+import {
+  FieldCard,
+  FieldRow,
+} from "../../../components/common/FieldRow/FieldRow";
+import { ORDER_TYPES } from "../../../utils/orderType";
 
 import FloatingActionButton from "../../../components/common/FloatingActionButton/FloatingActionButton";
 import { createStyles, floatingLabelAnim } from "./CreateProjectScreen.styles";
@@ -82,6 +88,8 @@ export default function CreateProjectScreen() {
   const canSeeFinance = hasPermission ? hasPermission("finance.manage") : false;
 
   const [projectName, setProjectName] = useState("");
+  // What kind of order: project / service / installation / jour / garanti.
+  const [orderType, setOrderType] = useState("project");
   // Contract / economy fields (mirrors the admin project form).
   const [littera, setLittera] = useState("");
   const [budget, setBudget] = useState("");
@@ -472,6 +480,7 @@ export default function CreateProjectScreen() {
 
       projectData.append("name", projectName);
       projectData.append("status", "planning");
+      projectData.append("orderType", orderType);
 
       if (location) {
         projectData.append("location", location);
@@ -848,6 +857,17 @@ export default function CreateProjectScreen() {
               />
             </View>
           </View>
+
+          <FieldCard>
+            <FieldRow label={t("projects.orderType.label")} isLast>
+              <ChoiceChips
+                values={ORDER_TYPES}
+                value={orderType}
+                onChange={setOrderType}
+                format={(key) => t(`projects.orderType.${key}`)}
+              />
+            </FieldRow>
+          </FieldCard>
 
           <View style={styles.noteGroup}>
             <TextInput

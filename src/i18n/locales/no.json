@@ -581,7 +581,15 @@
     },
     "untitled": "Uten navn",
     "pin": "Fest",
-    "internalTime": "Intern tid"
+    "internalTime": "Intern tid",
+    "orderType": {
+      "label": "Ordretype",
+      "project": "Prosjekt",
+      "service": "Service",
+      "installation": "Installasjon",
+      "jour": "Vakt",
+      "garanti": "Garanti"
+    }
   },
   "taskReminders": {
     "off": "Av",

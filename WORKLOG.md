@@ -7,7 +7,7 @@
 ## 08:10 · (через byggexp-admin, задачи владельца)
 
 - [x] A) company.hiddenReportFields (бэк 4074e2b, GET /company/my): в карточке дня скрыть выключенные строки (Övertid, OB, Restid, Bil, Traktamente, Frånvaro, Foton, Kvitton); значения не стирать; кэш на сессию, обновлять при открытии → useHiddenReportFields (GET /company/my, кэш на сессию, обновление при фокусе), карточка дня прячет строки; заголовок RESA — если видна Restid или Bil; рендер-тест; симулятор: overtime/ob/perDiem скрыты
-- [ ] B) project.orderType (бэк 5498512): поле «Ordertyp» в создании/редактировании проекта; в карточке проекта серой подписью, если не «Projekt»
+- [x] B) project.orderType (бэк 5498512): поле «Ordertyp» в создании/редактировании проекта; в карточке проекта серой подписью, если не «Projekt» → Skapa projekt: карточка «Ordertyp» чипами (Projekt/Service/Installation/Jour/Garanti), уходит в FormData; карточка в Mina projekt: серой строкой, если не «Projekt» (utils/orderType); 11 языков; тест. Редактирования проекта в приложении нет. Симулятор: подпись «Service» видна; форму создания не открыть под работником (Åtkomst nekad) — не смотрел
 
 ## 07:49 · «этот календарь — картинку верни как было, именно на value page» (онбординг)
 

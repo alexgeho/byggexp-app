@@ -582,7 +582,15 @@
     },
     "untitled": "Nenosaukts projekts",
     "pin": "Piespraust",
-    "internalTime": "Iekšējais laiks"
+    "internalTime": "Iekšējais laiks",
+    "orderType": {
+      "label": "Pasūtījuma veids",
+      "project": "Projekts",
+      "service": "Serviss",
+      "installation": "Uzstādīšana",
+      "jour": "Dežūra",
+      "garanti": "Garantija"
+    }
   },
   "taskReminders": {
     "off": "Izslēgts",

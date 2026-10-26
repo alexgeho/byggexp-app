@@ -585,7 +585,15 @@
     },
     "untitled": "Проєкт без назви",
     "pin": "Закріпити",
-    "internalTime": "Внутрішній час"
+    "internalTime": "Внутрішній час",
+    "orderType": {
+      "label": "Тип замовлення",
+      "project": "Проєкт",
+      "service": "Сервіс",
+      "installation": "Монтаж",
+      "jour": "Чергування",
+      "garanti": "Гарантія"
+    }
   },
   "taskReminders": {
     "off": "Вимк.",

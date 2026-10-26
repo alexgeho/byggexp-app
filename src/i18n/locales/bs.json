@@ -584,7 +584,15 @@
     },
     "untitled": "Projekat bez naziva",
     "pin": "Zakači",
-    "internalTime": "Interno vrijeme"
+    "internalTime": "Interno vrijeme",
+    "orderType": {
+      "label": "Vrsta naloga",
+      "project": "Projekat",
+      "service": "Servis",
+      "installation": "Instalacija",
+      "jour": "Dežurstvo",
+      "garanti": "Garancija"
+    }
   },
   "taskReminders": {
     "off": "Isključeno",

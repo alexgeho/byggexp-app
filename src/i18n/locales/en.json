@@ -581,7 +581,15 @@
     },
     "untitled": "Untitled project",
     "pin": "Pin",
-    "internalTime": "Internal time"
+    "internalTime": "Internal time",
+    "orderType": {
+      "label": "Order type",
+      "project": "Project",
+      "service": "Service",
+      "installation": "Installation",
+      "jour": "On-call",
+      "garanti": "Warranty"
+    }
   },
   "taskReminders": {
     "off": "Off",

@@ -31,6 +31,7 @@ import {
   isInternalProject,
 } from "../../../utils/internalProject";
 import { projectService } from "../../../services";
+import { orderTypeNote } from "../../../utils/orderType";
 import { EntityListScreen } from "../../../components/common/EntityListScreen/EntityListScreen";
 import { ListCard } from "../../../components/common/ListCard/ListCard";
 import { sortByNewest } from "../../../utils/sortByNewest";
@@ -436,6 +437,11 @@ export default function ProjectsScreen() {
             <Text style={[cardStyles.cardSecondaryText, styles.mutedText]}>
               {t("projects.locationLabel", { location: project.location })}
             </Text>
+            {orderTypeNote(project, t) ? (
+              <Text style={[cardStyles.cardSecondaryText, styles.mutedText]}>
+                {orderTypeNote(project, t)}
+              </Text>
+            ) : null}
           </ListCard>
         )
       }

@@ -585,7 +585,15 @@
     },
     "untitled": "Проект без названия",
     "pin": "Закрепить",
-    "internalTime": "Внутреннее время"
+    "internalTime": "Внутреннее время",
+    "orderType": {
+      "label": "Тип заказа",
+      "project": "Проект",
+      "service": "Сервис",
+      "installation": "Монтаж",
+      "jour": "Дежурство",
+      "garanti": "Гарантия"
+    }
   },
   "taskReminders": {
     "off": "Выкл.",

@@ -581,7 +581,15 @@
     },
     "untitled": "Nimeta projekt",
     "pin": "Kinnita",
-    "internalTime": "Sisemine aeg"
+    "internalTime": "Sisemine aeg",
+    "orderType": {
+      "label": "Tellimuse tüüp",
+      "project": "Projekt",
+      "service": "Hooldus",
+      "installation": "Paigaldus",
+      "jour": "Valve",
+      "garanti": "Garantii"
+    }
   },
   "taskReminders": {
     "off": "Väljas",

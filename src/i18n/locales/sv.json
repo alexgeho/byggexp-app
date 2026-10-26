@@ -581,7 +581,15 @@
     },
     "untitled": "Namnlöst projekt",
     "pin": "Fäst",
-    "internalTime": "Intern tid"
+    "internalTime": "Intern tid",
+    "orderType": {
+      "label": "Ordertyp",
+      "project": "Projekt",
+      "service": "Service",
+      "installation": "Installation",
+      "jour": "Jour",
+      "garanti": "Garanti"
+    }
   },
   "taskReminders": {
     "off": "Av",

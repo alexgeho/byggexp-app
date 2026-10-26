@@ -135,3 +135,8 @@ New client, New invoice, New offer (+ строки счёта, итоги, ни�
 
 - `company.hiddenReportFields` (overtime, ob, travel, mileage, perDiem, absence, photos, receipts): строка в карточке дня не показывается вовсе (не серой). Часы видны всегда. Сохранённые раньше значения не стираются.
 - Заголовок секции (RESA) показывается, только если в ней осталась хоть одна строка.
+
+## 14. Ordertyp проекта (2026-10-26)
+
+- Skapa projekt: карточка «Ordertyp» с чипами Projekt · Service · Installation · Jour · Garanti (по умолчанию Projekt).
+- Карточка проекта в списке: тип серой строкой под адресом, **только** если он не «Projekt».

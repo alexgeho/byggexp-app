@@ -581,7 +581,15 @@
     },
     "untitled": "Nimetön projekti",
     "pin": "Kiinnitä",
-    "internalTime": "Sisäinen aika"
+    "internalTime": "Sisäinen aika",
+    "orderType": {
+      "label": "Tilaustyyppi",
+      "project": "Projekti",
+      "service": "Huolto",
+      "installation": "Asennus",
+      "jour": "Päivystys",
+      "garanti": "Takuu"
+    }
   },
   "taskReminders": {
     "off": "Pois",

@@ -585,7 +585,15 @@
     },
     "untitled": "Projekt bez nazwy",
     "pin": "Przypnij",
-    "internalTime": "Czas wewnętrzny"
+    "internalTime": "Czas wewnętrzny",
+    "orderType": {
+      "label": "Typ zlecenia",
+      "project": "Projekt",
+      "service": "Serwis",
+      "installation": "Instalacja",
+      "jour": "Dyżur",
+      "garanti": "Gwarancja"
+    }
   },
   "taskReminders": {
     "off": "Wył.",
