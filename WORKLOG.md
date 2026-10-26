@@ -4,6 +4,12 @@
 
 # 2026-10-26 — Счёт: RUT и Grön teknik; Intern tid; поля отчёта; Ordertyp
 
+## 18:15 · «как у них» — прайсы оптовиков (Lundagrossisten), как в Mowin
+
+- [i] У Mowin: админ сам качает 3 файла с сайта Lundagrossisten (Huvudprislista, Nettoprislista, Kopparpriser; CSV/XLS/TXT), раз в месяц; старше 3 мес. — значок-предупреждение; авто-обновления нет
+- [ ] Передано byggexp-admin (бэк+админка): дата обновления прайса по поставщику, 3 типа файла (нетто перекрывает цену, медь), предупреждение > 90 дней «Uppdatera prislistan». В приложении изменений нет
+- [ ] byggexp-admin запрашивает у Lundagrossisten: спецификацию EDI, пример прайс-файла, как отдают обновления цен
+
 ## 17:20 · (через byggexp-admin) скриншоты для владельца + сборки для сторов
 
 - [x] Скриншоты на Рабочем столе: app-material-1…4, app-fortnox-1
