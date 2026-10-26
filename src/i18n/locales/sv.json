@@ -1912,6 +1912,7 @@
     "deliveryProject": "Projektets adress",
     "deliveryOther": "Annan adress",
     "address": "Adress",
-    "notFound": "Beställningen finns inte längre"
+    "notFound": "Beställningen finns inte längre",
+    "invoiced": "Fakturerad #{{number}}"
   }
 }

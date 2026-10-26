@@ -149,6 +149,7 @@ New client, New invoice, New offer (+ строки счёта, итоги, ни�
 - Вкладки проекта: Uppgifter, Dokument, Arbetare, **Material (4-я)**, Verktyg, Foton, Ekonomi.
 - Leverans: чипы «Projektets adress» / «Annan adress»; ниже — адрес проекта текстом или поле «Adress».
 - Уведомления заказов: новый черновик → админам, «Beställning #N skickad» → автору; тап открывает заказ; внизу заказа из пуша серая «Stäng av aviseringar» (bell-off), включить — Aviseringar → «Materialbeställningar».
+- Заказ со связанным счётом оптовика — серой строкой «Fakturerad #nr» на карточке и в заголовке поставщика; в «Beställt material» уже не входит (считает бэк).
 - Ekonomi проекта: строка «Beställt material» (все заказы по закупочной цене, сразу с момента заказа) входит в Total kostnad.
 - Счета: «Skickad till Fortnox» серой третьей строкой карточки (не в строке срока — иначе сумма уезжает под ⋮), только при fortnoxStatus = sent (ошибка в приложении не показывается), без значков и цвета.
 - Заказ: свой черновик открывается на правку (− / + / Lägg till artikel / дата / комментарий, красная текстовая «Ta bort beställning» с подтверждением); отправленный или чужой — только просмотр, без кнопок.

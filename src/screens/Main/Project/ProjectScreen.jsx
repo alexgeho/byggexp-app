@@ -793,6 +793,18 @@ export const ProjectScreen = () => {
                       .filter(Boolean)
                       .join(" · ")}
                   </Text>
+                  {/* The grossist's bill is linked: no longer counted as
+                      ordered material, the invoice carries the cost. */}
+                  {order.supplierInvoiceId ? (
+                    <Text
+                      style={cardStyles.cardSecondaryText}
+                      numberOfLines={1}
+                    >
+                      {t("materialOrders.invoiced", {
+                        number: order.supplierInvoiceNumber || "",
+                      })}
+                    </Text>
+                  ) : null}
                 </ListCard>
               );
             })

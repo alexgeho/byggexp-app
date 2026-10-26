@@ -1918,6 +1918,7 @@
     "deliveryProject": "Adresa projekta",
     "deliveryOther": "Druga adresa",
     "address": "Adresa",
-    "notFound": "Narudžba više ne postoji"
+    "notFound": "Narudžba više ne postoji",
+    "invoiced": "Fakturisano #{{number}}"
   }
 }

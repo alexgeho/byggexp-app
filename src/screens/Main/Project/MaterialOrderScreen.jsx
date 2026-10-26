@@ -306,7 +306,19 @@ function MaterialOrderForm({ order, projectId, projectAddress, fromPush }) {
           keyboardShouldPersistTaps="handled"
         >
           <View>
-            {supplier ? <SectionTitle>{supplier}</SectionTitle> : null}
+            {supplier ? (
+              <SectionTitle>
+                {[
+                  supplier,
+                  order?.supplierInvoiceId &&
+                    t("materialOrders.invoiced", {
+                      number: order.supplierInvoiceNumber || "",
+                    }),
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </SectionTitle>
+            ) : null}
             {rows.length > 0 ? (
               <FieldCard>
                 {rows.map((row, index) => (

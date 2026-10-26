@@ -1919,6 +1919,7 @@
     "deliveryProject": "Projekto adresas",
     "deliveryOther": "Kitas adresas",
     "address": "Adresas",
-    "notFound": "Užsakymo nebėra"
+    "notFound": "Užsakymo nebėra",
+    "invoiced": "Išrašyta sąskaita #{{number}}"
   }
 }

@@ -1922,6 +1922,7 @@
     "deliveryProject": "Адрес проекта",
     "deliveryOther": "Другой адрес",
     "address": "Адрес",
-    "notFound": "Этого заказа больше нет"
+    "notFound": "Этого заказа больше нет",
+    "invoiced": "Выставлен счёт #{{number}}"
   }
 }

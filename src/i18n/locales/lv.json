@@ -1916,6 +1916,7 @@
     "deliveryProject": "Projekta adrese",
     "deliveryOther": "Cita adrese",
     "address": "Adrese",
-    "notFound": "Pasūtījums vairs nepastāv"
+    "notFound": "Pasūtījums vairs nepastāv",
+    "invoiced": "Izrakstīts rēķins #{{number}}"
   }
 }

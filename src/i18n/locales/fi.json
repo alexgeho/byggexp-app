@@ -1912,6 +1912,7 @@
     "deliveryProject": "Projektin osoite",
     "deliveryOther": "Muu osoite",
     "address": "Osoite",
-    "notFound": "Tilausta ei enää ole"
+    "notFound": "Tilausta ei enää ole",
+    "invoiced": "Laskutettu #{{number}}"
   }
 }

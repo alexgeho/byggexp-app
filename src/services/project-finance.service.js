@@ -21,7 +21,7 @@ export const projectFinanceService = {
         api.get(`/ata/project/${projectId}/summary`),
         api.get("/hours/labor-cost"),
         api.get("/invoices"),
-        api.get("/material-orders", { params: { projectId } }),
+        api.get(`/material-orders/project/${projectId}/summary`),
       ]);
 
     const ok = (res, pick, fallback = 0) =>
@@ -43,20 +43,10 @@ export const projectFinanceService = {
       .reduce((sum, inv) => sum + num(inv.total), 0);
 
     // Material ordered from the grossist counts from the moment it's ordered
-    // (draft or sent), at purchase price — not only once their bill arrives.
-    const orders =
-      ordersRes.status === "fulfilled" && Array.isArray(ordersRes.value.data)
-        ? ordersRes.value.data
-        : [];
-    const ordered = orders.reduce(
-      (sum, order) =>
-        sum +
-        (order.rows || []).reduce(
-          (rowSum, row) => rowSum + num(row.unitPrice) * num(row.quantity),
-          0,
-        ),
-      0,
-    );
+    // (draft or sent) at purchase price; the backend drops an order once its
+    // supplier invoice is linked, so it's never counted twice. Same number as
+    // the admin web.
+    const ordered = num(ok(ordersRes, (d) => d.total));
 
     const costRate = num(project.costRatePerHour);
     const billRate = num(project.billRatePerHour);

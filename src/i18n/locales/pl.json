@@ -1922,6 +1922,7 @@
     "deliveryProject": "Adres projektu",
     "deliveryOther": "Inny adres",
     "address": "Adres",
-    "notFound": "To zamówienie już nie istnieje"
+    "notFound": "To zamówienie już nie istnieje",
+    "invoiced": "Zafakturowano #{{number}}"
   }
 }
