@@ -26,6 +26,10 @@ import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../../theme/ThemeContext";
 import AuthContext from "../../../contexts/AuthContext";
+import {
+  internalLast,
+  isInternalProject,
+} from "../../../utils/internalProject";
 import { projectService } from "../../../services";
 import { EntityListScreen } from "../../../components/common/EntityListScreen/EntityListScreen";
 import { ListCard } from "../../../components/common/ListCard/ListCard";
@@ -87,7 +91,9 @@ export default function ProjectsScreen() {
   // "Alla projekt" state, it would just repeat what you tapped.
   const allowAllProjectsOption =
     isLocalSelectionMode && Boolean(route.params?.allowAll);
-  const cacheKey = `${user?.role || "user"}:${userId || "anonymous"}`;
+  const cacheKey = `${user?.role || "user"}:${userId || "anonymous"}:${
+    isSelectionMode ? "pick" : "list"
+  }`;
   const [projects, setProjects] = useState(
     () => projectsCache.get(cacheKey) || [],
   );
@@ -195,10 +201,12 @@ export default function ProjectsScreen() {
         }
 
         // Backend already scopes projects by role (getMy / getAll).
+        // Picking the project for a shift (Home) also offers «Intern tid».
+        const scopeOptions = { includeInternal: isSelectionMode };
         const data =
           user?.role === "superadmin"
-            ? await projectService.getAll()
-            : await projectService.getMyProjects();
+            ? await projectService.getAll(scopeOptions)
+            : await projectService.getMyProjects(scopeOptions);
 
         const nextProjects = Array.isArray(data) ? data : [];
         const nextSignature = getProjectsSignature(nextProjects);
@@ -224,7 +232,7 @@ export default function ProjectsScreen() {
         }
       }
     },
-    [cacheKey, user?.role],
+    [cacheKey, user?.role, isSelectionMode],
   );
 
   useFocusEffect(
@@ -269,7 +277,8 @@ export default function ProjectsScreen() {
 
     // Pinned sites float to the top — on a phone the crew works on one or two
     // of them and should not scroll past everything else to find them.
-    return sortByFavourite(byNewest, favouriteIds, getProjectId);
+    // «Intern tid» is not a client site: its own row at the very bottom.
+    return internalLast(sortByFavourite(byNewest, favouriteIds, getProjectId));
   }, [projects, searchQuery, favouriteIds]);
 
   useEffect(() => {
@@ -394,34 +403,42 @@ export default function ProjectsScreen() {
           </TouchableOpacity>
         ) : null
       }
-      renderCard={(project) => (
-        <ListCard
-          onPress={() => handleProjectPress(project)}
-          selected={selectedProjectId === getProjectId(project)}
-          title={
-            favouriteIds.includes(String(getProjectId(project)))
-              ? `★ ${project.name}`
-              : project.name
-          }
-          badgeLabel={t(
-            `projects.status.${project.status}`,
-            formatProjectStatus(project.status),
-          )}
-          badgeStyle={getProjectStatusBadgeStyle(project.status)}
-        >
-          {formatDateOrNull(project.beginningDate) ? (
-            <Text style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}>
-              {t("projects.startLabel", {
-                date: formatDateOrNull(project.beginningDate),
-              })}
-            </Text>
-          ) : null}
+      renderCard={(project) =>
+        isInternalProject(project) ? (
+          <ListCard
+            onPress={() => handleProjectPress(project)}
+            selected={selectedProjectId === getProjectId(project)}
+            title={t("projects.internalTime")}
+          />
+        ) : (
+          <ListCard
+            onPress={() => handleProjectPress(project)}
+            selected={selectedProjectId === getProjectId(project)}
+            title={
+              favouriteIds.includes(String(getProjectId(project)))
+                ? `★ ${project.name}`
+                : project.name
+            }
+            badgeLabel={t(
+              `projects.status.${project.status}`,
+              formatProjectStatus(project.status),
+            )}
+            badgeStyle={getProjectStatusBadgeStyle(project.status)}
+          >
+            {formatDateOrNull(project.beginningDate) ? (
+              <Text style={[cardStyles.cardPrimaryText, themedAccentTextStyle]}>
+                {t("projects.startLabel", {
+                  date: formatDateOrNull(project.beginningDate),
+                })}
+              </Text>
+            ) : null}
 
-          <Text style={[cardStyles.cardSecondaryText, styles.mutedText]}>
-            {t("projects.locationLabel", { location: project.location })}
-          </Text>
-        </ListCard>
-      )}
+            <Text style={[cardStyles.cardSecondaryText, styles.mutedText]}>
+              {t("projects.locationLabel", { location: project.location })}
+            </Text>
+          </ListCard>
+        )
+      }
     />
   );
 }

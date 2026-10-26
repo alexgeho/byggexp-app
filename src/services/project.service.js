@@ -1,4 +1,5 @@
 import api from "./api";
+import { withoutInternal } from "../utils/internalProject";
 
 const getProjectSortTimestamp = (project) => {
   const value =
@@ -36,33 +37,38 @@ const sortProjects = (projects, sort) => {
   return projects;
 };
 
+// Lists leave out «Intern tid» unless the caller picks a project for a shift
+// ({ includeInternal: true }) — it is not a client site.
+const scope = (projects, options = {}) =>
+  options.includeInternal ? projects : withoutInternal(projects);
+
 export const projectService = {
   getAll: async (options = {}) => {
     const { data } = await api.get("/projects");
-    return sortProjects(data, options.sort);
+    return sortProjects(scope(data, options), options.sort);
   },
 
   getMyProjects: async (options = {}) => {
     const { data } = await api.get("/projects/my");
-    return sortProjects(data, options.sort);
+    return sortProjects(scope(data, options), options.sort);
   },
 
   getByCompany: async (companyId, options = {}) => {
     const { data } = await api.get(`/projects/company/${companyId}`);
-    return sortProjects(data, options.sort);
+    return sortProjects(scope(data, options), options.sort);
   },
 
-  getPopulated: async () => {
+  getPopulated: async (options = {}) => {
     const { data } = await api.get("/projects/populated");
-    return data;
+    return scope(data, options);
   },
 
   // Every project the caller can access, each populated (incl. tasks) in a
   // single request — replaces looping getPopulatedById per project. Works for
   // all roles (unlike admin-only /projects/populated).
-  getMyPopulated: async () => {
+  getMyPopulated: async (options = {}) => {
     const { data } = await api.get("/projects/my/populated");
-    return data;
+    return scope(data, options);
   },
 
   getInfo: async (id) => {

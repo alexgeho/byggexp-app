@@ -1,4 +1,5 @@
 import * as Device from "expo-device";
+import { isInternalProject } from "./internalProject";
 import * as Location from "expo-location";
 
 import projectService from "../services/project.service";
@@ -273,7 +274,8 @@ export const assertShiftStartAllowed = async ({
 } = {}) => {
   assertShiftScheduleAllowsStart(project);
 
-  if (skipLocationCheck) {
+  // «Intern tid» has no site and no address: no location check, ever.
+  if (skipLocationCheck || isInternalProject(project)) {
     return;
   }
 

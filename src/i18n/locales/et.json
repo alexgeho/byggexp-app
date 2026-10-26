@@ -580,7 +580,8 @@
       "on_hold": "Peatatud"
     },
     "untitled": "Nimeta projekt",
-    "pin": "Kinnita"
+    "pin": "Kinnita",
+    "internalTime": "Sisemine aeg"
   },
   "taskReminders": {
     "off": "Väljas",

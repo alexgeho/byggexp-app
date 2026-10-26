@@ -580,7 +580,8 @@
       "on_hold": "Keskeytetty"
     },
     "untitled": "Nimetön projekti",
-    "pin": "Kiinnitä"
+    "pin": "Kiinnitä",
+    "internalTime": "Sisäinen aika"
   },
   "taskReminders": {
     "off": "Pois",

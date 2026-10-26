@@ -580,7 +580,8 @@
       "on_hold": "On hold"
     },
     "untitled": "Untitled project",
-    "pin": "Pin"
+    "pin": "Pin",
+    "internalTime": "Internal time"
   },
   "taskReminders": {
     "off": "Off",

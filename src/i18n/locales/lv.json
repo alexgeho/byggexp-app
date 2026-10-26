@@ -581,7 +581,8 @@
       "on_hold": "Apturēts"
     },
     "untitled": "Nenosaukts projekts",
-    "pin": "Piespraust"
+    "pin": "Piespraust",
+    "internalTime": "Iekšējais laiks"
   },
   "taskReminders": {
     "off": "Izslēgts",

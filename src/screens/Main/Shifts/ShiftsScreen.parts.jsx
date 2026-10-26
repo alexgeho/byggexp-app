@@ -17,6 +17,7 @@ import { getDateLocale } from "../../../utils/dateLocale";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Icon from "react-native-vector-icons/Feather";
 import useSheetEnter from "../../../hooks/useSheetEnter";
+import { projectDisplayName } from "../../../utils/internalProject";
 
 import {
   formatDurationCompact,
@@ -195,7 +196,9 @@ export function ManualHoursModal({
                             active && styles.manualProjectOptionTextActive,
                           ]}
                         >
-                          {project.name || project.projectName || projectId}
+                          {projectDisplayName(project, t) ||
+                            project.projectName ||
+                            projectId}
                         </Text>
                       </TouchableOpacity>
                     );
@@ -304,7 +307,9 @@ export function ProjectPickModal({
                     numberOfLines={1}
                     style={styles.manualProjectOptionText}
                   >
-                    {project.name || project.projectName || projectId}
+                    {projectDisplayName(project, t) ||
+                      project.projectName ||
+                      projectId}
                   </Text>
                 </TouchableOpacity>
               );

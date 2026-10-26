@@ -584,7 +584,8 @@
       "on_hold": "Wstrzymany"
     },
     "untitled": "Projekt bez nazwy",
-    "pin": "Przypnij"
+    "pin": "Przypnij",
+    "internalTime": "Czas wewnętrzny"
   },
   "taskReminders": {
     "off": "Wył.",

@@ -38,6 +38,7 @@ import {
   shiftService,
   userService,
 } from "../../../services";
+import { internalLast, withoutInternal } from "../../../utils/internalProject";
 import { useShiftHistory } from "../../../hooks/useShiftHistory";
 import {
   buildExportMonthOptions,
@@ -280,7 +281,11 @@ export default function ShiftsScreen() {
     () =>
       selectedProject?._id ||
       selectedProject?.id ||
-      (projects.length === 1 ? projects[0]._id || projects[0].id : null),
+      // One client site → that one; «Intern tid» is always offered too, so it
+      // doesn't count (or every save would ask).
+      (withoutInternal(projects).length === 1
+        ? withoutInternal(projects)[0]._id || withoutInternal(projects)[0].id
+        : null),
     [selectedProject, projects],
   );
 
@@ -449,9 +454,11 @@ export default function ShiftsScreen() {
     let active = true;
     Promise.all([
       (user?.role === "superadmin"
-        ? projectService.getAll()
-        : projectService.getMyProjects()
-      ).catch(() => []),
+        ? projectService.getAll({ includeInternal: true })
+        : projectService.getMyProjects({ includeInternal: true })
+      )
+        .then(internalLast)
+        .catch(() => []),
       isAdmin
         ? userService.getColleagues().catch(() => [])
         : Promise.resolve([]),

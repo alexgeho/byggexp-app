@@ -584,7 +584,8 @@
       "on_hold": "Sustabdytas"
     },
     "untitled": "Projektas be pavadinimo",
-    "pin": "Prisegti"
+    "pin": "Prisegti",
+    "internalTime": "Vidinis laikas"
   },
   "taskReminders": {
     "off": "Išjungta",

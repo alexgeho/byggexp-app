@@ -124,3 +124,9 @@ New client, New invoice, New offer (+ строки счёта, итоги, ни�
 - Переключатель «Skattereduktion på fakturan» → строка «Typ» чипами: ROT 30% (max 50 000) · RUT 50% (75 000) · Grön teknik · solceller 15% (50 000) · Grön teknik · batteri/laddbox 50% (50 000). Подписи и ставки — как в админке (`deductionTypes.js`) и бэкенде (`invoice-math.ts`).
 - В итогах строка по виду: «ROT-avdrag» / «RUT-avdrag» / «Grön teknik», сумма зелёным с минусом.
 - У RUT нет поля «Fastighetsbeteckning / BRF» (услуги по дому, не недвижимость).
+
+## 12. «Intern tid» (2026-10-26)
+
+- Внутренний проект компании (`project.internal`) — время вне объекта клиента, идёт в зарплату, не в счёт.
+- Показывается **только** там, где выбирают проект для смены/часов — последней строкой списка, без адреса и статуса, подпись `projects.internalTime`. Везде остальное (Mina projekt, карта, задачи, экономика, счёт, Schema) — скрыт (`projectService` по умолчанию, `{ includeInternal: true }` — только для смены).
+- Без геозоны: старт смены не проверяет место.

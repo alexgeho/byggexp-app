@@ -580,7 +580,8 @@
       "on_hold": "På vent"
     },
     "untitled": "Uten navn",
-    "pin": "Fest"
+    "pin": "Fest",
+    "internalTime": "Intern tid"
   },
   "taskReminders": {
     "off": "Av",

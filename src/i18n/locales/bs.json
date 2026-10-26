@@ -583,7 +583,8 @@
       "on_hold": "Pauzirano"
     },
     "untitled": "Projekat bez naziva",
-    "pin": "Zakači"
+    "pin": "Zakači",
+    "internalTime": "Interno vrijeme"
   },
   "taskReminders": {
     "off": "Isključeno",
