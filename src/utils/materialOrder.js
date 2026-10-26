@@ -11,7 +11,22 @@ export const articleToRow = (article) => ({
   name: article.name || "",
   unit: article.unit || "st",
   quantity: 1,
+  // Purchase price — only admins get it from the API; workers never do.
+  ...(article.purchasePriceExclMoms != null
+    ? { unitPrice: Number(article.purchasePriceExclMoms) || 0 }
+    : {}),
 });
+
+// Order value at purchase price, or null when the rows carry no prices
+// (a worker's view).
+export const orderTotal = (rows) => {
+  const priced = (rows || []).filter((r) => r.unitPrice != null);
+  if (priced.length === 0) return null;
+  return priced.reduce(
+    (sum, r) => sum + (Number(r.unitPrice) || 0) * (Number(r.quantity) || 0),
+    0,
+  );
+};
 
 // Adding an article already on the order bumps its quantity instead of
 // adding a second row.
@@ -31,13 +46,14 @@ export const setQuantity = (rows, index, quantity) => {
     : rows.map((r, i) => (i === index ? { ...r, quantity: next } : r));
 };
 
-// A worker may change or delete an order only while it is their own draft;
-// a sent order (or a colleague's) is read-only.
-export const canEditOrder = (order, userId) =>
+// A draft can be changed or deleted — by any admin, by a worker only their
+// own (same rule as the API). A sent order is read-only for everyone.
+export const canEditOrder = (order, userId, isAdmin = false) =>
   !order ||
   (order.status !== "sent" &&
-    Boolean(userId) &&
-    String(order.createdBy?._id || order.createdBy) === String(userId));
+    (isAdmin ||
+      (Boolean(userId) &&
+        String(order.createdBy?._id || order.createdBy) === String(userId))));
 
 // The wanted date as a local date (the API returns midnight UTC).
 export const parseDateOnly = (value) => {

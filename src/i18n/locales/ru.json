@@ -1910,6 +1910,7 @@
     },
     "orderTitle": "Заказ #{{number}}",
     "delete": "Удалить заказ",
-    "deleteTitle": "Удалить заказ?"
+    "deleteTitle": "Удалить заказ?",
+    "total": "Итого"
   }
 }

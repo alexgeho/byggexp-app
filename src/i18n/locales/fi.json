@@ -1900,6 +1900,7 @@
     },
     "orderTitle": "Tilaus #{{number}}",
     "delete": "Poista tilaus",
-    "deleteTitle": "Poistetaanko tilaus?"
+    "deleteTitle": "Poistetaanko tilaus?",
+    "total": "Yhteensä"
   }
 }

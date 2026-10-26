@@ -1900,6 +1900,7 @@
     },
     "orderTitle": "Order #{{number}}",
     "delete": "Delete order",
-    "deleteTitle": "Delete this order?"
+    "deleteTitle": "Delete this order?",
+    "total": "Total"
   }
 }

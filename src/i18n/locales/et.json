@@ -1900,6 +1900,7 @@
     },
     "orderTitle": "Tellimus #{{number}}",
     "delete": "Kustuta tellimus",
-    "deleteTitle": "Kustutada tellimus?"
+    "deleteTitle": "Kustutada tellimus?",
+    "total": "Kokku"
   }
 }

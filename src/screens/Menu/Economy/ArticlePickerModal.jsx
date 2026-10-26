@@ -42,6 +42,7 @@ export default function ArticlePickerModal({
   filter,
   fetchArticles,
   showPrice = true,
+  priceKey = "priceExclMoms",
 }) {
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -151,7 +152,7 @@ export default function ArticlePickerModal({
                           article.articleNumber,
                           showPrice &&
                             formatMoney(
-                              article.priceExclMoms || 0,
+                              article[priceKey] || 0,
                               getDateLocale(),
                             ),
                           article.unit,

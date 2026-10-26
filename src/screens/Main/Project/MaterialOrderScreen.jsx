@@ -33,11 +33,13 @@ import {
 import { layout } from "../../../theme/spacing";
 import { getApiErrorMessage } from "../../../utils/apiError";
 import { getDateLocale } from "../../../utils/dateLocale";
+import { formatMoney } from "../../../utils/billingTotals";
 import {
   addArticle,
   buildOrderPayload,
   canEditOrder,
   isOrderable,
+  orderTotal,
   parseDateOnly,
   setQuantity,
 } from "../../../utils/materialOrder";
@@ -61,7 +63,11 @@ export default function MaterialOrderScreen() {
   const { showSuccess, showError } = useFeedback();
   const { user } = useContext(AuthContext);
   const orderId = order?._id || order?.id;
-  const editable = canEditOrder(order, user?._id || user?.id);
+  // Purchase prices are for the office: the API sends them to admins only.
+  const isAdmin = user?.role !== "worker";
+  const seePrices = isAdmin;
+  const editable = canEditOrder(order, user?._id || user?.id, isAdmin);
+  const money = (value) => formatMoney(value, getDateLocale());
 
   const [rows, setRows] = useState(() =>
     (order?.rows || []).map((row) => ({ ...row })),
@@ -191,7 +197,13 @@ export default function MaterialOrderScreen() {
                         {row.name || row.articleNumber}
                       </Text>
                       <Text style={styles.rowMeta} numberOfLines={1}>
-                        {[row.articleNumber, row.unit]
+                        {[
+                          row.articleNumber,
+                          row.unit,
+                          seePrices &&
+                            row.unitPrice != null &&
+                            money(row.unitPrice * row.quantity),
+                        ]
                           .filter(Boolean)
                           .join(" · ")}
                       </Text>
@@ -227,6 +239,16 @@ export default function MaterialOrderScreen() {
                     ) : null}
                   </View>
                 ))}
+                {seePrices && orderTotal(rows) != null ? (
+                  <View style={[styles.totalRow, styles.rowDividerTop]}>
+                    <Text style={styles.totalLabel}>
+                      {t("materialOrders.total")}
+                    </Text>
+                    <Text style={styles.totalValue}>
+                      {money(orderTotal(rows))}
+                    </Text>
+                  </View>
+                ) : null}
               </FieldCard>
             ) : null}
             {editable ? (
@@ -332,7 +354,8 @@ export default function MaterialOrderScreen() {
         fetchArticles={(q) =>
           materialOrderService.searchArticles({ supplier, q })
         }
-        showPrice={false}
+        showPrice={seePrices}
+        priceKey="purchasePriceExclMoms"
       />
     </FormScreen>
   );
@@ -367,6 +390,24 @@ function createStyles(theme) {
       fontFamily: theme.text.fontFamily.medium,
     },
     rowMeta: { fontSize: 12, color: c.textSecondary, marginTop: 2 },
+    rowDividerTop: {
+      borderTopWidth: StyleSheet.hairlineWidth,
+      borderTopColor: c.border,
+    },
+    totalRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      minHeight: 52,
+      paddingHorizontal: 16,
+    },
+    totalLabel: { fontSize: 14, color: c.textSecondary },
+    totalValue: {
+      fontSize: 16,
+      color: c.textPrimary,
+      fontFamily: theme.text.fontFamily.medium,
+      fontVariant: ["tabular-nums"],
+    },
     stepButton: {
       width: 44,
       height: 44,

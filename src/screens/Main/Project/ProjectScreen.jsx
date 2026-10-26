@@ -78,6 +78,7 @@ import {
 } from "../../../utils/userRoles";
 import { resolveUploadUrl } from "../../../utils/shifts";
 import { materialOrderService } from "../../../services/material-order.service";
+import { orderTotal } from "../../../utils/materialOrder";
 
 // Group project photo items ({ url, date, isReceipt }) by day, newest first.
 const groupPhotoItemsByDate = (items) => {
@@ -779,7 +780,13 @@ export const ProjectScreen = () => {
                       t("materialOrders.rowCount", { count: rowCount }),
                       order.desiredDate &&
                         formatDate(order.desiredDate, false, t),
-                      order.comment,
+                      // Admins get purchase prices (the value, whole kronor,
+                      // takes the comment's place); workers' rows have none.
+                      orderTotal(order.rows) != null
+                        ? `${new Intl.NumberFormat(getDateLocale(), {
+                            maximumFractionDigits: 0,
+                          }).format(orderTotal(order.rows))} kr`
+                        : order.comment,
                     ]
                       .filter(Boolean)
                       .join(" · ")}

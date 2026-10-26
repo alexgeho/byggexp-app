@@ -1907,6 +1907,7 @@
     },
     "orderTitle": "Užsakymas #{{number}}",
     "delete": "Ištrinti užsakymą",
-    "deleteTitle": "Ištrinti užsakymą?"
+    "deleteTitle": "Ištrinti užsakymą?",
+    "total": "Iš viso"
   }
 }

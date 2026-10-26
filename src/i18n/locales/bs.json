@@ -1906,6 +1906,7 @@
     },
     "orderTitle": "Narudžba #{{number}}",
     "delete": "Obriši narudžbu",
-    "deleteTitle": "Obrisati narudžbu?"
+    "deleteTitle": "Obrisati narudžbu?",
+    "total": "Ukupno"
   }
 }

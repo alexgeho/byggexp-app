@@ -1904,6 +1904,7 @@
     },
     "orderTitle": "Pasūtījums #{{number}}",
     "delete": "Dzēst pasūtījumu",
-    "deleteTitle": "Dzēst pasūtījumu?"
+    "deleteTitle": "Dzēst pasūtījumu?",
+    "total": "Kopā"
   }
 }

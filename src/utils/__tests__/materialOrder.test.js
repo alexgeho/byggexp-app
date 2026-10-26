@@ -60,9 +60,29 @@ describe("who may change an order", () => {
       false,
     );
     expect(canEditOrder(undefined, "w1")).toBe(true);
+    expect(canEditOrder({ status: "draft", createdBy: "w2" }, "a", true)).toBe(
+      true,
+    );
+    expect(canEditOrder({ status: "sent", createdBy: "w2" }, "a", true)).toBe(
+      false,
+    );
   });
   it("wanted date stays the same calendar day", () => {
     const d = parseDateOnly("2026-10-28T00:00:00.000Z");
     expect([d.getFullYear(), d.getMonth(), d.getDate()]).toEqual([2026, 9, 28]);
+  });
+});
+
+describe("order value at purchase price", () => {
+  const { orderTotal, addArticle } = require("../materialOrder");
+  it("admin rows carry a price, the total sums them", () => {
+    const rows = addArticle(
+      addArticle([], { _id: "a", purchasePriceExclMoms: 40 }),
+      { _id: "a", purchasePriceExclMoms: 40 },
+    );
+    expect(orderTotal(rows)).toBe(80);
+  });
+  it("worker rows have no price, so no total", () => {
+    expect(orderTotal(addArticle([], { _id: "a" }))).toBeNull();
   });
 });

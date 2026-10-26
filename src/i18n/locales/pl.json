@@ -1910,6 +1910,7 @@
     },
     "orderTitle": "Zamówienie #{{number}}",
     "delete": "Usuń zamówienie",
-    "deleteTitle": "Usunąć zamówienie?"
+    "deleteTitle": "Usunąć zamówienie?",
+    "total": "Suma"
   }
 }
