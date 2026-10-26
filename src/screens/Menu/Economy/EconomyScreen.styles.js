@@ -173,7 +173,7 @@ export const createStyles = (c) => {
       flexShrink: 1,
       textAlign: "right",
     },
-    cardMeta: { fontSize: 13, fontFamily: F_MED, color: MUTED },
+    cardMeta: { flexShrink: 1, fontSize: 13, fontFamily: F_MED, color: MUTED },
     cardRight: {
       alignItems: "flex-end",
       // The amount sits at the top of the right column, where the badge was.

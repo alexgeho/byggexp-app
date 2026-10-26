@@ -324,9 +324,10 @@ export const ProjectScreen = () => {
     let active = true;
     materialOrderService
       .listByProject(id)
+      .then((orders) => sortByNewest(orders, (order) => order.createdAt))
       .catch(() => [])
       .then((orders) => {
-        if (active) setMaterialOrders(sortByNewest(orders));
+        if (active) setMaterialOrders(orders);
       });
     return () => {
       active = false;

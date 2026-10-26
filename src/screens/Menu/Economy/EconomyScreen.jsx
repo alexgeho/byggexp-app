@@ -387,13 +387,12 @@ export default function EconomyScreen() {
       ? item.validUntil
         ? `${t("economy.validUntil")} ${formatDate(item.validUntil)}`
         : ""
-      : [
-          item.dueDate && `${t("economy.due")} ${formatDate(item.dueDate)}`,
-          // Pushed to the company's Fortnox; errors are the admin's business.
-          item.fortnoxStatus === "sent" && t("economy.sentToFortnox"),
-        ]
-          .filter(Boolean)
-          .join(" · ");
+      : item.dueDate
+        ? `${t("economy.due")} ${formatDate(item.dueDate)}`
+        : "";
+    // Pushed to the company's Fortnox (own line, so the amount keeps its
+    // place); errors are the admin's business, not shown here.
+    const inFortnox = !isOffers && item.fortnoxStatus === "sent";
 
     return (
       <TouchableOpacity
@@ -421,6 +420,11 @@ export default function EconomyScreen() {
               {formatAmount(amount)}
             </Text>
           </View>
+          {inFortnox ? (
+            <Text style={styles.cardMeta} numberOfLines={1}>
+              {t("economy.sentToFortnox")}
+            </Text>
+          ) : null}
         </View>
 
         {/* Overflow menu: a vertical ⋮ in the card's top-right corner, where

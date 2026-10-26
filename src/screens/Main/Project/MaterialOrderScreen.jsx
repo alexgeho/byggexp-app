@@ -151,9 +151,9 @@ export default function MaterialOrderScreen() {
     : t("materialOrders.newTitle");
 
   const dateLabel = desiredDate.toLocaleDateString(getDateLocale(), {
-    weekday: "short",
     day: "numeric",
     month: "short",
+    year: "numeric",
   });
 
   return (
