@@ -1239,8 +1239,7 @@
     "markPaid": "Označi kao plaćeno",
     "copyDocument": "Kopiraj",
     "deleteTitle": "Obrisati?",
-    "deleteMessage": "Dokument se trajno briše.",
-    "sentToFortnox": "Poslano u Fortnox"
+    "deleteMessage": "Dokument se trajno briše."
   },
   "billing": {
     "itemDescription": "Opis",

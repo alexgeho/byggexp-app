@@ -1240,8 +1240,7 @@
     "markPaid": "Pažymėti apmokėta",
     "copyDocument": "Kopijuoti",
     "deleteTitle": "Ištrinti?",
-    "deleteMessage": "Dokumentas bus ištrintas visam laikui.",
-    "sentToFortnox": "Išsiųsta į Fortnox"
+    "deleteMessage": "Dokumentas bus ištrintas visam laikui."
   },
   "billing": {
     "itemDescription": "Aprašymas",

@@ -1236,8 +1236,7 @@
     "markPaid": "Märgi makstuks",
     "copyDocument": "Kopeeri",
     "deleteTitle": "Kustutada?",
-    "deleteMessage": "Dokument kustutatakse jäädavalt.",
-    "sentToFortnox": "Saadetud Fortnoxi"
+    "deleteMessage": "Dokument kustutatakse jäädavalt."
   },
   "billing": {
     "itemDescription": "Kirjeldus",

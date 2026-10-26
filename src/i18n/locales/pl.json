@@ -1240,8 +1240,7 @@
     "markPaid": "Oznacz jako opłaconą",
     "copyDocument": "Kopiuj",
     "deleteTitle": "Usunąć?",
-    "deleteMessage": "Dokument zostanie trwale usunięty.",
-    "sentToFortnox": "Wysłano do Fortnox"
+    "deleteMessage": "Dokument zostanie trwale usunięty."
   },
   "billing": {
     "itemDescription": "Opis",

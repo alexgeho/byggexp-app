@@ -1236,8 +1236,7 @@
     "markPaid": "Markera som betald",
     "copyDocument": "Kopiera",
     "deleteTitle": "Ta bort?",
-    "deleteMessage": "Dokumentet tas bort permanent.",
-    "sentToFortnox": "Skickad till Fortnox"
+    "deleteMessage": "Dokumentet tas bort permanent."
   },
   "billing": {
     "itemDescription": "Beskrivning",

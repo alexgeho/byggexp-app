@@ -1236,8 +1236,7 @@
     "markPaid": "Mark as paid",
     "copyDocument": "Duplicate",
     "deleteTitle": "Delete?",
-    "deleteMessage": "The document is removed for good.",
-    "sentToFortnox": "Sent to Fortnox"
+    "deleteMessage": "The document is removed for good."
   },
   "billing": {
     "itemDescription": "Description",

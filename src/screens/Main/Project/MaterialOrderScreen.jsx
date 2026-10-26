@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -13,7 +13,6 @@ import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
-import AuthContext from "../../../contexts/AuthContext";
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import { useTheme } from "../../../theme/ThemeContext";
 import { materialOrderService } from "../../../services/material-order.service";
@@ -53,7 +52,6 @@ export default function MaterialOrderScreen() {
   const { projectId } = useRoute().params || {};
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const { user } = useContext(AuthContext);
   const { showSuccess, showError } = useFeedback();
 
   const [rows, setRows] = useState([]);
@@ -95,7 +93,6 @@ export default function MaterialOrderScreen() {
     try {
       await materialOrderService.create(
         buildOrderPayload({
-          companyId: user?.companyId,
           projectId,
           supplier,
           rows,
@@ -256,6 +253,9 @@ export default function MaterialOrderScreen() {
         onClose={() => setPickerOpen(false)}
         onSelect={handlePick}
         filter={articleFilter}
+        fetchArticles={(q) =>
+          materialOrderService.searchArticles({ supplier, q })
+        }
         showPrice={false}
       />
     </FormScreen>

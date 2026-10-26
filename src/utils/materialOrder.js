@@ -37,25 +37,18 @@ export const toDateOnly = (date) => {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 };
 
+// The backend fills art.nr, name and unit from the register by articleId, and
+// takes the company from the token and always saves a draft.
 export const buildOrderPayload = ({
-  companyId,
   projectId,
   supplier,
   rows,
   desiredDate,
   comment,
 }) => ({
-  companyId,
   projectId,
   supplier,
-  rows: rows.map(({ articleId, articleNumber, name, unit, quantity }) => ({
-    articleId,
-    articleNumber,
-    name,
-    unit,
-    quantity,
-  })),
+  rows: rows.map(({ articleId, quantity }) => ({ articleId, quantity })),
   desiredDate: desiredDate ? toDateOnly(desiredDate) : undefined,
   comment: comment?.trim() || undefined,
-  status: "draft",
 });

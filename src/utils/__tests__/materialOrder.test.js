@@ -33,9 +33,8 @@ describe("material order drafts", () => {
     expect(setQuantity(rows, 0, 0)).toEqual([]);
   });
 
-  it("builds a draft without prices, date as YYYY-MM-DD", () => {
+  it("builds a draft: article ids + quantities, date as YYYY-MM-DD", () => {
     const payload = buildOrderPayload({
-      companyId: "c",
       projectId: "p",
       supplier: "Lundagrossisten",
       rows: addArticle([], plank),
@@ -43,21 +42,11 @@ describe("material order drafts", () => {
       comment: "  till bakdörren ",
     });
     expect(payload).toEqual({
-      companyId: "c",
       projectId: "p",
       supplier: "Lundagrossisten",
-      rows: [
-        {
-          articleId: "a1",
-          articleNumber: "100",
-          name: "Regel 45x95",
-          unit: "m",
-          quantity: 1,
-        },
-      ],
+      rows: [{ articleId: "a1", quantity: 1 }],
       desiredDate: "2026-10-28",
       comment: "till bakdörren",
-      status: "draft",
     });
   });
 });

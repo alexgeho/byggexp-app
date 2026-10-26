@@ -1240,8 +1240,7 @@
     "markPaid": "Отметить оплаченным",
     "copyDocument": "Копировать",
     "deleteTitle": "Удалить?",
-    "deleteMessage": "Документ будет удалён безвозвратно.",
-    "sentToFortnox": "Отправлен в Fortnox"
+    "deleteMessage": "Документ будет удалён безвозвратно."
   },
   "billing": {
     "itemDescription": "Описание",

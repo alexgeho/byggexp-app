@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   Modal,
   View,
@@ -26,12 +32,15 @@ import { SheetPressable } from "../../../components/common/SheetSlideIn/SheetSli
 // same list the web form offers in its row dropdown. Picking fills the row's
 // article number, name, price, unit and VAT rate; new articles are created on
 // the Articles screen, as on the web. A material order passes `filter` (only
-// grossist articles) and `showPrice={false}` — the worker orders, not prices.
+// grossist articles), `fetchArticles(query)` (server search, the worker can't
+// read the whole register) and `showPrice={false}` — the worker orders, not
+// prices.
 export default function ArticlePickerModal({
   visible,
   onClose,
   onSelect,
   filter,
+  fetchArticles,
   showPrice = true,
 }) {
   const { t } = useTranslation();
@@ -41,10 +50,16 @@ export default function ArticlePickerModal({
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
 
-  const load = useCallback(async () => {
+  // Latest search function (it closes over the order's supplier).
+  const fetchRef = useRef(fetchArticles);
+  fetchRef.current = fetchArticles;
+
+  const load = useCallback(async (query = "") => {
     setLoading(true);
     try {
-      const data = await articleService.getAll();
+      const data = fetchRef.current
+        ? await fetchRef.current(query)
+        : await articleService.getAll();
       setArticles(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Failed to load articles:", error);
@@ -60,6 +75,15 @@ export default function ArticlePickerModal({
       load();
     }
   }, [visible, load]);
+
+  // Server search: ask again as the worker types (results are capped at 50,
+  // so filtering only what came back would miss articles).
+  useEffect(() => {
+    if (!visible || !fetchArticles) return undefined;
+    const timer = setTimeout(() => load(search.trim()), 300);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();

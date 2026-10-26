@@ -1237,8 +1237,7 @@
     "markPaid": "Atzīmēt kā apmaksātu",
     "copyDocument": "Kopēt",
     "deleteTitle": "Dzēst?",
-    "deleteMessage": "Dokuments tiks dzēsts neatgriezeniski.",
-    "sentToFortnox": "Nosūtīts uz Fortnox"
+    "deleteMessage": "Dokuments tiks dzēsts neatgriezeniski."
   },
   "billing": {
     "itemDescription": "Apraksts",

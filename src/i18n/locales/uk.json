@@ -1240,8 +1240,7 @@
     "markPaid": "Позначити оплаченим",
     "copyDocument": "Копіювати",
     "deleteTitle": "Видалити?",
-    "deleteMessage": "Документ буде видалено назавжди.",
-    "sentToFortnox": "Надіслано у Fortnox"
+    "deleteMessage": "Документ буде видалено назавжди."
   },
   "billing": {
     "itemDescription": "Опис",

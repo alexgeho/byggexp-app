@@ -1236,8 +1236,7 @@
     "markPaid": "Merk som betalt",
     "copyDocument": "Kopier",
     "deleteTitle": "Slette?",
-    "deleteMessage": "Dokumentet slettes permanent.",
-    "sentToFortnox": "Sendt til Fortnox"
+    "deleteMessage": "Dokumentet slettes permanent."
   },
   "billing": {
     "itemDescription": "Beskrivelse",
