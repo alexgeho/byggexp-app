@@ -22,7 +22,7 @@
 - [x] Причина: при запуске из пуша приложение открывало счёт, потом находило OTA и делало reloadAsync → главная. Теперь при открытии из пуша/ссылки обновление ставится при следующем запуске
 - [x] 1.1.6 пересобрана с фиксом: iOS 199 загружен в ASC, AAB 37 передан byggexp-admin; 198/36 устарели
 - [x] Alexander: «да, отправляйте на ревью» (13:58) → передано byggexp-admin
-- [ ] byggexp-admin: 1.1.6 (199) в App Store на ревью; Play Produktion с AAB 37
+- [x] 1.1.6 на ревью: iOS 199 «Waiting for Review»; Play Produktion AAB 37 «Ändringarna granskas» (byggexp-admin)
 
 ## 12:20 · «можно в сторы?» → «OTA для разработки, не для клиента»
 
