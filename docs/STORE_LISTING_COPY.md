@@ -112,6 +112,26 @@ FÖR HELA FÖRETAGET
 Prova gratis i 14 dagar.
 ```
 
+## 1.1.6 — Nyheter (2026-10-27)
+
+### sv
+
+- Välj leverantör först i materialbeställningen – Ahlsell, Beijer, Dahl, Lundagrossisten, Optimera och fler
+- Lägg till, ändra och ta bort leverantörer direkt i appen
+- Tydligare beställning: leveransadress och leveransdatum på samma ställe
+- Leverantörsfakturor från Fortnox hamnar automatiskt i projektets kostnader
+- Se vilka kostnader som redan fakturerats vidare till kunden
+- Förbättringar och buggfixar
+
+### en
+
+- Pick the supplier first in a material order – Ahlsell, Beijer, Dahl, Lundagrossisten, Optimera and more
+- Add, edit and remove suppliers right in the app
+- Clearer order form: delivery address and delivery date in one place
+- Supplier invoices from Fortnox land in project costs automatically
+- See which costs have already been invoiced on to the customer
+- Improvements and bug fixes
+
 ## 1.1.5 — Nyheter (2026-10-26)
 
 ### sv
