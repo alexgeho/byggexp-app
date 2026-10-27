@@ -1926,6 +1926,6 @@
     "nameRequired": "Sisesta nimi",
     "saved": "Salvestatud",
     "remove": "Eemalda",
-    "removeTitle": "Eemaldada {{name}}?"
+    "removeTitle": "Eemaldada tarnija?"
   }
 }

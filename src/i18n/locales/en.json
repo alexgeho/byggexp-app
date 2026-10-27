@@ -1926,6 +1926,6 @@
     "nameRequired": "Enter a name",
     "saved": "Saved",
     "remove": "Remove",
-    "removeTitle": "Remove {{name}}?"
+    "removeTitle": "Remove the supplier?"
   }
 }

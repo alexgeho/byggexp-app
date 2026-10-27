@@ -1936,6 +1936,6 @@
     "nameRequired": "Podaj nazwę",
     "saved": "Zapisano",
     "remove": "Usuń",
-    "removeTitle": "Usunąć {{name}}?"
+    "removeTitle": "Usunąć dostawcę?"
   }
 }

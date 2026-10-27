@@ -1936,6 +1936,6 @@
     "nameRequired": "Укажите название",
     "saved": "Сохранено",
     "remove": "Удалить",
-    "removeTitle": "Удалить {{name}}?"
+    "removeTitle": "Удалить поставщика?"
   }
 }

@@ -67,27 +67,23 @@ export default function SupplierScreen() {
   };
 
   const handleDelete = () => {
-    Alert.alert(
-      t("suppliers.removeTitle", { name: existing.supplier }),
-      undefined,
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("suppliers.remove"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await materialOrderService.removeSupplier(existing.supplier);
-              navigation.goBack();
-            } catch (error) {
-              showError({
-                message: getApiErrorMessage(error, t("common.error")),
-              });
-            }
-          },
+    Alert.alert(t("suppliers.removeTitle"), undefined, [
+      { text: t("common.cancel"), style: "cancel" },
+      {
+        text: t("suppliers.remove"),
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await materialOrderService.removeSupplier(existing.supplier);
+            navigation.goBack();
+          } catch (error) {
+            showError({
+              message: getApiErrorMessage(error, t("common.error")),
+            });
+          }
         },
-      ],
-    );
+      },
+    ]);
   };
 
   return (

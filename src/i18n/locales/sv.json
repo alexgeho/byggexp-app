@@ -1926,6 +1926,6 @@
     "nameRequired": "Ange namn",
     "saved": "Sparat",
     "remove": "Ta bort",
-    "removeTitle": "Ta bort {{name}}?"
+    "removeTitle": "Ta bort leverantören?"
   }
 }

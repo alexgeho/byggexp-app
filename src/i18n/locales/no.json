@@ -1926,6 +1926,6 @@
     "nameRequired": "Skriv inn navn",
     "saved": "Lagret",
     "remove": "Fjern",
-    "removeTitle": "Fjerne {{name}}?"
+    "removeTitle": "Fjerne leverandøren?"
   }
 }
