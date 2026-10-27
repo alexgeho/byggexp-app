@@ -21,7 +21,8 @@
 - [x] Правило записано (память + ~/CLAUDE.md): клиентам — только сторы
 - [x] 1.1.6: iOS 198 (EAS 18630951-6602-4a40-aee2-b5bc71051a40), Android 36 (EAS 2162eca0-a7da-43d3-b4b3-73c3c00bdd06) — сборки запущены
 - [x] Nyheter 1.1.6 (sv+en) — docs/STORE_LISTING_COPY.md
-- [ ] Дождаться сборок → iOS `eas submit -p ios --latest`; AAB — ссылку byggexp-admin / в Play вручную
+- [x] Сборки готовы; iOS 198 загружен в App Store Connect (eas submit); AAB 36 + Nyheter переданы byggexp-admin
+- [ ] byggexp-admin: версия 1.1.6 в ASC → ревью; Play Produktion → новая версия с AAB 36
 
 ## 11:40 · (через byggexp-admin, задача владельца) счета поставщиков из Fortnox в расходы проекта, как в Hantverksappen
 
