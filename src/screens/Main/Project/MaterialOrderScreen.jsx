@@ -324,6 +324,7 @@ function MaterialOrderForm({ order, projectId, projectAddress, fromPush }) {
                 <FieldRow label={t("materialOrders.supplier")} isLast>
                   <ChoiceChips
                     tone="soft"
+                    scroll
                     values={suppliers}
                     value={supplier}
                     onChange={setSupplier}
