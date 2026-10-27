@@ -1781,6 +1781,9 @@
     "serviceBody": "ByggExp clocks you in and out as you arrive at and leave the site."
   },
   "supplierInvoices": {
+    "fromFortnox": "From Fortnox",
+    "rebilled": "Invoiced #{{number}}",
+    "fortnoxReadOnly": "Imported from Fortnox – change or remove it there.",
     "title": "Supplier invoices",
     "empty": "No bills to pay.",
     "markPaid": "Mark as paid",

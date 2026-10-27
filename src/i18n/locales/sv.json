@@ -1781,6 +1781,9 @@
     "serviceBody": "ByggExp stämplar in och ut när du kommer till och lämnar arbetsplatsen."
   },
   "supplierInvoices": {
+    "fromFortnox": "Från Fortnox",
+    "rebilled": "Fakturerad #{{number}}",
+    "fortnoxReadOnly": "Importerad från Fortnox – ändra eller ta bort den där.",
     "title": "Leverantörsfakturor",
     "empty": "Inga fakturor att betala.",
     "markPaid": "Markera som betald",

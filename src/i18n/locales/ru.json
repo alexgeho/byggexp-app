@@ -1785,6 +1785,9 @@
     "serviceBody": "ByggExp отмечает приход и уход, когда вы приезжаете на объект и покидаете его."
   },
   "supplierInvoices": {
+    "fromFortnox": "Из Fortnox",
+    "rebilled": "Выставлен счёт #{{number}}",
+    "fortnoxReadOnly": "Импортировано из Fortnox – измените или удалите там.",
     "title": "Счета поставщиков",
     "empty": "Нет счетов к оплате.",
     "markPaid": "Отметить оплаченным",

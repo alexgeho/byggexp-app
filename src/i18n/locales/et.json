@@ -1781,6 +1781,9 @@
     "serviceBody": "ByggExp märgib sisse ja välja, kui saabud objektile ja lahkud sealt."
   },
   "supplierInvoices": {
+    "fromFortnox": "Fortnoxist",
+    "rebilled": "Arveldatud #{{number}}",
+    "fortnoxReadOnly": "Imporditud Fortnoxist – muuda või kustuta seal.",
     "title": "Tarnijate arved",
     "empty": "Maksmisele kuuluvaid arveid pole.",
     "markPaid": "Märgi makstuks",

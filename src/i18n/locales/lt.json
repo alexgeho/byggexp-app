@@ -1785,6 +1785,9 @@
     "serviceBody": "ByggExp registruoja atvykimą ir išvykimą iš objekto."
   },
   "supplierInvoices": {
+    "fromFortnox": "Iš Fortnox",
+    "rebilled": "Išrašyta sąskaita #{{number}}",
+    "fortnoxReadOnly": "Importuota iš Fortnox – keiskite arba pašalinkite ten.",
     "title": "Tiekėjų sąskaitos",
     "empty": "Nėra sąskaitų apmokėti.",
     "markPaid": "Pažymėti apmokėta",

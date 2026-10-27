@@ -1781,6 +1781,9 @@
     "serviceBody": "ByggExp leimaa sisään ja ulos, kun saavut työmaalle ja lähdet sieltä."
   },
   "supplierInvoices": {
+    "fromFortnox": "Fortnoxista",
+    "rebilled": "Laskutettu #{{number}}",
+    "fortnoxReadOnly": "Tuotu Fortnoxista – muokkaa tai poista siellä.",
     "title": "Ostolaskut",
     "empty": "Ei maksettavia laskuja.",
     "markPaid": "Merkitse maksetuksi",

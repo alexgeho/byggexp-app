@@ -1785,6 +1785,9 @@
     "serviceBody": "ByggExp odbija wejście i wyjście, gdy docierasz na budowę i ją opuszczasz."
   },
   "supplierInvoices": {
+    "fromFortnox": "Z Fortnox",
+    "rebilled": "Zafakturowano #{{number}}",
+    "fortnoxReadOnly": "Zaimportowano z Fortnox – zmień lub usuń tam.",
     "title": "Faktury dostawców",
     "empty": "Brak rachunków do zapłaty.",
     "markPaid": "Oznacz jako opłaconą",

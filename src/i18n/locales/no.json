@@ -1781,6 +1781,9 @@
     "serviceBody": "ByggExp stempler deg inn og ut når du kommer til og forlater arbeidsplassen."
   },
   "supplierInvoices": {
+    "fromFortnox": "Fra Fortnox",
+    "rebilled": "Fakturert #{{number}}",
+    "fortnoxReadOnly": "Importert fra Fortnox – endre eller slett den der.",
     "title": "Leverandørfakturaer",
     "empty": "Ingen regninger å betale.",
     "markPaid": "Merk som betalt",

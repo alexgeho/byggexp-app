@@ -1782,6 +1782,9 @@
     "serviceBody": "ByggExp atzīmē ierašanos un aiziešanu no objekta."
   },
   "supplierInvoices": {
+    "fromFortnox": "No Fortnox",
+    "rebilled": "Izrakstīts rēķins #{{number}}",
+    "fortnoxReadOnly": "Importēts no Fortnox – mainiet vai dzēsiet to tur.",
     "title": "Piegādātāju rēķini",
     "empty": "Nav rēķinu, kas jāapmaksā.",
     "markPaid": "Atzīmēt kā apmaksātu",

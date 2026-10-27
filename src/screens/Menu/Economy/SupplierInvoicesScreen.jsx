@@ -195,18 +195,23 @@ export default function SupplierInvoicesScreen() {
       ),
     );
 
+  // Bills imported from Fortnox live there: read-only here, removed there.
+  const fromFortnox = (invoice) => invoice?.source === "fortnox";
+
   const confirmDelete = (invoice) =>
-    Alert.alert(t("economy.deleteTitle"), t("economy.deleteMessage"), [
-      { text: t("common.cancel"), style: "cancel" },
-      {
-        text: t("common.delete"),
-        style: "destructive",
-        onPress: () =>
-          runAction(() =>
-            supplierInvoiceService.remove(invoice._id || invoice.id),
-          ),
-      },
-    ]);
+    fromFortnox(invoice)
+      ? Alert.alert(t("supplierInvoices.fortnoxReadOnly"))
+      : Alert.alert(t("economy.deleteTitle"), t("economy.deleteMessage"), [
+          { text: t("common.cancel"), style: "cancel" },
+          {
+            text: t("common.delete"),
+            style: "destructive",
+            onPress: () =>
+              runAction(() =>
+                supplierInvoiceService.remove(invoice._id || invoice.id),
+              ),
+          },
+        ]);
 
   const formatMoney = (value) =>
     `${new Intl.NumberFormat(getDateLocale(), {
@@ -242,6 +247,14 @@ export default function SupplierInvoicesScreen() {
         renderCard={(invoice) => {
           const days = dueDays(invoice);
           const paid = String(invoice.status || "") === "paid";
+          // Grey third line: billed on to the client, or where it came from.
+          const origin = invoice.rebilledInvoiceNumber
+            ? t("supplierInvoices.rebilled", {
+                number: invoice.rebilledInvoiceNumber,
+              })
+            : fromFortnox(invoice)
+              ? t("supplierInvoices.fromFortnox")
+              : "";
           const overdue = !paid && days !== null && days < 0;
           const badgeLabel = paid
             ? t("supplierInvoices.status.paid")
@@ -262,7 +275,9 @@ export default function SupplierInvoicesScreen() {
                     ? cardStyles.cardBadgeOverdue
                     : cardStyles.cardBadgeOpen
               }
-              onPress={() => setActionItem(invoice)}
+              onPress={
+                fromFortnox(invoice) ? undefined : () => setActionItem(invoice)
+              }
             >
               <View style={{ flexDirection: "row", gap: 8 }}>
                 <Text
@@ -279,6 +294,14 @@ export default function SupplierInvoicesScreen() {
                     .join(" · ")}
                 </Text>
               </View>
+              {origin ? (
+                <Text
+                  style={[cardStyles.cardSecondaryText, { marginTop: 4 }]}
+                  numberOfLines={1}
+                >
+                  {origin}
+                </Text>
+              ) : null}
             </ListCard>
           );
         }}
