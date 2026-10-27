@@ -433,52 +433,6 @@ function MaterialOrderForm({ order, projectId, projectAddress, fromPush }) {
             ) : null}
           </View>
 
-          <FieldCard>
-            {!editable ? (
-              <FieldRow
-                label={t("materialOrders.desiredDate")}
-                value={dateLabel}
-              />
-            ) : Platform.OS === "ios" ? (
-              <View style={[styles.dateRow, styles.rowDivider]}>
-                <Text style={styles.dateLabel}>
-                  {t("materialOrders.desiredDate")}
-                </Text>
-                <DateTimePicker
-                  value={desiredDate}
-                  mode="date"
-                  display="compact"
-                  locale={getDateLocale()}
-                  minimumDate={new Date()}
-                  onChange={(_event, date) => date && setDesiredDate(date)}
-                />
-              </View>
-            ) : (
-              <FieldRow
-                variant="select"
-                label={t("materialOrders.desiredDate")}
-                value={dateLabel}
-                onPress={() => setAndroidDateOpen(true)}
-              />
-            )}
-            {editable ? (
-              <FieldRow
-                variant="input"
-                multiline
-                label={t("materialOrders.comment")}
-                value={comment}
-                onChangeText={setComment}
-                isLast
-              />
-            ) : (
-              <FieldRow
-                label={t("materialOrders.comment")}
-                value={comment || "—"}
-                isLast
-              />
-            )}
-          </FieldCard>
-
           {editable ? (
             <FieldCard>
               <FieldRow label={t("materialOrders.delivery")}>
@@ -501,10 +455,32 @@ function MaterialOrderForm({ order, projectId, projectAddress, fromPush }) {
                   label={t("materialOrders.address")}
                   value={otherAddress}
                   onChangeText={setOtherAddress}
-                  isLast
                 />
               ) : (
-                <FieldRow value={projectAddress || "—"} isLast />
+                <FieldRow value={projectAddress || "—"} />
+              )}
+              {Platform.OS === "ios" ? (
+                <View style={styles.dateRow}>
+                  <Text style={styles.dateLabel}>
+                    {t("materialOrders.desiredDate")}
+                  </Text>
+                  <DateTimePicker
+                    value={desiredDate}
+                    mode="date"
+                    display="compact"
+                    locale={getDateLocale()}
+                    minimumDate={new Date()}
+                    onChange={(_event, date) => date && setDesiredDate(date)}
+                  />
+                </View>
+              ) : (
+                <FieldRow
+                  variant="select"
+                  label={t("materialOrders.desiredDate")}
+                  value={dateLabel}
+                  onPress={() => setAndroidDateOpen(true)}
+                  isLast
+                />
               )}
             </FieldCard>
           ) : (
@@ -512,10 +488,33 @@ function MaterialOrderForm({ order, projectId, projectAddress, fromPush }) {
               <FieldRow
                 label={t("materialOrders.delivery")}
                 value={savedAddress || projectAddress || "—"}
+              />
+              <FieldRow
+                label={t("materialOrders.desiredDate")}
+                value={dateLabel}
                 isLast
               />
             </FieldCard>
           )}
+
+          <FieldCard>
+            {editable ? (
+              <FieldRow
+                variant="input"
+                multiline
+                label={t("materialOrders.comment")}
+                value={comment}
+                onChangeText={setComment}
+                isLast
+              />
+            ) : (
+              <FieldRow
+                label={t("materialOrders.comment")}
+                value={comment || "—"}
+                isLast
+              />
+            )}
+          </FieldCard>
 
           {editable && orderId ? (
             <TouchableOpacity
