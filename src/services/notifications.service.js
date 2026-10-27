@@ -129,7 +129,13 @@ const handleNotificationNavigation = (data = {}) => {
   }
 };
 
+// Set once a push tap opened something, so the start-up OTA reload in App.js
+// doesn't restart the app and throw the user back on Home.
+let openedFromNotification = false;
+export const wasOpenedFromNotification = () => openedFromNotification;
+
 const handleNotificationResponse = async (response) => {
+  openedFromNotification = true;
   const data = response?.notification?.request?.content?.data || {};
   handleNotificationNavigation(data);
 

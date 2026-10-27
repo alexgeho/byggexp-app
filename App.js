@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, TextInput } from "react-native";
+import { Linking, StyleSheet, Text, TextInput } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -11,6 +11,7 @@ import { AuthProvider } from "./src/contexts/AuthContext";
 import { FeedbackProvider } from "./src/contexts/FeedbackContext";
 import { ThemeProvider, useTheme } from "./src/theme/ThemeContext";
 import NotificationBootstrap from "./src/components/NotificationBootstrap";
+import { wasOpenedFromNotification } from "./src/services/notifications.service";
 import ShiftLocationMonitor from "./src/components/ShiftLocationMonitor";
 import LocationConsentBootstrap from "./src/components/LocationConsentBootstrap";
 import MagicLinkHandler from "./src/components/MagicLinkHandler";
@@ -80,7 +81,13 @@ export default function App() {
           return;
         }
         await Updates.fetchUpdateAsync();
-        if (cancelled) {
+        // Opened from a push (or a link): the user is already on that screen —
+        // a reload would drop them on Home. The update applies next launch.
+        if (
+          cancelled ||
+          wasOpenedFromNotification() ||
+          (await Linking.getInitialURL())
+        ) {
           return;
         }
         await Updates.reloadAsync();
