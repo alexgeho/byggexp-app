@@ -1899,6 +1899,7 @@
   },
   "materialOrders": {
     "title": "Материалы",
+    "supplier": "Поставщик",
     "newTitle": "Новый заказ",
     "addArticle": "Добавить артикул",
     "desiredDate": "Желаемая дата",

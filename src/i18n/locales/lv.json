@@ -1893,6 +1893,7 @@
   },
   "materialOrders": {
     "title": "Materiāli",
+    "supplier": "Piegādātājs",
     "newTitle": "Jauns pasūtījums",
     "addArticle": "Pievienot preci",
     "desiredDate": "Vēlamais datums",

@@ -1896,6 +1896,7 @@
   },
   "materialOrders": {
     "title": "Medžiagos",
+    "supplier": "Tiekėjas",
     "newTitle": "Naujas užsakymas",
     "addArticle": "Pridėti prekę",
     "desiredDate": "Pageidaujama data",

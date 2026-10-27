@@ -176,12 +176,26 @@ function MaterialOrderForm({ order, projectId, projectAddress, fromPush }) {
     normalizeNotificationPreferences(user?.notificationPreferences)
       .materialOrders,
   );
+  // Which grossist this order goes to — picked first, before any article.
+  const [suppliers, setSuppliers] = useState([]);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [androidDateOpen, setAndroidDateOpen] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // One order goes to one grossist: once a row is in, only that supplier's
-  // articles are offered.
+  useEffect(() => {
+    if (!editable) return;
+    materialOrderService
+      .listSuppliers()
+      .then((list) => {
+        const names = list.map((s) => s.supplier).filter(Boolean);
+        setSuppliers(names);
+        setSupplier((current) => current || names[0] || "");
+      })
+      .catch(() => setSuppliers([]));
+  }, [editable]);
+
+  // One order goes to one grossist: only the chosen supplier's articles are
+  // offered, and the choice locks once a row is in.
   const articleFilter = useCallback(
     (article) =>
       isOrderable(article) && (!supplier || article.supplier === supplier),
@@ -190,15 +204,13 @@ function MaterialOrderForm({ order, projectId, projectAddress, fromPush }) {
 
   const handlePick = (article) => {
     setPickerOpen(false);
-    setSupplier(article.supplier);
+    if (article.supplier) setSupplier(article.supplier);
     setRows((prev) => addArticle(prev, article));
   };
 
   const changeQuantity = (index, quantity) =>
     setRows((prev) => {
-      const next = setQuantity(prev, index, quantity);
-      if (next.length === 0) setSupplier("");
-      return next;
+      return setQuantity(prev, index, quantity);
     });
 
   const handleSave = async () => {
@@ -292,7 +304,8 @@ function MaterialOrderForm({ order, projectId, projectAddress, fromPush }) {
       <FormHeader
         title={title}
         onBack={() => navigation.goBack()}
-        onSave={editable ? handleSave : undefined}
+        // Until the first article is in, adding one is the only action.
+        onSave={editable && rows.length > 0 ? handleSave : undefined}
         saving={saving}
         saveLabel={t("common.save")}
       />
@@ -305,8 +318,29 @@ function MaterialOrderForm({ order, projectId, projectAddress, fromPush }) {
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
         >
+          {editable && suppliers.length > 0 ? (
+            <FieldCard>
+              {rows.length === 0 && suppliers.length > 1 ? (
+                <FieldRow label={t("materialOrders.supplier")} isLast>
+                  <ChoiceChips
+                    tone="soft"
+                    values={suppliers}
+                    value={supplier}
+                    onChange={setSupplier}
+                  />
+                </FieldRow>
+              ) : (
+                <FieldRow
+                  label={t("materialOrders.supplier")}
+                  value={supplier}
+                  isLast
+                />
+              )}
+            </FieldCard>
+          ) : null}
+
           <View>
-            {supplier ? (
+            {!editable && supplier ? (
               <SectionTitle>
                 {[
                   supplier,
@@ -390,7 +424,7 @@ function MaterialOrderForm({ order, projectId, projectAddress, fromPush }) {
             ) : null}
             {editable ? (
               <Button
-                variant="outline"
+                variant={rows.length > 0 ? "outline" : "primary"}
                 title={t("materialOrders.addArticle")}
                 onPress={() => setPickerOpen(true)}
                 style={rows.length > 0 ? styles.addAfterRows : null}
@@ -448,6 +482,7 @@ function MaterialOrderForm({ order, projectId, projectAddress, fromPush }) {
             <FieldCard>
               <FieldRow label={t("materialOrders.delivery")}>
                 <ChoiceChips
+                  tone="soft"
                   values={["project", "other"]}
                   value={deliverOther ? "other" : "project"}
                   onChange={(v) => setDeliverOther(v === "other")}
@@ -521,13 +556,12 @@ function MaterialOrderForm({ order, projectId, projectAddress, fromPush }) {
         />
       ) : null}
 
-      {editable ? (
+      {editable && rows.length > 0 ? (
         <FormFooter>
           <Button
             title={t("materialOrders.saveDraft")}
             onPress={handleSave}
             loading={saving}
-            disabled={rows.length === 0}
           />
         </FormFooter>
       ) : null}

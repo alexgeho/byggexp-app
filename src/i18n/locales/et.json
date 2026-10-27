@@ -1889,6 +1889,7 @@
   },
   "materialOrders": {
     "title": "Materjal",
+    "supplier": "Tarnija",
     "newTitle": "Uus tellimus",
     "addArticle": "Lisa artikkel",
     "desiredDate": "Soovitud kuupäev",

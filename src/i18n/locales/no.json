@@ -1889,6 +1889,7 @@
   },
   "materialOrders": {
     "title": "Material",
+    "supplier": "Leverandør",
     "newTitle": "Ny bestilling",
     "addArticle": "Legg til artikkel",
     "desiredDate": "Ønsket dato",

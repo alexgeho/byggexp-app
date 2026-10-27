@@ -1899,6 +1899,7 @@
   },
   "materialOrders": {
     "title": "Materiał",
+    "supplier": "Dostawca",
     "newTitle": "Nowe zamówienie",
     "addArticle": "Dodaj artykuł",
     "desiredDate": "Żądana data",

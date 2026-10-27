@@ -4,23 +4,31 @@ import { radius, size, spacing, fontSize } from "../../../theme/tokens";
 import { useTheme } from "../../../theme/ThemeContext";
 
 // Single-choice pill row (client type, payment terms, currency…). Selected =
-// filled primary; the rest = outline, all one height.
-export const ChoiceChips = ({ values, value, onChange, format }) => {
+// filled primary; the rest = outline, all one height. tone="soft": a quiet
+// choice (not the screen's main action) — selected = grey fill, black text.
+export const ChoiceChips = ({ values, value, onChange, format, tone }) => {
   const { theme } = useTheme();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   return (
     <View style={styles.row}>
       {values.map((v) => {
         const active = value === v;
+        const soft = tone === "soft";
         return (
           <TouchableOpacity
             key={v}
             style={[
               styles.chip,
-              active && {
-                backgroundColor: theme.colors.primary,
-                borderColor: theme.colors.primary,
-              },
+              active &&
+                (soft
+                  ? {
+                      backgroundColor: theme.content.inputSurface,
+                      borderColor: "transparent",
+                    }
+                  : {
+                      backgroundColor: theme.colors.primary,
+                      borderColor: theme.colors.primary,
+                    }),
             ]}
             onPress={() => onChange(v)}
             activeOpacity={0.8}
@@ -28,7 +36,10 @@ export const ChoiceChips = ({ values, value, onChange, format }) => {
             accessibilityState={{ selected: active }}
           >
             <Text
-              style={[styles.text, active && { color: theme.content.onAccent }]}
+              style={[
+                styles.text,
+                active && !soft && { color: theme.content.onAccent },
+              ]}
             >
               {format ? format(v) : v}
             </Text>

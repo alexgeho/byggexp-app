@@ -1895,6 +1895,7 @@
   },
   "materialOrders": {
     "title": "Materijal",
+    "supplier": "Dobavljač",
     "newTitle": "Nova narudžba",
     "addArticle": "Dodaj artikal",
     "desiredDate": "Željeni datum",

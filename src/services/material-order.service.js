@@ -20,6 +20,11 @@ export const materialOrderService = {
     });
     return Array.isArray(data) ? data : [];
   },
+  // Grossists the company orders from (names; contact details for admins).
+  listSuppliers: async () => {
+    const { data } = await api.get("/material-orders/suppliers");
+    return Array.isArray(data) ? data : [];
+  },
   create: async (payload) => {
     const { data } = await api.post("/material-orders", payload);
     return data;
