@@ -1921,5 +1921,17 @@
     "address": "Adresa",
     "notFound": "Narudžba više ne postoji",
     "invoiced": "Fakturisano #{{number}}"
+  },
+  "suppliers": {
+    "title": "Dobavljači",
+    "empty": "Nema dobavljača",
+    "add": "Dodaj dobavljača",
+    "name": "Naziv",
+    "orderEmail": "E-mail za narudžbe",
+    "customerNumber": "Broj kupca",
+    "nameRequired": "Unesite naziv",
+    "saved": "Sačuvano",
+    "remove": "Ukloni",
+    "removeTitle": "Ukloniti {{name}}?"
   }
 }

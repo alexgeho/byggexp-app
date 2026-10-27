@@ -1925,5 +1925,17 @@
     "address": "Adres",
     "notFound": "To zamówienie już nie istnieje",
     "invoiced": "Zafakturowano #{{number}}"
+  },
+  "suppliers": {
+    "title": "Dostawcy",
+    "empty": "Brak dostawców",
+    "add": "Dodaj dostawcę",
+    "name": "Nazwa",
+    "orderEmail": "E-mail do zamówień",
+    "customerNumber": "Numer klienta",
+    "nameRequired": "Podaj nazwę",
+    "saved": "Zapisano",
+    "remove": "Usuń",
+    "removeTitle": "Usunąć {{name}}?"
   }
 }

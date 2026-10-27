@@ -1915,5 +1915,17 @@
     "address": "Adresse",
     "notFound": "Bestillingen finnes ikke lenger",
     "invoiced": "Fakturert #{{number}}"
+  },
+  "suppliers": {
+    "title": "Leverandører",
+    "empty": "Ingen leverandører",
+    "add": "Legg til leverandør",
+    "name": "Navn",
+    "orderEmail": "E-post for bestillinger",
+    "customerNumber": "Kundenummer",
+    "nameRequired": "Skriv inn navn",
+    "saved": "Lagret",
+    "remove": "Fjern",
+    "removeTitle": "Fjerne {{name}}?"
   }
 }

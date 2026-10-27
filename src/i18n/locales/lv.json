@@ -1919,5 +1919,17 @@
     "address": "Adrese",
     "notFound": "Pasūtījums vairs nepastāv",
     "invoiced": "Izrakstīts rēķins #{{number}}"
+  },
+  "suppliers": {
+    "title": "Piegādātāji",
+    "empty": "Nav piegādātāju",
+    "add": "Pievienot piegādātāju",
+    "name": "Nosaukums",
+    "orderEmail": "Pasūtījumu e-pasts",
+    "customerNumber": "Klienta numurs",
+    "nameRequired": "Ievadiet nosaukumu",
+    "saved": "Saglabāts",
+    "remove": "Noņemt",
+    "removeTitle": "Noņemt {{name}}?"
   }
 }

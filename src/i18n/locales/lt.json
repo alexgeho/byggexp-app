@@ -1922,5 +1922,17 @@
     "address": "Adresas",
     "notFound": "Užsakymo nebėra",
     "invoiced": "Išrašyta sąskaita #{{number}}"
+  },
+  "suppliers": {
+    "title": "Tiekėjai",
+    "empty": "Tiekėjų nėra",
+    "add": "Pridėti tiekėją",
+    "name": "Pavadinimas",
+    "orderEmail": "Užsakymų el. paštas",
+    "customerNumber": "Kliento numeris",
+    "nameRequired": "Įveskite pavadinimą",
+    "saved": "Išsaugota",
+    "remove": "Pašalinti",
+    "removeTitle": "Pašalinti {{name}}?"
   }
 }

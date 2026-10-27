@@ -1915,5 +1915,17 @@
     "address": "Osoite",
     "notFound": "Tilausta ei enää ole",
     "invoiced": "Laskutettu #{{number}}"
+  },
+  "suppliers": {
+    "title": "Toimittajat",
+    "empty": "Ei toimittajia",
+    "add": "Lisää toimittaja",
+    "name": "Nimi",
+    "orderEmail": "Tilausten sähköposti",
+    "customerNumber": "Asiakasnumero",
+    "nameRequired": "Anna nimi",
+    "saved": "Tallennettu",
+    "remove": "Poista",
+    "removeTitle": "Poistetaanko {{name}}?"
   }
 }

@@ -68,6 +68,7 @@ const MENU_ICONS = {
   "supplier-invoices": "inbox",
   clients: "users",
   articles: "package",
+  suppliers: "truck",
   company: "briefcase",
   language: "globe",
   legal: "shield",
@@ -532,6 +533,18 @@ export default function MenuScreen() {
       icon: require("../../assets/Tracker.png"),
       color: theme.colors.primary,
     },
+    // Grossists material is ordered from — the admin web's «Leverantörer».
+    ...(user?.role === "companyAdmin" || user?.role === "superadmin"
+      ? [
+          {
+            id: "suppliers",
+            screen: "Suppliers",
+            title: t("suppliers.title"),
+            icon: require("../../assets/Tracker.png"),
+            color: theme.colors.primary,
+          },
+        ]
+      : []),
     {
       id: "company",
       screen: "CompanyDetails",

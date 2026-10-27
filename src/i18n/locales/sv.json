@@ -1915,5 +1915,17 @@
     "address": "Adress",
     "notFound": "Beställningen finns inte längre",
     "invoiced": "Fakturerad #{{number}}"
+  },
+  "suppliers": {
+    "title": "Leverantörer",
+    "empty": "Inga leverantörer",
+    "add": "Lägg till leverantör",
+    "name": "Namn",
+    "orderEmail": "E-post för beställningar",
+    "customerNumber": "Kundnummer",
+    "nameRequired": "Ange namn",
+    "saved": "Sparat",
+    "remove": "Ta bort",
+    "removeTitle": "Ta bort {{name}}?"
   }
 }

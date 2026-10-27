@@ -1925,5 +1925,17 @@
     "address": "Адрес",
     "notFound": "Этого заказа больше нет",
     "invoiced": "Выставлен счёт #{{number}}"
+  },
+  "suppliers": {
+    "title": "Поставщики",
+    "empty": "Нет поставщиков",
+    "add": "Добавить поставщика",
+    "name": "Название",
+    "orderEmail": "E-mail для заказов",
+    "customerNumber": "Номер клиента",
+    "nameRequired": "Укажите название",
+    "saved": "Сохранено",
+    "remove": "Удалить",
+    "removeTitle": "Удалить {{name}}?"
   }
 }

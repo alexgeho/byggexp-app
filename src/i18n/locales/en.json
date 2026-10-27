@@ -1915,5 +1915,17 @@
     "address": "Address",
     "notFound": "This order no longer exists",
     "invoiced": "Invoiced #{{number}}"
+  },
+  "suppliers": {
+    "title": "Suppliers",
+    "empty": "No suppliers",
+    "add": "Add supplier",
+    "name": "Name",
+    "orderEmail": "Order e-mail",
+    "customerNumber": "Customer number",
+    "nameRequired": "Enter a name",
+    "saved": "Saved",
+    "remove": "Remove",
+    "removeTitle": "Remove {{name}}?"
   }
 }

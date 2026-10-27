@@ -25,6 +25,22 @@ export const materialOrderService = {
     const { data } = await api.get("/material-orders/suppliers");
     return Array.isArray(data) ? data : [];
   },
+  // Admin: add a grossist or change its order e-mail / customer number (also
+  // brings back a removed one).
+  saveSupplier: async (supplier, payload) => {
+    const { data } = await api.put(
+      `/material-orders/suppliers/${encodeURIComponent(supplier)}`,
+      payload,
+    );
+    return data;
+  },
+  // Admin: hide a grossist from new orders; its articles and orders stay.
+  removeSupplier: async (supplier) => {
+    const { data } = await api.delete(
+      `/material-orders/suppliers/${encodeURIComponent(supplier)}`,
+    );
+    return data;
+  },
   create: async (payload) => {
     const { data } = await api.post("/material-orders", payload);
     return data;

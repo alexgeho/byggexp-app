@@ -1915,5 +1915,17 @@
     "address": "Aadress",
     "notFound": "Tellimust enam ei ole",
     "invoiced": "Arveldatud #{{number}}"
+  },
+  "suppliers": {
+    "title": "Tarnijad",
+    "empty": "Tarnijaid pole",
+    "add": "Lisa tarnija",
+    "name": "Nimi",
+    "orderEmail": "Tellimuste e-post",
+    "customerNumber": "Kliendinumber",
+    "nameRequired": "Sisesta nimi",
+    "saved": "Salvestatud",
+    "remove": "Eemalda",
+    "removeTitle": "Eemaldada {{name}}?"
   }
 }

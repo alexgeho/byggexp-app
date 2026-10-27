@@ -373,6 +373,18 @@ export default function AppNavigator() {
               }
             />
             <Stack.Screen
+              name="Suppliers"
+              getComponent={() =>
+                require("../screens/Menu/Economy/SuppliersScreen").default
+              }
+            />
+            <Stack.Screen
+              name="Supplier"
+              getComponent={() =>
+                require("../screens/Menu/Economy/SupplierScreen").default
+              }
+            />
+            <Stack.Screen
               name="Clients"
               getComponent={() =>
                 require("../screens/Menu/Economy/ClientsScreen").default
