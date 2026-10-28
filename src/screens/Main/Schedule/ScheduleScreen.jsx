@@ -30,7 +30,6 @@ import {
   buildProjectOptions,
   buildProjectSpanItem,
   daysBetween,
-  DAY_MS,
   formatMonthLabel,
   formatWeekdayLabel,
   getMonthKey,
@@ -434,8 +433,10 @@ export default function ScheduleScreen() {
       return null;
     }
 
-    const left = ((clampedStart - rangeStartMs) / DAY_MS) * dayWidth;
-    const width = ((clampedEnd - clampedStart) / DAY_MS) * dayWidth;
+    // Whole calendar days (DST-safe), not ms / 24h.
+    const left = daysBetween(rangeStart, new Date(clampedStart)) * dayWidth;
+    const width =
+      daysBetween(new Date(clampedStart), new Date(clampedEnd)) * dayWidth;
     const clippedLeft = item.start < rangeStartMs;
     const clippedRight = item.end > rangeEndMs;
 

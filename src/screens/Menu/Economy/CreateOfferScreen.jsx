@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { offerService } from "../../../services";
 import { useFeedback } from "../../../contexts/FeedbackContext";
 import { downloadAndShareDocument } from "../../../utils/documentPreview";
+import { clientDisplayName } from "../../../utils/clientName";
 import { API_BASE_URL } from "../../../config/env";
 import { getDateLocale, formatDisplayDate } from "../../../utils/dateLocale";
 import {
@@ -68,7 +69,7 @@ export default function CreateOfferScreen() {
   const locale = getDateLocale();
 
   const onSelectClient = (client) => {
-    setCompanyName(client.companyName || "");
+    setCompanyName(clientDisplayName(client));
     setEmail(client.email || "");
     // The client's contact person is the natural "your reference" on the offer.
     setContactName((prev) => client.contactPerson || prev);

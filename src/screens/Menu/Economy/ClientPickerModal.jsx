@@ -13,6 +13,7 @@ import {
 import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import { clientService } from "../../../services";
+import { clientDisplayName } from "../../../utils/clientName";
 import { createStyles, PRIMARY, MUTED, mutedInk } from "./billingForm.styles";
 import { useTheme } from "../../../theme/ThemeContext";
 import { onDark } from "../../../theme/colorUtils";
@@ -73,7 +74,7 @@ export default function ClientPickerModal({ visible, onClose, onSelect }) {
     const query = search.trim().toLowerCase();
     if (!query) return clients;
     return clients.filter((client) =>
-      [client.companyName, client.customerNumber, client.email]
+      [clientDisplayName(client), client.customerNumber, client.email]
         .filter(Boolean)
         .join(" ")
         .toLowerCase()
@@ -322,7 +323,7 @@ export default function ClientPickerModal({ visible, onClose, onSelect }) {
                         onPress={() => onSelect(client)}
                       >
                         <Text style={styles.clientName}>
-                          {client.companyName || t("economy.noCustomer")}
+                          {clientDisplayName(client) || t("economy.noCustomer")}
                         </Text>
                         {(client.customerNumber || client.email) && (
                           <Text style={styles.clientMeta}>

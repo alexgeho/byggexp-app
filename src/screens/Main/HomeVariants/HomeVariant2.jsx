@@ -164,6 +164,13 @@ export default function HomeVariant2() {
   useEffect(() => {
     getOnboardingFocus().then(setOnboardingFocusState);
   }, []);
+  // Declared before chooseFocus, which lists their setters as deps (TDZ).
+  const [enabledButtons, setEnabledButtons] = useState(() =>
+    getDefaultEnabledButtons(user?.role),
+  );
+  const [enabledSections, setEnabledSections] = useState(() =>
+    getDefaultEnabledSections(user?.role),
+  );
   const chooseFocus = useCallback(
     async (value) => {
       setOnboardingFocusState(value);
@@ -299,9 +306,6 @@ export default function HomeVariant2() {
   currentShiftRef.current = currentShift;
   const focusFetchIdRef = useRef(0);
   const projectsNavigationPendingRef = useRef(false);
-  const [enabledButtons, setEnabledButtons] = useState(() =>
-    getDefaultEnabledButtons(user?.role),
-  );
   const [secondaryAction, setSecondaryAction] = useState("camera");
   // Clock / round buttons switched off in Customize ("timer" | "actions").
   const [hiddenCore, setHiddenCore] = useState([]);
@@ -313,9 +317,6 @@ export default function HomeVariant2() {
   const [isEditingHours, setIsEditingHours] = useState(false);
   const [editHours, setEditHours] = useState(0);
   const [editMinutes, setEditMinutes] = useState(0);
-  const [enabledSections, setEnabledSections] = useState(() =>
-    getDefaultEnabledSections(user?.role),
-  );
   const [sectionsOrder, setSectionsOrder] = useState(
     homeSections.map((section) => section.id),
   );

@@ -19,6 +19,7 @@ import {
 } from "../../../utils/billingTotals";
 import { createStyles, PRIMARY } from "./billingForm.styles";
 import { downloadAndShareDocument } from "../../../utils/documentPreview";
+import { clientDisplayName } from "../../../utils/clientName";
 import { API_BASE_URL } from "../../../config/env";
 import { useTheme } from "../../../theme/ThemeContext";
 import LineItemsEditor from "./LineItemsEditor";
@@ -183,7 +184,7 @@ export default function CreateInvoiceScreen() {
       setRotPersonalNumber("");
       setRotProperty("");
     }
-    setCompanyName(picked.companyName || "");
+    setCompanyName(clientDisplayName(picked));
     setEmail(picked.email || "");
     const termDays = Number(picked.paymentTerms) || DEFAULT_TERMS_DAYS;
     setPaymentTerms(String(termDays));

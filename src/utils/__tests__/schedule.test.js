@@ -1,6 +1,7 @@
 // Isolate the pure scheduling logic from the i18n stack.
 import {
   EVENT_COLORS,
+  addDays,
   buildEmployeeItems,
   buildEmployeeOptions,
   buildLeaveItems,
@@ -53,6 +54,33 @@ describe("date helpers", () => {
     expect(
       getTaskDates({ startDate: "nope", dueDate: "2026-07-03" }),
     ).toBeNull();
+  });
+});
+
+describe("DST (Europe/Stockholm, 25 Oct 2026)", () => {
+  const originalTz = process.env.TZ;
+  beforeAll(() => {
+    process.env.TZ = "Europe/Stockholm";
+  });
+  afterAll(() => {
+    process.env.TZ = originalTz;
+  });
+
+  it("addDays steps calendar days across the switch (no repeated day)", () => {
+    const monday = new Date(2026, 9, 19);
+    const dates = Array.from({ length: 14 }, (_, i) =>
+      addDays(monday, i).getDate(),
+    );
+    expect(dates).toEqual([
+      19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 1,
+    ]);
+    // Every day stays at local midnight.
+    expect(addDays(monday, 7).getHours()).toBe(0);
+  });
+
+  it("daysBetween counts whole days across the switch", () => {
+    expect(daysBetween(new Date(2026, 9, 19), new Date(2026, 9, 28))).toBe(9);
+    expect(daysBetween(new Date(2026, 2, 28), new Date(2026, 2, 30))).toBe(2);
   });
 });
 

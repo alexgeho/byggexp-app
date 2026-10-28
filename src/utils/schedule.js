@@ -19,7 +19,13 @@ export const EVENT_COLORS = [
 export const startOfDay = (date) =>
   new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-export const addDays = (date, days) => new Date(date.getTime() + days * DAY_MS);
+// Calendar-day step (setDate), not +24h in ms: on DST days a day is 23/25h,
+// so ms stepping repeats or skips a date (e.g. "sön 25" twice on 25 Oct).
+export const addDays = (date, days) => {
+  const next = new Date(date.getTime());
+  next.setDate(next.getDate() + days);
+  return next;
+};
 
 export const addMonths = (date, months) =>
   new Date(date.getFullYear(), date.getMonth() + months, 1);

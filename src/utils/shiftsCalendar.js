@@ -11,7 +11,9 @@ export const getISOWeekNumber = (date) => {
   normalizedDate.setDate(normalizedDate.getDate() + 4 - dayNum);
   const yearStart = new Date(normalizedDate.getFullYear(), 0, 1);
 
-  return Math.ceil(((normalizedDate - yearStart) / 86400000 + 1) / 7);
+  // Round to whole days: after the DST switch a span of N days is N×24h ± 1h.
+  const days = Math.round((normalizedDate - yearStart) / 86400000);
+  return Math.ceil((days + 1) / 7);
 };
 
 export const getCalendarWeekNumber = (
