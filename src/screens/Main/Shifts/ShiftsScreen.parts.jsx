@@ -1577,6 +1577,10 @@ function DayChoiceRow({ styles, label, options, value, onPick, disabled }) {
 
 const ABSENCE_TYPES = ["sick", "vab", "vacation", "parental", "leave"];
 
+// Traktamente stepped like the other pay lines: none → half → full.
+const PER_DIEM_STEPS = ["none", "half", "full"];
+const PER_DIEM_VALUE = { none: "0", half: "½", full: "1" };
+
 // The day's absence: what was reported (and whether the manager agreed), or
 // the types to report one with.
 function DayAbsenceRow({ styles, t, absence, onReport, saving }) {
@@ -1870,15 +1874,18 @@ export function DayHoursEntry({
               />
             ) : null}
             {shows("perDiem") ? (
-              <DayChoiceRow
+              <DayStepRow
                 styles={styles}
+                semiBoldFontFamily={semiBoldFontFamily}
                 label={t("dayReport.perDiem")}
-                options={["none", "half", "full"].map((key) => [
-                  key,
-                  t(`dayReport.perDiemOption.${key}`),
-                ])}
-                value={extras.perDiem || "none"}
-                onPick={(key) => onChangeExtra("perDiem", key)}
+                value={PER_DIEM_VALUE[extras.perDiem] || "0"}
+                valueStyle={styles.dayEntryStepValuePlain}
+                step={1}
+                onStep={(delta) => {
+                  const at = PER_DIEM_STEPS.indexOf(extras.perDiem || "none");
+                  const next = PER_DIEM_STEPS[at + delta];
+                  if (next) onChangeExtra("perDiem", next);
+                }}
               />
             ) : null}
           </>
