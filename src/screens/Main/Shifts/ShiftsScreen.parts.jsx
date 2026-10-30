@@ -1833,11 +1833,6 @@ export function DayHoursEntry({
                 onStep={(delta) => onChangeExtra("ob", delta)}
               />
             ) : null}
-            {shows("travel") || shows("mileage") ? (
-              <Text style={styles.dayEntrySection}>
-                {t("dayReport.travelLabel")}
-              </Text>
-            ) : null}
             {shows("travel") ? (
               <DayInputRow
                 key={`travel-${extrasVersion}`}
