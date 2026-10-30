@@ -516,7 +516,7 @@
     "clocked": "GPS-clocked time",
     "sourceManual": "manual",
     "sourceGps": "GPS",
-    "ob": "OB (inconvenient working hours)",
+    "ob": "OB (inconvenient hours)",
     "travelTime": "Travel time",
     "car": "Car",
     "absence": "Absence",
@@ -1757,7 +1757,7 @@
     "hourType": {
       "normal": "Normal",
       "overtime": "Overtime",
-      "ob": "OB (inconvenient working hours)"
+      "ob": "OB (inconvenient hours)"
     },
     "perDiemOption": {
       "none": "None",

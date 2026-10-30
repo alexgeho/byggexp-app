@@ -152,7 +152,7 @@ Prova gratis i 14 dagar.
 
 ### en
 
-- Daily report: hours, overtime, OB (inconvenient working hours), travel, mileage, per diem and absence on one day – with comment, photos and receipts
+- Daily report: hours, overtime, OB (inconvenient hours), travel, mileage, per diem and absence on one day – with comment, photos and receipts
 - Week, Month and Period views in Shifts, with an hours bar on every day
 - The day saves itself a second after a change, and ↺ copies last trip's travel time and km
 - Save manual hours without picking a project first
@@ -171,7 +171,7 @@ Prova gratis i 14 dagar.
 ```
 TIME TRACKING
 • Automatic GPS time clock: arrive at the project address and time starts, leave the site and it pauses
-• Manual daily report: hours, overtime, OB (inconvenient working hours), travel, mileage, per diem and absence – with photos, receipts and comment
+• Manual daily report: hours, overtime, OB (inconvenient hours), travel, mileage, per diem and absence – with photos, receipts and comment
 • Internal time for workshop, service and training – goes to payroll, not to the invoice
 • Week, month or any period, and the day saves itself
 • Reminder when hours are missing
