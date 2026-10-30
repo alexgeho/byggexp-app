@@ -516,7 +516,7 @@
     "clocked": "GPS-clocked time",
     "sourceManual": "manual",
     "sourceGps": "GPS",
-    "ob": "OB (inconvenient hours)",
+    "ob": "OB (inconvenient hrs)",
     "travelTime": "Travel time",
     "car": "Car",
     "absence": "Absence",
@@ -535,7 +535,7 @@
     "comment": "Comment",
     "receipts": "Receipts",
     "sameAsLast": "Same as last time",
-    "hoursUnit": "hours",
+    "hoursUnit": "h",
     "saved": "Saved",
     "saving": "Saving…"
   },
@@ -1757,7 +1757,7 @@
     "hourType": {
       "normal": "Normal",
       "overtime": "Overtime",
-      "ob": "OB (inconvenient hours)"
+      "ob": "OB (inconvenient hrs)"
     },
     "perDiemOption": {
       "none": "None",
