@@ -1383,16 +1383,10 @@ export function PeriodSummary({ summary, styles, t, semiBoldFontFamily }) {
     ],
     totals.perDiemHalf + totals.perDiemFull > 0 && [
       t("dayReport.perDiem"),
-      [
-        totals.perDiemFull
-          ? `${totals.perDiemFull} × ${t("dayReport.perDiemOption.full")}`
-          : null,
-        totals.perDiemHalf
-          ? `${totals.perDiemHalf} × ${t("dayReport.perDiemOption.half")}`
-          : null,
-      ]
-        .filter(Boolean)
-        .join(" · "),
+      // Counted like the day row: two full and a half = 2½.
+      `${totals.perDiemFull + Math.floor(totals.perDiemHalf / 2) || ""}${
+        totals.perDiemHalf % 2 ? "½" : ""
+      }`,
       null,
     ],
   ].filter(Boolean);
