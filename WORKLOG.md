@@ -8,7 +8,7 @@
 
 - [x] Приложение: en.json (2 места) + STORE_LISTING_COPY → «OB (inconvenient working hours)» (4a8940b4)
 - [x] Админка (byggexp-admin): экран правил договора «OB (inconvenient hours)» → «OB (inconvenient working hours)», sv/ru тоже; бэк/PDF/письма — только «OB»/«OB-tillägg», без правок
-- [i] Клиентам — со следующей сторовой версией
+- [x] OTA production (runtime 1.1.0, iOS+Android), group 1f849fa1 — для проверки; клиентам — со следующей сторовой версией
 
 # 2026-10-27 — Материалы: доводка формы заказа
 
