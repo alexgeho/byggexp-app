@@ -112,6 +112,24 @@ FÖR HELA FÖRETAGET
 Prova gratis i 14 dagar.
 ```
 
+## 1.1.7 — Nyheter (2026-10-31)
+
+### sv
+
+- Arbetspass: enklare dagkort – traktamente med − / +, restid och bil kan upprepas från förra resan
+- Tydligare benämningar enligt Byggavtalet
+- Planeringen visar rätt dagar även vid byte till vintertid
+- Privatkunder visas med namn
+- Förbättringar och buggfixar
+
+### en
+
+- Work shifts: simpler day card – daily allowance with − / +, travel time and car can be repeated from the last trip
+- Clearer wording in line with the construction agreement (OB, daily allowance)
+- Planning shows the right days across the switch to winter time
+- Private customers are shown by name
+- Improvements and bug fixes
+
 ## 1.1.6 — Nyheter (2026-10-27)
 
 ### sv
