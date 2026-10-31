@@ -58,6 +58,13 @@ export function createStyles(theme) {
       justifyContent: "center",
     },
 
+    addInner: {
+      alignItems: "center",
+    },
+    addIcon: {
+      opacity: 0.6,
+    },
+
     iconWrapper: {
       position: "relative",
       alignSelf: theme.homeButton.iconAlignSelf,

@@ -31,6 +31,7 @@ import { createStyles } from "./MainButtonsGrid.styles";
 export default function MainButtonsGrid({
   enabledButtonsOverride,
   buttonsOrderOverride,
+  onAddPress,
 } = {}) {
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -115,7 +116,15 @@ export default function MainButtonsGrid({
         return button.id === id;
       });
     })
-    .filter(Boolean);
+    .filter(Boolean)
+    .filter(function filterButtons(button) {
+      return isHomeButtonVisible(
+        button,
+        effectiveEnabled,
+        user?.role,
+        hasPermission,
+      );
+    });
 
   function handlePress(screen) {
     navigation.navigate(screen);
@@ -133,131 +142,137 @@ export default function MainButtonsGrid({
         });
       }}
     >
-      {orderedButtons
-        .filter(function filterButtons(button) {
-          return isHomeButtonVisible(
-            button,
-            effectiveEnabled,
-            user?.role,
-            hasPermission,
-          );
-        })
-        .map(function renderButton(button) {
-          const buttonColor = theme.colors.buttonColors?.[button.id];
-          // Vector icons take the label's colour, so the icon and the word
-          // under it read as one thing (the coloured cards keep white).
-          const iconColor = buttonColor ? "#FFFFFF" : styles.buttonText.color;
+      {orderedButtons.map(function renderButton(button) {
+        const buttonColor = theme.colors.buttonColors?.[button.id];
+        // Vector icons take the label's colour, so the icon and the word
+        // under it read as one thing (the coloured cards keep white).
+        const iconColor = buttonColor ? "#FFFFFF" : styles.buttonText.color;
 
-          return (
-            <View
-              key={button.id}
-              style={[
-                styles.button,
-                { width: columnButtonWidth },
-                buttonColor && {
-                  backgroundColor: buttonColor,
-                  borderColor: "#FFFFFF",
-                },
-              ]}
-            >
-              {theme.colors.cardGlow && !buttonColor ? (
-                // Fixed-size glow anchored to the bottom-right corner, so it
-                // looks identical whatever the card's height (Figma blurred
-                // ellipse). Card overflow:hidden clips it to the rounded corner.
-                <Svg
-                  pointerEvents="none"
-                  width={190}
-                  height={190}
-                  style={{ position: "absolute", right: -30, bottom: -30 }}
-                >
-                  <Defs>
-                    <RadialGradient
-                      id={`cardGlow-${button.id}`}
-                      cx="50%"
-                      cy="50%"
-                      r="50%"
-                    >
-                      <Stop
-                        offset="0"
-                        stopColor={theme.colors.cardGlow}
-                        stopOpacity="0.13"
-                      />
-                      <Stop
-                        offset="0.55"
-                        stopColor={theme.colors.cardGlow}
-                        stopOpacity="0.05"
-                      />
-                      <Stop
-                        offset="1"
-                        stopColor={theme.colors.cardGlow}
-                        stopOpacity="0"
-                      />
-                    </RadialGradient>
-                  </Defs>
-                  <Rect
-                    x="0"
-                    y="0"
-                    width="190"
-                    height="190"
-                    fill={`url(#cardGlow-${button.id})`}
-                  />
-                </Svg>
-              ) : null}
-              <TouchableOpacity
-                style={styles.buttonInner}
-                onPress={function onButtonPress() {
-                  handlePress(button.screen);
-                }}
+        return (
+          <View
+            key={button.id}
+            style={[
+              styles.button,
+              { width: columnButtonWidth },
+              buttonColor && {
+                backgroundColor: buttonColor,
+                borderColor: "#FFFFFF",
+              },
+            ]}
+          >
+            {theme.colors.cardGlow && !buttonColor ? (
+              // Fixed-size glow anchored to the bottom-right corner, so it
+              // looks identical whatever the card's height (Figma blurred
+              // ellipse). Card overflow:hidden clips it to the rounded corner.
+              <Svg
+                pointerEvents="none"
+                width={190}
+                height={190}
+                style={{ position: "absolute", right: -30, bottom: -30 }}
               >
-                <View style={styles.iconWrapper}>
-                  {button.vectorIcon ? (
-                    <Icon
-                      name={button.vectorIcon}
-                      size={theme.homeButton.iconSize}
-                      color={iconColor}
+                <Defs>
+                  <RadialGradient
+                    id={`cardGlow-${button.id}`}
+                    cx="50%"
+                    cy="50%"
+                    r="50%"
+                  >
+                    <Stop
+                      offset="0"
+                      stopColor={theme.colors.cardGlow}
+                      stopOpacity="0.13"
                     />
-                  ) : (
-                    <Image
-                      source={button.icon}
-                      style={[
-                        styles.buttonIcon,
-                        buttonColor && { tintColor: "#FFFFFF" },
-                      ]}
+                    <Stop
+                      offset="0.55"
+                      stopColor={theme.colors.cardGlow}
+                      stopOpacity="0.05"
                     />
-                  )}
-
-                  {button.id === "chats" ? (
-                    <UnreadBadge count={unreadCount} />
-                  ) : null}
-
-                  {button.id === "tasks" ? (
-                    <UnreadBadge count={overdueTaskCount} />
-                  ) : null}
-                </View>
-
-                <Text
-                  style={[
-                    styles.buttonText,
-                    buttonColor && { color: "#FFFFFF" },
-                  ]}
-                >
-                  {t(`home.buttons.${button.id}`, button.title)}
-                </Text>
-
-                <HomeButtonExtraInfo
-                  buttonId={button.id}
-                  showEmployeeStats={showEmployeeStats}
-                  employeeStats={employeeStats}
-                  shiftStats={shiftStats}
-                  taskDeadlines={taskDeadlines}
-                  projectStart={projectStart}
-                  projectDeadline={projectDeadline}
-                  style={styles.infoBadgesRow}
+                    <Stop
+                      offset="1"
+                      stopColor={theme.colors.cardGlow}
+                      stopOpacity="0"
+                    />
+                  </RadialGradient>
+                </Defs>
+                <Rect
+                  x="0"
+                  y="0"
+                  width="190"
+                  height="190"
+                  fill={`url(#cardGlow-${button.id})`}
                 />
-              </TouchableOpacity>
-            </View>
-          );
-        })}
+              </Svg>
+            ) : null}
+            <TouchableOpacity
+              style={styles.buttonInner}
+              onPress={function onButtonPress() {
+                handlePress(button.screen);
+              }}
+            >
+              <View style={styles.iconWrapper}>
+                {button.vectorIcon ? (
+                  <Icon
+                    name={button.vectorIcon}
+                    size={theme.homeButton.iconSize}
+                    color={iconColor}
+                  />
+                ) : (
+                  <Image
+                    source={button.icon}
+                    style={[
+                      styles.buttonIcon,
+                      buttonColor && { tintColor: "#FFFFFF" },
+                    ]}
+                  />
+                )}
+
+                {button.id === "chats" ? (
+                  <UnreadBadge count={unreadCount} />
+                ) : null}
+
+                {button.id === "tasks" ? (
+                  <UnreadBadge count={overdueTaskCount} />
+                ) : null}
+              </View>
+
+              <Text
+                style={[styles.buttonText, buttonColor && { color: "#FFFFFF" }]}
+              >
+                {t(`home.buttons.${button.id}`, button.title)}
+              </Text>
+
+              <HomeButtonExtraInfo
+                buttonId={button.id}
+                showEmployeeStats={showEmployeeStats}
+                employeeStats={employeeStats}
+                shiftStats={shiftStats}
+                taskDeadlines={taskDeadlines}
+                projectStart={projectStart}
+                projectDeadline={projectDeadline}
+                style={styles.infoBadgesRow}
+              />
+            </TouchableOpacity>
+          </View>
+        );
+      })}
+      {onAddPress && orderedButtons.length % 2 === 1 ? (
+        // An odd count leaves a hole in the last row: fill it with «+», which
+        // opens the home-screen editor.
+        <View style={[styles.button, { width: columnButtonWidth }]}>
+          <TouchableOpacity
+            style={[styles.buttonInner, styles.addInner]}
+            onPress={onAddPress}
+            accessibilityLabel={t("menu.customizeHome")}
+          >
+            <Icon
+              name="plus"
+              size={theme.homeButton.iconSize}
+              color={styles.buttonText.color}
+              style={styles.addIcon}
+            />
+          </TouchableOpacity>
+        </View>
+      ) : null}
     </View>
   );
 }

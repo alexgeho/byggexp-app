@@ -969,9 +969,10 @@ export default function HomeVariant2() {
       <MainButtonsGrid
         enabledButtonsOverride={enabledButtons}
         buttonsOrderOverride={buttonsOrder}
+        onAddPress={openCustomize}
       />
     ),
-    [enabledButtons, buttonsOrder],
+    [enabledButtons, buttonsOrder, openCustomize],
   );
 
   return (
