@@ -1516,17 +1516,23 @@ function DayInputRow({
             placeholderTextColor={styles.dayEntryHint?.color}
           />
         </View>
-        {copyValue != null && onCopy ? (
+        {onCopy ? (
+          // Always there; grey and inert until an earlier trip has a value.
           <TouchableOpacity
             style={styles.dayEntryStep}
             onPress={() => onCopy(copyValue)}
+            disabled={copyValue == null}
             activeOpacity={0.7}
             accessibilityLabel={`${label}: ${t("shifts.sameAsLast")}`}
           >
             <Icon
               name="rotate-ccw"
               size={16}
-              color={styles.weekNavIcon?.color}
+              color={
+                copyValue == null
+                  ? styles.dayEntryHint?.color
+                  : styles.weekNavIcon?.color
+              }
             />
           </TouchableOpacity>
         ) : (
