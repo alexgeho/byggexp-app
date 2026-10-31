@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.anonymous.totbygghubmobileapp",
-      "buildNumber": "199",
+      "buildNumber": "200",
       "associatedDomains": ["applinks:api.byggexp.se"],
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
@@ -28,7 +28,7 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "se.byggexp.app",
-      "versionCode": 37,
+      "versionCode": 38,
       "googleServicesFile": "./google-services.json",
       "intentFilters": [
         {
