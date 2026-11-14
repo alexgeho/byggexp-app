@@ -1930,5 +1930,33 @@
     "saved": "Sparat",
     "remove": "Ta bort",
     "removeTitle": "Ta bort leverantören?"
+  },
+  "booking": {
+    "title": "Ny bokning",
+    "workOrder": "Arbetsorder",
+    "article": "Artikel",
+    "addToExisting": "Lägg till i befintlig order",
+    "description": "Beskrivning",
+    "orderReference": "Orderreferens",
+    "files": "Dokument och foton",
+    "task": "Uppgift med påminnelser",
+    "client": "Kund",
+    "existingClient": "Befintlig kund",
+    "comment": "Kommentar",
+    "time": "Tid",
+    "from": "Från",
+    "to": "Till",
+    "weekdaysOnly": "Bara vardagar",
+    "staff": "Personal",
+    "chooseStaff": "Välj befintlig personal",
+    "name": "Namn",
+    "create": "Skapa",
+    "deleteOrder": "Ta bort ordern",
+    "deleteOrderTitle": "Ta bort ordern?",
+    "created": "Arbetsorder skapad",
+    "saved": "Sparat",
+    "descriptionRequired": "Fyll i beskrivning.",
+    "invalidTime": "Sluttiden måste vara efter starttiden.",
+    "filesFailed": "Filerna kunde inte laddas upp."
   }
 }

@@ -1937,5 +1937,33 @@
     "saved": "Išsaugota",
     "remove": "Pašalinti",
     "removeTitle": "Pašalinti tiekėją?"
+  },
+  "booking": {
+    "title": "Nauja rezervacija",
+    "workOrder": "Darbo užsakymas",
+    "article": "Artikulas",
+    "addToExisting": "Pridėti prie esamo užsakymo",
+    "description": "Aprašymas",
+    "orderReference": "Užsakymo nuoroda",
+    "files": "Dokumentai ir nuotraukos",
+    "task": "Užduotis su priminimais",
+    "client": "Klientas",
+    "existingClient": "Esamas klientas",
+    "comment": "Komentaras",
+    "time": "Laikas",
+    "from": "Nuo",
+    "to": "Iki",
+    "weekdaysOnly": "Tik darbo dienos",
+    "staff": "Personalas",
+    "chooseStaff": "Pasirinkti darbuotojus",
+    "name": "Vardas",
+    "create": "Sukurti",
+    "deleteOrder": "Ištrinti užsakymą",
+    "deleteOrderTitle": "Ištrinti užsakymą?",
+    "created": "Darbo užsakymas sukurtas",
+    "saved": "Išsaugota",
+    "descriptionRequired": "Užpildykite aprašymą.",
+    "invalidTime": "Pabaigos laikas turi būti vėlesnis už pradžios laiką.",
+    "filesFailed": "Nepavyko įkelti failų."
   }
 }

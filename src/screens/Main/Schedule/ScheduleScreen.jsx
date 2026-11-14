@@ -1,4 +1,11 @@
-import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   View,
   Text,
@@ -10,15 +17,17 @@ import {
   Modal,
   FlatList,
   Platform,
+  Pressable,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTranslation } from "react-i18next";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import AuthContext from "../../../contexts/AuthContext";
 import { taskService } from "../../../services";
+import { assignmentService } from "../../../services/assignment.service";
 import { useScheduleData } from "../../../hooks/useScheduleData";
 import {
   addDays,
@@ -40,6 +49,8 @@ import {
   startOfMonth,
   startOfWeek,
 } from "../../../utils/schedule";
+import { buildBookingItems, toDayKey } from "../../../utils/scheduleBooking";
+import { canCreateProjects } from "../../../utils/userRoles";
 import { getDateLocale } from "../../../utils/dateLocale";
 import { createStyles, ROW_HEIGHT } from "./ScheduleScreen.styles";
 import { useTheme } from "../../../theme/ThemeContext";
@@ -151,6 +162,41 @@ export default function ScheduleScreen() {
 
   const projectMap = useMemo(() => buildProjectMap(projects), [projects]);
 
+  // Bookings (who is planned where, which day) for the weeks on screen —
+  // the same /assignments the web calendar shows. Refetched on focus, so a
+  // booking made in the form is there on the way back.
+  const canBook = canCreateProjects(user?.role);
+  const [assignments, setAssignments] = useState([]);
+  const bookingRange = useMemo(() => {
+    const from = startOfWeek(startOfMonth(currentMonth));
+    return {
+      from: toDayKey(from),
+      to: toDayKey(addDays(from, RANGE_DAYS - 1)),
+    };
+  }, [currentMonth]);
+  useFocusEffect(
+    useCallback(() => {
+      if (__DEV__ && SCHEDULE_DEMO) return undefined;
+      let active = true;
+      assignmentService
+        .getRange(bookingRange.from, bookingRange.to)
+        .then((list) => active && setAssignments(list))
+        .catch(() => active && setAssignments([]));
+      return () => {
+        active = false;
+      };
+    }, [bookingRange]),
+  );
+  const shownAssignments = useMemo(
+    () =>
+      selectedProjectIds.length
+        ? assignments.filter((assignment) =>
+            selectedProjectIds.includes(normalizeId(assignment.projectId)),
+          )
+        : assignments,
+    [assignments, selectedProjectIds],
+  );
+
   // Filter options.
   const projectFilterOptions = useMemo(
     () => buildProjectOptions(projects),
@@ -215,6 +261,12 @@ export default function ScheduleScreen() {
       if (mode === "employees") {
         map[row.id] = [
           ...buildEmployeeItems(filteredTasks, projectMap, row.id),
+          ...buildBookingItems(
+            shownAssignments,
+            projectMap,
+            row.id,
+            t("billing.noProject"),
+          ),
           ...buildLeaveItems(leaves, row.id),
         ];
       } else {
@@ -223,7 +275,7 @@ export default function ScheduleScreen() {
       }
     });
     return map;
-  }, [mode, rows, filteredTasks, projectMap, leaves]);
+  }, [mode, rows, filteredTasks, shownAssignments, projectMap, leaves, t]);
 
   // Stack overlapping items into lanes and give each row a height that fits its
   // lane count, so bars in the same row never overlap.
@@ -352,8 +404,37 @@ export default function ScheduleScreen() {
     headerScrollRef.current?.scrollTo({ x: 0, animated: false });
   }, [currentMonth]);
 
+  // New booking: a tap on a free day of a person's row (that person and day
+  // filled in), or the "+" of the bottom bar (today).
+  const openNewBooking = (date, workerId) =>
+    navigation.navigate("Booking", {
+      date: toDayKey(date || new Date()),
+      ...(workerId ? { workerId } : {}),
+    });
+
+  // A booking opens its order with every booking on it (people, days, time).
+  const openBooking = (item) => {
+    if (!canBook || !item.projectId) {
+      return;
+    }
+    const sameOrder = assignments.filter(
+      (assignment) => normalizeId(assignment.projectId) === item.projectId,
+    );
+    const focus =
+      sameOrder.find((assignment) =>
+        item.assignmentIds.includes(normalizeId(assignment)),
+      ) || null;
+    navigation.navigate("Booking", {
+      projectId: item.projectId,
+      assignments: sameOrder,
+      focus,
+    });
+  };
+
   const openItem = (item) => {
-    if (item.type === "task") {
+    if (item.type === "booking") {
+      openBooking(item);
+    } else if (item.type === "task") {
       const task = tasks.find((entry) => normalizeId(entry) === item.taskId);
       if (task) {
         navigation.navigate("Task", {
@@ -479,6 +560,14 @@ export default function ScheduleScreen() {
           </Text>
           {done ? <Icon name="check" size={13} color="#FFFFFF" /> : null}
         </View>
+        {item.timeLabel ? (
+          <View style={styles.barMetaRow}>
+            <View style={styles.barMetaItemFixed}>
+              <Icon name="clock" size={11} color="rgba(255, 255, 255, 0.9)" />
+              <Text style={styles.barMeta}>{item.timeLabel}</Text>
+            </View>
+          </View>
+        ) : null}
         {item.location || item.assigneeCount ? (
           <View style={styles.barMetaRow}>
             {item.location ? (
@@ -751,6 +840,28 @@ export default function ScheduleScreen() {
                           { height: rowLayout[row.id]?.height || ROW_HEIGHT },
                         ]}
                       >
+                        {canBook && mode === "employees" ? (
+                          <Pressable
+                            style={StyleSheet.absoluteFill}
+                            onPress={(event) =>
+                              openNewBooking(
+                                addDays(
+                                  rangeStart,
+                                  Math.min(
+                                    RANGE_DAYS - 1,
+                                    Math.max(
+                                      0,
+                                      Math.floor(
+                                        event.nativeEvent.locationX / dayWidth,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                row.id,
+                              )
+                            }
+                          />
+                        ) : null}
                         {(rowLayout[row.id]?.items || []).map(renderBar)}
                       </View>
                     ))}
@@ -812,7 +923,8 @@ export default function ScheduleScreen() {
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
-        showAddButton={false}
+        showAddButton={canBook}
+        onAddPress={() => openNewBooking()}
       />
 
       {/* Filter (projects / statuses) */}

@@ -1930,5 +1930,33 @@
     "saved": "Saved",
     "remove": "Remove",
     "removeTitle": "Remove the supplier?"
+  },
+  "booking": {
+    "title": "New booking",
+    "workOrder": "Work order",
+    "article": "Article",
+    "addToExisting": "Add to existing order",
+    "description": "Description",
+    "orderReference": "Order reference",
+    "files": "Documents and photos",
+    "task": "Task with reminders",
+    "client": "Client",
+    "existingClient": "Existing client",
+    "comment": "Comment",
+    "time": "Time",
+    "from": "From",
+    "to": "To",
+    "weekdaysOnly": "Weekdays only",
+    "staff": "Staff",
+    "chooseStaff": "Choose existing staff",
+    "name": "Name",
+    "create": "Create",
+    "deleteOrder": "Delete order",
+    "deleteOrderTitle": "Delete this order?",
+    "created": "Work order created",
+    "saved": "Saved",
+    "descriptionRequired": "Please fill in a description.",
+    "invalidTime": "The end time must be after the start time.",
+    "filesFailed": "The files could not be uploaded."
   }
 }

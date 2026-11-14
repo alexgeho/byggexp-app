@@ -1930,5 +1930,33 @@
     "saved": "Salvestatud",
     "remove": "Eemalda",
     "removeTitle": "Eemaldada tarnija?"
+  },
+  "booking": {
+    "title": "Uus broneering",
+    "workOrder": "Töökäsk",
+    "article": "Artikkel",
+    "addToExisting": "Lisa olemasolevale tellimusele",
+    "description": "Kirjeldus",
+    "orderReference": "Tellimuse viide",
+    "files": "Dokumendid ja fotod",
+    "task": "Ülesanne meeldetuletustega",
+    "client": "Klient",
+    "existingClient": "Olemasolev klient",
+    "comment": "Kommentaar",
+    "time": "Aeg",
+    "from": "Algus",
+    "to": "Lõpp",
+    "weekdaysOnly": "Ainult tööpäevad",
+    "staff": "Personal",
+    "chooseStaff": "Vali töötajad",
+    "name": "Nimi",
+    "create": "Loo",
+    "deleteOrder": "Kustuta tellimus",
+    "deleteOrderTitle": "Kas kustutada tellimus?",
+    "created": "Töökäsk loodud",
+    "saved": "Salvestatud",
+    "descriptionRequired": "Täida kirjeldus.",
+    "invalidTime": "Lõpuaeg peab olema pärast algusaega.",
+    "filesFailed": "Faile ei õnnestunud üles laadida."
   }
 }

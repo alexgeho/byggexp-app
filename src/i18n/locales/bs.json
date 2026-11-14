@@ -1936,5 +1936,33 @@
     "saved": "Sačuvano",
     "remove": "Ukloni",
     "removeTitle": "Ukloniti dobavljača?"
+  },
+  "booking": {
+    "title": "Nova rezervacija",
+    "workOrder": "Radni nalog",
+    "article": "Artikal",
+    "addToExisting": "Dodaj u postojeći nalog",
+    "description": "Opis",
+    "orderReference": "Referenca naloga",
+    "files": "Dokumenti i fotografije",
+    "task": "Zadatak s podsjetnicima",
+    "client": "Klijent",
+    "existingClient": "Postojeći klijent",
+    "comment": "Komentar",
+    "time": "Vrijeme",
+    "from": "Od",
+    "to": "Do",
+    "weekdaysOnly": "Samo radni dani",
+    "staff": "Osoblje",
+    "chooseStaff": "Odaberi osoblje",
+    "name": "Ime",
+    "create": "Kreiraj",
+    "deleteOrder": "Obriši nalog",
+    "deleteOrderTitle": "Obrisati nalog?",
+    "created": "Radni nalog kreiran",
+    "saved": "Sačuvano",
+    "descriptionRequired": "Unesite opis.",
+    "invalidTime": "Vrijeme završetka mora biti nakon početka.",
+    "filesFailed": "Datoteke nije moguće učitati."
   }
 }

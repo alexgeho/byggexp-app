@@ -1940,5 +1940,33 @@
     "saved": "Zapisano",
     "remove": "Usuń",
     "removeTitle": "Usunąć dostawcę?"
+  },
+  "booking": {
+    "title": "Nowa rezerwacja",
+    "workOrder": "Zlecenie pracy",
+    "article": "Artykuł",
+    "addToExisting": "Dodaj do istniejącego zlecenia",
+    "description": "Opis",
+    "orderReference": "Numer referencyjny zlecenia",
+    "files": "Dokumenty i zdjęcia",
+    "task": "Zadanie z przypomnieniami",
+    "client": "Klient",
+    "existingClient": "Istniejący klient",
+    "comment": "Komentarz",
+    "time": "Czas",
+    "from": "Od",
+    "to": "Do",
+    "weekdaysOnly": "Tylko dni robocze",
+    "staff": "Personel",
+    "chooseStaff": "Wybierz pracowników",
+    "name": "Imię i nazwisko",
+    "create": "Utwórz",
+    "deleteOrder": "Usuń zlecenie",
+    "deleteOrderTitle": "Usunąć zlecenie?",
+    "created": "Zlecenie pracy utworzone",
+    "saved": "Zapisano",
+    "descriptionRequired": "Uzupełnij opis.",
+    "invalidTime": "Godzina zakończenia musi być późniejsza niż rozpoczęcia.",
+    "filesFailed": "Nie udało się przesłać plików."
   }
 }

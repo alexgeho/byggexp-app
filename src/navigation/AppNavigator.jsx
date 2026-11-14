@@ -238,6 +238,12 @@ export default function AppNavigator() {
               }
             />
             <Stack.Screen
+              name="Booking"
+              getComponent={() =>
+                require("../screens/Main/Schedule/BookingScreen").default
+              }
+            />
+            <Stack.Screen
               name="Menu"
               getComponent={() => require("../screens/Menu/MenuScreen").default}
             />

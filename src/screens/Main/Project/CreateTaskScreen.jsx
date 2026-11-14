@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  DeviceEventEmitter,
   Image,
   Modal,
   ScrollView,
@@ -609,6 +610,17 @@ export default function CreateTaskScreen() {
         title: t("createTask.created"),
         message: t("createTask.createdMessage"),
       });
+
+      // Opened from a calendar booking: back to it, with the task listed there.
+      if (returnTarget === "booking") {
+        DeviceEventEmitter.emit("booking:taskAdded", {
+          id: createdTask?._id || createdTask?.id,
+          title: taskTitle.trim(),
+          due: dueDate ? dueDate.toISOString() : null,
+        });
+        navigation.goBack();
+        return;
+      }
 
       if (returnTarget === "project" && selectedProjectId) {
         navigation.navigate("Project", {

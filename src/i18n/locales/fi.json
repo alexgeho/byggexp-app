@@ -1930,5 +1930,33 @@
     "saved": "Tallennettu",
     "remove": "Poista",
     "removeTitle": "Poistetaanko toimittaja?"
+  },
+  "booking": {
+    "title": "Uusi varaus",
+    "workOrder": "Työtilaus",
+    "article": "Artikkeli",
+    "addToExisting": "Lisää olemassa olevaan tilaukseen",
+    "description": "Kuvaus",
+    "orderReference": "Tilausviite",
+    "files": "Asiakirjat ja kuvat",
+    "task": "Tehtävä muistutuksilla",
+    "client": "Asiakas",
+    "existingClient": "Olemassa oleva asiakas",
+    "comment": "Kommentti",
+    "time": "Aika",
+    "from": "Alkaa",
+    "to": "Päättyy",
+    "weekdaysOnly": "Vain arkipäivät",
+    "staff": "Henkilöstö",
+    "chooseStaff": "Valitse henkilöstö",
+    "name": "Nimi",
+    "create": "Luo",
+    "deleteOrder": "Poista tilaus",
+    "deleteOrderTitle": "Poistetaanko tilaus?",
+    "created": "Työtilaus luotu",
+    "saved": "Tallennettu",
+    "descriptionRequired": "Täytä kuvaus.",
+    "invalidTime": "Päättymisajan on oltava alkamisajan jälkeen.",
+    "filesFailed": "Tiedostojen lataus epäonnistui."
   }
 }

@@ -1930,5 +1930,33 @@
     "saved": "Lagret",
     "remove": "Fjern",
     "removeTitle": "Fjerne leverandøren?"
+  },
+  "booking": {
+    "title": "Ny booking",
+    "workOrder": "Arbeidsordre",
+    "article": "Artikkel",
+    "addToExisting": "Legg til i eksisterende ordre",
+    "description": "Beskrivelse",
+    "orderReference": "Ordrereferanse",
+    "files": "Dokumenter og bilder",
+    "task": "Oppgave med påminnelser",
+    "client": "Kunde",
+    "existingClient": "Eksisterende kunde",
+    "comment": "Kommentar",
+    "time": "Tid",
+    "from": "Fra",
+    "to": "Til",
+    "weekdaysOnly": "Bare hverdager",
+    "staff": "Personale",
+    "chooseStaff": "Velg eksisterende personale",
+    "name": "Navn",
+    "create": "Opprett",
+    "deleteOrder": "Slett ordren",
+    "deleteOrderTitle": "Slette ordren?",
+    "created": "Arbeidsordre opprettet",
+    "saved": "Lagret",
+    "descriptionRequired": "Fyll inn beskrivelse.",
+    "invalidTime": "Sluttiden må være etter starttiden.",
+    "filesFailed": "Filene kunne ikke lastes opp."
   }
 }

@@ -1934,5 +1934,33 @@
     "saved": "Saglabāts",
     "remove": "Noņemt",
     "removeTitle": "Noņemt piegādātāju?"
+  },
+  "booking": {
+    "title": "Jauna rezervācija",
+    "workOrder": "Darba uzdevums",
+    "article": "Artikuls",
+    "addToExisting": "Pievienot esošam pasūtījumam",
+    "description": "Apraksts",
+    "orderReference": "Pasūtījuma atsauce",
+    "files": "Dokumenti un foto",
+    "task": "Uzdevums ar atgādinājumiem",
+    "client": "Klients",
+    "existingClient": "Esošs klients",
+    "comment": "Komentārs",
+    "time": "Laiks",
+    "from": "No",
+    "to": "Līdz",
+    "weekdaysOnly": "Tikai darba dienas",
+    "staff": "Personāls",
+    "chooseStaff": "Izvēlēties darbiniekus",
+    "name": "Vārds",
+    "create": "Izveidot",
+    "deleteOrder": "Dzēst pasūtījumu",
+    "deleteOrderTitle": "Dzēst pasūtījumu?",
+    "created": "Darba uzdevums izveidots",
+    "saved": "Saglabāts",
+    "descriptionRequired": "Aizpildiet aprakstu.",
+    "invalidTime": "Beigu laikam jābūt pēc sākuma laika.",
+    "filesFailed": "Failus neizdevās augšupielādēt."
   }
 }
