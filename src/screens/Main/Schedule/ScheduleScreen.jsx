@@ -44,11 +44,11 @@ import {
   parseDayKey,
   toDayKey,
 } from "../../../utils/scheduleBooking";
-import { PeriodSheet } from "../Shifts/ShiftsScreen.parts";
+import { PeriodSheet } from "../../../components/common/PeriodSheet/PeriodSheet";
 import {
-  createSheetStyles,
-  createStyles as createShiftsStyles,
-} from "../Shifts/ShiftsScreen.styles";
+  PERIOD_VIEWS,
+  PeriodTabs,
+} from "../../../components/common/PeriodTabs/PeriodTabs";
 import ScheduleGrid, { gridDaysFor } from "./ScheduleGrid";
 import { formatExportPickerDate } from "../../../utils/shifts";
 import { canCreateProjects } from "../../../utils/userRoles";
@@ -64,9 +64,8 @@ const SCHEDULE_DEMO = false;
 // One table (ScheduleGrid) for both views: week = hours down the left,
 // month and custom (two dates) = a row per week. Never a second table for
 // another period.
-const VIEWS = ["week", "month", "custom"];
+const VIEWS = PERIOD_VIEWS;
 const RANGE_KEY = "schedule-custom-range";
-const CUSTOM_TABS = ["Custom"];
 const DEFAULT_CUSTOM_DAYS = 14;
 const VIEW_KEY = "schedule-view";
 const HIDDEN_PEOPLE_KEY = "schedule-hidden-people";
@@ -101,15 +100,11 @@ export default function ScheduleScreen() {
     };
   });
   const [rangeDraft, setRangeDraft] = useState(null);
-  const [rangeTarget, setRangeTarget] = useState(null);
   const saveRange = (next) => {
     setRange(next);
     AsyncStorage.setItem(RANGE_KEY, JSON.stringify(next)).catch(() => {});
   };
-  const openRangeSheet = () => {
-    setRangeTarget(null);
-    setRangeDraft(range);
-  };
+  const openRangeSheet = () => setRangeDraft(range);
   const applyRange = () => {
     if (rangeDraft.from > rangeDraft.to) {
       Alert.alert(
@@ -151,14 +146,6 @@ export default function ScheduleScreen() {
   const gridDays = useMemo(
     () => (focusDay ? [focusDay] : gridDaysFor(anchor, view, rangeDays)),
     [focusDay, anchor, view, rangeDays],
-  );
-  const shiftsStyles = useMemo(
-    () => createShiftsStyles(theme.content),
-    [theme.content],
-  );
-  const sheetStyles = useMemo(
-    () => createSheetStyles(theme.content),
-    [theme.content],
   );
   const { loading, projects, workers, leaves } = useScheduleData(
     user,
@@ -405,27 +392,6 @@ export default function ScheduleScreen() {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.viewRow}>
-        {VIEWS.map((value) => (
-          <TouchableOpacity
-            key={value}
-            style={[styles.viewSegment, view === value && styles.segmentActive]}
-            onPress={() => pickView(value)}
-            activeOpacity={0.85}
-          >
-            <Text
-              numberOfLines={1}
-              style={[
-                styles.viewSegmentText,
-                view === value && styles.segmentTextActive,
-              ]}
-            >
-              {t(`schedule.views.${value}`)}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
       <View style={styles.peopleRow}>
         <ScrollView
           horizontal
@@ -467,6 +433,13 @@ export default function ScheduleScreen() {
       </View>
 
       <View style={styles.timelineCard}>
+        <View style={styles.viewRow}>
+          <PeriodTabs
+            value={view}
+            onChange={pickView}
+            testIDPrefix="schedule-view"
+          />
+        </View>
         {loading ? (
           <View style={styles.centered}>
             <ActivityIndicator size="large" color="#0091FF" />
@@ -504,28 +477,14 @@ export default function ScheduleScreen() {
         onAddPress={openNewBooking}
       />
 
-      {/* Custom period — the Shifts period sheet, dates only */}
+      {/* Custom period — the one period sheet, shared with Shifts */}
       <PeriodSheet
         visible={rangeDraft !== null}
         onClose={() => setRangeDraft(null)}
-        tabs={CUSTOM_TABS}
-        exportPeriodTab="Custom"
-        exportFromDate={rangeDraft?.from}
-        exportToDate={rangeDraft?.to}
-        datePickerTarget={rangeTarget}
-        setDatePickerTarget={setRangeTarget}
-        onCustomDateChange={(_event, date) =>
-          date &&
-          setRangeDraft((prev) => ({
-            ...prev,
-            [rangeTarget || "from"]: toDayKey(date),
-          }))
-        }
+        from={rangeDraft?.from}
+        to={rangeDraft?.to}
+        onChange={setRangeDraft}
         onApply={applyRange}
-        styles={shiftsStyles}
-        sheetStyles={sheetStyles}
-        titleFontFamily={theme.text.fontFamily.semiBold}
-        t={t}
       />
 
       {/* Month picker */}

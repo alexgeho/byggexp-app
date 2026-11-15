@@ -1,4 +1,4 @@
-import { Platform, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { radius, size } from "../../../theme/tokens";
 import {
   standardScreenContainer,
@@ -402,38 +402,6 @@ export const createStyles = (c) =>
       marginTop: -6,
     },
     /* Vecka | Månad | Period — what span the card shows */
-    viewModeToggle: {
-      flexDirection: "row",
-      alignSelf: "center",
-      backgroundColor: c.background,
-      borderRadius: radius.control,
-      padding: 3,
-      gap: 3,
-    },
-    viewModeBtn: {
-      height: 34,
-      paddingHorizontal: 18,
-      borderRadius: radius.control,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    viewModeBtnOn: {
-      backgroundColor: onDark(c, c.surfaceMuted, "#FFFFFF"),
-      shadowColor: "#000",
-      shadowOpacity: 0.08,
-      shadowRadius: 4,
-      shadowOffset: { width: 0, height: 1 },
-      elevation: 1,
-    },
-    viewModeText: {
-      color: c.textSecondary,
-      fontSize: 14,
-      fontWeight: "500",
-    },
-    viewModeTextOn: {
-      color: c.textPrimary,
-      fontWeight: "600",
-    },
     periodPickButton: {
       flexDirection: "row",
       alignItems: "center",
@@ -1108,110 +1076,9 @@ export const createStyles = (c) =>
       color: c.textPrimary,
       fontSize: 16,
     },
-    periodTabs: {
-      flexDirection: "row",
-      gap: 8,
-      alignSelf: "center",
-    },
-    periodTab: {
-      height: 44,
-      paddingHorizontal: 18,
-      alignItems: "center",
-      justifyContent: "center",
-      borderRadius: 20,
-      backgroundColor: c.surfaceMuted,
-      borderWidth: 1,
-      borderColor: c.border,
-    },
-    periodTabActive: {
-      backgroundColor: "#0785F4",
-      borderColor: "#0785F4",
-    },
-    periodTabText: {
-      fontSize: 15,
-      color: c.textPrimary,
-    },
-    periodTabTextActive: {
-      color: "#FFFFFF",
-      fontWeight: "600",
-    },
-    periodCard: {
-      backgroundColor: c.surface,
-      borderRadius: 20,
-      padding: 16,
-      borderWidth: 1,
-      borderColor: c.border,
-    },
-    dateContainer: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      gap: 12,
-    },
     // Month + year wheels, From above To, each pair across the full width so
     // a month name never gets cut off.
-    monthRangeStack: {
-      gap: 8,
-    },
-    monthYearRow: {
-      flexDirection: "row",
-      gap: 8,
-    },
-    monthYearMonth: {
-      flex: 2,
-      width: undefined,
-    },
-    monthYearYear: {
-      flex: 1,
-      width: undefined,
-    },
-    monthDateField: {
-      flex: 1,
-      alignItems: "center",
-    },
-    monthDateLabel: {
-      fontSize: 14,
-      color: c.textPrimary,
-      marginBottom: 4,
-      textAlign: "center",
-      width: "100%",
-    },
-    monthWheelContainer: {
-      width: "100%",
-      backgroundColor: "transparent",
-      overflow: "hidden",
-    },
-    monthWheel: {
-      height: Platform.OS === "ios" ? 120 : 48,
-      width: "100%",
-      backgroundColor: "transparent",
-    },
-    monthWheelItem: {
-      color: c.textPrimary,
-      fontSize: 16,
-    },
-    dateValueCard: {
-      width: "100%",
-      backgroundColor: onDark(c, c.inputSurface, "rgba(245, 245, 245, 1)"),
-      borderRadius: 20,
-      paddingHorizontal: 12,
-      height: 44,
-      justifyContent: "center",
-      alignItems: "center",
-      borderWidth: 2,
-      borderColor: "transparent",
-    },
     // The From/To field the inline wheel is currently editing.
-    dateValueCardActive: {
-      borderColor: "#0091FF",
-    },
-    dateValueText: {
-      fontSize: 15,
-      color: c.textPrimary,
-      textAlign: "center",
-    },
-    dateValuePlaceholder: {
-      color: c.textMuted,
-    },
     exportSheetCard: {
       backgroundColor: c.surfaceMuted,
       borderRadius: 20,
@@ -1311,10 +1178,6 @@ export const createStyles = (c) =>
     },
     // Inline (non-modal) date picker shown inside the Period sheet on the
     // Custom tab, so its wheel gets touches (a stacked Modal would not).
-    inlineDatePicker: {
-      alignItems: "center",
-      marginTop: 8,
-    },
     datePickerButton: {
       alignSelf: "flex-end",
       marginTop: 12,

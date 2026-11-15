@@ -41,8 +41,6 @@ import {
 import { internalLast, withoutInternal } from "../../../utils/internalProject";
 import { useShiftHistory } from "../../../hooks/useShiftHistory";
 import {
-  buildExportMonthOptions,
-  formatDateKey,
   formatDuration,
   effectiveDurationMs,
   shortAddress,
@@ -75,6 +73,7 @@ import {
   isPdfDocument,
 } from "../../../utils/documentPreview";
 import { createSheetStyles, createStyles } from "./ShiftsScreen.styles";
+import { PeriodSheet } from "../../../components/common/PeriodSheet/PeriodSheet";
 import {
   DayHoursEntry,
   PeriodSummary,
@@ -82,7 +81,6 @@ import {
   ExportSheet,
   HoursSourceToggle,
   ManualHoursModal,
-  PeriodSheet,
   ProjectPickModal,
   SelectionSummary,
   ShiftOvertime,
@@ -125,12 +123,8 @@ export default function ShiftsScreen() {
   // Set when the period sheet was opened from Export, to return there.
   const reopenExportRef = useRef(false);
   const [selectedExportType, setSelectedExportType] = useState("pdf");
-  const [exportPeriodTab, setExportPeriodTab] = useState("Month");
-  const [exportFromMonth, setExportFromMonth] = useState("");
-  const [exportToMonth, setExportToMonth] = useState("");
   const [exportFromDate, setExportFromDate] = useState("");
   const [exportToDate, setExportToDate] = useState("");
-  const [datePickerTarget, setDatePickerTarget] = useState(null);
   const [exportPeriodApplied, setExportPeriodApplied] = useState(false);
   const [exporting, setExporting] = useState(false);
   // Admin filters: scope the calendar + export to a project and/or people.
@@ -346,7 +340,6 @@ export default function ShiftsScreen() {
   const {
     loading,
     days,
-    availableMonths,
     currentMonthDuration,
     selectedMonth,
     setSelectedMonth,
@@ -1259,35 +1252,18 @@ export default function ShiftsScreen() {
       return t("shifts.selectPeriod");
     }
 
-    if (exportPeriodTab === "Month") {
-      if (exportFromMonth === exportToMonth) {
-        return formatMonthLabel(exportFromMonth);
-      }
-
-      return `${formatMonthLabel(exportFromMonth)} – ${formatMonthLabel(exportToMonth)}`;
-    }
-
     if (exportFromDate === exportToDate) {
       return formatExportPickerDate(exportFromDate);
     }
 
     return `${formatExportPickerDate(exportFromDate)} – ${formatExportPickerDate(exportToDate)}`;
-  }, [
-    exportFromDate,
-    exportFromMonth,
-    exportPeriodApplied,
-    exportPeriodTab,
-    exportToDate,
-    exportToMonth,
-    t,
-  ]);
+  }, [exportFromDate, exportPeriodApplied, exportToDate, t]);
 
   const closeExportSheet = useCallback(() => {
     setExportSheetOpen(false);
   }, []);
 
   const closePeriodSheet = useCallback(() => {
-    setDatePickerTarget(null);
     setPeriodSheetOpen(false);
     if (reopenExportRef.current) {
       reopenExportRef.current = false;
@@ -1296,14 +1272,6 @@ export default function ShiftsScreen() {
   }, []);
 
   const openPeriodSheet = useCallback(() => {
-    setDatePickerTarget(null);
-
-    if (!exportFromMonth) {
-      const monthKey = getCurrentMonthKey();
-      setExportFromMonth(monthKey);
-      setExportToMonth(monthKey);
-    }
-
     if (!exportFromDate) {
       const today = getTodayDateKey();
       setExportFromDate(today);
@@ -1311,24 +1279,9 @@ export default function ShiftsScreen() {
     }
 
     setPeriodSheetOpen(true);
-  }, [exportFromDate, exportFromMonth]);
+  }, [exportFromDate]);
 
   const getPeriodExportRange = useCallback(() => {
-    if (exportPeriodTab === "Month") {
-      if (!exportFromMonth || !exportToMonth) {
-        return null;
-      }
-
-      if (exportFromMonth > exportToMonth) {
-        return null;
-      }
-
-      return {
-        from: getMonthDateRange(exportFromMonth).from,
-        to: getMonthDateRange(exportToMonth).to,
-      };
-    }
-
     if (!exportFromDate || !exportToDate || exportFromDate > exportToDate) {
       return null;
     }
@@ -1337,35 +1290,13 @@ export default function ShiftsScreen() {
       from: exportFromDate,
       to: exportToDate,
     };
-  }, [
-    exportFromDate,
-    exportFromMonth,
-    exportPeriodTab,
-    exportToDate,
-    exportToMonth,
-  ]);
+  }, [exportFromDate, exportToDate]);
 
   // The period sheet only *picks* a period — the export itself runs from the
   // bottom Export button (see handleExport). Applying a period clears any
   // ad-hoc day selection so there's a single, unambiguous export target.
   const applyPeriod = useCallback(() => {
-    if (exportPeriodTab === "Month") {
-      if (!exportFromMonth || !exportToMonth) {
-        Alert.alert(
-          t("shiftHistory.invalidPeriodTitle"),
-          t("shifts.chooseBothMonths"),
-        );
-        return;
-      }
-
-      if (exportFromMonth > exportToMonth) {
-        Alert.alert(
-          t("shiftHistory.invalidPeriodTitle"),
-          t("shifts.fromMonthBeforeTo"),
-        );
-        return;
-      }
-    } else if (!exportFromDate || !exportToDate) {
+    if (!exportFromDate || !exportToDate) {
       Alert.alert(
         t("shiftHistory.invalidPeriodTitle"),
         t("shifts.chooseBothDates"),
@@ -1394,8 +1325,7 @@ export default function ShiftsScreen() {
 
     // Jump the calendar to the chosen period's month and reload, so the grid
     // reflects the selection instead of staying on the current month.
-    const targetMonth =
-      exportPeriodTab === "Month" ? exportFromMonth : range.from.slice(0, 7);
+    const targetMonth = range.from.slice(0, 7);
     if (targetMonth) {
       setSelectedMonth(targetMonth);
       refreshHistory(targetMonth);
@@ -1403,26 +1333,13 @@ export default function ShiftsScreen() {
   }, [
     closePeriodSheet,
     exportFromDate,
-    exportFromMonth,
-    exportPeriodTab,
     exportToDate,
-    exportToMonth,
     getPeriodExportRange,
     refreshHistory,
     setSelectedDates,
     setSelectedMonth,
     t,
   ]);
-
-  const exportMonthOptions = useMemo(
-    () =>
-      buildExportMonthOptions(availableMonths, [
-        exportFromMonth,
-        exportToMonth,
-        selectedMonth,
-      ]),
-    [availableMonths, exportFromMonth, exportToMonth, selectedMonth],
-  );
 
   const openExportSheet = useCallback(() => {
     // No date selection required: with nothing selected we export the current
@@ -1431,30 +1348,11 @@ export default function ShiftsScreen() {
     setExportSheetOpen(true);
   }, []);
 
-  const handleCustomDateChange = useCallback(
-    (_event, date) => {
-      if (!date) {
-        return;
-      }
-
-      // The wheel is always live on the Custom tab; when no field has been
-      // tapped yet it edits "From" by default.
-      const target = datePickerTarget || "from";
-      const formattedDate = formatDateKey(date);
-      if (target === "from") {
-        setExportFromDate(formattedDate);
-      } else {
-        setExportToDate(formattedDate);
-      }
-    },
-    [datePickerTarget],
-  );
-
   // Period needs a period: the first time, the period sheet opens.
   const changeViewMode = useCallback(
     (mode) => {
       setViewMode(mode);
-      if (mode === "period" && !exportPeriodApplied) {
+      if (mode === "custom" && !exportPeriodApplied) {
         openPeriodSheet();
       }
     },
@@ -1464,7 +1362,7 @@ export default function ShiftsScreen() {
   // The chosen period's totals, month by month. History loads one month at a
   // time, so each month in the range is fetched and the days outside it cut.
   useEffect(() => {
-    if (viewMode !== "period" || !exportPeriodApplied) {
+    if (viewMode !== "custom" || !exportPeriodApplied) {
       return undefined;
     }
     const range = getPeriodExportRange();
@@ -1540,7 +1438,7 @@ export default function ShiftsScreen() {
     // Picked days export as they are; otherwise what the card shows: the
     // period, the week, or the month.
     const usePeriod =
-      !selectedDates.length && (viewMode === "period" || viewMode === "week");
+      !selectedDates.length && (viewMode === "custom" || viewMode === "week");
     const range = !usePeriod
       ? null
       : viewMode === "week"
@@ -1908,7 +1806,7 @@ export default function ShiftsScreen() {
             onPickPeriod={openPeriodSheet}
           />
 
-          {viewMode === "period" ? (
+          {viewMode === "custom" ? (
             <PeriodSummary
               summary={periodSummary}
               styles={styles}
@@ -1917,7 +1815,7 @@ export default function ShiftsScreen() {
             />
           ) : null}
 
-          {viewMode === "period" ? null : (
+          {viewMode === "custom" ? null : (
             <View
               style={styles.shiftDetailsContainer}
               onLayout={(e) => {
@@ -2335,7 +2233,7 @@ export default function ShiftsScreen() {
             </View>
           )}
 
-          {viewMode === "period" ? null : (
+          {viewMode === "custom" ? null : (
             <SelectionSummary
               heroValueMs={heroValueMs}
               weekValueMs={weekValueMs}
@@ -2383,7 +2281,7 @@ export default function ShiftsScreen() {
         exportLabel={
           selectedDates.length
             ? null
-            : viewMode === "period"
+            : viewMode === "custom"
               ? exportPeriodLabel
               : viewMode === "week"
                 ? t("schedule.week", {
@@ -2402,23 +2300,13 @@ export default function ShiftsScreen() {
       <PeriodSheet
         visible={periodSheetOpen}
         onClose={closePeriodSheet}
-        exportPeriodTab={exportPeriodTab}
-        setExportPeriodTab={setExportPeriodTab}
-        exportFromMonth={exportFromMonth}
-        setExportFromMonth={setExportFromMonth}
-        exportToMonth={exportToMonth}
-        setExportToMonth={setExportToMonth}
-        exportMonthOptions={exportMonthOptions}
-        exportFromDate={exportFromDate}
-        exportToDate={exportToDate}
-        datePickerTarget={datePickerTarget}
-        setDatePickerTarget={setDatePickerTarget}
-        onCustomDateChange={handleCustomDateChange}
+        from={exportFromDate}
+        to={exportToDate}
+        onChange={({ from, to }) => {
+          setExportFromDate(from);
+          setExportToDate(to);
+        }}
         onApply={applyPeriod}
-        styles={styles}
-        sheetStyles={sheetStyles}
-        titleFontFamily={theme.text.fontFamily["semiBold"]}
-        t={t}
       />
 
       <EmployeePickerModal

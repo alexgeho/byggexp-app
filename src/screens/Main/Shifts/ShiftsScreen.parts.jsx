@@ -12,20 +12,16 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
-import { getDateLocale } from "../../../utils/dateLocale";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import Icon from "react-native-vector-icons/Feather";
+import { PeriodTabs } from "../../../components/common/PeriodTabs/PeriodTabs";
 import useSheetEnter from "../../../hooks/useSheetEnter";
 import { projectDisplayName } from "../../../utils/internalProject";
 
 import {
   formatDurationCompact,
   formatDurationShort,
-  formatExportPickerDate,
   formatMonthLabel,
   formatMonthShort,
-  parseDateKey,
 } from "../../../utils/shifts";
 import {
   addDaysToKey,
@@ -38,10 +34,6 @@ import {
 // Presentational sub-components split out of ShiftsScreen to keep that file
 // smaller. Each is self-contained: it receives the themed `styles` object and
 // `t` from the parent, so it does no data-fetching or theming of its own.
-
-const EXPORT_PERIOD_TABS = ["Month", "Custom"];
-// A calendar, never the wheel (owner 15.11: "remove that wheel everywhere").
-const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "inline" : "default";
 
 // Admin filter: pick which employees the calendar/export is scoped to.
 export function EmployeePickerModal({
@@ -462,256 +454,6 @@ export function ExportSheet({
   );
 }
 
-// Period bottom sheet: pick a Month range (two month wheels) or a Custom range
-// (From/To with an inline date wheel). Apply confirms. The date picker is
-// rendered inline INSIDE this sheet — a stacked Modal would swallow the wheel's
-// touches on iOS.
-// One month-and-year choice as two wheels, the way a birth date is picked:
-// the month by name on the left, the year on the right. A single wheel of
-// "август 2026 г." was cut off at the column width ("август 202…").
-function MonthYearWheels({ value, onChange, options, styles, prefix }) {
-  const years = [...new Set(options.map((key) => key.slice(0, 4)))];
-  const year = (value || options[0] || "").slice(0, 4);
-  const month = (value || "").slice(5, 7);
-  const monthsForYear = options
-    .filter((key) => key.startsWith(`${year}-`))
-    .map((key) => key.slice(5, 7));
-  const monthName = (mm) => {
-    const label = new Intl.DateTimeFormat(getDateLocale(), {
-      month: "long",
-    }).format(new Date(Number(year) || 2000, Number(mm) - 1, 1));
-    return label.charAt(0).toUpperCase() + label.slice(1);
-  };
-
-  const changeYear = (nextYear) => {
-    const available = options
-      .filter((key) => key.startsWith(`${nextYear}-`))
-      .map((key) => key.slice(5, 7));
-    // Keep the month if that year has it, else the nearest one it does have.
-    const nextMonth = available.includes(month)
-      ? month
-      : available[
-          month > available[available.length - 1] ? available.length - 1 : 0
-        ];
-    if (nextMonth) onChange(`${nextYear}-${nextMonth}`);
-  };
-
-  return (
-    <View style={styles.monthYearRow}>
-      <View style={[styles.monthWheelContainer, styles.monthYearMonth]}>
-        <Picker
-          selectedValue={month}
-          onValueChange={(mm) => onChange(`${year}-${mm}`)}
-          style={styles.monthWheel}
-          itemStyle={styles.monthWheelItem}
-          selectionColor="rgb(245, 245, 245)"
-        >
-          {monthsForYear.map((mm) => (
-            <Picker.Item
-              key={`${prefix}-m-${mm}`}
-              label={monthName(mm)}
-              value={mm}
-            />
-          ))}
-        </Picker>
-      </View>
-      <View style={[styles.monthWheelContainer, styles.monthYearYear]}>
-        <Picker
-          selectedValue={year}
-          onValueChange={changeYear}
-          style={styles.monthWheel}
-          itemStyle={styles.monthWheelItem}
-          selectionColor="rgb(245, 245, 245)"
-        >
-          {years.map((yy) => (
-            <Picker.Item key={`${prefix}-y-${yy}`} label={yy} value={yy} />
-          ))}
-        </Picker>
-      </View>
-    </View>
-  );
-}
-
-export function PeriodSheet({
-  visible,
-  onClose,
-  // Which ways of picking are offered; with one, the tab row is not shown
-  // (Planning offers only the two dates).
-  tabs = EXPORT_PERIOD_TABS,
-  exportPeriodTab,
-  setExportPeriodTab,
-  exportFromMonth,
-  setExportFromMonth,
-  exportToMonth,
-  setExportToMonth,
-  exportMonthOptions,
-  exportFromDate,
-  exportToDate,
-  datePickerTarget,
-  setDatePickerTarget,
-  onCustomDateChange,
-  onApply,
-  styles,
-  sheetStyles,
-  titleFontFamily,
-  t,
-}) {
-  const sheetEnter = useSheetEnter(visible);
-  return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      statusBarTranslucent
-      onRequestClose={onClose}
-    >
-      <Pressable style={sheetStyles.backdrop} onPress={onClose} />
-      <Animated.View style={[sheetStyles.container, sheetEnter]}>
-        <View style={styles.handleIndicator} />
-        <View style={styles.bottomSheetContent}>
-          <View style={styles.exportSheetBody}>
-            <Text
-              style={[styles.exportSheetTitle, { fontFamily: titleFontFamily }]}
-            >
-              {t("shiftHistory.periodLabel")}
-            </Text>
-
-            <View style={tabs.length > 1 ? styles.periodTabs : null}>
-              {(tabs.length > 1 ? tabs : []).map((tab) => (
-                <TouchableOpacity
-                  key={tab}
-                  style={[
-                    styles.periodTab,
-                    exportPeriodTab === tab && styles.periodTabActive,
-                  ]}
-                  onPress={() => setExportPeriodTab(tab)}
-                  activeOpacity={0.85}
-                >
-                  <Text
-                    style={[
-                      styles.periodTabText,
-                      exportPeriodTab === tab && styles.periodTabTextActive,
-                    ]}
-                  >
-                    {t(`shifts.periodTabs.${tab.toLowerCase()}`, tab)}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            <View style={styles.periodCard}>
-              {exportPeriodTab === "Month" ? (
-                <View style={styles.monthRangeStack}>
-                  <View>
-                    <Text style={styles.monthDateLabel}>
-                      {t("shiftHistory.from")}
-                    </Text>
-                    <MonthYearWheels
-                      value={exportFromMonth}
-                      onChange={setExportFromMonth}
-                      options={exportMonthOptions}
-                      styles={styles}
-                      prefix="from"
-                    />
-                  </View>
-                  <View>
-                    <Text style={styles.monthDateLabel}>
-                      {t("shiftHistory.to")}
-                    </Text>
-                    <MonthYearWheels
-                      value={exportToMonth}
-                      onChange={setExportToMonth}
-                      options={exportMonthOptions}
-                      styles={styles}
-                      prefix="to"
-                    />
-                  </View>
-                </View>
-              ) : (
-                <View style={styles.dateContainer}>
-                  <View style={styles.monthDateField}>
-                    <Text style={styles.monthDateLabel}>
-                      {t("shiftHistory.from")}
-                    </Text>
-                    <TouchableOpacity
-                      style={[
-                        styles.dateValueCard,
-                        (datePickerTarget || "from") === "from" &&
-                          styles.dateValueCardActive,
-                      ]}
-                      onPress={() => setDatePickerTarget("from")}
-                      activeOpacity={0.85}
-                    >
-                      <Text
-                        style={[
-                          styles.dateValueText,
-                          !exportFromDate && styles.dateValuePlaceholder,
-                        ]}
-                      >
-                        {formatExportPickerDate(exportFromDate)}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View style={styles.monthDateField}>
-                    <Text style={styles.monthDateLabel}>
-                      {t("shiftHistory.to")}
-                    </Text>
-                    <TouchableOpacity
-                      style={[
-                        styles.dateValueCard,
-                        datePickerTarget === "to" && styles.dateValueCardActive,
-                      ]}
-                      onPress={() => setDatePickerTarget("to")}
-                      activeOpacity={0.85}
-                    >
-                      <Text
-                        style={[
-                          styles.dateValueText,
-                          !exportToDate && styles.dateValuePlaceholder,
-                        ]}
-                      >
-                        {formatExportPickerDate(exportToDate)}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              )}
-
-              {exportPeriodTab === "Custom" ? (
-                <View style={styles.inlineDatePicker}>
-                  <DateTimePicker
-                    // One calendar per field, in the app's language.
-                    key={datePickerTarget || "from"}
-                    locale={getDateLocale()}
-                    value={parseDateKey(
-                      (datePickerTarget || "from") === "from"
-                        ? exportFromDate
-                        : exportToDate,
-                    )}
-                    mode="date"
-                    display={DATE_PICKER_DISPLAY}
-                    onChange={onCustomDateChange}
-                  />
-                </View>
-              ) : null}
-            </View>
-          </View>
-
-          <TouchableOpacity
-            style={styles.exportMainButton}
-            onPress={onApply}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.exportMainButtonText}>
-              {t("shifts.applyPeriod")}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </Animated.View>
-    </Modal>
-  );
-}
-
 // Planned / Manual / GPS segmented toggle — picks which hours source drives
 // the numbers and their colour.
 export function HoursSourceToggle({
@@ -830,7 +572,6 @@ export function SelectionSummary({
 }
 
 const CALENDAR_WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const VIEW_MODES = ["week", "month", "period"];
 
 const capitalize = (text) =>
   text ? text.charAt(0).toUpperCase() + text.slice(1) : "";
@@ -994,36 +735,17 @@ export function ShiftWeekPicker({
   return (
     <View style={styles.weekCard}>
       {onChangeViewMode ? (
-        <View style={styles.viewModeToggle}>
-          {VIEW_MODES.map((mode) => {
-            const on = mode === viewMode;
-            return (
-              <TouchableOpacity
-                key={mode}
-                style={[styles.viewModeBtn, on && styles.viewModeBtnOn]}
-                onPress={() => {
-                  setMonthGridOpen(false);
-                  onChangeViewMode(mode);
-                }}
-                activeOpacity={0.85}
-                testID={`shifts-view-${mode}`}
-              >
-                <Text
-                  style={[
-                    styles.viewModeText,
-                    on && styles.viewModeTextOn,
-                    on && { fontFamily: semiBoldFontFamily },
-                  ]}
-                >
-                  {t(`shifts.view.${mode}`)}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
+        <PeriodTabs
+          value={viewMode}
+          testIDPrefix="shifts-view"
+          onChange={(mode) => {
+            setMonthGridOpen(false);
+            onChangeViewMode(mode);
+          }}
+        />
       ) : null}
 
-      {viewMode === "period" ? (
+      {viewMode === "custom" ? (
         <TouchableOpacity
           style={styles.periodPickButton}
           onPress={onPickPeriod}
@@ -1166,7 +888,7 @@ export function ShiftWeekPicker({
           ))}
         </View>
       ) : null}
-      {viewMode === "period"
+      {viewMode === "custom"
         ? null
         : (viewMode === "month" ? monthWeeks : [weekKeys]).map((keys) => (
             <View

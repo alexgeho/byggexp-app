@@ -47,23 +47,7 @@ export const createStyles = (c) =>
       justifyContent: "center",
     },
     viewRow: {
-      flexDirection: "row",
-      gap: 6,
-      marginTop: 12,
-    },
-    viewSegment: {
-      flex: 1,
-      alignItems: "center",
-      paddingHorizontal: 6,
       paddingVertical: 10,
-      borderRadius: 999,
-      backgroundColor: c.surface,
-      borderWidth: 1,
-      borderColor: onDark(c, c.divider, "rgba(5, 45, 80, 0.12)"),
-    },
-    viewSegmentText: {
-      fontSize: 14,
-      color: c.textPrimary,
     },
     peopleRow: {
       marginTop: 12,
@@ -96,14 +80,6 @@ export const createStyles = (c) =>
       flexShrink: 1,
       color: c.textPrimary,
       fontSize: 14,
-    },
-    segmentActive: {
-      backgroundColor: "#1877F2",
-      borderColor: "#1877F2",
-    },
-    segmentTextActive: {
-      color: "#FFFFFF",
-      fontFamily: "DMSans-SemiBold",
     },
     timelineCard: {
       flex: 1,
