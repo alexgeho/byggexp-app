@@ -4,7 +4,39 @@ import { View, TouchableOpacity, Image, ActivityIndicator } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 
+import Svg, { Path, Rect } from "react-native-svg";
+
 import { styles } from "./mainActionButtons.styles";
+
+// Play / Pause drawn as vectors, not PNGs: an image is decoded after the
+// button is already on screen (the pause one is 1000×1000), so the white
+// circle stood empty for a moment. A vector is there in the same frame.
+function PlayPauseGlyph({ running, size, color }) {
+  return (
+    <Svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      opacity={0.85}
+      testID={running ? "action-pause-glyph" : "action-play-glyph"}
+    >
+      {running ? (
+        <>
+          <Rect x="5" y="4" width="5" height="16" rx="1.6" fill={color} />
+          <Rect x="14" y="4" width="5" height="16" rx="1.6" fill={color} />
+        </>
+      ) : (
+        <Path
+          d="M8.5 6 L18.5 12 L8.5 18 Z"
+          fill={color}
+          stroke={color}
+          strokeWidth={3.4}
+          strokeLinejoin="round"
+        />
+      )}
+    </Svg>
+  );
+}
 
 export function MainActionButtons({
   isRunning,
@@ -70,22 +102,10 @@ export function MainActionButtons({
           {loading ? (
             <ActivityIndicator color={actionIconColor || "#2F80ED"} />
           ) : (
-            <Image
-              style={[
-                styles.iconAction,
-                {
-                  width: iconActionSize,
-                  height: iconActionSize,
-                },
-                actionIconColor && {
-                  tintColor: actionIconColor,
-                },
-              ]}
-              source={
-                isRunning
-                  ? require("../../../assets/HomeScreen2/Pause.png")
-                  : require("../../../assets/HomeScreen2/Play.png")
-              }
+            <PlayPauseGlyph
+              running={isRunning}
+              size={iconActionSize}
+              color={actionIconColor || "#2F80ED"}
             />
           )}
         </TouchableOpacity>
