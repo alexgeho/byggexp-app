@@ -126,10 +126,9 @@ const toNoonIso = (date) =>
 // (guarded by __DEV__ at the call site); flip to preview colors locally.
 const SCHEDULE_DEMO = false;
 
-// Day / 3 days / week = the hour grid (the web admin's Google-Calendar view);
-// month = the timeline with tasks and project spans.
-const VIEWS = ["day", "3days", "week", "month"];
-const VIEW_DAYS = { day: 1, "3days": 3, week: 7 };
+// Week = the hour grid (the web admin's Google-Calendar view); month = the
+// timeline with tasks and project spans.
+const VIEWS = ["week", "month"];
 const VIEW_KEY = "schedule-view";
 const HIDDEN_PEOPLE_KEY = "schedule-hidden-people";
 
@@ -168,7 +167,7 @@ export default function ScheduleScreen() {
       return next;
     });
   const isGrid = view !== "month";
-  const gridDays = useMemo(() => gridDaysFor(view, anchor), [view, anchor]);
+  const gridDays = useMemo(() => gridDaysFor(anchor), [anchor]);
   const [currentMonth, setCurrentMonth] = useState(() =>
     startOfMonth(new Date()),
   );
@@ -409,10 +408,10 @@ export default function ScheduleScreen() {
     setAnchor(startOfDay(new Date()));
     setCurrentMonth(startOfMonth(new Date()));
   };
-  // ‹ › step by what is on screen: the grid's days, or a month.
+  // ‹ › step by what is on screen: a week, or a month.
   const step = (direction) => {
     if (isGrid) {
-      setAnchor((prev) => addDays(prev, direction * VIEW_DAYS[view]));
+      setAnchor((prev) => addDays(prev, direction * 7));
     } else {
       setCurrentMonth((prev) => addMonths(prev, direction));
     }

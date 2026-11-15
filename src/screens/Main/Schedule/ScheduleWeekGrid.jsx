@@ -4,7 +4,6 @@ import {
   addDays,
   formatWeekdayLabel,
   getWeekNumber,
-  startOfDay,
   startOfWeek,
 } from "../../../utils/schedule";
 import {
@@ -42,7 +41,6 @@ export default function ScheduleWeekGrid({
   t,
 }) {
   const styles = useMemo(() => createStyles(content), [content]);
-  const compact = days.length > 3;
   const today = toDayKey(new Date());
   const now = new Date();
   const nowMinute = now.getHours() * 60 + now.getMinutes();
@@ -86,12 +84,7 @@ export default function ScheduleWeekGrid({
                   style={styles.leavePill}
                 >
                   <Text numberOfLines={1} style={styles.leaveText}>
-                    {compact
-                      ? nameOf(leave.userId)
-                      : `${nameOf(leave.userId)} · ${t(
-                          `schedule.leaveTypes.${leave.type}`,
-                          leave.type,
-                        )}`}
+                    {nameOf(leave.userId)}
                   </Text>
                 </View>
               ))}
@@ -161,30 +154,14 @@ export default function ScheduleWeekGrid({
                         block.overbooked && styles.blockOver,
                       ]}
                     >
-                      <Text
-                        numberOfLines={1}
-                        style={[styles.blockName, compact && styles.blockSmall]}
-                      >
+                      <Text numberOfLines={1} style={styles.blockName}>
                         {nameOf(block.userId)}
                       </Text>
                       {height >= 34 ? (
-                        <Text
-                          numberOfLines={compact ? 2 : 1}
-                          style={[
-                            styles.blockSub,
-                            compact && styles.blockSmall,
-                          ]}
-                        >
+                        <Text numberOfLines={2} style={styles.blockSub}>
                           {block.projectId
                             ? projectNameOf(block.projectId)
                             : t("billing.noProject")}
-                        </Text>
-                      ) : null}
-                      {!compact && height >= 52 ? (
-                        <Text numberOfLines={1} style={styles.blockSub}>
-                          {`${formatMinutes(block.start)}–${formatMinutes(
-                            block.end,
-                          )}`}
                         </Text>
                       ) : null}
                     </Pressable>
@@ -208,11 +185,10 @@ export default function ScheduleWeekGrid({
   );
 }
 
-// Day list for a view: a whole week (Mon–Sun), or 1 / 3 days from the anchor.
-export const gridDaysFor = (view, anchor) => {
-  const first = view === "week" ? startOfWeek(anchor) : startOfDay(anchor);
-  const count = view === "week" ? 7 : view === "3days" ? 3 : 1;
-  return Array.from({ length: count }, (_, index) => addDays(first, index));
+// The week (Mon–Sun) the anchor day falls in.
+export const gridDaysFor = (anchor) => {
+  const first = startOfWeek(anchor);
+  return Array.from({ length: 7 }, (_, index) => addDays(first, index));
 };
 
 const createStyles = (c) => {
@@ -335,14 +311,11 @@ const createStyles = (c) => {
     },
     blockName: {
       color: "#FFFFFF",
-      fontSize: 12,
+      fontSize: 10,
       fontFamily: "DMSans-SemiBold",
     },
     blockSub: {
       color: "rgba(255, 255, 255, 0.92)",
-      fontSize: 11,
-    },
-    blockSmall: {
       fontSize: 10,
     },
     nowLine: {

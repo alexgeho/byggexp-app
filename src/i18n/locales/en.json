@@ -902,8 +902,6 @@
   },
   "schedule": {
     "views": {
-      "day": "Day",
-      "3days": "3 days",
       "week": "Week",
       "month": "Month"
     },

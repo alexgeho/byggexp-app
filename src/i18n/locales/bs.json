@@ -905,8 +905,6 @@
   },
   "schedule": {
     "views": {
-      "day": "Dan",
-      "3days": "3 dana",
       "week": "Sedmica",
       "month": "Mjesec"
     },

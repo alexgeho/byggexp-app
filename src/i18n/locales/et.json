@@ -902,8 +902,6 @@
   },
   "schedule": {
     "views": {
-      "day": "Päev",
-      "3days": "3 päeva",
       "week": "Nädal",
       "month": "Kuu"
     },

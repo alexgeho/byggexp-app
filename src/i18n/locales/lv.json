@@ -903,8 +903,6 @@
   },
   "schedule": {
     "views": {
-      "day": "Diena",
-      "3days": "3 dienas",
       "week": "Nedēļa",
       "month": "Mēnesis"
     },
