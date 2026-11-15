@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
@@ -25,6 +26,11 @@ const YEARS_BACK = 5;
 const YEARS_AHEAD = 2;
 const IOS_WHEEL_HEIGHT = 216;
 const WHEEL_BOX_HEIGHT = 120;
+// The iOS wheel keeps ~27 pt on each side of its text, so a wheel narrower
+// than its text + 54 pt cuts the text ("20…", half a digit).
+const DAY_WHEEL_WIDTH = 78;
+const YEAR_WHEEL_WIDTH = 104;
+const NARROW_SCREEN = 380;
 
 const pad = (n) => String(n).padStart(2, "0");
 const daysIn = (year, month) =>
@@ -49,9 +55,12 @@ function DateWheels({ value, onChange, styles, prefix }) {
   const days = Array.from({ length: daysIn(year, month) }, (_, index) =>
     pad(index + 1),
   );
+  // All three wheels are readable at once: on a narrow phone the month is
+  // written short ("Nov") so that the day and the year keep their width.
+  const { width } = useWindowDimensions();
   const monthName = (mm) => {
     const label = new Intl.DateTimeFormat(getDateLocale(), {
-      month: "long",
+      month: width < NARROW_SCREEN ? "short" : "long",
     }).format(new Date(Number(year), Number(mm) - 1, 1));
     return label.charAt(0).toUpperCase() + label.slice(1);
   };
@@ -232,7 +241,7 @@ const createStyles = (c) =>
     card: {
       backgroundColor: c.surface,
       borderRadius: 20,
-      padding: 16,
+      paddingVertical: 16,
     },
     label: {
       fontSize: 14,
@@ -246,7 +255,7 @@ const createStyles = (c) =>
     },
     wheels: {
       flexDirection: "row",
-      gap: 4,
+      gap: 2,
     },
     // iOS draws the wheel at its own 216 pt whatever height it is given, so
     // the box crops it evenly from both sides: the selected row (the grey
@@ -257,13 +266,13 @@ const createStyles = (c) =>
       height: Platform.OS === "ios" ? WHEEL_BOX_HEIGHT : undefined,
     },
     wheelDay: {
-      flex: 2,
+      width: DAY_WHEEL_WIDTH,
     },
     wheelMonth: {
-      flex: 5,
+      flex: 1,
     },
     wheelYear: {
-      flex: 3,
+      width: YEAR_WHEEL_WIDTH,
     },
     wheel: {
       height: Platform.OS === "ios" ? IOS_WHEEL_HEIGHT : 48,

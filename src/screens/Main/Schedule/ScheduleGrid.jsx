@@ -64,8 +64,11 @@ export default function ScheduleGrid({
   const today = toDayKey(new Date());
   const now = new Date();
   const nowMinute = now.getHours() * 60 + now.getMinutes();
-  const isMonth = view !== "week";
-  const head = days.slice(0, 7);
+  // Week and two weeks are the hour grid; month and custom are rows of weeks.
+  const isMonth = view !== "week" && view !== "twoWeeks";
+  // Fourteen columns of hours: the same grid, only tighter type.
+  const dense = !isMonth && days.length > 7;
+  const head = isMonth ? days.slice(0, 7) : days;
 
   // Several days at once: a long press on a day, then a drag over the days
   // next to it (in the week also down the hours); lifting the finger opens
@@ -184,12 +187,29 @@ export default function ScheduleGrid({
               disabled={isMonth || days.length === 1}
               onPress={() => onDayPress(day)}
             >
-              <Text numberOfLines={1} style={styles.weekday}>
-                {formatWeekdayLabel(day)}
+              <Text
+                numberOfLines={1}
+                style={[styles.weekday, dense && styles.weekdayDense]}
+              >
+                {dense
+                  ? formatWeekdayLabel(day).slice(0, 1).toUpperCase()
+                  : formatWeekdayLabel(day)}
               </Text>
               {isMonth ? null : (
-                <View style={[styles.dateBox, isToday && styles.dateBoxToday]}>
-                  <Text style={[styles.date, isToday && styles.dateToday]}>
+                <View
+                  style={[
+                    styles.dateBox,
+                    dense && styles.dateBoxDense,
+                    isToday && styles.dateBoxToday,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.date,
+                      dense && styles.dateDense,
+                      isToday && styles.dateToday,
+                    ]}
+                  >
                     {day.getDate()}
                   </Text>
                 </View>
@@ -402,6 +422,7 @@ export default function ScheduleGrid({
                           onPress={() => onBlockPress(block)}
                           style={[
                             styles.block,
+                            dense && styles.blockDense,
                             {
                               top: topOf(start),
                               height,
@@ -413,10 +434,17 @@ export default function ScheduleGrid({
                             block.overbooked && styles.blockOver,
                           ]}
                         >
-                          <Text numberOfLines={1} style={styles.blockName}>
+                          <Text
+                            numberOfLines={1}
+                            ellipsizeMode="clip"
+                            style={[
+                              styles.blockName,
+                              dense && styles.blockNameDense,
+                            ]}
+                          >
                             {nameOf(block.userId)}
                           </Text>
-                          {height >= 34 ? (
+                          {height >= 34 && !dense ? (
                             <Text numberOfLines={2} style={styles.blockSub}>
                               {block.projectId
                                 ? projectNameOf(block.projectId)
@@ -503,6 +531,18 @@ const createStyles = (c) => {
       justifyContent: "center",
       paddingHorizontal: 4,
     },
+    weekdayDense: {
+      fontSize: 9,
+    },
+    dateBoxDense: {
+      minWidth: 20,
+      height: 20,
+      borderRadius: 10,
+      paddingHorizontal: 0,
+    },
+    dateDense: {
+      fontSize: 11,
+    },
     dateBoxToday: {
       backgroundColor: "#1877F2",
     },
@@ -578,6 +618,13 @@ const createStyles = (c) => {
       overflow: "hidden",
       borderWidth: 1,
       borderColor: c.surface,
+    },
+    blockDense: {
+      paddingHorizontal: 1,
+      borderRadius: 4,
+    },
+    blockNameDense: {
+      fontSize: 8,
     },
     blockOver: {
       borderWidth: 2,

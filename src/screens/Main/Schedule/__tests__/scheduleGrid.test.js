@@ -163,7 +163,7 @@ describe("Planning — one grid", () => {
     expect(texts(tree).flat()).toContain("08:00");
   });
 
-  it("two weeks is the same grid: this week and the next, a row each", async () => {
+  it("two weeks is the week grid with hours: fourteen columns", async () => {
     const tree = await renderScreen("companyAdmin");
     await act(async () =>
       pressables(tree, "schedule-view-twoWeeks")[0].props.onPress(),
@@ -173,7 +173,7 @@ describe("Planning — one grid", () => {
     );
     expect(days.size).toBe(14);
     expect(pressables(tree, "grid-block-a1").length).toBeGreaterThan(0);
-    expect(texts(tree).flat()).not.toContain("08:00");
+    expect(texts(tree).flat()).toContain("08:00");
   });
 
   it("custom is the same grid over the chosen dates", async () => {
