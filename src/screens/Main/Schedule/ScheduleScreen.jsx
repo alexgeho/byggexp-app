@@ -32,6 +32,7 @@ import {
   daysBetween,
   EVENT_COLORS,
   formatMonthLabel,
+  formatMonthSpanLabel,
   getMonthKey,
   normalizeId,
   parseMonthKey,
@@ -50,7 +51,6 @@ import {
   PeriodTabs,
 } from "../../../components/common/PeriodTabs/PeriodTabs";
 import ScheduleGrid, { gridDaysFor, isHourGrid } from "./ScheduleGrid";
-import { formatExportPickerDate } from "../../../utils/shifts";
 import { canCreateProjects } from "../../../utils/userRoles";
 import { createStyles } from "./ScheduleScreen.styles";
 import { useTheme } from "../../../theme/ThemeContext";
@@ -218,15 +218,6 @@ export default function ScheduleScreen() {
       from: toDayKey(from),
       to: toDayKey(addDays(from, daysBetween(rangeDays.from, rangeDays.to))),
     });
-  const goToday = () => {
-    const today = startOfDay(new Date());
-    if (focusDay) {
-      setFocusDay(today);
-      return;
-    }
-    if (view === "custom") moveRange(today);
-    setAnchor(today);
-  };
   // ‹ › step by what is on screen: a week, a month, or the period's length.
   const step = (direction) => {
     if (focusDay) {
@@ -251,14 +242,13 @@ export default function ScheduleScreen() {
       : day.getMonth() === anchor.getMonth();
   };
 
+  // The header names only the month and the year of what is on screen (for
+  // Custom — of the chosen period); the day numbers are in the grid.
   let headerLabel = formatMonthLabel(view === "month" ? anchor : gridDays[0]);
   if (focusDay) {
-    headerLabel = formatExportPickerDate(toDayKey(focusDay));
+    headerLabel = formatMonthLabel(focusDay);
   } else if (view === "custom") {
-    headerLabel =
-      range.from === range.to
-        ? formatExportPickerDate(range.from)
-        : `${formatExportPickerDate(range.from)} – ${formatExportPickerDate(range.to)}`;
+    headerLabel = formatMonthSpanLabel(rangeDays.from, rangeDays.to);
   }
 
   const monthOptions = useMemo(() => {
@@ -339,35 +329,6 @@ export default function ScheduleScreen() {
           iconSource={require("../../../assets/Arrow-left.png")}
         />
         <TouchableOpacity
-          style={styles.todayButton}
-          onPress={goToday}
-          activeOpacity={0.85}
-        >
-          <Icon
-            name="calendar"
-            size={20}
-            color={onDark(theme.content, theme.content.textMuted, "#052D50")}
-          />
-        </TouchableOpacity>
-      </View>
-
-      {/* The dates have a row of their own, above the people: in the header
-          they were squeezed between the buttons. */}
-      <View style={styles.dateRow}>
-        <TouchableOpacity
-          style={styles.stepButton}
-          onPress={() => step(-1)}
-          activeOpacity={0.85}
-          hitSlop={6}
-          testID="schedule-step-prev"
-        >
-          <Icon
-            name="chevron-left"
-            size={20}
-            color={onDark(theme.content, theme.content.textMuted, "#052D50")}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
           style={styles.monthSelector}
           onPress={() => {
             if (focusDay) setFocusDay(null);
@@ -390,19 +351,34 @@ export default function ScheduleScreen() {
             color={onDark(theme.content, theme.content.textMuted, "#052D50")}
           />
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.stepButton}
-          onPress={() => step(1)}
-          activeOpacity={0.85}
-          hitSlop={6}
-          testID="schedule-step-next"
-        >
-          <Icon
-            name="chevron-right"
-            size={20}
-            color={onDark(theme.content, theme.content.textMuted, "#052D50")}
-          />
-        </TouchableOpacity>
+        <View style={styles.stepGroup}>
+          <TouchableOpacity
+            style={styles.stepButton}
+            onPress={() => step(-1)}
+            activeOpacity={0.85}
+            hitSlop={6}
+            testID="schedule-step-prev"
+          >
+            <Icon
+              name="chevron-left"
+              size={20}
+              color={onDark(theme.content, theme.content.textMuted, "#052D50")}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.stepButton}
+            onPress={() => step(1)}
+            activeOpacity={0.85}
+            hitSlop={6}
+            testID="schedule-step-next"
+          >
+            <Icon
+              name="chevron-right"
+              size={20}
+              color={onDark(theme.content, theme.content.textMuted, "#052D50")}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.peopleRow}>

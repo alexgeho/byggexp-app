@@ -14,13 +14,6 @@ export const createStyles = (c) =>
     header: {
       ...standardScreenHeader,
     },
-    dateRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      gap: 8,
-      marginTop: 12,
-    },
     monthSelector: {
       flexDirection: "row",
       alignItems: "center",
@@ -34,15 +27,9 @@ export const createStyles = (c) =>
       fontSize: 19,
       fontFamily: "DMSans-SemiBold",
     },
-    todayButton: {
-      width: 44,
-      height: 44,
-      borderRadius: 22,
-      backgroundColor: c.surfaceMuted,
-      borderWidth: 1,
-      borderColor: "#FFFFFF50",
-      alignItems: "center",
-      justifyContent: "center",
+    stepGroup: {
+      flexDirection: "row",
+      gap: 4,
     },
     stepButton: {
       width: 36,

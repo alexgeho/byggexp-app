@@ -72,6 +72,21 @@ export const formatMonthLabel = (date) =>
     year: "numeric",
   }).format(date);
 
+// The months a span of days covers: "November 2026", or "Nov 2026 – Dec 2026"
+// when it runs over into another month. Never the day numbers — the grid
+// under it shows those.
+export const formatMonthSpanLabel = (from, to) => {
+  const same =
+    from.getFullYear() === to.getFullYear() &&
+    from.getMonth() === to.getMonth();
+  if (same) return formatMonthLabel(from);
+  const short = new Intl.DateTimeFormat(getDateLocale(), {
+    month: "short",
+    year: "numeric",
+  });
+  return `${short.format(from)} – ${short.format(to)}`;
+};
+
 export const formatWeekdayLabel = (date) =>
   new Intl.DateTimeFormat(getDateLocale(), { weekday: "short" }).format(date);
 
