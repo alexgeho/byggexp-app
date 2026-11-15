@@ -10,6 +10,8 @@ import {
   planBookingChanges,
   shiftEndTime,
   slotAt,
+  dayIndexAt,
+  dragEndMinute,
   splitPhone,
   timeOf,
   toDayKey,
@@ -292,5 +294,26 @@ describe("scheduleBooking", () => {
       "2026-11-16": [{ userId: "u1", type: "sick" }],
       "2026-11-17": [{ userId: "u1", type: "sick" }],
     });
+  });
+});
+
+describe("drag over days", () => {
+  it("finds the day under the finger", () => {
+    const week = { width: 398, gutter: 48, columns: 7 };
+    expect(dayIndexAt({ ...week, x: 10, y: 0 })).toBe(0);
+    expect(dayIndexAt({ ...week, x: 48 + 50 * 2 + 5, y: 300 })).toBe(2);
+    expect(dayIndexAt({ ...week, x: 9999, y: 0 })).toBe(6);
+    const rows = [
+      { y: 0, height: 96 },
+      { y: 96, height: 120 },
+    ];
+    expect(dayIndexAt({ ...week, rows, x: 48 + 5, y: 100 })).toBe(7);
+    expect(dayIndexAt({ ...week, rows, x: 48 + 55, y: 9999 })).toBe(8);
+  });
+
+  it("stretches the time down to the finger, by half hours", () => {
+    expect(dragEndMinute(8 * 60, 48 * 8, 48)).toBe(8 * 60 + 30);
+    expect(dragEndMinute(8 * 60, 48 * 10 + 10, 48)).toBe(10 * 60 + 30);
+    expect(dragEndMinute(8 * 60, 99999, 48)).toBe(23 * 60 + 30);
   });
 });

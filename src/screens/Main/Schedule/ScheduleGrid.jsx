@@ -1,5 +1,12 @@
-import React, { useMemo } from "react";
-import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
+import React, { useMemo, useRef, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+  PanResponder,
+} from "react-native";
 import {
   addDays,
   daysBetween,
@@ -12,9 +19,12 @@ import {
   GRID_FIRST_HOUR,
   GRID_LAST_HOUR,
   GRID_OPEN_HOUR,
+  dayIndexAt,
+  dragEndMinute,
   formatMinutes,
   slotAt,
   toDayKey,
+  toMinutes,
 } from "../../../utils/scheduleBooking";
 import { onDark } from "../../../theme/colorUtils";
 
@@ -46,6 +56,7 @@ export default function ScheduleGrid({
   onSlotPress,
   onBlockPress,
   onDayPress,
+  onRangeSelect,
   content,
   t,
 }) {
@@ -55,6 +66,96 @@ export default function ScheduleGrid({
   const nowMinute = now.getHours() * 60 + now.getMinutes();
   const isMonth = view !== "week";
   const head = days.slice(0, 7);
+
+  // Several days at once: a long press on a day, then a drag over the days
+  // next to it (in the week also down the hours); lifting the finger opens
+  // the booking for them. A long press without a drag = that one day.
+  const [selection, setSelection] = useState(null); // { from, to, start, end }
+  const selectionRef = useRef(null);
+  const capturedRef = useRef(false);
+  const bodyRef = useRef(null);
+  const frameRef = useRef({ x: 0, y: 0, width: 0 });
+  const rowsRef = useRef([]);
+  const select = (next) => {
+    selectionRef.current = next;
+    setSelection(next);
+  };
+  const beginSelection = (index, slot) => {
+    bodyRef.current?.measureInWindow?.((x, y, width) => {
+      frameRef.current = { x, y, width };
+    });
+    const start = slot ? toMinutes(slot.start) : null;
+    select({ from: index, to: index, start, end: slot ? start + 60 : null });
+  };
+  const moveSelection = (pageX, pageY) => {
+    const current = selectionRef.current;
+    const frame = frameRef.current;
+    if (!current || !frame.width) return;
+    const y = pageY - frame.y;
+    const to = dayIndexAt({
+      x: pageX - frame.x,
+      y,
+      width: frame.width,
+      gutter: GUTTER_WIDTH,
+      columns: isMonth ? 7 : days.length,
+      rows: isMonth ? rowsRef.current : null,
+    });
+    const end =
+      current.start === null
+        ? null
+        : dragEndMinute(current.start, y, HOUR_HEIGHT);
+    if (to !== current.to || end !== current.end) {
+      select({ ...current, to, end });
+    }
+  };
+  const endSelection = (commit) => {
+    const current = selectionRef.current;
+    capturedRef.current = false;
+    if (!current) return;
+    select(null);
+    if (!commit) return;
+    const first = Math.min(current.from, current.to);
+    const last = Math.max(current.from, current.to);
+    onRangeSelect(
+      toDayKey(days[first]),
+      toDayKey(days[last]),
+      current.start === null
+        ? null
+        : {
+            start: formatMinutes(current.start),
+            end: formatMinutes(current.end),
+          },
+    );
+  };
+  // The latest closures for the responder, which is created once.
+  const handlersRef = useRef({});
+  handlersRef.current = { moveSelection, endSelection };
+  const pan = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponderCapture: () => {
+        if (!selectionRef.current) return false;
+        capturedRef.current = true;
+        return true;
+      },
+      onPanResponderMove: (event) =>
+        handlersRef.current.moveSelection(
+          event.nativeEvent.pageX,
+          event.nativeEvent.pageY,
+        ),
+      onPanResponderTerminationRequest: () => false,
+      onPanResponderRelease: () => handlersRef.current.endSelection(true),
+      onPanResponderTerminate: () => handlersRef.current.endSelection(false),
+    }),
+  ).current;
+  // The finger lifted without a drag: the pressable ends the selection (after
+  // a drag the responder above does).
+  const onPressOut = () => {
+    if (!capturedRef.current) endSelection(true);
+  };
+  const isSelected = (index) =>
+    selection !== null &&
+    index >= Math.min(selection.from, selection.to) &&
+    index <= Math.max(selection.from, selection.to);
   const hasLeaves =
     !isMonth &&
     days.some((day) => (leavesByDay[toDayKey(day)] || []).length > 0);
@@ -126,169 +227,220 @@ export default function ScheduleGrid({
         }
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.bodyContent}
+        // The page does not scroll under a finger that is selecting days.
+        scrollEnabled={selection === null}
       >
-        {isMonth ? (
-          weeks.map((week) => (
-            <View key={week[0].getTime()} style={styles.weekRow}>
-              <View style={styles.weekGutter}>
-                <Text style={styles.hourText}>{getWeekNumber(week[0])}</Text>
-              </View>
-              {week.map((day) => {
-                const dayKey = toDayKey(day);
-                const isToday = dayKey === today;
-                const outside = !isInside(day);
-                const weekend = day.getDay() === 0 || day.getDay() === 6;
-                const leaves = leavesByDay[dayKey] || [];
-                const blocks = [...(blocksByDay[dayKey] || [])].sort(
-                  (a, b) => a.start - b.start,
-                );
-                const room = Math.max(0, MONTH_CHIPS - leaves.length);
-                const more =
-                  Math.max(0, leaves.length - MONTH_CHIPS) +
-                  Math.max(0, blocks.length - room);
-                return (
-                  <Pressable
-                    key={dayKey}
-                    testID={`grid-day-${dayKey}`}
-                    style={[styles.cell, weekend && styles.columnWeekend]}
-                    onPress={() => onDayPress(day)}
-                  >
-                    <View
-                      style={[styles.cellDate, isToday && styles.dateBoxToday]}
+        <View ref={bodyRef} collapsable={false} {...pan.panHandlers}>
+          {isMonth ? (
+            weeks.map((week, weekIndex) => (
+              <View
+                key={week[0].getTime()}
+                style={styles.weekRow}
+                onLayout={(event) => {
+                  const { y, height } = event.nativeEvent.layout;
+                  rowsRef.current[weekIndex] = { y, height };
+                }}
+              >
+                <View style={styles.weekGutter}>
+                  <Text style={styles.hourText}>{getWeekNumber(week[0])}</Text>
+                </View>
+                {week.map((day, dayIndex) => {
+                  const index = weekIndex * 7 + dayIndex;
+                  const dayKey = toDayKey(day);
+                  const isToday = dayKey === today;
+                  const outside = !isInside(day);
+                  const weekend = day.getDay() === 0 || day.getDay() === 6;
+                  const leaves = leavesByDay[dayKey] || [];
+                  const blocks = [...(blocksByDay[dayKey] || [])].sort(
+                    (a, b) => a.start - b.start,
+                  );
+                  const room = Math.max(0, MONTH_CHIPS - leaves.length);
+                  const more =
+                    Math.max(0, leaves.length - MONTH_CHIPS) +
+                    Math.max(0, blocks.length - room);
+                  return (
+                    <Pressable
+                      key={dayKey}
+                      testID={`grid-day-${dayKey}`}
+                      style={[
+                        styles.cell,
+                        weekend && styles.columnWeekend,
+                        isSelected(index) && styles.cellSelected,
+                      ]}
+                      onPress={() => onDayPress(day)}
+                      delayLongPress={300}
+                      onLongPress={canBook ? () => beginSelection(index) : null}
+                      onPressOut={onPressOut}
                     >
-                      <Text
+                      <View
                         style={[
-                          styles.cellDateText,
-                          outside && styles.cellDateOutside,
-                          isToday && styles.dateToday,
+                          styles.cellDate,
+                          isToday && styles.dateBoxToday,
                         ]}
                       >
-                        {day.getDate()}
-                      </Text>
-                    </View>
-                    {leaves.slice(0, MONTH_CHIPS).map((leave) => (
-                      <View
-                        key={`${leave.userId}-${leave.type}`}
-                        style={styles.leavePill}
-                      >
-                        <Text numberOfLines={1} style={styles.leaveText}>
-                          {nameOf(leave.userId)}
+                        <Text
+                          style={[
+                            styles.cellDateText,
+                            outside && styles.cellDateOutside,
+                            isToday && styles.dateToday,
+                          ]}
+                        >
+                          {day.getDate()}
                         </Text>
                       </View>
+                      {leaves.slice(0, MONTH_CHIPS).map((leave) => (
+                        <View
+                          key={`${leave.userId}-${leave.type}`}
+                          style={styles.leavePill}
+                        >
+                          <Text numberOfLines={1} style={styles.leaveText}>
+                            {nameOf(leave.userId)}
+                          </Text>
+                        </View>
+                      ))}
+                      {blocks.slice(0, room).map((block) => (
+                        <Pressable
+                          key={block.id}
+                          testID={`grid-block-${block.id}`}
+                          onPress={() => onBlockPress(block)}
+                          style={[
+                            styles.chip,
+                            { backgroundColor: colorOf(block.userId) },
+                            block.overbooked && styles.blockOver,
+                          ]}
+                        >
+                          <Text numberOfLines={1} style={styles.blockName}>
+                            {nameOf(block.userId)}
+                          </Text>
+                        </Pressable>
+                      ))}
+                      {more > 0 ? (
+                        <Text style={styles.moreText}>+{more}</Text>
+                      ) : null}
+                    </Pressable>
+                  );
+                })}
+              </View>
+            ))
+          ) : (
+            <View style={styles.body}>
+              <View style={styles.gutter}>
+                {HOURS.map((hour) => (
+                  <View key={hour} style={styles.hourCell}>
+                    <Text style={styles.hourText}>
+                      {formatMinutes(hour * 60)}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+
+              {days.map((day, index) => {
+                const dayKey = toDayKey(day);
+                const weekend = day.getDay() === 0 || day.getDay() === 6;
+                return (
+                  <Pressable
+                    key={day.getTime()}
+                    testID={`grid-day-${dayKey}`}
+                    style={[styles.column, weekend && styles.columnWeekend]}
+                    disabled={!canBook}
+                    delayLongPress={300}
+                    onLongPress={(event) =>
+                      beginSelection(
+                        index,
+                        slotAt(event.nativeEvent.locationY, HOUR_HEIGHT),
+                      )
+                    }
+                    onPressOut={onPressOut}
+                    onPress={(event) =>
+                      onSlotPress(
+                        dayKey,
+                        slotAt(event.nativeEvent.locationY, HOUR_HEIGHT),
+                      )
+                    }
+                  >
+                    {HOURS.map((hour) => (
+                      <View
+                        key={hour}
+                        pointerEvents="none"
+                        style={styles.slot}
+                      />
                     ))}
-                    {blocks.slice(0, room).map((block) => (
-                      <Pressable
-                        key={block.id}
-                        testID={`grid-block-${block.id}`}
-                        onPress={() => onBlockPress(block)}
+
+                    {isSelected(index) ? (
+                      <View
+                        pointerEvents="none"
                         style={[
-                          styles.chip,
-                          { backgroundColor: colorOf(block.userId) },
-                          block.overbooked && styles.blockOver,
+                          styles.selectionBlock,
+                          {
+                            top: topOf(selection.start),
+                            height:
+                              topOf(selection.end) - topOf(selection.start),
+                          },
                         ]}
-                      >
-                        <Text numberOfLines={1} style={styles.blockName}>
-                          {nameOf(block.userId)}
-                        </Text>
-                      </Pressable>
-                    ))}
-                    {more > 0 ? (
-                      <Text style={styles.moreText}>+{more}</Text>
+                      />
+                    ) : null}
+
+                    {(blocksByDay[dayKey] || []).map((block) => {
+                      const start = Math.max(block.start, FIRST_MINUTE);
+                      const end = Math.min(block.end, LAST_MINUTE);
+                      if (end <= start) return null;
+                      // Like the web: overlapping bookings cascade to the right,
+                      // a free strip on the right stays for a new tap.
+                      const step =
+                        block.lanes > 1
+                          ? Math.min(16, 30 / (block.lanes - 1))
+                          : 0;
+                      const left = block.lane * step;
+                      const height = Math.max(
+                        topOf(end) - topOf(start) - 2,
+                        20,
+                      );
+                      return (
+                        <Pressable
+                          key={block.id}
+                          testID={`grid-block-${block.id}`}
+                          onPress={() => onBlockPress(block)}
+                          style={[
+                            styles.block,
+                            {
+                              top: topOf(start),
+                              height,
+                              left: `${left + 2}%`,
+                              width: `${85 - left}%`,
+                              zIndex: 1 + block.lane,
+                              backgroundColor: colorOf(block.userId),
+                            },
+                            block.overbooked && styles.blockOver,
+                          ]}
+                        >
+                          <Text numberOfLines={1} style={styles.blockName}>
+                            {nameOf(block.userId)}
+                          </Text>
+                          {height >= 34 ? (
+                            <Text numberOfLines={2} style={styles.blockSub}>
+                              {block.projectId
+                                ? projectNameOf(block.projectId)
+                                : t("billing.noProject")}
+                            </Text>
+                          ) : null}
+                        </Pressable>
+                      );
+                    })}
+
+                    {dayKey === today &&
+                    nowMinute >= FIRST_MINUTE &&
+                    nowMinute <= LAST_MINUTE ? (
+                      <View
+                        pointerEvents="none"
+                        style={[styles.nowLine, { top: topOf(nowMinute) }]}
+                      />
                     ) : null}
                   </Pressable>
                 );
               })}
             </View>
-          ))
-        ) : (
-          <View style={styles.body}>
-            <View style={styles.gutter}>
-              {HOURS.map((hour) => (
-                <View key={hour} style={styles.hourCell}>
-                  <Text style={styles.hourText}>
-                    {formatMinutes(hour * 60)}
-                  </Text>
-                </View>
-              ))}
-            </View>
-
-            {days.map((day) => {
-              const dayKey = toDayKey(day);
-              const weekend = day.getDay() === 0 || day.getDay() === 6;
-              return (
-                <Pressable
-                  key={day.getTime()}
-                  testID={`grid-day-${dayKey}`}
-                  style={[styles.column, weekend && styles.columnWeekend]}
-                  disabled={!canBook}
-                  onPress={(event) =>
-                    onSlotPress(
-                      dayKey,
-                      slotAt(event.nativeEvent.locationY, HOUR_HEIGHT),
-                    )
-                  }
-                >
-                  {HOURS.map((hour) => (
-                    <View key={hour} pointerEvents="none" style={styles.slot} />
-                  ))}
-
-                  {(blocksByDay[dayKey] || []).map((block) => {
-                    const start = Math.max(block.start, FIRST_MINUTE);
-                    const end = Math.min(block.end, LAST_MINUTE);
-                    if (end <= start) return null;
-                    // Like the web: overlapping bookings cascade to the right,
-                    // a free strip on the right stays for a new tap.
-                    const step =
-                      block.lanes > 1
-                        ? Math.min(16, 30 / (block.lanes - 1))
-                        : 0;
-                    const left = block.lane * step;
-                    const height = Math.max(topOf(end) - topOf(start) - 2, 20);
-                    return (
-                      <Pressable
-                        key={block.id}
-                        testID={`grid-block-${block.id}`}
-                        onPress={() => onBlockPress(block)}
-                        style={[
-                          styles.block,
-                          {
-                            top: topOf(start),
-                            height,
-                            left: `${left + 2}%`,
-                            width: `${85 - left}%`,
-                            zIndex: 1 + block.lane,
-                            backgroundColor: colorOf(block.userId),
-                          },
-                          block.overbooked && styles.blockOver,
-                        ]}
-                      >
-                        <Text numberOfLines={1} style={styles.blockName}>
-                          {nameOf(block.userId)}
-                        </Text>
-                        {height >= 34 ? (
-                          <Text numberOfLines={2} style={styles.blockSub}>
-                            {block.projectId
-                              ? projectNameOf(block.projectId)
-                              : t("billing.noProject")}
-                          </Text>
-                        ) : null}
-                      </Pressable>
-                    );
-                  })}
-
-                  {dayKey === today &&
-                  nowMinute >= FIRST_MINUTE &&
-                  nowMinute <= LAST_MINUTE ? (
-                    <View
-                      pointerEvents="none"
-                      style={[styles.nowLine, { top: topOf(nowMinute) }]}
-                    />
-                  ) : null}
-                </Pressable>
-              );
-            })}
-          </View>
-        )}
+          )}
+        </View>
       </ScrollView>
     </View>
   );
@@ -470,6 +622,19 @@ const createStyles = (c) => {
     },
     cellDateOutside: {
       color: c.textMuted,
+    },
+    cellSelected: {
+      backgroundColor: "rgba(24, 119, 242, 0.18)",
+    },
+    selectionBlock: {
+      position: "absolute",
+      left: 1,
+      right: 1,
+      borderRadius: 6,
+      borderWidth: 1,
+      borderColor: "#1877F2",
+      backgroundColor: "rgba(24, 119, 242, 0.22)",
+      zIndex: 15,
     },
     chip: {
       borderRadius: 6,

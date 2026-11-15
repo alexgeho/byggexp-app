@@ -245,6 +245,30 @@ export const slotAt = (offsetY, hourHeight) => {
   return { start: formatMinutes(start), end: formatMinutes(start + 60) };
 };
 
+// A finger on the grid → the index of the day under it. `rows` are the week
+// rows' { y, height } (month / period); without them there is one row (week).
+export const dayIndexAt = ({ x, y, width, gutter, columns, rows }) => {
+  const columnWidth = (width - gutter) / columns;
+  const column = Math.min(
+    columns - 1,
+    Math.max(0, Math.floor((x - gutter) / columnWidth)),
+  );
+  if (!rows || !rows.length) return column;
+  let row = rows.findIndex((item) => y < item.y + item.height);
+  if (row === -1) row = rows.length - 1;
+  return row * columns + column;
+};
+
+// The time a drag covers: from the slot the long press started on down to the
+// half hour under the finger — at least half an hour, never past 23:30.
+export const dragEndMinute = (startMinute, offsetY, hourHeight) => {
+  const raw = GRID_FIRST_HOUR * 60 + (offsetY / hourHeight) * 60;
+  return Math.min(
+    GRID_LAST_HOUR * 60 - 30,
+    Math.max(startMinute + 30, Math.ceil(raw / 30) * 30),
+  );
+};
+
 // Overlapping blocks of one day go side by side: each gets a lane and the
 // day's lane count.
 const layoutDay = (blocks) => {

@@ -303,14 +303,15 @@ export default function ScheduleScreen() {
 
   // A tap on a free hour of the week: that day and hour, and the person when only one
   // is shown (as on the web).
-  const openSlot = (date, { start, end }) => {
+  const openSlot = (date, { start, end }, dateTo) => {
     const shown = people.filter(
       (person) => !hiddenPeople.includes(String(person.id)),
     );
     navigation.navigate("Booking", {
       date,
-      start,
-      end,
+      ...(start ? { start, end } : {}),
+      // Days picked by a drag are exactly the days meant, weekend or not.
+      ...(dateTo && dateTo !== date ? { dateTo } : {}),
       ...(shown.length === 1 ? { workerId: shown[0].id } : {}),
     });
   };
@@ -489,6 +490,7 @@ export default function ScheduleScreen() {
               })
             }
             onDayPress={openDay}
+            onRangeSelect={(from, to, slot) => openSlot(from, slot || {}, to)}
             content={theme.content}
             t={t}
           />

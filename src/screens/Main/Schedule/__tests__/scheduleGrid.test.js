@@ -181,4 +181,21 @@ describe("Planning — one grid", () => {
     expect(days.size).toBeLessThanOrEqual(21);
     expect(pressables(tree, "grid-block-a1").length).toBeGreaterThan(0);
   });
+
+  it("a long press on a day of the month books that day", async () => {
+    const tree = await renderScreen("companyAdmin");
+    const monthTab = tree.root.findAll(
+      (node) =>
+        typeof node.props.onPress === "function" &&
+        node.findAllByType(Text).length === 1 &&
+        node.findAllByType(Text)[0].props.children === "schedule.views.month",
+    )[0];
+    await act(async () => monthTab.props.onPress());
+    await act(async () => todayColumn(tree).props.onLongPress());
+    await act(async () => todayColumn(tree).props.onPressOut());
+    expect(mockNavigate).toHaveBeenCalledWith("Booking", {
+      date: toDayKey(new Date()),
+      workerId: "u1",
+    });
+  });
 });

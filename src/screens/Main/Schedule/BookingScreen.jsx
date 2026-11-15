@@ -128,11 +128,14 @@ export default function BookingScreen() {
   const [fromDay, setFromDay] = useState(() =>
     params.date ? parseDayKey(params.date) : parseDayKey(toDayKey(new Date())),
   );
-  const [toDay, setToDay] = useState(fromDay);
+  // Several days picked by a drag in the calendar come as date → dateTo.
+  const [toDay, setToDay] = useState(() =>
+    params.dateTo ? parseDayKey(params.dateTo) : fromDay,
+  );
   // A tap on the hour grid brings its own time; "+" keeps 08:00–10:00.
   const [start, setStart] = useState(params.start || "08:00");
   const [end, setEnd] = useState(params.end || "10:00");
-  const [weekdaysOnly, setWeekdaysOnly] = useState(true);
+  const [weekdaysOnly, setWeekdaysOnly] = useState(!params.dateTo);
   const [androidPicker, setAndroidPicker] = useState(null); // { field, mode }
 
   const [people, setPeople] = useState([]);
