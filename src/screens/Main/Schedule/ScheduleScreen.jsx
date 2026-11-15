@@ -32,7 +32,6 @@ import {
   daysBetween,
   EVENT_COLORS,
   formatMonthLabel,
-  formatMonthSpanLabel,
   getMonthKey,
   normalizeId,
   parseMonthKey,
@@ -50,6 +49,7 @@ import {
   PERIOD_VIEWS,
   PeriodTabs,
 } from "../../../components/common/PeriodTabs/PeriodTabs";
+import { formatExportPickerDate } from "../../../utils/shifts";
 import ScheduleGrid, { gridDaysFor, isHourGrid } from "./ScheduleGrid";
 import { canCreateProjects } from "../../../utils/userRoles";
 import { createStyles } from "./ScheduleScreen.styles";
@@ -242,13 +242,16 @@ export default function ScheduleScreen() {
       : day.getMonth() === anchor.getMonth();
   };
 
-  // The header names only the month and the year of what is on screen (for
-  // Custom — of the chosen period); the day numbers are in the grid.
+  // The header names only the month and the year of what is on screen; for
+  // Custom — the dates chosen there, and nothing else.
   let headerLabel = formatMonthLabel(view === "month" ? anchor : gridDays[0]);
   if (focusDay) {
     headerLabel = formatMonthLabel(focusDay);
   } else if (view === "custom") {
-    headerLabel = formatMonthSpanLabel(rangeDays.from, rangeDays.to);
+    headerLabel =
+      range.from === range.to
+        ? formatExportPickerDate(range.from)
+        : `${formatExportPickerDate(range.from)} – ${formatExportPickerDate(range.to)}`;
   }
 
   const monthOptions = useMemo(() => {
