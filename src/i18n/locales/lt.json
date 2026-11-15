@@ -834,7 +834,8 @@
       "tasks": "Užduotys",
       "offer": "Pasiūlymas",
       "invoice": "Sąskaita",
-      "egenkontroll": "Savikontrolė"
+      "egenkontroll": "Savikontrolė",
+      "planning": "Planavimas"
     },
     "sections": {
       "shift-history": "Dienos ataskaita",

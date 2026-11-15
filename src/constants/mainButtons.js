@@ -85,6 +85,16 @@ export const mainButtons = [
     screen: "Invoices",
     permission: "finance.manage",
   },
+  // The planning calendar (Schema) — the same people who see it in the menu.
+  // Off by default: it is added from Customize.
+  {
+    id: "planning",
+    module: "schedule",
+    title: "Planning",
+    vectorIcon: "calendar",
+    screen: "Schedule",
+    adminOnly: true,
+  },
 ];
 
 export const homeSections = [

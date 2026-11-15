@@ -830,7 +830,8 @@
       "tasks": "Oppgaver",
       "offer": "Tilbud",
       "invoice": "Faktura",
-      "egenkontroll": "Egenkontroll"
+      "egenkontroll": "Egenkontroll",
+      "planning": "Planlegging"
     },
     "sections": {
       "shift-history": "Dagsrapport",

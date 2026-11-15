@@ -834,7 +834,8 @@
       "tasks": "Zadania",
       "offer": "Oferta",
       "invoice": "Faktura",
-      "egenkontroll": "Kontrola własna"
+      "egenkontroll": "Kontrola własna",
+      "planning": "Planowanie"
     },
     "sections": {
       "shift-history": "Raport dzienny",

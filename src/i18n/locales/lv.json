@@ -831,7 +831,8 @@
       "tasks": "Uzdevumi",
       "offer": "Piedāvājums",
       "invoice": "Rēķins",
-      "egenkontroll": "Paškontrole"
+      "egenkontroll": "Paškontrole",
+      "planning": "Plānošana"
     },
     "sections": {
       "shift-history": "Dienas atskaite",

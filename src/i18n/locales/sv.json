@@ -830,7 +830,8 @@
       "tasks": "Uppgifter",
       "offer": "Offert",
       "invoice": "Faktura",
-      "egenkontroll": "Egenkontroll"
+      "egenkontroll": "Egenkontroll",
+      "planning": "Planering"
     },
     "sections": {
       "shift-history": "Dagsrapport",

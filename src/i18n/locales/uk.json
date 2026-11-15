@@ -834,7 +834,8 @@
       "tasks": "Завдання",
       "offer": "Пропозиція",
       "invoice": "Рахунок",
-      "egenkontroll": "Самоконтроль"
+      "egenkontroll": "Самоконтроль",
+      "planning": "Планування"
     },
     "sections": {
       "shift-history": "Денний звіт",

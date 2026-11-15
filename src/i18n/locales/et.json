@@ -830,7 +830,8 @@
       "tasks": "Ülesanded",
       "offer": "Pakkumine",
       "invoice": "Arve",
-      "egenkontroll": "Enesekontroll"
+      "egenkontroll": "Enesekontroll",
+      "planning": "Planeerimine"
     },
     "sections": {
       "shift-history": "Päevaraport",

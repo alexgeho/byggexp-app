@@ -834,7 +834,8 @@
       "tasks": "Задачи",
       "offer": "Оффер",
       "invoice": "Счёт",
-      "egenkontroll": "Самопроверка"
+      "egenkontroll": "Самопроверка",
+      "planning": "Планирование"
     },
     "sections": {
       "shift-history": "Дневной отчёт",

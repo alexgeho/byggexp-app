@@ -830,7 +830,8 @@
       "tasks": "Tehtävät",
       "offer": "Tarjous",
       "invoice": "Lasku",
-      "egenkontroll": "Omavalvonta"
+      "egenkontroll": "Omavalvonta",
+      "planning": "Suunnittelu"
     },
     "sections": {
       "shift-history": "Päiväraportti",

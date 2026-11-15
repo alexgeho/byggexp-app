@@ -833,7 +833,8 @@
       "tasks": "Zadaci",
       "offer": "Ponuda",
       "invoice": "Faktura",
-      "egenkontroll": "Samokontrola"
+      "egenkontroll": "Samokontrola",
+      "planning": "Planiranje"
     },
     "sections": {
       "shift-history": "Dnevni izvještaj",

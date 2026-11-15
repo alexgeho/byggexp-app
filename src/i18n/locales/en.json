@@ -830,7 +830,8 @@
       "tasks": "Tasks",
       "offer": "Offer",
       "invoice": "Invoice",
-      "egenkontroll": "Egenkontroll"
+      "egenkontroll": "Egenkontroll",
+      "planning": "Planning"
     },
     "sections": {
       "shift-history": "Daily report",
