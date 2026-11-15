@@ -112,7 +112,7 @@ describe("Planning — one grid", () => {
   it("a tap on a free hour opens a new booking for that day and hour", async () => {
     const tree = await renderScreen("companyAdmin");
     act(() =>
-      todayColumn(tree).props.onPress({ nativeEvent: { locationY: 48 * 3 } }),
+      todayColumn(tree).props.onPress({ nativeEvent: { locationY: 48 * 9 } }),
     );
     expect(mockNavigate).toHaveBeenCalledWith("Booking", {
       date: toDayKey(new Date()),

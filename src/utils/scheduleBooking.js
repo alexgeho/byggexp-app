@@ -229,16 +229,19 @@ export const planBookingChanges = ({
 };
 
 // ── Hour grid (the web admin's Google-Calendar view) ────────────────────────
-export const GRID_FIRST_HOUR = 6;
-export const GRID_LAST_HOUR = 20;
+// The whole day, 00–24 (owner 15.11); the grid opens scrolled to the morning.
+export const GRID_FIRST_HOUR = 0;
+export const GRID_LAST_HOUR = 24;
+export const GRID_OPEN_HOUR = 6;
 
 // A tap on the grid → the half hour it landed on, and one hour from there
-// (the web's click). Kept inside the grid's hours.
+// (the web's click). Kept inside the day: the latest slot ends at 23:30, never
+// at "24:00".
 export const slotAt = (offsetY, hourHeight) => {
   const first = GRID_FIRST_HOUR * 60;
   const last = GRID_LAST_HOUR * 60;
   const raw = first + (offsetY / hourHeight) * 60;
-  const start = Math.min(last - 60, Math.max(first, Math.floor(raw / 30) * 30));
+  const start = Math.min(last - 90, Math.max(first, Math.floor(raw / 30) * 30));
   return { start: formatMinutes(start), end: formatMinutes(start + 60) };
 };
 

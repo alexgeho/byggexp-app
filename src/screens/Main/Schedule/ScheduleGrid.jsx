@@ -11,6 +11,7 @@ import {
 import {
   GRID_FIRST_HOUR,
   GRID_LAST_HOUR,
+  GRID_OPEN_HOUR,
   formatMinutes,
   slotAt,
   toDayKey,
@@ -118,6 +119,11 @@ export default function ScheduleGrid({
       ) : null}
 
       <ScrollView
+        // The hours open on the morning, not on midnight.
+        key={isMonth ? "weeks" : "hours"}
+        contentOffset={
+          isMonth ? undefined : { x: 0, y: topOf(GRID_OPEN_HOUR * 60) }
+        }
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.bodyContent}
       >

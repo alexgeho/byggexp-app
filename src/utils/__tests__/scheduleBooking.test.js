@@ -207,9 +207,9 @@ describe("scheduleBooking", () => {
 
   it("turns a tap on the hour grid into a one-hour slot", () => {
     // 48 px per hour, the grid starts at 06:00.
-    expect(slotAt(0, 48)).toEqual({ start: "06:00", end: "07:00" });
-    expect(slotAt(48 * 2 + 30, 48)).toEqual({ start: "08:30", end: "09:30" });
-    expect(slotAt(99999, 48)).toEqual({ start: "19:00", end: "20:00" });
+    expect(slotAt(0, 48)).toEqual({ start: "00:00", end: "01:00" });
+    expect(slotAt(48 * 2 + 30, 48)).toEqual({ start: "02:30", end: "03:30" });
+    expect(slotAt(99999, 48)).toEqual({ start: "22:30", end: "23:30" });
   });
 
   it("lays a day's bookings side by side and flags overbooking", () => {
