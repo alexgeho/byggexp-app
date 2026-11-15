@@ -3,131 +3,57 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
-  Alert,
   Modal,
   FlatList,
-  Platform,
-  Pressable,
 } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTranslation } from "react-i18next";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import AuthContext from "../../../contexts/AuthContext";
-import { taskService } from "../../../services";
 import { assignmentService } from "../../../services/assignment.service";
 import { useScheduleData } from "../../../hooks/useScheduleData";
 import {
   addDays,
   addMonths,
-  buildEmployeeItems,
   buildEmployeeOptions,
-  buildLeaveItems,
   buildProjectMap,
-  buildProjectOptions,
-  buildProjectSpanItem,
-  daysBetween,
   EVENT_COLORS,
   formatMonthLabel,
-  formatWeekdayLabel,
   getMonthKey,
-  getWeekNumber,
   normalizeId,
   parseMonthKey,
   startOfDay,
   startOfMonth,
-  startOfWeek,
 } from "../../../utils/schedule";
 import {
-  buildBookingItems,
   buildDayBlocks,
   buildDayLeaves,
   toDayKey,
 } from "../../../utils/scheduleBooking";
-import ScheduleWeekGrid, { gridDaysFor } from "./ScheduleWeekGrid";
+import ScheduleGrid, { gridDaysFor } from "./ScheduleGrid";
 import { canCreateProjects } from "../../../utils/userRoles";
-import { getDateLocale } from "../../../utils/dateLocale";
-import { createStyles, ROW_HEIGHT } from "./ScheduleScreen.styles";
+import { createStyles } from "./ScheduleScreen.styles";
 import { useTheme } from "../../../theme/ThemeContext";
 import { onDark } from "../../../theme/colorUtils";
 import { SheetView } from "../../../components/common/SheetSlideIn/SheetSlideIn";
 
-const RANGE_DAYS = 42; // 6 weeks — covers any month with week alignment
-const BASE_DAY_WIDTH = 72;
-const MIN_DAY_WIDTH = 18; // zoom out far enough to see the whole range
-const MAX_DAY_WIDTH = 200; // zoom in to a single day comfortably
-const ZOOM_STEP = 1.3;
-const BAR_RADIUS = 16;
-const DONE_STATUSES = new Set(["done", "completed", "closed"]);
-const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "spinner" : "default";
-
-// Bar/lane geometry. A single-lane row keeps the original 64px height
-// (8 + 48 + 8). When a row's items overlap in time they are stacked into
-// separate lanes and the row grows, so overlapping bars never draw on top of
-// each other.
-const LANE_VPAD = 8;
-const BAR_HEIGHT = ROW_HEIGHT - LANE_VPAD * 2; // 48
-const LANE_GAP = 8;
-const LANE_STRIDE = BAR_HEIGHT + LANE_GAP;
-const rowHeightForLanes = (laneCount) =>
-  LANE_VPAD * 2 +
-  laneCount * BAR_HEIGHT +
-  Math.max(0, laneCount - 1) * LANE_GAP;
-
-// Greedy interval partitioning: place each item in the first lane whose last
-// bar has already ended, otherwise open a new lane. Returns the items tagged
-// with a `lane` index and the total lane count for the row.
-const assignLanes = (items) => {
-  const sorted = [...items].sort((a, b) => a.start - b.start);
-  const laneEnds = [];
-  const laid = sorted.map((item) => {
-    let lane = laneEnds.findIndex((end) => item.start >= end);
-    if (lane === -1) {
-      lane = laneEnds.length;
-      laneEnds.push(item.end);
-    } else {
-      laneEnds[lane] = item.end;
-    }
-    return { ...item, lane };
-  });
-  return { items: laid, laneCount: Math.max(1, laneEnds.length) };
-};
-
-const formatFullDate = (date) =>
-  new Intl.DateTimeFormat(getDateLocale(), {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(date);
-
-const toNoonIso = (date) =>
-  new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate(),
-    12,
-    0,
-    0,
-  ).toISOString();
 // Dev-only preview with fake, varied data. Never true in production
 // (guarded by __DEV__ at the call site); flip to preview colors locally.
 const SCHEDULE_DEMO = false;
 
-// Week = the hour grid (the web admin's Google-Calendar view); month = the
-// timeline with tasks and project spans.
+// One table (ScheduleGrid) for both views: week = hours down the left,
+// month = a row per week. Never a second table for another period.
 const VIEWS = ["week", "month"];
 const VIEW_KEY = "schedule-view";
 const HIDDEN_PEOPLE_KEY = "schedule-hidden-people";
@@ -139,7 +65,6 @@ export default function ScheduleScreen() {
   const { t } = useTranslation();
   const { user } = useContext(AuthContext);
 
-  const [mode, setMode] = useState("employees");
   // The view picked last time is the one the screen opens on.
   const [view, setView] = useState("week");
   const [anchor, setAnchor] = useState(() => startOfDay(new Date()));
@@ -166,62 +91,27 @@ export default function ScheduleScreen() {
       );
       return next;
     });
-  const isGrid = view !== "month";
-  const gridDays = useMemo(() => gridDaysFor(anchor), [anchor]);
-  const [currentMonth, setCurrentMonth] = useState(() =>
-    startOfMonth(new Date()),
+  const gridDays = useMemo(() => gridDaysFor(anchor, view), [anchor, view]);
+  const { loading, projects, workers, leaves } = useScheduleData(
+    user,
+    SCHEDULE_DEMO,
   );
-  // Month shown in the header — follows the horizontal scroll position so it
-  // reflects the dates currently in view (not just the selected month).
-  const [visibleMonth, setVisibleMonth] = useState(() =>
-    startOfMonth(new Date()),
-  );
-  const [timelineViewportWidth, setTimelineViewportWidth] = useState(0);
-  const [dayWidth, setDayWidth] = useState(BASE_DAY_WIDTH);
-  const [bodyHeight, setBodyHeight] = useState(0);
-  const {
-    loading,
-    tasks,
-    projects,
-    workers,
-    leaves,
-    reload: loadData,
-  } = useScheduleData(user, SCHEDULE_DEMO);
   const [monthPickerOpen, setMonthPickerOpen] = useState(false);
-  const [selectedProjectIds, setSelectedProjectIds] = useState([]);
-  const [selectedStatuses, setSelectedStatuses] = useState([]);
-  const [activeFilter, setActiveFilter] = useState(null); // 'project' | 'status'
-  const [reschedule, setReschedule] = useState(null); // { taskId, title, start, due }
-  const [datePickerTarget, setDatePickerTarget] = useState(null); // 'start' | 'due'
-  const [savingReschedule, setSavingReschedule] = useState(false);
-
-  // Frozen header (horizontal) and sidebar (vertical) are driven by the
-  // timeline body's scroll so the three panes stay aligned.
-  const headerScrollRef = useRef(null);
-  const sidebarScrollRef = useRef(null);
-  const bodyHScrollRef = useRef(null);
-  const bodyVScrollRef = useRef(null);
 
   const projectMap = useMemo(() => buildProjectMap(projects), [projects]);
 
-  // Bookings (who is planned where, which day) for the weeks on screen —
+  // Bookings (who is planned where, which day) for the days on screen —
   // the same /assignments the web calendar shows. Refetched on focus, so a
   // booking made in the form is there on the way back.
   const canBook = canCreateProjects(user?.role);
   const [assignments, setAssignments] = useState([]);
-  const bookingRange = useMemo(() => {
-    if (isGrid) {
-      return {
-        from: toDayKey(gridDays[0]),
-        to: toDayKey(gridDays[gridDays.length - 1]),
-      };
-    }
-    const from = startOfWeek(startOfMonth(currentMonth));
-    return {
-      from: toDayKey(from),
-      to: toDayKey(addDays(from, RANGE_DAYS - 1)),
-    };
-  }, [isGrid, gridDays, currentMonth]);
+  const bookingRange = useMemo(
+    () => ({
+      from: toDayKey(gridDays[0]),
+      to: toDayKey(gridDays[gridDays.length - 1]),
+    }),
+    [gridDays],
+  );
   useFocusEffect(
     useCallback(() => {
       if (__DEV__ && SCHEDULE_DEMO) return undefined;
@@ -235,17 +125,8 @@ export default function ScheduleScreen() {
       };
     }, [bookingRange]),
   );
-  const shownAssignments = useMemo(
-    () =>
-      selectedProjectIds.length
-        ? assignments.filter((assignment) =>
-            selectedProjectIds.includes(normalizeId(assignment.projectId)),
-          )
-        : assignments,
-    [assignments, selectedProjectIds],
-  );
 
-  // People of the hour grid: everyone gets a stable colour (by id, not by the
+  // People of the grid: everyone gets a stable colour (by id, not by the
   // order on screen), and can be switched off in the people row.
   const people = useMemo(
     () => buildEmployeeOptions(projects, workers),
@@ -277,163 +158,14 @@ export default function ScheduleScreen() {
     };
   }, [gridDays, hiddenPeople, assignments, leaves]);
 
-  // Filter options.
-  const projectFilterOptions = useMemo(
-    () => buildProjectOptions(projects),
-    [projects],
-  );
-  const statusOptions = useMemo(() => {
-    const set = new Set();
-    tasks.forEach((task) => {
-      if (task?.status) {
-        set.add(String(task.status));
-      }
-    });
-    return Array.from(set).map((key) => ({
-      id: key,
-      name: t(`task.status.${key}`, key),
-    }));
-  }, [tasks, t]);
-
-  const filteredTasks = useMemo(
-    () =>
-      tasks.filter((task) => {
-        const projectOk =
-          !selectedProjectIds.length ||
-          selectedProjectIds.includes(normalizeId(task.projectId));
-        const statusOk =
-          !selectedStatuses.length ||
-          selectedStatuses.includes(String(task.status));
-        return projectOk && statusOk;
-      }),
-    [tasks, selectedProjectIds, selectedStatuses],
-  );
-
-  const rows = useMemo(() => {
-    if (mode === "employees") {
-      return buildEmployeeOptions(projects, workers);
-    }
-    let options = buildProjectOptions(projects);
-    if (selectedProjectIds.length) {
-      options = options.filter((option) =>
-        selectedProjectIds.includes(option.id),
-      );
-    }
-    if (selectedStatuses.length) {
-      options = options.filter((option) =>
-        selectedStatuses.includes(String(projectMap[option.id]?.status)),
-      );
-    }
-    return options;
-  }, [
-    mode,
-    projects,
-    workers,
-    selectedProjectIds,
-    selectedStatuses,
-    projectMap,
-  ]);
-
-  // rowId -> array of bars for that row.
-  const itemsByRow = useMemo(() => {
-    const map = {};
-    rows.forEach((row, index) => {
-      if (mode === "employees") {
-        map[row.id] = [
-          ...buildEmployeeItems(filteredTasks, projectMap, row.id),
-          ...buildBookingItems(
-            shownAssignments,
-            projectMap,
-            row.id,
-            t("billing.noProject"),
-          ),
-          ...buildLeaveItems(leaves, row.id),
-        ];
-      } else {
-        const spanItem = buildProjectSpanItem(projectMap[row.id], index);
-        map[row.id] = spanItem ? [spanItem] : [];
-      }
-    });
-    return map;
-  }, [mode, rows, filteredTasks, shownAssignments, projectMap, leaves, t]);
-
-  // Stack overlapping items into lanes and give each row a height that fits its
-  // lane count, so bars in the same row never overlap.
-  const rowLayout = useMemo(() => {
-    const out = {};
-    rows.forEach((row) => {
-      const { items, laneCount } = assignLanes(itemsByRow[row.id] || []);
-      out[row.id] = { items, laneCount, height: rowHeightForLanes(laneCount) };
-    });
-    return out;
-  }, [rows, itemsByRow]);
-
-  const rangeStart = useMemo(
-    () => startOfWeek(startOfMonth(currentMonth)),
-    [currentMonth],
-  );
-  const rangeStartMs = rangeStart.getTime();
-  const rangeEndMs = useMemo(
-    () => addDays(rangeStart, RANGE_DAYS).getTime(),
-    [rangeStart],
-  );
-  const timelineWidth = RANGE_DAYS * dayWidth;
-
-  const days = useMemo(
-    () =>
-      Array.from({ length: RANGE_DAYS }, (_, index) =>
-        addDays(rangeStart, index),
-      ),
-    [rangeStart],
-  );
-
-  const weeks = useMemo(() => {
-    const result = [];
-    for (let index = 0; index < RANGE_DAYS; index += 7) {
-      result.push({
-        key: `week-${index}`,
-        label: t("schedule.week", { number: getWeekNumber(days[index]) }),
-      });
-    }
-    return result;
-  }, [days, t]);
-
-  const todayStart = startOfDay(new Date()).getTime();
-  const todayInRange = todayStart >= rangeStartMs && todayStart < rangeEndMs;
-  const todayX = todayInRange
-    ? daysBetween(rangeStart, new Date()) * dayWidth
-    : null;
-
-  // The month opens on today (one day of context before it), not on the first
-  // week of the range.
-  const startX =
-    todayX !== null && timelineViewportWidth > 0
-      ? Math.max(
-          0,
-          Math.min(todayX - dayWidth, timelineWidth - timelineViewportWidth),
-        )
-      : 0;
-
-  const goToday = () => {
-    setAnchor(startOfDay(new Date()));
-    setCurrentMonth(startOfMonth(new Date()));
-  };
+  const goToday = () => setAnchor(startOfDay(new Date()));
   // ‹ › step by what is on screen: a week, or a month.
-  const step = (direction) => {
-    if (isGrid) {
-      setAnchor((prev) => addDays(prev, direction * 7));
-    } else {
-      setCurrentMonth((prev) => addMonths(prev, direction));
-    }
-  };
-
-  const zoom = (factor) =>
-    setDayWidth((prev) =>
-      Math.round(
-        Math.min(MAX_DAY_WIDTH, Math.max(MIN_DAY_WIDTH, prev * factor)),
-      ),
+  const step = (direction) =>
+    setAnchor((prev) =>
+      view === "month"
+        ? addMonths(startOfMonth(prev), direction)
+        : addDays(prev, direction * 7),
     );
-  const zoomPercent = Math.round((dayWidth / BASE_DAY_WIDTH) * 100);
 
   const monthOptions = useMemo(() => {
     const base = startOfMonth(new Date());
@@ -445,83 +177,20 @@ export default function ScheduleScreen() {
     return options;
   }, []);
 
-  const contentHeight = Math.max(
-    rows.reduce(
-      (sum, row) => sum + (rowLayout[row.id]?.height || ROW_HEIGHT),
-      0,
-    ),
-    ROW_HEIGHT,
-  );
-
-  const filterOptions =
-    activeFilter === "project" ? projectFilterOptions : statusOptions;
-  const filterSelected =
-    activeFilter === "project" ? selectedProjectIds : selectedStatuses;
-  const setFilterSelected =
-    activeFilter === "project" ? setSelectedProjectIds : setSelectedStatuses;
-
-  const toggleFilterValue = (id) =>
-    setFilterSelected((prev) =>
-      prev.includes(id) ? prev.filter((value) => value !== id) : [...prev, id],
-    );
-
-  const projectChipLabel = selectedProjectIds.length
-    ? `${t("menu.projects")} · ${selectedProjectIds.length}`
-    : t("projects.all");
-  const statusChipLabel = selectedStatuses.length
-    ? `${t("task.statusLabel")} · ${selectedStatuses.length}`
-    : t("schedule.allStatuses");
-
-  const onBodyHorizontalScroll = (event) => {
-    const x = event.nativeEvent.contentOffset.x;
-    headerScrollRef.current?.scrollTo({ x, animated: false });
-
-    // Switch the header month to the month at the centre of what's visible.
-    if (timelineViewportWidth > 0 && dayWidth > 0) {
-      const centerDayIndex = Math.floor(
-        (x + timelineViewportWidth / 2) / dayWidth,
-      );
-      const dateAtCenter = addDays(rangeStart, centerDayIndex);
-      setVisibleMonth((prev) =>
-        getMonthKey(prev) === getMonthKey(dateAtCenter)
-          ? prev
-          : startOfMonth(dateAtCenter),
-      );
-    }
+  // The "+" of the bottom bar: a new booking on the first day on screen
+  // (today when the month on screen is the current one).
+  const openNewBooking = () => {
+    const today = startOfDay(new Date());
+    const first =
+      view === "month"
+        ? getMonthKey(anchor) === getMonthKey(today)
+          ? today
+          : startOfMonth(anchor)
+        : gridDays[0];
+    navigation.navigate("Booking", { date: toDayKey(first) });
   };
 
-  const onBodyVerticalScroll = (event) => {
-    sidebarScrollRef.current?.scrollTo({
-      y: event.nativeEvent.contentOffset.y,
-      animated: false,
-    });
-  };
-
-  // When the selected month changes (picker / arrows), reset the header label
-  // and jump the timeline back to the start of the range.
-  useEffect(() => {
-    setVisibleMonth(currentMonth);
-  }, [currentMonth]);
-  // Measured, or another month picked → today into view (start of the range
-  // when today is not in it). Zooming does not jump.
-  const startXRef = useRef(0);
-  startXRef.current = startX;
-  useEffect(() => {
-    if (isGrid || !timelineViewportWidth) return;
-    const x = startXRef.current;
-    bodyHScrollRef.current?.scrollTo({ x, animated: false });
-    headerScrollRef.current?.scrollTo({ x, animated: false });
-  }, [currentMonth, isGrid, timelineViewportWidth, loading]);
-
-  // New booking: a tap on a free day of a person's row (that person and day
-  // filled in), or the "+" of the bottom bar (today).
-  const openNewBooking = (date, workerId) =>
-    navigation.navigate("Booking", {
-      date: toDayKey(date || new Date()),
-      ...(workerId ? { workerId } : {}),
-    });
-
-  // A tap on the hour grid: that day and hour, and the person when only one
+  // A tap on a free hour of the week: that day and hour, and the person when only one
   // is shown (as on the web).
   const openSlot = (date, { start, end }) => {
     const shown = people.filter(
@@ -554,167 +223,10 @@ export default function ScheduleScreen() {
     });
   };
 
-  const openItem = (item) => {
-    if (item.type === "booking") {
-      openBooking(item);
-    } else if (item.type === "task") {
-      const task = tasks.find((entry) => normalizeId(entry) === item.taskId);
-      if (task) {
-        navigation.navigate("Task", {
-          task,
-          project: projectMap[item.projectId] || null,
-        });
-      }
-    } else if (item.type === "project" && item.projectId) {
-      navigation.navigate("Project", { id: item.projectId });
-    }
-  };
-
-  // Long-press a task bar to reschedule it (change start/due dates).
-  const openReschedule = (item) => {
-    if (item.type !== "task" || !item.taskId) {
-      return;
-    }
-    const task = tasks.find((entry) => normalizeId(entry) === item.taskId);
-    if (!task) {
-      return;
-    }
-    const start = task.startDate ? new Date(task.startDate) : new Date();
-    const validStart = Number.isNaN(start.getTime()) ? new Date() : start;
-    const due = task.dueDate ? new Date(task.dueDate) : validStart;
-    const validDue = Number.isNaN(due.getTime()) ? validStart : due;
-    setReschedule({
-      taskId: item.taskId,
-      title: item.title,
-      start: validStart,
-      due: validDue,
-    });
-  };
-
-  const handleRescheduleDateChange = (_event, date) => {
-    if (!date || !datePickerTarget) {
-      return;
-    }
-    setReschedule((prev) =>
-      prev ? { ...prev, [datePickerTarget]: date } : prev,
-    );
-    if (Platform.OS !== "ios") {
-      setDatePickerTarget(null);
-    }
-  };
-
-  const handleSaveReschedule = async () => {
-    if (!reschedule || savingReschedule) {
-      return;
-    }
-    if (
-      startOfDay(reschedule.due).getTime() <
-      startOfDay(reschedule.start).getTime()
-    ) {
-      Alert.alert(t("schedule.invalidDatesTitle"), t("schedule.invalidDates"));
-      return;
-    }
-    try {
-      setSavingReschedule(true);
-      await taskService.update(reschedule.taskId, {
-        startDate: toNoonIso(reschedule.start),
-        dueDate: toNoonIso(reschedule.due),
-      });
-      setReschedule(null);
-      setDatePickerTarget(null);
-      await loadData();
-    } catch {
-      Alert.alert(t("schedule.saveFailedTitle"), t("common.tryAgain"));
-    } finally {
-      setSavingReschedule(false);
-    }
-  };
-
-  const renderBar = (item) => {
-    const clampedStart = Math.max(item.start, rangeStartMs);
-    const clampedEnd = Math.min(item.end, rangeEndMs);
-    if (clampedEnd <= clampedStart) {
-      return null;
-    }
-
-    // Whole calendar days (DST-safe), not ms / 24h.
-    const left = daysBetween(rangeStart, new Date(clampedStart)) * dayWidth;
-    const width =
-      daysBetween(new Date(clampedStart), new Date(clampedEnd)) * dayWidth;
-    const clippedLeft = item.start < rangeStartMs;
-    const clippedRight = item.end > rangeEndMs;
-
-    const done = DONE_STATUSES.has(String(item.status || "").toLowerCase());
-    const overdue = !done && item.type === "task" && item.end <= todayStart;
-    const isLeave = item.type === "leave";
-    const label = isLeave
-      ? t(`schedule.leaveTypes.${item.leaveType}`, item.leaveType)
-      : item.title;
-
-    return (
-      <TouchableOpacity
-        key={item.id}
-        activeOpacity={0.85}
-        onPress={() => openItem(item)}
-        onLongPress={() => openReschedule(item)}
-        style={[
-          styles.bar,
-          {
-            left,
-            width: Math.max(width, 8),
-            top: LANE_VPAD + (item.lane || 0) * LANE_STRIDE,
-            height: BAR_HEIGHT,
-            backgroundColor: isLeave ? "#E7E3D5" : item.color,
-            opacity: done ? 0.55 : 1,
-            borderTopLeftRadius: clippedLeft ? 0 : BAR_RADIUS,
-            borderBottomLeftRadius: clippedLeft ? 0 : BAR_RADIUS,
-            borderTopRightRadius: clippedRight ? 0 : BAR_RADIUS,
-            borderBottomRightRadius: clippedRight ? 0 : BAR_RADIUS,
-          },
-          overdue && styles.barOverdue,
-        ]}
-      >
-        <View style={styles.barTitleRow}>
-          <Text
-            numberOfLines={1}
-            style={isLeave ? styles.barTitleMuted : styles.barTitle}
-          >
-            {label}
-          </Text>
-          {done ? <Icon name="check" size={13} color="#FFFFFF" /> : null}
-        </View>
-        {item.timeLabel ? (
-          <View style={styles.barMetaRow}>
-            <View style={styles.barMetaItemFixed}>
-              <Icon name="clock" size={11} color="rgba(255, 255, 255, 0.9)" />
-              <Text style={styles.barMeta}>{item.timeLabel}</Text>
-            </View>
-          </View>
-        ) : null}
-        {item.location || item.assigneeCount ? (
-          <View style={styles.barMetaRow}>
-            {item.location ? (
-              <View style={styles.barMetaItem}>
-                <Icon
-                  name="map-pin"
-                  size={11}
-                  color="rgba(255, 255, 255, 0.9)"
-                />
-                <Text numberOfLines={1} style={styles.barMeta}>
-                  {item.location}
-                </Text>
-              </View>
-            ) : null}
-            {item.assigneeCount ? (
-              <View style={styles.barMetaItemFixed}>
-                <Icon name="users" size={11} color="rgba(255, 255, 255, 0.9)" />
-                <Text style={styles.barMeta}>{item.assigneeCount}</Text>
-              </View>
-            ) : null}
-          </View>
-        ) : null}
-      </TouchableOpacity>
-    );
+  // A tap on a day of the month opens its week.
+  const openDay = (day) => {
+    setAnchor(startOfDay(day));
+    pickView("week");
   };
 
   return (
@@ -733,7 +245,7 @@ export default function ScheduleScreen() {
           activeOpacity={0.85}
         >
           <Text style={styles.monthLabel}>
-            {formatMonthLabel(isGrid ? gridDays[0] : visibleMonth)}
+            {formatMonthLabel(view === "month" ? anchor : gridDays[0])}
           </Text>
           <Icon
             name="chevron-down"
@@ -796,124 +308,55 @@ export default function ScheduleScreen() {
         ))}
       </View>
 
-      {isGrid ? (
-        <View style={styles.peopleRow}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.peopleContent}
-          >
-            {people.map((person) => {
-              const id = String(person.id);
-              const hidden = hiddenPeople.includes(id);
-              return (
-                <TouchableOpacity
-                  key={id}
-                  style={[styles.personChip, hidden && styles.personChipOff]}
-                  onPress={() => togglePerson(id)}
-                  activeOpacity={0.85}
-                >
-                  <View
-                    style={[
-                      styles.personDot,
-                      hidden
-                        ? { borderColor: personColors[id] }
-                        : {
-                            borderColor: personColors[id],
-                            backgroundColor: personColors[id],
-                          },
-                    ]}
-                  >
-                    {hidden ? null : (
-                      <Icon name="check" size={11} color="#FFFFFF" />
-                    )}
-                  </View>
-                  <Text numberOfLines={1} style={styles.personName}>
-                    {person.name}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
-        </View>
-      ) : null}
-
-      {isGrid ? null : (
-        <View style={styles.toolbar}>
-          <View style={styles.segmented}>
-            {["employees", "projects"].map((value) => (
+      <View style={styles.peopleRow}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.peopleContent}
+        >
+          {people.map((person) => {
+            const id = String(person.id);
+            const hidden = hiddenPeople.includes(id);
+            return (
               <TouchableOpacity
-                key={value}
-                style={[styles.segment, mode === value && styles.segmentActive]}
-                onPress={() => setMode(value)}
+                key={id}
+                style={[styles.personChip, hidden && styles.personChipOff]}
+                onPress={() => togglePerson(id)}
                 activeOpacity={0.85}
               >
-                <Text
+                <View
                   style={[
-                    styles.segmentText,
-                    mode === value && styles.segmentTextActive,
+                    styles.personDot,
+                    hidden
+                      ? { borderColor: personColors[id] }
+                      : {
+                          borderColor: personColors[id],
+                          backgroundColor: personColors[id],
+                        },
                   ]}
                 >
-                  {t(`schedule.${value}`)}
+                  {hidden ? null : (
+                    <Icon name="check" size={11} color="#FFFFFF" />
+                  )}
+                </View>
+                <Text numberOfLines={1} style={styles.personName}>
+                  {person.name}
                 </Text>
               </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-      )}
-
-      {isGrid ? null : (
-        <View style={styles.filterRow}>
-          <TouchableOpacity
-            style={styles.filterChip}
-            onPress={() => setActiveFilter("project")}
-            activeOpacity={0.85}
-          >
-            <Text
-              numberOfLines={1}
-              style={[
-                styles.filterChipText,
-                selectedProjectIds.length === 0 && styles.filterChipPlaceholder,
-              ]}
-            >
-              {projectChipLabel}
-            </Text>
-            <Icon
-              name="chevron-down"
-              size={16}
-              color={onDark(theme.content, theme.content.textMuted, "#052D50")}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.filterChip}
-            onPress={() => setActiveFilter("status")}
-            activeOpacity={0.85}
-          >
-            <Text
-              numberOfLines={1}
-              style={[
-                styles.filterChipText,
-                selectedStatuses.length === 0 && styles.filterChipPlaceholder,
-              ]}
-            >
-              {statusChipLabel}
-            </Text>
-            <Icon
-              name="chevron-down"
-              size={16}
-              color={onDark(theme.content, theme.content.textMuted, "#052D50")}
-            />
-          </TouchableOpacity>
-        </View>
-      )}
+            );
+          })}
+        </ScrollView>
+      </View>
 
       <View style={styles.timelineCard}>
         {loading ? (
           <View style={styles.centered}>
             <ActivityIndicator size="large" color="#0091FF" />
           </View>
-        ) : isGrid ? (
-          <ScheduleWeekGrid
+        ) : (
+          <ScheduleGrid
+            view={view}
+            month={anchor.getMonth()}
             days={gridDays}
             blocksByDay={gridData.blocks}
             leavesByDay={gridData.leaves}
@@ -928,406 +371,19 @@ export default function ScheduleScreen() {
                 assignmentIds: [block.id],
               })
             }
+            onDayPress={openDay}
             content={theme.content}
             t={t}
           />
-        ) : !rows.length ? (
-          <View style={styles.centered}>
-            <Text style={styles.emptyText}>{t("schedule.noResources")}</Text>
-          </View>
-        ) : (
-          <>
-            {/* Frozen top: corner + day/week header (driven horizontally) */}
-            <View style={styles.headerRow}>
-              <View style={styles.corner}>
-                <Text style={styles.cornerText}>
-                  {t(
-                    mode === "employees"
-                      ? "schedule.employees"
-                      : "schedule.projects",
-                  )}
-                </Text>
-              </View>
-              <ScrollView
-                ref={headerScrollRef}
-                horizontal
-                scrollEnabled={false}
-                showsHorizontalScrollIndicator={false}
-              >
-                <View style={{ width: timelineWidth }}>
-                  <View style={styles.weekHeaderRow}>
-                    {weeks.map((week) => (
-                      <View
-                        key={week.key}
-                        style={[styles.weekHeaderCell, { width: 7 * dayWidth }]}
-                      >
-                        <Text style={styles.weekHeaderText}>{week.label}</Text>
-                      </View>
-                    ))}
-                  </View>
-                  <View style={styles.dayHeaderRow}>
-                    {days.map((day) => {
-                      const isToday = startOfDay(day).getTime() === todayStart;
-                      return (
-                        <View
-                          key={day.getTime()}
-                          style={[styles.dayHeaderCell, { width: dayWidth }]}
-                        >
-                          <View style={isToday ? styles.dayTodayPill : null}>
-                            <Text
-                              numberOfLines={1}
-                              style={[
-                                styles.dayLabel,
-                                isToday && styles.dayTodayLabel,
-                              ]}
-                            >
-                              {dayWidth >= 48
-                                ? `${formatWeekdayLabel(day)} ${day.getDate()}`
-                                : day.getDate()}
-                            </Text>
-                          </View>
-                        </View>
-                      );
-                    })}
-                  </View>
-                </View>
-              </ScrollView>
-            </View>
-
-            {/* Body: frozen sidebar + scrollable timeline */}
-            <View
-              style={styles.bodyRow}
-              onLayout={(event) =>
-                setBodyHeight(event.nativeEvent.layout.height)
-              }
-            >
-              <ScrollView
-                ref={sidebarScrollRef}
-                scrollEnabled={false}
-                showsVerticalScrollIndicator={false}
-                style={[
-                  styles.sidebar,
-                  bodyHeight ? { height: bodyHeight } : null,
-                ]}
-              >
-                {rows.map((row) => (
-                  <View
-                    key={row.id}
-                    style={[
-                      styles.sidebarCell,
-                      { height: rowLayout[row.id]?.height || ROW_HEIGHT },
-                    ]}
-                  >
-                    <Text numberOfLines={1} style={styles.sidebarName}>
-                      {row.name}
-                    </Text>
-                    {row.subtitle ? (
-                      <Text numberOfLines={1} style={styles.sidebarSubtitle}>
-                        {row.subtitle}
-                      </Text>
-                    ) : null}
-                  </View>
-                ))}
-              </ScrollView>
-
-              <ScrollView
-                ref={bodyHScrollRef}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                scrollEventThrottle={16}
-                onScroll={onBodyHorizontalScroll}
-                onLayout={(e) =>
-                  setTimelineViewportWidth(e.nativeEvent.layout.width)
-                }
-              >
-                <ScrollView
-                  ref={bodyVScrollRef}
-                  showsVerticalScrollIndicator={false}
-                  scrollEventThrottle={16}
-                  onScroll={onBodyVerticalScroll}
-                  style={bodyHeight ? { height: bodyHeight } : null}
-                >
-                  <View style={{ width: timelineWidth, height: contentHeight }}>
-                    {/* Day grid lines */}
-                    <View style={StyleSheet.absoluteFill} pointerEvents="none">
-                      {days.map((day, index) => (
-                        <View
-                          key={`grid-${day.getTime()}`}
-                          style={[
-                            styles.gridLine,
-                            { left: index * dayWidth, height: contentHeight },
-                          ]}
-                        />
-                      ))}
-                    </View>
-
-                    {/* Rows */}
-                    {rows.map((row) => (
-                      <View
-                        key={row.id}
-                        style={[
-                          styles.timelineRow,
-                          { height: rowLayout[row.id]?.height || ROW_HEIGHT },
-                        ]}
-                      >
-                        {canBook && mode === "employees" ? (
-                          <Pressable
-                            style={StyleSheet.absoluteFill}
-                            onPress={(event) =>
-                              openNewBooking(
-                                addDays(
-                                  rangeStart,
-                                  Math.min(
-                                    RANGE_DAYS - 1,
-                                    Math.max(
-                                      0,
-                                      Math.floor(
-                                        event.nativeEvent.locationX / dayWidth,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                row.id,
-                              )
-                            }
-                          />
-                        ) : null}
-                        {(rowLayout[row.id]?.items || []).map(renderBar)}
-                      </View>
-                    ))}
-
-                    {/* Today marker */}
-                    {todayX !== null ? (
-                      <View
-                        pointerEvents="none"
-                        style={[
-                          styles.todayLine,
-                          {
-                            left: todayX + dayWidth / 2,
-                            height: contentHeight,
-                          },
-                        ]}
-                      />
-                    ) : null}
-                  </View>
-                </ScrollView>
-              </ScrollView>
-            </View>
-          </>
         )}
       </View>
-
-      {/* Zoom — floats above the bottom bar, matching the design */}
-      {isGrid ? null : (
-        <View style={styles.zoomFloating} pointerEvents="box-none">
-          <View style={styles.zoomGroup}>
-            <TouchableOpacity
-              style={styles.zoomButton}
-              onPress={() => zoom(1 / ZOOM_STEP)}
-              disabled={dayWidth <= MIN_DAY_WIDTH}
-              activeOpacity={0.85}
-            >
-              <Icon
-                name="minus"
-                size={20}
-                color={onDark(
-                  theme.content,
-                  theme.content.textMuted,
-                  "#052D50",
-                )}
-              />
-            </TouchableOpacity>
-            <View style={styles.zoomValueBox}>
-              <Text style={styles.zoomValueText}>{zoomPercent}%</Text>
-            </View>
-            <TouchableOpacity
-              style={styles.zoomButton}
-              onPress={() => zoom(ZOOM_STEP)}
-              disabled={dayWidth >= MAX_DAY_WIDTH}
-              activeOpacity={0.85}
-            >
-              <Icon
-                name="plus"
-                size={20}
-                color={onDark(
-                  theme.content,
-                  theme.content.textMuted,
-                  "#052D50",
-                )}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
 
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
         showAddButton={canBook}
-        onAddPress={() => openNewBooking(isGrid ? gridDays[0] : undefined)}
+        onAddPress={openNewBooking}
       />
-
-      {/* Filter (projects / statuses) */}
-      <Modal
-        visible={activeFilter !== null}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setActiveFilter(null)}
-      >
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={() => setActiveFilter(null)}
-        >
-          <SheetView style={styles.modalSheet}>
-            <View style={styles.modalHeaderRow}>
-              <Text style={styles.modalTitle}>
-                {t(
-                  activeFilter === "project"
-                    ? "schedule.filterProjects"
-                    : "schedule.filterStatuses",
-                )}
-              </Text>
-              {filterSelected.length ? (
-                <TouchableOpacity onPress={() => setFilterSelected([])}>
-                  <Text style={styles.clearText}>{t("schedule.clear")}</Text>
-                </TouchableOpacity>
-              ) : null}
-            </View>
-            <FlatList
-              data={filterOptions}
-              keyExtractor={(option) => option.id}
-              renderItem={({ item: option }) => {
-                const checked = filterSelected.includes(option.id);
-                return (
-                  <TouchableOpacity
-                    style={styles.optionRow}
-                    onPress={() => toggleFilterValue(option.id)}
-                    activeOpacity={0.85}
-                  >
-                    <Text style={styles.optionName}>{option.name}</Text>
-                    <View
-                      style={[
-                        styles.checkbox,
-                        checked && styles.checkboxChecked,
-                      ]}
-                    >
-                      {checked ? (
-                        <Icon name="check" size={14} color="#FFFFFF" />
-                      ) : null}
-                    </View>
-                  </TouchableOpacity>
-                );
-              }}
-            />
-          </SheetView>
-        </TouchableOpacity>
-      </Modal>
-
-      {/* Reschedule task */}
-      <Modal
-        visible={reschedule !== null}
-        transparent
-        animationType="fade"
-        onRequestClose={() => {
-          setReschedule(null);
-          setDatePickerTarget(null);
-        }}
-      >
-        <View style={styles.modalOverlay}>
-          <SheetView style={styles.modalSheet}>
-            <Text style={styles.modalTitle}>
-              {t("schedule.rescheduleTitle")}
-            </Text>
-            {reschedule ? (
-              <>
-                <Text numberOfLines={1} style={styles.rescheduleTaskName}>
-                  {reschedule.title}
-                </Text>
-
-                <TouchableOpacity
-                  style={styles.dateRow}
-                  onPress={() => setDatePickerTarget("start")}
-                  activeOpacity={0.85}
-                >
-                  <Text style={styles.dateRowLabel}>
-                    {t("schedule.startDate")}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.dateRowValue,
-                      datePickerTarget === "start" && styles.dateRowValueActive,
-                    ]}
-                  >
-                    {formatFullDate(reschedule.start)}
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.dateRow}
-                  onPress={() => setDatePickerTarget("due")}
-                  activeOpacity={0.85}
-                >
-                  <Text style={styles.dateRowLabel}>
-                    {t("schedule.dueDate")}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.dateRowValue,
-                      datePickerTarget === "due" && styles.dateRowValueActive,
-                    ]}
-                  >
-                    {formatFullDate(reschedule.due)}
-                  </Text>
-                </TouchableOpacity>
-
-                {datePickerTarget ? (
-                  <>
-                    <DateTimePicker
-                      value={
-                        datePickerTarget === "start"
-                          ? reschedule.start
-                          : reschedule.due
-                      }
-                      mode="date"
-                      display={DATE_PICKER_DISPLAY}
-                      onChange={handleRescheduleDateChange}
-                    />
-                    {Platform.OS === "ios" ? (
-                      <TouchableOpacity
-                        style={styles.pickerDone}
-                        onPress={() => setDatePickerTarget(null)}
-                      >
-                        <Text style={styles.pickerDoneText}>
-                          {t("common.done")}
-                        </Text>
-                      </TouchableOpacity>
-                    ) : null}
-                  </>
-                ) : null}
-
-                <TouchableOpacity
-                  style={[
-                    styles.saveButton,
-                    savingReschedule && styles.saveButtonDisabled,
-                  ]}
-                  onPress={handleSaveReschedule}
-                  disabled={savingReschedule}
-                  activeOpacity={0.85}
-                >
-                  {savingReschedule ? (
-                    <ActivityIndicator color="#FFFFFF" />
-                  ) : (
-                    <Text style={styles.saveButtonText}>
-                      {t("common.save")}
-                    </Text>
-                  )}
-                </TouchableOpacity>
-              </>
-            ) : null}
-          </SheetView>
-        </View>
-      </Modal>
 
       {/* Month picker */}
       <Modal
@@ -1356,14 +412,13 @@ export default function ScheduleScreen() {
                 <TouchableOpacity
                   style={styles.optionRow}
                   onPress={() => {
-                    setCurrentMonth(parseMonthKey(option.key));
                     setAnchor(parseMonthKey(option.key));
                     setMonthPickerOpen(false);
                   }}
                   activeOpacity={0.85}
                 >
                   <Text style={styles.optionName}>{option.label}</Text>
-                  {option.key === getMonthKey(currentMonth) ? (
+                  {option.key === getMonthKey(anchor) ? (
                     <Icon name="check" size={20} color="#0091FF" />
                   ) : null}
                 </TouchableOpacity>

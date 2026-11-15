@@ -94,7 +94,7 @@ const pressables = (tree, prefix) =>
 const todayColumn = (tree) =>
   pressables(tree, `grid-day-${toDayKey(new Date())}`)[0];
 
-describe("Planning — hour grid", () => {
+describe("Planning — one grid", () => {
   beforeEach(() => mockNavigate.mockClear());
 
   it("opens on the week grid with the booking as a block", async () => {
@@ -136,5 +136,29 @@ describe("Planning — hour grid", () => {
     expect(todayColumn(tree).props.disabled).toBe(true);
     act(() => pressables(tree, "grid-block-a1")[0].props.onPress());
     expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it("month is the same grid: every week of the month, a tap opens the week", async () => {
+    const tree = await renderScreen("companyAdmin");
+    const monthTab = tree.root.findAll(
+      (node) =>
+        typeof node.props.onPress === "function" &&
+        node.findAllByType(Text).length === 1 &&
+        node.findAllByType(Text)[0].props.children === "schedule.views.month",
+    )[0];
+    await act(async () => monthTab.props.onPress());
+    const days = new Set(
+      pressables(tree, "grid-day-").map((node) => node.props.testID),
+    );
+    expect(days.size % 7).toBe(0);
+    expect(days.size).toBeGreaterThanOrEqual(28);
+    expect(pressables(tree, "grid-block-a1").length).toBeGreaterThan(0);
+    expect(texts(tree).flat()).not.toContain("08:00");
+
+    await act(async () => todayColumn(tree).props.onPress());
+    expect(
+      new Set(pressables(tree, "grid-day-").map((node) => node.props.testID))
+        .size,
+    ).toBe(7);
   });
 });
