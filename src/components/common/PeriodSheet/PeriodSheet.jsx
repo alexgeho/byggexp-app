@@ -1,80 +1,115 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   Animated,
   Modal,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import Icon from "react-native-vector-icons/Feather";
+import { Picker } from "@react-native-picker/picker";
 import { useTranslation } from "react-i18next";
 import useSheetEnter from "../../../hooks/useSheetEnter";
 import { useTheme } from "../../../theme/ThemeContext";
 import { onDark } from "../../../theme/colorUtils";
 import { radius, size } from "../../../theme/tokens";
-import {
-  addDays,
-  addMonths,
-  formatMonthLabel,
-  formatWeekdayLabel,
-  startOfMonth,
-  startOfWeek,
-} from "../../../utils/schedule";
-import {
-  formatDateKey,
-  formatExportPickerDate,
-  parseDateKey,
-} from "../../../utils/shifts";
+import { getDateLocale } from "../../../utils/dateLocale";
+import { getMonthDateRange } from "../../../utils/shifts";
+
+const MONTHS = Array.from({ length: 12 }, (_, index) =>
+  String(index + 1).padStart(2, "0"),
+);
+const YEARS_BACK = 5;
+const YEARS_AHEAD = 2;
+
+// One month-and-year choice as two wheels, the way a birth date is picked:
+// the month by name on the left, the year on the right.
+function MonthYearWheels({ value, onChange, styles, prefix }) {
+  const year = value.slice(0, 4);
+  const month = value.slice(5, 7);
+  const thisYear = new Date().getFullYear();
+  const years = [
+    ...new Set([
+      ...Array.from({ length: YEARS_BACK + YEARS_AHEAD + 1 }, (_, index) =>
+        String(thisYear - YEARS_BACK + index),
+      ),
+      year,
+    ]),
+  ].sort();
+  const monthName = (mm) => {
+    const label = new Intl.DateTimeFormat(getDateLocale(), {
+      month: "long",
+    }).format(new Date(Number(year), Number(mm) - 1, 1));
+    return label.charAt(0).toUpperCase() + label.slice(1);
+  };
+
+  return (
+    <View style={styles.wheels}>
+      <View style={[styles.wheelBox, styles.wheelMonth]}>
+        <Picker
+          testID={`period-${prefix}-month`}
+          selectedValue={month}
+          onValueChange={(mm) => onChange(`${year}-${mm}`)}
+          style={styles.wheel}
+          itemStyle={styles.wheelItem}
+          selectionColor="rgb(245, 245, 245)"
+        >
+          {MONTHS.map((mm) => (
+            <Picker.Item
+              key={`${prefix}-m-${mm}`}
+              label={monthName(mm)}
+              value={mm}
+            />
+          ))}
+        </Picker>
+      </View>
+      <View style={[styles.wheelBox, styles.wheelYear]}>
+        <Picker
+          testID={`period-${prefix}-year`}
+          selectedValue={year}
+          onValueChange={(yy) => onChange(`${yy}-${month}`)}
+          style={styles.wheel}
+          itemStyle={styles.wheelItem}
+          selectionColor="rgb(245, 245, 245)"
+        >
+          {years.map((yy) => (
+            <Picker.Item key={`${prefix}-y-${yy}`} label={yy} value={yy} />
+          ))}
+        </Picker>
+      </View>
+    </View>
+  );
+}
+
+const monthOf = (dayKey) =>
+  (dayKey || "").slice(0, 7) ||
+  `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
 
 // THE "Custom" period picker — Planning and Shifts both open this one sheet.
-// No tabs inside and no wheels: one calendar on which both ends are seen at
-// once — a tap sets the start, the next tap the end, the days between are
-// tinted. `from` / `to` are day keys (YYYY-MM-DD).
+// No tabs inside: From and To are both on screen at once, each a month and a
+// year (owner 15.11: keep it as it was, without the nesting). The period is
+// whole months: `from` = the first day of the From month, `to` = the last day
+// of the To month (day keys, YYYY-MM-DD).
 export function PeriodSheet({ visible, from, to, onChange, onApply, onClose }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const sheetEnter = useSheetEnter(visible);
-  const [target, setTarget] = useState("from");
-  const [month, setMonth] = useState(() => startOfMonth(parseDateKey(from)));
-  // Every opening starts from the start date and its month.
+  const fromMonth = monthOf(from);
+  const toMonth = monthOf(to);
+  const emit = (nextFrom, nextTo) =>
+    onChange({
+      from: getMonthDateRange(nextFrom).from,
+      to: getMonthDateRange(nextTo).to,
+    });
+  // What is on the wheels is what Apply gets: the dates snap to whole months
+  // as soon as the sheet opens.
   useEffect(() => {
-    if (visible) {
-      setTarget("from");
-      setMonth(startOfMonth(parseDateKey(from)));
-    }
+    if (visible) emit(fromMonth, toMonth);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
-  const weeks = useMemo(() => {
-    const first = startOfWeek(month);
-    const rows = [];
-    for (let row = 0; row < 6; row += 1) {
-      const days = Array.from({ length: 7 }, (_, index) =>
-        addDays(first, row * 7 + index),
-      );
-      if (row > 3 && days[0].getMonth() !== month.getMonth()) break;
-      rows.push(days);
-    }
-    return rows;
-  }, [month]);
-  // A tap on a day fills the active end and moves on to the other one; an end
-  // before the start turns the period around.
-  const pickDay = (key) => {
-    if (target === "from") {
-      onChange({ from: key, to: to && to >= key ? to : key });
-      setTarget("to");
-    } else if (from && key < from) {
-      onChange({ from: key, to: from });
-    } else {
-      onChange({ from, to: key });
-    }
-  };
-  const fields = [
-    { key: "from", label: t("shiftHistory.from"), value: from },
-    { key: "to", label: t("shiftHistory.to"), value: to },
-  ];
 
   return (
     <Modal
@@ -98,96 +133,26 @@ export function PeriodSheet({ visible, from, to, onChange, onApply, onClose }) {
           </Text>
 
           <View style={styles.card}>
-            <View style={styles.fields}>
-              {fields.map((field) => (
-                <View key={field.key} style={styles.field}>
-                  <Text style={styles.label}>{field.label}</Text>
-                  <TouchableOpacity
-                    testID={`period-${field.key}`}
-                    style={[
-                      styles.value,
-                      target === field.key && styles.valueActive,
-                    ]}
-                    onPress={() => setTarget(field.key)}
-                    activeOpacity={0.85}
-                  >
-                    <Text
-                      style={[
-                        styles.valueText,
-                        !field.value && styles.valuePlaceholder,
-                      ]}
-                    >
-                      {formatExportPickerDate(field.value)}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </View>
-
-            <View style={styles.monthRow}>
-              <Text style={styles.monthText}>{formatMonthLabel(month)}</Text>
-              <View style={styles.monthSteps}>
-                {[-1, 1].map((direction) => (
-                  <TouchableOpacity
-                    key={direction}
-                    testID={`period-month-${direction < 0 ? "prev" : "next"}`}
-                    onPress={() =>
-                      setMonth((prev) => addMonths(prev, direction))
-                    }
-                    hitSlop={8}
-                    activeOpacity={0.85}
-                  >
-                    <Icon
-                      name={direction < 0 ? "chevron-left" : "chevron-right"}
-                      size={24}
-                      color="#0091FF"
-                    />
-                  </TouchableOpacity>
-                ))}
+            <View style={styles.stack}>
+              <View>
+                <Text style={styles.label}>{t("shiftHistory.from")}</Text>
+                <MonthYearWheels
+                  value={fromMonth}
+                  onChange={(next) => emit(next, toMonth)}
+                  styles={styles}
+                  prefix="from"
+                />
+              </View>
+              <View>
+                <Text style={styles.label}>{t("shiftHistory.to")}</Text>
+                <MonthYearWheels
+                  value={toMonth}
+                  onChange={(next) => emit(fromMonth, next)}
+                  styles={styles}
+                  prefix="to"
+                />
               </View>
             </View>
-            <View style={styles.week}>
-              {weeks[0].map((day) => (
-                <Text
-                  key={day.getTime()}
-                  numberOfLines={1}
-                  style={styles.weekday}
-                >
-                  {formatWeekdayLabel(day)}
-                </Text>
-              ))}
-            </View>
-            {weeks.map((days) => (
-              <View key={days[0].getTime()} style={styles.week}>
-                {days.map((day) => {
-                  const key = formatDateKey(day);
-                  const outside = day.getMonth() !== month.getMonth();
-                  const end = key === from || key === to;
-                  const between = from && to && key > from && key < to;
-                  return (
-                    <TouchableOpacity
-                      key={key}
-                      testID={`period-day-${key}`}
-                      style={[styles.day, between && styles.dayBetween]}
-                      onPress={() => pickDay(key)}
-                      activeOpacity={0.85}
-                    >
-                      <View style={[styles.dayDot, end && styles.dayDotEnd]}>
-                        <Text
-                          style={[
-                            styles.dayText,
-                            outside && styles.dayTextOutside,
-                            end && styles.dayTextEnd,
-                          ]}
-                        >
-                          {day.getDate()}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            ))}
           </View>
 
           <TouchableOpacity
@@ -251,15 +216,6 @@ const createStyles = (c) =>
       borderWidth: 1,
       borderColor: c.border,
     },
-    fields: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      gap: 12,
-    },
-    field: {
-      flex: 1,
-      alignItems: "center",
-    },
     label: {
       fontSize: 14,
       color: c.textPrimary,
@@ -267,84 +223,31 @@ const createStyles = (c) =>
       textAlign: "center",
       width: "100%",
     },
-    value: {
+    stack: {
+      gap: 8,
+    },
+    wheels: {
+      flexDirection: "row",
+      gap: 8,
+    },
+    wheelBox: {
+      backgroundColor: "transparent",
+      overflow: "hidden",
+    },
+    wheelMonth: {
+      flex: 2,
+    },
+    wheelYear: {
+      flex: 1,
+    },
+    wheel: {
+      height: Platform.OS === "ios" ? 120 : 48,
       width: "100%",
-      backgroundColor: onDark(c, c.inputSurface, "rgba(245, 245, 245, 1)"),
-      borderRadius: 20,
-      paddingHorizontal: 12,
-      height: 44,
-      justifyContent: "center",
-      alignItems: "center",
-      borderWidth: 2,
-      borderColor: "transparent",
+      backgroundColor: "transparent",
     },
-    valueActive: {
-      borderColor: "#0091FF",
-    },
-    valueText: {
-      fontSize: 15,
-      color: c.textPrimary,
-      textAlign: "center",
-    },
-    valuePlaceholder: {
-      color: c.textMuted,
-    },
-    monthRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      marginTop: 16,
-      marginBottom: 8,
-      paddingHorizontal: 6,
-    },
-    monthText: {
-      color: c.textPrimary,
-      fontSize: 17,
-      fontFamily: "DMSans-SemiBold",
-    },
-    monthSteps: {
-      flexDirection: "row",
-      gap: 20,
-    },
-    week: {
-      flexDirection: "row",
-    },
-    weekday: {
-      flex: 1,
-      textAlign: "center",
-      color: c.textMuted,
-      fontSize: 12,
-      paddingVertical: 4,
-    },
-    day: {
-      flex: 1,
-      height: 40,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    dayBetween: {
-      backgroundColor: "rgba(0, 145, 255, 0.14)",
-    },
-    dayDot: {
-      width: 36,
-      height: 36,
-      borderRadius: 18,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    dayDotEnd: {
-      backgroundColor: "#0091FF",
-    },
-    dayText: {
+    wheelItem: {
       color: c.textPrimary,
       fontSize: 16,
-    },
-    dayTextOutside: {
-      color: c.textMuted,
-    },
-    dayTextEnd: {
-      color: "#FFFFFF",
-      fontFamily: "DMSans-SemiBold",
     },
     apply: {
       width: "100%",

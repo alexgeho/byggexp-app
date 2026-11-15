@@ -66,7 +66,6 @@ const SCHEDULE_DEMO = false;
 // another period.
 const VIEWS = PERIOD_VIEWS;
 const RANGE_KEY = "schedule-custom-range";
-const DEFAULT_CUSTOM_DAYS = 14;
 const VIEW_KEY = "schedule-view";
 const HIDDEN_PEOPLE_KEY = "schedule-hidden-people";
 
@@ -93,10 +92,10 @@ export default function ScheduleScreen() {
   // Custom: the two dates of the period (day keys), picked in the same
   // period sheet as in Shifts.
   const [range, setRange] = useState(() => {
-    const today = startOfDay(new Date());
+    const first = startOfMonth(new Date());
     return {
-      from: toDayKey(today),
-      to: toDayKey(addDays(today, DEFAULT_CUSTOM_DAYS - 1)),
+      from: toDayKey(first),
+      to: toDayKey(addDays(addMonths(first, 1), -1)),
     };
   });
   const [rangeDraft, setRangeDraft] = useState(null);

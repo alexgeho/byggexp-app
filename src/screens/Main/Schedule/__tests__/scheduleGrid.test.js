@@ -172,13 +172,13 @@ describe("Planning — one grid", () => {
         node.findAllByType(Text)[0].props.children === "schedule.views.custom",
     )[0];
     await act(async () => tab.props.onPress());
-    // Opens on two weeks from today: every whole week they touch.
+    // Opens on the current month: every whole week it touches.
     const days = new Set(
       pressables(tree, "grid-day-").map((node) => node.props.testID),
     );
     expect(days.size % 7).toBe(0);
-    expect(days.size).toBeGreaterThanOrEqual(14);
-    expect(days.size).toBeLessThanOrEqual(21);
+    expect(days.size).toBeGreaterThanOrEqual(28);
+    expect(days.size).toBeLessThanOrEqual(42);
     expect(pressables(tree, "grid-block-a1").length).toBeGreaterThan(0);
   });
 
@@ -201,7 +201,7 @@ describe("Planning — one grid", () => {
 });
 
 describe("Custom period sheet", () => {
-  it("first tap is the start, the next tap the end", () => {
+  it("From and To are months; the period is whole months", () => {
     const {
       PeriodSheet,
     } = require("../../../../components/common/PeriodSheet/PeriodSheet");
@@ -227,14 +227,13 @@ describe("Custom period sheet", () => {
     act(() => {
       tree = TestRenderer.create(<Harness />);
     });
-    const press = (id) =>
-      act(() => tree.root.findAllByProps({ testID: id })[0].props.onPress());
-    press("period-day-2026-11-10");
-    press("period-day-2026-11-13");
-    press("period-apply");
+    const node = (id) => tree.root.findAllByProps({ testID: id })[0];
+    act(() => node("period-from-month").props.onValueChange("10"));
+    act(() => node("period-to-month").props.onValueChange("12"));
+    act(() => node("period-apply").props.onPress());
     expect(mockNavigate).toHaveBeenCalledWith({
-      from: "2026-11-10",
-      to: "2026-11-13",
+      from: "2026-10-01",
+      to: "2026-12-31",
     });
   });
 });
