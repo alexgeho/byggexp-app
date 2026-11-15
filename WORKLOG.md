@@ -134,7 +134,9 @@
 
 - [x] 1.1.7 уже вышла в App Store (01.11) → версия 1.1.8; Nyheter sv/en — `docs/STORE_LISTING_COPY.md`
 - [x] Сборки 1.1.8 готовы из main после последнего OTA: iOS 202 (EAS `227ba961`), Android 40 (EAS `e548bf1f`, AAB)
-- [ ] Загрузка iOS 202 в App Store Connect (`eas submit`) и релиз AAB 40 в Play, затем ревью — ждёт команды владельца
+- [x] Play: AAB 40 загружен (владелец), Nyheter sv-SE вписаны, версия 40 (1.1.8) сохранена в Publiceringsöversikt — не отправлена
+- [ ] Play: «Skicka in 1 ändring för granskning» — ждёт «да» владельца
+- [ ] iOS 202: `eas submit` упал — `EAS_ASC_REQUIRED_AGREEMENTS_MISSING_OR_EXPIRED`; владельцу принять соглашения в App Store Connect (appstoreconnect.apple.com/business) и developer.apple.com/account, затем повторить
 
 # 2026-11-14 — Schema: бронь прямо из календаря (как в админке)
 
