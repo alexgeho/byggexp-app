@@ -121,7 +121,15 @@ export default function ScheduleScreen() {
     saveRange(rangeDraft);
     setRangeDraft(null);
   };
+  // One day opened by a tap on it (from any view): the same hour grid with a
+  // single column. Not a tab — a tab (or the title) leads back.
+  const [focusDay, setFocusDay] = useState(null);
   const pickView = (next) => {
+    if (focusDay && next === view) {
+      setFocusDay(null);
+      return;
+    }
+    setFocusDay(null);
     setView(next);
     AsyncStorage.setItem(VIEW_KEY, next).catch(() => {});
     if (next === "custom") openRangeSheet();
@@ -141,8 +149,8 @@ export default function ScheduleScreen() {
     [range],
   );
   const gridDays = useMemo(
-    () => gridDaysFor(anchor, view, rangeDays),
-    [anchor, view, rangeDays],
+    () => (focusDay ? [focusDay] : gridDaysFor(anchor, view, rangeDays)),
+    [focusDay, anchor, view, rangeDays],
   );
   const shiftsStyles = useMemo(
     () => createShiftsStyles(theme.content),
@@ -226,11 +234,19 @@ export default function ScheduleScreen() {
     });
   const goToday = () => {
     const today = startOfDay(new Date());
+    if (focusDay) {
+      setFocusDay(today);
+      return;
+    }
     if (view === "custom") moveRange(today);
     setAnchor(today);
   };
   // ‹ › step by what is on screen: a week, a month, or the period's length.
   const step = (direction) => {
+    if (focusDay) {
+      setFocusDay((prev) => addDays(prev, direction));
+      return;
+    }
     if (view === "custom") {
       const length = daysBetween(rangeDays.from, rangeDays.to) + 1;
       moveRange(addDays(rangeDays.from, direction * length));
@@ -248,7 +264,9 @@ export default function ScheduleScreen() {
       : day.getMonth() === anchor.getMonth();
 
   let headerLabel = formatMonthLabel(view === "month" ? anchor : gridDays[0]);
-  if (view === "custom") {
+  if (focusDay) {
+    headerLabel = formatExportPickerDate(toDayKey(focusDay));
+  } else if (view === "custom") {
     headerLabel =
       range.from === range.to
         ? formatExportPickerDate(range.from)
@@ -270,7 +288,9 @@ export default function ScheduleScreen() {
   const openNewBooking = () => {
     const today = startOfDay(new Date());
     let first = gridDays[0];
-    if (view === "custom") {
+    if (focusDay) {
+      first = focusDay;
+    } else if (view === "custom") {
       first = rangeDays.from;
     } else if (view === "month") {
       first =
@@ -314,11 +334,8 @@ export default function ScheduleScreen() {
     });
   };
 
-  // A tap on a day of the month or the period opens its week.
-  const openDay = (day) => {
-    setAnchor(startOfDay(day));
-    pickView("week");
-  };
+  // A tap on a day (week head, month, period) opens that one day.
+  const openDay = (day) => setFocusDay(startOfDay(day));
 
   return (
     <View style={styles.container}>
@@ -332,9 +349,11 @@ export default function ScheduleScreen() {
         />
         <TouchableOpacity
           style={styles.monthSelector}
-          onPress={() =>
-            view === "custom" ? openRangeSheet() : setMonthPickerOpen(true)
-          }
+          onPress={() => {
+            if (focusDay) setFocusDay(null);
+            else if (view === "custom") openRangeSheet();
+            else setMonthPickerOpen(true);
+          }}
           activeOpacity={0.85}
         >
           <Text
@@ -346,7 +365,7 @@ export default function ScheduleScreen() {
             {headerLabel}
           </Text>
           <Icon
-            name="chevron-down"
+            name={focusDay ? "x" : "chevron-down"}
             size={18}
             color={onDark(theme.content, theme.content.textMuted, "#052D50")}
           />
@@ -453,7 +472,7 @@ export default function ScheduleScreen() {
           </View>
         ) : (
           <ScheduleGrid
-            view={view}
+            view={focusDay ? "week" : view}
             isInside={isInside}
             days={gridDays}
             blocksByDay={gridData.blocks}

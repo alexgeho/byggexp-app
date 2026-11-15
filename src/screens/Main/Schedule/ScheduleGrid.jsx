@@ -75,7 +75,13 @@ export default function ScheduleGrid({
         {head.map((day) => {
           const isToday = toDayKey(day) === today;
           return (
-            <View key={day.getTime()} style={styles.dayHead}>
+            <Pressable
+              key={day.getTime()}
+              style={styles.dayHead}
+              // A tap on a day of the week opens that one day.
+              disabled={isMonth || days.length === 1}
+              onPress={() => onDayPress(day)}
+            >
               <Text numberOfLines={1} style={styles.weekday}>
                 {formatWeekdayLabel(day)}
               </Text>
@@ -86,7 +92,7 @@ export default function ScheduleGrid({
                   </Text>
                 </View>
               )}
-            </View>
+            </Pressable>
           );
         })}
       </View>

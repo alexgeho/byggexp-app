@@ -138,7 +138,7 @@ describe("Planning — one grid", () => {
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
-  it("month is the same grid: every week of the month, a tap opens the week", async () => {
+  it("month is the same grid: every week of the month, a tap opens that day", async () => {
     const tree = await renderScreen("companyAdmin");
     const monthTab = tree.root.findAll(
       (node) =>
@@ -159,7 +159,8 @@ describe("Planning — one grid", () => {
     expect(
       new Set(pressables(tree, "grid-day-").map((node) => node.props.testID))
         .size,
-    ).toBe(7);
+    ).toBe(1);
+    expect(texts(tree).flat()).toContain("08:00");
   });
 
   it("custom is the same grid over the chosen dates", async () => {
