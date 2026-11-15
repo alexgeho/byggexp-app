@@ -1,8 +1,11 @@
 import {
   addArticle,
   buildOrderPayload,
+  defaultSupplier,
+  GROSSISTS,
   isOrderable,
   setQuantity,
+  supplierChoices,
 } from "../materialOrder";
 
 const plank = {
@@ -19,6 +22,20 @@ describe("material order drafts", () => {
     expect(isOrderable(plank)).toBe(true);
     expect(isOrderable({ ...plank, supplier: "" })).toBe(false);
     expect(isOrderable({ ...plank, active: false })).toBe(false);
+  });
+
+  it("offers the company's stores first, then every grossist", () => {
+    const own = [{ supplier: "Byggmax" }, { supplier: "Dahl", canOrder: true }];
+    expect(supplierChoices(own).slice(0, 3)).toEqual([
+      "Byggmax",
+      "Dahl",
+      "Ahlsell",
+    ]);
+    expect(supplierChoices(own)).toHaveLength(GROSSISTS.length + 1);
+    expect(supplierChoices()).toEqual(GROSSISTS);
+    expect(defaultSupplier(own)).toBe("Dahl");
+    expect(defaultSupplier([{ supplier: "Byggmax" }])).toBe("Byggmax");
+    expect(defaultSupplier()).toBe("Ahlsell");
   });
 
   it("adding the same article again bumps the quantity", () => {

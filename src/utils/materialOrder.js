@@ -2,6 +2,35 @@
 // Only articles that came from a grossist price list (supplier set) can be
 // ordered, and one order goes to one supplier.
 
+// The grossists the web admin offers (features/articles/priceList/grossists).
+export const GROSSISTS = [
+  "Ahlsell",
+  "Dahl",
+  "Rexel",
+  "Sonepar",
+  "Elektroskandia",
+  "Solar",
+  "Onninen",
+  "Beijer",
+  "Bevego",
+  "Lundagrossisten",
+  "Würth",
+];
+
+// Stores to choose from in a new order: the company's own suppliers first,
+// then the rest of the grossists — the same list as the web admin.
+export const supplierChoices = (suppliers = []) => [
+  ...new Set([
+    ...suppliers.map((s) => s?.supplier).filter(Boolean),
+    ...GROSSISTS,
+  ]),
+];
+
+// The store a new order starts on: one the company can order from, else its
+// first own supplier, else the first grossist.
+export const defaultSupplier = (suppliers = []) =>
+  suppliers.find((s) => s?.canOrder)?.supplier || supplierChoices(suppliers)[0];
+
 export const isOrderable = (article) =>
   article?.active !== false && Boolean(String(article?.supplier || "").trim());
 

@@ -49,10 +49,12 @@ import {
   addArticle,
   buildOrderPayload,
   canEditOrder,
+  defaultSupplier,
   isOrderable,
   orderTotal,
   parseDateOnly,
   setQuantity,
+  supplierChoices,
 } from "../../../utils/materialOrder";
 
 const tomorrow = () => {
@@ -177,7 +179,7 @@ function MaterialOrderForm({ order, projectId, projectAddress, fromPush }) {
       .materialOrders,
   );
   // Which grossist this order goes to — picked first, before any article.
-  const [suppliers, setSuppliers] = useState([]);
+  const [suppliers, setSuppliers] = useState(() => supplierChoices());
   const [pickerOpen, setPickerOpen] = useState(false);
   const [androidDateOpen, setAndroidDateOpen] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -187,11 +189,11 @@ function MaterialOrderForm({ order, projectId, projectAddress, fromPush }) {
     materialOrderService
       .listSuppliers()
       .then((list) => {
-        const names = list.map((s) => s.supplier).filter(Boolean);
-        setSuppliers(names);
-        setSupplier((current) => current || names[0] || "");
+        setSuppliers(supplierChoices(list));
+        setSupplier((current) => current || defaultSupplier(list));
       })
-      .catch(() => setSuppliers([]));
+      // The company's own list is unavailable: the grossists stay on offer.
+      .catch(() => setSupplier((current) => current || defaultSupplier()));
   }, [editable]);
 
   // One order goes to one grossist: only the chosen supplier's articles are
@@ -318,9 +320,9 @@ function MaterialOrderForm({ order, projectId, projectAddress, fromPush }) {
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
         >
-          {editable && suppliers.length > 0 ? (
+          {editable ? (
             <FieldCard>
-              {rows.length === 0 && suppliers.length > 1 ? (
+              {rows.length === 0 ? (
                 <FieldRow label={t("materialOrders.supplier")} isLast>
                   <ChoiceChips
                     tone="soft"
