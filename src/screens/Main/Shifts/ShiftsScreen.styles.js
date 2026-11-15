@@ -7,6 +7,32 @@ import {
 } from "../../../styles/screenLayout";
 import { onDark } from "../../../theme/colorUtils";
 
+// Plain-Modal bottom sheet — replaces @gorhom/bottom-sheet, which hangs the JS
+// thread on Android under the New Architecture (reanimated 4 / RN 0.81).
+export const createSheetStyles = (c) =>
+  StyleSheet.create({
+    backdrop: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: "rgba(0,0,0,0.4)",
+    },
+    container: {
+      position: "absolute",
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: c.surface,
+      borderTopLeftRadius: 24,
+      borderTopRightRadius: 24,
+      paddingTop: 10,
+      paddingBottom: 28,
+      maxHeight: "90%",
+    },
+  });
+
 export const createStyles = (c) =>
   StyleSheet.create({
     container: {

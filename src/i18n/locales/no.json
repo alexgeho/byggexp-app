@@ -903,7 +903,8 @@
   "schedule": {
     "views": {
       "week": "Uke",
-      "month": "Måned"
+      "month": "Måned",
+      "custom": "Tilpasset"
     },
     "employees": "Ansatte",
     "projects": "Prosjekter",

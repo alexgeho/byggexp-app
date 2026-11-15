@@ -18,8 +18,10 @@ export const createStyles = (c) =>
       flexDirection: "row",
       alignItems: "center",
       gap: 6,
+      flexShrink: 1,
     },
     monthLabel: {
+      flexShrink: 1,
       color: c.textPrimary,
       fontSize: 19,
       fontFamily: "DMSans-SemiBold",

@@ -903,7 +903,8 @@
   "schedule": {
     "views": {
       "week": "Nädal",
-      "month": "Kuu"
+      "month": "Kuu",
+      "custom": "Kohandatud"
     },
     "employees": "Töötajad",
     "projects": "Projektid",

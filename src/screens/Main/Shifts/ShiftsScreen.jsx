@@ -17,7 +17,6 @@ import {
   Linking,
   Platform,
   Keyboard,
-  StyleSheet,
 } from "react-native";
 import { Image as ExpoImage } from "expo-image";
 import { useTranslation } from "react-i18next";
@@ -75,7 +74,7 @@ import {
   isImageDocument,
   isPdfDocument,
 } from "../../../utils/documentPreview";
-import { createStyles } from "./ShiftsScreen.styles";
+import { createSheetStyles, createStyles } from "./ShiftsScreen.styles";
 import {
   DayHoursEntry,
   PeriodSummary,
@@ -89,32 +88,6 @@ import {
   ShiftOvertime,
   ShiftWeekPicker,
 } from "./ShiftsScreen.parts";
-
-// Plain-Modal bottom sheet — replaces @gorhom/bottom-sheet, which hangs the JS
-// thread on Android under the New Architecture (reanimated 4 / RN 0.81).
-const createSheetStyles = (c) =>
-  StyleSheet.create({
-    backdrop: {
-      position: "absolute",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: "rgba(0,0,0,0.4)",
-    },
-    container: {
-      position: "absolute",
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: c.surface,
-      borderTopLeftRadius: 24,
-      borderTopRightRadius: 24,
-      paddingTop: 10,
-      paddingBottom: 28,
-      maxHeight: "90%",
-    },
-  });
 
 // Which hours to show/bill by. GPS is the tracked timer duration (durationMs);
 // planned (contract, from the hours module) and manual (worker-entered) are

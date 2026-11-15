@@ -161,4 +161,23 @@ describe("Planning — one grid", () => {
         .size,
     ).toBe(7);
   });
+
+  it("custom is the same grid over the chosen dates", async () => {
+    const tree = await renderScreen("companyAdmin");
+    const tab = tree.root.findAll(
+      (node) =>
+        typeof node.props.onPress === "function" &&
+        node.findAllByType(Text).length === 1 &&
+        node.findAllByType(Text)[0].props.children === "schedule.views.custom",
+    )[0];
+    await act(async () => tab.props.onPress());
+    // Opens on two weeks from today: every whole week they touch.
+    const days = new Set(
+      pressables(tree, "grid-day-").map((node) => node.props.testID),
+    );
+    expect(days.size % 7).toBe(0);
+    expect(days.size).toBeGreaterThanOrEqual(14);
+    expect(days.size).toBeLessThanOrEqual(21);
+    expect(pressables(tree, "grid-block-a1").length).toBeGreaterThan(0);
+  });
 });

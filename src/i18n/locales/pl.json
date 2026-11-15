@@ -907,7 +907,8 @@
   "schedule": {
     "views": {
       "week": "Tydzień",
-      "month": "Miesiąc"
+      "month": "Miesiąc",
+      "custom": "Własny"
     },
     "employees": "Pracownicy",
     "projects": "Projekty",

@@ -19,8 +19,8 @@ import { onDark } from "../../../theme/colorUtils";
 
 // The one planning table. Week: the web admin's Google-Calendar view — hours
 // down the left, one column per day, every booking a block from its start
-// time. Month: the same seven columns, a row per week, the whole month on
-// screen. Same gutter, same head, same colours — switching does not jump.
+// time. Month and Custom: the same seven columns, a row per week, the whole
+// period on screen. Same gutter, same head, same colours — switching does not jump.
 const HOUR_HEIGHT = 48;
 const GUTTER_WIDTH = 48;
 const HOURS = Array.from(
@@ -34,7 +34,7 @@ const MONTH_CHIPS = 3;
 
 export default function ScheduleGrid({
   view,
-  month,
+  isInside,
   days,
   blocksByDay,
   leavesByDay,
@@ -52,7 +52,7 @@ export default function ScheduleGrid({
   const today = toDayKey(new Date());
   const now = new Date();
   const nowMinute = now.getHours() * 60 + now.getMinutes();
-  const isMonth = view === "month";
+  const isMonth = view !== "week";
   const head = days.slice(0, 7);
   const hasLeaves =
     !isMonth &&
@@ -124,7 +124,7 @@ export default function ScheduleGrid({
               {week.map((day) => {
                 const dayKey = toDayKey(day);
                 const isToday = dayKey === today;
-                const outside = day.getMonth() !== month;
+                const outside = !isInside(day);
                 const weekend = day.getDay() === 0 || day.getDay() === 6;
                 const leaves = leavesByDay[dayKey] || [];
                 const blocks = [...(blocksByDay[dayKey] || [])].sort(
@@ -283,14 +283,17 @@ export default function ScheduleGrid({
 }
 
 // The days on screen: the week (Mon–Sun) the anchor day falls in, or every
-// whole week its month touches.
-export const gridDaysFor = (anchor, view) => {
-  if (view !== "month") {
+// whole week its month — or the chosen period — touches.
+export const gridDaysFor = (anchor, view, range) => {
+  if (view === "week") {
     const first = startOfWeek(anchor);
     return Array.from({ length: 7 }, (_, index) => addDays(first, index));
   }
-  const first = startOfWeek(startOfMonth(anchor));
-  const lastDay = new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0);
+  const custom = view === "custom";
+  const first = startOfWeek(custom ? range.from : startOfMonth(anchor));
+  const lastDay = custom
+    ? range.to
+    : new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0);
   const count = (Math.floor(daysBetween(first, lastDay) / 7) + 1) * 7;
   return Array.from({ length: count }, (_, index) => addDays(first, index));
 };

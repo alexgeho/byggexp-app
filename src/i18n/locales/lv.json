@@ -904,7 +904,8 @@
   "schedule": {
     "views": {
       "week": "Nedēļa",
-      "month": "Mēnesis"
+      "month": "Mēnesis",
+      "custom": "Pielāgots"
     },
     "employees": "Darbinieki",
     "projects": "Projekti",

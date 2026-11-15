@@ -903,7 +903,8 @@
   "schedule": {
     "views": {
       "week": "Vecka",
-      "month": "Månad"
+      "month": "Månad",
+      "custom": "Anpassad"
     },
     "employees": "Anställda",
     "projects": "Projekt",

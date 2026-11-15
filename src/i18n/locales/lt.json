@@ -907,7 +907,8 @@
   "schedule": {
     "views": {
       "week": "Savaitė",
-      "month": "Mėnuo"
+      "month": "Mėnuo",
+      "custom": "Pasirinktinis"
     },
     "employees": "Darbuotojai",
     "projects": "Projektai",

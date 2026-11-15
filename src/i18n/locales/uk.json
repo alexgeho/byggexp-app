@@ -907,7 +907,8 @@
   "schedule": {
     "views": {
       "week": "Тиждень",
-      "month": "Місяць"
+      "month": "Місяць",
+      "custom": "Свій"
     },
     "employees": "Співробітники",
     "projects": "Проєкти",

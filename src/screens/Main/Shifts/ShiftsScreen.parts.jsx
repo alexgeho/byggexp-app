@@ -534,6 +534,9 @@ function MonthYearWheels({ value, onChange, options, styles, prefix }) {
 export function PeriodSheet({
   visible,
   onClose,
+  // Which ways of picking are offered; with one, the tab row is not shown
+  // (Planning offers only the two dates).
+  tabs = EXPORT_PERIOD_TABS,
   exportPeriodTab,
   setExportPeriodTab,
   exportFromMonth,
@@ -572,8 +575,8 @@ export function PeriodSheet({
               {t("shiftHistory.periodLabel")}
             </Text>
 
-            <View style={styles.periodTabs}>
-              {EXPORT_PERIOD_TABS.map((tab) => (
+            <View style={tabs.length > 1 ? styles.periodTabs : null}>
+              {(tabs.length > 1 ? tabs : []).map((tab) => (
                 <TouchableOpacity
                   key={tab}
                   style={[

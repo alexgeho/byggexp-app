@@ -906,7 +906,8 @@
   "schedule": {
     "views": {
       "week": "Sedmica",
-      "month": "Mjesec"
+      "month": "Mjesec",
+      "custom": "Prilagođeno"
     },
     "employees": "Zaposleni",
     "projects": "Projekti",

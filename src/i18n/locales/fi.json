@@ -903,7 +903,8 @@
   "schedule": {
     "views": {
       "week": "Viikko",
-      "month": "Kuukausi"
+      "month": "Kuukausi",
+      "custom": "Mukautettu"
     },
     "employees": "Työntekijät",
     "projects": "Projektit",

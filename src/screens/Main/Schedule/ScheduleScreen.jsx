@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  Alert,
   Modal,
   FlatList,
 } from "react-native";
@@ -28,6 +29,7 @@ import {
   addMonths,
   buildEmployeeOptions,
   buildProjectMap,
+  daysBetween,
   EVENT_COLORS,
   formatMonthLabel,
   getMonthKey,
@@ -39,9 +41,16 @@ import {
 import {
   buildDayBlocks,
   buildDayLeaves,
+  parseDayKey,
   toDayKey,
 } from "../../../utils/scheduleBooking";
+import { PeriodSheet } from "../Shifts/ShiftsScreen.parts";
+import {
+  createSheetStyles,
+  createStyles as createShiftsStyles,
+} from "../Shifts/ShiftsScreen.styles";
 import ScheduleGrid, { gridDaysFor } from "./ScheduleGrid";
+import { formatExportPickerDate } from "../../../utils/shifts";
 import { canCreateProjects } from "../../../utils/userRoles";
 import { createStyles } from "./ScheduleScreen.styles";
 import { useTheme } from "../../../theme/ThemeContext";
@@ -53,8 +62,12 @@ import { SheetView } from "../../../components/common/SheetSlideIn/SheetSlideIn"
 const SCHEDULE_DEMO = false;
 
 // One table (ScheduleGrid) for both views: week = hours down the left,
-// month = a row per week. Never a second table for another period.
-const VIEWS = ["week", "month"];
+// month and custom (two dates) = a row per week. Never a second table for
+// another period.
+const VIEWS = ["week", "month", "custom"];
+const RANGE_KEY = "schedule-custom-range";
+const CUSTOM_TABS = ["Custom"];
+const DEFAULT_CUSTOM_DAYS = 14;
 const VIEW_KEY = "schedule-view";
 const HIDDEN_PEOPLE_KEY = "schedule-hidden-people";
 
@@ -70,16 +83,48 @@ export default function ScheduleScreen() {
   const [anchor, setAnchor] = useState(() => startOfDay(new Date()));
   const [hiddenPeople, setHiddenPeople] = useState([]);
   useEffect(() => {
-    AsyncStorage.multiGet([VIEW_KEY, HIDDEN_PEOPLE_KEY])
-      .then(([[, savedView], [, savedHidden]]) => {
+    AsyncStorage.multiGet([VIEW_KEY, HIDDEN_PEOPLE_KEY, RANGE_KEY])
+      .then(([[, savedView], [, savedHidden], [, savedRange]]) => {
+        if (savedRange) setRange(JSON.parse(savedRange));
         if (VIEWS.includes(savedView)) setView(savedView);
         if (savedHidden) setHiddenPeople(JSON.parse(savedHidden));
       })
       .catch(() => {});
   }, []);
+  // Custom: the two dates of the period (day keys), picked in the same
+  // period sheet as in Shifts.
+  const [range, setRange] = useState(() => {
+    const today = startOfDay(new Date());
+    return {
+      from: toDayKey(today),
+      to: toDayKey(addDays(today, DEFAULT_CUSTOM_DAYS - 1)),
+    };
+  });
+  const [rangeDraft, setRangeDraft] = useState(null);
+  const [rangeTarget, setRangeTarget] = useState(null);
+  const saveRange = (next) => {
+    setRange(next);
+    AsyncStorage.setItem(RANGE_KEY, JSON.stringify(next)).catch(() => {});
+  };
+  const openRangeSheet = () => {
+    setRangeTarget(null);
+    setRangeDraft(range);
+  };
+  const applyRange = () => {
+    if (rangeDraft.from > rangeDraft.to) {
+      Alert.alert(
+        t("shiftHistory.invalidPeriodTitle"),
+        t("shiftHistory.invalidPeriodMessage"),
+      );
+      return;
+    }
+    saveRange(rangeDraft);
+    setRangeDraft(null);
+  };
   const pickView = (next) => {
     setView(next);
     AsyncStorage.setItem(VIEW_KEY, next).catch(() => {});
+    if (next === "custom") openRangeSheet();
   };
   const togglePerson = (id) =>
     setHiddenPeople((prev) => {
@@ -91,7 +136,22 @@ export default function ScheduleScreen() {
       );
       return next;
     });
-  const gridDays = useMemo(() => gridDaysFor(anchor, view), [anchor, view]);
+  const rangeDays = useMemo(
+    () => ({ from: parseDayKey(range.from), to: parseDayKey(range.to) }),
+    [range],
+  );
+  const gridDays = useMemo(
+    () => gridDaysFor(anchor, view, rangeDays),
+    [anchor, view, rangeDays],
+  );
+  const shiftsStyles = useMemo(
+    () => createShiftsStyles(theme.content),
+    [theme.content],
+  );
+  const sheetStyles = useMemo(
+    () => createSheetStyles(theme.content),
+    [theme.content],
+  );
   const { loading, projects, workers, leaves } = useScheduleData(
     user,
     SCHEDULE_DEMO,
@@ -158,14 +218,42 @@ export default function ScheduleScreen() {
     };
   }, [gridDays, hiddenPeople, assignments, leaves]);
 
-  const goToday = () => setAnchor(startOfDay(new Date()));
-  // ‹ › step by what is on screen: a week, or a month.
-  const step = (direction) =>
+  // Custom keeps its length and moves as a whole.
+  const moveRange = (from) =>
+    saveRange({
+      from: toDayKey(from),
+      to: toDayKey(addDays(from, daysBetween(rangeDays.from, rangeDays.to))),
+    });
+  const goToday = () => {
+    const today = startOfDay(new Date());
+    if (view === "custom") moveRange(today);
+    setAnchor(today);
+  };
+  // ‹ › step by what is on screen: a week, a month, or the period's length.
+  const step = (direction) => {
+    if (view === "custom") {
+      const length = daysBetween(rangeDays.from, rangeDays.to) + 1;
+      moveRange(addDays(rangeDays.from, direction * length));
+      return;
+    }
     setAnchor((prev) =>
       view === "month"
         ? addMonths(startOfMonth(prev), direction)
         : addDays(prev, direction * 7),
     );
+  };
+  const isInside = (day) =>
+    view === "custom"
+      ? toDayKey(day) >= range.from && toDayKey(day) <= range.to
+      : day.getMonth() === anchor.getMonth();
+
+  let headerLabel = formatMonthLabel(view === "month" ? anchor : gridDays[0]);
+  if (view === "custom") {
+    headerLabel =
+      range.from === range.to
+        ? formatExportPickerDate(range.from)
+        : `${formatExportPickerDate(range.from)} – ${formatExportPickerDate(range.to)}`;
+  }
 
   const monthOptions = useMemo(() => {
     const base = startOfMonth(new Date());
@@ -181,12 +269,15 @@ export default function ScheduleScreen() {
   // (today when the month on screen is the current one).
   const openNewBooking = () => {
     const today = startOfDay(new Date());
-    const first =
-      view === "month"
-        ? getMonthKey(anchor) === getMonthKey(today)
+    let first = gridDays[0];
+    if (view === "custom") {
+      first = rangeDays.from;
+    } else if (view === "month") {
+      first =
+        getMonthKey(anchor) === getMonthKey(today)
           ? today
-          : startOfMonth(anchor)
-        : gridDays[0];
+          : startOfMonth(anchor);
+    }
     navigation.navigate("Booking", { date: toDayKey(first) });
   };
 
@@ -223,7 +314,7 @@ export default function ScheduleScreen() {
     });
   };
 
-  // A tap on a day of the month opens its week.
+  // A tap on a day of the month or the period opens its week.
   const openDay = (day) => {
     setAnchor(startOfDay(day));
     pickView("week");
@@ -241,11 +332,18 @@ export default function ScheduleScreen() {
         />
         <TouchableOpacity
           style={styles.monthSelector}
-          onPress={() => setMonthPickerOpen(true)}
+          onPress={() =>
+            view === "custom" ? openRangeSheet() : setMonthPickerOpen(true)
+          }
           activeOpacity={0.85}
         >
-          <Text style={styles.monthLabel}>
-            {formatMonthLabel(view === "month" ? anchor : gridDays[0])}
+          <Text
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.6}
+            style={styles.monthLabel}
+          >
+            {headerLabel}
           </Text>
           <Icon
             name="chevron-down"
@@ -356,7 +454,7 @@ export default function ScheduleScreen() {
         ) : (
           <ScheduleGrid
             view={view}
-            month={anchor.getMonth()}
+            isInside={isInside}
             days={gridDays}
             blocksByDay={gridData.blocks}
             leavesByDay={gridData.leaves}
@@ -383,6 +481,30 @@ export default function ScheduleScreen() {
         onRightPress={() => navigation.navigate("Menu")}
         showAddButton={canBook}
         onAddPress={openNewBooking}
+      />
+
+      {/* Custom period — the Shifts period sheet, dates only */}
+      <PeriodSheet
+        visible={rangeDraft !== null}
+        onClose={() => setRangeDraft(null)}
+        tabs={CUSTOM_TABS}
+        exportPeriodTab="Custom"
+        exportFromDate={rangeDraft?.from}
+        exportToDate={rangeDraft?.to}
+        datePickerTarget={rangeTarget}
+        setDatePickerTarget={setRangeTarget}
+        onCustomDateChange={(_event, date) =>
+          date &&
+          setRangeDraft((prev) => ({
+            ...prev,
+            [rangeTarget || "from"]: toDayKey(date),
+          }))
+        }
+        onApply={applyRange}
+        styles={shiftsStyles}
+        sheetStyles={sheetStyles}
+        titleFontFamily={theme.text.fontFamily.semiBold}
+        t={t}
       />
 
       {/* Month picker */}
