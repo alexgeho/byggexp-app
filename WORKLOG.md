@@ -135,9 +135,9 @@
 - [x] 1.1.7 уже вышла в App Store (01.11) → версия 1.1.8; Nyheter sv/en — `docs/STORE_LISTING_COPY.md`
 - [x] Сборки 1.1.8 готовы из main после последнего OTA: iOS 202 (EAS `227ba961`), Android 40 (EAS `e548bf1f`, AAB)
 - [x] Play: AAB 40 загружен (владелец), Nyheter sv-SE вписаны, версия 40 (1.1.8) сохранена в Publiceringsöversikt — не отправлена
-- [ ] Play: «Skicka in 1 ändring för granskning» — ждёт «да» владельца
+- [x] Play: после «да» владельца версия 40 (1.1.8) отправлена на ревью («Ändringarna granskas»). Предпроверка ругалась «DNS для страницы политики» (`byggexp.se/sv/integritetspolicy`) — страница отвечает 200 со всех DNS, отмечено как исправленное
 - [x] iOS 202 загружен в App Store Connect (`eas submit`) — после того как владелец принял Free Apps Agreement (15.11); первые попытки падали с `EAS_ASC_REQUIRED_AGREEMENTS_MISSING_OR_EXPIRED`
-- [ ] ASC: версия 1.1.8, прикрепить сборку 202, What's New, отправить на ревью — ждёт «да» владельца
+- [x] ASC: версия 1.1.8, сборка 202, What's New (sv) — отправлено на ревью, статус «Waiting for Review» (15.11, 22:34)
 
 # 2026-11-14 — Schema: бронь прямо из календаря (как в админке)
 
