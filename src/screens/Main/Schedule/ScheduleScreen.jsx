@@ -29,7 +29,6 @@ import {
   addMonths,
   buildEmployeeOptions,
   buildProjectMap,
-  daysBetween,
   EVENT_COLORS,
   formatMonthLabel,
   formatMonthSpanLabel,
@@ -54,7 +53,6 @@ import ScheduleGrid, { gridDaysFor, isHourGrid } from "./ScheduleGrid";
 import { canCreateProjects } from "../../../utils/userRoles";
 import { createStyles } from "./ScheduleScreen.styles";
 import { useTheme } from "../../../theme/ThemeContext";
-import { onDark } from "../../../theme/colorUtils";
 import { SheetView } from "../../../components/common/SheetSlideIn/SheetSlideIn";
 
 // Dev-only preview with fake, varied data. Never true in production
@@ -212,29 +210,6 @@ export default function ScheduleScreen() {
     };
   }, [gridDays, hiddenPeople, assignments, leaves]);
 
-  // Custom keeps its length and moves as a whole.
-  const moveRange = (from) =>
-    saveRange({
-      from: toDayKey(from),
-      to: toDayKey(addDays(from, daysBetween(rangeDays.from, rangeDays.to))),
-    });
-  // ‹ › step by what is on screen: a week, a month, or the period's length.
-  const step = (direction) => {
-    if (focusDay) {
-      setFocusDay((prev) => addDays(prev, direction));
-      return;
-    }
-    if (view === "custom") {
-      const length = daysBetween(rangeDays.from, rangeDays.to) + 1;
-      moveRange(addDays(rangeDays.from, direction * length));
-      return;
-    }
-    setAnchor((prev) =>
-      view === "month"
-        ? addMonths(startOfMonth(prev), direction)
-        : addDays(prev, direction * (view === "twoWeeks" ? 14 : 7)),
-    );
-  };
   const isInside = (day) => {
     if (view === "twoWeeks") return true;
     return view === "custom"
@@ -341,46 +316,9 @@ export default function ScheduleScreen() {
         >
           {headerLabel}
         </Text>
-        {/* A custom period is chosen in its sheet (a tap on the Custom tab),
-            not stepped: no ‹ › there. An opened day still steps by day. */}
-        {view === "custom" && !focusDay ? null : (
-          <View style={styles.stepGroup}>
-            <TouchableOpacity
-              style={styles.stepButton}
-              onPress={() => step(-1)}
-              activeOpacity={0.85}
-              hitSlop={6}
-              testID="schedule-step-prev"
-            >
-              <Icon
-                name="chevron-left"
-                size={20}
-                color={onDark(
-                  theme.content,
-                  theme.content.textMuted,
-                  "#052D50",
-                )}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.stepButton}
-              onPress={() => step(1)}
-              activeOpacity={0.85}
-              hitSlop={6}
-              testID="schedule-step-next"
-            >
-              <Icon
-                name="chevron-right"
-                size={20}
-                color={onDark(
-                  theme.content,
-                  theme.content.textMuted,
-                  "#052D50",
-                )}
-              />
-            </TouchableOpacity>
-          </View>
-        )}
+        {/* Nothing else up here: the top only shows; what is on screen is
+            set below — the Week · 2 weeks · Month · Custom pills and the
+            Custom sheet (owner 15.11). No ‹ ›. */}
       </View>
 
       <View style={styles.peopleRow}>

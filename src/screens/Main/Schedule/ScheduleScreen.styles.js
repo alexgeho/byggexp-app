@@ -22,16 +22,6 @@ export const createStyles = (c) =>
       fontSize: 20,
       fontFamily: "DMSans-SemiBold",
     },
-    stepGroup: {
-      flexDirection: "row",
-      gap: 4,
-    },
-    stepButton: {
-      width: 36,
-      height: 44,
-      alignItems: "center",
-      justifyContent: "center",
-    },
     viewRow: {
       paddingVertical: 10,
     },
