@@ -404,6 +404,16 @@ export default function ScheduleScreen() {
     ? daysBetween(rangeStart, new Date()) * dayWidth
     : null;
 
+  // The month opens on today (one day of context before it), not on the first
+  // week of the range.
+  const startX =
+    todayX !== null && timelineViewportWidth > 0
+      ? Math.max(
+          0,
+          Math.min(todayX - dayWidth, timelineWidth - timelineViewportWidth),
+        )
+      : 0;
+
   const goToday = () => {
     setAnchor(startOfDay(new Date()));
     setCurrentMonth(startOfMonth(new Date()));
@@ -491,9 +501,17 @@ export default function ScheduleScreen() {
   // and jump the timeline back to the start of the range.
   useEffect(() => {
     setVisibleMonth(currentMonth);
-    bodyHScrollRef.current?.scrollTo({ x: 0, animated: false });
-    headerScrollRef.current?.scrollTo({ x: 0, animated: false });
   }, [currentMonth]);
+  // Measured, or another month picked → today into view (start of the range
+  // when today is not in it). Zooming does not jump.
+  const startXRef = useRef(0);
+  startXRef.current = startX;
+  useEffect(() => {
+    if (isGrid || !timelineViewportWidth) return;
+    const x = startXRef.current;
+    bodyHScrollRef.current?.scrollTo({ x, animated: false });
+    headerScrollRef.current?.scrollTo({ x, animated: false });
+  }, [currentMonth, isGrid, timelineViewportWidth, loading]);
 
   // New booking: a tap on a free day of a person's row (that person and day
   // filled in), or the "+" of the bottom bar (today).

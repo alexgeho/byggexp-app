@@ -237,6 +237,10 @@ export const createStyles = (c) =>
       flexDirection: "row",
     },
     sidebar: {
+      // A ScrollView shrinks by default: without this the wide timeline squeezes
+      // the name column and the days slide out from under their headers.
+      flexGrow: 0,
+      flexShrink: 0,
       width: SIDEBAR_WIDTH,
       borderRightWidth: 1,
       borderRightColor: onDark(c, c.divider, "#F0F2F4"),
