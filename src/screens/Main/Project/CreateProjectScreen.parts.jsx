@@ -31,6 +31,7 @@ import { LocationMapPicker, getDeviceCoordinate } from "./LocationMapPicker";
 import { RadiusSlider } from "./RadiusSlider";
 import { useTheme } from "../../../theme/ThemeContext";
 import { onDark } from "../../../theme/colorUtils";
+import { getDateLocale } from "../../../utils/dateLocale";
 import { SheetView } from "../../../components/common/SheetSlideIn/SheetSlideIn";
 
 const useThemedStyles = () => {
@@ -72,6 +73,7 @@ export const ProjectDatePickerModal = ({
               showStart ? beginningDate || new Date() : endDate || new Date()
             }
             mode="date"
+            locale={getDateLocale()}
             display={DATE_PICKER_DISPLAY}
             onChange={(event, date) => {
               if (!date) {

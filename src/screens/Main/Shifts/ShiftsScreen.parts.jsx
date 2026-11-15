@@ -679,6 +679,10 @@ export function PeriodSheet({
               {exportPeriodTab === "Custom" ? (
                 <View style={styles.inlineDatePicker}>
                   <DateTimePicker
+                    // One wheel per field, in the app's language: without a
+                    // locale iOS draws the months as "M11".
+                    key={datePickerTarget || "from"}
+                    locale={getDateLocale()}
                     value={parseDateKey(
                       (datePickerTarget || "from") === "from"
                         ? exportFromDate
