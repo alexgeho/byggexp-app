@@ -8,20 +8,31 @@ import { radius } from "../../../theme/tokens";
 export const PERIOD_VIEWS = ["week", "month", "custom"];
 
 // THE Week · Month · Custom switch — the same one in Planning and in Shifts.
-// "Custom" is a period of two dates, picked in PeriodSheet.
-export function PeriodTabs({ value, onChange, testIDPrefix = "period-view" }) {
+// "Custom" is a period of two dates, picked in PeriodSheet. A screen that has
+// one more period passes its list in `views` (Planning: also "twoWeeks") —
+// the same switch, never a second one.
+export function PeriodTabs({
+  value,
+  onChange,
+  testIDPrefix = "period-view",
+  views = PERIOD_VIEWS,
+}) {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
 
   return (
     <View style={styles.toggle}>
-      {PERIOD_VIEWS.map((view) => {
+      {views.map((view) => {
         const on = view === value;
         return (
           <TouchableOpacity
             key={view}
-            style={[styles.button, on && styles.buttonOn]}
+            style={[
+              styles.button,
+              views.length > 3 && styles.buttonTight,
+              on && styles.buttonOn,
+            ]}
             onPress={() => onChange(view)}
             activeOpacity={0.85}
             testID={`${testIDPrefix}-${view}`}
@@ -48,6 +59,7 @@ const createStyles = (c) =>
     toggle: {
       flexDirection: "row",
       alignSelf: "center",
+      maxWidth: "100%",
       backgroundColor: c.background,
       borderRadius: radius.control,
       padding: 3,
@@ -59,6 +71,10 @@ const createStyles = (c) =>
       borderRadius: radius.control,
       alignItems: "center",
       justifyContent: "center",
+      flexShrink: 1,
+    },
+    buttonTight: {
+      paddingHorizontal: 12,
     },
     buttonOn: {
       backgroundColor: onDark(c, c.surfaceMuted, "#FFFFFF"),

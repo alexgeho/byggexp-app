@@ -906,6 +906,7 @@
   "schedule": {
     "views": {
       "week": "Sedmica",
+      "twoWeeks": "2 sedmice",
       "month": "Mjesec",
       "custom": "Prilagođeno"
     },

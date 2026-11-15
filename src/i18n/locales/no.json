@@ -903,6 +903,7 @@
   "schedule": {
     "views": {
       "week": "Uke",
+      "twoWeeks": "2 uker",
       "month": "Måned",
       "custom": "Tilpasset"
     },

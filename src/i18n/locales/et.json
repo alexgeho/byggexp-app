@@ -903,6 +903,7 @@
   "schedule": {
     "views": {
       "week": "Nädal",
+      "twoWeeks": "2 nädalat",
       "month": "Kuu",
       "custom": "Kohandatud"
     },

@@ -446,12 +446,15 @@ export default function ScheduleGrid({
   );
 }
 
-// The days on screen: the week (Mon–Sun) the anchor day falls in, or every
-// whole week its month — or the chosen period — touches.
+// The days on screen: the week (Mon–Sun) the anchor day falls in, that week
+// and the next one, or every whole week its month — or the chosen period —
+// touches.
 export const gridDaysFor = (anchor, view, range) => {
-  if (view === "week") {
+  if (view === "week" || view === "twoWeeks") {
     const first = startOfWeek(anchor);
-    return Array.from({ length: 7 }, (_, index) => addDays(first, index));
+    return Array.from({ length: view === "week" ? 7 : 14 }, (_, index) =>
+      addDays(first, index),
+    );
   }
   const custom = view === "custom";
   const first = startOfWeek(custom ? range.from : startOfMonth(anchor));

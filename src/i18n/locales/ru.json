@@ -907,6 +907,7 @@
   "schedule": {
     "views": {
       "week": "Неделя",
+      "twoWeeks": "2 недели",
       "month": "Месяц",
       "custom": "Свой"
     },

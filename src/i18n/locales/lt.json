@@ -907,6 +907,7 @@
   "schedule": {
     "views": {
       "week": "Savaitė",
+      "twoWeeks": "2 savaitės",
       "month": "Mėnuo",
       "custom": "Pasirinktinis"
     },

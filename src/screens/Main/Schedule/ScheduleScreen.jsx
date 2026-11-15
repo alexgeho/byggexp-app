@@ -61,10 +61,10 @@ import { SheetView } from "../../../components/common/SheetSlideIn/SheetSlideIn"
 // (guarded by __DEV__ at the call site); flip to preview colors locally.
 const SCHEDULE_DEMO = false;
 
-// One table (ScheduleGrid) for both views: week = hours down the left,
-// month and custom (two dates) = a row per week. Never a second table for
-// another period.
-const VIEWS = PERIOD_VIEWS;
+// One table (ScheduleGrid) for every view: week = hours down the left; two
+// weeks, month and custom (two dates) = a row per week. Never a second table
+// for another period.
+const VIEWS = ["week", "twoWeeks", ...PERIOD_VIEWS.slice(1)];
 const RANGE_KEY = "schedule-custom-range";
 const VIEW_KEY = "schedule-view";
 const HIDDEN_PEOPLE_KEY = "schedule-hidden-people";
@@ -241,13 +241,15 @@ export default function ScheduleScreen() {
     setAnchor((prev) =>
       view === "month"
         ? addMonths(startOfMonth(prev), direction)
-        : addDays(prev, direction * 7),
+        : addDays(prev, direction * (view === "twoWeeks" ? 14 : 7)),
     );
   };
-  const isInside = (day) =>
-    view === "custom"
+  const isInside = (day) => {
+    if (view === "twoWeeks") return true;
+    return view === "custom"
       ? toDayKey(day) >= range.from && toDayKey(day) <= range.to
       : day.getMonth() === anchor.getMonth();
+  };
 
   let headerLabel = formatMonthLabel(view === "month" ? anchor : gridDays[0]);
   if (focusDay) {
@@ -437,6 +439,7 @@ export default function ScheduleScreen() {
             value={view}
             onChange={pickView}
             testIDPrefix="schedule-view"
+            views={VIEWS}
           />
         </View>
         {loading ? (

@@ -904,6 +904,7 @@
   "schedule": {
     "views": {
       "week": "Nedēļa",
+      "twoWeeks": "2 nedēļas",
       "month": "Mēnesis",
       "custom": "Pielāgots"
     },

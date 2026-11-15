@@ -903,6 +903,7 @@
   "schedule": {
     "views": {
       "week": "Viikko",
+      "twoWeeks": "2 viikkoa",
       "month": "Kuukausi",
       "custom": "Mukautettu"
     },

@@ -903,6 +903,7 @@
   "schedule": {
     "views": {
       "week": "Vecka",
+      "twoWeeks": "2 veckor",
       "month": "Månad",
       "custom": "Anpassad"
     },

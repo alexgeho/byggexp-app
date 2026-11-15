@@ -907,6 +907,7 @@
   "schedule": {
     "views": {
       "week": "Tydzień",
+      "twoWeeks": "2 tygodnie",
       "month": "Miesiąc",
       "custom": "Własny"
     },
