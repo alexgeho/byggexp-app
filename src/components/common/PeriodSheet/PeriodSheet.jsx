@@ -23,6 +23,8 @@ const MONTHS = Array.from({ length: 12 }, (_, index) =>
 );
 const YEARS_BACK = 5;
 const YEARS_AHEAD = 2;
+const IOS_WHEEL_HEIGHT = 216;
+const WHEEL_BOX_HEIGHT = 120;
 
 // One month-and-year choice as two wheels, the way a birth date is picked:
 // the month by name on the left, the year on the right.
@@ -213,8 +215,6 @@ const createStyles = (c) =>
       backgroundColor: c.surface,
       borderRadius: 20,
       padding: 16,
-      borderWidth: 1,
-      borderColor: c.border,
     },
     label: {
       fontSize: 14,
@@ -230,9 +230,13 @@ const createStyles = (c) =>
       flexDirection: "row",
       gap: 8,
     },
+    // iOS draws the wheel at its own 216 pt whatever height it is given, so
+    // the box crops it evenly from both sides: the selected row (the grey
+    // pill) stays in the middle of the box.
     wheelBox: {
       backgroundColor: "transparent",
       overflow: "hidden",
+      height: Platform.OS === "ios" ? WHEEL_BOX_HEIGHT : undefined,
     },
     wheelMonth: {
       flex: 2,
@@ -241,7 +245,9 @@ const createStyles = (c) =>
       flex: 1,
     },
     wheel: {
-      height: Platform.OS === "ios" ? 120 : 48,
+      height: Platform.OS === "ios" ? IOS_WHEEL_HEIGHT : 48,
+      marginTop:
+        Platform.OS === "ios" ? (WHEEL_BOX_HEIGHT - IOS_WHEEL_HEIGHT) / 2 : 0,
       width: "100%",
       backgroundColor: "transparent",
     },
