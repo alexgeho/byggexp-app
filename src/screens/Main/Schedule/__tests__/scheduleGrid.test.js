@@ -5,6 +5,7 @@ import { Text } from "react-native";
 import AuthContext from "../../../../contexts/AuthContext";
 import { ThemeProvider } from "../../../../theme/ThemeContext";
 import ScheduleScreen from "../ScheduleScreen";
+import { gridDaysFor, isHourGrid } from "../ScheduleGrid";
 import { toDayKey } from "../../../../utils/scheduleBooking";
 
 const mockNavigate = jest.fn();
@@ -210,6 +211,29 @@ describe("Planning — one grid", () => {
       date: toDayKey(new Date()),
       workerId: "u1",
     });
+  });
+});
+
+describe("Custom period — which grid", () => {
+  const range = (from, to) => ({
+    from: new Date(`${from}T00:00:00`),
+    to: new Date(`${to}T00:00:00`),
+  });
+  it("up to two weeks: the hour grid over exactly those days", () => {
+    const short = range("2026-11-01", "2026-11-04");
+    expect(isHourGrid("custom", short)).toBe(true);
+    expect(gridDaysFor(short.from, "custom", short).map(toDayKey)).toEqual([
+      "2026-11-01",
+      "2026-11-02",
+      "2026-11-03",
+      "2026-11-04",
+    ]);
+    expect(isHourGrid("custom", range("2026-11-01", "2026-11-14"))).toBe(true);
+  });
+  it("longer than two weeks: rows of whole weeks, like the month", () => {
+    const long = range("2026-11-01", "2026-11-15");
+    expect(isHourGrid("custom", long)).toBe(false);
+    expect(gridDaysFor(long.from, "custom", long).length % 7).toBe(0);
   });
 });
 

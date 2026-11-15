@@ -476,8 +476,24 @@ export default function ScheduleGrid({
 
 // The days on screen: the week (Mon–Sun) the anchor day falls in, that week
 // and the next one, or every whole week its month — or the chosen period —
-// touches.
+// touches. A custom period of up to two weeks is exactly its own days.
+// Hours down the left (week, two weeks, a custom period of up to two weeks)
+// or a row per week (month, a longer custom period).
+export const HOUR_GRID_MAX_DAYS = 14;
+export const isHourGrid = (view, range) =>
+  view === "week" ||
+  view === "twoWeeks" ||
+  (view === "custom" &&
+    daysBetween(range.from, range.to) + 1 <= HOUR_GRID_MAX_DAYS);
+
 export const gridDaysFor = (anchor, view, range) => {
+  if (view === "custom" && isHourGrid(view, range)) {
+    // A short period: exactly its days, a column each.
+    return Array.from(
+      { length: daysBetween(range.from, range.to) + 1 },
+      (_, index) => addDays(range.from, index),
+    );
+  }
   if (view === "week" || view === "twoWeeks") {
     const first = startOfWeek(anchor);
     return Array.from({ length: view === "week" ? 7 : 14 }, (_, index) =>

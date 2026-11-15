@@ -49,7 +49,7 @@ import {
   PERIOD_VIEWS,
   PeriodTabs,
 } from "../../../components/common/PeriodTabs/PeriodTabs";
-import ScheduleGrid, { gridDaysFor } from "./ScheduleGrid";
+import ScheduleGrid, { gridDaysFor, isHourGrid } from "./ScheduleGrid";
 import { formatExportPickerDate } from "../../../utils/shifts";
 import { canCreateProjects } from "../../../utils/userRoles";
 import { createStyles } from "./ScheduleScreen.styles";
@@ -333,7 +333,9 @@ export default function ScheduleScreen() {
           backgroundColor={theme.content.surfaceMuted}
           tint="light"
           borderColor="#FFFFFF50"
-          onPress={() => navigation.goBack()}
+          // From one opened day the arrow goes back to the view it was
+          // opened from (the month…), not out of Planning.
+          onPress={() => (focusDay ? setFocusDay(null) : navigation.goBack())}
           iconSource={require("../../../assets/Arrow-left.png")}
         />
         <TouchableOpacity
@@ -448,7 +450,7 @@ export default function ScheduleScreen() {
           </View>
         ) : (
           <ScheduleGrid
-            view={focusDay ? "week" : view}
+            view={focusDay || isHourGrid(view, rangeDays) ? "week" : "month"}
             isInside={isInside}
             days={gridDays}
             blocksByDay={gridData.blocks}
