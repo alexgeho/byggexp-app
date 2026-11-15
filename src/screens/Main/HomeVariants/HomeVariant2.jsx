@@ -112,6 +112,10 @@ function showShiftAlert(title, message) {
   Alert.alert(title, message);
 }
 
+// The longest the Play button waits for running animations before it asks
+// for the current shift.
+const SHIFT_LOAD_MAX_WAIT_MS = 250;
+
 export default function HomeVariant2() {
   const { t } = useTranslation();
   const { theme, themeName } = useTheme();
@@ -509,10 +513,22 @@ export default function HomeVariant2() {
       // rejected it ("Only an active shift can be paused."). loadCurrentShift
       // clears the flag in its finally block.
       setLoadingShift(true);
-      const task = InteractionManager.runAfterInteractions(() => {
+      // Still off the mount commit (the Android cold-start crash fix), but not
+      // for as long as animations keep running: the home screen animates, and
+      // waiting for it to go quiet left the button on its spinner for seconds.
+      let started = false;
+      const run = () => {
+        if (started) return;
+        started = true;
         loadCurrentShift(selectedProjectId);
-      });
-      return () => task.cancel();
+      };
+      const task = InteractionManager.runAfterInteractions(run);
+      const timer = setTimeout(run, SHIFT_LOAD_MAX_WAIT_MS);
+      return () => {
+        started = true;
+        task.cancel();
+        clearTimeout(timer);
+      };
     },
     [loadCurrentShift, selectedProjectId],
   );
