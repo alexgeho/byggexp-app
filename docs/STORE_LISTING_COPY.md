@@ -112,6 +112,26 @@ FÖR HELA FÖRETAGET
 Prova gratis i 14 dagar.
 ```
 
+## 1.1.8 — Nyheter (2026-11-15)
+
+### sv
+
+- Planering: boka direkt i kalendern – tryck på en tid, eller håll in och dra över flera dagar
+- Planering: vecka, 2 veckor, månad eller egen period i samma vy – tryck på en dag för att se den timme för timme
+- Arbetspass: ny periodväljare – välj från och till med dag, månad och år
+- Materialbeställning: butiken går alltid att välja
+- Planering kan läggas som knapp på startsidan
+- Förbättringar och buggfixar
+
+### en
+
+- Planning: book straight in the calendar – tap a time, or press and drag across several days
+- Planning: week, 2 weeks, month or your own period in one view – tap a day to see it hour by hour
+- Work shifts: new period picker – choose from and to by day, month and year
+- Material orders: the store can always be chosen
+- Planning can be added as a button on the home screen
+- Improvements and bug fixes
+
 ## 1.1.7 — Nyheter (2026-10-31)
 
 ### sv
