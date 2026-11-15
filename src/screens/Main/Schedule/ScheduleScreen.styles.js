@@ -18,9 +18,14 @@ export const createStyles = (c) =>
     monthLabel: {
       flex: 1,
       marginHorizontal: 12,
+      textAlign: "center",
       color: c.textPrimary,
-      fontSize: 20,
+      fontSize: 17,
       fontFamily: "DMSans-SemiBold",
+    },
+    // As wide as the back button, so the title is centred on the screen.
+    headerSide: {
+      width: 44,
     },
     viewRow: {
       paddingVertical: 10,

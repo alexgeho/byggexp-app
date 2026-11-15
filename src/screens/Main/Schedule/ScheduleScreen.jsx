@@ -316,6 +316,7 @@ export default function ScheduleScreen() {
         >
           {headerLabel}
         </Text>
+        <View style={styles.headerSide} />
         {/* Nothing else up here: the top only shows; what is on screen is
             set below — the Week · 2 weeks · Month · Custom pills and the
             Custom sheet (owner 15.11). No ‹ ›. */}
