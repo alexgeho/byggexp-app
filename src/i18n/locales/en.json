@@ -901,6 +901,12 @@
     "logOutConfirm": "Log out?"
   },
   "schedule": {
+    "views": {
+      "day": "Day",
+      "3days": "3 days",
+      "week": "Week",
+      "month": "Month"
+    },
     "employees": "Employees",
     "projects": "Projects",
     "week": "Week {{number}}",

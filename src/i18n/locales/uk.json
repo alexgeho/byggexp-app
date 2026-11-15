@@ -905,6 +905,12 @@
     "logOutConfirm": "Вийти?"
   },
   "schedule": {
+    "views": {
+      "day": "День",
+      "3days": "3 дні",
+      "week": "Тиждень",
+      "month": "Місяць"
+    },
     "employees": "Співробітники",
     "projects": "Проєкти",
     "week": "Тиждень {{number}}",

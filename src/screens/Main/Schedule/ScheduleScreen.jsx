@@ -23,6 +23,7 @@ import Icon from "react-native-vector-icons/Feather";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTranslation } from "react-i18next";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BackButton } from "../../../components/common/BackButton/BackButton";
 import { BottomBar } from "../../../components/common/BottomBar/BottomBar";
 import AuthContext from "../../../contexts/AuthContext";
@@ -39,6 +40,7 @@ import {
   buildProjectOptions,
   buildProjectSpanItem,
   daysBetween,
+  EVENT_COLORS,
   formatMonthLabel,
   formatWeekdayLabel,
   getMonthKey,
@@ -49,7 +51,13 @@ import {
   startOfMonth,
   startOfWeek,
 } from "../../../utils/schedule";
-import { buildBookingItems, toDayKey } from "../../../utils/scheduleBooking";
+import {
+  buildBookingItems,
+  buildDayBlocks,
+  buildDayLeaves,
+  toDayKey,
+} from "../../../utils/scheduleBooking";
+import ScheduleWeekGrid, { gridDaysFor } from "./ScheduleWeekGrid";
 import { canCreateProjects } from "../../../utils/userRoles";
 import { getDateLocale } from "../../../utils/dateLocale";
 import { createStyles, ROW_HEIGHT } from "./ScheduleScreen.styles";
@@ -118,6 +126,13 @@ const toNoonIso = (date) =>
 // (guarded by __DEV__ at the call site); flip to preview colors locally.
 const SCHEDULE_DEMO = false;
 
+// Day / 3 days / week = the hour grid (the web admin's Google-Calendar view);
+// month = the timeline with tasks and project spans.
+const VIEWS = ["day", "3days", "week", "month"];
+const VIEW_DAYS = { day: 1, "3days": 3, week: 7 };
+const VIEW_KEY = "schedule-view";
+const HIDDEN_PEOPLE_KEY = "schedule-hidden-people";
+
 export default function ScheduleScreen() {
   const navigation = useNavigation();
   const { theme } = useTheme();
@@ -126,6 +141,34 @@ export default function ScheduleScreen() {
   const { user } = useContext(AuthContext);
 
   const [mode, setMode] = useState("employees");
+  // The view picked last time is the one the screen opens on.
+  const [view, setView] = useState("week");
+  const [anchor, setAnchor] = useState(() => startOfDay(new Date()));
+  const [hiddenPeople, setHiddenPeople] = useState([]);
+  useEffect(() => {
+    AsyncStorage.multiGet([VIEW_KEY, HIDDEN_PEOPLE_KEY])
+      .then(([[, savedView], [, savedHidden]]) => {
+        if (VIEWS.includes(savedView)) setView(savedView);
+        if (savedHidden) setHiddenPeople(JSON.parse(savedHidden));
+      })
+      .catch(() => {});
+  }, []);
+  const pickView = (next) => {
+    setView(next);
+    AsyncStorage.setItem(VIEW_KEY, next).catch(() => {});
+  };
+  const togglePerson = (id) =>
+    setHiddenPeople((prev) => {
+      const next = prev.includes(id)
+        ? prev.filter((value) => value !== id)
+        : [...prev, id];
+      AsyncStorage.setItem(HIDDEN_PEOPLE_KEY, JSON.stringify(next)).catch(
+        () => {},
+      );
+      return next;
+    });
+  const isGrid = view !== "month";
+  const gridDays = useMemo(() => gridDaysFor(view, anchor), [view, anchor]);
   const [currentMonth, setCurrentMonth] = useState(() =>
     startOfMonth(new Date()),
   );
@@ -168,12 +211,18 @@ export default function ScheduleScreen() {
   const canBook = canCreateProjects(user?.role);
   const [assignments, setAssignments] = useState([]);
   const bookingRange = useMemo(() => {
+    if (isGrid) {
+      return {
+        from: toDayKey(gridDays[0]),
+        to: toDayKey(gridDays[gridDays.length - 1]),
+      };
+    }
     const from = startOfWeek(startOfMonth(currentMonth));
     return {
       from: toDayKey(from),
       to: toDayKey(addDays(from, RANGE_DAYS - 1)),
     };
-  }, [currentMonth]);
+  }, [isGrid, gridDays, currentMonth]);
   useFocusEffect(
     useCallback(() => {
       if (__DEV__ && SCHEDULE_DEMO) return undefined;
@@ -196,6 +245,38 @@ export default function ScheduleScreen() {
         : assignments,
     [assignments, selectedProjectIds],
   );
+
+  // People of the hour grid: everyone gets a stable colour (by id, not by the
+  // order on screen), and can be switched off in the people row.
+  const people = useMemo(
+    () => buildEmployeeOptions(projects, workers),
+    [projects, workers],
+  );
+  const personColors = useMemo(() => {
+    const map = {};
+    people
+      .map((person) => String(person.id))
+      .sort()
+      .forEach((id, index) => {
+        map[id] = EVENT_COLORS[index % EVENT_COLORS.length];
+      });
+    return map;
+  }, [people]);
+  const personNames = useMemo(
+    () =>
+      Object.fromEntries(
+        people.map((person) => [String(person.id), person.name]),
+      ),
+    [people],
+  );
+  const gridData = useMemo(() => {
+    const dayKeys = gridDays.map(toDayKey);
+    const hidden = new Set(hiddenPeople);
+    return {
+      blocks: buildDayBlocks(assignments, dayKeys, hidden),
+      leaves: buildDayLeaves(leaves, dayKeys, hidden),
+    };
+  }, [gridDays, hiddenPeople, assignments, leaves]);
 
   // Filter options.
   const projectFilterOptions = useMemo(
@@ -324,7 +405,18 @@ export default function ScheduleScreen() {
     ? daysBetween(rangeStart, new Date()) * dayWidth
     : null;
 
-  const goToday = () => setCurrentMonth(startOfMonth(new Date()));
+  const goToday = () => {
+    setAnchor(startOfDay(new Date()));
+    setCurrentMonth(startOfMonth(new Date()));
+  };
+  // ‹ › step by what is on screen: the grid's days, or a month.
+  const step = (direction) => {
+    if (isGrid) {
+      setAnchor((prev) => addDays(prev, direction * VIEW_DAYS[view]));
+    } else {
+      setCurrentMonth((prev) => addMonths(prev, direction));
+    }
+  };
 
   const zoom = (factor) =>
     setDayWidth((prev) =>
@@ -411,6 +503,20 @@ export default function ScheduleScreen() {
       date: toDayKey(date || new Date()),
       ...(workerId ? { workerId } : {}),
     });
+
+  // A tap on the hour grid: that day and hour, and the person when only one
+  // is shown (as on the web).
+  const openSlot = (date, { start, end }) => {
+    const shown = people.filter(
+      (person) => !hiddenPeople.includes(String(person.id)),
+    );
+    navigation.navigate("Booking", {
+      date,
+      start,
+      end,
+      ...(shown.length === 1 ? { workerId: shown[0].id } : {}),
+    });
+  };
 
   // A booking opens its order with every booking on it (people, days, time).
   const openBooking = (item) => {
@@ -610,7 +716,7 @@ export default function ScheduleScreen() {
           activeOpacity={0.85}
         >
           <Text style={styles.monthLabel}>
-            {formatMonthLabel(visibleMonth)}
+            {formatMonthLabel(isGrid ? gridDays[0] : visibleMonth)}
           </Text>
           <Icon
             name="chevron-down"
@@ -618,6 +724,27 @@ export default function ScheduleScreen() {
             color={onDark(theme.content, theme.content.textMuted, "#052D50")}
           />
         </TouchableOpacity>
+        <View style={styles.stepGroup}>
+          {[-1, 1].map((direction) => (
+            <TouchableOpacity
+              key={direction}
+              style={styles.stepButton}
+              onPress={() => step(direction)}
+              activeOpacity={0.85}
+              hitSlop={6}
+            >
+              <Icon
+                name={direction < 0 ? "chevron-left" : "chevron-right"}
+                size={20}
+                color={onDark(
+                  theme.content,
+                  theme.content.textMuted,
+                  "#052D50",
+                )}
+              />
+            </TouchableOpacity>
+          ))}
+        </View>
         <TouchableOpacity
           style={styles.todayButton}
           onPress={goToday}
@@ -631,76 +758,162 @@ export default function ScheduleScreen() {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.toolbar}>
-        <View style={styles.segmented}>
-          {["employees", "projects"].map((value) => (
-            <TouchableOpacity
-              key={value}
-              style={[styles.segment, mode === value && styles.segmentActive]}
-              onPress={() => setMode(value)}
-              activeOpacity={0.85}
+      <View style={styles.viewRow}>
+        {VIEWS.map((value) => (
+          <TouchableOpacity
+            key={value}
+            style={[styles.viewSegment, view === value && styles.segmentActive]}
+            onPress={() => pickView(value)}
+            activeOpacity={0.85}
+          >
+            <Text
+              numberOfLines={1}
+              style={[
+                styles.viewSegmentText,
+                view === value && styles.segmentTextActive,
+              ]}
             >
-              <Text
-                style={[
-                  styles.segmentText,
-                  mode === value && styles.segmentTextActive,
-                ]}
-              >
-                {t(`schedule.${value}`)}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+              {t(`schedule.views.${value}`)}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
-      <View style={styles.filterRow}>
-        <TouchableOpacity
-          style={styles.filterChip}
-          onPress={() => setActiveFilter("project")}
-          activeOpacity={0.85}
-        >
-          <Text
-            numberOfLines={1}
-            style={[
-              styles.filterChipText,
-              selectedProjectIds.length === 0 && styles.filterChipPlaceholder,
-            ]}
+      {isGrid ? (
+        <View style={styles.peopleRow}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.peopleContent}
           >
-            {projectChipLabel}
-          </Text>
-          <Icon
-            name="chevron-down"
-            size={16}
-            color={onDark(theme.content, theme.content.textMuted, "#052D50")}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.filterChip}
-          onPress={() => setActiveFilter("status")}
-          activeOpacity={0.85}
-        >
-          <Text
-            numberOfLines={1}
-            style={[
-              styles.filterChipText,
-              selectedStatuses.length === 0 && styles.filterChipPlaceholder,
-            ]}
+            {people.map((person) => {
+              const id = String(person.id);
+              const hidden = hiddenPeople.includes(id);
+              return (
+                <TouchableOpacity
+                  key={id}
+                  style={[styles.personChip, hidden && styles.personChipOff]}
+                  onPress={() => togglePerson(id)}
+                  activeOpacity={0.85}
+                >
+                  <View
+                    style={[
+                      styles.personDot,
+                      hidden
+                        ? { borderColor: personColors[id] }
+                        : {
+                            borderColor: personColors[id],
+                            backgroundColor: personColors[id],
+                          },
+                    ]}
+                  >
+                    {hidden ? null : (
+                      <Icon name="check" size={11} color="#FFFFFF" />
+                    )}
+                  </View>
+                  <Text numberOfLines={1} style={styles.personName}>
+                    {person.name}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
+      ) : null}
+
+      {isGrid ? null : (
+        <View style={styles.toolbar}>
+          <View style={styles.segmented}>
+            {["employees", "projects"].map((value) => (
+              <TouchableOpacity
+                key={value}
+                style={[styles.segment, mode === value && styles.segmentActive]}
+                onPress={() => setMode(value)}
+                activeOpacity={0.85}
+              >
+                <Text
+                  style={[
+                    styles.segmentText,
+                    mode === value && styles.segmentTextActive,
+                  ]}
+                >
+                  {t(`schedule.${value}`)}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      )}
+
+      {isGrid ? null : (
+        <View style={styles.filterRow}>
+          <TouchableOpacity
+            style={styles.filterChip}
+            onPress={() => setActiveFilter("project")}
+            activeOpacity={0.85}
           >
-            {statusChipLabel}
-          </Text>
-          <Icon
-            name="chevron-down"
-            size={16}
-            color={onDark(theme.content, theme.content.textMuted, "#052D50")}
-          />
-        </TouchableOpacity>
-      </View>
+            <Text
+              numberOfLines={1}
+              style={[
+                styles.filterChipText,
+                selectedProjectIds.length === 0 && styles.filterChipPlaceholder,
+              ]}
+            >
+              {projectChipLabel}
+            </Text>
+            <Icon
+              name="chevron-down"
+              size={16}
+              color={onDark(theme.content, theme.content.textMuted, "#052D50")}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.filterChip}
+            onPress={() => setActiveFilter("status")}
+            activeOpacity={0.85}
+          >
+            <Text
+              numberOfLines={1}
+              style={[
+                styles.filterChipText,
+                selectedStatuses.length === 0 && styles.filterChipPlaceholder,
+              ]}
+            >
+              {statusChipLabel}
+            </Text>
+            <Icon
+              name="chevron-down"
+              size={16}
+              color={onDark(theme.content, theme.content.textMuted, "#052D50")}
+            />
+          </TouchableOpacity>
+        </View>
+      )}
 
       <View style={styles.timelineCard}>
         {loading ? (
           <View style={styles.centered}>
             <ActivityIndicator size="large" color="#0091FF" />
           </View>
+        ) : isGrid ? (
+          <ScheduleWeekGrid
+            days={gridDays}
+            blocksByDay={gridData.blocks}
+            leavesByDay={gridData.leaves}
+            nameOf={(id) => personNames[id] || ""}
+            projectNameOf={(id) => projectMap[id]?.name || "—"}
+            colorOf={(id) => personColors[id] || EVENT_COLORS[0]}
+            canBook={canBook}
+            onSlotPress={openSlot}
+            onBlockPress={(block) =>
+              openBooking({
+                projectId: block.projectId || null,
+                assignmentIds: [block.id],
+              })
+            }
+            content={theme.content}
+            t={t}
+          />
         ) : !rows.length ? (
           <View style={styles.centered}>
             <Text style={styles.emptyText}>{t("schedule.noResources")}</Text>
@@ -888,43 +1101,53 @@ export default function ScheduleScreen() {
       </View>
 
       {/* Zoom — floats above the bottom bar, matching the design */}
-      <View style={styles.zoomFloating} pointerEvents="box-none">
-        <View style={styles.zoomGroup}>
-          <TouchableOpacity
-            style={styles.zoomButton}
-            onPress={() => zoom(1 / ZOOM_STEP)}
-            disabled={dayWidth <= MIN_DAY_WIDTH}
-            activeOpacity={0.85}
-          >
-            <Icon
-              name="minus"
-              size={20}
-              color={onDark(theme.content, theme.content.textMuted, "#052D50")}
-            />
-          </TouchableOpacity>
-          <View style={styles.zoomValueBox}>
-            <Text style={styles.zoomValueText}>{zoomPercent}%</Text>
+      {isGrid ? null : (
+        <View style={styles.zoomFloating} pointerEvents="box-none">
+          <View style={styles.zoomGroup}>
+            <TouchableOpacity
+              style={styles.zoomButton}
+              onPress={() => zoom(1 / ZOOM_STEP)}
+              disabled={dayWidth <= MIN_DAY_WIDTH}
+              activeOpacity={0.85}
+            >
+              <Icon
+                name="minus"
+                size={20}
+                color={onDark(
+                  theme.content,
+                  theme.content.textMuted,
+                  "#052D50",
+                )}
+              />
+            </TouchableOpacity>
+            <View style={styles.zoomValueBox}>
+              <Text style={styles.zoomValueText}>{zoomPercent}%</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.zoomButton}
+              onPress={() => zoom(ZOOM_STEP)}
+              disabled={dayWidth >= MAX_DAY_WIDTH}
+              activeOpacity={0.85}
+            >
+              <Icon
+                name="plus"
+                size={20}
+                color={onDark(
+                  theme.content,
+                  theme.content.textMuted,
+                  "#052D50",
+                )}
+              />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            style={styles.zoomButton}
-            onPress={() => zoom(ZOOM_STEP)}
-            disabled={dayWidth >= MAX_DAY_WIDTH}
-            activeOpacity={0.85}
-          >
-            <Icon
-              name="plus"
-              size={20}
-              color={onDark(theme.content, theme.content.textMuted, "#052D50")}
-            />
-          </TouchableOpacity>
         </View>
-      </View>
+      )}
 
       <BottomBar
         onLeftPress={() => navigation.navigate("Main")}
         onRightPress={() => navigation.navigate("Menu")}
         showAddButton={canBook}
-        onAddPress={() => openNewBooking()}
+        onAddPress={() => openNewBooking(isGrid ? gridDays[0] : undefined)}
       />
 
       {/* Filter (projects / statuses) */}
@@ -1117,6 +1340,7 @@ export default function ScheduleScreen() {
                   style={styles.optionRow}
                   onPress={() => {
                     setCurrentMonth(parseMonthKey(option.key));
+                    setAnchor(parseMonthKey(option.key));
                     setMonthPickerOpen(false);
                   }}
                   activeOpacity={0.85}

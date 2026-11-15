@@ -901,6 +901,12 @@
     "logOutConfirm": "Kirjaudu ulos?"
   },
   "schedule": {
+    "views": {
+      "day": "Päivä",
+      "3days": "3 päivää",
+      "week": "Viikko",
+      "month": "Kuukausi"
+    },
     "employees": "Työntekijät",
     "projects": "Projektit",
     "week": "Viikko {{number}}",

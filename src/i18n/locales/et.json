@@ -901,6 +901,12 @@
     "logOutConfirm": "Logi välja?"
   },
   "schedule": {
+    "views": {
+      "day": "Päev",
+      "3days": "3 päeva",
+      "week": "Nädal",
+      "month": "Kuu"
+    },
     "employees": "Töötajad",
     "projects": "Projektid",
     "week": "Nädal {{number}}",

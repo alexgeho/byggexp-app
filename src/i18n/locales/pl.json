@@ -905,6 +905,12 @@
     "logOutConfirm": "Wylogować się?"
   },
   "schedule": {
+    "views": {
+      "day": "Dzień",
+      "3days": "3 dni",
+      "week": "Tydzień",
+      "month": "Miesiąc"
+    },
     "employees": "Pracownicy",
     "projects": "Projekty",
     "week": "Tydzień {{number}}",

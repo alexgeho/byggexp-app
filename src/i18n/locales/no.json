@@ -901,6 +901,12 @@
     "logOutConfirm": "Logge ut?"
   },
   "schedule": {
+    "views": {
+      "day": "Dag",
+      "3days": "3 dager",
+      "week": "Uke",
+      "month": "Måned"
+    },
     "employees": "Ansatte",
     "projects": "Prosjekter",
     "week": "Uke {{number}}",

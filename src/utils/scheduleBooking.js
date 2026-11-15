@@ -227,3 +227,89 @@ export const planBookingChanges = ({
   );
   return { toCreate, toDelete, toUpdate };
 };
+
+// ── Hour grid (the web admin's Google-Calendar view) ────────────────────────
+export const GRID_FIRST_HOUR = 6;
+export const GRID_LAST_HOUR = 20;
+
+// A tap on the grid → the half hour it landed on, and one hour from there
+// (the web's click). Kept inside the grid's hours.
+export const slotAt = (offsetY, hourHeight) => {
+  const first = GRID_FIRST_HOUR * 60;
+  const last = GRID_LAST_HOUR * 60;
+  const raw = first + (offsetY / hourHeight) * 60;
+  const start = Math.min(last - 60, Math.max(first, Math.floor(raw / 30) * 30));
+  return { start: formatMinutes(start), end: formatMinutes(start + 60) };
+};
+
+// Overlapping blocks of one day go side by side: each gets a lane and the
+// day's lane count.
+const layoutDay = (blocks) => {
+  const sorted = [...blocks].sort((a, b) => a.start - b.start || b.end - a.end);
+  const laneEnds = [];
+  sorted.forEach((block) => {
+    let lane = laneEnds.findIndex((end) => end <= block.start);
+    if (lane === -1) {
+      lane = laneEnds.length;
+      laneEnds.push(block.end);
+    } else {
+      laneEnds[lane] = block.end;
+    }
+    block.lane = lane;
+  });
+  sorted.forEach((block) => {
+    block.lanes = Math.max(1, laneEnds.length);
+  });
+  return sorted;
+};
+
+// dayKey → that day's booking blocks (minutes from 00:00), laid out in lanes.
+// `hiddenIds` = people switched off in the people row. A person planned for
+// more than 8 hours on a day gets `overbooked` on all their blocks that day.
+export const buildDayBlocks = (assignments = [], dayKeys = [], hiddenIds) => {
+  const byDay = Object.fromEntries(dayKeys.map((day) => [day, []]));
+  const hours = {};
+  assignments.forEach((assignment) => {
+    if (!assignment?.date) return;
+    const userId = normalizeId(assignment.userId) || "";
+    const day = assignmentDayKey(assignment);
+    const planned = Number(assignment.hours) || 8;
+    hours[`${userId}|${day}`] = (hours[`${userId}|${day}`] || 0) + planned;
+    if (!byDay[day] || hiddenIds?.has(userId)) return;
+    const start = toMinutes(assignment.startTime);
+    byDay[day].push({
+      id: normalizeId(assignment),
+      assignment,
+      userId,
+      projectId: normalizeId(assignment.projectId) || "",
+      start,
+      end: start + Math.round(planned * 60),
+    });
+  });
+  Object.keys(byDay).forEach((day) => {
+    byDay[day] = layoutDay(byDay[day]).map((block) => ({
+      ...block,
+      overbooked: hours[`${block.userId}|${day}`] > 8,
+    }));
+  });
+  return byDay;
+};
+
+// dayKey → approved absences (Frånvaro) of the shown people on that day.
+export const buildDayLeaves = (leaves = [], dayKeys = [], hiddenIds) => {
+  const byDay = Object.fromEntries(dayKeys.map((day) => [day, []]));
+  leaves.forEach((leave) => {
+    if (String(leave?.status || "").toLowerCase() !== "approved") return;
+    const userId = normalizeId(leave.userId) || "";
+    if (hiddenIds?.has(userId) || !leave.startDate) return;
+    // Local days, as the month timeline reads them.
+    const from = toDayKey(new Date(leave.startDate));
+    const to = toDayKey(new Date(leave.endDate || leave.startDate));
+    dayKeys.forEach((day) => {
+      if (day >= from && day <= to) {
+        byDay[day].push({ userId, type: leave.type || "other" });
+      }
+    });
+  });
+  return byDay;
+};

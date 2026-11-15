@@ -1,5 +1,7 @@
 import {
   buildBookingItems,
+  buildDayBlocks,
+  buildDayLeaves,
   buildClientBody,
   clientHasName,
   endTimeFor,
@@ -7,6 +9,7 @@ import {
   hoursBetween,
   planBookingChanges,
   shiftEndTime,
+  slotAt,
   splitPhone,
   timeOf,
   toDayKey,
@@ -200,5 +203,94 @@ describe("scheduleBooking", () => {
       note: "x",
     });
     expect(plan).toEqual({ toCreate: [], toDelete: [], toUpdate: [] });
+  });
+
+  it("turns a tap on the hour grid into a one-hour slot", () => {
+    // 48 px per hour, the grid starts at 06:00.
+    expect(slotAt(0, 48)).toEqual({ start: "06:00", end: "07:00" });
+    expect(slotAt(48 * 2 + 30, 48)).toEqual({ start: "08:30", end: "09:30" });
+    expect(slotAt(99999, 48)).toEqual({ start: "19:00", end: "20:00" });
+  });
+
+  it("lays a day's bookings side by side and flags overbooking", () => {
+    const day = "2026-11-16T00:00:00.000Z";
+    const blocks = buildDayBlocks(
+      [
+        {
+          _id: "a1",
+          userId: "u1",
+          projectId: "p1",
+          date: day,
+          startTime: "08:00",
+          hours: 6,
+        },
+        {
+          _id: "a2",
+          userId: "u1",
+          projectId: "p2",
+          date: day,
+          startTime: "14:00",
+          hours: 4,
+        },
+        {
+          _id: "a3",
+          userId: "u2",
+          projectId: "p1",
+          date: day,
+          startTime: "09:00",
+          hours: 2,
+        },
+        {
+          _id: "a4",
+          userId: "u3",
+          projectId: "p1",
+          date: day,
+          startTime: "09:00",
+          hours: 2,
+        },
+      ],
+      ["2026-11-16", "2026-11-17"],
+      new Set(["u3"]),
+    );
+    expect(blocks["2026-11-17"]).toEqual([]);
+    expect(
+      blocks["2026-11-16"].map((b) => [
+        b.id,
+        b.start,
+        b.end,
+        b.lane,
+        b.lanes,
+        b.overbooked,
+      ]),
+    ).toEqual([
+      ["a1", 480, 840, 0, 2, true],
+      ["a3", 540, 660, 1, 2, false],
+      ["a2", 840, 1080, 0, 2, true],
+    ]);
+  });
+
+  it("shows approved absences on their days", () => {
+    const leaves = buildDayLeaves(
+      [
+        {
+          userId: "u1",
+          status: "approved",
+          type: "sick",
+          startDate: "2026-11-16T00:00:00.000Z",
+          endDate: "2026-11-17T00:00:00.000Z",
+        },
+        {
+          userId: "u2",
+          status: "pending",
+          startDate: "2026-11-16T00:00:00.000Z",
+        },
+      ],
+      ["2026-11-15", "2026-11-16", "2026-11-17"],
+    );
+    expect(leaves).toEqual({
+      "2026-11-15": [],
+      "2026-11-16": [{ userId: "u1", type: "sick" }],
+      "2026-11-17": [{ userId: "u1", type: "sick" }],
+    });
   });
 });

@@ -904,6 +904,12 @@
     "logOutConfirm": "Odjaviti se?"
   },
   "schedule": {
+    "views": {
+      "day": "Dan",
+      "3days": "3 dana",
+      "week": "Sedmica",
+      "month": "Mjesec"
+    },
     "employees": "Zaposleni",
     "projects": "Projekti",
     "week": "Sedmica {{number}}",

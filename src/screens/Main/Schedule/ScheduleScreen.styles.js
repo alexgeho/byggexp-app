@@ -41,6 +41,67 @@ export const createStyles = (c) =>
       alignItems: "center",
       justifyContent: "center",
     },
+    stepGroup: {
+      flexDirection: "row",
+      gap: 4,
+    },
+    stepButton: {
+      width: 36,
+      height: 44,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    viewRow: {
+      flexDirection: "row",
+      gap: 6,
+      marginTop: 12,
+    },
+    viewSegment: {
+      flex: 1,
+      alignItems: "center",
+      paddingHorizontal: 6,
+      paddingVertical: 10,
+      borderRadius: 999,
+      backgroundColor: c.surface,
+      borderWidth: 1,
+      borderColor: onDark(c, c.divider, "rgba(5, 45, 80, 0.12)"),
+    },
+    viewSegmentText: {
+      fontSize: 14,
+      color: c.textPrimary,
+    },
+    peopleRow: {
+      marginTop: 12,
+    },
+    peopleContent: {
+      gap: 8,
+    },
+    personChip: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+      height: 40,
+      maxWidth: 180,
+      paddingHorizontal: 12,
+      borderRadius: 20,
+      backgroundColor: c.surface,
+    },
+    personChipOff: {
+      opacity: 0.55,
+    },
+    personDot: {
+      width: 18,
+      height: 18,
+      borderRadius: 5,
+      borderWidth: 2,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    personName: {
+      flexShrink: 1,
+      color: c.textPrimary,
+      fontSize: 14,
+    },
     toolbar: {
       marginTop: 12,
     },

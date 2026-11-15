@@ -905,6 +905,12 @@
     "logOutConfirm": "Atsijungti?"
   },
   "schedule": {
+    "views": {
+      "day": "Diena",
+      "3days": "3 dienos",
+      "week": "Savaitė",
+      "month": "Mėnuo"
+    },
     "employees": "Darbuotojai",
     "projects": "Projektai",
     "week": "{{number}} savaitė",
