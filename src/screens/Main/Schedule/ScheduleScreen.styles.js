@@ -3,6 +3,7 @@ import {
   standardScreenContainer,
   standardScreenHeader,
 } from "../../../styles/screenLayout";
+import { layout } from "../../../theme/spacing";
 import { onDark } from "../../../theme/colorUtils";
 
 export const createStyles = (c) =>
@@ -14,17 +15,11 @@ export const createStyles = (c) =>
     header: {
       ...standardScreenHeader,
     },
-    monthSelector: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: 6,
-      flex: 1,
-    },
     monthLabel: {
-      flexShrink: 1,
+      flex: 1,
+      marginHorizontal: 12,
       color: c.textPrimary,
-      fontSize: 19,
+      fontSize: 20,
       fontFamily: "DMSans-SemiBold",
     },
     stepGroup: {
@@ -40,9 +35,9 @@ export const createStyles = (c) =>
     viewRow: {
       paddingVertical: 10,
     },
-    peopleRow: {
-      marginTop: 12,
-    },
+    // The header already keeps its gap under itself; the people sit right
+    // after it, and the card keeps the same gap after the people.
+    peopleRow: {},
     peopleContent: {
       gap: 8,
     },
@@ -74,7 +69,7 @@ export const createStyles = (c) =>
     },
     timelineCard: {
       flex: 1,
-      marginTop: 12,
+      marginTop: layout.headerToContent,
       backgroundColor: c.surface,
       borderRadius: 16,
       overflow: "hidden",

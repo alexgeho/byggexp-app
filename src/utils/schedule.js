@@ -72,6 +72,23 @@ export const formatMonthLabel = (date) =>
     year: "numeric",
   }).format(date);
 
+// The month and year of what is on screen: "November 2026"; over two months
+// "November – December 2026" (the years apart: "December 2026 – January
+// 2027"). Never day numbers — the grid shows those.
+export const formatMonthSpanLabel = (from, to) => {
+  if (
+    from.getFullYear() === to.getFullYear() &&
+    from.getMonth() === to.getMonth()
+  ) {
+    return formatMonthLabel(from);
+  }
+  if (from.getFullYear() !== to.getFullYear()) {
+    return `${formatMonthLabel(from)} – ${formatMonthLabel(to)}`;
+  }
+  const month = new Intl.DateTimeFormat(getDateLocale(), { month: "long" });
+  return `${month.format(from)} – ${formatMonthLabel(to)}`;
+};
+
 export const formatWeekdayLabel = (date) =>
   new Intl.DateTimeFormat(getDateLocale(), { weekday: "short" }).format(date);
 

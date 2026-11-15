@@ -32,6 +32,7 @@ import {
   daysBetween,
   EVENT_COLORS,
   formatMonthLabel,
+  formatMonthSpanLabel,
   getMonthKey,
   normalizeId,
   parseMonthKey,
@@ -241,6 +242,16 @@ export default function ScheduleScreen() {
       : day.getMonth() === anchor.getMonth();
   };
 
+  let headerLabel = formatMonthSpanLabel(
+    gridDays[0],
+    gridDays[gridDays.length - 1],
+  );
+  if (view === "month" && !focusDay) {
+    headerLabel = formatMonthLabel(anchor);
+  } else if (view === "custom" && !focusDay) {
+    headerLabel = formatMonthSpanLabel(rangeDays.from, rangeDays.to);
+  }
+
   const monthOptions = useMemo(() => {
     const base = startOfMonth(new Date());
     const options = [];
@@ -318,8 +329,18 @@ export default function ScheduleScreen() {
           onPress={() => (focusDay ? setFocusDay(null) : navigation.goBack())}
           iconSource={require("../../../assets/Arrow-left.png")}
         />
-        {/* No title here: neither dates nor a month (owner 15.11). What is on
-            screen is read from the grid; Custom is re-picked by its tab. */}
+        {/* Only the month and the year of what is on screen — plain text, no
+            day numbers, nothing to tap or pick here (owner 15.11). Over two
+            months both are named and the type shrinks to fit. */}
+        <Text
+          testID="schedule-title"
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.5}
+          style={styles.monthLabel}
+        >
+          {headerLabel}
+        </Text>
         {/* A custom period is chosen in its sheet (a tap on the Custom tab),
             not stepped: no ‹ › there. An opened day still steps by day. */}
         {view === "custom" && !focusDay ? null : (
