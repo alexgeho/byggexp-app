@@ -57,7 +57,7 @@ export function PeriodSheet({ visible, from, to, onChange, onApply, onClose }) {
               { fontFamily: theme.text.fontFamily.semiBold },
             ]}
           >
-            {t("shiftHistory.periodLabel")}
+            {t("schedule.views.custom")}
           </Text>
 
           <View style={styles.card}>
