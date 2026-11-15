@@ -26,11 +26,17 @@ const YEARS_AHEAD = 2;
 const IOS_WHEEL_HEIGHT = 216;
 const WHEEL_BOX_HEIGHT = 120;
 
-// One month-and-year choice as two wheels, the way a birth date is picked:
-// the month by name on the left, the year on the right.
-function MonthYearWheels({ value, onChange, styles, prefix }) {
+const pad = (n) => String(n).padStart(2, "0");
+const daysIn = (year, month) =>
+  new Date(Number(year), Number(month), 0).getDate();
+
+// One date as three wheels, the way a birth date is picked: the day, the
+// month by name, the year. A day the new month does not have (31 → February)
+// falls back to that month's last day.
+function DateWheels({ value, onChange, styles, prefix }) {
   const year = value.slice(0, 4);
   const month = value.slice(5, 7);
+  const day = value.slice(8, 10);
   const thisYear = new Date().getFullYear();
   const years = [
     ...new Set([
@@ -40,76 +46,88 @@ function MonthYearWheels({ value, onChange, styles, prefix }) {
       year,
     ]),
   ].sort();
+  const days = Array.from({ length: daysIn(year, month) }, (_, index) =>
+    pad(index + 1),
+  );
   const monthName = (mm) => {
     const label = new Intl.DateTimeFormat(getDateLocale(), {
       month: "long",
     }).format(new Date(Number(year), Number(mm) - 1, 1));
     return label.charAt(0).toUpperCase() + label.slice(1);
   };
+  const set = (yy, mm, dd) =>
+    onChange(`${yy}-${mm}-${pad(Math.min(Number(dd), daysIn(yy, mm)))}`);
+  const wheel = (part, selected, items, onPick, boxStyle) => (
+    <View style={[styles.wheelBox, boxStyle]}>
+      <Picker
+        testID={`period-${prefix}-${part}`}
+        selectedValue={selected}
+        onValueChange={onPick}
+        style={styles.wheel}
+        itemStyle={styles.wheelItem}
+        selectionColor="rgb(245, 245, 245)"
+      >
+        {items.map(({ label, value: itemValue }) => (
+          <Picker.Item
+            key={`${prefix}-${part}-${itemValue}`}
+            label={label}
+            value={itemValue}
+          />
+        ))}
+      </Picker>
+    </View>
+  );
 
   return (
     <View style={styles.wheels}>
-      <View style={[styles.wheelBox, styles.wheelMonth]}>
-        <Picker
-          testID={`period-${prefix}-month`}
-          selectedValue={month}
-          onValueChange={(mm) => onChange(`${year}-${mm}`)}
-          style={styles.wheel}
-          itemStyle={styles.wheelItem}
-          selectionColor="rgb(245, 245, 245)"
-        >
-          {MONTHS.map((mm) => (
-            <Picker.Item
-              key={`${prefix}-m-${mm}`}
-              label={monthName(mm)}
-              value={mm}
-            />
-          ))}
-        </Picker>
-      </View>
-      <View style={[styles.wheelBox, styles.wheelYear]}>
-        <Picker
-          testID={`period-${prefix}-year`}
-          selectedValue={year}
-          onValueChange={(yy) => onChange(`${yy}-${month}`)}
-          style={styles.wheel}
-          itemStyle={styles.wheelItem}
-          selectionColor="rgb(245, 245, 245)"
-        >
-          {years.map((yy) => (
-            <Picker.Item key={`${prefix}-y-${yy}`} label={yy} value={yy} />
-          ))}
-        </Picker>
-      </View>
+      {wheel(
+        "day",
+        day,
+        days.map((dd) => ({ label: String(Number(dd)), value: dd })),
+        (dd) => set(year, month, dd),
+        styles.wheelDay,
+      )}
+      {wheel(
+        "month",
+        month,
+        MONTHS.map((mm) => ({ label: monthName(mm), value: mm })),
+        (mm) => set(year, mm, day),
+        styles.wheelMonth,
+      )}
+      {wheel(
+        "year",
+        year,
+        years.map((yy) => ({ label: yy, value: yy })),
+        (yy) => set(yy, month, day),
+        styles.wheelYear,
+      )}
     </View>
   );
 }
 
-const monthOf = (dayKey) =>
-  (dayKey || "").slice(0, 7) ||
-  `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
+const DAY_KEY = /^\d{4}-\d{2}-\d{2}$/;
+const thisMonth = () =>
+  `${new Date().getFullYear()}-${pad(new Date().getMonth() + 1)}`;
 
 // THE "Custom" period picker — Planning and Shifts both open this one sheet.
-// No tabs inside: From and To are both on screen at once, each a month and a
-// year (owner 15.11: keep it as it was, without the nesting). The period is
-// whole months: `from` = the first day of the From month, `to` = the last day
-// of the To month (day keys, YYYY-MM-DD).
+// No tabs inside: From and To are both on screen at once, each a day, a month
+// and a year (owner 15.11: both ends visible at once, no nesting; then "add
+// the day"). `from` and `to` are day keys (YYYY-MM-DD); with nothing chosen
+// yet the sheet opens on the current month, first day to last.
 export function PeriodSheet({ visible, from, to, onChange, onApply, onClose }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const sheetEnter = useSheetEnter(visible);
-  const fromMonth = monthOf(from);
-  const toMonth = monthOf(to);
-  const emit = (nextFrom, nextTo) =>
-    onChange({
-      from: getMonthDateRange(nextFrom).from,
-      to: getMonthDateRange(nextTo).to,
-    });
-  // What is on the wheels is what Apply gets: the dates snap to whole months
-  // as soon as the sheet opens.
+  const fromDay = DAY_KEY.test(from || "")
+    ? from
+    : getMonthDateRange(thisMonth()).from;
+  const toDay = DAY_KEY.test(to || "") ? to : getMonthDateRange(thisMonth()).to;
+  const emit = (nextFrom, nextTo) => onChange({ from: nextFrom, to: nextTo });
+  // What is on the wheels is what Apply gets, also when the sheet opened with
+  // nothing chosen.
   useEffect(() => {
-    if (visible) emit(fromMonth, toMonth);
+    if (visible) emit(fromDay, toDay);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
@@ -138,18 +156,18 @@ export function PeriodSheet({ visible, from, to, onChange, onApply, onClose }) {
             <View style={styles.stack}>
               <View>
                 <Text style={styles.label}>{t("shiftHistory.from")}</Text>
-                <MonthYearWheels
-                  value={fromMonth}
-                  onChange={(next) => emit(next, toMonth)}
+                <DateWheels
+                  value={fromDay}
+                  onChange={(next) => emit(next, toDay)}
                   styles={styles}
                   prefix="from"
                 />
               </View>
               <View>
                 <Text style={styles.label}>{t("shiftHistory.to")}</Text>
-                <MonthYearWheels
-                  value={toMonth}
-                  onChange={(next) => emit(fromMonth, next)}
+                <DateWheels
+                  value={toDay}
+                  onChange={(next) => emit(fromDay, next)}
                   styles={styles}
                   prefix="to"
                 />
@@ -228,7 +246,7 @@ const createStyles = (c) =>
     },
     wheels: {
       flexDirection: "row",
-      gap: 8,
+      gap: 4,
     },
     // iOS draws the wheel at its own 216 pt whatever height it is given, so
     // the box crops it evenly from both sides: the selected row (the grey
@@ -238,11 +256,14 @@ const createStyles = (c) =>
       overflow: "hidden",
       height: Platform.OS === "ios" ? WHEEL_BOX_HEIGHT : undefined,
     },
-    wheelMonth: {
+    wheelDay: {
       flex: 2,
     },
+    wheelMonth: {
+      flex: 5,
+    },
     wheelYear: {
-      flex: 1,
+      flex: 3,
     },
     wheel: {
       height: Platform.OS === "ios" ? IOS_WHEEL_HEIGHT : 48,

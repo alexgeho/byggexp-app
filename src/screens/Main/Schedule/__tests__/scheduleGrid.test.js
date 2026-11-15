@@ -229,11 +229,15 @@ describe("Custom period sheet", () => {
     });
     const node = (id) => tree.root.findAllByProps({ testID: id })[0];
     act(() => node("period-from-month").props.onValueChange("10"));
+    act(() => node("period-from-day").props.onValueChange("31"));
     act(() => node("period-to-month").props.onValueChange("12"));
+    act(() => node("period-to-day").props.onValueChange("05"));
+    // 31 → February has no such day: falls back to its last one.
+    act(() => node("period-from-month").props.onValueChange("02"));
     act(() => node("period-apply").props.onPress());
     expect(mockNavigate).toHaveBeenCalledWith({
-      from: "2026-10-01",
-      to: "2026-12-31",
+      from: "2026-02-28",
+      to: "2026-12-05",
     });
   });
 });
