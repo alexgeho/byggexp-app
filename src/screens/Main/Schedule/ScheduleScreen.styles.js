@@ -14,11 +14,19 @@ export const createStyles = (c) =>
     header: {
       ...standardScreenHeader,
     },
+    dateRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 8,
+      marginTop: 12,
+    },
     monthSelector: {
       flexDirection: "row",
       alignItems: "center",
+      justifyContent: "center",
       gap: 6,
-      flexShrink: 1,
+      flex: 1,
     },
     monthLabel: {
       flexShrink: 1,
@@ -35,10 +43,6 @@ export const createStyles = (c) =>
       borderColor: "#FFFFFF50",
       alignItems: "center",
       justifyContent: "center",
-    },
-    stepGroup: {
-      flexDirection: "row",
-      gap: 4,
     },
     stepButton: {
       width: 36,

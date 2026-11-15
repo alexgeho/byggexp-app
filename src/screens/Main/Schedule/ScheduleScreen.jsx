@@ -339,6 +339,35 @@ export default function ScheduleScreen() {
           iconSource={require("../../../assets/Arrow-left.png")}
         />
         <TouchableOpacity
+          style={styles.todayButton}
+          onPress={goToday}
+          activeOpacity={0.85}
+        >
+          <Icon
+            name="calendar"
+            size={20}
+            color={onDark(theme.content, theme.content.textMuted, "#052D50")}
+          />
+        </TouchableOpacity>
+      </View>
+
+      {/* The dates have a row of their own, above the people: in the header
+          they were squeezed between the buttons. */}
+      <View style={styles.dateRow}>
+        <TouchableOpacity
+          style={styles.stepButton}
+          onPress={() => step(-1)}
+          activeOpacity={0.85}
+          hitSlop={6}
+          testID="schedule-step-prev"
+        >
+          <Icon
+            name="chevron-left"
+            size={20}
+            color={onDark(theme.content, theme.content.textMuted, "#052D50")}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
           style={styles.monthSelector}
           onPress={() => {
             if (focusDay) setFocusDay(null);
@@ -361,34 +390,15 @@ export default function ScheduleScreen() {
             color={onDark(theme.content, theme.content.textMuted, "#052D50")}
           />
         </TouchableOpacity>
-        <View style={styles.stepGroup}>
-          {[-1, 1].map((direction) => (
-            <TouchableOpacity
-              key={direction}
-              style={styles.stepButton}
-              onPress={() => step(direction)}
-              activeOpacity={0.85}
-              hitSlop={6}
-            >
-              <Icon
-                name={direction < 0 ? "chevron-left" : "chevron-right"}
-                size={20}
-                color={onDark(
-                  theme.content,
-                  theme.content.textMuted,
-                  "#052D50",
-                )}
-              />
-            </TouchableOpacity>
-          ))}
-        </View>
         <TouchableOpacity
-          style={styles.todayButton}
-          onPress={goToday}
+          style={styles.stepButton}
+          onPress={() => step(1)}
           activeOpacity={0.85}
+          hitSlop={6}
+          testID="schedule-step-next"
         >
           <Icon
-            name="calendar"
+            name="chevron-right"
             size={20}
             color={onDark(theme.content, theme.content.textMuted, "#052D50")}
           />
