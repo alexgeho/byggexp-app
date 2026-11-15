@@ -32,7 +32,6 @@ import {
   daysBetween,
   EVENT_COLORS,
   formatMonthLabel,
-  formatMonthSpanLabel,
   getMonthKey,
   normalizeId,
   parseMonthKey,
@@ -242,15 +241,6 @@ export default function ScheduleScreen() {
       : day.getMonth() === anchor.getMonth();
   };
 
-  // The header names only the month and the year of what is on screen (for
-  // Custom — of the chosen period); the day numbers are in the grid.
-  let headerLabel = formatMonthLabel(view === "month" ? anchor : gridDays[0]);
-  if (focusDay) {
-    headerLabel = formatMonthLabel(focusDay);
-  } else if (view === "custom") {
-    headerLabel = formatMonthSpanLabel(rangeDays.from, rangeDays.to);
-  }
-
   const monthOptions = useMemo(() => {
     const base = startOfMonth(new Date());
     const options = [];
@@ -328,31 +318,10 @@ export default function ScheduleScreen() {
           onPress={() => (focusDay ? setFocusDay(null) : navigation.goBack())}
           iconSource={require("../../../assets/Arrow-left.png")}
         />
-        <TouchableOpacity
-          style={styles.monthSelector}
-          onPress={() => {
-            if (focusDay) setFocusDay(null);
-            else if (view === "custom") openRangeSheet();
-            else setMonthPickerOpen(true);
-          }}
-          activeOpacity={0.85}
-        >
-          <Text
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            minimumFontScale={0.6}
-            style={styles.monthLabel}
-          >
-            {headerLabel}
-          </Text>
-          <Icon
-            name={focusDay ? "x" : "chevron-down"}
-            size={18}
-            color={onDark(theme.content, theme.content.textMuted, "#052D50")}
-          />
-        </TouchableOpacity>
-        {/* A custom period is chosen in its sheet (a tap on the title), not
-            stepped: no ‹ › there. An opened day still steps by day. */}
+        {/* No title here: neither dates nor a month (owner 15.11). What is on
+            screen is read from the grid; Custom is re-picked by its tab. */}
+        {/* A custom period is chosen in its sheet (a tap on the Custom tab),
+            not stepped: no ‹ › there. An opened day still steps by day. */}
         {view === "custom" && !focusDay ? null : (
           <View style={styles.stepGroup}>
             <TouchableOpacity
