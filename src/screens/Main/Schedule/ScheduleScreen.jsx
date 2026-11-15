@@ -351,34 +351,46 @@ export default function ScheduleScreen() {
             color={onDark(theme.content, theme.content.textMuted, "#052D50")}
           />
         </TouchableOpacity>
-        <View style={styles.stepGroup}>
-          <TouchableOpacity
-            style={styles.stepButton}
-            onPress={() => step(-1)}
-            activeOpacity={0.85}
-            hitSlop={6}
-            testID="schedule-step-prev"
-          >
-            <Icon
-              name="chevron-left"
-              size={20}
-              color={onDark(theme.content, theme.content.textMuted, "#052D50")}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.stepButton}
-            onPress={() => step(1)}
-            activeOpacity={0.85}
-            hitSlop={6}
-            testID="schedule-step-next"
-          >
-            <Icon
-              name="chevron-right"
-              size={20}
-              color={onDark(theme.content, theme.content.textMuted, "#052D50")}
-            />
-          </TouchableOpacity>
-        </View>
+        {/* A custom period is chosen in its sheet (a tap on the title), not
+            stepped: no ‹ › there. An opened day still steps by day. */}
+        {view === "custom" && !focusDay ? null : (
+          <View style={styles.stepGroup}>
+            <TouchableOpacity
+              style={styles.stepButton}
+              onPress={() => step(-1)}
+              activeOpacity={0.85}
+              hitSlop={6}
+              testID="schedule-step-prev"
+            >
+              <Icon
+                name="chevron-left"
+                size={20}
+                color={onDark(
+                  theme.content,
+                  theme.content.textMuted,
+                  "#052D50",
+                )}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.stepButton}
+              onPress={() => step(1)}
+              activeOpacity={0.85}
+              hitSlop={6}
+              testID="schedule-step-next"
+            >
+              <Icon
+                name="chevron-right"
+                size={20}
+                color={onDark(
+                  theme.content,
+                  theme.content.textMuted,
+                  "#052D50",
+                )}
+              />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
 
       <View style={styles.peopleRow}>
