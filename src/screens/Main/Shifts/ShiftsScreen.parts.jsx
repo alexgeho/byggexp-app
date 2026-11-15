@@ -40,7 +40,8 @@ import {
 // `t` from the parent, so it does no data-fetching or theming of its own.
 
 const EXPORT_PERIOD_TABS = ["Month", "Custom"];
-const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "spinner" : "default";
+// A calendar, never the wheel (owner 15.11: "remove that wheel everywhere").
+const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "inline" : "default";
 
 // Admin filter: pick which employees the calendar/export is scoped to.
 export function EmployeePickerModal({
@@ -679,8 +680,7 @@ export function PeriodSheet({
               {exportPeriodTab === "Custom" ? (
                 <View style={styles.inlineDatePicker}>
                   <DateTimePicker
-                    // One wheel per field, in the app's language: without a
-                    // locale iOS draws the months as "M11".
+                    // One calendar per field, in the app's language.
                     key={datePickerTarget || "from"}
                     locale={getDateLocale()}
                     value={parseDateKey(
