@@ -199,3 +199,42 @@ describe("Planning — one grid", () => {
     });
   });
 });
+
+describe("Custom period sheet", () => {
+  it("first tap is the start, the next tap the end", () => {
+    const {
+      PeriodSheet,
+    } = require("../../../../components/common/PeriodSheet/PeriodSheet");
+    const Harness = () => {
+      const [range, setRange] = React.useState({
+        from: "2026-11-15",
+        to: "2026-11-15",
+      });
+      return (
+        <ThemeProvider>
+          <PeriodSheet
+            visible
+            from={range.from}
+            to={range.to}
+            onChange={setRange}
+            onApply={() => mockNavigate(range)}
+            onClose={() => {}}
+          />
+        </ThemeProvider>
+      );
+    };
+    let tree;
+    act(() => {
+      tree = TestRenderer.create(<Harness />);
+    });
+    const press = (id) =>
+      act(() => tree.root.findAllByProps({ testID: id })[0].props.onPress());
+    press("period-day-2026-11-10");
+    press("period-day-2026-11-13");
+    press("period-apply");
+    expect(mockNavigate).toHaveBeenCalledWith({
+      from: "2026-11-10",
+      to: "2026-11-13",
+    });
+  });
+});

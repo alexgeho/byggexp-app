@@ -1,39 +1,76 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Animated,
   Modal,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import Icon from "react-native-vector-icons/Feather";
 import { useTranslation } from "react-i18next";
 import useSheetEnter from "../../../hooks/useSheetEnter";
 import { useTheme } from "../../../theme/ThemeContext";
 import { onDark } from "../../../theme/colorUtils";
 import { radius, size } from "../../../theme/tokens";
-import { getDateLocale } from "../../../utils/dateLocale";
+import {
+  addDays,
+  addMonths,
+  formatMonthLabel,
+  formatWeekdayLabel,
+  startOfMonth,
+  startOfWeek,
+} from "../../../utils/schedule";
 import {
   formatDateKey,
   formatExportPickerDate,
   parseDateKey,
 } from "../../../utils/shifts";
 
-// A calendar, never the wheel (owner 15.11).
-const DATE_PICKER_DISPLAY = Platform.OS === "ios" ? "inline" : "default";
-
 // THE "Custom" period picker — Planning and Shifts both open this one sheet.
-// No tabs inside: From and To at once, a calendar for the field that is
-// active, Apply. `from` / `to` are day keys (YYYY-MM-DD).
+// No tabs inside and no wheels: one calendar on which both ends are seen at
+// once — a tap sets the start, the next tap the end, the days between are
+// tinted. `from` / `to` are day keys (YYYY-MM-DD).
 export function PeriodSheet({ visible, from, to, onChange, onApply, onClose }) {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme.content), [theme.content]);
   const sheetEnter = useSheetEnter(visible);
   const [target, setTarget] = useState("from");
+  const [month, setMonth] = useState(() => startOfMonth(parseDateKey(from)));
+  // Every opening starts from the start date and its month.
+  useEffect(() => {
+    if (visible) {
+      setTarget("from");
+      setMonth(startOfMonth(parseDateKey(from)));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible]);
+  const weeks = useMemo(() => {
+    const first = startOfWeek(month);
+    const rows = [];
+    for (let row = 0; row < 6; row += 1) {
+      const days = Array.from({ length: 7 }, (_, index) =>
+        addDays(first, row * 7 + index),
+      );
+      if (row > 3 && days[0].getMonth() !== month.getMonth()) break;
+      rows.push(days);
+    }
+    return rows;
+  }, [month]);
+  // A tap on a day fills the active end and moves on to the other one; an end
+  // before the start turns the period around.
+  const pickDay = (key) => {
+    if (target === "from") {
+      onChange({ from: key, to: to && to >= key ? to : key });
+      setTarget("to");
+    } else if (from && key < from) {
+      onChange({ from: key, to: from });
+    } else {
+      onChange({ from, to: key });
+    }
+  };
   const fields = [
     { key: "from", label: t("shiftHistory.from"), value: from },
     { key: "to", label: t("shiftHistory.to"), value: to },
@@ -87,19 +124,70 @@ export function PeriodSheet({ visible, from, to, onChange, onApply, onClose }) {
               ))}
             </View>
 
-            <View style={styles.picker}>
-              <DateTimePicker
-                // One calendar per field, in the app's language.
-                key={target}
-                locale={getDateLocale()}
-                value={parseDateKey(target === "from" ? from : to)}
-                mode="date"
-                display={DATE_PICKER_DISPLAY}
-                onChange={(_event, date) =>
-                  date && onChange({ from, to, [target]: formatDateKey(date) })
-                }
-              />
+            <View style={styles.monthRow}>
+              <Text style={styles.monthText}>{formatMonthLabel(month)}</Text>
+              <View style={styles.monthSteps}>
+                {[-1, 1].map((direction) => (
+                  <TouchableOpacity
+                    key={direction}
+                    testID={`period-month-${direction < 0 ? "prev" : "next"}`}
+                    onPress={() =>
+                      setMonth((prev) => addMonths(prev, direction))
+                    }
+                    hitSlop={8}
+                    activeOpacity={0.85}
+                  >
+                    <Icon
+                      name={direction < 0 ? "chevron-left" : "chevron-right"}
+                      size={24}
+                      color="#0091FF"
+                    />
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
+            <View style={styles.week}>
+              {weeks[0].map((day) => (
+                <Text
+                  key={day.getTime()}
+                  numberOfLines={1}
+                  style={styles.weekday}
+                >
+                  {formatWeekdayLabel(day)}
+                </Text>
+              ))}
+            </View>
+            {weeks.map((days) => (
+              <View key={days[0].getTime()} style={styles.week}>
+                {days.map((day) => {
+                  const key = formatDateKey(day);
+                  const outside = day.getMonth() !== month.getMonth();
+                  const end = key === from || key === to;
+                  const between = from && to && key > from && key < to;
+                  return (
+                    <TouchableOpacity
+                      key={key}
+                      testID={`period-day-${key}`}
+                      style={[styles.day, between && styles.dayBetween]}
+                      onPress={() => pickDay(key)}
+                      activeOpacity={0.85}
+                    >
+                      <View style={[styles.dayDot, end && styles.dayDotEnd]}>
+                        <Text
+                          style={[
+                            styles.dayText,
+                            outside && styles.dayTextOutside,
+                            end && styles.dayTextEnd,
+                          ]}
+                        >
+                          {day.getDate()}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            ))}
           </View>
 
           <TouchableOpacity
@@ -201,9 +289,62 @@ const createStyles = (c) =>
     valuePlaceholder: {
       color: c.textMuted,
     },
-    picker: {
+    monthRow: {
+      flexDirection: "row",
       alignItems: "center",
-      marginTop: 8,
+      justifyContent: "space-between",
+      marginTop: 16,
+      marginBottom: 8,
+      paddingHorizontal: 6,
+    },
+    monthText: {
+      color: c.textPrimary,
+      fontSize: 17,
+      fontFamily: "DMSans-SemiBold",
+    },
+    monthSteps: {
+      flexDirection: "row",
+      gap: 20,
+    },
+    week: {
+      flexDirection: "row",
+    },
+    weekday: {
+      flex: 1,
+      textAlign: "center",
+      color: c.textMuted,
+      fontSize: 12,
+      paddingVertical: 4,
+    },
+    day: {
+      flex: 1,
+      height: 40,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    dayBetween: {
+      backgroundColor: "rgba(0, 145, 255, 0.14)",
+    },
+    dayDot: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    dayDotEnd: {
+      backgroundColor: "#0091FF",
+    },
+    dayText: {
+      color: c.textPrimary,
+      fontSize: 16,
+    },
+    dayTextOutside: {
+      color: c.textMuted,
+    },
+    dayTextEnd: {
+      color: "#FFFFFF",
+      fontFamily: "DMSans-SemiBold",
     },
     apply: {
       width: "100%",
