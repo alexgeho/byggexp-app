@@ -1960,6 +1960,8 @@
     "create": "Opprett",
     "deleteOrder": "Slett ordren",
     "deleteOrderTitle": "Slette ordren?",
+    "deleteBooking": "Slett bookingen",
+    "deleteBookingTitle": "Slette bookingen?",
     "created": "Arbeidsordre opprettet",
     "saved": "Lagret",
     "descriptionRequired": "Fyll inn beskrivelse.",

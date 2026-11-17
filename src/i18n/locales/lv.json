@@ -1964,6 +1964,8 @@
     "create": "Izveidot",
     "deleteOrder": "Dzēst pasūtījumu",
     "deleteOrderTitle": "Dzēst pasūtījumu?",
+    "deleteBooking": "Dzēst rezervāciju",
+    "deleteBookingTitle": "Dzēst rezervāciju?",
     "created": "Darba uzdevums izveidots",
     "saved": "Saglabāts",
     "descriptionRequired": "Aizpildiet aprakstu.",

@@ -1960,6 +1960,8 @@
     "create": "Create",
     "deleteOrder": "Delete order",
     "deleteOrderTitle": "Delete this order?",
+    "deleteBooking": "Delete booking",
+    "deleteBookingTitle": "Delete this booking?",
     "created": "Work order created",
     "saved": "Saved",
     "descriptionRequired": "Please fill in a description.",

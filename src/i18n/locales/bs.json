@@ -1966,6 +1966,8 @@
     "create": "Kreiraj",
     "deleteOrder": "Obriši nalog",
     "deleteOrderTitle": "Obrisati nalog?",
+    "deleteBooking": "Obriši rezervaciju",
+    "deleteBookingTitle": "Obrisati rezervaciju?",
     "created": "Radni nalog kreiran",
     "saved": "Sačuvano",
     "descriptionRequired": "Unesite opis.",

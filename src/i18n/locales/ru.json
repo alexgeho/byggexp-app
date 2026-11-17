@@ -1970,6 +1970,8 @@
     "create": "Создать",
     "deleteOrder": "Удалить заказ",
     "deleteOrderTitle": "Удалить заказ?",
+    "deleteBooking": "Удалить бронь",
+    "deleteBookingTitle": "Удалить бронь?",
     "created": "Заказ-наряд создан",
     "saved": "Сохранено",
     "descriptionRequired": "Заполните описание.",

@@ -1967,6 +1967,8 @@
     "create": "Sukurti",
     "deleteOrder": "Ištrinti užsakymą",
     "deleteOrderTitle": "Ištrinti užsakymą?",
+    "deleteBooking": "Ištrinti rezervaciją",
+    "deleteBookingTitle": "Ištrinti rezervaciją?",
     "created": "Darbo užsakymas sukurtas",
     "saved": "Išsaugota",
     "descriptionRequired": "Užpildykite aprašymą.",

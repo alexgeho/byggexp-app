@@ -32,6 +32,7 @@ import { taskService } from "../../../services/task.service";
 import { userService } from "../../../services/user.service";
 import {
   deleteBookingOrder,
+  deleteLooseBookings,
   saveBooking,
 } from "../../../services/booking.service";
 import {
@@ -109,6 +110,8 @@ export default function BookingScreen() {
 
   const editingId = params.projectId || null;
   const editing = Boolean(editingId);
+  // Bookings made without an order, opened from the calendar.
+  const loose = editing ? [] : params.assignments || [];
   const [project, setProject] = useState(null);
   const [ready, setReady] = useState(!editing);
 
@@ -427,7 +430,7 @@ export default function BookingScreen() {
           ? { projectId: editingId, assignments: params.assignments || [] }
           : null,
         existingOrder,
-        loose: editing ? [] : params.assignments || [],
+        loose,
         title: readOnlyOrder ? existingOrder.name : title.trim(),
         order: {
           littera: littera.trim(),
@@ -466,14 +469,18 @@ export default function BookingScreen() {
   };
 
   const handleDelete = () => {
-    Alert.alert(t("booking.deleteOrderTitle"), undefined, [
+    const title = editing
+      ? t("booking.deleteOrderTitle")
+      : t("booking.deleteBookingTitle");
+    Alert.alert(title, undefined, [
       { text: t("common.cancel"), style: "cancel" },
       {
         text: t("common.delete"),
         style: "destructive",
         onPress: async () => {
           try {
-            await deleteBookingOrder(editingId);
+            if (editing) await deleteBookingOrder(editingId);
+            else await deleteLooseBookings(loose);
             navigation.goBack();
           } catch (error) {
             showError({
@@ -815,7 +822,7 @@ export default function BookingScreen() {
             </FieldCard>
           </View>
 
-          {editing ? (
+          {editing || loose.length ? (
             <TouchableOpacity
               style={styles.deleteButton}
               onPress={handleDelete}
@@ -823,7 +830,11 @@ export default function BookingScreen() {
               accessibilityRole="button"
             >
               <Icon name="trash-2" size={18} color={theme.content.danger} />
-              <Text style={styles.deleteText}>{t("booking.deleteOrder")}</Text>
+              <Text style={styles.deleteText}>
+                {editing
+                  ? t("booking.deleteOrder")
+                  : t("booking.deleteBooking")}
+              </Text>
             </TouchableOpacity>
           ) : null}
         </ScrollView>

@@ -188,3 +188,11 @@ export const deleteBookingOrder = async (projectId) => {
   );
   await projectService.delete(projectId);
 };
+
+// A booking made without an order: only the bookings themselves go.
+export const deleteLooseBookings = (assignments = []) =>
+  Promise.all(
+    assignments.map((assignment) =>
+      assignmentService.remove(normalizeId(assignment)),
+    ),
+  );

@@ -1970,6 +1970,8 @@
     "create": "Створити",
     "deleteOrder": "Видалити замовлення",
     "deleteOrderTitle": "Видалити замовлення?",
+    "deleteBooking": "Видалити бронювання",
+    "deleteBookingTitle": "Видалити бронювання?",
     "created": "Наряд-замовлення створено",
     "saved": "Збережено",
     "descriptionRequired": "Заповніть опис.",

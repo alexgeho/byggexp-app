@@ -1960,6 +1960,8 @@
     "create": "Skapa",
     "deleteOrder": "Ta bort ordern",
     "deleteOrderTitle": "Ta bort ordern?",
+    "deleteBooking": "Ta bort bokningen",
+    "deleteBookingTitle": "Ta bort bokningen?",
     "created": "Arbetsorder skapad",
     "saved": "Sparat",
     "descriptionRequired": "Fyll i beskrivning.",
