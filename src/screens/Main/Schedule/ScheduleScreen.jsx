@@ -181,9 +181,18 @@ export default function ScheduleScreen() {
 
   // People of the grid: everyone gets a stable colour (by id, not by the
   // order on screen), and can be switched off in the people row.
+  // Whoever is booked is a person of the grid too — an admin who made an
+  // order without staff is booked on it themselves.
   const people = useMemo(
-    () => buildEmployeeOptions(projects, workers),
-    [projects, workers],
+    () =>
+      buildEmployeeOptions(
+        [
+          ...projects,
+          { workers: assignments.map((item) => normalizeId(item.userId)) },
+        ],
+        workers,
+      ),
+    [projects, workers, assignments],
   );
   const personColors = useMemo(() => {
     const map = {};

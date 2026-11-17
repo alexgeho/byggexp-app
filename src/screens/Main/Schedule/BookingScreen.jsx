@@ -409,6 +409,10 @@ export default function BookingScreen() {
         setNewEmployee(EMPTY_EMPLOYEE);
         setWorkerIds(ids);
       }
+      // Nobody picked: the order is booked on whoever makes it, so it is on
+      // the calendar and not lost (owner 17.11).
+      const myId = normalizeId(user);
+      if (!ids.length && myId) ids = [myId];
       const typedClient =
         !readOnlyOrder && !clientId && clientHasName(newClient)
           ? newClient
