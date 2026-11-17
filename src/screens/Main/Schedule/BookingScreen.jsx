@@ -161,9 +161,10 @@ export default function BookingScreen() {
   }, [user?.role]);
 
   // Editing: the order itself, plus the bookings the calendar already loaded.
+  // Bookings made without an order come the same way, just with no order yet.
   useEffect(() => {
-    if (!editing) return;
     const bookings = params.assignments || [];
+    if (!bookings.length && !editing) return;
     const days = bookings.map(assignmentDayKey).sort();
     if (days.length) {
       setFromDay(parseDayKey(days[0]));
@@ -177,6 +178,7 @@ export default function BookingScreen() {
     setWorkerIds([
       ...new Set(bookings.map((a) => normalizeId(a.userId)).filter(Boolean)),
     ]);
+    if (!editing) return;
     projectService
       .getById(editingId)
       .then((loaded) => {
@@ -421,6 +423,7 @@ export default function BookingScreen() {
           ? { projectId: editingId, assignments: params.assignments || [] }
           : null,
         existingOrder,
+        loose: editing ? [] : params.assignments || [],
         title: readOnlyOrder ? existingOrder.name : title.trim(),
         order: {
           littera: littera.trim(),

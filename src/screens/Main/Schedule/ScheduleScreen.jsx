@@ -41,6 +41,7 @@ import {
 import {
   buildDayBlocks,
   buildDayLeaves,
+  looseBookingRun,
   parseDayKey,
   toDayKey,
 } from "../../../utils/scheduleBooking";
@@ -272,7 +273,20 @@ export default function ScheduleScreen() {
 
   // A booking opens its order with every booking on it (people, days, time).
   const openBooking = (item) => {
-    if (!canBook || !item.projectId) {
+    if (!canBook) {
+      return;
+    }
+    // Booked without an order: the same form, filled in with the person, the
+    // days and the time — saving it makes the order and moves them onto it.
+    if (!item.projectId) {
+      const loose = looseBookingRun(assignments, item.assignmentIds[0]);
+      if (!loose.length) return;
+      navigation.navigate("Booking", {
+        assignments: loose,
+        focus: loose.find((assignment) =>
+          item.assignmentIds.includes(normalizeId(assignment)),
+        ),
+      });
       return;
     }
     const sameOrder = assignments.filter(

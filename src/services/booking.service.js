@@ -39,10 +39,13 @@ const uploadFiles = async (projectId, files) => {
 // bookings for every day of the range.
 //   editing       { projectId, assignments } when an existing booking is open
 //   existingOrder a project to add this booking to (new booking only)
+//   loose         bookings made without an order, opened from the calendar:
+//                 they are not booked again, they move onto the order
 // Returns { projectId, filesSaved }.
 export const saveBooking = async ({
   editing = null,
   existingOrder = null,
+  loose = [],
   title,
   order = {},
   clientId = null,
@@ -75,9 +78,47 @@ export const saveBooking = async ({
           .catch(() => null),
       ),
     );
-  const everyDay = workerIds.flatMap((userId) =>
-    days.map((date) => ({ userId, date })),
-  );
+  // Bookings that already exist change only by the difference: people taken
+  // off and days outside the range go, new people / days come, the kept ones
+  // get the new time and comment — and the order, when they had none.
+  const sync = (projectId, existing, adopt = false) => {
+    const { toCreate, toDelete, toUpdate } = planBookingChanges({
+      existing,
+      workerIds,
+      days,
+      from,
+      to,
+      start,
+      hours,
+      note,
+    });
+    const kept = existing.filter(
+      (assignment) => !toDelete.includes(assignment),
+    );
+    return Promise.all([
+      book(projectId, toCreate),
+      ...toDelete.map((assignment) =>
+        assignmentService.remove(normalizeId(assignment)).catch(() => null),
+      ),
+      ...(adopt ? kept : toUpdate).map((assignment) =>
+        assignmentService
+          .update(normalizeId(assignment), {
+            ...(adopt ? { projectId } : {}),
+            startTime: start,
+            hours,
+            note,
+          })
+          .catch(() => null),
+      ),
+    ]);
+  };
+  const bookAll = (projectId) =>
+    loose.length
+      ? sync(projectId, loose, true)
+      : book(
+          projectId,
+          workerIds.flatMap((userId) => days.map((date) => ({ userId, date }))),
+        );
 
   // Add this booking (time, crew, article) to an order that already exists.
   if (existingOrder && !editing) {
@@ -92,7 +133,7 @@ export const saveBooking = async ({
     if (Object.keys(changes).length) {
       await projectService.update(projectId, changes);
     }
-    await book(projectId, everyDay);
+    await bookAll(projectId);
     return { projectId, filesSaved: await uploadFiles(projectId, files) };
   }
 
@@ -114,27 +155,7 @@ export const saveBooking = async ({
       orderRows: rows,
       clientId: resolvedClientId || null,
     });
-    const { toCreate, toDelete, toUpdate } = planBookingChanges({
-      existing: editing.assignments || [],
-      workerIds,
-      days,
-      from,
-      to,
-      start,
-      hours,
-      note,
-    });
-    await Promise.all([
-      book(projectId, toCreate),
-      ...toDelete.map((assignment) =>
-        assignmentService.remove(normalizeId(assignment)).catch(() => null),
-      ),
-      ...toUpdate.map((assignment) =>
-        assignmentService
-          .update(normalizeId(assignment), { startTime: start, hours, note })
-          .catch(() => null),
-      ),
-    ]);
+    await sync(projectId, editing.assignments || []);
     return { projectId, filesSaved: await uploadFiles(projectId, files) };
   }
 
@@ -150,7 +171,7 @@ export const saveBooking = async ({
     clientId: resolvedClientId || null,
   });
   const projectId = normalizeId(project);
-  await book(projectId, everyDay);
+  await bookAll(projectId);
   return { projectId, filesSaved: await uploadFiles(projectId, files) };
 };
 

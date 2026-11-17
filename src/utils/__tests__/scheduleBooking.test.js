@@ -7,6 +7,7 @@ import {
   endTimeFor,
   enumerateDayKeys,
   hoursBetween,
+  looseBookingRun,
   planBookingChanges,
   shiftEndTime,
   slotAt,
@@ -22,6 +23,30 @@ import {
 jest.mock("../dateLocale", () => ({ getDateLocale: () => "en-GB" }));
 
 describe("scheduleBooking", () => {
+  it("opens a booking without an order as the worker's run of such days", () => {
+    const day = (id, userId, date, projectId = null) => ({
+      _id: id,
+      userId,
+      projectId,
+      date: `${date}T00:00:00.000Z`,
+    });
+    const all = [
+      day("a1", "u1", "2026-11-23"), // not next to the run
+      day("a2", "u1", "2026-11-25"),
+      day("a3", "u1", "2026-11-26"),
+      day("a4", "u1", "2026-11-27", "p1"), // has an order
+      day("a5", "u1", "2026-11-27"),
+      day("a6", "u2", "2026-11-26"), // someone else
+    ];
+    expect(looseBookingRun(all, "a3").map((a) => a._id)).toEqual([
+      "a2",
+      "a3",
+      "a5",
+    ]);
+    expect(looseBookingRun(all, "a4")).toEqual([]);
+    expect(looseBookingRun(all, "nope")).toEqual([]);
+  });
+
   it("lists every day of a range, weekends optional", () => {
     // 2026-11-13 is a Friday.
     expect(enumerateDayKeys("2026-11-13", "2026-11-16")).toEqual([

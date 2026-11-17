@@ -185,6 +185,31 @@ export const buildBookingItems = (
   return items;
 };
 
+// A booking made without an order (the web's "assign" window lets the project
+// stay empty): the tapped one plus the same worker's other order-less bookings
+// on the days right next to it — what the calendar shows as one bar.
+export const looseBookingRun = (assignments = [], assignmentId) => {
+  const tapped = assignments.find(
+    (assignment) => normalizeId(assignment) === String(assignmentId),
+  );
+  if (!tapped || normalizeId(tapped.projectId)) return [];
+  const userId = normalizeId(tapped.userId);
+  const byDay = new Map();
+  assignments.forEach((assignment) => {
+    if (normalizeId(assignment.projectId)) return;
+    if (normalizeId(assignment.userId) !== userId || !assignment.date) return;
+    const day = assignmentDayKey(assignment);
+    if (!byDay.has(day)) byDay.set(day, []);
+    byDay.get(day).push(assignment);
+  });
+  const step = (day, delta) => toDayKey(addDays(parseDayKey(day), delta));
+  let first = assignmentDayKey(tapped);
+  let last = first;
+  while (byDay.has(step(first, -1))) first = step(first, -1);
+  while (byDay.has(step(last, 1))) last = step(last, 1);
+  return enumerateDayKeys(first, last).flatMap((day) => byDay.get(day) || []);
+};
+
 // Saving an edited booking changes only the difference: people taken off and
 // days outside the new range go, new people / days come, kept bookings get
 // the new time and comment.
