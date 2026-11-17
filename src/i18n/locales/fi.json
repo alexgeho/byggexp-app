@@ -1960,6 +1960,7 @@
     "create": "Luo",
     "deleteOrder": "Poista tilaus",
     "deleteOrderTitle": "Poistetaanko tilaus?",
+    "copy": "Kopioi",
     "deleteBooking": "Poista varaus",
     "deleteBookingTitle": "Poistetaanko varaus?",
     "created": "Työtilaus luotu",

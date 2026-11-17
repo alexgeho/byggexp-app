@@ -116,10 +116,13 @@ export default function BookingScreen() {
   const [ready, setReady] = useState(!editing);
 
   const [title, setTitle] = useState("");
-  const [littera, setLittera] = useState("");
+  // A copy of a booking (owner 17.11): a new booking on the same order with
+  // the same people and time — only the day is left to change.
+  const copy = params.copy || null;
+  const [littera, setLittera] = useState(copy?.order?.littera || "");
   const [status, setStatus] = useState("planning");
   const [rows, setRows] = useState([]);
-  const [existingOrder, setExistingOrder] = useState(null);
+  const [existingOrder, setExistingOrder] = useState(copy?.order || null);
   const [files, setFiles] = useState([]);
   const [addedTasks, setAddedTasks] = useState([]);
 
@@ -143,12 +146,12 @@ export default function BookingScreen() {
 
   const [people, setPeople] = useState([]);
   const [workerIds, setWorkerIds] = useState(
-    params.workerId ? [String(params.workerId)] : [],
+    copy?.workerIds || (params.workerId ? [String(params.workerId)] : []),
   );
   const [pendingWorkers, setPendingWorkers] = useState([]);
   const [workerSearch, setWorkerSearch] = useState("");
   const [newEmployee, setNewEmployee] = useState(EMPTY_EMPLOYEE);
-  const [note, setNote] = useState("");
+  const [note, setNote] = useState(copy?.note || "");
 
   const [picker, setPicker] = useState(null); // 'article' | 'order' | 'client' | 'workers'
   const [saving, setSaving] = useState(false);
@@ -466,6 +469,18 @@ export default function BookingScreen() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleCopy = () => {
+    navigation.replace("Booking", {
+      date: toDayKey(fromDay),
+      ...(toDay.getTime() > fromDay.getTime()
+        ? { dateTo: toDayKey(toDay) }
+        : {}),
+      start,
+      end,
+      copy: { order: project, workerIds, note },
+    });
   };
 
   const handleDelete = () => {
@@ -823,19 +838,33 @@ export default function BookingScreen() {
           </View>
 
           {editing || loose.length ? (
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={handleDelete}
-              activeOpacity={0.7}
-              accessibilityRole="button"
-            >
-              <Icon name="trash-2" size={18} color={theme.content.danger} />
-              <Text style={styles.deleteText}>
-                {editing
-                  ? t("booking.deleteOrder")
-                  : t("booking.deleteBooking")}
-              </Text>
-            </TouchableOpacity>
+            <View style={styles.bottomActions}>
+              {/* Copy only when there is an order to copy onto. */}
+              {editing && project ? (
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={handleCopy}
+                  activeOpacity={0.7}
+                  accessibilityRole="button"
+                >
+                  <Icon name="copy" size={18} color={theme.colors.primary} />
+                  <Text style={styles.copyText}>{t("booking.copy")}</Text>
+                </TouchableOpacity>
+              ) : null}
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={handleDelete}
+                activeOpacity={0.7}
+                accessibilityRole="button"
+              >
+                <Icon name="trash-2" size={18} color={theme.content.danger} />
+                <Text style={styles.deleteText}>
+                  {editing
+                    ? t("booking.deleteOrder")
+                    : t("booking.deleteBooking")}
+                </Text>
+              </TouchableOpacity>
+            </View>
           ) : null}
         </ScrollView>
       </KeyboardAvoidingView>
@@ -997,7 +1026,10 @@ function createStyles(theme) {
       alignItems: "center",
       justifyContent: "center",
     },
+    // Copy on the left, delete on the right — two equal halves.
+    bottomActions: { flexDirection: "row" },
     deleteButton: {
+      flex: 1,
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
@@ -1005,5 +1037,6 @@ function createStyles(theme) {
       minHeight: 48,
     },
     deleteText: { fontSize: 16, color: c.danger },
+    copyText: { fontSize: 16, color: theme.colors.primary },
   });
 }

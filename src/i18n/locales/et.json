@@ -1960,6 +1960,7 @@
     "create": "Loo",
     "deleteOrder": "Kustuta tellimus",
     "deleteOrderTitle": "Kas kustutada tellimus?",
+    "copy": "Kopeeri",
     "deleteBooking": "Kustuta broneering",
     "deleteBookingTitle": "Kas kustutada broneering?",
     "created": "Töökäsk loodud",
