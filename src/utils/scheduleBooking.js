@@ -210,6 +210,20 @@ export const looseBookingRun = (assignments = [], assignmentId) => {
   return enumerateDayKeys(first, last).flatMap((day) => byDay.get(day) || []);
 };
 
+// A booking moved by whole days and by minutes: its new date, and its new start
+// when the time moved too (kept inside the day, 00:00–23:45).
+export const shiftBooking = (assignment, dayDelta = 0, minuteDelta = 0) => {
+  const date = toDayKey(
+    addDays(parseDayKey(assignmentDayKey(assignment)), dayDelta),
+  );
+  if (!minuteDelta) return { date };
+  const start = Math.min(
+    LAST_END_MINUTE,
+    Math.max(0, toMinutes(assignment.startTime) + minuteDelta),
+  );
+  return { date, startTime: formatMinutes(start) };
+};
+
 // Saving an edited booking changes only the difference: people taken off and
 // days outside the new range go, new people / days come, kept bookings get
 // the new time and comment.

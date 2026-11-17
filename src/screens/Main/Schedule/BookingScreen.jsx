@@ -33,6 +33,7 @@ import { userService } from "../../../services/user.service";
 import {
   deleteBookingOrder,
   deleteLooseBookings,
+  moveBookings,
   saveBooking,
 } from "../../../services/booking.service";
 import {
@@ -68,6 +69,7 @@ import {
   splitPhone,
   timeOf,
   toDayKey,
+  toMinutes,
   withTime,
 } from "../../../utils/scheduleBooking";
 
@@ -471,6 +473,37 @@ export default function BookingScreen() {
     }
   };
 
+  // «Move» (owner 17.11): the same screen with only the new start — the day
+  // and the time. Every booking shown here goes the same distance; the order,
+  // the people and the length stay.
+  const moving = params.mode === "move";
+  const handleMove = async () => {
+    if (saving) return;
+    const bookings = params.assignments || [];
+    const focus = params.focus || bookings[0] || {};
+    const firstDay = bookings.map(assignmentDayKey).sort()[0];
+    const dayDelta = firstDay ? daysBetween(parseDayKey(firstDay), fromDay) : 0;
+    const minuteDelta =
+      toMinutes(start) - toMinutes(focus.startTime || DEFAULT_START);
+    if (!dayDelta && !minuteDelta) {
+      navigation.goBack();
+      return;
+    }
+    setSaving(true);
+    try {
+      await moveBookings(bookings, dayDelta, minuteDelta);
+      showSuccess({ title: t("booking.moved") });
+      // Back to the calendar, past the form the move was opened from.
+      navigation.pop(2);
+    } catch (error) {
+      showError({ message: getApiErrorMessage(error, t("common.error")) });
+    } finally {
+      setSaving(false);
+    }
+  };
+  const openMove = () =>
+    navigation.push("Booking", { ...params, mode: "move" });
+
   // An order's booking, or a booking made without an order — not a new one.
   const existing = (editing && Boolean(project)) || loose.length > 0;
 
@@ -605,11 +638,17 @@ export default function BookingScreen() {
   return (
     <FormScreen style={styles.safe} edges={["top"]}>
       <FormHeader
-        title={editing ? title || t("booking.workOrder") : t("booking.title")}
+        title={
+          moving
+            ? t("booking.move")
+            : editing
+              ? title || t("booking.workOrder")
+              : t("booking.title")
+        }
         onBack={() => navigation.goBack()}
-        onSave={handleSave}
+        onSave={moving ? handleMove : handleSave}
         saving={saving}
-        saveLabel={saveLabel}
+        saveLabel={moving ? t("booking.move") : saveLabel}
       />
 
       <KeyboardAvoidingView
@@ -620,226 +659,259 @@ export default function BookingScreen() {
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
         >
-          <View>
-            <SectionTitle inset>{t("booking.workOrder")}</SectionTitle>
-            <FieldCard>
-              <FieldRow
-                variant="select"
-                floating
-                label={t("booking.article")}
-                value={articleLabel}
-                onPress={() => setPicker("article")}
-              />
-              {editing ? (
-                <FieldRow label={t("task.statusLabel")}>
-                  <ChoiceChips
-                    tone="soft"
-                    scroll
-                    values={STATUSES}
-                    value={status}
-                    onChange={setStatus}
-                    format={(value) => t(`projects.status.${value}`)}
+          {moving ? (
+            <View>
+              <SectionTitle inset>{t("booking.moveTo")}</SectionTitle>
+              <FieldCard>
+                {timeRow("from", t("booking.from"), fromDay, start)}
+              </FieldCard>
+            </View>
+          ) : (
+            <>
+              <View>
+                <SectionTitle inset>{t("booking.workOrder")}</SectionTitle>
+                <FieldCard>
+                  <FieldRow
+                    variant="select"
+                    floating
+                    label={t("booking.article")}
+                    value={articleLabel}
+                    onPress={() => setPicker("article")}
                   />
-                </FieldRow>
-              ) : (
-                <FieldRow
-                  variant="select"
-                  floating
-                  label={t("booking.addToExisting")}
-                  value={existingOrder?.name || ""}
-                  onPress={() => setPicker("order")}
-                />
-              )}
-              {readOnlyOrder ? (
-                <FieldRow
-                  label={t("booking.description")}
-                  value={existingOrder.name || "—"}
-                />
-              ) : (
-                input(t("booking.description"), title, setTitle)
-              )}
-              {input(t("booking.orderReference"), littera, setLittera)}
-              {actionRow("paperclip", t("booking.files"), pickFiles)}
-              {files.length ? (
-                <View style={styles.tiles}>
-                  {files.map((file, index) => (
-                    <View key={file.uri} style={styles.tile}>
-                      {isImage(file) ? (
-                        <Image
-                          source={{ uri: file.uri }}
-                          style={styles.tileImage}
-                        />
-                      ) : (
-                        <>
-                          <Icon
-                            name="file-text"
-                            size={22}
-                            color={theme.content.textSecondary}
-                          />
-                          <Text style={styles.tileName} numberOfLines={2}>
-                            {file.name}
+                  {editing ? (
+                    <FieldRow label={t("task.statusLabel")}>
+                      <ChoiceChips
+                        tone="soft"
+                        scroll
+                        values={STATUSES}
+                        value={status}
+                        onChange={setStatus}
+                        format={(value) => t(`projects.status.${value}`)}
+                      />
+                    </FieldRow>
+                  ) : (
+                    <FieldRow
+                      variant="select"
+                      floating
+                      label={t("booking.addToExisting")}
+                      value={existingOrder?.name || ""}
+                      onPress={() => setPicker("order")}
+                    />
+                  )}
+                  {readOnlyOrder ? (
+                    <FieldRow
+                      label={t("booking.description")}
+                      value={existingOrder.name || "—"}
+                    />
+                  ) : (
+                    input(t("booking.description"), title, setTitle)
+                  )}
+                  {input(t("booking.orderReference"), littera, setLittera)}
+                  {actionRow("paperclip", t("booking.files"), pickFiles)}
+                  {files.length ? (
+                    <View style={styles.tiles}>
+                      {files.map((file, index) => (
+                        <View key={file.uri} style={styles.tile}>
+                          {isImage(file) ? (
+                            <Image
+                              source={{ uri: file.uri }}
+                              style={styles.tileImage}
+                            />
+                          ) : (
+                            <>
+                              <Icon
+                                name="file-text"
+                                size={22}
+                                color={theme.content.textSecondary}
+                              />
+                              <Text style={styles.tileName} numberOfLines={2}>
+                                {file.name}
+                              </Text>
+                            </>
+                          )}
+                          <TouchableOpacity
+                            style={styles.tileRemove}
+                            hitSlop={8}
+                            onPress={() =>
+                              setFiles((prev) =>
+                                prev.filter((_, i) => i !== index),
+                              )
+                            }
+                            accessibilityRole="button"
+                            accessibilityLabel={t("common.delete")}
+                          >
+                            <Icon name="x" size={12} color="#FFFFFF" />
+                          </TouchableOpacity>
+                        </View>
+                      ))}
+                    </View>
+                  ) : null}
+                  <View style={styles.separator} />
+                  {actionRow("plus", t("booking.task"), openTask)}
+                  {addedTasks.map((task, index) => (
+                    <View
+                      key={task.id || `${task.title}-${index}`}
+                      style={styles.taskRow}
+                    >
+                      <View style={styles.flex}>
+                        <Text style={styles.taskTitle} numberOfLines={1}>
+                          {task.title}
+                        </Text>
+                        {task.due ? (
+                          <Text style={styles.taskMeta} numberOfLines={1}>
+                            {new Date(task.due).toLocaleString(
+                              getDateLocale(),
+                              {
+                                day: "numeric",
+                                month: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              },
+                            )}
                           </Text>
-                        </>
-                      )}
+                        ) : null}
+                      </View>
                       <TouchableOpacity
-                        style={styles.tileRemove}
-                        hitSlop={8}
-                        onPress={() =>
-                          setFiles((prev) => prev.filter((_, i) => i !== index))
-                        }
+                        style={styles.taskRemove}
+                        onPress={() => removeTask(index)}
                         accessibilityRole="button"
                         accessibilityLabel={t("common.delete")}
                       >
-                        <Icon name="x" size={12} color="#FFFFFF" />
+                        <Icon
+                          name="x"
+                          size={18}
+                          color={theme.content.textMuted}
+                        />
                       </TouchableOpacity>
                     </View>
                   ))}
-                </View>
-              ) : null}
-              <View style={styles.separator} />
-              {actionRow("plus", t("booking.task"), openTask)}
-              {addedTasks.map((task, index) => (
-                <View
-                  key={task.id || `${task.title}-${index}`}
-                  style={styles.taskRow}
-                >
-                  <View style={styles.flex}>
-                    <Text style={styles.taskTitle} numberOfLines={1}>
-                      {task.title}
-                    </Text>
-                    {task.due ? (
-                      <Text style={styles.taskMeta} numberOfLines={1}>
-                        {new Date(task.due).toLocaleString(getDateLocale(), {
-                          day: "numeric",
-                          month: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </Text>
-                    ) : null}
-                  </View>
-                  <TouchableOpacity
-                    style={styles.taskRemove}
-                    onPress={() => removeTask(index)}
-                    accessibilityRole="button"
-                    accessibilityLabel={t("common.delete")}
-                  >
-                    <Icon name="x" size={18} color={theme.content.textMuted} />
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </FieldCard>
-          </View>
+                </FieldCard>
+              </View>
 
-          <View>
-            <SectionTitle inset>{t("booking.client")}</SectionTitle>
-            <FieldCard>
-              {readOnlyOrder ? null : (
-                <FieldRow>
-                  <ChoiceChips
-                    tone="soft"
-                    values={["new", "existing"]}
-                    value={clientId ? "existing" : "new"}
-                    onChange={changeClientMode}
-                    format={(value) =>
-                      value === "new"
-                        ? t("billing.newClient")
-                        : t("booking.existingClient")
-                    }
-                  />
-                </FieldRow>
-              )}
-              {lockClient ? (
-                <FieldRow
-                  variant={readOnlyOrder ? "readonly" : "select"}
-                  label={t("booking.client")}
-                  value={clientDisplayName(client) || "—"}
-                  onPress={
-                    readOnlyOrder ? undefined : () => setPicker("client")
-                  }
-                />
-              ) : (
-                <FieldRow label={t("clientForm.clientType")}>
-                  <ChoiceChips
-                    tone="soft"
-                    values={["private", "company"]}
-                    value={newClient.clientType}
-                    onChange={setC("clientType")}
-                    format={(value) =>
-                      value === "company"
-                        ? t("clientForm.business")
-                        : t("clientForm.private")
-                    }
-                  />
-                </FieldRow>
-              )}
-              {isCompany ? (
-                <>
-                  {clientField("companyName", t("clientForm.companyName"))}
-                  {clientField("orgNumber", t("clientForm.orgNumber"))}
-                  {clientField("contactPerson", t("clientForm.contactPerson"))}
-                </>
-              ) : (
-                <>
-                  {clientField("firstName", t("clientForm.firstName"))}
-                  {clientField("lastName", t("clientForm.lastName"))}
-                </>
-              )}
-              {clientField("phone", t("clientForm.phone"), {
-                keyboardType: "phone-pad",
-              })}
-              {clientField("email", t("clientForm.email"), {
-                keyboardType: "email-address",
-                autoCapitalize: "none",
-              })}
-              {clientField("address", t("clientForm.address"))}
-              {clientField("notes", t("booking.comment"), { isLast: true })}
-            </FieldCard>
-          </View>
+              <View>
+                <SectionTitle inset>{t("booking.client")}</SectionTitle>
+                <FieldCard>
+                  {readOnlyOrder ? null : (
+                    <FieldRow>
+                      <ChoiceChips
+                        tone="soft"
+                        values={["new", "existing"]}
+                        value={clientId ? "existing" : "new"}
+                        onChange={changeClientMode}
+                        format={(value) =>
+                          value === "new"
+                            ? t("billing.newClient")
+                            : t("booking.existingClient")
+                        }
+                      />
+                    </FieldRow>
+                  )}
+                  {lockClient ? (
+                    <FieldRow
+                      variant={readOnlyOrder ? "readonly" : "select"}
+                      label={t("booking.client")}
+                      value={clientDisplayName(client) || "—"}
+                      onPress={
+                        readOnlyOrder ? undefined : () => setPicker("client")
+                      }
+                    />
+                  ) : (
+                    <FieldRow label={t("clientForm.clientType")}>
+                      <ChoiceChips
+                        tone="soft"
+                        values={["private", "company"]}
+                        value={newClient.clientType}
+                        onChange={setC("clientType")}
+                        format={(value) =>
+                          value === "company"
+                            ? t("clientForm.business")
+                            : t("clientForm.private")
+                        }
+                      />
+                    </FieldRow>
+                  )}
+                  {isCompany ? (
+                    <>
+                      {clientField("companyName", t("clientForm.companyName"))}
+                      {clientField("orgNumber", t("clientForm.orgNumber"))}
+                      {clientField(
+                        "contactPerson",
+                        t("clientForm.contactPerson"),
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {clientField("firstName", t("clientForm.firstName"))}
+                      {clientField("lastName", t("clientForm.lastName"))}
+                    </>
+                  )}
+                  {clientField("phone", t("clientForm.phone"), {
+                    keyboardType: "phone-pad",
+                  })}
+                  {clientField("email", t("clientForm.email"), {
+                    keyboardType: "email-address",
+                    autoCapitalize: "none",
+                  })}
+                  {clientField("address", t("clientForm.address"))}
+                  {clientField("notes", t("booking.comment"), { isLast: true })}
+                </FieldCard>
+              </View>
 
-          <View>
-            <SectionTitle inset>{t("booking.time")}</SectionTitle>
-            <FieldCard>
-              {timeRow("from", t("booking.from"), fromDay, start)}
-              <View style={styles.separator} />
-              {timeRow("to", t("booking.to"), toDay, end)}
-              {multiDay ? (
-                <>
+              <View>
+                <SectionTitle inset>{t("booking.time")}</SectionTitle>
+                <FieldCard>
+                  {timeRow("from", t("booking.from"), fromDay, start)}
                   <View style={styles.separator} />
-                  <FieldRow
-                    variant="toggle"
-                    floating
-                    label={t("booking.weekdaysOnly")}
-                    switchValue={weekdaysOnly}
-                    onSwitchChange={setWeekdaysOnly}
-                    isLast
-                  />
-                </>
-              ) : null}
-            </FieldCard>
-          </View>
+                  {timeRow("to", t("booking.to"), toDay, end)}
+                  {multiDay ? (
+                    <>
+                      <View style={styles.separator} />
+                      <FieldRow
+                        variant="toggle"
+                        floating
+                        label={t("booking.weekdaysOnly")}
+                        switchValue={weekdaysOnly}
+                        onSwitchChange={setWeekdaysOnly}
+                        isLast
+                      />
+                    </>
+                  ) : null}
+                </FieldCard>
+              </View>
 
-          <View>
-            <SectionTitle inset>{t("booking.staff")}</SectionTitle>
-            <FieldCard>
-              <FieldRow
-                variant="select"
-                floating
-                label={t("booking.chooseStaff")}
-                value={staffLabel}
-                onPress={openWorkers}
-              />
-              {input(t("booking.name"), newEmployee.name, setE("name"))}
-              {input(t("clientForm.phone"), newEmployee.phone, setE("phone"), {
-                keyboardType: "phone-pad",
-              })}
-              {input(t("clientForm.email"), newEmployee.email, setE("email"), {
-                keyboardType: "email-address",
-                autoCapitalize: "none",
-              })}
-              {input(t("booking.comment"), note, setNote, { isLast: true })}
-            </FieldCard>
-          </View>
+              <View>
+                <SectionTitle inset>{t("booking.staff")}</SectionTitle>
+                <FieldCard>
+                  <FieldRow
+                    variant="select"
+                    floating
+                    label={t("booking.chooseStaff")}
+                    value={staffLabel}
+                    onPress={openWorkers}
+                  />
+                  {input(t("booking.name"), newEmployee.name, setE("name"))}
+                  {input(
+                    t("clientForm.phone"),
+                    newEmployee.phone,
+                    setE("phone"),
+                    {
+                      keyboardType: "phone-pad",
+                    },
+                  )}
+                  {input(
+                    t("clientForm.email"),
+                    newEmployee.email,
+                    setE("email"),
+                    {
+                      keyboardType: "email-address",
+                      autoCapitalize: "none",
+                    },
+                  )}
+                  {input(t("booking.comment"), note, setNote, { isLast: true })}
+                </FieldCard>
+              </View>
+            </>
+          )}
         </ScrollView>
       </KeyboardAvoidingView>
 
@@ -861,34 +933,52 @@ export default function BookingScreen() {
       ) : null}
 
       {/* Everything that can be done with this booking is on screen at once,
-          no scrolling (owner 17.11): delete · copy · save. A brand-new booking
-          has nothing to delete or copy yet. */}
-      <FormFooter>
-        {existing ? (
+          no scrolling (owner 17.11): delete · copy · move above the main
+          button. A brand-new booking has nothing to delete, copy or move. */}
+      {moving ? (
+        <FormFooter>
           <Button
-            variant="danger"
-            title={t("common.delete")}
-            onPress={handleDelete}
-            disabled={saving}
-            style={styles.footerButton}
+            title={t("booking.move")}
+            onPress={handleMove}
+            loading={saving}
           />
-        ) : null}
-        {existing ? (
-          <Button
-            variant="outline"
-            title={t("booking.copy")}
-            onPress={handleCopy}
-            disabled={saving}
-            style={styles.footerButton}
-          />
-        ) : null}
-        <Button
-          title={saveLabel}
-          onPress={handleSave}
-          loading={saving}
-          style={existing ? styles.footerButton : null}
-        />
-      </FormFooter>
+        </FormFooter>
+      ) : (
+        <FormFooter
+          top={
+            existing
+              ? [
+                  <Button
+                    key="delete"
+                    variant="danger"
+                    title={t("common.delete")}
+                    onPress={handleDelete}
+                    disabled={saving}
+                    style={styles.footerButton}
+                  />,
+                  <Button
+                    key="copy"
+                    variant="outline"
+                    title={t("booking.copy")}
+                    onPress={handleCopy}
+                    disabled={saving}
+                    style={styles.footerButton}
+                  />,
+                  <Button
+                    key="move"
+                    variant="outline"
+                    title={t("booking.move")}
+                    onPress={openMove}
+                    disabled={saving}
+                    style={styles.footerButton}
+                  />,
+                ]
+              : null
+          }
+        >
+          <Button title={saveLabel} onPress={handleSave} loading={saving} />
+        </FormFooter>
+      )}
 
       <ArticlePickerModal
         visible={picker === "article"}
@@ -1026,7 +1116,7 @@ function createStyles(theme) {
       alignItems: "center",
       justifyContent: "center",
     },
-    // Three buttons share the footer: less side padding, the words stay whole.
+    // Three buttons share a footer row: less side padding, the words stay whole.
     footerButton: { paddingHorizontal: 8 },
   });
 }

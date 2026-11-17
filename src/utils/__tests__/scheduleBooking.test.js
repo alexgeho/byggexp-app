@@ -8,6 +8,7 @@ import {
   enumerateDayKeys,
   hoursBetween,
   looseBookingRun,
+  shiftBooking,
   planBookingChanges,
   shiftEndTime,
   slotAt,
@@ -23,6 +24,21 @@ import {
 jest.mock("../dateLocale", () => ({ getDateLocale: () => "en-GB" }));
 
 describe("scheduleBooking", () => {
+  it("moves a booking by days and minutes, inside the day", () => {
+    const booking = { date: "2026-11-30T00:00:00.000Z", startTime: "" };
+    expect(shiftBooking(booking, 2, 0)).toEqual({ date: "2026-12-02" });
+    expect(shiftBooking(booking, -1, 90)).toEqual({
+      date: "2026-11-29",
+      startTime: "08:30",
+    });
+    expect(
+      shiftBooking({ ...booking, startTime: "23:00" }, 0, 120).startTime,
+    ).toBe("23:45");
+    expect(
+      shiftBooking({ ...booking, startTime: "01:00" }, 0, -180).startTime,
+    ).toBe("00:00");
+  });
+
   it("opens a booking without an order as the worker's run of such days", () => {
     const day = (id, userId, date, projectId = null) => ({
       _id: id,

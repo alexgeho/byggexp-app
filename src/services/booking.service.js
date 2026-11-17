@@ -6,6 +6,7 @@ import {
   buildClientBody,
   enumerateDayKeys,
   planBookingChanges,
+  shiftBooking,
 } from "../utils/scheduleBooking";
 
 const notEmpty = (object) =>
@@ -194,5 +195,17 @@ export const deleteLooseBookings = (assignments = []) =>
   Promise.all(
     assignments.map((assignment) =>
       assignmentService.remove(normalizeId(assignment)),
+    ),
+  );
+
+// «Move»: every booking goes the same number of days and minutes away; the
+// order, the people and the length stay as they are.
+export const moveBookings = (assignments = [], dayDelta = 0, minuteDelta = 0) =>
+  Promise.all(
+    assignments.map((assignment) =>
+      assignmentService.update(
+        normalizeId(assignment),
+        shiftBooking(assignment, dayDelta, minuteDelta),
+      ),
     ),
   );
