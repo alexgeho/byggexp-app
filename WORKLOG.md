@@ -9,8 +9,9 @@
 ## · 22:20 «давай отправляем в сторы»
 
 - [i] 1.1.8 вышла в обоих сторах (App Store 16.11) → новая версия 1.1.9; Nyheter sv/en — `docs/STORE_LISTING_COPY.md`
-- [ ] Сборки 1.1.9 из main после последнего OTA: `npx eas-cli build --platform all --profile production`
-- [ ] iOS → `eas submit`, версия в ASC, What's New, на ревью
+- [x] iOS 1.1.9 (203) собрана (EAS `f618d114`), загружена в App Store Connect через `eas submit` (22:40)
+- [x] 22:50 владелец: «appl отправил» — версию в ASC на ревью отправил сам; статус в ASC я не проверял
+- [ ] Android 1.1.9 (41), EAS `cc506a36` — в 22:50 всё ещё в очереди Expo
 - [ ] Android → AAB в Play Console загружает владелец, дальше Nyheter и отправка
 - [i] Ничего из 17.11 на устройстве не проверялось (только jest)
 
