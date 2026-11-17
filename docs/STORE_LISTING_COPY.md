@@ -112,6 +112,26 @@ FÖR HELA FÖRETAGET
 Prova gratis i 14 dagar.
 ```
 
+## 1.1.9 — Nyheter (2026-11-17)
+
+### sv
+
+- Planering: flytta en bokning till en annan dag eller tid – knappen Flytta
+- Planering: kopiera en bokning – samma order, personal och tid, välj bara ny dag
+- Bokningar: Ta bort, Kopiera och Flytta syns direkt längst ned, utan att scrolla
+- Bokningar utan order går nu att öppna, göra om till en order och ta bort
+- En order utan vald personal bokas på den som skapar den och syns i kalendern
+- Förbättringar och buggfixar
+
+### en
+
+- Planning: move a booking to another day or time – the Move button
+- Planning: copy a booking – same order, staff and time, just pick a new day
+- Bookings: Delete, Copy and Move are always visible at the bottom, no scrolling
+- Bookings without an order can now be opened, turned into an order and deleted
+- An order with no staff chosen is booked on whoever creates it and shows in the calendar
+- Improvements and bug fixes
+
 ## 1.1.8 — Nyheter (2026-11-15)
 
 ### sv
