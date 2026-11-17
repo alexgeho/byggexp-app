@@ -471,6 +471,9 @@ export default function BookingScreen() {
     }
   };
 
+  // An order's booking, or a booking made without an order — not a new one.
+  const existing = (editing && Boolean(project)) || loose.length > 0;
+
   const handleCopy = () => {
     navigation.replace("Booking", {
       date: toDayKey(fromDay),
@@ -479,7 +482,8 @@ export default function BookingScreen() {
         : {}),
       start,
       end,
-      copy: { order: project, workerIds, note },
+      // A booking without an order is copied without one: person and time.
+      copy: { order: editing ? project : null, workerIds, note },
     });
   };
 
@@ -836,36 +840,6 @@ export default function BookingScreen() {
               {input(t("booking.comment"), note, setNote, { isLast: true })}
             </FieldCard>
           </View>
-
-          {editing || loose.length ? (
-            <View style={styles.bottomActions}>
-              {/* Copy only when there is an order to copy onto. */}
-              {editing && project ? (
-                <TouchableOpacity
-                  style={styles.deleteButton}
-                  onPress={handleCopy}
-                  activeOpacity={0.7}
-                  accessibilityRole="button"
-                >
-                  <Icon name="copy" size={18} color={theme.colors.primary} />
-                  <Text style={styles.copyText}>{t("booking.copy")}</Text>
-                </TouchableOpacity>
-              ) : null}
-              <TouchableOpacity
-                style={styles.deleteButton}
-                onPress={handleDelete}
-                activeOpacity={0.7}
-                accessibilityRole="button"
-              >
-                <Icon name="trash-2" size={18} color={theme.content.danger} />
-                <Text style={styles.deleteText}>
-                  {editing
-                    ? t("booking.deleteOrder")
-                    : t("booking.deleteBooking")}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          ) : null}
         </ScrollView>
       </KeyboardAvoidingView>
 
@@ -886,8 +860,34 @@ export default function BookingScreen() {
         />
       ) : null}
 
+      {/* Everything that can be done with this booking is on screen at once,
+          no scrolling (owner 17.11): delete · copy · save. A brand-new booking
+          has nothing to delete or copy yet. */}
       <FormFooter>
-        <Button title={saveLabel} onPress={handleSave} loading={saving} />
+        {existing ? (
+          <Button
+            variant="danger"
+            title={t("common.delete")}
+            onPress={handleDelete}
+            disabled={saving}
+            style={styles.footerButton}
+          />
+        ) : null}
+        {existing ? (
+          <Button
+            variant="outline"
+            title={t("booking.copy")}
+            onPress={handleCopy}
+            disabled={saving}
+            style={styles.footerButton}
+          />
+        ) : null}
+        <Button
+          title={saveLabel}
+          onPress={handleSave}
+          loading={saving}
+          style={existing ? styles.footerButton : null}
+        />
       </FormFooter>
 
       <ArticlePickerModal
@@ -1026,17 +1026,7 @@ function createStyles(theme) {
       alignItems: "center",
       justifyContent: "center",
     },
-    // Copy on the left, delete on the right — two equal halves.
-    bottomActions: { flexDirection: "row" },
-    deleteButton: {
-      flex: 1,
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: 8,
-      minHeight: 48,
-    },
-    deleteText: { fontSize: 16, color: c.danger },
-    copyText: { fontSize: 16, color: theme.colors.primary },
+    // Three buttons share the footer: less side padding, the words stay whole.
+    footerButton: { paddingHorizontal: 8 },
   });
 }

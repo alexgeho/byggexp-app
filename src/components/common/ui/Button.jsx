@@ -17,7 +17,8 @@ import { useTheme } from "../../../theme/ThemeContext";
 // THE action button. Shows a spinner while `loading`.
 // `icon` = optional Feather glyph name shown before the title.
 // Variants: "primary" (filled accent), "outline" (transparent + 1px border,
-// dark text), "secondary" (surface fill, accent text). Every variant carries
+// dark text), "danger" (the outline button with red text — delete),
+// "secondary" (surface fill, accent text). Every variant carries
 // the same 1px border (transparent unless outline), so a filled + outline pair
 // is always exactly the same height.
 export const Button = ({
@@ -36,9 +37,11 @@ export const Button = ({
   const fg =
     variant === "outline"
       ? theme.content.textPrimary
-      : variant === "secondary"
-        ? theme.content.accent
-        : theme.content.onAccent;
+      : variant === "danger"
+        ? theme.content.danger
+        : variant === "secondary"
+          ? theme.content.accent
+          : theme.content.onAccent;
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -64,7 +67,13 @@ export const Button = ({
           {icon ? (
             <Icon name={icon} size={18} color={fg} style={styles.icon} />
           ) : null}
-          <Text style={[styles.text, { color: fg }]} numberOfLines={1}>
+          {/* A long word in a narrow button shrinks a little instead of being cut. */}
+          <Text
+            style={[styles.text, { color: fg }]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.75}
+          >
             {title}
           </Text>
         </>
@@ -100,6 +109,10 @@ const createStyles = (c) =>
       backgroundColor: c.surface,
     },
     outline: {
+      backgroundColor: "transparent",
+      borderColor: c.border,
+    },
+    danger: {
       backgroundColor: "transparent",
       borderColor: c.border,
     },
