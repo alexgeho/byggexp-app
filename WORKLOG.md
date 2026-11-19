@@ -7,7 +7,7 @@
 # 2026-11-19 — Tidsunderlag в приложении
 
 - [x] «Александр сделал в рабочих часах вкладку по тидрапорту, скачать можно только с компьютера — надо и с приложения; сделай OTA, чтобы проверить дизайн перед сторами» → в шторке экспорта Arbetspass третий вариант «Tidsunderlag» (PDF · Excel · Tidsunderlag), 11 языков; PDF — новый `format=tidsunderlag` в `/shifts/export` на бэке (шаблон `tidsunderlag-pdf.template.ts`, как `timesheetPdf.js` админки). Правило — DESIGN-SYSTEM §20. jest 437/437; бэк: тест шаблона 3/3, пример ~/Desktop/tidsunderlag-app-primer-2026-11-19.pdf
-- [ ] Бэк на прод + OTA — ждут разрешения владельца (выкладка не прошла без подтверждения)
+- [x] Бэк на проде (`cfd1e82`, Deploy 44501387971 ✓) → OTA `7e6fbd10` (production, runtime 1.1.0, iOS + Android). На устройстве не проверено
 
 # 2026-11-18 — HANDOFF: заказ материала у поставщика (Lundagrossisten), письма
 
