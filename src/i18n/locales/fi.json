@@ -537,7 +537,8 @@
     "sameAsLast": "Sama kuin viimeksi",
     "hoursUnit": "h",
     "saved": "Tallennettu",
-    "saving": "Tallennetaan…"
+    "saving": "Tallennetaan…",
+    "exportTimesheet": "Tuntierittely"
   },
   "shiftHistory": {
     "title": "Päiväraportti",

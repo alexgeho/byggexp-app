@@ -541,7 +541,8 @@
     "sameAsLast": "Tak jak ostatnio",
     "hoursUnit": "godz.",
     "saved": "Zapisano",
-    "saving": "Zapisywanie…"
+    "saving": "Zapisywanie…",
+    "exportTimesheet": "Karta czasu"
   },
   "shiftHistory": {
     "title": "Raport dzienny",

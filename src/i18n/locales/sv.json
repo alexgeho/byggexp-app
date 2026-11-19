@@ -537,7 +537,8 @@
     "sameAsLast": "Samma som förra gången",
     "hoursUnit": "tim",
     "saved": "Sparat",
-    "saving": "Sparar…"
+    "saving": "Sparar…",
+    "exportTimesheet": "Tidsunderlag"
   },
   "shiftHistory": {
     "title": "Dagsrapport",

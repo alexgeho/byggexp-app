@@ -540,7 +540,8 @@
     "sameAsLast": "Isto kao prošli put",
     "hoursUnit": "h",
     "saved": "Sačuvano",
-    "saving": "Čuvanje…"
+    "saving": "Čuvanje…",
+    "exportTimesheet": "Evidencija sati"
   },
   "shiftHistory": {
     "title": "Dnevni izvještaj",

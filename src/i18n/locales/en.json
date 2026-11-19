@@ -537,7 +537,8 @@
     "sameAsLast": "Same as last time",
     "hoursUnit": "h",
     "saved": "Saved",
-    "saving": "Saving…"
+    "saving": "Saving…",
+    "exportTimesheet": "Timesheet"
   },
   "shiftHistory": {
     "title": "Daily report",

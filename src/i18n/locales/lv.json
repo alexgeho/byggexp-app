@@ -538,7 +538,8 @@
     "sameAsLast": "Tāpat kā iepriekšējo reizi",
     "hoursUnit": "h",
     "saved": "Saglabāts",
-    "saving": "Saglabā…"
+    "saving": "Saglabā…",
+    "exportTimesheet": "Darba laika uzskaite"
   },
   "shiftHistory": {
     "title": "Dienas atskaite",

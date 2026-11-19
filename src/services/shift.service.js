@@ -51,9 +51,12 @@ const buildExportFileName = ({
     ) || "all-time";
   const workerPart = sanitizeFilePart(workerName);
   const projectPart = sanitizeFilePart(projectName);
-  const nameParts = ["shift-report", rangePart, workerPart, projectPart].filter(
-    Boolean,
-  );
+  const nameParts = [
+    format === "tidsunderlag" ? "tidsunderlag" : "shift-report",
+    rangePart,
+    workerPart,
+    projectPart,
+  ].filter(Boolean);
 
   return `${nameParts.join("-")}.${extension}`;
 };

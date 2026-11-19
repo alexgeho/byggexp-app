@@ -376,42 +376,36 @@ export function ExportSheet({
 
             <View style={styles.exportSheetCard}>
               <View style={styles.exportButtonsContainer}>
-                <TouchableOpacity
-                  style={[
-                    styles.exportButton,
-                    selectedExportType === "pdf" && styles.exportButtonActive,
-                  ]}
-                  onPress={() => setSelectedExportType("pdf")}
-                  activeOpacity={0.85}
-                >
-                  <Text
+                {[
+                  { key: "pdf", label: "PDF" },
+                  { key: "excel", label: "Excel" },
+                  // The admin's «Tidsunderlag»: worker rows × days, the
+                  // hours behind an invoice (owner 19.11).
+                  { key: "tidsunderlag", label: t("shifts.exportTimesheet") },
+                ].map((option) => (
+                  <TouchableOpacity
+                    key={option.key}
                     style={[
-                      styles.exportButtonText,
-                      selectedExportType === "pdf" &&
-                        styles.exportButtonTextActive,
+                      styles.exportButton,
+                      selectedExportType === option.key &&
+                        styles.exportButtonActive,
                     ]}
+                    onPress={() => setSelectedExportType(option.key)}
+                    activeOpacity={0.85}
                   >
-                    PDF
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[
-                    styles.exportButton,
-                    selectedExportType === "excel" && styles.exportButtonActive,
-                  ]}
-                  onPress={() => setSelectedExportType("excel")}
-                  activeOpacity={0.85}
-                >
-                  <Text
-                    style={[
-                      styles.exportButtonText,
-                      selectedExportType === "excel" &&
-                        styles.exportButtonTextActive,
-                    ]}
-                  >
-                    Excel
-                  </Text>
-                </TouchableOpacity>
+                    <Text
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                      style={[
+                        styles.exportButtonText,
+                        selectedExportType === option.key &&
+                          styles.exportButtonTextActive,
+                      ]}
+                    >
+                      {option.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
               </View>
             </View>
           </View>

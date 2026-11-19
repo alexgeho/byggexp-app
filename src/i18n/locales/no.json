@@ -537,7 +537,8 @@
     "sameAsLast": "Samme som sist",
     "hoursUnit": "t",
     "saved": "Lagret",
-    "saving": "Lagrer…"
+    "saving": "Lagrer…",
+    "exportTimesheet": "Timeliste"
   },
   "shiftHistory": {
     "title": "Dagsrapport",

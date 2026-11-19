@@ -537,7 +537,8 @@
     "sameAsLast": "Sama mis eelmisel korral",
     "hoursUnit": "h",
     "saved": "Salvestatud",
-    "saving": "Salvestan…"
+    "saving": "Salvestan…",
+    "exportTimesheet": "Tunnileht"
   },
   "shiftHistory": {
     "title": "Päevaraport",

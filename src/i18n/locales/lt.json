@@ -541,7 +541,8 @@
     "sameAsLast": "Kaip praėjusį kartą",
     "hoursUnit": "val.",
     "saved": "Išsaugota",
-    "saving": "Saugoma…"
+    "saving": "Saugoma…",
+    "exportTimesheet": "Darbo laiko žiniaraštis"
   },
   "shiftHistory": {
     "title": "Dienos ataskaita",

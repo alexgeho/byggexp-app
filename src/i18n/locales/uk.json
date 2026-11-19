@@ -541,7 +541,8 @@
     "sameAsLast": "Як минулого разу",
     "hoursUnit": "год",
     "saved": "Збережено",
-    "saving": "Збереження…"
+    "saving": "Збереження…",
+    "exportTimesheet": "Табель"
   },
   "shiftHistory": {
     "title": "Денний звіт",
